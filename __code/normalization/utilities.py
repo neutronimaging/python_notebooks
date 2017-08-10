@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import re
+import shutil
 from configparser import RawConfigParser
 
 
@@ -137,6 +138,16 @@ def get_working_dir(ipts=''):
         working_dir = './'
 
     return working_dir
-                
-                
+
+def make_dir(dir='', overwrite=True):
+    if dir== '':
+        return
+    
+    if overwrite:
+        if os.path.exists(dir):
+            shutil.rmtree(dir)
+    else:
+        raise IOError("{} exists already!".format(dir))
+            
+    os.mkdir(dir)             
     

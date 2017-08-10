@@ -153,7 +153,18 @@ class FileSelectorPanel:
         display(self.panel)
 
     def result(self):
-        return ['yo','ya','dfdf']
+        _result = self.widgets[1].value
+        if self.multiple:
+            _selection = [_folder.split('|')[0].strip() for _folder in _result]
+            return _selection
+        else:
+            return _result.split('|')[0].strip()
+    
+    def result_full_path(self):
+        _result = self.widgets[1].value
+        _selection = [_folder.split('|')[0].strip() for _folder in _result]
+        full_path = [os.path.join(self.curdir, _file) for _file in _selection]
+        return full_path    
 
     def remove(self):
         for w in self.widgets: w.close()
