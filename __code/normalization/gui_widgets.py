@@ -17,6 +17,7 @@ def gui_dname(dir=None, message=''):
     dirname = QFileDialog.getExistingDirectory(None, message, 
                                             dir, 
                                             QFileDialog.ShowDirsOnly)
+
     if platform.system() == 'Linux':
         return dirname
     else:
@@ -45,6 +46,8 @@ def gui_fname(dir=None, message='', ext='tif'):
                                          directory = dir, 
                                          filter = _filter)
 
+    if isinstance(fname, tuple):
+        return fname[0]
     return fname
 
 @format_directory
