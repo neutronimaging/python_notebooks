@@ -5,7 +5,7 @@ except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
 import os
-from __code.deal_images.decorators import format_directory
+from __code.decorators import format_directory
 import platform
 
 
