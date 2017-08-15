@@ -162,8 +162,12 @@ class FileSelectorPanel:
     
     def result_full_path(self):
         _result = self.widgets[1].value
-        _selection = [_folder.split('|')[0].strip() for _folder in _result]
-        full_path = [os.path.join(self.curdir, _file) for _file in _selection]
+        if self.multiple:
+            _selection = [_folder.split('|')[0].strip() for _folder in _result]
+            full_path = [os.path.join(self.curdir, _file) for _file in _selection]
+        else:
+            _result = _result.split('|')[0].strip()
+            full_path = os.path.join(self.curdir, _result)
         return full_path    
 
     def remove(self):

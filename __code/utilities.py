@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 from configparser import RawConfigParser
+import glob
 
 
 def calculate_file_temperature(left_T=-1, right_T=-1, left_time=-1, right_time=-1, file_time = -1):
@@ -115,14 +116,17 @@ def get_ipts():
         
     return ipts
     
-def get_working_dir(ipts=''):
+def get_working_dir(ipts='', debugging=False):
     '''
     if there is an ipts argument passed in, the working dir will be '/HFIR/CG1DImaging/IPTS-{}'.format(ipts)
     if ipts is empty: program will look if there is a 'working_dir' argument in the 'main_session' of the config file
     '~/.notebooks_config.cfg', otherwise will return the current folder location
     '''
     if ipts:
-        _path = '/HFIR/CG1DImaging/IPTS-{}/'.format(ipts)
+        if debugging:
+            _path = '/Volumes/my_book_thunderbolt_duo/IPTS/IPTS_{}'.format(ipts)
+        else:
+            _path = '/HFIR/CG1DImaging/IPTS-{}/'.format(ipts)
         if os.path.exists(_path):
             return _path
 
@@ -149,5 +153,30 @@ def make_dir(dir='', overwrite=True):
     else:
         raise IOError("{} exists already!".format(dir))
             
-    os.mkdir(dir)             
+    os.mkdir(dir)  
+
+def format_file_index(filename='', number_of_digits=4):
+    '''
+    This function take a file name that may look like this /Users/my_user/folder/description_1.tif
+    and will format it to make sure the prefix has a fix number of digit. If number of digit is 4,
+    the file name will be now /Users/my_user/folder/description_0001.tif
+
+    Parameters:
+    ===========
+    filename: string. name of file
+    number_of_digits: default is 4. int. number of digit to add to number at the end
+
+    Returns:
+    ========
+    new file name formatted
+    '''
+    _basename = os.path.basename(filename)
+    [_base, _ext] = os.path.splitext(_basename)
+    _base_slitted = _base.split('_')
+    _number = np.int(_base_slitted[-1])
+
+
+    return ''
+
+
     

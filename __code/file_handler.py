@@ -5,6 +5,9 @@ import pickle
 import shutil
 from PIL import Image
 
+from ipywidgets.widgets import interact
+from ipywidgets import widgets
+from IPython.core.display import display, HTML
 
 def test_image(file_name, threshold=5000):
     # check size of image and return False if size is below threshold 
@@ -102,5 +105,37 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d'):
        
     f.close()
     
+def read_ascii(filename=''):
+    '''return contain of an ascii file'''
+    f = open(filename, 'r')
+    text = f.read()
+    f.close()
+    return text
+
+def retrieve_metadata_from_dsc_file(filename=''):
+    text = read_ascii(filename=filename)
+    splitted_text = text.split('\n')
+    metadata = {}
+    metadata['acquisition_time'] = splitted_text[9]
+    metadata['user_format'] = splitted_text[-3]
+    metadata['os_format'] = splitted_text[-7]
+
+    return metadata
+
+def retrieve_metadata_from_dsc_list_files(list_files=[]):
+    w = widgets.IntProgress()
+    w.max = len(list_files)
+    display(w)
+
+    metadata = {}
+    for _index, _file in enumerate(list_files):
+        metadata[os.path.basename(_file)] = retrieve_metadata_from_dsc_file(filename=_file)
+        w.value = _index+1
+
+    return metadata
+
+
+
+
 
    
