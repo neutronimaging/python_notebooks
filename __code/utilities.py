@@ -4,6 +4,11 @@ import re
 import shutil
 from configparser import RawConfigParser
 import glob
+from shutil import copyfile
+
+from ipywidgets.widgets import interact
+from ipywidgets import widgets
+from IPython.core.display import display, HTML
 
 
 def calculate_file_temperature(left_T=-1, right_T=-1, left_time=-1, right_time=-1, file_time = -1):
@@ -175,8 +180,46 @@ def format_file_index(filename='', number_of_digits=4):
     _base_slitted = _base.split('_')
     _number = np.int(_base_slitted[-1])
 
-
     return ''
+
+def get_n_random_element(input_list=[], n=1):
+    '''
+    will return a list of n element taken from the input array called input_list
+    '''
+    n_random = np.random.randint(0, len(input_list)-1, n)
+    new_list = [input_list[_index] for _index in n_random]
+    return new_list
+
+def rename_files(dict_old_new_names={}, new_output_folder=''):
+    make_dir(dir=new_output_folder)
+
+    nbr_files = len(dict_old_new_names.keys())
+    w1 = widgets.IntProgress()
+    w1.max = nbr_files
+    display(w1)
+
+    # create new images
+    for _index, _old_name in enumerate(dict_old_new_names.keys()):
+        _new_name = os.path.join(new_output_folder, dict_old_new_names[_old_name])
+        os.rename(_old_name, _new_name)
+        w1.value = _index + 1
+
+def copy_files(dict_old_new_names={}, new_output_folder=''):
+    make_dir(dir=new_output_folder)
+
+    nbr_files = len(dict_old_new_names.keys())
+    w1 = widgets.IntProgress()
+    w1.max = nbr_files
+    display(w1)
+
+    # create new images
+    for _index, _old_name in enumerate(dict_old_new_names.keys()):
+        _new_name = os.path.join(new_output_folder, dict_old_new_names[_old_name])
+        copyfile(_old_name, _new_name)
+        w1.value = _index + 1
+
+
+
 
 
     

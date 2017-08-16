@@ -4,6 +4,8 @@ import numpy as np
 import pickle
 import shutil
 from PIL import Image
+import glob
+from collections import Counter
 
 from ipywidgets.widgets import interact
 from ipywidgets import widgets
@@ -134,8 +136,30 @@ def retrieve_metadata_from_dsc_list_files(list_files=[]):
 
     return metadata
 
+def retrieve_list_of_most_dominand_extension_from_folder(folder=''):
+    '''
+    This will return the list of files from the most dominand file extension found in the folder
+    as well as the most dominand extension used
+    '''
+    
+    list_of_input_files = glob.glob(os.path.join(folder, '*'))
+    list_of_base_name = [os.path.basename(_file) for _file in list_of_input_files]
 
+    # work with the largest common file extension from the folder selected
 
+    counter_extension = Counter()
+    for _file in list_of_base_name:
+        [_base, _ext] = os.path.splitext(_file)
+        counter_extension[_ext] += 1
 
+    dominand_extension = ''
+    dominand_number = 0
+    for _key in counter_extension.keys():
+        if counter_extension[_key] > dominand_number:
+            dominand_extension = _key
+
+    list_of_input_files = glob.glob(os.path.join(folder, '*' + dominand_extension))
+
+    return [list_of_input_files, dominand_extension]
 
    
