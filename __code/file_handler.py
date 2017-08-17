@@ -11,6 +11,10 @@ from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 
+import NeuNorm
+from NeuNorm.normalization import Normalization
+
+
 def test_image(file_name, threshold=5000):
     # check size of image and return False if size is below threshold 
     statinfo = os.stat(file_name)
@@ -18,22 +22,64 @@ def test_image(file_name, threshold=5000):
         return False
     return True
 
-def load_data(filename=''):
+def load_data(filenames='', folder='', showing_progress=False):
     '''
     load the various file_name format
     '''
-    data_type = get_data_type(filename)
-    if data_type == '.fits':
-        hdulist = fits.open(filename, ignore_missing_end=True)
-        hdu = hdulist[0]
-        _image = np.asarray(hdu.data)
-        hdulist.close()
-        return _image
-    elif (data_type == '.tiff') or (data_type == '.tif'):
-        _image = Image.open(filename)
-        return np.array(_image)
-    else:
-        return []
+    if folder:
+        list_files = glob.glob(folder + '/*.*')
+        stack = []
+
+        if showing_progress:
+            w = widgets.IntProgress()
+            w.max = len(list_files)
+            display(w)
+
+
+        for _index, _file in enumerate(list_files):
+            _data = load_data(filenames=_file)
+            stack.append(_data)
+
+            if showing_progress:
+                w.value = _index+1
+
+        return stack
+
+    elif isinstance(filenames, str):
+        data_type = get_data_type(filenames)
+        if data_type == '.fits':
+            hdulist = fits.open(filenames, ignore_missing_end=True)
+            hdu = hdulist[0]
+            _image = np.asarray(hdu.data)
+            hdulist.close()
+            return _image
+        elif (data_type == '.tiff') or (data_type == '.tif'):
+            _image = Image.open(filenames)
+            return np.array(_image)
+        else:
+            return []
+        
+    else: # list of filenames
+        
+        list_files = filenames
+    
+        stack = []
+
+        if showing_progress:
+            w = widgets.IntProgress()
+            w.max = len(list_files)
+            display(w)
+
+
+        for _index, _file in enumerate(list_files):
+            _data = load_data(filenames=_file)
+            stack.append(_data)
+
+            if showing_progress:
+                w.value = _index+1
+
+        return stack
+
     
 def save_data(data=[], filename=''):
     data_type = get_data_type(file_name)
