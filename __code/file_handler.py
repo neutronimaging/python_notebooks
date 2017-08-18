@@ -6,6 +6,7 @@ import shutil
 from PIL import Image
 import glob
 from collections import Counter
+import re
 
 from ipywidgets.widgets import interact
 from ipywidgets import widgets
@@ -207,5 +208,36 @@ def retrieve_list_of_most_dominand_extension_from_folder(folder=''):
     list_of_input_files = glob.glob(os.path.join(folder, '*' + dominand_extension))
 
     return [list_of_input_files, dominand_extension]
+
+def remove_file_from_list(list_files=[], regular_expression=''):
+    '''
+    This method will look through the list of files provided and will try
+    to find, using regular expresision, the name of the file that does match
+    the 're' argument passed. If found, the list is returned without that file
+
+    Parameters:
+    ===========
+    list_files: list
+    re: string (regular expression)
+      example: re = '*_SummedImg.fits'
+
+    Returns:
+    ========
+    list
+    '''
+    if regular_expression == '':
+        return list_files
+
+    p = re.compile(regular_expression)
+    for _index, _file in enumerate(list_files):
+        if p.match(_file):
+            list_files.pop(_index)
+
+    return list_files
+
+
+
+
+
 
    
