@@ -70,7 +70,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="distance_source_detector">
+         <widget class="QLineEdit" name="distance_source_detector_value">
           <property name="minimumSize">
            <size>
             <width>80</width>
@@ -239,7 +239,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>distance_source_detector</sender>
+   <sender>distance_source_detector_value</sender>
    <signal>editingFinished()</signal>
    <receiver>MainWindow</receiver>
    <slot>distance_source_detector_validated()</slot>
