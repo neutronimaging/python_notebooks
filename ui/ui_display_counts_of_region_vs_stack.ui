@@ -286,11 +286,60 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>file_index_ratio_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>radio_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>66</x>
+     <y>224</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>470</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tof_radio_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>radio_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>224</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>470</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lambda_radio_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>radio_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>224</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>470</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>done_button_clicked()</slot>
   <slot>distance_source_detector_validated()</slot>
   <slot>detector_offset_validated()</slot>
   <slot>time_spectra_file_browse_button_clicked()</slot>
+  <slot>radio_button_clicked()</slot>
  </slots>
 </ui>

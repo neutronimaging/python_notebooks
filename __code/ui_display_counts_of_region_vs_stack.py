@@ -120,6 +120,9 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.distance_source_detector_value, QtCore.SIGNAL(_fromUtf8("editingFinished()")), MainWindow.distance_source_detector_validated)
         QtCore.QObject.connect(self.detector_offset_value, QtCore.SIGNAL(_fromUtf8("returnPressed()")), MainWindow.detector_offset_validated)
         QtCore.QObject.connect(self.time_spectra_file_browse_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.time_spectra_file_browse_button_clicked)
+        QtCore.QObject.connect(self.file_index_ratio_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.radio_button_clicked)
+        QtCore.QObject.connect(self.tof_radio_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.radio_button_clicked)
+        QtCore.QObject.connect(self.lambda_radio_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.radio_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
