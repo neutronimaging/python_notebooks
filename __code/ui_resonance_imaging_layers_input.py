@@ -261,6 +261,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.validate_table_iinputs, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.validate_table_input_clicked)
         QtCore.QObject.connect(self.layer_name_combobox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), MainWindow.layer_combobox_clicked)
         QtCore.QObject.connect(self.element_name_combobox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), MainWindow.element_combobox_clicked)
+        QtCore.QObject.connect(self.element_table, QtCore.SIGNAL(_fromUtf8("cellChanged(int,int)")), MainWindow.element_table_edited)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

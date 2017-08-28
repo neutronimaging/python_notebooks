@@ -601,6 +601,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>element_table</sender>
+   <signal>cellChanged(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>element_table_edited()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>597</x>
+     <y>480</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>validate_table_input_clicked()</slot>
@@ -608,5 +624,6 @@
   <slot>element_combobox_clicked()</slot>
   <slot>cancel_button_clicked()</slot>
   <slot>ok_button_clicked()</slot>
+  <slot>element_table_edited()</slot>
  </slots>
 </ui>
