@@ -27,7 +27,7 @@ class ImageWindow(QMainWindow):
     y_axis = {'label': 'Mean Counts', 'data': []}
     spectra_file = ''
     
-    def __init__(self, parent=None, stack=[], working_folder=''):
+    def __init__(self, parent=None, stack=[], working_folder='', o_reso=None):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
@@ -36,7 +36,8 @@ class ImageWindow(QMainWindow):
         self.stack = np.array(stack)
         self.integrated_stack = self.stack.sum(axis=0)
         self.working_folder = working_folder
-
+        self.o_reso = o_reso
+        
         self.initialize_pyqtgraph()
         self.init_label()
 

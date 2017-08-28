@@ -1,5 +1,3 @@
-import pyqtgraph as pg
-from pyqtgraph.dockarea import *
 import numpy as np
 import os
 import numbers
@@ -13,195 +11,237 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication
 
-from neutronbraggedge.experiment_handler import *
+from __code.ui_resonance_imaging_layers_input import Ui_MainWindow as UiSampleMainWindow
+from ImagingReso.resonance import Resonance
 
-from __code.ui_display_counts_of_region_vs_stack import Ui_MainWindow as UiMainWindow
 
-
-class ImageWindow(QMainWindow):
-
-    stack = []
-    integrated_stack = []
-    working_folder = ''
-    x_axis = {'label': 'File Index', 'type': 'file_index', 'data': []}
-    y_axis = {'label': 'Mean Counts', 'data': []}
-    spectra_file = ''
+class SampleWindow(QMainWindow):
     
-    def __init__(self, parent=None, stack=[], working_folder=''):
+    debugging = False
+    stack = {} # used to initialize ImagingReso
+    
+    def __init__(self, parent=None, debugging=False):
         QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
+        self.ui = UiSampleMainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle("Select Rotation Angle for All Images")
-
-        self.stack = np.array(stack)
-        self.integrated_stack = self.stack.sum(axis=0)
-        self.working_folder = working_folder
-
-        self.initialize_pyqtgraph()
-        self.init_label()
-
-        self.display_image()
-        self.update_x_axis()
-        self.roi_changed()
+        self.setWindowTitle("Define Sample Layers")
+    
+        self.debugging = debugging
         
-    def update_plot(self):
-        self.update_x_axis()
-        self.plot()
+        self.initialize_ui()
+        self.__debugging()
         
-    def init_label(self):
-        _tof_label = u"TOF (\u00B5s)"
-        self.ui.tof_radio_button.setText(_tof_label)
-        _lambda_label = u"lambda (\u212B)"
-        self.ui.lambda_radio_button.setText(_lambda_label)
-        _offset_label = u"\u00B5s"
-        self.ui.detector_offset_units.setText(_offset_label)
-
-    def display_image(self):
-        self.ui.image_view.setImage(self.integrated_stack)
-
-    def plot(self):
-        x_axis_data = self.x_axis['data']
-        x_axis_label = self.x_axis['label']
+    def __debugging(self):
+        '''Fill the table for debugging only!'''
+        if not self.debugging:
+            return
         
-        y_axis_data = self.y_axis['data']
-        y_axis_label = self.y_axis['label']
+        _debug_table = [['CoAg','Co,Ag','1,1','20','0.9'],
+                        ['Uranium','U','1','10','0.5']]
+        for _row_index,_row in enumerate(_debug_table):
+            for _col_index, _entry in enumerate(_row):
+                _item = QtGui.QTableWidgetItem(_entry)
+                self.ui.layer_table.setItem(_row_index, _col_index, _item)
         
-        x_axis_data = x_axis_data[0: len(y_axis_data)]
+    def initialize_ui(self):
+        self.ui.check_groupBox.setVisible(False)
         
-        self.counts_vs_index.clear()
-        self.counts_vs_index.plot(x_axis_data, y_axis_data)
-        
-        self.counts_vs_index.setLabel('bottom', x_axis_label)
-        self.counts_vs_index.setLabel('left', y_axis_label)
-        
-    def initialize_pyqtgraph(self):
-        area = DockArea()
-        area.setVisible(True)
-        d1 = Dock("Image Integrated Preview", size=(200, 300))
-        d2 = Dock("Counts vs Image Index of Selection", size=(200, 100))
-
-        area.addDock(d1, 'top')
-        area.addDock(d2, 'bottom')
-
-        preview_widget = pg.GraphicsLayoutWidget()
-        pg.setConfigOptions(antialias=True)
-
-        # image view
-        self.ui.image_view = pg.ImageView()
-        self.ui.image_view.ui.menuBtn.hide()
-        self.ui.image_view.ui.roiBtn.hide()
-
-        # default ROI
-        self.ui.roi = pg.ROI(
-            [0, 0], [20, 20], pen=(62, 13, 244), scaleSnap=True)  #blue
-        self.ui.roi.addScaleHandle([1, 1], [0, 0])
-        self.ui.image_view.addItem(self.ui.roi)
-        self.ui.roi.sigRegionChanged.connect(self.roi_changed)
-        d1.addWidget(self.ui.image_view)
-
-        self.counts_vs_index = pg.PlotWidget(title='')
-        self.counts_vs_index.plot()
-        d2.addWidget(self.counts_vs_index)
-
-        vertical_layout = QtGui.QVBoxLayout()
-        vertical_layout.addWidget(area)
-
-        self.ui.widget.setLayout(vertical_layout)
-
-    def roi_changed(self):
-        region = self.ui.roi.getArraySlice(self.integrated_stack,
-                                           self.ui.image_view.imageItem)
-        x0 = region[0][0].start
-        x1 = region[0][0].stop - 1
-        y0 = region[0][1].start
-        y1 = region[0][1].stop - 1
-
-        mean_selection = [_data[y0:y1, x0:x1].mean() for _data in self.stack]
-        self.y_axis['data'] = mean_selection
-        self.plot()
-
-    # x_axis
-    def get_x_axis_selected(self):
-        if self.ui.file_index_ratio_button.isChecked():
-            return 'file_index'
-        elif self.ui.tof_radio_button.isChecked():
-            return 'tof'
-        else:
-            return 'lambda'
-
-    def update_x_axis(self):
-        x_axis_selected = self.get_x_axis_selected()
-        b_enable_only_file_index_button = False
-        
-        spectra_file = self.spectra_file
-        if not os.path.exists(spectra_file):
-            x_axis_selected = 'file_index'
-            b_enable_only_file_index_button = True
-
-        distance_source_detector = self.ui.distance_source_detector_value.text()
-        if not distance_source_detector:
-            x_axis_selected = 'file_index'
-            b_enable_only_file_index_button = True
-
-        elif not isinstance(float(distance_source_detector), numbers.Number):
-            x_axis_selected = 'file_index'
-            b_enable_only_file_index_button = True
+        _column_width = [300, 100, 100, 100, 100]
+        for _index, _width in enumerate(_column_width):
+            self.ui.layer_table.setColumnWidth(_index, _width)
+            self.ui.example_table.setColumnWidth(_index, _width)
             
-        detector_offset = str(self.ui.detector_offset_value.text())
-        if not detector_offset:
-            x_axis_selected = 'file_index'
-            b_enable_only_file_index_button = True
-        elif not isinstance(float(detector_offset), numbers.Number):
-            x_axis_selected = 'file_index'
-            b_enable_only_file_index_button = True
-            
-        self.radio_buttons_status(b_enable_only_file_index_button = b_enable_only_file_index_button)
-            
-        self.x_axis['type'] = x_axis_selected
-        if x_axis_selected == 'file_index':
-            self.x_axis['data'] = np.arange(len(self.integrated_stack))
-            self.x_axis['label'] = 'File Index'
-        else:
-            _tof_handler = TOF(filename=spectra_file)
-            if x_axis_selected == 'tof':
-                self.x_axis['data'] = _tof_handler.tof_array
-                self.x_axis['label'] = u'TOF (\u00B5s)'
+        _column_width = [80, 90, 90, 100]
+        for _index, _width in enumerate(_column_width):
+            self.ui.element_table.setColumnWidth(_index, _width)
+        
+    def validate_table_input_clicked(self):
+        # block element table signal
+        self.ui.element_table.blockSignals(True)
+        
+        # collect table input
+        nbr_row = self.ui.layer_table.rowCount()
+        _table_dictionary = {}
+        for _row_index in range(nbr_row):
+            _dict = {}
+            _layer_name = self.get_table_item(_row_index, 0)
+            if _layer_name == '':
+                break
+            _dict['elements'] = self.format_string_to_array(string=self.get_table_item(_row_index, 1), data_type='str')
+            _dict['stoichiometric_ratio'] = self.format_string_to_array(string=self.get_table_item(_row_index, 2), data_type='float')
+            _dict['thickness'] = {'value': float(self.get_table_item(_row_index, 3)),
+                                  'units': 'mm'}
+            _dict['density'] = {'value': float(self.get_table_item(_row_index, 4)),
+                                'units': 'g/cm3'}
+            _table_dictionary[_layer_name] = _dict
+        self.stack = _table_dictionary
+        o_reso = Resonance(stack=self.stack)
+        self.o_reso = o_reso
+        
+        self.fill_check_groupBox()
+        self.ui.check_groupBox.setVisible(True)        
+        self.ui.element_table.blockSignals(False)
+        
+    def format_string_to_array(self, string='', data_type='str'):
+        _parsed_string = string.split(',')
+        result = []
+        for _entry in _parsed_string:
+            if data_type == 'str':
+                result.append(str(_entry))
+            elif data_type == 'float':
+                result.append(float(_entry))
             else:
-                _exp = Experiment(tof = _tof_handler.tof_array, 
-                                  distance_source_detector_m = float(distance_source_detector),
-                                  detector_offset_micros= float(detector_offset))
-                self.x_axis['data'] = _exp.lambda_array * 1e10
-                self.x_axis['label'] = u'\u03BB (\u212B)'
+                raise ValueError("data_type not supported!")
+        return result
+    
+    def get_table_item(self, row, col):
+        _item = self.ui.layer_table.item(row, col)
+        if _item is None:
+            return ''
+        _text = _item.text().strip()
+        return _text
 
-    def radio_buttons_status(self, b_enable_only_file_index_button=False):
-        self.ui.tof_radio_button.setEnabled(not b_enable_only_file_index_button)
-        self.ui.lambda_radio_button.setEnabled(not b_enable_only_file_index_button)
-        if b_enable_only_file_index_button:
-            self.ui.file_index_ratio_button.setChecked(True)
+    def fill_check_groupBox(self):
+        # fill layer's name
+        _stack = self.o_reso.stack
+        layers_name = list(_stack.keys())
+        self.ui.layer_name_combobox.clear()
+        self.ui.layer_name_combobox.addItems(layers_name)
+        
+    def element_combobox_clicked(self, element_selected):
+        if element_selected == '':
+            return
+        
+        self.ui.element_table.blockSignals(True)
+
+        layer_selected = self.ui.layer_name_combobox.currentText()
+        if layer_selected == '':
+            return
+        if element_selected == '':
+            return
+        
+        _entry = self.stack[layer_selected][element_selected]
+        number_of_atoms = float(self.stack[layer_selected]['atoms_per_cm3'][element_selected])
+        self.ui.element_number_of_atoms.setText("{:6.3e}".format(number_of_atoms))
+        density = str(self.stack[layer_selected][element_selected]['density']['value'])
+        self.ui.element_density.setText("{:6.3e}".format(float(density)))
+        molar_mass = str(self.stack[layer_selected][element_selected]['molar_mass']['value'])
+        self.ui.element_molar_mass.setText("{:6.3e}".format(float(molar_mass)))
+        
+        self.fill_isotopes_table(element_selected)
+        self.ui.element_table.blockSignals(False)
+        
+    def fill_isotopes_table(self, element_selected=''):
+        self.clear_isotopes_table()
+        layer_selected = self.ui.layer_name_combobox.currentText()
+        element_selected = self.ui.element_name_combobox.currentText()
+        _entry = self.stack[layer_selected][element_selected]['isotopes']
+        list_iso = _entry['list']
+        list_density = _entry['density']['value']
+        list_iso_ratio = _entry['isotopic_ratio']
+        list_mass = _entry['mass']['value']
+        
+        nbr_iso = len(list_iso)
+        for _row in range(nbr_iso):
+            self.ui.element_table.insertRow(_row)
+
+            # iso name
+            _item = QtGui.QTableWidgetItem(list_iso[_row])
+            _item.setFlags(QtCore.Qt.NoItemFlags)
+            _color = QtGui.QColor(200,200,200)
+            _item.setBackgroundColor(_color)
+            self.ui.element_table.setItem(_row, 0, _item)
+
+            # density
+            _item = QtGui.QTableWidgetItem("{:6.3e}".format(list_density[_row]))
+            _item.setBackgroundColor(_color)
+            _item.setFlags(QtCore.Qt.NoItemFlags)
+            self.ui.element_table.setItem(_row, 1, _item)
+            
+            # iso. ratio
+            _item = QtGui.QTableWidgetItem("{:6.3e}".format(list_iso_ratio[_row]))
+            self.ui.element_table.setItem(_row, 2, _item)
+            
+            # molar mass
+            _item = QtGui.QTableWidgetItem("{:6.3e}".format(list_mass[_row]))
+            _item.setBackgroundColor(_color)
+            _item.setFlags(QtCore.Qt.NoItemFlags)
+            self.ui.element_table.setItem(_row, 3, _item)
+
+        self.calculate_sum_iso_ratio()
+            
+    def clear_isotopes_table(self):
+        nbr_row = self.ui.element_table.rowCount()
+        for _row in range(nbr_row):
+            self.ui.element_table.removeRow(0)
+
+    def calculate_sum_iso_ratio(self):
+        nbr_row = self.ui.element_table.rowCount()
+        total_iso_ratio = 0
+        for _row in range(nbr_row):
+            _item = self.ui.element_table.item(_row, 2)
+            try:
+                _iso_ratio = float(self.ui.element_table.item(_row, 2).text())
+            except:
+                _iso_ratio = np.NaN
+                _item = QtGui.QTableWidgetItem("NaN")
+                self.ui.element_table.setItem(_row, 2, _item)
+            total_iso_ratio += _iso_ratio
+        self.ui.total_iso_ratio.setText("{:.2f}".format(total_iso_ratio))
+
+        # will use this flag to allow new isotopic ratio entries
+        if np.isnan(total_iso_ratio):
+            return False
+        return True
+            
+    def layer_combobox_clicked(self, layer_selected):
+        if layer_selected == '':
+            return
+        list_elements = self.stack[layer_selected]['elements']
+        # block element table signal
+        self.ui.element_table.blockSignals(True)
+      
+        # fill list of elements for this layer
+        self.ui.element_name_combobox.clear()
+        self.ui.element_name_combobox.addItems(list_elements)
+        
+        # fill info for this layer
+        _layer = self.stack[layer_selected]
+        thickness = str(_layer['thickness']['value'])
+        self.ui.layer_thickness.setText(thickness)
+        density = str(_layer['density']['value'])
+        self.ui.layer_density.setText(density)
+        
+        self.ui.element_table.blockSignals(False)
+
+    def element_table_edited(self, row, col):
+        if col == 2:
+            calculation_status = self.calculate_sum_iso_ratio()
+            if calculation_status:
+                self.define_new_isotopic_ratio()
                 
-    def radio_button_clicked(self):
-        self.update_plot()
-                
-    def distance_source_detector_validated(self):
-        self.update_plot()
+    def define_new_isotopic_ratio(self):
+        layer_selected = self.ui.layer_name_combobox.currentText()
+        element_selected = self.ui.element_name_combobox.currentText()
+        _entry = self.stack[layer_selected][element_selected]['isotopes']
+        list_isotopes = _entry['list']
+ 
 
-    def detector_offset_validated(self):
-        self.update_plot()
-
-    def time_spectra_file_browse_button_clicked(self):
-        spectra_file = QFileDialog.getOpenFileName(
-            caption='Select Time Spectra',
-            directory=self.working_folder,
-            filter='txt (*_Spectra.txt);;All (*.*)')
-        if spectra_file:
-            self.ui.time_spectra_file.setText(os.path.basename(spectra_file))
-            self.spectra_file = spectra_file
-            self.update_x_axis()
-            self.plot()
-
-    def done_button_clicked(self):
+        nbr_row = self.ui.element_table.rowCount()
+        list_isotopic_ratio = []
+        for _row in range(nbr_row):
+            _iso_ratio = float(self.ui.element_table.item(_row, 2).text())
+            list_isotopic_ratio.append(_iso_ratio)
+        
+        self.o_reso.set_isotopic_ratio(compound=layer_selected, 
+                                       element=element_selected, 
+                                       list_ratio=list_isotopic_ratio)
+        
+        self.layer_combobox_clicked(layer_selected)
+        self.element_combobox_clicked(element_selected)
+        
+    def ok_button_clicked(self):
+#        global global_o_reso
+#        global_o_reso = self.o_reso
         self.close()
-
-    def closeEvent(self, event=None):
-        pass
-
+        
