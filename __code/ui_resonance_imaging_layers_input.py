@@ -238,9 +238,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addItem(spacerItem6)
         self.horizontalLayout_7 = QtGui.QHBoxLayout()
         self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-        self.cancel_button = QtGui.QPushButton(self.centralwidget)
-        self.cancel_button.setObjectName(_fromUtf8("cancel_button"))
-        self.horizontalLayout_7.addWidget(self.cancel_button)
         spacerItem7 = QtGui.QSpacerItem(17, 17, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem7)
         self.ok_button = QtGui.QPushButton(self.centralwidget)
@@ -262,6 +259,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.layer_name_combobox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), MainWindow.layer_combobox_clicked)
         QtCore.QObject.connect(self.element_name_combobox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), MainWindow.element_combobox_clicked)
         QtCore.QObject.connect(self.element_table, QtCore.SIGNAL(_fromUtf8("cellChanged(int,int)")), MainWindow.element_table_edited)
+        QtCore.QObject.connect(self.ok_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.ok_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -349,6 +347,5 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Molar Mass (g/mol)", None))
         self.label_3.setText(_translate("MainWindow", "Total Iso. Ratio:", None))
         self.total_iso_ratio.setText(_translate("MainWindow", "N/A", None))
-        self.cancel_button.setText(_translate("MainWindow", "Cancel", None))
         self.ok_button.setText(_translate("MainWindow", "OK", None))
 

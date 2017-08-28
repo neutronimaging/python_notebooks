@@ -507,13 +507,6 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
-         <widget class="QPushButton" name="cancel_button">
-          <property name="text">
-           <string>Cancel</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <spacer name="horizontalSpacer_6">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -610,6 +603,22 @@
     <hint type="sourcelabel">
      <x>597</x>
      <y>480</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ok_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ok_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>758</x>
+     <y>672</y>
     </hint>
     <hint type="destinationlabel">
      <x>405</x>
