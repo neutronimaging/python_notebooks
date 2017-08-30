@@ -12,6 +12,7 @@ class UiBuilder(object):
         self.py_name = os.path.abspath('__code/' + py_name)
 
         # run command
+        print(self.pyuic + ' ' + self.ui_name + ' -o ' + self.py_name)
         os.system(self.pyuic + ' ' + self.ui_name + ' -o ' + self.py_name)
         
     def define_pyuic_to_run(self):
@@ -19,4 +20,5 @@ class UiBuilder(object):
             from PyQt4 import QtGui
             self.pyuic = 'pyuic4'
         except:
+            from PyQt5 import QtGui
             self.pyuic = 'pyuic5'

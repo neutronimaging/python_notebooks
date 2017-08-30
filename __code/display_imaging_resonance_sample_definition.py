@@ -9,7 +9,7 @@ try:
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from __code.ui_resonance_imaging_layers_input import Ui_MainWindow as UiSampleMainWindow
 from ImagingReso.resonance import Resonance

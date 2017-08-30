@@ -11,7 +11,7 @@ try:
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from neutronbraggedge.experiment_handler import *
 
