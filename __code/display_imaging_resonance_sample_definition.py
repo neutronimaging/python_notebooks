@@ -58,6 +58,9 @@ class SampleWindow(QMainWindow):
     def validate_table_input_clicked(self):
         # block element table signal
         self.ui.element_table.blockSignals(True)
+
+        # disable top part (no more changes allowed)
+        self.ui.layer_groupBox.setEnabled(False)
         
         # collect table input
         nbr_row = self.ui.layer_table.rowCount()
@@ -75,7 +78,12 @@ class SampleWindow(QMainWindow):
                                 'units': 'g/cm3'}
             _table_dictionary[_layer_name] = _dict
         self.stack = _table_dictionary
-        o_reso = Resonance(stack=self.stack)
+
+        E_min = float(str(self.ui.Emin_lineEdit.text()))
+        E_max = float(str(self.ui.Emax_lineEdit.text()))
+        delta_E = float(str(self.ui.deltaE_lineEdit.text()))
+
+        o_reso = Resonance(stack=self.stack, energy_min=E_min, energy_max=E_max, energy_step=delta_E)
         self.o_reso = o_reso
         
         self.fill_check_groupBox()
