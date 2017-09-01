@@ -11,7 +11,7 @@ try:
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5.QtWidgets import QApplication
 
 from neutronbraggedge.experiment_handler import *
 
@@ -27,39 +27,23 @@ class ImageWindow(QMainWindow):
     y_axis = {'label': 'Mean Counts', 'data': []}
     spectra_file = ''
     
-    def __init__(self, parent=None, stack=[], working_folder='', o_reso=None):
+    def __init__(self, parent=None, stack=[], working_folder=''):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("Select Rotation Angle for All Images")
 
         self.stack = np.array(stack)
+        [self.nbr_files, height, width] = np.shape(self.stack)
         self.integrated_stack = self.stack.sum(axis=0)
         self.working_folder = working_folder
-        self.o_reso = o_reso
-        
+
         self.initialize_pyqtgraph()
         self.init_label()
-        self.init_list_of_things_to_plot()
 
         self.display_image()
         self.update_x_axis()
         self.roi_changed()
-        
-    def init_list_of_things_to_plot(self):
-        list_things_to_plot = []
-        stack = self.o_reso.stack
-        list_layers = stack.keys()
-        for _layer in list_layers:
-            list_things_to_plot.append(_layer)
-            list_elements = stack[_layer]['elements']
-            for _element in list_elements:
-                list_things_to_plot.append(_element)
-                list_isotopes = stack[_layer][_element]['list']
-                for _isotope in list_isotopes:
-                    list_things_to_plot.append(_isotopes)
-                    
-        print(list_things_to_plot)
         
     def update_plot(self):
         self.update_x_axis()
@@ -176,7 +160,7 @@ class ImageWindow(QMainWindow):
             
         self.x_axis['type'] = x_axis_selected
         if x_axis_selected == 'file_index':
-            self.x_axis['data'] = np.arange(len(self.integrated_stack))
+            self.x_axis['data'] = np.arange(self.nbr_files)
             self.x_axis['label'] = 'File Index'
         else:
             _tof_handler = TOF(filename=spectra_file)

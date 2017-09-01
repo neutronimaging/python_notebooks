@@ -36,8 +36,8 @@ class SampleWindow(QMainWindow):
         if not self.debugging:
             return
         
-        _debug_table = [['CoAg','Co,Ag','1,1','20','0.9'],
-                        ['Uranium','U','1','10','0.5']]
+        _debug_table = [['Gadnium','Gd','1','0.075','']]
+
         for _row_index,_row in enumerate(_debug_table):
             for _col_index, _entry in enumerate(_row):
                 _item = QtGui.QTableWidgetItem(_entry)
@@ -74,8 +74,9 @@ class SampleWindow(QMainWindow):
             _dict['stoichiometric_ratio'] = self.format_string_to_array(string=self.get_table_item(_row_index, 2), data_type='float')
             _dict['thickness'] = {'value': float(self.get_table_item(_row_index, 3)),
                                   'units': 'mm'}
-            _dict['density'] = {'value': float(self.get_table_item(_row_index, 4)),
-                                'units': 'g/cm3'}
+            if self.get_table_item(_row_index, 4):
+                _dict['density'] = {'value': float(self.get_table_item(_row_index, 4)),
+                                    'units': 'g/cm3'}
             _table_dictionary[_layer_name] = _dict
         self.stack = _table_dictionary
 

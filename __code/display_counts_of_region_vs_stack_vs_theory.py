@@ -197,7 +197,7 @@ class ImageWindow(QMainWindow):
             
         self.x_axis['type'] = x_axis_selected
         if x_axis_selected == 'file_index':
-            self.x_axis['data'] = np.arange(len(self.integrated_stack))
+            self.x_axis['data'] = np.arange(len(self.stack))
             self.x_axis['label'] = 'File Index'
         else:
             _tof_handler = TOF(filename=spectra_file)
