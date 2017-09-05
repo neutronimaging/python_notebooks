@@ -1,10 +1,12 @@
 from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
-
+import os
 from PIL import Image
 from PIL.ExifTags import TAGS
 import collections
+
+from __code import file_handler
 
 
 class DisplayMetadata(object):
@@ -35,18 +37,30 @@ class DisplayMetadata(object):
 
 		# retrieve key selected
 		[key,value] = metadata_selected.split(' -> ')
+		self.key = key
 
 		# display file vs value of key selected
 		display(widgets.Label("Metadata to display {}".format(metadata_selected)))
 		export_txt = []
-		for _file in list_images:
+		for _file in self.list_images:
 		    o_image = Image.open(_file)
 		    o_dict = dict(o_image.tag_v2)
 		    _key = os.path.basename(_file)
 		    _value = o_dict[float(key)]
 		    export_txt.append("{} {}".format(_key, _value))
 		    box = widgets.HBox([widgets.Label("  {} -> ".format(_key),
-		                                      layout=widgets.Layout(width='40%', height='10%')),
+		                                      layout=widgets.Layout(width='40%')),
 		                        widgets.Label(" {}".format(_value),
-		                                        layout=widgets.Layout(width='20%', height='10%'))])
+		                                        layout=widgets.Layout(width='20%'))])
 		    display(box)
+
+		self.export_txt = export_txt
+
+	def export(self, output_folder=''):
+		parent_folder = self.list_images[0].split(os.path.sep)[-2]
+		metadata_name = 'metadata#{}'.format(self.key)
+		output_file_name = os.path.join(output_folder, "{}_{}.txt".format(parent_folder, metadata_name))
+		file_handler.make_ascii_file(metadata=['#Metadata: ' + self.key], 
+			data=self.export_txt, 
+			dim='1d', 
+			output_file_name=output_file_name)
