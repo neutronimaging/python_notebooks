@@ -213,7 +213,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.sector_sector, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.sector_radio_button_changed)
         QtCore.QObject.connect(self.sector_from_value, QtCore.SIGNAL(_fromUtf8("returnPressed()")), MainWindow.sector_changed)
         QtCore.QObject.connect(self.sector_to_value, QtCore.SIGNAL(_fromUtf8("returnPressed()")), MainWindow.sector_changed)
-        QtCore.QObject.connect(self.lineEdit, QtCore.SIGNAL(_fromUtf8("returnPressed()")), MainWindow.circle_center_changed)
+        QtCore.QObject.connect(self.lineEdit, QtCore.SIGNAL(_fromUtf8("returnPressed()")), MainWindow.grid_size_changed)
         QtCore.QObject.connect(self.guide_red_slider, QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")), MainWindow.guide_color_changed)
         QtCore.QObject.connect(self.guide_green_slider, QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")), MainWindow.guide_color_changed)
         QtCore.QObject.connect(self.guide_blue_slider, QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")), MainWindow.guide_color_changed)
@@ -222,10 +222,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.groupBox_2.setTitle(_translate("MainWindow", "Circle", None))
+        self.groupBox_2.setTitle(_translate("MainWindow", "Circle Center", None))
         self.label.setText(_translate("MainWindow", "x", None))
         self.label_2.setText(_translate("MainWindow", "y", None))
-        self.label_4.setText(_translate("MainWindow", "radius guide", None))
+        self.label_4.setText(_translate("MainWindow", "Grid Size", None))
         self.groupBox_3.setTitle(_translate("MainWindow", "Sector", None))
         self.sector_full_circle.setText(_translate("MainWindow", "Full circle", None))
         self.label_3.setText(_translate("MainWindow", "or", None))

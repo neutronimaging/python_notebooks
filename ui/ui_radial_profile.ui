@@ -44,7 +44,7 @@
            </size>
           </property>
           <property name="title">
-           <string>Circle</string>
+           <string>Circle Center</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
@@ -90,7 +90,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="label_4">
              <property name="text">
-              <string>radius guide</string>
+              <string>Grid Size</string>
              </property>
             </widget>
            </item>
@@ -543,7 +543,7 @@ p, li { white-space: pre-wrap; }
    <sender>lineEdit</sender>
    <signal>returnPressed()</signal>
    <receiver>MainWindow</receiver>
-   <slot>circle_center_changed()</slot>
+   <slot>grid_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>602</x>
@@ -627,5 +627,6 @@ p, li { white-space: pre-wrap; }
   <slot>sector_radio_button_changed()</slot>
   <slot>sector_changed()</slot>
   <slot>guide_color_changed()</slot>
+  <slot>grid_size_changed()</slot>
  </slots>
 </ui>

@@ -2,6 +2,7 @@
 from ipywidgets import widgets
 from IPython.core.display import HTML
 from IPython.display import display
+import ipywe.fileselector
 
 import numpy as np
 import os
@@ -23,9 +24,16 @@ class RadialProfile(object):
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
 
-    def import_images(self):
+    def select_images(self):
         display(HTML('<span style="font-size: 20px; color:blue">Select the images you want to work on!</span>'))
-        list_images = gui_widgets.gui_fimage(dir = self.working_dir)
+        self.list_images_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images...',
+                                                              multiple=True,
+                                                              start_dir = self.working_dir)
+        self.list_images_ui.show()
+
+    def load_images(self):
+        list_images = self.list_images_ui.selected
+
         if list_images:
 
             w = widgets.IntProgress()
