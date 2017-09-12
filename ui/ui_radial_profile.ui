@@ -389,7 +389,7 @@ p, li { white-space: pre-wrap; }
       <item>
        <widget class="QPushButton" name="apply_button">
         <property name="text">
-         <string>Apply on all Images</string>
+         <string>OK</string>
         </property>
        </widget>
       </item>

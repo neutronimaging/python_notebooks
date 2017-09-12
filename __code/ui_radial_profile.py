@@ -247,5 +247,5 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">center of circle</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">radial sector</span></p></body></html>", None))
         self.cancel_button.setText(_translate("MainWindow", "Cancel", None))
-        self.apply_button.setText(_translate("MainWindow", "Apply on all Images", None))
+        self.apply_button.setText(_translate("MainWindow", "OK", None))
 
