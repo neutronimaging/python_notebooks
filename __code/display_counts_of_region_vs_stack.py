@@ -31,7 +31,7 @@ class ImageWindow(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle("Select Rotation Angle for All Images")
+        self.setWindowTitle("Select ROI to display profile over all images.")
 
         self.stack = np.array(stack)
         [self.nbr_files, height, width] = np.shape(self.stack)
@@ -117,7 +117,7 @@ class ImageWindow(QMainWindow):
         y0 = region[0][1].start
         y1 = region[0][1].stop - 1
 
-        mean_selection = [_data[y0:y1, x0:x1].mean() for _data in self.stack]
+        mean_selection = [_data[x0:x1, y0:y1].mean() for _data in self.stack]
         self.y_axis['data'] = mean_selection
         self.plot()
 
