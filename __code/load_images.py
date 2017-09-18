@@ -55,6 +55,9 @@ class LoadImages(object):
                 working_data.append(_data)
                 w.value = _index + 1
 
+            if len(np.shape(working_data)) < 3:
+                raise ValueError("Check the Input Files! (no data loaded)")
+
             [self.nbr_files, self.images_dimension['height'], self.images_dimension['width']] = np.shape(working_data)
             self.working_data = np.squeeze(working_data)
             self.working_dir = os.path.dirname(list_images[0])
