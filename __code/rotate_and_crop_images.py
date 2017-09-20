@@ -7,20 +7,19 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
+from ipywidgets import widgets
 from IPython.core.display import display, HTML
+import ipywe.fileselector
 
 import pyqtgraph as pg
 import scipy.ndimage
 import numpy as np
+import os
 
+from __code import file_handler
 from __code.ui_rotate_and_crop import Ui_MainWindow as UiMainWindow
 
-
 class RotateAndCropImages(QMainWindow):
-    display(
-        HTML(
-            '<span style="font-size: 20px; color:blue">Select the rotation angle in the UI that poped up (maybe hidden behind this browser!)</span>'
-        ))
 
     grid_size = 100
     live_data = []
@@ -29,7 +28,16 @@ class RotateAndCropImages(QMainWindow):
     width = 0
     nbr_files = 0
 
+    # output
+    rotated_working_data = []
+    rotation_value = 0
+
     def __init__(self, parent=None, o_load=None):
+
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Select the rotation angle in the UI that poped up (maybe hidden behind this browser!)</span>'
+            ))
 
         self.working_data = o_load.working_data
         self.rotated_working_data = o_load.working_data
@@ -232,6 +240,7 @@ class RotateAndCropImages(QMainWindow):
             self.rotated_working_data.append(rotated_data)
             self.eventProgress.setValue(_index + 1)
             QtGui.QApplication.processEvents()
+            self.rotation_angle = _rotation_value
 
         # self.file_index_changed()
         #        self.ui.image_view.removeItem(self.line_view_binning)
@@ -252,3 +261,47 @@ class RotateAndCropImages(QMainWindow):
     def closeEvent(self, event=None):
         global rotation_angle
         rotation_angle = np.float(str(self.ui.rotation_value.text()))
+
+
+class Export(object):
+
+    def __init__(self, working_dir=''):
+        self.working_dir = working_dir
+
+    def select_folder(self):
+
+        display(HTML(
+            '<span style="font-size: 20px; color:blue">Select where you want to create the rotated images folder!</span>'))
+
+        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction = 'Select Output Folder ...',
+                                                                start_dir = self.working_dir,
+                                                                type = 'directory')
+        self.output_folder_ui.show()
+
+    def get_folder(self):
+        return os.path.abspath(self.output_folder_ui.selected)
+
+    def export(self, new_folder='', data='', list_files=''):
+
+        w = widgets.IntProgress()
+        w.max = len(list_files)
+        display(w)
+
+        output_folder = self.get_folder()
+        full_output_folder = os.path.join(output_folder, new_folder)
+        if not os.path.exists(full_output_folder):
+            os.makedirs(full_output_folder)
+
+        for _index, _file in enumerate(list_files):
+            _base_file_name = os.path.basename(_file)
+            [_base, _] = os.path.splitext(_base_file_name)
+            _full_file_name = os.path.join(full_output_folder, _base + '.tiff')
+            file_handler.make_tiff(data=data[_index], filename=_full_file_name)
+
+            w.value = _index + 1
+
+
+        display(HTML(
+            '<span style="font-size: 20px; color:blue">You are done here!</span>'))
+
+
