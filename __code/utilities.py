@@ -132,6 +132,7 @@ def get_working_dir(ipts='', debugging=False):
             _path = '/Volumes/my_book_thunderbolt_duo/IPTS/IPTS_{}'.format(ipts)
         else:
             _path = '/HFIR/CG1DImaging/IPTS-{}/'.format(ipts)
+            print(_path)
         if os.path.exists(_path):
             return _path
 
