@@ -52,6 +52,9 @@ class LoadImages(object):
         self.list_images = list_images
 
 
+
+
+
         # if list_images:
         #
         #     w = widgets.IntProgress()
