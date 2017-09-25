@@ -83,7 +83,7 @@ def load_data(filenames='', folder='', showing_progress=False):
 
     
 def save_data(data=[], filename=''):
-    data_type = get_data_type(file_name)
+    data_type = get_data_type(filename)
     if data_type == '.fits':
         make_fits(data=data, filename=filename)
     elif (data_type == '.tiff') or (data_type == '.tif'):

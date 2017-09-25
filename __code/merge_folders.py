@@ -2,10 +2,12 @@ import glob
 import os
 import ipywe.fileselector
 
-from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
+
+from __code import file_handler
+from NeuNorm.normalization import Normalization
 
 
 class MergeFolders(object):
@@ -87,55 +89,153 @@ class MergeFolders(object):
     def __create_merging_dictionary(self):
         """where we will figure out which file goes with witch one"""
         merging_value = np.int(self.bin_size.value)
+        _list_folders_short = self.list_folders_short
+        _list_files_dict = self.list_files_dict
 
-        _list_folders = self.list_folders_short
+        _index_folder = 0
+        merging_dict = {}
+        while (_index_folder < len(_list_folders_short)):
+            _new_folder_name_list = []
+            from_index = _index_folder
+            to_index = from_index + merging_value
+            if to_index >= len(_list_folders_short):
+                break
+
+            _tmp_list_folder = []
+            for _index in np.arange(from_index, to_index):
+                _current_short_folder_name = _list_folders_short[_index]
+                _tmp_list_folder.append(_current_short_folder_name)
+                _new_folder_name_list.append(_current_short_folder_name)
+
+            new_folder_name = "_".join(_new_folder_name_list)
+            merging_dict[new_folder_name] = _tmp_list_folder
+
+            _index_folder += merging_value
+
+        return merging_dict
 
     def merging(self):
+        """combine images using algorithm provided"""
 
+        # get merging algorithm
         merging_algo = self.combine_method.value
+        algorithm = self.__add
+        if merging_algo == 'mean':
+            algorithm = self.__mean
+
+        # get output folder
+        output_folder = os.path.abspath(self.output_folder_widget.selected)
 
         # create dictionary of how the images will be combined
-        self.__create_merging_dictionary()
+        merging_dict = self.__create_merging_dictionary()
 
-    # combine images using algorithm provided
+        # create final list of files to merge
+        final_dict_of_files_to_merge = self.__create_dict_of_files_to_merge(merging_dict)
+
+        final_nbr_folders = len(merging_dict.keys())
+        folder_level_ui = widgets.HBox([widgets.Label("Folder Progress:",
+                                                      layout=widgets.Layout(width='10%')),
+                                        widgets.IntProgress(max=final_nbr_folders,
+                                                            layout=widgets.Layout(width='50%'))])
+        display(folder_level_ui)
+        w1 = folder_level_ui.children[1]
+
+        nbr_files_to_merge = self.nbr_files_in_each_folder
+        file_level_ui = widgets.HBox([widgets.Label("File Progress:",
+                                                    layout=widgets.Layout(width='10%')),
+                                     widgets.IntProgress(max=nbr_files_to_merge,
+                                                         layout=widgets.Layout(width='50%'))])
+        display(file_level_ui)
+        w2 = file_level_ui.children[1]
+
+        for _index_final_folder, _final_folder in enumerate(final_dict_of_files_to_merge.keys()):
+
+            file_handler.make_or_reset_folder(os.path.join(output_folder, _final_folder))
+
+            list_files_to_merge = final_dict_of_files_to_merge[_final_folder]
+            for _index_files_to_merge, _files_to_merge in enumerate(list_files_to_merge):
+
+                _files_to_merge = [_file for _file in _files_to_merge]
+                o_load = Normalization()
+                o_load.load(file=_files_to_merge)
+                _data = o_load.data['sample']['data']
+                combined_data = self.__merging_algorithm(algorithm, _data)
+
+                _base_name_file = os.path.basename(_files_to_merge[0])
+                output_file_name = os.path.join(output_folder, _final_folder, _base_name_file)
+
+                file_handler.save_data(data=combined_data, filename=output_file_name)
+                w2.value = _index_files_to_merge + 1
+
+            w1.value = _index_final_folder + 1
+
+
+    def __create_dict_of_files_to_merge(self, merging_dict):
+
+        list_files_dict = self.list_files_dict
+
+        final_dict_of_files_to_merge = {}
+        for _key in merging_dict.keys():
+            _list_folders_to_add = merging_dict[_key]
+            _tmp_list_files_to_merge = []
+            for _folder in _list_folders_to_add:
+                _tmp_list_files_to_merge.append(list_files_dict[_folder]['list_files'])
+            final_dict_of_files_to_merge[_key] = list(zip(*_tmp_list_files_to_merge))
+
+        return final_dict_of_files_to_merge
+
+    def __add(self, data_array):
+        return np.sum(data_array, axis=0)
+
+    def __mean(self, data_array):
+        return np.mean(data_array, axis=0)
+
+    def __merging_algorithm(self, function_, *args):
+        return function_(*args)
 
 
 
 
+    # def load_list_files(self, filename_array=[]):
+    #     data = []
+    #     for _filename in filename_array:
+    #         data = file_handler.load_data(filename=_filename)
+    #         data.append(_data)
+    #     return data
 
+    # def add(self, array=[]):
+    #     return np.array(array).sum(axis=0)
+    #
+    # def mean(self, array=[]):
+    #     return np.array(array).mean(axis=0)
+    #
+    # def run(self):
+    #     merged_images = {'file_name': [],
+    #                      'data': []}
+    #     nbr_files = list(values)[0]
+    #
+    #     box1 = widgets.HBox([widgets.Label("Merging Progress:",
+    #                                        layout=widgets.Layout(width='10%')),
+    #                          widgets.IntProgress(max=nbr_files)])
+    #     display(box1)
+    #     w1 = box1.children[1]
+    #
+    #     for _index_file in np.arange(nbr_files):
+    #         _list_file_to_merge = []
+    #         for _key in list_files_dict.keys():
+    #             _file = list_files_dict[_key][_index_file]
+    #             _list_file_to_merge.append(_file)
+    #             merged_images['file_name'].append(os.path.basename(_file))
+    #
+    #         _data_array = load_list_files(_list_file_to_merge)
+    #         merged_data = add(_data_array)
+    #
+    #         w1.value = _index_file + 1
 
-    def load_list_files(self, filename_array=[]):
-        data = []
-        for _filename in filename_array:
-            data = file_handler.load_data(filename=_filename)
-            data.append(_data)
-        return data
+    def select_output_folder(self):
+        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+                                                                                     'output folders ...',
+                                                                         start_dir=self.working_dir,
+                                                                         type='directory')
 
-    def add(self, array=[]):
-        return np.array(array).sum(axis=0)
-
-    def mean(self, array=[]):
-        return np.array(array).mean(axis=0)
-
-    def run(self):
-        merged_images = {'file_name': [],
-                         'data': []}
-        nbr_files = list(values)[0]
-
-        box1 = widgets.HBox([widgets.Label("Merging Progress:",
-                                           layout=widgets.Layout(width='10%')),
-                             widgets.IntProgress(max=nbr_files)])
-        display(box1)
-        w1 = box1.children[1]
-
-        for _index_file in np.arange(nbr_files):
-            _list_file_to_merge = []
-            for _key in list_files_dict.keys():
-                _file = list_files_dict[_key][_index_file]
-                _list_file_to_merge.append(_file)
-                merged_images['file_name'].append(os.path.basename(_file))
-
-            _data_array = load_list_files(_list_file_to_merge)
-            merged_data = add(_data_array)
-
-            w1.value = _index_file + 1
+        self.output_folder_widget.show()
