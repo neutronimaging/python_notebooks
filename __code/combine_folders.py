@@ -10,7 +10,7 @@ from __code import file_handler
 from NeuNorm.normalization import Normalization
 
 
-class MergeFolders(object):
+class CombineFolders(object):
     working_dir = ''
     list_folders = []
     list_folders_short = []  # short name of list of folders
