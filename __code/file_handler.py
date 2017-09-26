@@ -117,7 +117,11 @@ def make_tiff(data=[], filename=''):
     
 def make_fits(data=[], filename=''):
     fits.writeto(filename, data, clobber=True)
-    
+
+def make_folder(folder_name):
+    if not (os.path.exists(folder_name)):
+        os.makedirs(folder_name)
+
 def make_or_reset_folder(folder_name):
     if os.path.exists(folder_name):
          shutil.rmtree(folder_name)
