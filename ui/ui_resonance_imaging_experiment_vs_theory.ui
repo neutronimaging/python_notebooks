@@ -23,7 +23,6 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <zorder>groupBox</zorder>
      </widget>
     </item>
     <item>
@@ -69,6 +68,13 @@
             <widget class="QRadioButton" name="lambda_radio_button">
              <property name="text">
               <string>lambda (A)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="energy_radio_button">
+             <property name="text">
+              <string>Energy (eV)</string>
              </property>
             </widget>
            </item>
@@ -449,6 +455,22 @@
     <hint type="sourcelabel">
      <x>164</x>
      <y>308</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>506</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>energy_radio_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>radio_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>352</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>506</x>

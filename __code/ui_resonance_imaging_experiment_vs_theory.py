@@ -58,6 +58,9 @@ class Ui_MainWindow(object):
         self.lambda_radio_button = QtGui.QRadioButton(self.groupBox)
         self.lambda_radio_button.setObjectName(_fromUtf8("lambda_radio_button"))
         self.horizontalLayout_8.addWidget(self.lambda_radio_button)
+        self.energy_radio_button = QtGui.QRadioButton(self.groupBox)
+        self.energy_radio_button.setObjectName(_fromUtf8("energy_radio_button"))
+        self.horizontalLayout_8.addWidget(self.energy_radio_button)
         self.verticalLayout_4.addWidget(self.groupBox)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_4.addItem(spacerItem)
@@ -159,6 +162,7 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.tof_radio_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.radio_button_clicked)
         QtCore.QObject.connect(self.lambda_radio_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.radio_button_clicked)
         QtCore.QObject.connect(self.list_to_plot_widget, QtCore.SIGNAL(_fromUtf8("itemClicked(QListWidgetItem*)")), MainWindow.plot_selection_changed)
+        QtCore.QObject.connect(self.energy_radio_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.radio_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -167,6 +171,7 @@ class Ui_MainWindow(object):
         self.file_index_ratio_button.setText(_translate("MainWindow", "File Index", None))
         self.tof_radio_button.setText(_translate("MainWindow", "TOF (us)", None))
         self.lambda_radio_button.setText(_translate("MainWindow", "lambda (A)", None))
+        self.energy_radio_button.setText(_translate("MainWindow", "Energy (eV)", None))
         self.label_4.setText(_translate("MainWindow", "Plot Selection", None))
         self.label.setText(_translate("MainWindow", "Distance Source-Detector", None))
         self.label_2.setText(_translate("MainWindow", "m", None))
