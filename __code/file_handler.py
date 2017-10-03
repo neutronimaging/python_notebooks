@@ -153,7 +153,7 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d'):
             _str_data = [str(_value) for _value in _data]
             _line = ",".join(_str_data) + "\n"
         else:
-            _line = _data + '\n'
+            _line = str(_data) + '\n'
         f.write(_line)
        
     f.close()
