@@ -650,6 +650,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="ok_button">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>OK</string>
           </property>

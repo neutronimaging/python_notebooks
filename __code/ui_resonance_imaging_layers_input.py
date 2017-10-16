@@ -281,6 +281,7 @@ class Ui_MainWindow(object):
         spacerItem9 = QtGui.QSpacerItem(17, 17, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem9)
         self.ok_button = QtGui.QPushButton(self.centralwidget)
+        self.ok_button.setEnabled(False)
         self.ok_button.setObjectName(_fromUtf8("ok_button"))
         self.horizontalLayout_7.addWidget(self.ok_button)
         self.verticalLayout_4.addLayout(self.horizontalLayout_7)

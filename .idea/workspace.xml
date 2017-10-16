@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ec057bef-1f6e-4550-ad55-c1184f066b49" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__code/file_handler.py" afterPath="$PROJECT_DIR$/__code/file_handler.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resonance_imaging_experiment_vs_theory.ipynb" afterPath="$PROJECT_DIR$/resonance_imaging_experiment_vs_theory.ipynb" />
-    </list>
+    <list default="true" id="ec057bef-1f6e-4550-ad55-c1184f066b49" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -101,6 +97,41 @@
             <path>
               <item name="Root" type="cbb8eebc:String" user="Root" />
               <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
+              <item name="__docs" type="cbb8eebc:String" user="__docs" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+              <item name="git" type="cbb8eebc:String" user="git" />
             </path>
           </expand>
           <select />

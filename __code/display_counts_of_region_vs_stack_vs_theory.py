@@ -14,23 +14,33 @@ except ImportError:
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from neutronbraggedge.experiment_handler import *
+from ImagingReso import _utilities
 
 from __code.ui_resonance_imaging_experiment_vs_theory import Ui_MainWindow as UiMainWindow
 
 
 class ImageWindow(QMainWindow):
 
-    pen_color = ['b','g','r','c','m','y','k','w']
-    pen_symbol = ['o','s','t','d','+'] 
-    
+    pen_color = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+    pen_symbol = ['o', 's', 't', 'd', '+']
+
     stack = []
     integrated_stack = []
     working_folder = ''
-    x_axis = {'label': 'File Index', 'type': 'file_index', 'data': []}
+    x_axis = {'file_index': [],
+              'tof': [],
+              'ev': [],
+              'lambda': []}
+    x_axis_label = {'file_index': 'file index',
+                   'tof': u'TOF (\u00B5s)', 
+                   'ev': 'eV',
+                   'lambda': u'\u03BB (\u212B)',
+                   }
     y_axis = {'label': 'Mean Counts', 'data': []}
-    elements_to_plot = {} # ex U, U235...etc to plot
+    elements_to_plot = {}  # ex U, U235...etc to plot
     spectra_file = ''
-    
+    b_enable_only_file_index_button = True
+
     def __init__(self, parent=None, stack=[], working_folder='', o_reso=None):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
@@ -41,19 +51,20 @@ class ImageWindow(QMainWindow):
         self.integrated_stack = self.stack.sum(axis=0)
         self.working_folder = working_folder
         self.o_reso = o_reso
-        
+
         self.initialize_pyqtgraph()
         self.init_label()
         self.init_list_of_things_to_plot()
 
+        self.update_radio_button_status()
         self.display_image()
         self.update_x_axis()
         self.roi_changed()
-        
+
     def update_plot(self):
-        self.update_x_axis()
+        #        self.update_x_axis()
         self.plot()
-        
+
     def init_label(self):
         _tof_label = u"TOF (\u00B5s)"
         self.ui.tof_radio_button.setText(_tof_label)
@@ -66,11 +77,20 @@ class ImageWindow(QMainWindow):
         self.ui.image_view.setImage(self.integrated_stack)
 
     def plot(self):
-        x_axis_data = self.x_axis['data']
-        x_axis_label = self.x_axis['label']
-        
+        x_axis_selected = self.get_x_axis_selected()
+        x_axis_data = self.x_axis[x_axis_selected]
         y_axis_data = self.y_axis['data']
+            
+#         print("for {}".format(x_axis_selected))
+#         pprint.pprint(y_axis_data[0:10])
+#         pprint.pprint(x_axis_data[0:10])
+#         print()
+        
         y_axis_label = self.y_axis['label']
+
+        if x_axis_selected == 'ev':
+            y_axis_data = y_axis_data[::-1]
+            x_axis_data = x_axis_data[::-1]
         
         x_axis_data = x_axis_data[0: len(y_axis_data)]
         
@@ -79,12 +99,13 @@ class ImageWindow(QMainWindow):
             self.legend.scene().removeItem(self.legend)
         except:
             pass
-        self.legend = self.counts_vs_index.addLegend()        
-        self.counts_vs_index.plot(x_axis_data, y_axis_data, name='Experimental')
-        
-        self.counts_vs_index.setLabel('bottom', x_axis_label)
+        self.legend = self.counts_vs_index.addLegend()
+        self.counts_vs_index.plot(
+            x_axis_data, y_axis_data, name='Experimental')
+
+        self.counts_vs_index.setLabel('bottom', x_axis_selected)
         self.counts_vs_index.setLabel('left', y_axis_label)
-        
+
         # plot all elements
         elements_to_plot = self.elements_to_plot
         _index_pen_color = 0
@@ -92,26 +113,29 @@ class ImageWindow(QMainWindow):
         for _label in elements_to_plot.keys():
             _x_axis_data = elements_to_plot[_label]['x_axis']
             _y_axis_data = elements_to_plot[_label]['y_axis']
-            self.counts_vs_index.plot(_x_axis_data, _y_axis_data, name=_label, 
-                                      pen=self.pen_color[_index_pen_color],
-                                     penSymbol = self.pen_symbol[_index_pen_symbol])
+            self.counts_vs_index.plot(
+                _x_axis_data,
+                _y_axis_data,
+                name=_label,
+                pen=self.pen_color[_index_pen_color],
+                penSymbol=self.pen_symbol[_index_pen_symbol])
             _index_pen_color += 1
             if _index_pen_color >= len(self.pen_color):
                 _index_pen_color = 0
                 _index_pen_symbol += 1
-                
+
             if _index_pen_symbol == len(self.pen_symbol):
                 _index_pen_color = 0
                 _index_pen_symbol = 0
-                
+
     def initialize_pyqtgraph(self):
         area = DockArea()
         area.setVisible(True)
-        d1 = Dock("Image Integrated Preview", size=(200, 300))
-        d2 = Dock("Counts vs Image Index of Selection", size=(200, 100))
+        d1 = Dock("Image Integrated Preview", size=(300, 800))
+        d2 = Dock("Counts vs Image Index of Selection", size=(300, 800))
 
-        area.addDock(d1, 'top')
-        area.addDock(d2, 'bottom')
+        area.addDock(d1, 'right')
+        area.addDock(d2, 'left')
 
         preview_widget = pg.GraphicsLayoutWidget()
         pg.setConfigOptions(antialias=True)
@@ -122,8 +146,9 @@ class ImageWindow(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
 
         # default ROI
-        self.ui.roi = pg.ROI(
-            [0, 0], [20, 20], pen=(62, 13, 244), scaleSnap=True)  #blue
+        self.ui.roi = pg.ROI([0, 0], [20, 20],
+                             pen=(62, 13, 244),
+                             scaleSnap=True)  #blue
         self.ui.roi.addScaleHandle([1, 1], [0, 0])
         self.ui.image_view.addItem(self.ui.roi)
         self.ui.roi.sigRegionChanged.connect(self.roi_changed)
@@ -156,21 +181,23 @@ class ImageWindow(QMainWindow):
             return 'file_index'
         elif self.ui.tof_radio_button.isChecked():
             return 'tof'
-        else:
+        elif self.ui.lambda_radio_button.isChecked():
             return 'lambda'
+        else:
+            return 'ev'
 
-    def update_x_axis(self):
+    def update_radio_button_status(self):
+
         x_axis_selected = self.get_x_axis_selected()
-        
+
         # enable or not list of element to display
         if x_axis_selected == 'file_index':
             list_status = False
         else:
             list_status = True
         self.ui.list_to_plot_widget.setEnabled(list_status)
-
         b_enable_only_file_index_button = False
-        
+
         spectra_file = self.spectra_file
         if not os.path.exists(spectra_file):
             x_axis_selected = 'file_index'
@@ -184,7 +211,7 @@ class ImageWindow(QMainWindow):
         elif not isinstance(float(distance_source_detector), numbers.Number):
             x_axis_selected = 'file_index'
             b_enable_only_file_index_button = True
-            
+
         detector_offset = str(self.ui.detector_offset_value.text())
         if not detector_offset:
             x_axis_selected = 'file_index'
@@ -192,39 +219,83 @@ class ImageWindow(QMainWindow):
         elif not isinstance(float(detector_offset), numbers.Number):
             x_axis_selected = 'file_index'
             b_enable_only_file_index_button = True
-            
-        self.radio_buttons_status(b_enable_only_file_index_button = b_enable_only_file_index_button)
-            
-        self.x_axis['type'] = x_axis_selected
-        if x_axis_selected == 'file_index':
-            self.x_axis['data'] = np.arange(len(self.stack))
-            self.x_axis['label'] = 'File Index'
-        else:
-            _tof_handler = TOF(filename=spectra_file)
-            if x_axis_selected == 'tof':
-                self.x_axis['data'] = _tof_handler.tof_array
-                self.x_axis['label'] = u'TOF (\u00B5s)'
-            else:
-                _exp = Experiment(tof = _tof_handler.tof_array, 
-                                  distance_source_detector_m = float(distance_source_detector),
-                                  detector_offset_micros= float(detector_offset))
-                self.x_axis['data'] = _exp.lambda_array * 1e10
-                self.x_axis['label'] = u'\u03BB (\u212B)'
 
-    def radio_buttons_status(self, b_enable_only_file_index_button=False):
-        self.ui.tof_radio_button.setEnabled(not b_enable_only_file_index_button)
-        self.ui.lambda_radio_button.setEnabled(not b_enable_only_file_index_button)
+        self.set_radio_buttons_status(
+            b_enable_only_file_index_button=b_enable_only_file_index_button)
+        self.b_enable_only_file_index_button = b_enable_only_file_index_button
+        
+        self.update_x_axis()
+        
+    def update_x_axis(self):
+        
+        self.x_axis['file_index'] = np.arange(len(self.stack))
+        if not self.b_enable_only_file_index_button:
+        
+            # tof
+            spectra_file = self.spectra_file
+            _tof_handler = TOF(filename=spectra_file)
+            self.x_axis['tof'] = _tof_handler.tof_array
+            
+            # lambda
+            distance_source_detector = self.ui.distance_source_detector_value.text()
+            detector_offset = str(self.ui.detector_offset_value.text())
+            _exp = Experiment(
+                tof=_tof_handler.tof_array,
+                distance_source_detector_m=float(distance_source_detector),
+                detector_offset_micros=float(detector_offset))
+            self.x_axis['lambda'] = _exp.lambda_array * 1e10
+            
+            # ev
+            _exp = Experiment(tof = _tof_handler.tof_array, 
+                              distance_source_detector_m = float(distance_source_detector),
+                              detector_offset_micros= float(detector_offset))
+            _exp_ev = _utilities.convert_x_axis(array=_exp.lambda_array*1e10,
+                                               from_units='angstroms',
+                                               to_units='ev',
+                                               offset_us=float(detector_offset),
+                                               source_to_detector_m=float(distance_source_detector))
+
+
+            
+#             _exp_ev = np.linspace(1, 3000, len(_tof_handler.tof_array))
+#             import scipy
+#             _exp_ev = scipy.random.ranf(len(_tof_handler.tof_array)) * 3000000
+#             _exp_ev.sort()
+#             _exp_ev = _exp_ev[::-1]
+            self.x_axis['ev'] = _exp_ev
+
+#             with open('/users/j35/Desktop/test_output.txt', 'w') as f:
+#                 for _data in _exp_ev:
+#                     f.write(str(_data) + '\n')
+        else:
+            
+            self.x_axis['ev'] = []
+            self.x_axis['tof'] = []
+            self.x_axis['lambda'] = []
+            
+    def set_radio_buttons_status(self, b_enable_only_file_index_button=False):
+        self.ui.tof_radio_button.setEnabled(
+            not b_enable_only_file_index_button)
+        self.ui.lambda_radio_button.setEnabled(
+            not b_enable_only_file_index_button)
+        self.ui.energy_radio_button.setEnabled(
+            not b_enable_only_file_index_button)
         if b_enable_only_file_index_button:
             self.ui.file_index_ratio_button.setChecked(True)
-                
+
     def radio_button_clicked(self):
-        self.update_plot()
-        
+        self.update_radio_button_status()
+        self.plot()
+
     def distance_source_detector_validated(self):
-        self.update_plot()
+        self.update_radio_button_status()
+        self.update_x_axis()
+        self.plot()
 
     def detector_offset_validated(self):
-        self.update_plot()
+        self.update_radio_button_status()
+        self.update_x_axis()
+        self.plot()
 
     def time_spectra_file_browse_button_clicked(self):
         spectra_file = QFileDialog.getOpenFileName(
@@ -234,6 +305,7 @@ class ImageWindow(QMainWindow):
         if spectra_file:
             self.ui.time_spectra_file.setText(os.path.basename(spectra_file))
             self.spectra_file = spectra_file
+            self.update_radio_button_status()
             self.update_x_axis()
             self.plot()
 
@@ -248,16 +320,20 @@ class ImageWindow(QMainWindow):
                 list_things_to_plot.append(_layer + ' -> ' + _element)
                 list_isotopes = stack[_layer][_element]['isotopes']['list']
                 for _isotope in list_isotopes:
-                    list_things_to_plot.append(_layer + ' -> ' + _element + ' -> ' + _isotope)
-                    
+                    list_things_to_plot.append(_layer + ' -> ' + _element +
+                                               ' -> ' + _isotope)
+
         self.ui.list_to_plot_widget.addItems(list_things_to_plot)
-        
+
     def done_button_clicked(self):
         self.close()
 
     def plot_selection_changed(self, item):
         _elements_to_plot = {}
-        
+
+        # init
+        x_axis_ev = []
+
         x_axis_selected = self.get_x_axis_selected()
         if x_axis_selected == 'file_index':
             self.elements_to_plot = _elements_to_plot
@@ -268,54 +344,63 @@ class ImageWindow(QMainWindow):
             _row_selected = _item.row()
             _text = self.ui.list_to_plot_widget.item(_row_selected).text()
             _layer_element_isotope = self.__parse_layer_element_isotope(_text)
-            
+
             _layer = _layer_element_isotope['layer']
             _element = _layer_element_isotope['element']
             _isotope = _layer_element_isotope['isotope']
-            
+
             if _element == '':
                 transmission = self.o_reso.stack_signal[_layer]['transmission']
                 x_axis_ev = self.o_reso.stack_signal[_layer]['energy_eV']
             elif _isotope == '':
-                transmission = self.o_reso.stack_signal[_layer][_element]['transmission']
-                x_axis_ev = self.o_reso.stack_signal[_layer][_element]['energy_eV']
+                transmission = self.o_reso.stack_signal[_layer][_element][
+                    'transmission']
+                x_axis_ev = self.o_reso.stack_signal[_layer][_element][
+                    'energy_eV']
             else:
-                transmission = self.o_reso.stack_signal[_layer][_element][_isotope]['transmission']
-                x_axis_ev = self.o_reso.stack_signal[_layer][_element][_isotope]['energy_eV']
-            
+                transmission = self.o_reso.stack_signal[_layer][_element][
+                    _isotope]['transmission']
+                x_axis_ev = self.o_reso.stack_signal[_layer][_element][
+                    _isotope]['energy_eV']
+
             _elements_to_plot[_text] = {}
             _elements_to_plot[_text]['y_axis'] = transmission
-            
+
             x_axis = []
             if x_axis_selected == 'lambda':
-                x_axis = self.o_reso.convert_x_axis(array=x_axis_ev, from_units='ev', to_units='angstroms')
+                x_axis = _utilities.convert_x_axis(
+                    array=x_axis_ev, from_units='ev', to_units='angstroms')
             elif x_axis_selected == 'tof':
                 detector_offset = float(self.ui.detector_offset_value.text())
-                distance_source_detector = float(self.ui.distance_source_detector_value.text())
-                x_axis = self.o_reso.convert_x_axis(array=x_axis_ev, from_units='ev', to_units='s',
-                                              delay_us = detector_offset,
-                                              source_to_detector_m = distance_source_detector)
+                distance_source_detector = float(
+                    self.ui.distance_source_detector_value.text())
+                x_axis = _utilities.convert_x_axis(
+                    array=x_axis_ev,
+                    from_units='ev',
+                    to_units='s',
+                    offset_us=detector_offset,
+                    source_to_detector_m=distance_source_detector)
+            else:  # ev
+                x_axis = x_axis_ev
+
             _elements_to_plot[_text]['x_axis'] = x_axis
-            
+
         self.elements_to_plot = _elements_to_plot
         self.plot()
-        
+
     def __parse_layer_element_isotope(self, text):
         ''' this will create a dictionary of each data to plot
         '''
-        _dict = {'layer': '',
-                'element': '',
-                'isotope': ''}
-        
+        _dict = {'layer': '', 'element': '', 'isotope': ''}
+
         parse_text = text.split(' -> ')
         _dict['layer'] = parse_text[0]
         if len(parse_text) >= 2:
             _dict['element'] = parse_text[1]
         if len(parse_text) >= 3:
             _dict['isotope'] = parse_text[2]
-        
+
         return _dict
-        
+
     def closeEvent(self, event=None):
         pass
-    

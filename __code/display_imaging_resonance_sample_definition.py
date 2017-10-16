@@ -90,6 +90,7 @@ class SampleWindow(QMainWindow):
         self.fill_check_groupBox()
         self.ui.check_groupBox.setVisible(True)        
         self.ui.element_table.blockSignals(False)
+        self.ui.ok_button.setEnabled(True)
         
     def format_string_to_array(self, string='', data_type='str'):
         _parsed_string = string.split(',')
