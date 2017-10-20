@@ -305,5 +305,4 @@ class FileNameMetadataTimeStamp(object):
         output_file_name = os.path.abspath(os.path.join(output_folder, file_name))
 
         self.pandas_format.to_csv(output_file_name)
-        if self.verbose:
-            pprint("Created File: {}".format(output_file_name))
+        pprint("Created File: {}".format(output_file_name))
