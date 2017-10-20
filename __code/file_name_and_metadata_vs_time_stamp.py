@@ -39,7 +39,16 @@ class FileNameMetadataTimeStamp(object):
         self.time_stamp_vs_file_name = []
 
         # metadata
-        final_time_stamp_metadata = []
+        self.final_time_stamp_metadata = []
+        self.file_name_vs_metadata_array = []
+
+        # preview
+        self.metadata_array = []
+        self.time_array = []
+        self.file_index = []
+
+        # export
+        self.pandas_format = None
 
     def select_image_folder(self):
         self.folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Raw Image Folder ...',
@@ -89,7 +98,7 @@ class FileNameMetadataTimeStamp(object):
             time_stamp_metadata_file_name_merged[time_stamp_metadata_file_name_merged.columns[1]])
 
         # calculate equivalent metadata for each file
-        file_name_vs_metadata_array = []  # 'file_name, metadata, time_stamp
+        self.file_name_vs_metadata_array = []  # 'file_name, metadata, time_stamp
 
         # w1 = widgets.IntProgress(description='Calculating')
         # w1.max = len(file_name_array)
@@ -107,12 +116,12 @@ class FileNameMetadataTimeStamp(object):
                 _metadata = metadata_array[_index]
 
             _new_entry = [_file, _metadata, time_stamp_array[_index]]
-            file_name_vs_metadata_array.append(_new_entry)
+            self.file_name_vs_metadata_array.append(_new_entry)
 
         # w1.value = _index+1
 
         if self.verbose:
-            pprint(file_name_vs_metadata_array)
+            pprint(self.file_name_vs_metadata_array)
 
 
     def __calculate_file_metadata(self, left_meta=-1, right_meta=-1, left_time=-1, right_time=-1, file_time=-1):
@@ -156,9 +165,9 @@ class FileNameMetadataTimeStamp(object):
         progress_label = box.children[0]
 
         # retrieve time and metadata from file
-        sample_environment_file = self.sample_environment_file_ui.selected
+        self.sample_environment_file = self.sample_environment_file_ui.selected
 
-        df = pd.read_csv(sample_environment_file, sep='\t', names=header)
+        df = pd.read_csv(self.sample_environment_file, sep='\t', names=header)
         df = df.reset_index()
 
         try:
@@ -204,9 +213,9 @@ class FileNameMetadataTimeStamp(object):
             return time.mktime(datetime.datetime.strptime(str(x), "%Y-%m-%d %H:%M:%S").timetuple())
 
     def format_image_infos(self):
-        folder = self.folder_ui.selected
+        self.input_folder = self.folder_ui.selected
 
-        list_files = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=folder)
+        list_files = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=self.input_folder)
         list_files = list_files[0]
 
         box = widgets.VBox([widgets.Label("Retrieving Time Stamp .......... IN PROGRESS")])
@@ -227,3 +236,74 @@ class FileNameMetadataTimeStamp(object):
 
         self.timestamp_array = timestamp_array
         self.list_base_file_name = list_base_file_name
+
+    def prepare_data_for_export(self):
+        self.pandas_format = pd.DataFrame(self.file_name_vs_metadata_array)
+        self.pandas_format.rename(columns={0: 'file_name', 1: 'Metadata', 2: 'time'}, inplace=True)
+
+    def preview(self):
+        self.prepare_data_for_export()
+
+        self.metadata_array = self.pandas_format['Metadata']
+        self.time_array = self.pandas_format['time']
+        self.file_index = self.pandas_format.index
+
+        self.preview_metadata_vs_file_index()
+        self.preview_metadata_vs_relative_time()
+
+    def preview_metadata_vs_file_index(self):
+        trace = go.Scatter(x=self.file_index,
+                           y=self.metadata_array,
+                           mode='markers',
+                           name='Metadata Profile vs File Index')
+
+        layout = go.Layout(width="100%",
+                           height=500,
+                           showlegend=False,
+                           title='Profile of Metadata vs File Index',
+                           xaxis={'title': 'File Index'},
+                           yaxis={'title': 'Metadata Value'},
+                           )
+
+        data = [trace]
+        figure = go.Figure(data=data, layout=layout)
+        iplot(figure)
+
+    def preview_metadata_vs_relative_time(self):
+        time_offset_axis = (self.time_array - self.time_array[0]) / 60
+
+        trace = go.Scatter(x=time_offset_axis,
+                           y=self.metadata_array,
+                           mode='markers',
+                           name='Metadata Profile vs Relative Time(s)')
+
+        layout = go.Layout(width="100%",
+                           height=500,
+                           showlegend=False,
+                           title='Profile of Metadata vs File Index',
+                           xaxis={'title': 'time offset (mn)'},
+                           yaxis={'title': 'Metadata Value'},
+                           )
+
+        data = [trace]
+        figure = go.Figure(data=data, layout=layout)
+        iplot(figure)
+
+    def select_export_folder(self):
+        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select output Folder ...',
+                                                                     start_dir=self.working_dir,
+                                                                     type='directory')
+        self.output_folder_ui.show()
+
+    def export(self):
+        output_folder = self.output_folder_ui.selected
+
+        [short_metatadata_file_name, _] = os.path.splitext(os.path.basename(self.sample_environment_file))
+        sample_folder_name = os.path.basename(self.input_folder)
+
+        file_name = "{}_vs_{}.txt".format(sample_folder_name, short_metatadata_file_name)
+        output_file_name = os.path.abspath(os.path.join(output_folder, file_name))
+
+        self.pandas_format.to_csv(output_file_name)
+        if self.verbose:
+            pprint("Created File: {}".format(output_file_name))
