@@ -1,6 +1,6 @@
-from __code import utilities, gui_widgets, file_handler
+from __code import file_handler
 import ipywe.fileselector
-from IPython.core.display import display, HTML
+
 import pandas as pd
 import numpy as np
 from pprint import pprint
@@ -10,11 +10,9 @@ from IPython.core.display import display, HTML
 
 import matplotlib.pyplot as plt
 
-from IPython import display as display_ipython
 
-from plotly.offline import plot, init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode, iplot
 init_notebook_mode()
-import plotly.plotly as py
 import plotly.graph_objs as go
 
 import os
