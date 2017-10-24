@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec057bef-1f6e-4550-ad55-c1184f066b49" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/display_images_with_metadata_profile.ipynb" afterPath="$PROJECT_DIR$/display_images_with_metadata_profile.ipynb" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" afterPath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -16,12 +18,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="file_name_and_metadata_vs_time_stamp.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="file_name_and_metadata_vs_time_stamp.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="27" lean-forward="true" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
+            <state relative-caret-position="30">
+              <caret line="2" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="display_and_export_images_with_metadata_profile.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="734">
+              <caret line="100" column="0" lean-forward="false" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -66,6 +80,7 @@
         <option value="$PROJECT_DIR$/__code/combine_images.py" />
         <option value="$PROJECT_DIR$/__code/display_counts_of_region_vs_stack_vs_theory.py" />
         <option value="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" />
+        <option value="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
       </list>
     </option>
   </component>
@@ -76,7 +91,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1781" />
+    <option name="x" value="71" />
     <option name="y" value="23" />
     <option name="width" value="1353" />
     <option name="height" value="1353" />
@@ -108,11 +123,6 @@
               <item name="Root" type="cbb8eebc:String" user="Root" />
               <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
               <item name="__code" type="cbb8eebc:String" user="__code" />
-            </path>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
-              <item name="__docs" type="cbb8eebc:String" user="__docs" />
             </path>
           </expand>
           <select />
@@ -234,7 +244,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1781" y="23" width="1353" height="1353" extended-state="0" />
+    <frame x="71" y="23" width="1353" height="1353" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31655225" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -282,16 +292,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#22#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/select_metadata_to_display.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -639,9 +639,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="27" lean-forward="true" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
+        <state relative-caret-position="30">
+          <caret line="2" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="734">
+          <caret line="100" column="0" lean-forward="false" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
