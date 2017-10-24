@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec057bef-1f6e-4550-ad55-c1184f066b49" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" afterPath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.yml" afterPath="$PROJECT_DIR$/requirements.yml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,18 +20,40 @@
       <file leaf-file-name="file_name_and_metadata_vs_time_stamp.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+            <state relative-caret-position="456">
+              <caret line="57" column="128" lean-forward="false" selection-start-line="57" selection-start-column="12" selection-end-line="57" selection-end-column="128" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="871">
+              <caret line="139" column="11" lean-forward="false" selection-start-line="139" selection-start-column="11" selection-end-line="139" selection-end-column="11" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="display_and_export_images_with_metadata_profile.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="requirements.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/requirements.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="891">
+              <caret line="124" column="0" lean-forward="false" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="display_and_export_images_with_metadata_profile.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="734">
-              <caret line="100" column="0" lean-forward="false" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+            <state relative-caret-position="1292">
+              <caret line="91" column="0" lean-forward="false" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -81,6 +102,8 @@
         <option value="$PROJECT_DIR$/__code/display_counts_of_region_vs_stack_vs_theory.py" />
         <option value="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" />
         <option value="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/requirements.yml" />
       </list>
     </option>
   </component>
@@ -91,8 +114,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="71" />
-    <option name="y" value="23" />
+    <option name="x" value="1851" />
+    <option name="y" value="25" />
     <option name="width" value="1353" />
     <option name="height" value="1353" />
   </component>
@@ -123,6 +146,91 @@
               <item name="Root" type="cbb8eebc:String" user="Root" />
               <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
               <item name="__code" type="cbb8eebc:String" user="__code" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+              <item name="anaconda" type="cbb8eebc:String" user="anaconda" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+              <item name="anaconda" type="cbb8eebc:String" user="anaconda" />
+              <item name="envs" type="cbb8eebc:String" user="envs" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+              <item name="anaconda" type="cbb8eebc:String" user="anaconda" />
+              <item name="envs" type="cbb8eebc:String" user="envs" />
+              <item name="py35" type="cbb8eebc:String" user="py35" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+              <item name="anaconda" type="cbb8eebc:String" user="anaconda" />
+              <item name="envs" type="cbb8eebc:String" user="envs" />
+              <item name="py35" type="cbb8eebc:String" user="py35" />
+              <item name="lib" type="cbb8eebc:String" user="lib" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+              <item name="anaconda" type="cbb8eebc:String" user="anaconda" />
+              <item name="envs" type="cbb8eebc:String" user="envs" />
+              <item name="py35" type="cbb8eebc:String" user="py35" />
+              <item name="lib" type="cbb8eebc:String" user="lib" />
+              <item name="python3.5" type="cbb8eebc:String" user="python3.5" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="External Dependencies" type="cbb8eebc:String" user="External Dependencies" />
+              <item name="/" type="cbb8eebc:String" user="/" />
+              <item name="Users" type="cbb8eebc:String" user="Users" />
+              <item name="j35" type="cbb8eebc:String" user="j35" />
+              <item name="anaconda" type="cbb8eebc:String" user="anaconda" />
+              <item name="envs" type="cbb8eebc:String" user="envs" />
+              <item name="py35" type="cbb8eebc:String" user="py35" />
+              <item name="lib" type="cbb8eebc:String" user="lib" />
+              <item name="python3.5" type="cbb8eebc:String" user="python3.5" />
+              <item name="site-packages" type="cbb8eebc:String" user="site-packages" />
             </path>
           </expand>
           <select />
@@ -244,7 +352,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="71" y="23" width="1353" height="1353" extended-state="0" />
+    <frame x="1851" y="25" width="1353" height="1353" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31655225" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -292,26 +400,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/__code/select_metadata_to_display.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#39#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__code/normalization.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack_vs_theory.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2655">
@@ -637,21 +725,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1292">
+          <caret line="91" column="0" lean-forward="false" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+        <state relative-caret-position="456">
+          <caret line="57" column="128" lean-forward="false" selection-start-line="57" selection-start-column="12" selection-end-line="57" selection-end-column="128" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="871">
+          <caret line="139" column="11" lean-forward="false" selection-start-line="139" selection-start-column="11" selection-end-line="139" selection-end-column="11" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
+    <entry file="file://$PROJECT_DIR$/requirements.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="734">
-          <caret line="100" column="0" lean-forward="false" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="891">
+          <caret line="124" column="0" lean-forward="false" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
