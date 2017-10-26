@@ -23,9 +23,24 @@ class CombineImages(object):
         self.files_list_widget.show()
 
     def how_to_combine(self):
-        self.combine_method = widgets.RadioButtons(options=['add', 'mean'],
-                                                   value='add')
-        display(self.combine_method)
+        _file = open("__docs/combine_images/geometric_mean.png", 'rb')
+        _geo_image = _file.read()
+        geo_box = widgets.HBox([widgets.Label("Geometric Mean",
+                                              layout=widgets.Layout(width='20%')),
+                                widgets.Image(value=_geo_image,
+                                              format='png')])
+        _file = open("__docs/combine_images/algebric_mean.png", 'rb')
+        _alge_image = _file.read()
+        alge_box = widgets.HBox([widgets.Label("Algebric Mean",
+                                              layout=widgets.Layout(width='20%')),
+                                widgets.Image(value=_alge_image,
+                                              format='png')])
+
+        self.combine_method = widgets.RadioButtons(options=['add', 'algebric mean', 'geometric mean'],
+                                                   value='algebric mean')
+
+        vertical = widgets.VBox([geo_box, alge_box, self.combine_method])
+        display(vertical)
 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \

@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec057bef-1f6e-4550-ad55-c1184f066b49" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Welcome.ipynb" afterPath="$PROJECT_DIR$/Welcome.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__code/display_and_export_images_with_time_stamp.py" afterPath="$PROJECT_DIR$/__code/display_and_export_images_with_time_stamp.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__code/normalization.py" afterPath="$PROJECT_DIR$/__code/normalization.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__code/select_metadata_to_display.py" afterPath="$PROJECT_DIR$/__code/select_metadata_to_display.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/display_and_export_images_with_timestamp.ipynb" afterPath="$PROJECT_DIR$/display_and_export_images_with_timestamp.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/normalization.ipynb" afterPath="$PROJECT_DIR$/normalization.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__code/combine_images.py" afterPath="$PROJECT_DIR$/__code/combine_images.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/combine_images.ipynb" afterPath="$PROJECT_DIR$/combine_images.ipynb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -24,13 +19,25 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="normalization.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="normalization.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/__code/normalization.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="714">
-                  <caret line="186" column="0" lean-forward="true" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+                  <caret line="186" column="0" lean-forward="false" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#36#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="combine_images.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/__code/combine_images.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="307">
+                  <caret line="34" column="31" lean-forward="true" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -110,7 +117,6 @@
         <option value="$PROJECT_DIR$/__code/merge_folders.py" />
         <option value="$PROJECT_DIR$/__code/combine_folders.py" />
         <option value="$PROJECT_DIR$/__code/file_handler.py" />
-        <option value="$PROJECT_DIR$/__code/combine_images.py" />
         <option value="$PROJECT_DIR$/__code/display_counts_of_region_vs_stack_vs_theory.py" />
         <option value="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
@@ -120,6 +126,7 @@
         <option value="$PROJECT_DIR$/__code/display_and_export_images_with_time_stamp.py" />
         <option value="$PROJECT_DIR$/__code/select_metadata_to_display.py" />
         <option value="$PROJECT_DIR$/__code/normalization.py" />
+        <option value="$PROJECT_DIR$/__code/combine_images.py" />
       </list>
     </option>
   </component>
@@ -132,7 +139,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="49" />
     <option name="y" value="23" />
-    <option name="width" value="2299" />
+    <option name="width" value="2066" />
     <option name="height" value="1358" />
   </component>
   <component name="ProjectView">
@@ -162,6 +169,17 @@
               <item name="Root" type="cbb8eebc:String" user="Root" />
               <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
               <item name="__code" type="cbb8eebc:String" user="__code" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
+              <item name="__docs" type="cbb8eebc:String" user="__docs" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="notebooks" type="cbb8eebc:String" user="notebooks" />
+              <item name="__docs" type="cbb8eebc:String" user="__docs" />
+              <item name="combine_images" type="cbb8eebc:String" user="combine_images" />
             </path>
           </expand>
           <select />
@@ -283,10 +301,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="49" y="23" width="2299" height="1358" extended-state="0" />
+    <frame x="49" y="23" width="2066" height="1358" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16792202" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18725297" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -502,7 +520,6 @@
     <entry file="file://$PROJECT_DIR$/__code/merge_folders.py" />
     <entry file="file://$PROJECT_DIR$/__code/bin_images.py" />
     <entry file="file://$PROJECT_DIR$/__code/combine_folders.py" />
-    <entry file="file://$PROJECT_DIR$/__code/combine_images.py" />
     <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack_vs_theory.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2655">
@@ -650,9 +667,19 @@
     <entry file="file://$PROJECT_DIR$/__code/normalization.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="714">
-          <caret line="186" column="0" lean-forward="true" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+          <caret line="186" column="0" lean-forward="false" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/combine_images.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="34" column="31" lean-forward="true" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
