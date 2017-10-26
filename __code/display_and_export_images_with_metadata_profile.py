@@ -128,6 +128,14 @@ class DisplayExportScreenshots(object):
 
             plt.close(fig)
 
+        box = widgets.HBox([widgets.Label("Exporting Images:",
+                                          layout=widgets.Layout(width='20%')),
+                            widgets.IntProgress(min=0,
+                                                max=self.nbr_images - 1,
+                                                layout=widgets.Layout(width='50%'))])
+        progress_bar = box.children[1]
+        display(box)
+
         for _index in np.arange(self.nbr_images):
             plot_images_and_profile(file_index=_index)
-
+            progress_bar.value = _index + 1
