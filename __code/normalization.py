@@ -2,6 +2,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from IPython.core.display import HTML
 
 from ipywidgets.widgets import interact
 from ipywidgets import widgets
@@ -93,7 +94,27 @@ class NormalizationHandler(object):
         else:
             self.integrated_sample = np.squeeze(self.data['sample'])
 
+    def with_or_without_roi(self):
+        label1 = widgets.Label("Do you want to select a region of interest (ROI) that will make sure that the " +
+                              "sample background matches the OB background")
+        label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
+        box = widgets.HBox([widgets.Label("With or Without ROI?"),
+                            widgets.RadioButtons(options=['yes','no'],
+                                                value='yes',
+                                                layout=widgets.Layout(width='50%'))])
+        self.with_or_without_radio_button = box.children[1]
+        vertical = widgets.VBox([label1, box])
+        display(vertical)
+
     def select_sample_roi(self):
+
+        if self.with_or_without_radio_button.value == 'no':
+            label2 = widgets.Label("-> You chose not to select any ROI! Next step: Normalization")
+            display(label2)
+            return
+
+        label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
+        display(label2)
 
         if self.integrated_sample == []:
             self.calculate_integrated_sample()
@@ -146,12 +167,23 @@ class NormalizationHandler(object):
 
     def run_normalization(self):
 
-        [x_left, y_top, width_roi, height_roi] = self.roi_selection.widget.result
-        _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
+        if self.with_or_without_radio_button.value == 'no':
+            try:
+                self.o_norm.normalization(notebook=True)
+                self.normalized_data_array = self.o_norm.get_normalized_data()
+            except:
+                display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+                             'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+        else:
+            [x_left, y_top, width_roi, height_roi] = self.roi_selection.widget.result
+            _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
 
-        self.o_norm.normalization(roi=_roi, notebook=True)
-
-        self.normalized_data_array = self.o_norm.get_normalized_data()
+            try:
+                self.o_norm.normalization(roi=_roi, notebook=True)
+                self.normalized_data_array = self.o_norm.get_normalized_data()
+            except:
+                display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+                             'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
 
     def select_export_folder(self):
 
@@ -177,3 +209,6 @@ class NormalizationHandler(object):
             file_handler.make_tiff(filename=output_file_name, data=self.normalized_data_array[_index])
 
             w.value = _index + 1
+
+        display(HTML('<span style="font-size: 20px; color:blue">The normalized images have been ' +
+                     'created in ' + output_folder + '</span>'))

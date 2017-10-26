@@ -73,7 +73,7 @@ class DisplayExportScreenshots(object):
         text_y = 0.1 * height
         text_x = 0.6 * width
 
-        def display_selected_image(index, text_x, text_y, color):
+        def display_selected_image(index, text_x, text_y, pre_text, post_text, color):
 
             font = {'family': 'serif',
                     'color': color,
@@ -83,12 +83,18 @@ class DisplayExportScreenshots(object):
             fig = plt.figure(figsize=(15, 10))
             gs = gridspec.GridSpec(1, 1)
             ax = plt.subplot(gs[0, 0])
-            ax.imshow(self.images_array[index])
+            im=ax.imshow(self.images_array[index], interpolation='nearest')
             plt.title("image index {}".format(index))
-            plt.text(text_x, text_y, "Time Offset {:.2f}s".format(self.list_time_offset[index]), fontdict=font)
+            plt.text(text_x, text_y, "{}{:.2f}{}".format(pre_text,
+                                                         self.list_time_offset[index],
+                                                         post_text),
+                     fontdict=font)
+            fig.colorbar(im)
             plt.show()
 
-            return {'text_x': text_x, 'text_y': text_y, 'color': color}
+            return {'text_x': text_x, 'text_y': text_y,
+                    'pre_text': pre_text, 'post_text': post_text,
+                    'color': color}
 
         self.preview = interact(display_selected_image,
                                 index=widgets.IntSlider(min=0,
@@ -104,6 +110,10 @@ class DisplayExportScreenshots(object):
                                                          value=text_y,
                                                          description='Text y_offset',
                                                          continuous_upadte=False),
+                                pre_text=widgets.Text(value='Time Offset',
+                                                      description='Pre text'),
+                                post_text=widgets.Text(value='(s)',
+                                                       description='Post text'),
                                 color=widgets.RadioButtons(options=['red', 'blue', 'white', 'black', 'yellow'],
                                                            value='red',
                                                            description='Text Color'))
@@ -126,6 +136,8 @@ class DisplayExportScreenshots(object):
 
         text_x = self.preview.widget.result['text_x']
         text_y = self.preview.widget.result['text_y']
+        pre_text = self.preview.widget.result['pre_text']
+        post_text = self.preview.widget.result['post_text']
         color = self.preview.widget.result['color']
 
         def plot_selected_image(index):
@@ -141,10 +153,13 @@ class DisplayExportScreenshots(object):
             fig = plt.figure(figsize=(15, 10))
             gs = gridspec.GridSpec(1, 1)
             ax = plt.subplot(gs[0, 0])
-            ax.imshow(self.images_array[index])
+            im = ax.imshow(self.images_array[index], interpolation='nearest')
             plt.title("image index {}".format(index))
-            plt.text(text_x, text_y, "Time Offset {:.2f}s".format(self.list_time_offset[index]), fontdict=font)
-
+            plt.text(text_x, text_y, "{}{:.2f}{}".format(pre_text,
+                                                         self.list_time_offset[index],
+                                                         post_text),
+                     fontdict=font)
+            fig.colorbar(im)
             plt.savefig(output_file_name)
             plt.close(fig)
 

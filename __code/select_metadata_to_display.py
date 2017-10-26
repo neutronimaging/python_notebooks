@@ -1,9 +1,7 @@
-from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import os
 from PIL import Image
-from PIL.ExifTags import TAGS
 import collections
 
 from __code import file_handler
