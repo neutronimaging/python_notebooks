@@ -37,7 +37,7 @@ class CombineImages(object):
                                               format='png')])
 
         self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean'],
-                                                   value='algebric mean')
+                                                   value='arithmetic mean')
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
         display(vertical)
@@ -49,6 +49,36 @@ class CombineImages(object):
                                                                          type='directory')
 
         self.output_folder_widget.show()
+
+    def __get_formated_merging_algo_name(self):
+        _algo = self.combine_method.value
+        if _algo =='arithmetic mean':
+            return 'arithmetic_mean'
+        elif _algo == 'geometric mean':
+            return 'geometric_mean'
+        else:
+            return _algo
+
+    def define_output_filename(self):
+        list_files = self.files_list_widget.selected
+        short_list_files = [os.path.basename(_file) for _file in list_files]
+
+        merging_algo = self.__get_formated_merging_algo_name()
+        [default_new_name, ext] = self.__create_merged_file_name(list_files_names=short_list_files)
+
+        top_label = widgets.Label("You have the option to change the default output file name")
+
+        box = widgets.HBox([widgets.Label("Default File Name",
+                                          layout=widgets.Layout(width='20%')),
+                            widgets.Text(default_new_name,
+                                         layout=widgets.Layout(width='60%')),
+                            widgets.Label("_{}{}".format(merging_algo, ext),
+                                          layout=widgets.Layout(width='20%')),
+                            ])
+        self.default_filename_ui = box.children[1]
+        self.ext_ui = box.children[2]
+        vertical_box = widgets.VBox([top_label, box])
+        display(vertical_box)
 
     def merging(self):
         """combine images using algorithm provided"""
@@ -80,7 +110,8 @@ class CombineImages(object):
         combined_data = self.__merging_algorithm(algorithm, _data)
         w1.value = 1
 
-        _new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
+        #_new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
+        _new_name = self.default_filename_ui.value + self.ext_ui.value
         output_file_name = os.path.join(output_folder, _new_name)
 
         file_handler.save_data(data=combined_data, filename=output_file_name)
@@ -106,7 +137,7 @@ class CombineImages(object):
             [_name, ext] = os.path.splitext(basename)
             list_base_name.append(_name)
 
-        return '_'.join(list_base_name) + ext
+        return ('_'.join(list_base_name), ext)
 
     def __add(self, data_array):
         return np.sum(data_array, axis=0)
