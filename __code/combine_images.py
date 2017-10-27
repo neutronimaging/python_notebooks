@@ -39,7 +39,7 @@ class CombineImages(object):
         self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean'],
                                                    value='algebric mean')
 
-        vertical = widgets.VBox([geo_box, alge_box, self.combine_method])
+        vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
         display(vertical)
 
     def select_output_folder(self):

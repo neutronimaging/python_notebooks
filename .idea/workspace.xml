@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ec057bef-1f6e-4550-ad55-c1184f066b49" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__code/combine_images.py" afterPath="$PROJECT_DIR$/__code/combine_images.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/combine_images.ipynb" afterPath="$PROJECT_DIR$/combine_images.ipynb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -34,8 +33,8 @@
           <file leaf-file-name="combine_images.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/__code/combine_images.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="252">
-                  <caret line="38" column="78" lean-forward="false" selection-start-line="38" selection-start-column="78" selection-end-line="38" selection-end-column="78" />
+                <state relative-caret-position="368">
+                  <caret line="41" column="50" lean-forward="false" selection-start-line="41" selection-start-column="50" selection-end-line="41" selection-end-column="50" />
                   <folding>
                     <element signature="e#0#9#0" expanded="true" />
                   </folding>
@@ -676,8 +675,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/__code/combine_images.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="38" column="78" lean-forward="false" selection-start-line="38" selection-start-column="78" selection-end-line="38" selection-end-column="78" />
+        <state relative-caret-position="368">
+          <caret line="41" column="50" lean-forward="false" selection-start-line="41" selection-start-column="50" selection-end-line="41" selection-end-column="50" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
