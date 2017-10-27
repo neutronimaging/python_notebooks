@@ -34,10 +34,10 @@
           <file leaf-file-name="combine_images.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/__code/combine_images.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="307">
-                  <caret line="34" column="31" lean-forward="true" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
+                <state relative-caret-position="252">
+                  <caret line="38" column="78" lean-forward="false" selection-start-line="38" selection-start-column="78" selection-end-line="38" selection-end-column="78" />
                   <folding>
-                    <element signature="e#0#11#0" expanded="true" />
+                    <element signature="e#0#9#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -63,7 +63,7 @@
           <file leaf-file-name="format_filename_index.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/__code/format_filename_index.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-202">
+                <state relative-caret-position="-199">
                   <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#39#0" expanded="true" />
@@ -676,10 +676,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/__code/combine_images.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="34" column="31" lean-forward="true" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
+        <state relative-caret-position="252">
+          <caret line="38" column="78" lean-forward="false" selection-start-line="38" selection-start-column="78" selection-end-line="38" selection-end-column="78" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>

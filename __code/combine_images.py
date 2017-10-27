@@ -1,6 +1,6 @@
-import glob
 import os
 import ipywe.fileselector
+from scipy.stats.mstats import gmean
 
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
@@ -31,12 +31,12 @@ class CombineImages(object):
                                               format='png')])
         _file = open("__docs/combine_images/algebric_mean.png", 'rb')
         _alge_image = _file.read()
-        alge_box = widgets.HBox([widgets.Label("Algebric Mean",
+        alge_box = widgets.HBox([widgets.Label("Arithmetic Mean",
                                               layout=widgets.Layout(width='20%')),
                                 widgets.Image(value=_alge_image,
                                               format='png')])
 
-        self.combine_method = widgets.RadioButtons(options=['add', 'algebric mean', 'geometric mean'],
+        self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean'],
                                                    value='algebric mean')
 
         vertical = widgets.VBox([geo_box, alge_box, self.combine_method])
@@ -59,8 +59,10 @@ class CombineImages(object):
         # get merging algorithm
         merging_algo = self.combine_method.value
         algorithm = self.__add
-        if merging_algo == 'mean':
-            algorithm = self.__mean
+        if merging_algo =='arithmetic mean':
+            algorithm = self.__arithmetic_mean
+        elif merging_algo == 'geometric mean':
+            algorithm = self.__geo_mean
 
         # get output folder
         output_folder = os.path.abspath(self.output_folder_widget.selected)
@@ -109,8 +111,11 @@ class CombineImages(object):
     def __add(self, data_array):
         return np.sum(data_array, axis=0)
 
-    def __mean(self, data_array):
+    def __arithmetic_mean(self, data_array):
         return np.mean(data_array, axis=0)
+
+    def __geo_mean(self, data_array):
+        return gmean(data_array, axis=0)
 
     def __merging_algorithm(self, function_, *args):
         return function_(*args)
