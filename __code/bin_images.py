@@ -1,15 +1,12 @@
-import matplotlib.patches as patches
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from ipywidgets.widgets import interact
+from IPython.core.display import HTML
 from ipywidgets import widgets
 from IPython.core.display import display
 
 import ipywe.fileselector
 from NeuNorm.normalization import Normalization
-from NeuNorm.roi import ROI
 
 from __code import utilities, file_handler
 
@@ -134,11 +131,18 @@ class BinHandler(object):
 
         return data_rebinned
 
+    def get_input_folder(self):
+        list_files = self.list_file_names
+        _file0 = list_files[0]
+        full_dir_name = os.path.dirname(_file0)
+        return os.path.basename(full_dir_name)
+
     def export(self):
 
+        input_folder = self.get_input_folder()
         output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected,
-                                                     "rebin_by_{}".format(self.bin_value)))
-        utilities.make_dir(dir=output_folder)
+                                                     "{}_rebin_by_{}".format(input_folder, self.bin_value)))
+        utilities.make_dir(dir=output_folder, overwrite=False)
 
         w = widgets.IntProgress()
         w.max = len(self.list_file_names)
@@ -152,3 +156,6 @@ class BinHandler(object):
             file_handler.make_tiff(filename=output_file_name, data=_rebin_data)
 
             w.value = _index + 1
+
+        display(HTML('<span style="font-size: 20px; color:blue">File created in ' + \
+                     output_folder + '</span>'))

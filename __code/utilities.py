@@ -156,10 +156,10 @@ def make_dir(dir='', overwrite=True):
     if overwrite:
         if os.path.exists(dir):
             shutil.rmtree(dir)
+        os.mkdir(dir)
     else:
-        raise IOError("{} exists already!".format(dir))
-            
-    os.mkdir(dir)  
+        if not (os.path.exists(dir)):
+            os.mkdir(dir)
 
 def format_file_index(filename='', number_of_digits=4):
     '''
