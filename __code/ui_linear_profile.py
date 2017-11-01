@@ -120,6 +120,7 @@ class Ui_MainWindow(object):
         self.add_profile_2.clicked.connect(MainWindow.remove_profile)
         self.pushButton.clicked.connect(MainWindow.ok_button_clicked)
         self.actionExport_Profile.triggered.connect(MainWindow.export_button_clicked)
+        self.table_profile.cellChanged['int','int'].connect(MainWindow.save_roi_table)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

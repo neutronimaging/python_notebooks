@@ -327,6 +327,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>table_profile</sender>
+   <signal>cellChanged(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>save_roi_table()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>399</x>
+     <y>514</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -334,5 +350,6 @@
   <slot>remove_profile()</slot>
   <slot>ok_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
+  <slot>save_roi_table()</slot>
  </slots>
 </ui>
