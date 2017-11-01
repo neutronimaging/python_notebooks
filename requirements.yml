@@ -1,6 +1,14 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: osx-64
+astropy
+numpy
+pillow
+jupyter
+scipy
+matplotlib
+-c neutrons ipywe
+
 _nb_ext_conf=0.3.0=py35_0
 anaconda-client=1.6.0=py35_0
 appnope=0.1.0=py35_0

@@ -1,3 +1,5 @@
+NeuNorm
+
 anaconda-client==1.6.0
 appdirs==1.4.3
 appnope==0.1.0
