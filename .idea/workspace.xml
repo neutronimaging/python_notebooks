@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec057bef-1f6e-4550-ad55-c1184f066b49" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__code/ui_linear_profile.py" afterPath="$PROJECT_DIR$/__code/ui_linear_profile.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" afterPath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/file_name_and_metadata_vs_time_stamp.ipynb" afterPath="$PROJECT_DIR$/file_name_and_metadata_vs_time_stamp.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/linear_profile.ipynb" afterPath="$PROJECT_DIR$/linear_profile.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ui/ui_linear_profile.ui" afterPath="$PROJECT_DIR$/ui/ui_linear_profile.ui" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -118,7 +118,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="262" />
+    <option name="x" value="241" />
     <option name="y" value="37" />
     <option name="width" value="1634" />
     <option name="height" value="1370" />
@@ -282,7 +282,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="262" y="37" width="1634" height="1370" extended-state="0" />
+    <frame x="241" y="37" width="1634" height="1370" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24183416" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
