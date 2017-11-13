@@ -9,15 +9,18 @@ from IPython.core.display import display
 class System(object):
 
     working_dir = ''
+    start_path = ''
 
     @classmethod
-    def select_working_dir(cls):
+    def select_working_dir(cls, debugger_folder=''):
 
         username = getpass.getuser()
 
         debugging = config.debugging
         debugger_username = config.debugger_username
-        debugger_folder = config.debugger_folder
+
+        if debugger_folder == '':
+            debugger_folder = config.debugger_folder
 
         if debugging and (username == debugger_username):
             print("** Using Debugging Mode! **")
@@ -29,10 +32,11 @@ class System(object):
                 if not os.path.exists(debugger_folder):
                     debugging = False
 
-            start_path = config.debugger_folder
+            start_path = debugger_folder
         else:
             start_path = config.system_folder
 
+        cls.start_path = start_path
         list_folders = glob.glob(start_path + '*')
         short_list_folders = [os.path.basename(_folder) for _folder in list_folders]
         short_list_folders = sorted(short_list_folders)
@@ -62,4 +66,4 @@ class System(object):
 
     @classmethod
     def get_working_dir(cls):
-        return cls.working_dir_ui.value
+        return os.path.join(cls.start_path, cls.working_dir_ui.value)
