@@ -37,9 +37,9 @@ class System(object):
             start_path = config.system_folder
 
         cls.start_path = start_path
-        list_folders = glob.glob(start_path + '*')
+        list_folders = sorted(glob.glob(start_path + '*'))
         short_list_folders = [os.path.basename(_folder) for _folder in list_folders]
-        short_list_folders = sorted(short_list_folders)
+        #short_list_folders = sorted(short_list_folders)
 
         # if user mode, only display folder user can access
         default_value = ''
