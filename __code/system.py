@@ -19,8 +19,16 @@ class System(object):
         debugging = config.debugging
         debugger_username = config.debugger_username
 
+        found_a_folder = False
         if debugger_folder == '':
-            debugger_folder = config.debugger_folder
+            for _folder in config.debugger_folder:
+                if os.path.exists(_folder):
+                    debugger_folder = _folder
+                    found_a_folder = True
+                    break
+            
+        if not found_a_folder:
+            debugger_folder = './'
 
         if debugging and (username == debugger_username):
             print("** Using Debugging Mode! **")
@@ -38,7 +46,7 @@ class System(object):
 
         cls.start_path = start_path
         list_folders = sorted(glob.glob(start_path + '*'))
-        short_list_folders = [os.path.basename(_folder) for _folder in list_folders]
+        short_list_folders = [os.path.basename(_folder) for _folder in list_folders if os.path.isdir(_folder)]
         #short_list_folders = sorted(short_list_folders)
 
         # if user mode, only display folder user can access
