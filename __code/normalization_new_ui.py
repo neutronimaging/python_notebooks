@@ -1,3 +1,4 @@
+import os
 from ipywidgets import widgets, Layout
 from IPython.core.display import display
 import ipywe.fileselector
@@ -27,14 +28,20 @@ class myFileSelectorPanel(ipywe.fileselector.FileSelectorPanel):
 
     def validate(self, s):
         super(myFileSelectorPanel, self).validate(s)
-        if self.current_ui.state == 'sample':
-            self.current_ui.files.sample = self.selected
-        elif self.current_ui.state == 'ob':
-            self.current_ui.files.ob = self.selected
-        else:
-            self.current_ui.files.df = self.selected
+        try:
+            if self.current_ui.state == 'sample':
+                self.current_ui.files.sample = self.selected
+            elif self.current_ui.state == 'ob':
+                self.current_ui.files.ob = self.selected
+            else:
+                self.current_ui.files.df = self.selected
 
-        self.current_ui.label.value = "{} files selected".format(len(self.selected))
+            parent_folder = os.path.dirname(os.path.dirname(self.selected[0]))
+            self.current_ui.working_dir = parent_folder
+            self.current_ui.label.value = "{} files selected".format(len(self.selected))
+            self.current_ui.next_button_ui.disabled = False
+        except AttributeError:
+            pass
 
 
 class Files:
@@ -69,14 +76,22 @@ class Panel:
         self.__init_widgets()
 
     def __init_widgets(self):
-        self.title.value = "Select list of {} files ".format(self.state)
-
+        
         _list = self.files.sample
+        _label = "Sample"
+        _option = '(mandatory)'
         if self.state == 'ob':
             _list = self.files.ob
+            _label = 'Open Beam'
         elif self.state == 'df':
             _list = self.files.df
+            _label = 'Dark Field'
+            _option = '(optional)'
         self.label.value = "{} files selected".format(len(_list))
+        self.title.value = "Select list of {} files {} ".format(_label, _option)
+        
+        if len(_list) > 0:
+            self.next_button_ui.disabled = False
 
     def __top_panel(self):
         title_ui = widgets.HBox([widgets.Label("Instructions:",
@@ -108,6 +123,7 @@ class Panel:
             self.prev_button_ui = widgets.Button(description="<< Previous Step",
                                                  tooltip='Click to move to previous step',
                                                  button_style='info',
+                                                 disabled=False,
                                                  layout=widgets.Layout(width='20%'))
             self.prev_button_ui.on_click(self.prev_button_clicked)
             list_ui.append(self.prev_button_ui)
@@ -120,6 +136,7 @@ class Panel:
             self.next_button_ui = widgets.Button(description="Next Step>>",
                                                  tooltip='Click to move to next step',
                                                  button_style='info',
+                                                 disabled=True,
                                                  layout=widgets.Layout(width='20%'))
             list_ui.append(self.next_button_ui)
             self.next_button_ui.on_click(self.next_button_clicked)
@@ -169,7 +186,7 @@ class SampleSelectionPanel(Panel):
 
     def next_button_clicked(self, event):
         self.remove()
-        _panel = OBSelectionPanel()
+        _panel = OBSelectionPanel(working_dir=self.working_dir)
         _panel.init_ui(files=self.files)
         _panel.show()
 
@@ -180,13 +197,13 @@ class OBSelectionPanel(Panel):
 
     def next_button_clicked(self, event):
         self.remove()
-        _panel = DFSelectionPanel()
+        _panel = DFSelectionPanel(working_dir=self.working_dir)
         _panel.init_ui(files=self.files)
         _panel.show()
 
     def prev_button_clicked(self, event):
         self.remove()
-        _panel = SampleSelectionPanel()
+        _panel = SampleSelectionPanel(working_dir=self.working_dir)
         _panel.init_ui(files=self.files)
         _panel.show()
 
@@ -200,6 +217,6 @@ class DFSelectionPanel(Panel):
 
     def prev_button_clicked(self, event):
         self.remove()
-        _panel = OBSelectionPanel()
+        _panel = OBSelectionPanel(working_dir=self.working_dir)
         _panel.init_ui(files=self.files)
         _panel.show()
