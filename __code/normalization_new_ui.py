@@ -26,7 +26,8 @@ def close(w):
 
 class myFileSelectorPanel(ipywe.fileselector.FileSelectorPanel):
     def __init__(self, instruction, start_dir=".", type='file',
-                 next=None, multiple=False,
+                 next=None,
+                 multiple=False,
                  newdir_toolbar_button=False,
                  current_ui=None):
         super(myFileSelectorPanel, self).__init__(instruction,
