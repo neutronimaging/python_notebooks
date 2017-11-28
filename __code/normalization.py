@@ -4,7 +4,6 @@ import numpy as np
 import os
 from IPython.core.display import HTML
 
-from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display
 
@@ -79,7 +78,7 @@ class NormalizationHandler(object):
             ax_img = plt.subplot(111)
             ax_img.imshow(sample_array[index], cmap='viridis')
 
-        _ = interact(_plot_images,
+        _ = widgets.interact(_plot_images,
                      index=widgets.IntSlider(min=0,
                                              max=len(self.list_file_names[data_type]) - 1,
                                              step=1,
@@ -139,7 +138,7 @@ class NormalizationHandler(object):
 
             return [x_left, y_top, width, height]
 
-        self.roi_selection = interact(plot_roi,
+        self.roi_selection = widgets.interact(plot_roi,
                                       x_left=widgets.IntSlider(min=0,
                                                                max=width,
                                                                step=1,
@@ -178,12 +177,12 @@ class NormalizationHandler(object):
             [x_left, y_top, width_roi, height_roi] = self.roi_selection.widget.result
             _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
 
-            try:
-                self.o_norm.normalization(roi=_roi, notebook=True)
-                self.normalized_data_array = self.o_norm.get_normalized_data()
-            except:
-                display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-                             'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+            # try:
+            self.o_norm.normalization(roi=_roi, notebook=True)
+            self.normalized_data_array = self.o_norm.get_normalized_data()
+            # except:
+            #     display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+            #                  'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
 
     def select_export_folder(self):
 

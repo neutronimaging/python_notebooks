@@ -1,4 +1,9 @@
 import os
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import numpy as np
+from IPython.core.display import HTML
+
 from ipywidgets import widgets, Layout
 from IPython.core.display import display
 import ipywe.fileselector
@@ -6,6 +11,7 @@ import ipywe.fileselector
 from NeuNorm.normalization import Normalization
 from NeuNorm.roi import ROI
 
+from __code import utilities, file_handler
 
 
 def close(w):
@@ -54,7 +60,8 @@ class Data:
     sample = []
     ob = []
     df = []
-        
+
+
 class Files:
     sample = []
     ob = []
@@ -230,12 +237,13 @@ class OBSelectionPanel(Panel):
     def prev_button_clicked(self, event):
         self.remove()
         _panel = SampleSelectionPanel(working_dir=self.working_dir,
-                                     top_object=top_object)
+                                     top_object=self.top_object)
         _panel.init_ui(files=self.files)
         _panel.show()
 
 class DFSelectionPanel(Panel):
     def __init__(self, working_dir='', top_object=None):
+        self.working_dir = working_dir
         super(DFSelectionPanel, self).__init__(prev_button=True,
                                                next_button=True,
                                                state='df',
@@ -244,24 +252,30 @@ class DFSelectionPanel(Panel):
 
     def prev_button_clicked(self, event):
         self.remove()
-        _panel = OBSelectionPanel(working_dir=self.working_dir, top_object=top_object)
+        _panel = OBSelectionPanel(working_dir=self.working_dir, top_object=self.top_object)
         _panel.init_ui(files=self.files)
         _panel.show()
 
     def next_button_clicked(self, event):
         self.remove()
-        o_norm = NormalizationHandler(files=self.files)
+        o_norm = NormalizationHandler(files=self.files,
+                                      working_dir=self.working_dir)
         o_norm.load_data()
         self.top_object.o_norm = o_norm
 
 class NormalizationHandler(object):
     
     data = None
-    
-    def __init__(self, files=None):
+    integrated_sample = []
+    working_dir = ''
+
+    normalized_data_array = []
+
+    def __init__(self, files=None, working_dir=''):
         self.files = files
+        self.working_dir = working_dir
         self.data = Data()
-        
+
     def load_data(self):
         self.o_norm = Normalization()
         
@@ -269,6 +283,7 @@ class NormalizationHandler(object):
         list_sample = self.files.sample
         self.o_norm.load(file=list_sample, notebook=True)
         self.data.sample = self.o_norm.data['sample']['data']
+        self.list_file_names = list_sample
         
         # ob
         list_ob = self.files.ob
@@ -298,7 +313,7 @@ class NormalizationHandler(object):
             ax_img = plt.subplot(111)
             ax_img.imshow(sample_array[index], cmap='viridis')
 
-        _ = interact(_plot_images,
+        _ = widgets.interact(_plot_images,
                      index=widgets.IntSlider(min=0,
                                              max=len(self.get_data(data_type=data_type)) - 1,
                                              step=1,
@@ -358,7 +373,7 @@ class NormalizationHandler(object):
 
             return [x_left, y_top, width, height]
 
-        self.roi_selection = interact(plot_roi,
+        self.roi_selection = widgets.interact(plot_roi,
                                       x_left=widgets.IntSlider(min=0,
                                                                max=width,
                                                                step=1,
@@ -421,7 +436,7 @@ class NormalizationHandler(object):
         w.max = len(self.files.sample)
         display(w)
 
-        for _index, _file in enumerate(self.list_file_names['sample']):
+        for _index, _file in enumerate(self.list_file_names):
             basename = os.path.basename(_file)
             _base, _ext = os.path.splitext(basename)
             output_file_name = os.path.join(output_folder, _base + '.tiff')
