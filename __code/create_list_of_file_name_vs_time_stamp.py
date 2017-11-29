@@ -13,7 +13,7 @@ from __code.metadata_handler import MetadataHandler
 from __code import file_handler
 
 
-class DisplayExportScreenshots(object):
+class CreateListFileName(object):
 
     def __init__(self, working_dir='', verbose=False):
         self.working_dir = working_dir
@@ -128,54 +128,27 @@ class DisplayExportScreenshots(object):
         output_folder = self.output_folder_ui.selected
 
         input_folder_basename = os.path.basename(self.image_folder)
-        output_folder = os.path.join(output_folder, input_folder_basename + '_with_timestamp_info')
-        if os.path.exists(output_folder):
-            import shutil
-            shutil.rmtree(output_folder)
-        os.makedirs(output_folder)
+        output_file = os.path.join(output_folder, input_folder_basename + '_timestamp_infos.txt')
+        if os.path.exists(output_file):
+            os.remove(output_file)
 
-        text_x = self.preview.widget.result['text_x']
-        text_y = self.preview.widget.result['text_y']
-        pre_text = self.preview.widget.result['pre_text']
-        post_text = self.preview.widget.result['post_text']
-        color = self.preview.widget.result['color']
+        self.retrieve_time_stamp()
 
-        def plot_selected_image(index):
+        metadata = ['#filename, timestamp(s), timeoffset(ms)\n']
+        text = metadata
 
-            _short_file = os.path.basename(self.list_files[index])
-            output_file_name = os.path.abspath(os.path.join(output_folder, _short_file + '.png'))
+        file_list = self.list_files
+        time_stamp = self.list_time_stamp
+        time_offset = self.list_time_offset
 
-            font = {'family': 'serif',
-                    'color': color,
-                    'weight': 'normal',
-                    'size': 16}
+        for _index, _file in file_list:
+            text += "{}, {}, {}\n".format(_file, time_stamp[_index], time_offset[_index])
 
-            fig = plt.figure(figsize=(15, 10))
-            gs = gridspec.GridSpec(1, 1)
-            ax = plt.subplot(gs[0, 0])
-            im = ax.imshow(self.images_array[index], interpolation='nearest')
-            plt.title("image index {}".format(index))
-            plt.text(text_x, text_y, "{}{:.2f}{}".format(pre_text,
-                                                         self.list_time_offset[index],
-                                                         post_text),
-                     fontdict=font)
-            fig.colorbar(im)
-            plt.savefig(output_file_name)
-            plt.close(fig)
-
-        box = widgets.HBox([widgets.Label("Exporting Images:",
-                                          layout=widgets.Layout(width='20%')),
-                            widgets.IntProgress(min=0,
-                                                max=len(self.list_files) - 1,
-                                                layout=widgets.Layout(width='50%'))])
-        progress_bar = box.children[1]
-        display(box)
-
-        for _index in np.arange(len(self.list_files)):
-            plot_selected_image(index=_index)
-            progress_bar.value = _index + 1
+        with open(output_file, 'w') as f:
+            f.write(text)
 
 
+        display(HTML('<span>File Created: ' + os.path.basename(output_file) + '</span>'))
 
 
 
