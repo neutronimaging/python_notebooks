@@ -125,28 +125,32 @@ class CreateListFileName(object):
         self.output_folder_ui.show()
 
     def export(self):
-        output_folder = self.output_folder_ui.selected
+        self.retrieve_time_stamp()
+
+        try:
+            output_folder = self.output_folder_ui.selected
+        except:
+            display(HTML('<span>Make sure you selected an export folder!</span>'))
+            return
 
         input_folder_basename = os.path.basename(self.image_folder)
         output_file = os.path.join(output_folder, input_folder_basename + '_timestamp_infos.txt')
         if os.path.exists(output_file):
             os.remove(output_file)
 
-        self.retrieve_time_stamp()
 
-        metadata = ['#filename, timestamp(s), timeoffset(ms)\n']
+        metadata = '#filename, timestamp(s), timeoffset(s)\n'
         text = metadata
 
         file_list = self.list_files
         time_stamp = self.list_time_stamp
         time_offset = self.list_time_offset
 
-        for _index, _file in file_list:
+        for _index, _file in enumerate(file_list):
             text += "{}, {}, {}\n".format(_file, time_stamp[_index], time_offset[_index])
 
         with open(output_file, 'w') as f:
             f.write(text)
-
 
         display(HTML('<span>File Created: ' + os.path.basename(output_file) + '</span>'))
 
