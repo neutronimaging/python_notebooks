@@ -430,7 +430,8 @@ class NormalizationHandler(object):
 
     def export(self):
 
-        output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected, 'normalization'))
+        base_folder = os.path.basename(os.path.dirname(self.list_file_names[0])) + '_normalized'
+        output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected, base_folder))
         utilities.make_dir(dir=output_folder)
 
         w = widgets.IntProgress()

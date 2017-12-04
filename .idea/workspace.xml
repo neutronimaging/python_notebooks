@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9b2c6fa-0050-4a4f-9525-22b443f19582" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/__code/normalization_new_ui.py" afterPath="$PROJECT_DIR$/__code/normalization_new_ui.py" />
       <change beforePath="$PROJECT_DIR$/__code/profile_vs_file_index.py" afterPath="$PROJECT_DIR$/__code/profile_vs_file_index.py" />
+      <change beforePath="$PROJECT_DIR$/calculate_water_intake_profile.ipynb" afterPath="$PROJECT_DIR$/calculate_water_intake_profile.ipynb" />
+      <change beforePath="$PROJECT_DIR$/create_list_of_file_name_vs_time_stamp.ipynb" afterPath="$PROJECT_DIR$/create_list_of_file_name_vs_time_stamp.ipynb" />
+      <change beforePath="$PROJECT_DIR$/normalization.ipynb" afterPath="$PROJECT_DIR$/normalization.ipynb" />
       <change beforePath="$PROJECT_DIR$/profile_vs_file_index.ipynb" afterPath="$PROJECT_DIR$/profile_vs_file_index.ipynb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,11 +18,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/config.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="profile_vs_file_index.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1100">
-              <caret line="270" column="28" lean-forward="false" selection-start-line="270" selection-start-column="28" selection-end-line="270" selection-end-column="28" />
+            <state relative-caret-position="318">
+              <caret line="204" column="66" lean-forward="true" selection-start-line="204" selection-start-column="66" selection-end-line="204" selection-end-column="66" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
@@ -26,11 +40,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="file_handler.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
+      <file leaf-file-name="normalization.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/normalization.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="596">
-              <caret line="157" column="7" lean-forward="true" selection-start-line="157" selection-start-column="7" selection-end-line="157" selection-end-column="7" />
+            <state relative-caret-position="-394">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#36#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="normalization_new_ui.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/normalization_new_ui.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="65">
+              <caret line="385" column="70" lean-forward="true" selection-start-line="385" selection-start-column="70" selection-end-line="385" selection-end-column="70" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -46,6 +72,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/__code/normalization_new_ui.py" />
         <option value="$PROJECT_DIR$/__code/profile_vs_file_index.py" />
       </list>
     </option>
@@ -153,7 +180,45 @@
     <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="596">
-          <caret line="157" column="7" lean-forward="true" selection-start-line="157" selection-start-column="7" selection-end-line="157" selection-end-column="7" />
+          <caret line="157" column="7" lean-forward="false" selection-start-line="157" selection-start-column="7" selection-end-line="157" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/system.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/normalization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-394">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/normalization_new_ui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="65">
+          <caret line="385" column="70" lean-forward="true" selection-start-line="385" selection-start-column="70" selection-end-line="385" selection-end-column="70" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
@@ -162,8 +227,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1100">
-          <caret line="270" column="28" lean-forward="false" selection-start-line="270" selection-start-column="28" selection-end-line="270" selection-end-column="28" />
+        <state relative-caret-position="318">
+          <caret line="204" column="66" lean-forward="true" selection-start-line="204" selection-start-column="66" selection-end-line="204" selection-end-column="66" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>

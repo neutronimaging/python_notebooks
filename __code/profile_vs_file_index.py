@@ -219,8 +219,7 @@ class ProfileVsFileIndex(object):
         self.output_folder_ui.show()
 
     def __get_time_stamp(self, file_name):
-        index = self.df.index[self.df['#filename'] == file_name].tolist()[0]
-        return self.list_time_stamp[index]
+        return self.list_data_files_short.index(os.path.basename(file_name))
 
     def output_profiles(self):
 
@@ -233,6 +232,7 @@ class ProfileVsFileIndex(object):
 
         [roi_left, roi_top, roi_width, roi_height] = self.roi
 
+        self.list_data_files_short = [os.path.basename(_file) for _file in self.df['#filename']]
         time_0 = self.__get_time_stamp(self.list_data_files[0])
 
         for _index, _profile in enumerate(self.profile_1d):
