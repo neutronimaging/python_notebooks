@@ -157,7 +157,11 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d'):
         f.write(_line)
        
     f.close()
-    
+
+def make_ascii_file_from_string(text="", filename=''):
+    with open(filename, 'w') as f:
+        f.write(text)
+
 def read_ascii(filename=''):
     '''return contain of an ascii file'''
     f = open(filename, 'r')
