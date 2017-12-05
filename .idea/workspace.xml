@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9b2c6fa-0050-4a4f-9525-22b443f19582" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/__code/file_handler.py" afterPath="$PROJECT_DIR$/__code/file_handler.py" />
-      <change beforePath="$PROJECT_DIR$/calculate_water_intake_profile.ipynb" afterPath="$PROJECT_DIR$/calculate_water_intake_profile.ipynb" />
+      <change beforePath="$PROJECT_DIR$/__code/config.py" afterPath="$PROJECT_DIR$/__code/config.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,11 +15,11 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf>
-          <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="config.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/__code/config.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="0">
-                  <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                  <caret line="0" column="17" lean-forward="false" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
                   <folding />
                 </state>
               </provider>
@@ -32,7 +29,7 @@
             <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="572">
-                  <caret line="218" column="36" lean-forward="true" selection-start-line="214" selection-start-column="2" selection-end-line="218" selection-end-column="36" />
+                  <caret line="218" column="36" lean-forward="false" selection-start-line="214" selection-start-column="2" selection-end-line="218" selection-end-column="36" />
                   <folding>
                     <element signature="e#0#25#0" expanded="true" />
                   </folding>
@@ -40,11 +37,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="calculate_water_intake_profile.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="calculate_water_intake_profile.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/__code/calculate_water_intake_profile.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="785">
-                  <caret line="176" column="74" lean-forward="false" selection-start-line="176" selection-start-column="74" selection-end-line="176" selection-end-column="74" />
+                <state relative-caret-position="245">
+                  <caret line="140" column="43" lean-forward="false" selection-start-line="140" selection-start-column="43" selection-end-line="140" selection-end-column="43" />
                   <folding>
                     <element signature="e#0#31#0" expanded="true" />
                   </folding>
@@ -94,7 +91,7 @@
             <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="4">
-                  <caret line="150" column="22" lean-forward="true" selection-start-line="150" selection-start-column="22" selection-end-line="150" selection-end-column="22" />
+                  <caret line="150" column="22" lean-forward="false" selection-start-line="150" selection-start-column="22" selection-end-line="150" selection-end-column="22" />
                   <folding />
                 </state>
               </provider>
@@ -121,6 +118,7 @@
         <option value="$PROJECT_DIR$/__code/profile_vs_file_index.py" />
         <option value="$PROJECT_DIR$/__code/file_handler.py" />
         <option value="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" />
+        <option value="$PROJECT_DIR$/__code/config.py" />
       </list>
     </option>
   </component>
@@ -224,14 +222,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/__code/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/system.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -263,7 +253,7 @@
     <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="572">
-          <caret line="218" column="36" lean-forward="true" selection-start-line="214" selection-start-column="2" selection-end-line="218" selection-end-column="36" />
+          <caret line="218" column="36" lean-forward="false" selection-start-line="214" selection-start-column="2" selection-end-line="218" selection-end-column="36" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
@@ -282,11 +272,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/__code/calculate_water_intake_profile.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="785">
-          <caret line="176" column="74" lean-forward="false" selection-start-line="176" selection-start-column="74" selection-end-line="176" selection-end-column="74" />
+        <state relative-caret-position="245">
+          <caret line="140" column="43" lean-forward="false" selection-start-line="140" selection-start-column="43" selection-end-line="140" selection-end-column="43" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="17" lean-forward="false" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
