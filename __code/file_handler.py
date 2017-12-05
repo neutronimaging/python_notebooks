@@ -215,6 +215,7 @@ def retrieve_list_of_most_dominand_extension_from_folder(folder=''):
             dominand_extension = _key
 
     list_of_input_files = glob.glob(os.path.join(folder, '*' + dominand_extension))
+    list_of_input_files.sort()
 
     return [list_of_input_files, dominand_extension]
 
