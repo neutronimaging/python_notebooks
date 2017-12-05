@@ -160,7 +160,7 @@ class CalculateWaterIntakeProfile(object):
     def export(self):
 
         output_folder = os.path.abspath(self.output_folder_ui.selected)
-        short_file_name = os.path.basename(os.path.dirname(self.list_files[0])) + '.txt'
+        short_file_name = os.path.basename(os.path.abspath(os.path.dirname(self.list_files[0]))) + '.txt'
         output_file_name = os.path.join(output_folder, short_file_name)
 
         ascii_text = "# Source data: {}\n".format(os.path.basename(os.path.dirname(self.list_files[0])))

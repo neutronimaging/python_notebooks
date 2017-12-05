@@ -226,6 +226,7 @@ class ProfileVsFileIndex(object):
         # make name of output folder
         output_folder = os.path.join(os.path.abspath(self.output_folder_ui.selected),
                                      os.path.basename(os.path.dirname(self.list_file_name[0]) + '_profiles'))
+        output_folder = os.path.abspath(output_folder)
         if os.path.isdir(output_folder):
             shutil.rmtree(output_folder)
         os.mkdir(output_folder)

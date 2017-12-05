@@ -133,8 +133,9 @@ class CreateListFileName(object):
             display(HTML('<span>Make sure you selected an export folder!</span>'))
             return
 
-        input_folder_basename = os.path.basename(self.image_folder)
-        output_file = os.path.join(output_folder, input_folder_basename + '_timestamp_infos.txt')
+        input_folder_basename = os.path.basename(os.path.abspath(self.image_folder))
+        output_file = os.path.abspath(os.path.join(output_folder, input_folder_basename +
+                                                   '_timestamp_infos.txt'))
         if os.path.exists(output_file):
             os.remove(output_file)
 
