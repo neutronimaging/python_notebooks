@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9b2c6fa-0050-4a4f-9525-22b443f19582" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" afterPath="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" />
-      <change beforePath="$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py" afterPath="$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py" />
-      <change beforePath="$PROJECT_DIR$/__code/profile_vs_file_index.py" afterPath="$PROJECT_DIR$/__code/profile_vs_file_index.py" />
+      <change beforePath="$PROJECT_DIR$/__code/file_handler.py" afterPath="$PROJECT_DIR$/__code/file_handler.py" />
+      <change beforePath="$PROJECT_DIR$/create_list_of_file_name_vs_time_stamp.ipynb" afterPath="$PROJECT_DIR$/create_list_of_file_name_vs_time_stamp.ipynb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,106 +13,88 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
-      <split-first>
-        <leaf>
-          <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/__code/config.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="75">
-                  <caret line="5" column="44" lean-forward="true" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="create_list_of_file_name_vs_time_stamp.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="710">
-                  <caret line="135" column="84" lean-forward="false" selection-start-line="135" selection-start-column="84" selection-end-line="135" selection-end-column="84" />
-                  <folding>
-                    <element signature="e#0#31#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="profile_vs_file_index.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="425">
-                  <caret line="228" column="53" lean-forward="false" selection-start-line="228" selection-start-column="53" selection-end-line="228" selection-end-column="53" />
-                  <folding>
-                    <element signature="e#0#25#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="calculate_water_intake_profile.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/__code/calculate_water_intake_profile.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="560">
-                  <caret line="162" column="94" lean-forward="false" selection-start-line="162" selection-start-column="94" selection-end-line="162" selection-end-column="94" />
-                  <folding>
-                    <element signature="e#0#31#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="file_handler.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="596">
-                  <caret line="157" column="7" lean-forward="false" selection-start-line="157" selection-start-column="7" selection-end-line="157" selection-end-column="7" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="normalization.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/__code/normalization.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="500">
-                  <caret line="175" column="0" lean-forward="false" selection-start-line="173" selection-start-column="0" selection-end-line="175" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#0#36#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="normalization_new_ui.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/__code/normalization_new_ui.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="65">
-                  <caret line="385" column="70" lean-forward="false" selection-start-line="385" selection-start-column="70" selection-end-line="385" selection-end-column="70" />
-                  <folding>
-                    <element signature="e#0#9#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="file_handler.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="4">
-                  <caret line="150" column="22" lean-forward="false" selection-start-line="150" selection-start-column="22" selection-end-line="150" selection-end-column="22" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/config.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="create_list_of_file_name_vs_time_stamp.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="423">
+              <caret line="33" column="62" lean-forward="true" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="profile_vs_file_index.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="425">
+              <caret line="228" column="53" lean-forward="false" selection-start-line="228" selection-start-column="53" selection-end-line="228" selection-end-column="53" />
+              <folding>
+                <element signature="e#0#25#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="calculate_water_intake_profile.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/calculate_water_intake_profile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="560">
+              <caret line="162" column="94" lean-forward="false" selection-start-line="162" selection-start-column="94" selection-end-line="162" selection-end-column="94" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="file_handler.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="542">
+              <caret line="200" column="30" lean-forward="false" selection-start-line="200" selection-start-column="30" selection-end-line="200" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="normalization.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/normalization.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="500">
+              <caret line="175" column="0" lean-forward="false" selection-start-line="173" selection-start-column="0" selection-end-line="175" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#36#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="normalization_new_ui.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/normalization_new_ui.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="65">
+              <caret line="385" column="70" lean-forward="false" selection-start-line="385" selection-start-column="70" selection-end-line="385" selection-end-column="70" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -129,16 +110,16 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/__code/normalization_new_ui.py" />
-        <option value="$PROJECT_DIR$/__code/file_handler.py" />
         <option value="$PROJECT_DIR$/__code/config.py" />
         <option value="$PROJECT_DIR$/__code/profile_vs_file_index.py" />
         <option value="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" />
         <option value="$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py" />
+        <option value="$PROJECT_DIR$/__code/file_handler.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1027" />
+    <option name="x" value="56" />
     <option name="y" value="23" />
     <option name="width" value="2191" />
     <option name="height" value="1352" />
@@ -207,7 +188,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1027" y="23" width="2191" height="1352" extended-state="0" />
+    <frame x="56" y="23" width="2191" height="1352" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18571429" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -257,14 +238,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="596">
-          <caret line="157" column="7" lean-forward="false" selection-start-line="157" selection-start-column="7" selection-end-line="157" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/normalization.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="500">
@@ -278,7 +251,7 @@
     <entry file="file://$PROJECT_DIR$/__code/config.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
-          <caret line="5" column="44" lean-forward="true" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
+          <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
           <folding />
         </state>
       </provider>
@@ -313,11 +286,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="710">
-          <caret line="135" column="84" lean-forward="false" selection-start-line="135" selection-start-column="84" selection-end-line="135" selection-end-column="84" />
+        <state relative-caret-position="423">
+          <caret line="33" column="62" lean-forward="true" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="542">
+          <caret line="200" column="30" lean-forward="false" selection-start-line="200" selection-start-column="30" selection-end-line="200" selection-end-column="30" />
+          <folding />
         </state>
       </provider>
     </entry>
