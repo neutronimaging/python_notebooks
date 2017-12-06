@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9b2c6fa-0050-4a4f-9525-22b443f19582" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" afterPath="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
-      <change beforePath="$PROJECT_DIR$/bin_images.ipynb" afterPath="$PROJECT_DIR$/bin_images.ipynb" />
-      <change beforePath="$PROJECT_DIR$/deal_files.ipynb" afterPath="$PROJECT_DIR$/deal_files.ipynb" />
-      <change beforePath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" afterPath="$PROJECT_DIR$/display_and_export_images_with_metadata_profile.ipynb" />
+      <change beforePath="$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py" afterPath="$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py" />
+      <change beforePath="$PROJECT_DIR$/__code/ui_display_counts_of_region_vs_stack.py" afterPath="$PROJECT_DIR$/__code/ui_display_counts_of_region_vs_stack.py" />
+      <change beforePath="$PROJECT_DIR$/display_counts_of_region_vs_stack.ipynb" afterPath="$PROJECT_DIR$/display_counts_of_region_vs_stack.ipynb" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,69 +16,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/__code/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="create_list_of_file_name_vs_time_stamp.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="profile_vs_file_index.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="51" column="67" lean-forward="false" selection-start-line="51" selection-start-column="26" selection-end-line="51" selection-end-column="67" />
-              <folding>
-                <element signature="e#0#25#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="calculate_water_intake_profile.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/__code/calculate_water_intake_profile.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="40" lean-forward="false" selection-start-line="6" selection-start-column="40" selection-end-line="6" selection-end-column="40" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="display_and_export_images_with_metadata_profile.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1028">
-              <caret line="158" column="62" lean-forward="false" selection-start-line="158" selection-start-column="62" selection-end-line="158" selection-end-column="62" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="normalization.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/__code/normalization.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2519">
-              <caret line="175" column="0" lean-forward="false" selection-start-line="173" selection-start-column="0" selection-end-line="175" selection-end-column="0" />
+            <state relative-caret-position="150">
+              <caret line="10" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="display_counts_of_region_vs_stack.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="890">
+              <caret line="221" column="38" lean-forward="false" selection-start-line="221" selection-start-column="38" selection-end-line="221" selection-end-column="38" />
               <folding>
-                <element signature="e#0#36#0" expanded="true" />
+                <element signature="e#0#22#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -108,6 +61,9 @@
         <option value="$PROJECT_DIR$/__code/file_handler.py" />
         <option value="$PROJECT_DIR$/__code/deal.py" />
         <option value="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
+        <option value="$PROJECT_DIR$/requirements.yml" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py" />
       </list>
     </option>
   </component>
@@ -224,29 +180,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/radial_profile.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-5048">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
-          <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -268,22 +206,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/normalization.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2519">
-          <caret line="175" column="0" lean-forward="false" selection-start-line="173" selection-start-column="0" selection-end-line="175" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/deal.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="440">
           <caret line="75" column="29" lean-forward="true" selection-start-line="75" selection-start-column="29" selection-end-line="75" selection-end-column="29" />
           <folding>
             <element signature="e#0#13#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1028">
+          <caret line="158" column="62" lean-forward="false" selection-start-line="158" selection-start-column="62" selection-end-line="158" selection-end-column="62" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -306,12 +244,62 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py">
+    <entry file="file://$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1028">
-          <caret line="158" column="62" lean-forward="false" selection-start-line="158" selection-start-column="62" selection-end-line="158" selection-end-column="62" />
+        <state relative-caret-position="423">
+          <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/normalization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="10" lean-forward="false" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/install_me.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="890">
+          <caret line="221" column="38" lean-forward="false" selection-start-line="221" selection-start-column="38" selection-end-line="221" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#22#0" expanded="true" />
           </folding>
         </state>
       </provider>

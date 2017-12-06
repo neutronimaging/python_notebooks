@@ -3,6 +3,7 @@ from pyqtgraph.dockarea import *
 import numpy as np
 import os
 import numbers
+import ipywe.fileselector
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -11,11 +12,25 @@ try:
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from neutronbraggedge.experiment_handler import *
+from NeuNorm.normalization import Normalization
 
 from __code.ui_display_counts_of_region_vs_stack import Ui_MainWindow as UiMainWindow
+
+
+class DisplayCountsVsStack(object):
+
+    def __init__(self, working_dir=''):
+        self.working_dir = working_dir
+
+    def select_input_folder(self):
+        self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Input Folder',
+                                                               type='directory',
+                                                               start_dir=self.working_dir,
+                                                               multiple=False)
+        self.input_folder_ui.show()
 
 
 class ImageWindow(QMainWindow):
@@ -27,16 +42,20 @@ class ImageWindow(QMainWindow):
     y_axis = {'label': 'Mean Counts', 'data': []}
     spectra_file = ''
     
-    def __init__(self, parent=None, stack=[], working_folder=''):
+    def __init__(self, parent=None, display_counts_vs_stack=None):
+
+        self.o_display_counts_vs_stack = display_counts_vs_stack
+        self.working_folder = self.o_display_counts_vs_stack.input_folder_ui.selected
+        self.load_data()
+
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("Select ROI to display profile over all images.")
 
-        self.stack = np.array(stack)
+        #self.stack = np.array(stack)
         [self.nbr_files, height, width] = np.shape(self.stack)
         self.integrated_stack = self.stack.sum(axis=0)
-        self.working_folder = working_folder
 
         self.initialize_pyqtgraph()
         self.init_label()
@@ -44,7 +63,13 @@ class ImageWindow(QMainWindow):
         self.display_image()
         self.update_x_axis()
         self.roi_changed()
-        
+
+    def load_data(self):
+        working_folder = self.working_folder
+        o_norm = Normalization()
+        o_norm.load(folder=working_folder, notebook=True)
+        self.stack = np.array(o_norm.data['sample']['data'])
+
     def update_plot(self):
         self.update_x_axis()
         self.plot()
@@ -191,9 +216,10 @@ class ImageWindow(QMainWindow):
 
     def time_spectra_file_browse_button_clicked(self):
         spectra_file = QFileDialog.getOpenFileName(
-            caption='Select Time Spectra',
-            directory=self.working_folder,
-            filter='txt (*_Spectra.txt);;All (*.*)')
+                        caption='Select Time Spectra',
+                        directory=self.working_folder,
+                        filter='txt (*_Spectra.txt);;All (*.*)')
+        spectra_file = spectra_file[0]
         if spectra_file:
             self.ui.time_spectra_file.setText(os.path.basename(spectra_file))
             self.spectra_file = spectra_file
