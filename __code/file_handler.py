@@ -5,7 +5,7 @@ import pickle
 import shutil
 from PIL import Image
 import glob
-from collections import Counter
+from collections import Counter, namedtuple
 import re
 
 from ipywidgets.widgets import interact
@@ -247,6 +247,87 @@ def remove_file_from_list(list_files=[], regular_expression=''):
     return list_files
 
 
+class ListMostDominantExtension(object):
+    Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))
+
+    def __init__(self, working_dir=''):
+        self.working_dir = working_dir
+
+    def get_list_of_files(self):
+        list_of_input_files = glob.glob(os.path.join(self.working_dir, '*'))
+        list_of_input_files.sort()
+        self.list_of_base_name = [os.path.basename(_file) for _file in list_of_input_files]
+
+    def get_counter_of_extension(self):
+        counter_extension = Counter()
+        for _file in self.list_of_base_name:
+            [_base, _ext] = os.path.splitext(_file)
+            counter_extension[_ext] += 1
+        self.counter_extension = counter_extension
+
+    def get_dominant_extension(self):
+        dominant_extension = ''
+        dominant_number = 0
+        list_of_number_of_ext = []
+        for _key in self.counter_extension.keys():
+            list_of_number_of_ext.append(self.counter_extension[_key])
+            if self.counter_extension[_key] > dominant_number:
+                dominant_extension = _key
+                dominant_number = self.counter_extension[_key]
+
+        self.dominant_number = dominant_number
+        self.dominant_extension = dominant_extension
+        self.list_of_number_of_ext = list_of_number_of_ext
+
+    def check_uniqueness_of_dominand_extension(self):
+        # check if there are several ext with the same max number
+        indices = [i for i, x in enumerate(self.list_of_number_of_ext) if x == self.dominant_number]
+        if len(indices) > 1:  # found several majority ext
+            self.uniqueness = False
+        else:
+            self.uniqueness = True
+
+    def calculate(self):
+        self.get_list_of_files()
+        self.get_counter_of_extension()
+        self.get_dominant_extension()
+        self.check_uniqueness_of_dominand_extension()
+        self.retrieve_parameters()
+
+    def retrieve_parameters(self):
+        if self.uniqueness:
+            list_of_input_files = glob.glob(os.path.join(self.working_dir, '*' + self.dominant_extension))
+            list_of_input_files.sort()
+
+            self.result = self.Result(list_files=list_of_input_files,
+                                      ext=self.dominant_extension,
+                                      uniqueness=True)
+
+        else:
+
+            list_of_maj_ext = [_ext for _ext in self.counter_extension.keys() if
+                               self.counter_extension[_ext] == self.dominant_number]
+
+            box = widgets.HBox([widgets.Label("Select Extension to work with",
+                                              layout=widgets.Layout(width='20%')),
+                                widgets.Dropdown(options=list_of_maj_ext,
+                                                 layout=widgets.Layout(width='20%'),
+                                                 value=list_of_maj_ext[0])])
+            display(box)
+            self.dropdown_ui = box.children[1]
+
+    def get_files_of_selected_ext(self):
+        if self.uniqueness:
+            return self.result
+
+        else:
+            _ext_selected = self.dropdown_ui.value
+            list_of_input_files = glob.glob(os.path.join(self.working_dir, '*' + _ext_selected))
+            list_of_input_files.sort()
+
+            return self.Result(list_files=list_of_input_files,
+                               ext=self.dominant_extension,
+                               uniqueness=True)
 
 
 
