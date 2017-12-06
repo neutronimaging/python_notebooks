@@ -213,6 +213,7 @@ def retrieve_list_of_most_dominand_extension_from_folder(folder=''):
     for _key in counter_extension.keys():
         if counter_extension[_key] > dominand_number:
             dominand_extension = _key
+            dominand_number = counter_extension[_key]
 
     list_of_input_files = glob.glob(os.path.join(folder, '*' + dominand_extension))
     list_of_input_files.sort()
