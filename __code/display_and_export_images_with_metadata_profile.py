@@ -1,5 +1,4 @@
 import pandas as pd
-import pprint
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from ipywidgets.widgets import interact
@@ -7,48 +6,64 @@ from ipywidgets import widgets
 import numpy as np
 import os
 import ipywe.fileselector
-
 from IPython.core.display import display, HTML
 
 from NeuNorm.normalization import Normalization
-
 from __code import file_handler
 
 
 class DisplayExportScreenshots(object):
 
-    def __init__(self, o_meta=None, verbose=False):
-        self.o_meta = o_meta
-        self.verbose = verbose
+    def __init__(self, working_dir=''):
+        self.working_dir = working_dir
 
-    def check_inputs(self):
+    def select_input_folder(self):
+        self.folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Input Folder ...',
+                                                              start_dir=self.working_dir,
+                                                              type='directory',
+                                                              multiple=False)
+
+        self.folder_ui.show()
+
+    def select_metadata_file(self):
+        self.metadata_file_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Metadata File (created by file_name_and_metadata_vs_time_stamp.ipynb ...',
+                                                              start_dir=self.working_dir,
+                                                              multiple=False)
+        self.metadata_file_ui.show()
+
+    def display(self):
+
+        self.__check_inputs()
+        self.__load()
+        self.__preview()
+
+
+
+    def __check_inputs(self):
         # images
-        image_folder = self.o_meta.folder_ui.selected
+        image_folder = self.folder_ui.selected
+
         list_images = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=image_folder)
         list_images = list_images[0]
         self.nbr_images = len(list_images)
 
         # entry from file
-        file_name_vs_metadata_name = self.o_meta.sample_environment_file_ui.selected
+        file_name_vs_metadata_name = self.metadata_file_ui.selected
         self.file_name_vs_metadata = pd.read_csv(file_name_vs_metadata_name)
         self.metadata_name = list(self.file_name_vs_metadata.columns.values)[2]
         nbr_metadata = len(self.file_name_vs_metadata[self.file_name_vs_metadata.columns[0]])
-
-        if self.verbose:
-            pprint.pprint(self.file_name_vs_metadata.head())
 
         assert self.nbr_images == nbr_metadata
 
         self.list_images = list_images
 
-    def load_images(self):
-        self.check_inputs()
+    def __load(self):
         o_load = Normalization()
         o_load.load(file=self.list_images, notebook=True)
         self.images_array = o_load.data['sample']['data']
         self.images_list = o_load.data['sample']['file_name']
 
-    def preview(self):
+    def __preview(self):
         metadata_profile = {}
 
         _metadata_array = np.array(self.file_name_vs_metadata['Metadata'])
@@ -90,14 +105,14 @@ class DisplayExportScreenshots(object):
 
     def select_export_folder(self):
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select output Folder ...',
-                                                                     start_dir=self.o_meta.working_dir,
+                                                                     start_dir=self.working_dir,
                                                                      type='directory')
         self.output_folder_ui.show()
 
     def export(self):
         output_folder = self.output_folder_ui.selected
 
-        input_folder_basename = os.path.basename(self.o_meta.folder_ui.selected)
+        input_folder_basename = os.path.basename(self.folder_ui.selected)
         output_folder = os.path.join(output_folder, input_folder_basename + '_vs_metadata_screenshots')
         if os.path.exists(output_folder):
             import shutil
@@ -139,3 +154,6 @@ class DisplayExportScreenshots(object):
         for _index in np.arange(self.nbr_images):
             plot_images_and_profile(file_index=_index)
             progress_bar.value = _index + 1
+
+        box.close()
+        display(HTML('<span style="font-size: 20px; color:blue">Images created in ' + output_folder + '</span>'))
