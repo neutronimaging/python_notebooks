@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9b2c6fa-0050-4a4f-9525-22b443f19582" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/__code/file_folder_browser.py" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" afterPath="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" />
-      <change beforePath="$PROJECT_DIR$/__code/select_metadata_to_display.py" afterPath="$PROJECT_DIR$/__code/select_metadata_to_display.py" />
-      <change beforePath="$PROJECT_DIR$/file_name_and_metadata_vs_time_stamp.ipynb" afterPath="$PROJECT_DIR$/file_name_and_metadata_vs_time_stamp.ipynb" />
-      <change beforePath="$PROJECT_DIR$/list_tiff_metadata.ipynb" afterPath="$PROJECT_DIR$/list_tiff_metadata.ipynb" />
+      <change beforePath="$PROJECT_DIR$/__code/radial_profile.py" afterPath="$PROJECT_DIR$/__code/radial_profile.py" />
+      <change beforePath="$PROJECT_DIR$/__code/ui_radial_profile.py" afterPath="$PROJECT_DIR$/__code/ui_radial_profile.py" />
+      <change beforePath="$PROJECT_DIR$/radial_profile.ipynb" afterPath="$PROJECT_DIR$/radial_profile.ipynb" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,21 +19,19 @@
       <file leaf-file-name="normalization.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/__code/normalization.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
+            <state relative-caret-position="-292">
               <caret line="10" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="select_metadata_to_display.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/__code/select_metadata_to_display.py">
+      <file leaf-file-name="radial_profile.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/__code/radial_profile.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="458">
-              <caret line="32" column="85" lean-forward="true" selection-start-line="32" selection-start-column="85" selection-end-line="32" selection-end-column="85" />
-              <folding>
-                <element signature="e#0#30#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="240">
+              <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -73,7 +69,6 @@
         <option value="$PROJECT_DIR$/__code/deal.py" />
         <option value="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
         <option value="$PROJECT_DIR$/requirements.yml" />
-        <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py" />
         <option value="$PROJECT_DIR$/__code/display_integrated_stack_of_images.py" />
         <option value="$PROJECT_DIR$/__code/file_handler.py" />
@@ -81,6 +76,8 @@
         <option value="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" />
         <option value="$PROJECT_DIR$/__code/file_folder_browser.py" />
         <option value="$PROJECT_DIR$/__code/select_metadata_to_display.py" />
+        <option value="$PROJECT_DIR$/__code/radial_profile.py" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
       </list>
     </option>
   </component>
@@ -200,14 +197,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/radial_profile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5048">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/normalization_new_ui.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="65">
@@ -290,20 +279,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/display_integrated_stack_of_images.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="675">
           <caret line="45" column="0" lean-forward="false" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#25#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -313,7 +294,7 @@
         <state relative-caret-position="-205">
           <caret line="249" column="31" lean-forward="false" selection-start-line="249" selection-start-column="6" selection-end-line="249" selection-end-column="31" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -348,9 +329,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/__code/select_metadata_to_display.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="85" lean-forward="false" selection-start-line="32" selection-start-column="85" selection-end-line="32" selection-end-column="85" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/__code/normalization.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
+        <state relative-caret-position="-292">
           <caret line="10" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
           <folding />
         </state>
@@ -364,13 +355,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/select_metadata_to_display.py">
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="458">
-          <caret line="32" column="85" lean-forward="true" selection-start-line="32" selection-start-column="85" selection-end-line="32" selection-end-column="85" />
-          <folding>
-            <element signature="e#0#30#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="285">
+          <caret line="19" column="15" lean-forward="true" selection-start-line="19" selection-start-column="15" selection-end-line="19" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/radial_profile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -19,15 +19,16 @@ try:
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from __code import file_handler
 from __code.ui_radial_profile import Ui_MainWindow as UiMainWindow
+from __code.file_folder_browser import FileFolderBrowser
 
 from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
 
-class RadialProfile(object):
+class RadialProfile(FileFolderBrowser):
 
     nbr_files = 0
     images_dimension = {'height': 0,
@@ -39,14 +40,7 @@ class RadialProfile(object):
     profile_data = []
 
     def __init__(self, working_dir=''):
-        self.working_dir = working_dir
-
-    def select_images(self):
-        display(HTML('<span style="font-size: 20px; color:blue">Select the images you want to work on!</span>'))
-        self.list_images_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images...',
-                                                              multiple=True,
-                                                              start_dir = self.working_dir)
-        self.list_images_ui.show()
+        super(RadialProfile, self).__init__(working_dir=working_dir)
 
     def load_images(self):
         list_images = self.list_images_ui.selected
@@ -170,11 +164,14 @@ class SelectRadialParameters(QMainWindow):
         display(HTML('<span style="font-size: 20px; color:blue">Select the center of the circle and the angular sector in the UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
+        o_profile.load_images()
+
         self.rotated_working_data = o_profile.working_data
         self.working_data = o_profile.working_data
         self.list_images = o_profile.list_images
         self.height = o_profile.images_dimension['height']
         self.width = o_profile.images_dimension['width']
+
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
