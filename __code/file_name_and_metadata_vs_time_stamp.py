@@ -22,9 +22,8 @@ import time, datetime
 
 class FileNameMetadataTimeStamp(object):
 
-    def __init__(self, working_dir, verbose=False):
+    def __init__(self, working_dir):
         self.working_dir = working_dir
-        self.verbose = verbose
 
         if sys.platform == 'darwin':
             self.my_system = 'mac'
@@ -50,8 +49,8 @@ class FileNameMetadataTimeStamp(object):
 
     def select_image_folder(self):
         self.folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Raw Image Folder ...',
-                                                         start_dir=self.working_dir,
-                                                         type='directory')
+                                                              start_dir=self.working_dir,
+                                                              type='directory')
         self.folder_ui.show()
 
         display(HTML(

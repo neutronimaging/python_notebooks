@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9b2c6fa-0050-4a4f-9525-22b443f19582" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/__code/file_handler.py" afterPath="$PROJECT_DIR$/__code/file_handler.py" />
-      <change beforePath="$PROJECT_DIR$/__code/format_filename_index.py" afterPath="$PROJECT_DIR$/__code/format_filename_index.py" />
-      <change beforePath="$PROJECT_DIR$/format_filename_index.ipynb" afterPath="$PROJECT_DIR$/format_filename_index.ipynb" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/__code/file_folder_browser.py" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" afterPath="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" />
+      <change beforePath="$PROJECT_DIR$/__code/select_metadata_to_display.py" afterPath="$PROJECT_DIR$/__code/select_metadata_to_display.py" />
+      <change beforePath="$PROJECT_DIR$/file_name_and_metadata_vs_time_stamp.ipynb" afterPath="$PROJECT_DIR$/file_name_and_metadata_vs_time_stamp.ipynb" />
+      <change beforePath="$PROJECT_DIR$/list_tiff_metadata.ipynb" afterPath="$PROJECT_DIR$/list_tiff_metadata.ipynb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,47 +21,31 @@
       <file leaf-file-name="normalization.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/__code/normalization.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="755">
-              <caret line="192" column="36" lean-forward="true" selection-start-line="186" selection-start-column="2" selection-end-line="192" selection-end-column="36" />
+            <state relative-caret-position="150">
+              <caret line="10" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="select_metadata_to_display.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/__code/select_metadata_to_display.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="458">
+              <caret line="32" column="85" lean-forward="true" selection-start-line="32" selection-start-column="85" selection-end-line="32" selection-end-column="85" />
               <folding>
-                <element signature="e#0#36#0" expanded="true" />
+                <element signature="e#0#30#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="display_counts_of_region_vs_stack.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py">
+      <file leaf-file-name="file_folder_browser.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/__code/file_folder_browser.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#22#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="format_filename_index.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/__code/format_filename_index.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="729">
-              <caret line="154" column="54" lean-forward="false" selection-start-line="154" selection-start-column="54" selection-end-line="154" selection-end-column="54" />
-              <folding>
-                <element signature="e#0#39#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="file_handler.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-205">
-              <caret line="249" column="31" lean-forward="false" selection-start-line="249" selection-start-column="6" selection-end-line="249" selection-end-column="31" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="405">
+              <caret line="27" column="0" lean-forward="true" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -91,6 +78,9 @@
         <option value="$PROJECT_DIR$/__code/display_integrated_stack_of_images.py" />
         <option value="$PROJECT_DIR$/__code/file_handler.py" />
         <option value="$PROJECT_DIR$/__code/format_filename_index.py" />
+        <option value="$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py" />
+        <option value="$PROJECT_DIR$/__code/file_folder_browser.py" />
+        <option value="$PROJECT_DIR$/__code/select_metadata_to_display.py" />
       </list>
     </option>
   </component>
@@ -318,16 +308,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#22#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-205">
@@ -338,22 +318,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/normalization.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="755">
-          <caret line="192" column="36" lean-forward="true" selection-start-line="186" selection-start-column="2" selection-end-line="192" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/format_filename_index.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="729">
           <caret line="154" column="54" lean-forward="false" selection-start-line="154" selection-start-column="54" selection-end-line="154" selection-end-column="54" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#0#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/display_counts_of_region_vs_stack.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#22#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/file_name_and_metadata_vs_time_stamp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="945">
+          <caret line="63" column="0" lean-forward="true" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#31#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/normalization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/file_folder_browser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="27" column="0" lean-forward="true" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/select_metadata_to_display.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="458">
+          <caret line="32" column="85" lean-forward="true" selection-start-line="32" selection-start-column="85" selection-end-line="32" selection-end-column="85" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
           </folding>
         </state>
       </provider>
