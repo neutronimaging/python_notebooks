@@ -2,99 +2,86 @@
 
 # Form implementation generated from reading ui file '/Users/j35/git/IPTS/notebooks/ui/ui_rotate_and_crop.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
-
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
-        self.centralwidget = QtGui.QWidget(MainWindow)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.centralwidget)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.widget = QtGui.QWidget(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.widget = QtWidgets.QWidget(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
         self.widget.setSizePolicy(sizePolicy)
-        self.widget.setObjectName(_fromUtf8("widget"))
+        self.widget.setObjectName("widget")
         self.verticalLayout_2.addWidget(self.widget)
-        self.groupBox = QtGui.QGroupBox(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+        self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
         self.groupBox.setSizePolicy(sizePolicy)
         self.groupBox.setMinimumSize(QtCore.QSize(0, 60))
         self.groupBox.setMaximumSize(QtCore.QSize(16777215, 75))
-        self.groupBox.setObjectName(_fromUtf8("groupBox"))
-        self.verticalLayout = QtGui.QVBoxLayout(self.groupBox)
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.textBrowser = QtGui.QTextBrowser(self.groupBox)
+        self.groupBox.setObjectName("groupBox")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.textBrowser = QtWidgets.QTextBrowser(self.groupBox)
         self.textBrowser.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
         self.textBrowser.setSizePolicy(sizePolicy)
         self.textBrowser.setMinimumSize(QtCore.QSize(0, 40))
         self.textBrowser.setMaximumSize(QtCore.QSize(16777215, 40))
-        self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
+        self.textBrowser.setObjectName("textBrowser")
         self.verticalLayout.addWidget(self.textBrowser)
         self.verticalLayout_2.addWidget(self.groupBox)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.cancel_button = QtGui.QPushButton(self.centralwidget)
-        self.cancel_button.setObjectName(_fromUtf8("cancel_button"))
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.cancel_button = QtWidgets.QPushButton(self.centralwidget)
+        self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout.addWidget(self.cancel_button)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.apply_button = QtGui.QPushButton(self.centralwidget)
-        self.apply_button.setObjectName(_fromUtf8("apply_button"))
+        self.apply_button = QtWidgets.QPushButton(self.centralwidget)
+        self.apply_button.setObjectName("apply_button")
         self.horizontalLayout.addWidget(self.apply_button)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
+        self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.cancel_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.cancel_clicked)
-        QtCore.QObject.connect(self.apply_button, QtCore.SIGNAL(_fromUtf8("clicked()")), MainWindow.apply_clicked)
+        self.cancel_button.clicked.connect(MainWindow.cancel_clicked)
+        self.apply_button.clicked.connect(MainWindow.apply_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.groupBox.setTitle(_translate("MainWindow", "Instructions", None))
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.groupBox.setTitle(_translate("MainWindow", "Instructions"))
         self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'.SF NS Text\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">angle value</span> and hit ENTER to validate choice.</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* The<span style=\" font-weight:600;\"> selection box </span>within the image defines the cropping region</p></body></html>", None))
-        self.cancel_button.setText(_translate("MainWindow", "Cancel", None))
-        self.apply_button.setText(_translate("MainWindow", "Apply on all Images", None))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* The<span style=\" font-weight:600;\"> selection box </span>within the image defines the cropping region</p></body></html>"))
+        self.cancel_button.setText(_translate("MainWindow", "Cancel"))
+        self.apply_button.setText(_translate("MainWindow", "Apply on all Images"))
 

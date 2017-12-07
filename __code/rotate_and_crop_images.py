@@ -19,6 +19,7 @@ import os
 from __code import file_handler
 from __code.ui_rotate_and_crop import Ui_MainWindow as UiMainWindow
 
+
 class RotateAndCropImages(QMainWindow):
 
     grid_size = 100
@@ -300,8 +301,9 @@ class Export(object):
 
             w.value = _index + 1
 
+        w.close()
 
         display(HTML(
-            '<span style="font-size: 20px; color:blue">You are done here!</span>'))
+            '<span style="font-size: 20px; color:blue">Files created in ' + full_output_folder + '</span>'))
 
 

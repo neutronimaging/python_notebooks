@@ -50,34 +50,3 @@ class LoadImages(object):
             np.shape(self.o_norm.data['sample']['data'][0])
         self.working_data = np.squeeze(self.o_norm.data['sample']['data'])
         self.list_images = list_images
-
-
-
-
-
-        # if list_images:
-        #
-        #     w = widgets.IntProgress()
-        #     w.max = len(list_images)
-        #     display(w)
-        #
-        #
-        #
-        #
-        #
-        #
-        #     working_data = []
-        #     for _index, _file in enumerate(list_images):
-        #         _data = np.array(file_handler.load_data(_file))
-        #         _data[_data == np.inf] = np.NaN  # removing inf values
-        #         _data[np.isnan(_data)] = 0
-        #         working_data.append(_data)
-        #         w.value = _index + 1
-        #
-        #     if len(np.shape(working_data)) < 3:
-        #         raise ValueError("Check the Input Files! (no data loaded)")
-        #
-        #     [self.nbr_files, self.images_dimension['height'], self.images_dimension['width']] = np.shape(working_data)
-        #     self.working_data = np.squeeze(working_data)
-        #     self.working_dir = os.path.dirname(list_images[0])
-        #     self.list_images = list_images
