@@ -36,7 +36,6 @@ class ProfileVsFileIndex(object):
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
 
-
     def select_images(self):
         self.folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Input Images ...',
                                                               start_dir=self.working_dir,

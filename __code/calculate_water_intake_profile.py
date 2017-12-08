@@ -1,22 +1,14 @@
-import matplotlib.pyplot as plt
-
 import ipywe.fileselector
-from NeuNorm.normalization import Normalization
 
 from IPython.core.display import HTML
 from IPython.core.display import display
-
-from ipywidgets.widgets import interact
 from ipywidgets import widgets
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import numpy as np
 import os
 import re
 import pandas as pd
-import datetime
-import shutil
 
 from __code.file_handler import make_ascii_file_from_string
 
@@ -25,6 +17,8 @@ class CalculateWaterIntakeProfile(object):
 
     files_data = []
     files_metadata = []
+
+    documentation_path = '__docs/calculate_water_intake_profile/water_intake_calculation.pdf'
 
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
@@ -190,8 +184,8 @@ class MeanRangeCalculation(object):
         _data = self.data
         _nbr_pixel = self.nbr_pixel
 
-        self.left_mean = np.mean(_data[0:pixel + 1])
-        self.right_mean = np.mean(_data[pixel + 1:_nbr_pixel])
+        self.left_mean = np.mean(_data[0:pixel+1])
+        self.right_mean = np.mean(_data[pixel+1:_nbr_pixel])
 
     def calculate_delta_mean_square(self):
         self.delta_square = np.square(self.left_mean - self.right_mean)
