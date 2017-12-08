@@ -219,7 +219,8 @@ class ProfileVsFileIndex(object):
         self.output_folder_ui.show()
 
     def __get_time_stamp(self, file_name):
-        return self.list_data_files_short.index(os.path.basename(file_name))
+        _index_time_stamp = self.list_data_files_short.index(os.path.basename(file_name))
+        return self.list_time_stamp[_index_time_stamp]
 
     def output_profiles(self):
 
@@ -235,6 +236,10 @@ class ProfileVsFileIndex(object):
 
         self.list_data_files_short = [os.path.basename(_file) for _file in self.df['#filename']]
         time_0 = self.__get_time_stamp(self.list_data_files[0])
+
+        w = widgets.IntProgress()
+        w.max = len(self.profile_1d)
+        display(w)
 
         for _index, _profile in enumerate(self.profile_1d):
             _file_name = self.list_data_files[_index]
@@ -270,3 +275,7 @@ class ProfileVsFileIndex(object):
                             data=data,
                             output_file_name=output_file_name,
                             dim='1d')
+
+            w.value = _index+1
+
+        w.close()
