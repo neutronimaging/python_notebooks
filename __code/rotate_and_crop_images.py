@@ -21,6 +21,7 @@ from __code.ui_rotate_and_crop import Ui_MainWindow as UiMainWindow
 
 
 class RotateAndCropImages(QMainWindow):
+    """Rotate and Crop Images"""
 
     grid_size = 100
     live_data = []
