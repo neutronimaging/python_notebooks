@@ -3,6 +3,7 @@ import ipywe.fileselector
 from IPython.core.display import HTML
 from IPython.core.display import display
 from ipywidgets import widgets
+from ipywidgets.widgets import interact
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -112,10 +113,45 @@ class CalculateWaterIntakeProfile(object):
         self.water_intake_peak = water_intake_peak
         self.time_stamps = time_stamps
 
-    def display_water_intake_peak_in_px(self):
+    def display_water_intake_vs_profile(self):
 
         self.retrieve_data_and_metadata()
         self.calculate_water_intake_peak()
+
+        water_intake_peak = self.water_intake_peak
+        list_files = self.list_files
+        metadata = self.files_metadata
+
+        def display_intake_vs_profile(file_index):
+
+            plt.figure(figsize=(5,5))
+            ax_img = plt.subplot(111)
+            _file = list_files[file_index]
+            _data = self.files_data[_file]['counts'].values
+            _peak = float(water_intake_peak[file_index])
+            _metadata = metadata[_file]
+            _rebin = float(_metadata['Rebin in y direction'])
+            _metadata_entry = _metadata['ROI selected (y0, x0, height, width)']
+            m = re.match(r"\((?P<y0>\d*), (?P<x0>\d*), (?P<height>\d*), (?P<width>\d*)\)",
+                         _metadata_entry)
+            y0 = float(m.group('y0'))
+            height = float(m.group('height'))
+
+            _real_peak = (_peak + y0) * _rebin
+            _real_axis = np.arange(y0, height, _rebin)
+
+            ax_img.plot(_real_axis, _data, '.')
+            plt.title(os.path.basename(_file))
+            ax_img.axvline(x=_real_peak, color='r')
+
+        _ = interact(display_intake_vs_profile,
+                     file_index = widgets.IntSlider(min=0,
+                                                    max=len(list_files)-1,
+                                                    value=0,
+                                                    description='File Index'))
+
+    def display_water_intake_peak_in_px(self):
+
 
         fig = plt.figure(figsize=(5, 5))
         plt.plot(self.time_stamps, self.water_intake_peak)

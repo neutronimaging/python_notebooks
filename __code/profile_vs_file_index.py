@@ -78,15 +78,15 @@ class ProfileVsFileIndex(object):
         if roi_width == -1:
             roi_width = self.width - 1
 
-        def plot_images_with_roi(x_left, y_top, width, height):
+        def plot_images_with_roi(x_left, y_top, width, height, contrast_min, contrast_max):
 
             plt.figure(figsize=(5, 5))
             ax_img = plt.subplot(111)
 
             ax_img.imshow(self.integrated_data, cmap='rainbow',
-                          interpolation=None)
-            #                   vmin = min_intensity,
-            #                   vmax = max_intensity)
+                          interpolation=None,
+                          vmin = contrast_min,
+                          vmax = contrast_max)
 
             ax_img.add_patch(patches.Rectangle((x_left, y_top), width, height, fill=False))
 
@@ -112,7 +112,17 @@ class ProfileVsFileIndex(object):
                                                         max=self.height - 1,
                                                         step=1,
                                                         value=roi_height,
-                                                        continuous_update=False))
+                                                        continuous_update=False),
+                               contrast_min=widgets.FloatSlider(min=0,
+                                                           max=1,
+                                                           step=0.1,
+                                                           value=0,
+                                                           continuous_update=False),
+                               contrast_max=widgets.FloatSlider(min=0,
+                                                              max=2,
+                                                              value=1,
+                                                              step=0.1,
+                                                              continuous_update=False))
 
     def calculate_integrated_profile(self):
         [roi_left, roi_top, roi_width, roi_height] = self.profile.widget.result
@@ -130,16 +140,27 @@ class ProfileVsFileIndex(object):
         profile_array = []
         for _image in sample_data:
             _profile_image = _image[roi_top:roi_top + roi_height, roi_left:roi_left + roi_width]
-            _value = np.sum(_profile_image)
+            _value = np.mean(_profile_image)
             profile_array.append(_value)
             w.value = index
             index += 1
 
         w.close()
 
+    def select_vertical_pixel_binning(self):
+
+        box = widgets.HBox([widgets.Label("Vertical Binning",
+                                          layout=widgets.Layout(width='20%')),
+                            widgets.Dropdown(options=['1','2','3','4','5','6','7','8','9'],
+                                             value='1',
+                                             layout=widgets.Layout(width='20%')),
+                            ])
+        display(box)
+        self.bin_ui = box.children[1]
+
     def calculate_profile(self):
 
-        self.rebin = 1
+        self.rebin = int(self.bin_ui.value)
 
         sample_data = self.sample_data
         [roi_left, roi_top, roi_width, roi_height] = self.roi
@@ -148,13 +169,13 @@ class ProfileVsFileIndex(object):
         w.max = len(sample_data) - 1
         display(w)
 
-        self.rebin_range = np.arange(0, roi_height - roi_top, self.rebin)
+        self.rebin_range = np.arange(roi_top, roi_height - roi_top, self.rebin)
 
         profile_1d = []
         for _index, _array in enumerate(sample_data):
             _roi_array = _array[roi_top:roi_top + roi_height, roi_left:roi_left + roi_width]
-            _width_profile = np.sum(_roi_array, 1)
-            rebin_width_profile = [sum(_width_profile[x:x + self.rebin]) for x in self.rebin_range]
+            _width_profile = np.mean(_roi_array, 1)
+            rebin_width_profile = [np.mean(_width_profile[x:x + self.rebin]) for x in self.rebin_range]
             profile_1d.append(rebin_width_profile)
             _index += 1
             w.value = _index
@@ -164,6 +185,9 @@ class ProfileVsFileIndex(object):
     def display_profile(self):
 
         [roi_left, roi_top, roi_width, roi_height] = self.roi
+        _rebin = self.rebin
+
+        pixel_range = np.arange(roi_top, roi_height-roi_top, _rebin)
 
         def plot_profile(file_index):
             data_1d = self.profile_1d[file_index]
@@ -172,7 +196,9 @@ class ProfileVsFileIndex(object):
             fig = plt.figure(figsize=(5, 5))
 
             ax_plt = plt.subplot(211)
-            ax_plt.plot(data_1d)
+            ax_plt.plot(pixel_range, data_1d)
+            plt.xlabel("Pixel")
+            plt.ylabel("Transmission")
             ax_plt.set_title(os.path.basename(self.list_data_files[file_index]))
 
             ax_img = plt.subplot(212)
@@ -183,11 +209,11 @@ class ProfileVsFileIndex(object):
         number_of_files = len(self.sample_data)
         _ = interact(plot_profile,
                      file_index=widgets.IntSlider(min=0,
-                     max=number_of_files - 1,
-                     value=0,
-                     step=1,
-                     description="Image Index",
-                     continuous_update=False))
+                                                  max=number_of_files - 1,
+                                                  value=0,
+                                                  step=1,
+                                                  description="Image Index",
+                                                  continuous_update=False))
 
     def select_file_name_vs_time_stamp(self):
 
@@ -278,3 +304,6 @@ class ProfileVsFileIndex(object):
             w.value = _index+1
 
         w.close()
+
+        display(HTML('<span style="font-size: 20px; color:blue">Files created in folder ' +
+                     output_folder + '</span>'))
