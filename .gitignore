@@ -8,4 +8,4 @@ __pycache__/*
 /dist/*
 /build/*
 .cache/*
-.idea/*
+/.idea/*
