@@ -1,6 +1,8 @@
 import os
 import glob
 
+from __code.file_handler import read_ascii, make_ascii_file_from_string
+
 # this will clean up all the ipynb files by running the nbstripout program
 
 _file_path = os.path.dirname(__file__)
@@ -19,8 +21,16 @@ if len(list_notebooks) == len(list_notebooks_after):
     print(" Cleaning Result:  OK!")
 else:
     print(" Cleaning Result: WARNNG!")
-    for _file in list_notebook:
+    for _file in list_notebooks:
         if not (_file in list_notebooks_after):
             print(" Missing File: {}".format(_file))
 
+# turn debugging flag OFF
+print("Turning Off Debugging Mode!")
+config_file = os.path.join(_file_path, '__code/config.py')
+_config_file_contain = read_ascii(config_file)
+_parse = _config_file_contain.split('\n')
+_parse[0] = 'debugging = False'
+_new_contain = '\n'.join(_parse)
 
+make_ascii_file_from_string(text=_new_contain, filename=config_file)

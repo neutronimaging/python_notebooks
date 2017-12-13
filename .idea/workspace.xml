@@ -3,10 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="e9b2c6fa-0050-4a4f-9525-22b443f19582" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" afterPath="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" />
-      <change beforePath="$PROJECT_DIR$/__code/profile_vs_file_index.py" afterPath="$PROJECT_DIR$/__code/profile_vs_file_index.py" />
+      <change beforePath="$PROJECT_DIR$/.pre_commit.py" afterPath="$PROJECT_DIR$/.pre_commit.py" />
+      <change beforePath="$PROJECT_DIR$/__code/config.py" afterPath="$PROJECT_DIR$/__code/config.py" />
+      <change beforePath="$PROJECT_DIR$/calculate_water_intake_profile-PROTOTYPE.ipynb" afterPath="$PROJECT_DIR$/calculate_water_intake_profile-PROTOTYPE.ipynb" />
       <change beforePath="$PROJECT_DIR$/calculate_water_intake_profile.ipynb" afterPath="$PROJECT_DIR$/calculate_water_intake_profile.ipynb" />
       <change beforePath="$PROJECT_DIR$/profile_vs_file_index.ipynb" afterPath="$PROJECT_DIR$/profile_vs_file_index.ipynb" />
+      <change beforePath="$PROJECT_DIR$/profile_vs_file_index_PROTOTYPE.ipynb" afterPath="$PROJECT_DIR$/profile_vs_file_index_PROTOTYPE.ipynb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -43,11 +45,33 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="profile_vs_file_index.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="profile_vs_file_index.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="479">
+                <state relative-caret-position="1666">
                   <caret line="179" column="0" lean-forward="false" selection-start-line="179" selection-start-column="0" selection-end-line="179" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name=".pre_commit.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/.pre_commit.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="525">
+                  <caret line="35" column="43" lean-forward="false" selection-start-line="35" selection-start-column="43" selection-end-line="35" selection-end-column="43" />
+                  <folding>
+                    <element signature="e#0#9#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="config.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/__code/config.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="75">
+                  <caret line="5" column="31" lean-forward="false" selection-start-line="5" selection-start-column="31" selection-end-line="5" selection-end-column="31" />
                   <folding />
                 </state>
               </provider>
@@ -60,8 +84,20 @@
           <file leaf-file-name="profile_vs_file_index.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-766">
-                  <caret line="7" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+                <state relative-caret-position="539">
+                  <caret line="94" column="8" lean-forward="false" selection-start-line="94" selection-start-column="8" selection-end-line="94" selection-end-column="8" />
+                  <folding>
+                    <element signature="e#0#25#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="file_handler.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="504">
+                  <caret line="150" column="22" lean-forward="false" selection-start-line="150" selection-start-column="22" selection-end-line="150" selection-end-column="22" />
                   <folding />
                 </state>
               </provider>
@@ -85,7 +121,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/__code/normalization_new_ui.py" />
-        <option value="$PROJECT_DIR$/__code/config.py" />
         <option value="$PROJECT_DIR$/__code/create_list_of_file_name_vs_time_stamp.py" />
         <option value="$PROJECT_DIR$/__code/deal.py" />
         <option value="$PROJECT_DIR$/__code/display_and_export_images_with_metadata_profile.py" />
@@ -104,6 +139,8 @@
         <option value="$PROJECT_DIR$/__code/rotate_and_crop_images.py" />
         <option value="$PROJECT_DIR$/__code/calculate_water_intake_profile.py" />
         <option value="$PROJECT_DIR$/__code/profile_vs_file_index.py" />
+        <option value="$PROJECT_DIR$/.pre_commit.py" />
+        <option value="$PROJECT_DIR$/__code/config.py" />
       </list>
     </option>
   </component>
@@ -218,9 +255,9 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16229117" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="0" y="0" width="370" height="1152" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19116466" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19116466" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32931727" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23732358" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980132" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -323,13 +360,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -422,14 +452,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="444">
-          <caret line="146" column="26" lean-forward="true" selection-start-line="146" selection-start-column="26" selection-end-line="146" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__code/utilities.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1234">
@@ -490,10 +512,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/__code/file_handler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="150" column="22" lean-forward="false" selection-start-line="150" selection-start-column="22" selection-end-line="150" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/config_tmp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="44" lean-forward="true" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/__code/profile_vs_file_index.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="479">
+        <state relative-caret-position="1666">
           <caret line="179" column="0" lean-forward="false" selection-start-line="179" selection-start-column="0" selection-end-line="179" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.pre_commit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="35" column="43" lean-forward="false" selection-start-line="35" selection-start-column="43" selection-end-line="35" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__code/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="31" lean-forward="false" selection-start-line="5" selection-start-column="31" selection-end-line="5" selection-end-column="31" />
           <folding />
         </state>
       </provider>
