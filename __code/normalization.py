@@ -167,12 +167,12 @@ class NormalizationHandler(object):
     def run_normalization(self):
 
         if self.with_or_without_radio_button.value == 'no':
-            try:
-                self.o_norm.normalization(notebook=True)
-                self.normalized_data_array = self.o_norm.get_normalized_data()
-            except:
-                display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-                             'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+#            try:
+            self.o_norm.normalization(notebook=True)
+            self.normalized_data_array = self.o_norm.get_normalized_data()
+        #     except:
+        #         display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+        #                      'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
         else:
             [x_left, y_top, width_roi, height_roi] = self.roi_selection.widget.result
             _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
