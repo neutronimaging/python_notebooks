@@ -195,6 +195,35 @@ class FixImages(FileFolderBrowser):
                                                       continuous_update=False)
                              )
 
+    def display_images_pretty(self):
+
+        _data = self.data
+        _clean_data = self.clean_data
+        _files = self.list_files
+        _full_statistics = self.full_statistics
+
+        [height, width] = np.shape(self.data[0])
+
+        def _plot_images(index):
+            _file_name = _files[index]
+
+            fig = plt.figure(figsize=(7,7))
+            ax0 = plt.subplot(111)
+            ax0.set_title(os.path.basename(_file_name))
+            cax0 = ax0.imshow(_clean_data[index], cmap='viridis', interpolation=None)
+            tmp2 = fig.colorbar(cax0, ax=ax0)  # colorbar
+            fig.tight_layout()
+
+        tmp3 = widgets.interact(_plot_images,
+                                index=widgets.IntSlider(min=0,
+                                                        max=len(self.list_files) - 1,
+                                                        step=1,
+                                                        value=0,
+                                                        description='File Index',
+                                                        continuous_update=False),
+                                )
+
+
     def export(self):
         output_folder = os.path.abspath(self.list_output_folders_ui.selected)
 
