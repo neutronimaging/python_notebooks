@@ -43,6 +43,8 @@ class System(object):
             start_path = debugger_folder
         else:
             start_path = config.system_folder
+            import warnings
+            warnings.filterwarnings('ignore')
 
         cls.start_path = start_path
         list_folders = sorted(glob.glob(start_path + '*'))
