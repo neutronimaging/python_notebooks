@@ -62,6 +62,7 @@ class FixImages(FileFolderBrowser):
             w.value = _index + 1
 
         self.data = data
+        self.data_corrected = data.copy()
         w.close()
 
     def give_statistics(self):
@@ -145,48 +146,43 @@ class FixImages(FileFolderBrowser):
 
     def display_and_fix(self):
         self.fix()
+        self.correct_data()
         self.display()
 
     def display(self):
-        data = self.data
+
+        _data_corrected = self.data_corrected
+        _raw_data = self.data
         list_files = self.list_files
 
-        def plot_data(index):
+        self.fig, [[self.ax0, self.ax1], [self.ax2, self.ax3]] = plt.subplots(ncols=2, nrows=2,
+                                                                              figsize=(15, 10))
+        _raw_data = _raw_data[self.index_image_selected]
+        _corrected_data = _data_corrected[self.index_image_selected]
+        _file = list_files[self.index_image_selected]
 
-            self.fig, [[self.ax0, self.ax1], [self.ax2, self.ax3]] = plt.subplots(ncols=2, nrows=2,
-                                                                                  figsize=(15, 10))
+        # raw data
+        # plt.title(os.path.basename(_files[index]))
+        cax0 = self.ax0.imshow(_raw_data, cmap='viridis', interpolation=None)
+        self.ax0.set_title("Raw Image")
+        tmp1 = self.fig.colorbar(cax0, ax=self.ax0)  # colorbar
 
-            _data = data[index]
-            _file = list_files[index]
+        self.ax1.hist(_raw_data.ravel(), range=(np.nanmin(_raw_data), np.nanmax(_raw_data)), bins=256)
+        self.ax1.set_title("Raw Histogram")
 
-            # plt.title(os.path.basename(_files[index]))
-            cax0 = self.ax0.imshow(_data, cmap='viridis', interpolation=None)
-            self.ax0.set_title("Raw Image")
-            tmp1 = self.fig.colorbar(cax0, ax=self.ax0)  # colorbar
+        # corrected
+        cax2 = self.ax2.imshow(_corrected_data, cmap='viridis', interpolation=None)
+        self.ax2.set_title("New Image")
+        tmp1 = self.fig.colorbar(cax2, ax=self.ax2)  # colorbar
 
-            self.ax1.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
-            self.ax1.set_title("Raw Histogram")
+        self.ax3.hist(_corrected_data.ravel(), range=(np.nanmin(_corrected_data),
+                                                      np.nanmax(_corrected_data)), bins=256)
+        self.ax3.set_title("New Histogram")
 
-            cax2 = self.ax2.imshow(_data, cmap='viridis', interpolation=None)
-            self.ax2.set_title("New Image")
-            tmp1 = self.fig.colorbar(cax2, ax=self.ax2)  # colorbar
-
-            self.ax3.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
-            self.ax3.set_title("New Histogram")
-
-            self.fig.tight_layout()
-            display_ipython.clear_output(wait=True)
-            display_ipython.display(plt.gcf())
-            display_ipython.clear_output(wait=True)
-
-        tmp3 = widgets.interact(plot_data,
-                                index=widgets.IntSlider(min=0,
-                                                        max=len(list_files) - 1,
-                                                        step=1,
-                                                        value=0,
-                                                        description='File Index',
-                                                        continuous_update=False))
-
+        self.fig.tight_layout()
+        #display_ipython.clear_output(wait=True)
+        #display_ipython.display(plt.gcf())
+        #display_ipython.clear_output(wait=True)
 
     def neg_on_change(self, change):
         if self.counter == 0:
@@ -227,30 +223,45 @@ class FixImages(FileFolderBrowser):
         else:
             self.counter += 1
 
+    def index_on_change(self, change):
+        if self.counter == 0:
+            _new_value = change['new']['value']
+            self.counter += 1
+            self.index_image_selected = _new_value
+            self._refresh_plot()
+        elif self.counter == 2:
+            self.counter = 0
+        else:
+            self.counter += 1
+
     def _refresh_plot(self):
 
-        index = 0
-        _data = self.data[index]
+        self.correct_data()
+
+        index = self.index_image_selected
+        _raw_data = self.data[index]
+        _data_corrected = self.data_corrected[index]
         _file = self.list_files[index]
 
         self.fig, [[self.ax0, self.ax1], [self.ax2, self.ax3]] = plt.subplots(ncols=2, nrows=2,
                                                                               figsize=(15, 10))
 
         # plt.title(os.path.basename(_files[index]))
-        cax0 = self.ax0.imshow(_data, cmap='viridis', interpolation=None)
+        cax0 = self.ax0.imshow(_raw_data, cmap='viridis', interpolation=None)
         self.ax0.set_title("Raw Image")
         tmp1 = self.fig.colorbar(cax0, ax=self.ax0)  # colorbar
 
-        self.ax1.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
+        self.ax1.hist(_raw_data.ravel(), range=(np.nanmin(_raw_data), np.nanmax(_raw_data)), bins=256)
         self.ax1.set_title("Raw Histogram")
 
-        cax2 = self.ax2.imshow(_data, cmap='viridis', interpolation=None)
+        # corrected data
+        cax2 = self.ax2.imshow(_data_corrected, cmap='viridis', interpolation=None)
         self.ax2.set_title("New Image")
         tmp1 = self.fig.colorbar(cax2, ax=self.ax2)  # colorbar
 
 #        self.ax3.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
-        self.ax3.hist(_data.ravel(), range=(0, np.nanmax(_data)), bins=256)
-        self.ax3.set_title("New Histogram TESTING")
+        self.ax3.hist(_data_corrected.ravel(), range=(np.nanmin(_data_corrected), np.nanmax(_data_corrected), bins=256)
+        self.ax3.set_title("New Histogram")
 
         self.fig.tight_layout()
         display_ipython.clear_output(wait=True)
@@ -259,6 +270,14 @@ class FixImages(FileFolderBrowser):
         self.fix()
 
     def fix(self):
+
+        box2 = widgets.HBox([widgets.Label("File Index:",
+                                           layout=widgets.Layout(width='20%')),
+                             widgets.IntSlider(value=self.index_image_selected,
+                                               max=len(self.list_files)-1,
+                                               layout=widgets.Layout(width='20%'))])
+        index_slider = box2.children[1]
+        index_slider.observe(self.index_on_change)
 
         box3 = widgets.HBox([widgets.Label("Replace Negative values by",
                                            layout=widgets.Layout(width='20%')),
@@ -284,8 +303,51 @@ class FixImages(FileFolderBrowser):
         nan_widget = box5.children[1]
         nan_widget.observe(self.nan_on_change)
 
-        vertical_box = widgets.VBox([box3, box4, box5])
+        vertical_box = widgets.VBox([box2, box3, box4, box5])
         display(vertical_box)
+
+    def correct_data(self):
+
+        _data = self.data.copy()
+        _index = self.index_image_selected
+
+        _data_corrected = _data[_index].copy()
+
+        # inf
+        _result_inf = np.where(np.isinf(_data_corrected))
+        if self.dropdown_selection.inf == 'NaN':
+            _data_corrected[_result_inf] = np.NaN
+        else:
+            _data_corrected[_result_inf] = 0
+
+        # nan
+        _result_nan = np.where(np.isnan(_data_corrected))
+        if self.dropdown_selection.nan == 'NaN':
+            pass
+        else:
+            _data_corrected[_result_nan] = 0
+
+        # neg
+        _result_neg = np.where(_data_corrected < 0)
+        if self.dropdown_selection.neg == 'NaN':
+            _data_corrected[_result_neg] = np.NaN
+        else:
+            _data_corrected[_result_neg] = 100
+
+        _all_data_corrected = self.data_corrected
+        _all_data_corrected[_index] = _data_corrected
+        self.data_corrected = _all_data_corrected
+
+
+
+
+
+
+
+
+
+
+
 
 
     def display_and_correct_images(self):
