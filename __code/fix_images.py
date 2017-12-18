@@ -14,14 +14,31 @@ from NeuNorm.normalization import Normalization
 from __code.file_folder_browser import FileFolderBrowser
 from __code.file_handler import save_data, make_folder
 
+from IPython import display as display_ipython
+
+
+
 class FixImages(FileFolderBrowser):
 
     list_files = []
     data = []
     full_statistics = {}
 
+    fig = None
+    ax0 = None
+    ax1 = None
+    ax2 = None
+
+    counter = 0
+    index_image_selected = 0
+
     Statistics = namedtuple('Statistics',
-                            'nbr_pixel_modified percentage_pixel_modified total_pixels')
+                            'total_pixels nbr_negative percentage_negative nbr_infinite percentage_infinite nbr_nan percentage_nan')
+    DropdownSelection = namedtuple('DropdownSelection', 'neg inf nan')
+
+    dropdown_selection = DropdownSelection(neg='NaN',
+                                           inf='NaN',
+                                           nan='NaN')
 
     def __init__(self, working_dir=''):
         super(FixImages, self).__init__(working_dir=working_dir)
@@ -47,201 +64,438 @@ class FixImages(FileFolderBrowser):
         self.data = data
         w.close()
 
-    def display_histo_and_images(self):
+    def give_statistics(self):
 
-        _data = self.data
-        _files = self.list_files
-        _full_statistics = self.full_statistics
+        data = self.data
+        list_files = self.list_files
 
-        [height, width] = np.shape(self.data[0])
+        def __give_statistics(index):
 
-        def _plot_images(index):
-            _file_name = _files[index]
-            fig, (ax0, ax1) = plt.subplots(ncols=2,
-                                           figsize=(10, 5),
-                                           num=os.path.basename(_file_name))
-            _stat = _full_statistics[index]
+            def get_statistics_of_roi_cleaned(data):
+                _data = data
+                _result = np.where(_data < 0)
+
+                nbr_negative = len(_result[0])
+                total = np.size(_data)
+                percentage_negative = (nbr_negative / total) * 100
+
+                _result_inf = np.where(np.isinf(_data))
+                nbr_inf = len(_result_inf[0])
+                percentage_inf = (nbr_inf / total) * 100
+
+                nan_values = np.where(np.isnan(_data))
+                nbr_nan = len(nan_values[0])
+                percentage_nan = (nbr_nan / total) * 100
+
+                stat = self.Statistics(total_pixels=total,
+                                       nbr_negative=nbr_negative,
+                                       percentage_negative=percentage_negative,
+                                       nbr_infinite=nbr_inf,
+                                       percentage_infinite=percentage_inf,
+                                       nbr_nan=nbr_nan,
+                                       percentage_nan=percentage_nan)
+                return stat
+
+            _file = os.path.basename(list_files[index])
+            _data = data[index]
+
+            stat = get_statistics_of_roi_cleaned(_data)
+
+            number_of_pixels = stat.total_pixels
+            negative_values = stat.nbr_negative
+            negative_percentage = stat.percentage_negative
+            infinite_values = stat.nbr_infinite
+            infinite_percentage = stat.percentage_infinite
+            nan_values = stat.nbr_nan
+            nan_percentage = stat.percentage_nan
+
+            box1 = widgets.HBox([widgets.Label("File Name:"),
+                                 widgets.Label(_file,
+                                               layout=widgets.Layout(width='80%'))])
+            box2 = widgets.HBox([widgets.Label("Total number of pixels:",
+                                               layout=widgets.Layout(width='15%')),
+                                 widgets.Label(str(number_of_pixels))])
+
+            box3 = widgets.HBox([widgets.Label("Negative values:",
+                                               layout=widgets.Layout(width='10%')),
+                                 widgets.Label("{} pixels ({:.3}%)".format(negative_values, negative_percentage),
+                                               layout=widgets.Layout(width='15%'))])
+
+            box4 = widgets.HBox([widgets.Label("Infinite values:",
+                                               layout=widgets.Layout(width='10%')),
+                                 widgets.Label("{} pixels ({:.3}%)".format(infinite_values, infinite_percentage),
+                                               layout=widgets.Layout(width='15%'))])
+
+            box5 = widgets.HBox([widgets.Label("NaN values:",
+                                               layout=widgets.Layout(width='10%')),
+                                 widgets.Label("{} pixels ({:.3}%)".format(nan_values, nan_percentage),
+                                               layout=widgets.Layout(width='15%'))])
+
+            vertical_box = widgets.VBox([box1, box2, box3, box4, box5])
+            display(vertical_box)
+
+        tmp3 = widgets.interact(__give_statistics,
+                                index=widgets.IntSlider(min=0,
+                                                        max=len(list_files) - 1,
+                                                        step=1,
+                                                        value=0,
+                                                        description='File Index',
+                                                        continuous_update=False),
+                                )
+
+    def display_and_fix(self):
+        self.fix()
+        self.display()
+
+    def display(self):
+        data = self.data
+        list_files = self.list_files
+
+        def plot_data(index):
+
+            self.fig, [[self.ax0, self.ax1], [self.ax2, self.ax3]] = plt.subplots(ncols=2, nrows=2,
+                                                                                  figsize=(15, 10))
+
+            _data = data[index]
+            _file = list_files[index]
 
             # plt.title(os.path.basename(_files[index]))
-            cax0 = ax0.imshow(_data[index], cmap='viridis', interpolation=None)
-            ax0.set_title("Raw Image")
-            tmp1 = fig.colorbar(cax0, ax=ax0)  # colorbar
+            cax0 = self.ax0.imshow(_data, cmap='viridis', interpolation=None)
+            self.ax0.set_title("Raw Image")
+            tmp1 = self.fig.colorbar(cax0, ax=self.ax0)  # colorbar
 
-            ax1.hist(_data[index].ravel())
+            self.ax1.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
+            self.ax1.set_title("Raw Histogram")
 
-            fig.tight_layout()
+            cax2 = self.ax2.imshow(_data, cmap='viridis', interpolation=None)
+            self.ax2.set_title("New Image")
+            tmp1 = self.fig.colorbar(cax2, ax=self.ax2)  # colorbar
 
-            print("STATISTICS of FULL REGION")
-            print("-> Number of pixels corrected: {}".format(_stat.nbr_pixel_modified))
-            print("-> Total number of pixels: {}".format(_stat.total_pixels))
-            print("-> Percentage of pixels corrected: {:.3}%".format(_stat.percentage_pixel_modified))
-            print("")
+            self.ax3.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
+            self.ax3.set_title("New Histogram")
 
-        tmp3 = widgets.interact(_plot_images,
+            self.fig.tight_layout()
+            display_ipython.clear_output(wait=True)
+            display_ipython.display(plt.gcf())
+            display_ipython.clear_output(wait=True)
+
+        tmp3 = widgets.interact(plot_data,
                                 index=widgets.IntSlider(min=0,
-                                                        max=len(self.list_files) - 1,
+                                                        max=len(list_files) - 1,
                                                         step=1,
                                                         value=0,
                                                         description='File Index',
-                                                        continuous_update=False),
-                                )
+                                                        continuous_update=False))
 
 
+    def neg_on_change(self, change):
+        if self.counter == 0:
+            _new_index = change['new']['index']
+            _list = change['owner'].options
+            _new_selection = _list[_new_index]
+            self.dropdown_selection = self.dropdown_selection._replace(neg=_new_selection)
+            self.counter += 1
+            self._refresh_plot()
+        elif self.counter == 4:
+            self.counter = 0
+        else:
+            self.counter += 1
 
-    def remove_negative_values(self):
+    def inf_on_change(self, change):
+        if self.counter == 0:
+            _new_index = change['new']['index']
+            _list = change['owner'].options
+            _new_selection = _list[_new_index]
+            self.dropdown_selection = self.dropdown_selection._replace(inf=_new_selection)
+            self.counter += 1
+            self._refresh_plot()
+        elif self.counter == 4:
+            self.counter = 0
+        else:
+            self.counter += 1
 
-        clean_data = []
-        full_statistics = {}
+    def nan_on_change(self, change):
+        if self.counter == 0:
+            _new_index = change['new']['index']
+            _list = change['owner'].options
+            _new_selection = _list[_new_index]
+            self.dropdown_selection = self.dropdown_selection._replace(nan=_new_selection)
+            self.counter += 1
+            self._refresh_plot()
+        elif self.counter == 4:
+            self.counter = 0
+        else:
+            self.counter += 1
 
-        for _index, _data in enumerate(self.data):
+    def _refresh_plot(self):
+
+        index = 0
+        _data = self.data[index]
+        _file = self.list_files[index]
+
+        self.fig, [[self.ax0, self.ax1], [self.ax2, self.ax3]] = plt.subplots(ncols=2, nrows=2,
+                                                                              figsize=(15, 10))
+
+        # plt.title(os.path.basename(_files[index]))
+        cax0 = self.ax0.imshow(_data, cmap='viridis', interpolation=None)
+        self.ax0.set_title("Raw Image")
+        tmp1 = self.fig.colorbar(cax0, ax=self.ax0)  # colorbar
+
+        self.ax1.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
+        self.ax1.set_title("Raw Histogram")
+
+        cax2 = self.ax2.imshow(_data, cmap='viridis', interpolation=None)
+        self.ax2.set_title("New Image")
+        tmp1 = self.fig.colorbar(cax2, ax=self.ax2)  # colorbar
+
+#        self.ax3.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
+        self.ax3.hist(_data.ravel(), range=(0, np.nanmax(_data)), bins=256)
+        self.ax3.set_title("New Histogram TESTING")
+
+        self.fig.tight_layout()
+        display_ipython.clear_output(wait=True)
+        display_ipython.display(plt.gcf())
+        display_ipython.clear_output(wait=True)
+        self.fix()
+
+    def fix(self):
+
+        box3 = widgets.HBox([widgets.Label("Replace Negative values by",
+                                           layout=widgets.Layout(width='20%')),
+                             widgets.Dropdown(options=['NaN', '0'],
+                                              value=self.dropdown_selection.neg)])
+
+        neg_widget = box3.children[1]
+        neg_widget.observe(self.neg_on_change)
+
+        box4 = widgets.HBox([widgets.Label("Replace Infinite values by",
+                                           layout=widgets.Layout(width='20%')),
+                             widgets.Dropdown(options=['NaN', '0'],
+                                              value=self.dropdown_selection.inf)])
+
+        inf_widget = box4.children[1]
+        inf_widget.observe(self.inf_on_change)
+
+        box5 = widgets.HBox([widgets.Label("Replace NaN values by",
+                                           layout=widgets.Layout(width='20%')),
+                             widgets.Dropdown(options=['NaN', '0'],
+                                              value=self.dropdown_selection.nan)])
+
+        nan_widget = box5.children[1]
+        nan_widget.observe(self.nan_on_change)
+
+        vertical_box = widgets.VBox([box3, box4, box5])
+        display(vertical_box)
+
+
+    def display_and_correct_images(self):
+        data = self.data
+        list_files = self.list_files
+
+        def get_statistics_of_roi_cleaned(data):
+            _data = data
             _result = np.where(_data < 0)
-            new_data = _data.copy()
-            new_data[_result] = np.NaN
-            clean_data.append(new_data)
 
-            _nbr_pixel_modified = len(_result[0])
-            _total_pixels =  np.size(_data)
-            _percentage = (_nbr_pixel_modified / _total_pixels) * 100
+            nbr_negative = len(_result[0])
+            total = np.size(_data)
+            percentage_negative = (nbr_negative / total) * 100
 
-            _stat = self.Statistics(nbr_pixel_modified=_nbr_pixel_modified,
-                                    percentage_pixel_modified=_percentage,
-                                    total_pixels=_total_pixels)
-            full_statistics[_index] = _stat
+            _result_inf = np.where(np.isinf(_data))
+            nbr_inf = len(_result_inf[0])
+            percentage_inf = (nbr_inf / total) * 100
 
-        self.clean_data = clean_data
-        self.full_statistics = full_statistics
+            nan_values = np.where(np.isnan(_data))
+            nbr_nan = len(nan_values[0])
+            percentage_nan = (nbr_nan / total) * 100
 
-    def get_statistics_of_roi_cleaned(self, x_left, y_top, height, width, data):
+            stat = self.Statistics(total_pixels=total,
+                                   nbr_negative=nbr_negative,
+                                   percentage_negative=percentage_negative,
+                                   nbr_infinite=nbr_inf,
+                                   percentage_infinite=percentage_inf,
+                                   nbr_nan=nbr_nan,
+                                   percentage_nan=percentage_nan)
+            return stat
 
-        _data = data[y_top:y_top+height, x_left:x_left+width]
-        _result = np.where(_data < 0)
-        nbr_negative_in_roi = len(_result[0])
-        total = width * height
-        percentage_in_roi = (nbr_negative_in_roi / total) * 100
 
-        stat = self.Statistics(nbr_pixel_modified=nbr_negative_in_roi,
-                               percentage_pixel_modified=percentage_in_roi,
-                               total_pixels=total)
-        return stat
+        def give_statistics(index):
 
-    def display_images(self):
+            _file = os.path.basename(list_files[index])
+            _data = data[index]
 
-        _data = self.data
-        _clean_data = self.clean_data
-        _files = self.list_files
-        _full_statistics = self.full_statistics
+            def correct_data(_data=[]):
+                global dropdown_selection
 
-        [height, width] = np.shape(self.data[0])
+                _data = _data.copy()
 
-        def _plot_images(index, x_left, y_top, width, height):
+                # inf
+                _result_inf = np.where(np.isinf(_data))
+                if dropdown_selection.inf == 'NaN':
+                    _data[_result_inf] = np.NaN
+                else:
+                    _data[_result_inf] = 0
 
-            _file_name = _files[index]
-            fig, (ax0, ax1) = plt.subplots(ncols=2,
-                                           figsize=(10, 5),
-                                           num=os.path.basename(_file_name))
-            _stat = _full_statistics[index]
+                # nan
+                _result_nan = np.where(np.isnan(_data))
+                if dropdown_selection.nan == 'NaN':
+                    pass
+                else:
+                    _data[_result_nan] = 0
 
-            #plt.title(os.path.basename(_files[index]))
-            cax0 = ax0.imshow(_data[index], cmap='viridis', interpolation=None)
-            ax0.set_title("Before Correction")
-            tmp1 = fig.colorbar(cax0, ax=ax0) # colorbar
-            _rectangle1 = patches.Rectangle((x_left, y_top),
-                                           width,
-                                           height,
-                                           edgecolor='white',
-                                           linewidth=2,
-                                           fill=False)
-            ax1.add_patch(_rectangle1)
+                # neg
+                _result_neg = np.where(_data < 0)
+                if dropdown_selection.neg == 'NaN':
+                    _data[_result_neg] = np.NaN
+                else:
+                    _data[_result_neg] = 100
 
-            cax1 = ax1.imshow(_clean_data[index], cmap='viridis', interpolation=None)
-            ax1.set_title("After Correction")
-            tmp2 = fig.colorbar(cax1, ax=ax1) # colorbar
-            _rectangle2 = patches.Rectangle((x_left, y_top),
-                                           width,
-                                           height,
-                                           edgecolor='white',
-                                           linewidth=2,
-                                            fill=False)
-            ax0.add_patch(_rectangle2)
+                return _data
 
-            fig.tight_layout()
+            def plot_data():
+                _data_corrected = correct_data(_data=_data)
 
-            print("STATISTICS of FULL REGION")
-            print("-> Number of pixels corrected: {}".format(_stat.nbr_pixel_modified))
-            print("-> Total number of pixels: {}".format(_stat.total_pixels))
-            print("-> Percentage of pixels corrected: {:.3}%".format(_stat.percentage_pixel_modified))
-            print("")
+                # plt.title(os.path.basename(_files[index]))
+                cax0 = ax0.imshow(_data, cmap='viridis', interpolation=None)
+                ax0.set_title("Raw Image")
+                tmp1 = fig.colorbar(cax0, ax=ax0)  # colorbar
 
-            _stat_roi = self.get_statistics_of_roi_cleaned(x_left, y_top,
-                                                       height,
-                                                       width,
-                                                       _data[index])
+                ax1.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
+                ax1.set_title("Raw Histogram")
 
-            print("STATISTICS of SELECTED REGION")
-            print("-> Number of pixels corrected: {}".format(_stat_roi.nbr_pixel_modified))
-            print("-> Total number of pixels: {}".format(_stat_roi.total_pixels))
-            print("-> Percentage of pixels corrected: {:.3}%".format(_stat_roi.percentage_pixel_modified))
+                cax2 = ax2.imshow(_data_corrected, cmap='viridis', interpolation=None)
+                ax2.set_title("New Image")
+                tmp1 = fig.colorbar(cax2, ax=ax2)  # colorbar
 
-        tmp3 = widgets.interact(_plot_images,
-                             index=widgets.IntSlider(min=0,
-                                                     max=len(self.list_files) - 1,
-                                                     step=1,
-                                                     value=0,
-                                                     description='File Index',
-                                                     continuous_update=False),
-                             x_left=widgets.IntSlider(min=0,
-                                                      max=width - 1,
-                                                      step=1,
-                                                      value=0,
-                                                      description='X Left',
-                                                      continuous_update=False),
-                             y_top=widgets.IntSlider(min=0,
-                                                     max=height - 1,
-                                                     value=0,
-                                                     step=1,
-                                                     description='Y Top',
-                                                     continuous_update=False),
-                             width=widgets.IntSlider(min=0,
-                                                     max=width - 1,
-                                                     step=1,
-                                                     value=60,
-                                                     description="Width",
-                                                     continuous_update=False),
-                             height=widgets.IntSlider(min=0,
-                                                      max=height - 1,
-                                                      step=1,
-                                                      value=100,
-                                                      description='Height',
-                                                      continuous_update=False)
-                             )
+                ax3.hist(_data.ravel(), range=(np.nanmin(_data_corrected), np.nanmax(_data_corrected)), bins=256)
+                ax3.set_title("New Histogram")
 
-    def display_images_pretty(self):
+                fig.tight_layout()
 
-        _data = self.data
-        _clean_data = self.clean_data
-        _files = self.list_files
-        _full_statistics = self.full_statistics
+            def neg_on_change(change):
+                global counter
+                global dropdown_selection
+                if counter == 0:
+                    _new_index = change['new']['index']
+                    _list = change['owner'].options
+                    _new_selection = _list[_new_index]
+                    dropdown_selection = dropdown_selection._replace(neg=_new_selection)
+                    plot_data()
+                    counter += 1
+                elif counter == 4:
+                    counter = 0
+                else:
+                    counter += 1
 
-        [height, width] = np.shape(self.data[0])
 
-        def _plot_images(index):
-            _file_name = _files[index]
+            def inf_on_change(change):
+                global counter
+                global dropdown_selection
+                if counter == 0:
+                    _new_index = change['new']['index']
+                    _list = change['owner'].options
+                    _new_selection = _list[_new_index]
+                    dropdown_selection = dropdown_selection._replace(inf=_new_selection)
+                    plot_data()
+                    counter += 1
+                elif counter == 4:
+                    counter = 0
+                else:
+                    counter += 1
 
-            fig = plt.figure(figsize=(7,7))
-            ax0 = plt.subplot(111)
-            ax0.set_title(os.path.basename(_file_name))
-            cax0 = ax0.imshow(_clean_data[index], cmap='viridis', interpolation=None)
-            tmp2 = fig.colorbar(cax0, ax=ax0)  # colorbar
-            fig.tight_layout()
+            def nan_on_change(change):
+                global counter
+                global dropdown_selection
+                if counter == 0:
+                    _new_index = change['new']['index']
+                    _list = change['owner'].options
+                    _new_selection = _list[_new_index]
+                    dropdown_selection = dropdown_selection._replace(nan=_new_selection)
+                    plot_data()
+                    counter += 1
+                elif counter == 4:
+                    counter = 0
+                else:
+                    counter += 1
 
-        tmp3 = widgets.interact(_plot_images,
+            stat = get_statistics_of_roi_cleaned(_data)
+
+            number_of_pixels = stat.total_pixels
+            negative_values = stat.nbr_negative
+            negative_percentage = stat.percentage_negative
+            infinite_values = stat.nbr_infinite
+            infinite_percentage = stat.percentage_infinite
+            nan_values = stat.nbr_nan
+            nan_percentage = stat.percentage_nan
+
+            box1 = widgets.HBox([widgets.Label("File Name:"),
+                                 widgets.Label(_file,
+                                               layout=widgets.Layout(width='80%'))])
+            box2 = widgets.HBox([widgets.Label("Total number of pixels:",
+                                               layout=widgets.Layout(width='15%')),
+                                 widgets.Label(str(number_of_pixels))])
+
+            box3 = widgets.HBox([widgets.Label("Negative values:",
+                                               layout=widgets.Layout(width='10%')),
+                                 widgets.Label("{} pixels ({:.3}%)".format(negative_values, negative_percentage),
+                                               layout=widgets.Layout(width='15%')),
+                                 widgets.Label("to replace by"),
+                                 widgets.Dropdown(options=['NaN', '0'],
+                                                  value=dropdown_selection.neg)])
+            neg_widgets = box3.children[3]
+            neg_widgets.observe(neg_on_change)
+
+            box4 = widgets.HBox([widgets.Label("Infinite values:",
+                                               layout=widgets.Layout(width='10%')),
+                                 widgets.Label("{} pixels ({:.3}%)".format(infinite_values, infinite_percentage),
+                                               layout=widgets.Layout(width='15%')),
+                                 widgets.Label("to replace by"),
+                                 widgets.Dropdown(options=['NaN', '0'],
+                                                  value=dropdown_selection.inf)])
+
+            inf_widgets = box4.children[3]
+            inf_widgets.observe(inf_on_change)
+
+            box5 = widgets.HBox([widgets.Label("NaN values:",
+                                               layout=widgets.Layout(width='10%')),
+                                 widgets.Label("{} pixels ({:.3}%)".format(nan_values, nan_percentage),
+                                               layout=widgets.Layout(width='15%')),
+                                 widgets.Label("to replace by"),
+                                 widgets.Dropdown(options=['NaN', '0'],
+                                                  value=dropdown_selection.nan)])
+
+            nan_widgets = box5.children[3]
+            nan_widgets.observe(nan_on_change)
+
+            vertical_box = widgets.VBox([box1, box2, box3, box4, box5])
+            display(vertical_box)
+
+            fig, [[ax0, ax1], [ax2, ax3]] = plt.subplots(ncols=2, nrows=2,
+                                                         figsize=(15, 10),
+                                                         num=os.path.basename(_file))
+
+            plot_data()
+
+
+        tmp3 = widgets.interact(give_statistics,
                                 index=widgets.IntSlider(min=0,
-                                                        max=len(self.list_files) - 1,
+                                                        max=len(list_files) - 1,
                                                         step=1,
                                                         value=0,
                                                         description='File Index',
                                                         continuous_update=False),
                                 )
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     def export(self):
