@@ -22,6 +22,7 @@ class FixImages(FileFolderBrowser):
 
     list_files = []
     data = []
+    data_corrected = []
     full_statistics = {}
 
     fig = None
@@ -320,17 +321,6 @@ class FixImages(FileFolderBrowser):
         _all_data_corrected[_index] = _data_corrected
         self.data_corrected = _all_data_corrected
 
-
-
-
-
-
-
-
-
-
-
-
     def export(self):
         output_folder = os.path.abspath(self.list_output_folders_ui.selected)
 
@@ -343,7 +333,7 @@ class FixImages(FileFolderBrowser):
             _short_file_name = os.path.basename(_file)
             _full_output_file_name = os.path.join(output_folder, _short_file_name)
 
-            _data = self.clean_data[_index]
+            _data = self.data_corrected[_index]
 
             save_data(data=_data, filename=_full_output_file_name)
 
