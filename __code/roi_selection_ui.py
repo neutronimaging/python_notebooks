@@ -25,7 +25,7 @@ class Interface(QMainWindow):
     integrated_image = None
 
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
-    default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50}
+    default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
     def __init__(self, parent=None, o_norm=None):
 
@@ -81,6 +81,8 @@ class Interface(QMainWindow):
         self.ui.image_view.setImage(self.integrated_image)
 
     def remove_row_entry(self, row):
+        _roi_id = self.list_roi[row]['id']
+        self.ui.image_view.removeItem(_roi_id)
         del self.list_roi[row]
 
         #rename row
@@ -173,6 +175,13 @@ class Interface(QMainWindow):
         else:
             return ''
 
+    def roi_manually_moved(self):
+        roi = self.list_roi[0]
+        roi_id = roi['id']
+        print(roi_id.getArraySlice(self.integrated_image, self.ui.image_view))
+
+
+
     def add_roi_button_clicked(self):
         self.ui.table_roi.blockSignals(True)
         _selection = self.ui.table_roi.selectedRanges()
@@ -214,6 +223,23 @@ class Interface(QMainWindow):
 
             _y1 = self._get_item_value(_row, 3)
             _roi['y1'] = _y1
+
+            x0_int = int(_x0)
+            y0_int = int(_y0)
+            width_int = np.abs(x0_int - int(_x1))
+            height_int = np.abs(y0_int - int(_y1))
+
+            _color = QtGui.QColor(62, 13, 244)
+            _pen = QtGui.QPen()
+            _pen.setColor(_color)
+            _pen.setWidth(0.6)
+            _roi_id = pg.ROI([x0_int, y0_int], [width_int, height_int], pen=_pen, scaleSnap=True)
+            _roi_id.addScaleHandle([1,1], [0,0])
+            self.ui.image_view.addItem(_roi_id)
+            # add connection to roi
+            _roi_id.sigRegionChanged.connect(self.roi_manually_moved)
+
+            _roi['id'] = _roi_id
 
             list_roi[_row] = _roi
 
