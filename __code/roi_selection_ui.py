@@ -31,7 +31,6 @@ class Interface(QMainWindow):
         if o_norm:
             self.o_norm = o_norm
 
-
         #self.list_files = self.o_norm.data['sample']['file_name']
         #self.list_data = self.o_norm.data['sample']['data']
 
@@ -49,6 +48,7 @@ class Interface(QMainWindow):
         top_layout.addWidget(self.ui.image_view)
         self.ui.widget.setLayout(top_layout)
         self.init_widgets()
+        self.display_image()
 
     def init_widgets(self):
         nbr_columns = self.ui.table_roi.columnCount()
@@ -69,8 +69,9 @@ class Interface(QMainWindow):
     def cancel_clicked(self):
         self.close()
 
-    def display_image(self, image):
-        self.ui.image_view.setImage(image)
+    def display_image(self):
+        print(type(self.o_norm.data['sample']['data'][0]))
+        self.ui.image_view.setImage(self.o_norm.data['sample']['data'][0])
 
     def remove_roi_button_clicked(self):
         pass

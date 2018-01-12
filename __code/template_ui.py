@@ -51,8 +51,8 @@ class Interface(QMainWindow):
         self.setWindowTitle("Template UI")
 
         self.ui.image_view = pg.ImageView()
-        #self.ui.image_view.ui.roiBtn.hide()
-        #self.ui.image_view.ui.menuBtn.hide()
+        self.ui.image_view.ui.roiBtn.hide()
+        self.ui.image_view.ui.menuBtn.hide()
 
         bottom_layout = QtGui.QHBoxLayout()
 
