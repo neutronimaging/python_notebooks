@@ -106,15 +106,6 @@ class Interface(QMainWindow):
 
         self.ui.table_roi.blockSignals(False)
 
-
-        #WORK IN PROGRESS
-        # select same row (except if no more row)
-        if self.ui.table_roi.rowCount() > 0:
-            if row == (self.ui.table_roi.rowCount() -1):
-                row = -1
-            _selection = QtGui.QTableWidgetSelectionRange(row, 0, row, 3)
-            self.ui.table_roi.setRangeSelected(_selection, True)
-
         self.check_add_remove_button_widgets_status()
 
     def clear_table(self):
