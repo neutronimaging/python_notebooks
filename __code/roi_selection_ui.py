@@ -139,15 +139,26 @@ class Interface(QMainWindow):
 
     def update_table_roi(self, item):
         """Using the table_roi_ui as reference, will update the list_roi dictionary"""
-        print("hdfdf")
+        nbr_row = self.ui.table_roi.rowCount()
+        list_roi = {}
+        for _row in np.arange(nbr_row):
+            _roi = {}
 
+            _roi['x0'] = self._get_item_value(_row, 0)
+            _roi['x1'] = self._get_item_value(_row, 1)
+            _roi['y0'] = self._get_item_value(_row, 2)
+            _roi['y1'] = self._get_item_value(_row, 3)
+
+            list_roi[_row] = _roi
+
+        self.list_roi = list_roi
 
     def _get_item_value(self, row, column):
         _item = self.ui.table_roi.item(row, column)
         if _item:
             return str(_item.text())
         else:
-            return None
+            return ''
 
     def add_roi_button_clicked(self):
         self.ui.table_roi.blockSignals(True)
