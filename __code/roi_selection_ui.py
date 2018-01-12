@@ -106,6 +106,17 @@ class Interface(QMainWindow):
 
         self.ui.table_roi.blockSignals(False)
 
+
+        #WORK IN PROGRESS
+        # select same row (except if no more row)
+        if self.ui.table_roi.rowCount() > 0:
+            if row == (self.ui.table_roi.rowCount() -1):
+                row = -1
+            _selection = QtGui.QTableWidgetSelectionRange(row, 0, row, 3)
+            self.ui.table_roi.setRangeSelected(_selection, True)
+
+        self.check_add_remove_button_widgets_status()
+
     def clear_table(self):
         nbr_row = self.ui.table_roi.rowCount()
         for _row in np.arange(nbr_row):
@@ -207,6 +218,15 @@ class Interface(QMainWindow):
         self.list_roi = list_roi
 
         self.ui.table_roi.blockSignals(False)
+
+        self.check_add_remove_button_widgets_status()
+
+    def check_add_remove_button_widgets_status(self):
+        nbr_row = self.ui.table_roi.rowCount()
+        if nbr_row > 0:
+            self.ui.remove_roi_button.setEnabled(True)
+        else:
+            self.ui.remove_roi_button.setEnabled(False)
 
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")
