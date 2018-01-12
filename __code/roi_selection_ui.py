@@ -97,16 +97,26 @@ class Interface(QMainWindow):
 
         _selection = self.ui.table_roi.selectedRanges()
         row = _selection[0].topRow()
+        old_nbr_row = self.ui.table_roi.rowCount()
 
         # remove entry from list of roi
         self.remove_row_entry(row)
 
         # update table of rois
         self.update_table_roi_ui()
-
         self.ui.table_roi.blockSignals(False)
-
         self.check_add_remove_button_widgets_status()
+
+        # update selection
+        new_nbr_row = self.ui.table_roi.rowCount()
+        if new_nbr_row == 0:
+            return
+
+        if row == (old_nbr_row-1):
+            row = new_nbr_row - 1
+
+        _new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, 3)
+        self.ui.table_roi.setRangeSelected(_new_selection, True)
 
     def clear_table(self):
         nbr_row = self.ui.table_roi.rowCount()

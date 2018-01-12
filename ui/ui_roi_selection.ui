@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1227</width>
-    <height>545</height>
+    <width>1140</width>
+    <height>704</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,6 +91,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QPushButton" name="remove_roi_button">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="font">
              <font>
               <family>Helvetica</family>
@@ -176,7 +179,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1227</width>
+     <width>1140</width>
      <height>22</height>
     </rect>
    </property>
