@@ -104,6 +104,7 @@ class Ui_MainWindow(object):
         self.apply_button.clicked.connect(MainWindow.apply_clicked)
         self.remove_roi_button.clicked.connect(MainWindow.remove_roi_button_clicked)
         self.add_roi_button.clicked.connect(MainWindow.add_roi_button_clicked)
+        self.table_roi.itemChanged['QTableWidgetItem*'].connect(MainWindow.update_table_roi)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

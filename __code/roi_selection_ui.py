@@ -80,45 +80,69 @@ class Interface(QMainWindow):
     def display_image(self):
         self.ui.image_view.setImage(self.integrated_image)
 
+    def remove_row_entry(self, row):
+        del self.list_roi[row]
+
+        #rename row
+        new_list_roi = {}
+        new_row_index = 0
+        for _previous_row_index in self.list_roi.keys():
+            new_list_roi[new_row_index] = self.list_roi[_previous_row_index]
+            new_row_index += 1
+        self.list_roi = new_list_roi
+
     def remove_roi_button_clicked(self):
+
+        self.ui.table_roi.blockSignals(True)
+
         _selection = self.ui.table_roi.selectedRanges()
         row = _selection[0].topRow()
 
         # remove entry from list of roi
-        del self.list_roi[row]
+        self.remove_row_entry(row)
 
         # update table of rois
-        self.update_table_roi
+        self.update_table_roi_ui()
+
+        self.ui.table_roi.blockSignals(False)
 
     def clear_table(self):
         nbr_row = self.ui.table_roi.rowCount()
         for _row in np.arange(nbr_row):
             self.ui.table_roi.removeRow(0)
 
-    def update_table_roi(self):
+    def update_table_roi_ui(self):
+        """Using list_roi as reference, repopulate the table_roi_ui"""
         list_roi = self.list_roi
 
         self.clear_table()
 
+        _index_row = 0
         for _roi_key in list_roi.keys():
             _roi = list_roi[_roi_key]
 
-            self.ui.table_roi.insertRow(_roi_key)
+            self.ui.table_roi.insertRow(_index_row)
 
             _item = QtGui.QTableWidgetItem(_roi['x0'])
-            self.ui.table_roi.setItem(_roi_key, 0, _item)
+            self.ui.table_roi.setItem(_index_row, 0, _item)
 
             _item = QtGui.QTableWidgetItem(_roi['y0'])
-            self.ui.table_roi.setItem(_roi_key, 1, _item)
+            self.ui.table_roi.setItem(_index_row, 1, _item)
 
             _item = QtGui.QTableWidgetItem(_roi['x1'])
-            self.ui.table_roi.setItem(_roi_key, 2, _item)
+            self.ui.table_roi.setItem(_index_row, 2, _item)
 
             _item = QtGui.QTableWidgetItem(_roi['y1'])
-            self.ui.table_roi.setItem(_roi_key, 3, _item)
+            self.ui.table_roi.setItem(_index_row, 3, _item)
+
+            _index_row += 1
+
+    def update_table_roi(self, item):
+        """Using the table_roi_ui as reference, will update the list_roi dictionary"""
+        print("hdfdf")
 
 
-    def _get_item_value(selfs, row, column):
+    def _get_item_value(self, row, column):
         _item = self.ui.table_roi.item(row, column)
         if _item:
             return str(_item.text())
@@ -126,6 +150,7 @@ class Interface(QMainWindow):
             return None
 
     def add_roi_button_clicked(self):
+        self.ui.table_roi.blockSignals(True)
         _selection = self.ui.table_roi.selectedRanges()
         if _selection:
             row = _selection[0].topRow()
@@ -170,6 +195,7 @@ class Interface(QMainWindow):
 
         self.list_roi = list_roi
 
+        self.ui.table_roi.blockSignals(False)
 
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")

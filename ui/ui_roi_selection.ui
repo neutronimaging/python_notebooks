@@ -193,7 +193,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>71</x>
-     <y>749</y>
+     <y>512</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -208,8 +208,8 @@
    <slot>apply_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1222</x>
-     <y>749</y>
+     <x>1214</x>
+     <y>512</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -224,8 +224,8 @@
    <slot>remove_roi_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>649</x>
-     <y>363</y>
+     <x>938</x>
+     <y>256</y>
     </hint>
     <hint type="destinationlabel">
      <x>770</x>
@@ -240,12 +240,28 @@
    <slot>add_roi_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1183</x>
-     <y>371</y>
+     <x>1083</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>1127</x>
      <y>431</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>table_roi</sender>
+   <signal>itemChanged(QTableWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_table_roi()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1027</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>998</x>
+     <y>390</y>
     </hint>
    </hints>
   </connection>
@@ -260,5 +276,6 @@
   <slot>grid_size_changed()</slot>
   <slot>remove_roi_button_clicked()</slot>
   <slot>add_roi_button_clicked()</slot>
+  <slot>update_table_roi()</slot>
  </slots>
 </ui>
