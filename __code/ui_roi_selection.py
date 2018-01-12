@@ -40,6 +40,8 @@ class Ui_MainWindow(object):
         self.table_roi.setSizePolicy(sizePolicy)
         self.table_roi.setMinimumSize(QtCore.QSize(300, 0))
         self.table_roi.setMaximumSize(QtCore.QSize(300, 16777215))
+        self.table_roi.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.table_roi.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.table_roi.setObjectName("table_roi")
         self.table_roi.setColumnCount(4)
         self.table_roi.setRowCount(0)
