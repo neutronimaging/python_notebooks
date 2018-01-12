@@ -118,6 +118,7 @@ class Interface(QMainWindow):
         _new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, 3)
         self.ui.table_roi.setRangeSelected(_new_selection, True)
 
+
     def clear_table(self):
         nbr_row = self.ui.table_roi.rowCount()
         for _row in np.arange(nbr_row):
@@ -221,6 +222,10 @@ class Interface(QMainWindow):
         self.ui.table_roi.blockSignals(False)
 
         self.check_add_remove_button_widgets_status()
+
+        if not _selection:
+            _new_selection = QtGui.QTableWidgetSelectionRange(0, 0, 0, 3)
+            self.ui.table_roi.setRangeSelected(_new_selection, True)
 
     def check_add_remove_button_widgets_status(self):
         nbr_row = self.ui.table_roi.rowCount()
