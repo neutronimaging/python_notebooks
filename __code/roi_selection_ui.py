@@ -69,18 +69,11 @@ class Interface(QMainWindow):
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
-    def apply_clicked(self):
-        # do stuff
-        self.close()
-
-    def cancel_clicked(self):
-        self.close()
-
     def integrate_images(self):
         self.integrated_image = np.mean(self.o_norm.data['sample']['data'], axis=0)
 
     def display_image(self):
-        self.ui.image_view.setImage(self.integrated_image)
+        self.ui.image_view.setImage(np.transpose(self.integrated_image))
 
     def remove_row_entry(self, row):
         _roi_id = self.list_roi[row]['id']
@@ -325,8 +318,12 @@ class Interface(QMainWindow):
         else:
             self.ui.remove_roi_button.setEnabled(False)
 
+    def apply_clicked(self):
+        self.close()
+
+    def cancel_clicked(self):
+        self.close()
+
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")
-
-
 
