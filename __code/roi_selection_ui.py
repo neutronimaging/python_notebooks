@@ -120,7 +120,6 @@ class Interface(QMainWindow):
         _new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, 3)
         self.ui.table_roi.setRangeSelected(_new_selection, True)
 
-
     def clear_table(self):
         nbr_row = self.ui.table_roi.rowCount()
         for _row in np.arange(nbr_row):
@@ -128,6 +127,7 @@ class Interface(QMainWindow):
 
     def update_table_roi_ui(self):
         """Using list_roi as reference, repopulate the table_roi_ui"""
+
         self.ui.table_roi.blockSignals(True)
         list_roi = self.list_roi
 
@@ -154,18 +154,54 @@ class Interface(QMainWindow):
             _index_row += 1
 
         self.ui.table_roi.blockSignals(False)
+        #self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
 
     def update_table_roi(self, item):
         """Using the table_roi_ui as reference, will update the list_roi dictionary"""
         nbr_row = self.ui.table_roi.rowCount()
-        list_roi = {}
+        new_list_roi = OrderedDict()
+        old_list_roi = self.list_roi
         for _row in np.arange(nbr_row):
             _roi = {}
 
             _roi['x0'] = self._get_item_value(_row, 0)
-            _roi['x1'] = self._get_item_value(_row, 1)
-            _roi['y0'] = self._get_item_value(_row, 2)
+            _roi['y0'] = self._get_item_value(_row, 1)
+            _roi['x1'] = self._get_item_value(_row, 2)
             _roi['y1'] = self._get_item_value(_row, 3)
+            _roi['id'] = old_list_roi[_row]['id']
+
+            new_list_roi[_row] = _roi
+
+        self.list_roi = new_list_roi
+        self.update_image_view_item()
+
+    def update_image_view_item(self):
+        self.clear_roi_on_image_view()
+
+        list_roi = self.list_roi
+        for _row in list_roi.keys():
+            _roi = list_roi[_row]
+
+            _x0 = np.int(_roi['x0'])
+            _y0 = np.int(_roi['y0'])
+            _x1 = np.int(_roi['x1'])
+            _y1 = np.int(_roi['y1'])
+
+            _width = np.abs(_x1 - _x0)
+            _height = np.abs(_y1 - _y0)
+
+            _color = QtGui.QColor(62, 13, 244)
+            _pen = QtGui.QPen()
+            _pen.setColor(_color)
+            _pen.setWidth(0.6)
+            _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
+            _roi_id.addScaleHandle([1,1], [0,0])
+            self.ui.image_view.addItem(_roi_id)
+
+            # add connection to roi
+            _roi_id.sigRegionChanged.connect(self.roi_manually_moved)
+
+            _roi['id'] = _roi_id
 
             list_roi[_row] = _roi
 
@@ -245,16 +281,16 @@ class Interface(QMainWindow):
             _roi = {}
 
             _x0 = self._get_item_value(_row, 0)
-            _roi['x0'] = _x0
+            _roi['x0'] = np.int(_x0)
 
             _y0 = self._get_item_value(_row, 1)
-            _roi['y0'] = _y0
+            _roi['y0'] = np.int(_y0)
 
             _x1 = self._get_item_value(_row, 2)
-            _roi['x1'] = _x1
+            _roi['x1'] = np.int(_x1)
 
             _y1 = self._get_item_value(_row, 3)
-            _roi['y1'] = _y1
+            _roi['y1'] = np.int(_y1)
 
             x0_int = int(_x0)
             y0_int = int(_y0)
