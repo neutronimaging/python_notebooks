@@ -192,17 +192,8 @@ class Interface(QMainWindow):
             _width = np.abs(_x1 - _x0)
             _height = np.abs(_y1 - _y0)
 
-            _color = QtGui.QColor(62, 13, 244)
-            _pen = QtGui.QPen()
-            _pen.setColor(_color)
-            _pen.setWidthF(self.roi_width)
-            _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
-            _roi_id.addScaleHandle([1,1], [0,0])
-            self.ui.image_view.addItem(_roi_id)
-
-            # add connection to roi
-            _roi_id.sigRegionChanged.connect(self.roi_manually_moved)
-
+            _roi_id = self.init_roi(x0=_x0, y0=_y0,
+                                    width=_width, height=_height)
             _roi['id'] = _roi_id
 
             list_roi[_row] = _roi
@@ -299,18 +290,9 @@ class Interface(QMainWindow):
             width_int = np.abs(x0_int - int(_x1))
             height_int = np.abs(y0_int - int(_y1))
 
-            _color = QtGui.QColor(62, 13, 244)
-            _pen = QtGui.QPen()
-            _pen.setColor(_color)
-            _pen.setWidthF(self.roi_width)
-            _roi_id = pg.ROI([x0_int, y0_int], [width_int, height_int], pen=_pen, scaleSnap=True)
-            _roi_id.addScaleHandle([1,1], [0,0])
-            self.ui.image_view.addItem(_roi_id)
-            # add connection to roi
-            _roi_id.sigRegionChanged.connect(self.roi_manually_moved)
-
+            _roi_id = self.init_roi(x0=x0_int, y0=y0_int,
+                                    width=width_int, height=height_int)
             _roi['id'] = _roi_id
-
             list_roi[_row] = _roi
 
         self.list_roi = list_roi
@@ -322,6 +304,19 @@ class Interface(QMainWindow):
         if not _selection:
             _new_selection = QtGui.QTableWidgetSelectionRange(0, 0, 0, 3)
             self.ui.table_roi.setRangeSelected(_new_selection, True)
+
+    def init_roi(self, x0=0, y0=0, width=0, height=0):
+        _color = QtGui.QColor(62, 13, 244)
+        _pen = QtGui.QPen()
+        _pen.setColor(_color)
+        _pen.setWidthF(self.roi_width)
+        _roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
+        _roi_id.addScaleHandle([1, 1], [0, 0])
+        _roi_id.addScaleHandle([0, 0], [1, 1])
+        self.ui.image_view.addItem(_roi_id)
+        # add connection to roi
+        _roi_id.sigRegionChanged.connect(self.roi_manually_moved)
+        return _roi_id
 
     def check_add_remove_button_widgets_status(self):
         nbr_row = self.ui.table_roi.rowCount()
