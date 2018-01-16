@@ -128,6 +128,7 @@ class Interface(QMainWindow):
 
     def update_table_roi_ui(self):
         """Using list_roi as reference, repopulate the table_roi_ui"""
+        self.ui.table_roi.blockSignals(True)
         list_roi = self.list_roi
 
         self.clear_table()
@@ -138,19 +139,21 @@ class Interface(QMainWindow):
 
             self.ui.table_roi.insertRow(_index_row)
 
-            _item = QtGui.QTableWidgetItem(_roi['x0'])
+            _item = QtGui.QTableWidgetItem(str(_roi['x0']))
             self.ui.table_roi.setItem(_index_row, 0, _item)
 
-            _item = QtGui.QTableWidgetItem(_roi['y0'])
+            _item = QtGui.QTableWidgetItem(str(_roi['y0']))
             self.ui.table_roi.setItem(_index_row, 1, _item)
 
-            _item = QtGui.QTableWidgetItem(_roi['x1'])
+            _item = QtGui.QTableWidgetItem(str(_roi['x1']))
             self.ui.table_roi.setItem(_index_row, 2, _item)
 
-            _item = QtGui.QTableWidgetItem(_roi['y1'])
+            _item = QtGui.QTableWidgetItem(str(_roi['y1']))
             self.ui.table_roi.setItem(_index_row, 3, _item)
 
             _index_row += 1
+
+        self.ui.table_roi.blockSignals(False)
 
     def update_table_roi(self, item):
         """Using the table_roi_ui as reference, will update the list_roi dictionary"""
@@ -176,11 +179,29 @@ class Interface(QMainWindow):
             return ''
 
     def roi_manually_moved(self):
-        roi = self.list_roi[0]
-        roi_id = roi['id']
-        print(roi_id.getArraySlice(self.integrated_image, self.ui.image_view))
+        list_roi = self.list_roi
 
+        for _row in list_roi.keys():
 
+            _roi = list_roi[_row]
+
+            roi_id = _roi['id']
+            region = roi_id.getArraySlice(self.integrated_image, self.ui.image_view.imageItem)
+
+            x0 = region[0][0].start
+            x1 = region[0][0].stop
+            y0 = region[0][1].start
+            y1 = region[0][1].stop
+
+            _roi['x0'] = x0
+            _roi['x1'] = x1
+            _roi['y0'] = y0
+            _roi['y1'] = y1
+
+            list_roi[_row] = _roi
+
+        self.list_roi = list_roi
+        self.update_table_roi_ui()
 
     def add_roi_button_clicked(self):
         self.ui.table_roi.blockSignals(True)
