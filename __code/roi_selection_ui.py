@@ -203,7 +203,18 @@ class Interface(QMainWindow):
         self.list_roi = list_roi
         self.update_table_roi_ui()
 
+    def clear_roi_on_image_view(self):
+        list_roi = self.list_roi
+
+        for _row in list_roi.keys():
+
+            _roi = list_roi[_row]
+            roi_id = _roi['id']
+            self.ui.image_view.removeItem(roi_id)
+
     def add_roi_button_clicked(self):
+        self.clear_roi_on_image_view()
+
         self.ui.table_roi.blockSignals(True)
         _selection = self.ui.table_roi.selectedRanges()
         if _selection:
