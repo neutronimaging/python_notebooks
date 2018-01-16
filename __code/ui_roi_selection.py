@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/j35/git/IPTS/notebooks/ui/ui_roi_selection.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_roi_selection.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #

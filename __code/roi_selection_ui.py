@@ -19,6 +19,8 @@ from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
 
 class Interface(QMainWindow):
 
+    roi_width = 0.01
+
     live_data = []
     o_norm = None
     roi_column_width = 70
@@ -193,7 +195,7 @@ class Interface(QMainWindow):
             _color = QtGui.QColor(62, 13, 244)
             _pen = QtGui.QPen()
             _pen.setColor(_color)
-            _pen.setWidth(0.6)
+            _pen.setWidthF(self.roi_width)
             _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
             _roi_id.addScaleHandle([1,1], [0,0])
             self.ui.image_view.addItem(_roi_id)
@@ -300,7 +302,7 @@ class Interface(QMainWindow):
             _color = QtGui.QColor(62, 13, 244)
             _pen = QtGui.QPen()
             _pen.setColor(_color)
-            _pen.setWidth(0.6)
+            _pen.setWidthF(self.roi_width)
             _roi_id = pg.ROI([x0_int, y0_int], [width_int, height_int], pen=_pen, scaleSnap=True)
             _roi_id.addScaleHandle([1,1], [0,0])
             self.ui.image_view.addItem(_roi_id)
