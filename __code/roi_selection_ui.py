@@ -26,6 +26,7 @@ class Interface(QMainWindow):
     o_norm = None
     roi_column_width = 70
     integrated_image = None
+    integrated_image_size = {'width': -1, 'height': -1}
 
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
@@ -72,6 +73,9 @@ class Interface(QMainWindow):
 
     def integrate_images(self):
         self.integrated_image = np.mean(self.o_norm.data['sample']['data'], axis=0)
+        [_height, _width] = np.shape(self.integrated_image)
+        self.integrated_image_size['height'] = _height
+        self.integrated_image_size['width'] = _width
 
     def display_image(self):
         self.ui.image_view.setImage(np.transpose(self.integrated_image))
@@ -135,41 +139,84 @@ class Interface(QMainWindow):
 
             self.ui.table_roi.insertRow(_index_row)
 
-            _item = QtGui.QTableWidgetItem(str(_roi['x0']))
-            self.ui.table_roi.setItem(_index_row, 0, _item)
+            self._set_item_value(_index_row, 0, _roi['x0'])
+            # _item = QtGui.QTableWidgetItem(str(_roi['x0']))
+            # self.ui.table_roi.setItem(_index_row, 0, _item)
 
-            _item = QtGui.QTableWidgetItem(str(_roi['y0']))
-            self.ui.table_roi.setItem(_index_row, 1, _item)
+            self._set_item_value(_index_row, 1, _roi['y0'])
+            # _item = QtGui.QTableWidgetItem(str(_roi['y0']))
+            # self.ui.table_roi.setItem(_index_row, 1, _item)
 
-            _item = QtGui.QTableWidgetItem(str(_roi['x1']))
-            self.ui.table_roi.setItem(_index_row, 2, _item)
+            self._set_item_value(_index_row, 2, _roi['x1'])
+            # _item = QtGui.QTableWidgetItem(str(_roi['x1']))
+            # self.ui.table_roi.setItem(_index_row, 2, _item)
 
-            _item = QtGui.QTableWidgetItem(str(_roi['y1']))
-            self.ui.table_roi.setItem(_index_row, 3, _item)
+            self._set_item_value(_index_row, 3, _roi['y1'])
+            # _item = QtGui.QTableWidgetItem(str(_roi['y1']))
+            # self.ui.table_roi.setItem(_index_row, 3, _item)
 
             _index_row += 1
 
         self.ui.table_roi.blockSignals(False)
         #self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
 
+    def _set_item_value(self, row=0, column=0, value=-1):
+        _item = QtGui.QTableWidgetItem(str(value))
+        self.ui.table_roi.setItem(row, column, _item)
+
+    def check_roi_validity(self, value, x_axis=True):
+        """Make sure the ROI selected or defined stays within the image size"""
+        min_value = 0
+
+        value = np.int(value)
+
+        if x_axis:
+            max_value = self.integrated_image_size['width']
+        else:
+            max_value = self.integrated_image_size['height']
+
+        if value < 0:
+            return min_value
+
+        if value > max_value:
+            return max_value
+
+        return value
+
     def update_table_roi(self, item):
         """Using the table_roi_ui as reference, will update the list_roi dictionary"""
+        self.ui.table_roi.blockSignals(True)
+
         nbr_row = self.ui.table_roi.rowCount()
         new_list_roi = OrderedDict()
         old_list_roi = self.list_roi
         for _row in np.arange(nbr_row):
             _roi = {}
 
-            _roi['x0'] = self._get_item_value(_row, 0)
-            _roi['y0'] = self._get_item_value(_row, 1)
-            _roi['x1'] = self._get_item_value(_row, 2)
-            _roi['y1'] = self._get_item_value(_row, 3)
+            # checking that x0, y0, x1 and y1 stay within the range of the image
+            _x0 = self.check_roi_validity(self._get_item_value(_row, 0))
+            _y0 = self.check_roi_validity(self._get_item_value(_row, 1), x_axis=False)
+
+            _x1 = self.check_roi_validity(self._get_item_value(_row, 2))
+            _y1 = self.check_roi_validity(self._get_item_value(_row, 3), x_axis=False)
+
+            # updating table content (in case some of the roi were out of scope
+            self._set_item_value(_row, 0, _x0)
+            self._set_item_value(_row, 1, _y0)
+            self._set_item_value(_row, 2, _x1)
+            self._set_item_value(_row, 3, _y1)
+
+            _roi['x0'] = _x0
+            _roi['y0'] = _y0
+            _roi['x1'] = _x1
+            _roi['y1'] = _y1
             _roi['id'] = old_list_roi[_row]['id']
 
             new_list_roi[_row] = _roi
 
         self.list_roi = new_list_roi
         self.update_image_view_item()
+        self.ui.table_roi.blockSignals(False)
 
     def update_image_view_item(self):
         self.clear_roi_on_image_view()
@@ -333,6 +380,7 @@ class Interface(QMainWindow):
         self.roi_selected = roi_selected
 
     def apply_clicked(self):
+        self.update_table_roi(None) #check ROI before leaving application
         self.format_roi()
         self.close()
 

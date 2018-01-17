@@ -403,12 +403,12 @@ class NormalizationHandler(object):
     def run_normalization(self, dict_roi=None):
 
         if dict_roi is None:
-            # try:
-            self.o_norm.normalization(notebook=True)
-            self.normalized_data_array = self.o_norm.get_normalized_data()
-        #     except:
-        #         display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-        #                      'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+            try:
+                self.o_norm.normalization(notebook=True)
+                self.normalized_data_array = self.o_norm.get_normalized_data()
+            except:
+                display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+                             'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
         else: # ROI selected
             _list_roi = []
             for _key in dict_roi.keys():
@@ -427,12 +427,12 @@ class NormalizationHandler(object):
                 _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
                 _list_roi.append(_roi)
 
-            # try:
-            self.o_norm.normalization(roi=_list_roi, notebook=True)
-            self.normalized_data_array = self.o_norm.get_normalized_data()
-            # except:
-            #     display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-            #                  'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+            try:
+                self.o_norm.normalization(roi=_list_roi, notebook=True)
+                self.normalized_data_array = self.o_norm.get_normalized_data()
+            except:
+                 display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+                              'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
 
     # def run_normalization(self):
     #
