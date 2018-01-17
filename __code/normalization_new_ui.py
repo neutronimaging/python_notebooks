@@ -400,25 +400,59 @@ class NormalizationHandler(object):
                                                                description='Height',
                                                                continuous_update=False))
 
-    def run_normalization(self):
+    def run_normalization(self, dict_roi=None):
 
-        if self.with_or_without_radio_button.value == 'no':
+        if dict_roi is None:
             # try:
             self.o_norm.normalization(notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
         #     except:
         #         display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
         #                      'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
-        else:
-            [x_left, y_top, width_roi, height_roi] = self.roi_selection.widget.result
-            _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
+        else: # ROI selected
+            _list_roi = []
+            for _key in dict_roi.keys():
+                _roi = dict_roi[_key]
+                x0 = _roi['x0']
+                y0 = _roi['y0']
+                x1 = _roi['x1']
+                y1 = _roi['y1']
+
+                x_left = np.min([x0, x1])
+                y_top = np.min([y0, y1])
+
+                width_roi = np.abs(x0 - x1)
+                height_roi = np.abs(y0 - y1)
+
+                _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
+                _list_roi.append(_roi)
 
             # try:
-            self.o_norm.normalization(roi=_roi, notebook=True)
+            self.o_norm.normalization(roi=_list_roi, notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             # except:
             #     display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
             #                  'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+
+    # def run_normalization(self):
+    #
+    #     if self.with_or_without_radio_button.value == 'no':
+    #         # try:
+    #         self.o_norm.normalization(notebook=True)
+    #         self.normalized_data_array = self.o_norm.get_normalized_data()
+    #     #     except:
+    #     #         display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+    #     #                      'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+    #     else:
+    #         [x_left, y_top, width_roi, height_roi] = self.roi_selection.widget.result
+    #         _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
+    #
+    #         # try:
+    #         self.o_norm.normalization(roi=_roi, notebook=True)
+    #         self.normalized_data_array = self.o_norm.get_normalized_data()
+    #         # except:
+    #         #     display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
+    #         #                  'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
 
     def select_export_folder(self):
 

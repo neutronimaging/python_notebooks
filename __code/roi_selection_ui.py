@@ -20,6 +20,7 @@ from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
 class Interface(QMainWindow):
 
     roi_width = 0.01
+    roi_selected = {} #nice formatting of list_roi for outside access
 
     live_data = []
     o_norm = None
@@ -318,7 +319,21 @@ class Interface(QMainWindow):
         else:
             self.ui.remove_roi_button.setEnabled(False)
 
+    def format_roi(self):
+        roi_selected = {}
+        for _key in self.list_roi.keys():
+            _roi = self.list_roi[_key]
+            x0 = _roi['x0']
+            y0 = _roi['y0']
+            x1 = _roi['x1']
+            y1 = _roi['y1']
+            new_entry = {'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1}
+            roi_selected[_key] = new_entry
+
+        self.roi_selected = roi_selected
+
     def apply_clicked(self):
+        self.format_roi()
         self.close()
 
     def cancel_clicked(self):
