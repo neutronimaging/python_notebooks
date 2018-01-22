@@ -71,6 +71,35 @@ class Interface(QMainWindow):
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
+    def __get_recap(self, data_array):
+        if data_array:
+            [height, width] = np.shape(data_array[0])
+            nbr_sample = len(data_array)
+        else:
+            nbr_sample = '0'
+            [height, width] = ['N/A', 'N/A']
+
+        return [nbr_sample, height, width]
+
+    def __built_html_table_row_3_columns(self, name, nbr, height, width):
+        _html = '<tr><td>' + str(name) + '</td><td>' + str(nbr) + '</td><td>' + str(height) + \
+        '*' + str(width) + '</td></tr>'
+        return _html
+
+    def recap(self):
+        """Display nbr of files loaded and size. This can be used to figure why a normalization failed"""
+        [nbr_sample, height_sample, width_sample] = self.__get_recap(self.o_norm.data['sample']['data'])
+        [nbr_ob, height_ob, width_ob] = self.__get_recap(self.o_norm.data['ob']['data'])
+        [nbr_df, height_df, width_df] = self.__get_recap(self.o_norm.data['df']['data'])
+
+        html =  '<table><tr><td width="30%"><strong>Type</strong></td><td><strong>Number</strong></td><td>' + \
+                '<strong>Size (height*width)</strong></td></tr>'
+        html += self.__built_html_table_row_3_columns('sample', nbr_sample, height_sample, width_sample)
+        html += self.__built_html_table_row_3_columns('ob', nbr_ob, height_ob, width_ob)
+        html += self.__built_html_table_row_3_columns('df', nbr_df, height_df, width_df)
+        html += '</table>'
+        display(HTML(html))
+
     def integrate_images(self):
         self.integrated_image = np.mean(self.o_norm.data['sample']['data'], axis=0)
         [_height, _width] = np.shape(self.integrated_image)
