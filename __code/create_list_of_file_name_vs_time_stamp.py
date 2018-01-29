@@ -67,7 +67,6 @@ class CreateListFileName(object):
         self.list_time_stamp = list_time_stamp
         self.list_time_stamp_user_format = list_time_stamp_user_format
 
-        self.list_time_offset = [t - list_time_stamp[0] for t in list_time_stamp]
 
     def load(self):
         o_norm = Normalization()
@@ -170,8 +169,28 @@ class CreateListFileName(object):
         # # Output as a formatted string.
         # return str(ornl_datetime.isoformat())
 
+    def sort_files_using_time_stamp(self):
+        """Using the time stamp information, all the files will be sorted in ascending order of time stamp"""
+
+        file_list = np.array(self.list_files)
+        time_stamp = np.array(self.list_time_stamp)
+        time_stamp_user_format = np.array(self.list_time_stamp_user_format)
+
+        # sort according to time_stamp array
+        sort_index = np.argsort(time_stamp)
+
+        # using same sorting index of the other list
+        self.list_files = file_list[sort_index]
+        self.list_time_stamp = time_stamp[sort_index]
+        self.list_time_stamp_user_format = time_stamp_user_format[sort_index]
+
     def export(self):
         self.retrieve_time_stamp()
+        self.sort_files_using_time_stamp()
+
+        # culculate time offset relative to first image (earlier file)
+        time_stamp_0 = self.list_time_stamp[0]
+        self.list_time_offset = [t - time_stamp_0 for t in self.list_time_stamp]
 
         try:
             output_folder = self.output_folder_ui.selected
@@ -203,7 +222,3 @@ class CreateListFileName(object):
             f.write(text)
 
         display(HTML('<span>File Created: ' + os.path.basename(output_file) + '</span>'))
-
-
-
-
