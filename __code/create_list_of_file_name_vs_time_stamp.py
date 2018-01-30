@@ -214,7 +214,7 @@ class CreateListFileName(object):
         time_offset = self.list_time_offset
 
         for _index, _file in enumerate(file_list):
-            text += "{}, {}, {}, {}\n".format(_file, time_stamp[_index],
+            text += "{}, {}, {}, {}\n".format(os.path.abspath(_file), time_stamp[_index],
                                               time_stamp_user_format[_index],
                                               time_offset[_index])
 
