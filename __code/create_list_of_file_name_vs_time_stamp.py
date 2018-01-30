@@ -215,8 +215,8 @@ class CreateListFileName(object):
 
         for _index, _file in enumerate(file_list):
             text += "{}, {}, {}, {}\n".format(_file, time_stamp[_index],
-                                              time_offset[_index],
-                                              time_stamp_user_format[_index])
+                                              time_stamp_user_format[_index],
+                                              time_offset[_index])
 
         with open(output_file, 'w') as f:
             f.write(text)
