@@ -49,6 +49,15 @@ class Interface(QMainWindow):
         # self.integrate_images()
         # self.display_image()
         self.init_table()
+        self.init_display()
+
+    def init_display(self):
+        row_counts = self.ui.tableWidget.rowCount()
+        if row_counts > 0:
+            nbr_column = self.ui.tableWidget.columnCount()
+            _selection_range = QtGui.QTableWidgetSelectionRange(0, 0, 0, nbr_column-1)
+            self.ui.tableWidget.setRangeSelected(_selection_range, True)
+            self.refresh_pyqtgraph()
 
     def init_table(self):
         """fill the table using information from experiment dictionary"""
@@ -108,9 +117,15 @@ class Interface(QMainWindow):
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
-    def refresh_pyqtgraph(self):
-        slider_value = self.ui.group_slider.value()
-        self.ui.image_view.setImage(np.transpose(self.working_range_of_images[slider_value]))
+    def slider_moved(self, value):
+        self.refresh_pyqtgraph(slider_value=value)
+
+    def refresh_pyqtgraph(self, slider_value=-1):
+        if slider_value == -1:
+            slider_value = self.ui.group_slider.value()
+        slider_min = self.ui.group_slider.minimum()
+        index = slider_value - slider_min
+        self.ui.image_view.setImage(np.transpose(self.working_range_of_images[index]))
 
     def clear_table(self):
         nbr_row = self.ui.table_roi.rowCount()
@@ -123,8 +138,6 @@ class Interface(QMainWindow):
             return str(_item.text())
         else:
             return ''
-
-
 
     def close_clicked(self):
         self.close()

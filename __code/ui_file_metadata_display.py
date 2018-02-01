@@ -61,6 +61,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addWidget(self.label_6)
         self.group_slider = QtWidgets.QSlider(self.centralwidget)
         self.group_slider.setOrientation(QtCore.Qt.Horizontal)
+        self.group_slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.group_slider.setTickInterval(1)
         self.group_slider.setObjectName("group_slider")
         self.horizontalLayout_2.addWidget(self.group_slider)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
@@ -105,7 +107,8 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
         self.close_button.clicked.connect(MainWindow.close_clicked)
-        self.group_slider.sliderMoved['int'].connect(MainWindow.refresh_pyqtgraph)
+        self.group_slider.valueChanged['int'].connect(MainWindow.slider_moved)
+        self.group_slider.sliderPressed.connect(MainWindow.refresh_pyqtgraph)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

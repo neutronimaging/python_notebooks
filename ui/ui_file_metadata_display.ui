@@ -136,6 +136,25 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLabel" name="group_label">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -263,9 +282,9 @@
   </connection>
   <connection>
    <sender>group_slider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>refresh_pyqtgraph()</slot>
+   <slot>slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>188</x>
@@ -305,5 +324,6 @@
   <slot>table_widget_selection_changed()</slot>
   <slot>close_clicked()</slot>
   <slot>refresh_pyqtgraph()</slot>
+  <slot>slider_moved()</slot>
  </slots>
 </ui>
