@@ -12,7 +12,7 @@ class System(object):
     start_path = ''
 
     @classmethod
-    def select_working_dir(cls, debugger_folder=''):
+    def select_working_dir(cls, debugger_folder='', system_folder=''):
 
         username = getpass.getuser()
 
@@ -42,7 +42,10 @@ class System(object):
 
             start_path = debugger_folder
         else:
-            start_path = config.system_folder
+            if system_folder == '':
+                start_path = config.system_folder
+            else:
+                start_path = system_folder
             import warnings
             warnings.filterwarnings('ignore')
 

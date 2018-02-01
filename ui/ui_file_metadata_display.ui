@@ -148,6 +148,15 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ContiguousSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
         <column>
          <property name="text">
           <string>Groups</string>
@@ -172,7 +181,7 @@
       <item>
        <widget class="QPushButton" name="export_button">
         <property name="text">
-         <string>Export ...</string>
+         <string>Export Selection ...</string>
         </property>
        </widget>
       </item>
@@ -199,16 +208,6 @@
      </layout>
     </item>
    </layout>
-   <zorder>tableWidget</zorder>
-   <zorder>para_1_label</zorder>
-   <zorder>para_1_value</zorder>
-   <zorder>para_2_value</zorder>
-   <zorder>para_2_label</zorder>
-   <zorder>widget</zorder>
-   <zorder>widget</zorder>
-   <zorder>widget_2</zorder>
-   <zorder>label_6</zorder>
-   <zorder>group_slider</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -223,7 +222,56 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_widget_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>758</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>460</x>
+     <y>343</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>close_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>867</x>
+     <y>644</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>819</x>
+     <y>655</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>group_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>refresh_pyqtgraph()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>188</x>
+     <y>600</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>209</x>
+     <y>644</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>cancel_clicked()</slot>
   <slot>apply_clicked()</slot>
@@ -232,5 +280,8 @@
   <slot>sector_changed()</slot>
   <slot>guide_color_changed()</slot>
   <slot>grid_size_changed()</slot>
+  <slot>table_widget_selection_changed()</slot>
+  <slot>close_clicked()</slot>
+  <slot>refresh_pyqtgraph()</slot>
  </slots>
 </ui>
