@@ -125,33 +125,14 @@
           </item>
           <item>
            <widget class="QSlider" name="group_slider">
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="tickPosition">
              <enum>QSlider::TicksBelow</enum>
-            </property>
-            <property name="tickInterval">
-             <number>1</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="group_label">
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>0</string>
             </property>
            </widget>
           </item>
@@ -282,9 +263,9 @@
   </connection>
   <connection>
    <sender>group_slider</sender>
-   <signal>valueChanged(int)</signal>
+   <signal>sliderMoved(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slider_moved()</slot>
+   <slot>refresh_pyqtgraph()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>188</x>
@@ -297,18 +278,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>group_slider</sender>
-   <signal>sliderPressed()</signal>
+   <sender>export_button</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>refresh_pyqtgraph()</slot>
+   <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>333</x>
-     <y>596</y>
+     <x>107</x>
+     <y>640</y>
     </hint>
     <hint type="destinationlabel">
-     <x>460</x>
-     <y>343</y>
+     <x>132</x>
+     <y>659</y>
     </hint>
    </hints>
   </connection>
@@ -324,6 +305,6 @@
   <slot>table_widget_selection_changed()</slot>
   <slot>close_clicked()</slot>
   <slot>refresh_pyqtgraph()</slot>
-  <slot>slider_moved()</slot>
+  <slot>export_button_clicked()</slot>
  </slots>
 </ui>

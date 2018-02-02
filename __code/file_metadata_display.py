@@ -127,6 +127,14 @@ class Interface(QMainWindow):
         index = slider_value - slider_min
         self.ui.image_view.setImage(np.transpose(self.working_range_of_images[index]))
 
+        # update labels on top of image display
+        _current_dict = self.exp_dict[str(slider_value)]
+        _T = _current_dict['T']
+        _P = _current_dict['P']
+
+        self.ui.para_1_value.setText(_T)
+        self.ui.para_2_value.setText(_P)
+
     def clear_table(self):
         nbr_row = self.ui.table_roi.rowCount()
         for _row in np.arange(nbr_row):
@@ -138,6 +146,13 @@ class Interface(QMainWindow):
             return str(_item.text())
         else:
             return ''
+
+    def export_button_clicked(self):
+        # pop up select folder dialog box
+
+        # retrieve selection infos
+
+        pass
 
     def close_clicked(self):
         self.close()
