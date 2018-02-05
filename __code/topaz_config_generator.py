@@ -15,20 +15,58 @@ class TopazConfigGenerator(object):
     reduce_ui = None
     reduce_label_ui = None
 
+    # for config file output
+    config = {'instrument_name': 'TOPAZ',
+              'calibration_file_1': '',
+              'calibration_file_2': 'None',
+              'z_offset': 0.0,
+              'x_offset': 0.0,
+              'data_directory': '',
+              'output_directory': '',
+              'use_monitor_counts': False,
+              'min_tof': 1000,
+              'max_tof': 16600,
+              'min_monitor_tof': 800,
+              'max_monitor_tof': 12500,
+              'read_UB': True,
+              'UB_filename': '',
+              'cell_type': 'Monoclinic',
+              'centering': 'P',
+              'num_peaks_to_find': 300,
+              'min_d': 5,
+              'max_d': 25,
+              'tolerance': 0.12,
+              'integrate_predicted_peaks': True,
+              'min_pred_wl': 0.5,
+              'max_pred_wl': 3.4,
+              'min_pred_dspacing': 0.5,
+              'max_pred_dspacing': 11.0,
+              'use_sphere_integration': False,
+              'use_ellipse_integration': True,
+              'use_fit_peaks_integration': False,
+              'use_cylindrical_integration': False,
+              'peak_radius': 0.130,
+              'bkg_inner_radius': 0.14,
+              'bkg_outer_radius': 0.15,
+              'integrate_if_edge_peak': True,
+              'rebin_step': -0.004,
+              'preserve_events': True,
+              'use_ikeda_carpenter': False,
+              'n_bad_edge_pixels': 0,
+              'cylinder_radius': 0.05,
+              'cylinder_length': 0.30,
+              'exp_name': '',
+              'reduce_one_run_script': 'ReduceSCD_OneRun_xz_offset.py',
+              'run_nums': '',
+              'slurm_queue_name': 'None',
+              'max_processes': 8,
+                }
+
+
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
         self.__define_css_format()
         self.__run()
-
-    def __define_css_format(self):
-        HTML("""
-        <style>
-        .mylabel_key {
-            font-style: bold;
-            color: black;
-        }
-        </style>
-        """)
 
     def __run(self):
 
