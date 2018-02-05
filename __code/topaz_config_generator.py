@@ -62,6 +62,24 @@ class TopazConfigGenerator(object):
               'max_processes': 8,
                 }
 
+    cell_type = ['Triclinic',
+                 'Monoclinic',
+                 'Orthorhombic',
+                 'Tetragonal',
+                 'Rhombohedral',
+                 'Hexagonal',
+                 'Cubic']
+
+    centering_mode = {'P': cell_type.copy(),
+                      'I': ['Tetragonal', 'Monoclinic', 'Cubic'],
+                      'A': ['Monoclinic', 'Orthorhombic'],
+                      'B': ['Monoclinic', 'Orthorhombic'],
+                      'C': ['Monoclinic', 'Orthorhombic'],
+                      'F': ['Orthorhombic', 'Cubic'],
+                      'Robv': ['Rhombohedral'],
+                      'Rrev': ['Rhombohedral'],
+                      }
+
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
