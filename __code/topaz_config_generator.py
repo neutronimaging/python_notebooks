@@ -90,21 +90,8 @@ class TopazConfigGenerator(object):
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
-        self.__define_css_format()
         self.__create_cell_type_centering_dict()
         self._run()
-
-    def __define_css_format(self):
-
-        HTML("""
-            <style>
-           .mylabel_key {
-              font-style: bold;
-              color: black;
-              font-size: 20px;
-           }
-           </style>
-        """)
 
     def __create_cell_type_centering_dict(self):
         self.cell_type_dict = defaultdict()
