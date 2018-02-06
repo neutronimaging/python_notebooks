@@ -2,7 +2,7 @@ import glob
 from ipywidgets import widgets
 import ipywe.fileselector
 import os
-
+from collections import defaultdict
 from IPython.core.display import HTML
 from IPython.display import display
 
@@ -83,10 +83,17 @@ class TopazConfigGenerator(object):
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
-        self.__define_css_format()
-        self.__run()
+        self.__create_cell_type_centering_dict{}
+        self._run()
 
-    def __run(self):
+    def __create_cell_type_centering_dict(self):
+        self.cell_type_dict = defaultdict()
+        for _key in self.centering_mode.keys():
+            _list = self.centering_mode[_key]
+            for _item in _list:
+                self.cell_type_dict.setdefault(_item, []).append(_key)
+
+    def _run(self):
 
         # calibration files
         working_dir = self.working_dir
