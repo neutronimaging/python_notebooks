@@ -80,10 +80,12 @@ class TopazConfigGenerator(object):
                       'Rrev': ['Rhombohedral'],
                       }
 
+    cell_type_dict = {}
+
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
-        self.__create_cell_type_centering_dict{}
+        self.__create_cell_type_centering_dict()
         self._run()
 
     def __create_cell_type_centering_dict(self):
@@ -94,6 +96,13 @@ class TopazConfigGenerator(object):
                 self.cell_type_dict.setdefault(_item, []).append(_key)
 
     def _run(self):
+
+        def cell_type_changed(value):
+            centering_ui.children[1].options = self.cell_type_dict[value['new']]
+            centering_ui.children[1].value = self.cell_type_dict[value['new']][0]
+
+        def centering_changed(value):
+            pass
 
         # calibration files
         working_dir = self.working_dir
@@ -230,15 +239,17 @@ class TopazConfigGenerator(object):
 
         cell_type_ui = widgets.HBox([widgets.Label("Cell Type:",
                                                    layout=widgets.Layout(width=left_column_width)),
-                                     widgets.Dropdown(options=['Monoclinic', 'Triclinic', 'other'],
+                                     widgets.Dropdown(options=self.cell_type,
                                                       value='Monoclinic',
                                                       layout=widgets.Layout(width='20%'))])
+        cell_type_ui.children[1].observe(cell_type_changed, names='value')
 
         centering_ui = widgets.HBox([widgets.Label("Centering:",
                                                    layout=widgets.Layout(width=left_column_width)),
-                                     widgets.Dropdown(options=['I', 'F', 'A', 'B', 'C', 'P', 'None'],
+                                     widgets.Dropdown(options=self.cell_type_dict['Monoclinic'],
                                                       value='P',
                                                       layout=widgets.Layout(width='20%'))])
+        # centering_ui.children[1].observe(centering_changed, names='value')
 
         cell_ui = widgets.VBox([cell_type_ui, centering_ui])
 
