@@ -1,16 +1,271 @@
 import glob
 from ipywidgets import widgets
 import ipywe.fileselector
+import ipywidgets as ipyw
 import os
+import time
 from collections import defaultdict
 from IPython.core.display import HTML
 from IPython.display import display
 
+from __code.file_handler import make_ascii_file_from_string
 
-class MyFileSelectorPanel(ipywe.fileselector.FileSelectorPanel):
+
+class MyFileSelectorPanel:
+    """Files and directories selector"""
+
+    # If ipywidgets version 5.3 or higher is used, the "width="
+    # statement should change the width of the file selector. "width="
+    # doesn't appear to work in earlier versions.
+    select_layout = ipyw.Layout(width="750px")
+    select_multiple_layout = ipyw.Layout(width="750px",
+                                         display="flex", flex_flow="column")
+    button_layout = ipyw.Layout(margin="5px 40px")
+    toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px")
+    toolbar_box_layout = ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px')
+    label_layout = ipyw.Layout(width="250px")
+    layout = ipyw.Layout()
+
+    def js_alert(m):
+        js = "<script>alert('%s');</script>" % m
+        display(HTML(js))
+        return
+
+    def __init__(
+            self,
+            instruction,
+            start_dir=".", type='file', next=None,
+            multiple=False, newdir_toolbar_button=False):
+        """
+        Create FileSelectorPanel instance
+        Parameters
+        ----------
+        instruction : str
+            instruction to users for file/dir selection
+        start_dir : str
+            starting directory path
+        type : str
+            type of selection. "file" or "directory"
+        multiple: bool
+            if True, multiple files/dirs can be selected
+        next : function
+            callback function to execute after the selection is selected
+        newdir_toolbar_button : bool
+            If true, a button to create new directory is added to the toolbar
+        """
+        if type not in ['file', 'directory']:
+            raise ValueError("type must be either file or directory")
+        self.instruction = instruction
+        self.type = type
+        self.multiple = multiple
+        self.newdir_toolbar_button = newdir_toolbar_button
+        self.createPanel(os.path.abspath(start_dir))
+        self.next = next
+        return
+
+    def activate_status(self, is_disabled=True):
+        self.button_layout.disabled = is_disabled
+        self.ok.disabled = is_disabled
+        self.jumpto_input.disabled = is_disabled
+        self.enterdir.disabled = is_disabled
+        self.jumpto_button.disabled = is_disabled
+        self.select.disabled = is_disabled
+
+    def createPanel(self, curdir):
+        wait = ipyw.HTML("Please wait...")
+        display(wait)
+
+        self.curdir = curdir
+        explanation = ipyw.Label(self.instruction, layout=self.label_layout)
+        # toolbar
+        # "jump to"
+        self.jumpto_input = jumpto_input = ipyw.Text(
+            value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width='300px'))
+        jumpto_button = ipyw.Button(description="Jump", layout=self.toolbar_button_layout)
+        jumpto_button.on_click(self.handle_jumpto)
+        jumpto = ipyw.HBox(children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout)
+        self.jumpto_button = jumpto_button
+        if self.newdir_toolbar_button:
+            # "new dir"
+            self.newdir_input = newdir_input = ipyw.Text(
+                value="", placeholder="new dir name", description="New subdir: ",
+                layout=ipyw.Layout(width='180px'))
+            newdir_button = ipyw.Button(description="Create", layout=self.toolbar_button_layout)
+            newdir_button.on_click(self.handle_newdir)
+            newdir = ipyw.HBox(children=[newdir_input, newdir_button], layout=self.toolbar_box_layout)
+            toolbar = ipyw.HBox(children=[jumpto, newdir])
+        else:
+            toolbar = ipyw.HBox(children=[jumpto])
+        # entries in this starting dir
+        entries_files = sorted(os.listdir(curdir))
+        entries_paths = [os.path.join(curdir, e) for e in entries_files]
+        entries_ftime = create_file_times(entries_paths)
+        entries = create_nametime_labels(entries_files, entries_ftime)
+        self._entries = entries = [' .', ' ..', ] + entries
+        if self.multiple:
+            value = []
+            self.select = ipyw.SelectMultiple(
+                value=value, options=entries,
+                description="Select",
+                layout=self.select_multiple_layout)
+        else:
+            value = entries[0]
+            self.select = ipyw.Select(
+                value=value, options=entries,
+                description="Select",
+                layout=self.select_layout)
+        """When ipywidgets 7.0 is released, the old way that the select or select multiple 
+           widget was set up (see below) should work so long as self.select_layout is changed
+           to include the display="flex" and flex_flow="column" statements. In ipywidgets 6.0,
+           this doesn't work because the styles of the select and select multiple widgets are
+           not the same.
+
+        self.select = widget(
+            value=value, options=entries,
+            description="Select",
+            layout=self.select_layout) """
+        # enter directory button
+        self.enterdir = ipyw.Button(description='Enter directory', layout=self.button_layout)
+        self.enterdir.on_click(self.handle_enterdir)
+        # select button
+        self.ok = ipyw.Button(description='Select', layout=self.button_layout)
+        self.ok.on_click(self.validate)
+        buttons = ipyw.HBox(children=[self.enterdir, self.ok])
+        lower_panel = ipyw.VBox(children=[self.select, buttons],
+                                layout=ipyw.Layout(border='1px solid lightgrey', margin='5px', padding='10px'))
+        self.panel = ipyw.VBox(children=[explanation, toolbar, lower_panel], layout=self.layout)
+        wait.close()
+        return
+
+    def handle_jumpto(self, s):
+        v = self.jumpto_input.value
+        if not os.path.isdir(v): return
+        self.remove()
+        self.createPanel(v)
+        self.show()
+        return
+
+    def handle_newdir(self, s):
+        v = self.newdir_input.value
+        path = os.path.join(self.curdir, v)
+        try:
+            os.makedirs(path)
+        except:
+            return
+        self.remove()
+        self.createPanel(path)
+        self.show()
+        return
+
+    def handle_enterdir(self, s):
+        v = self.select.value
+        v = del_ftime(v)
+        if self.multiple:
+            if len(v) != 1:
+                js_alert("Please select a directory")
+                return
+            v = v[0]
+        p = os.path.abspath(os.path.join(self.curdir, v))
+        if os.path.isdir(p):
+            self.remove()
+            self.createPanel(p)
+            self.show()
+        return
+
+    def validate(self, s):
+        v = self.select.value
+        v = del_ftime(v)
+        # build paths
+        if self.multiple:
+            vs = v
+            paths = [os.path.join(self.curdir, v) for v in vs]
+        else:
+            path = os.path.join(self.curdir, v)
+            paths = [path]
+        # check type
+        if self.type == 'file':
+            for p in paths:
+                if not os.path.isfile(p):
+                    js_alert("Please select file(s)")
+                    return
+        else:
+            assert self.type == 'directory'
+            for p in paths:
+                if not os.path.isdir(p):
+                    js_alert("Please select directory(s)")
+                    return
+        # set output
+        if self.multiple:
+            self.selected = paths
+        else:
+            self.selected = paths[0]
+        # clean up
+        #self.remove()
+        # next step
+        if self.next:
+            self.next(self.selected)
+        return
+
+    def show(self):
+        display(HTML("""
+        <style type="text/css">
+        .jupyter-widgets select option {font-family: "Lucida Console", Monaco, monospace;}
+        div.output_subarea {padding: 0px;}
+        div.output_subarea > div {margin: 0.4em;}
+        </style>
+        """))
+        display(self.panel)
 
     def remove(self):
-        pass
+        close(self.panel)
+
+
+def close(w):
+    "recursively close a widget"
+    if hasattr(w, 'children'):
+        for c in w.children:
+            close(c)
+            continue
+    w.close()
+    return
+
+
+def create_file_times(paths):
+    """returns a list of file modify time"""
+    ftimes = []
+    for f in paths:
+        try:
+            if os.path.isdir(f):
+                ftimes.append("Directory")
+            else:
+                ftime_sec = os.path.getmtime(f)
+                ftime_tuple = time.localtime(ftime_sec)
+                ftime = time.asctime(ftime_tuple)
+                ftimes.append(ftime)
+        except OSError:
+            ftimes.append("Unknown or Permission Denied")
+    return ftimes
+
+
+def create_nametime_labels(entries, ftimes):
+    if not entries:
+        return []
+    max_len = max(len(e) for e in entries)
+    n_spaces = 5
+    fmt_str = ' %-' + str(max_len + n_spaces) + "s|" + ' ' * n_spaces + '%s'
+    label_list = [fmt_str % (e, f) for e, f in zip(entries, ftimes)]
+    return label_list
+
+def del_ftime(file_label):
+    """file_label is either a str or a tuple of strings"""
+    if isinstance(file_label, tuple):
+        return tuple(del_ftime(s) for s in file_label)
+    else:
+        file_label_new = file_label.strip()
+        if file_label_new != "." and file_label_new != "..":
+            file_label_new = file_label_new.split("|")[0].rstrip()
+    return (file_label_new)
+
 
 class TopazConfigGenerator(object):
 
@@ -19,6 +274,8 @@ class TopazConfigGenerator(object):
     fit_peaks_vertical_layout = None
     reduce_ui = None
     reduce_label_ui = None
+
+    left_column_width = '15%'
 
     # for config file output
     config = {'instrument_name': 'TOPAZ',
@@ -48,13 +305,15 @@ class TopazConfigGenerator(object):
               'min_pred_dspacing': 0.5,
               'max_pred_dspacing': 11.0,
               'use_sphere_integration': False,
-              'use_ellipse_integration': True,
+              'use_ellipse_integration': False,
               'use_fit_peaks_integration': False,
               'use_cylindrical_integration': False,
               'peak_radius': 0.130,
               'bkg_inner_radius': 0.14,
               'bkg_outer_radius': 0.15,
               'integrate_if_edge_peak': True,
+              'ellipse_region_radius': 0.20,
+              'ellipse_size_specified': True,
               'rebin_step': -0.004,
               'preserve_events': True,
               'use_ikeda_carpenter': False,
@@ -88,11 +347,21 @@ class TopazConfigGenerator(object):
 
     cell_type_dict = {}
 
-
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
+        self.init_css()
         self.__create_cell_type_centering_dict()
-        self._run()
+
+    def init_css(self):
+        display(HTML("""
+            <style>
+            .mylabel_key {
+               font-style: bold;
+               color: black;
+               font-size: 18px;
+            }
+            </style>
+            """))
 
     def __create_cell_type_centering_dict(self):
         self.cell_type_dict = defaultdict()
@@ -101,14 +370,68 @@ class TopazConfigGenerator(object):
             for _item in _list:
                 self.cell_type_dict.setdefault(_item, []).append(_key)
 
-    def _run(self):
+    def select_input_data_folder(self):
 
-        def cell_type_changed(value):
-            centering_ui.children[1].options = self.cell_type_dict[value['new']]
-            centering_ui.children[1].value = self.cell_type_dict[value['new']][0]
+        # ****** Select Input Data Folder ********
 
-        def centering_changed(value):
-            pass
+        display(HTML("<h2>Select Input Data Folder</h2>"))
+
+        select_input_data_folder_ui = None
+        def select_input_data_folder(selection):
+            select_input_data_folder_ui.children[1].value = selection
+
+        select_input_data_folder_ui = widgets.HBox([widgets.Label("Input Data Folder Selected:",
+                                                                  layout=widgets.Layout(width='25%')),
+                                                    widgets.Label("N/A",
+                                                                  layout=widgets.Layout(width='70%'))])
+
+        select_input_data_folder_ui.children[0].add_class("mylabel_key")
+        self.input_data_folder_ui = select_input_data_folder_ui.children[1]
+        display(select_input_data_folder_ui)
+
+        input_folder_ui = MyFileSelectorPanel(instruction='',
+                                              start_dir=os.path.join(self.working_dir, 'data'),
+                                              next=select_input_data_folder,
+                                              type='directory')
+        input_folder_ui.show()
+
+
+    def select_output_folder(self):
+
+        # ****** Select or Create Output Folder ********
+
+        display(HTML("<h2>Select or Create Output Folder</h2>"))
+
+        select_output_data_folder_ui = None
+
+        def select_output_data_folder(selection):
+            select_output_data_folder_ui.children[1].value = selection
+
+        default_output_folder = os.path.join(self.working_dir, 'shared')
+        select_output_data_folder_ui = widgets.HBox([widgets.Label("Output Data Folder Selected:",
+                                                                   layout=widgets.Layout(width='25%')),
+                                                     widgets.Label(default_output_folder,
+                                                                   layout=widgets.Layout(width='70%'))])
+
+        select_output_data_folder_ui.children[0].add_class("mylabel_key")
+        self.output_data_folder_ui = select_output_data_folder_ui.children[1]
+        display(select_output_data_folder_ui)
+
+        output_folder_ui = MyFileSelectorPanel(instruction='Location of Output Folder',
+                                               start_dir=default_output_folder,
+                                               type='directory',
+                                               next=select_output_data_folder,
+                                               newdir_toolbar_button=True)
+        output_folder_ui.show()
+
+    def parameters_1(self):
+
+        # def cell_type_changed(value):
+        #     centering_ui.children[1].options = self.cell_type_dict[value['new']]
+        #     centering_ui.children[1].value = self.cell_type_dict[value['new']][0]
+        #
+        # def centering_changed(value):
+        #     pass
 
         # calibration files
         working_dir = self.working_dir
@@ -125,7 +448,7 @@ class TopazConfigGenerator(object):
         calibration1_ui = widgets.HBox([widgets.Label("Calibration File:",
                                                       layout=widgets.Layout(width='15%')),
                                         widgets.Dropdown(options=list_of_calibration_file,
-                                                         layout=widgets.Layout(width='60%'))])
+                                                         layout=widgets.Layout(width='85%'))])
         self.calibration_file_ui = calibration1_ui.children[1]
         display(calibration1_ui)
 
@@ -159,64 +482,6 @@ class TopazConfigGenerator(object):
         offset_ui = widgets.VBox([zoffset_ui, xoffset_ui])
         display(offset_ui)
 
-        # ****** Select Input Data Folder ********
-
-        display(HTML("<h2>Select Input Data Folder</h2>"))
-
-        select_input_data_folder_ui = None
-        def select_input_data_folder(selection):
-            select_input_data_folder_ui.children[1].value = selection
-
-        # input_folder_ui = None
-        # def re_select_input_data_folder(arg):
-        #     input_folder_ui.show()
-
-        # input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='',
-        #                                                        start_dir=os.path.join(working_dir, 'data'),
-        #                                                        next=select_input_data_folder,
-        #                                                        type='directory')
-        input_folder_ui = MyFileSelectorPanel(instruction='',
-                                              start_dir=os.path.join(working_dir, 'data'),
-                                              next=select_input_data_folder,
-                                              type='directory')
-        input_folder_ui.show()
-
-        select_input_data_folder_ui = widgets.HBox([widgets.Label("Input Data Folder Selected:",
-                                                                  layout=widgets.Layout(width='25%')),
-                                                    widgets.Label("N/A",
-                                                                  layout=widgets.Layout(width='70%'))])
-
-        select_input_data_folder_ui.children[0].add_class("mylabel_key")
-        self.input_data_folder_ui = select_input_data_folder_ui.children[1]
-        display(select_input_data_folder_ui)
-
-        # ****** Select or Create Output Folder ********
-
-        display(HTML("<h2>Select or Create Output Folder</h2>"))
-
-        select_output_data_folder_ui = None
-        def select_output_data_folder(selection):
-            select_output_data_folder_ui.children[1].value = selection
-
-        # output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Location of Output Folder',
-        #                                                         start_dir=os.path.join(working_dir, 'shared'),
-        #                                                         type='directory',
-        #                                                         newdir_toolbar_button=True)
-        output_folder_ui = MyFileSelectorPanel(instruction='Location of Output Folder',
-                                               start_dir=os.path.join(working_dir, 'shared'),
-                                               type='directory',
-                                               next=select_output_data_folder,
-                                               newdir_toolbar_button=True)
-        output_folder_ui.show()
-
-        select_output_data_folder_ui = widgets.HBox([widgets.Label("Output Data Folder Selected:",
-                                                                  layout=widgets.Layout(width='25%')),
-                                                    widgets.Label("N/A",
-                                                                  layout=widgets.Layout(width='70%'))])
-
-        select_output_data_folder_ui.children[0].add_class("mylabel_key")
-        self.output_data_folder_ui = select_input_data_folder_ui.children[1]
-        display(select_output_data_folder_ui)
 
         # ****** Use Monitor Counts ?********
 
@@ -236,10 +501,9 @@ class TopazConfigGenerator(object):
                     determine the range of tofs integrated in the monitor data to get the \
                     total monitor counts. <br>You need these even if Use Monitor Counts is False."))
 
-        left_column_width = '15%'
 
         tof_ui = widgets.HBox([widgets.Label("TOF Range",
-                                             layout=widgets.Layout(width=left_column_width)),
+                                             layout=widgets.Layout(width=self.left_column_width)),
                                widgets.IntRangeSlider(value=[1000, 16600],
                                                       min=500,
                                                       max=16600,
@@ -252,14 +516,14 @@ class TopazConfigGenerator(object):
         self.tof_ui = tof_ui.children[1]
 
         monitor_index_ui = widgets.HBox([widgets.Label("Monitor Index",
-                                                       layout=widgets.Layout(width=left_column_width)),
+                                                       layout=widgets.Layout(width=self.left_column_width)),
                                          widgets.Dropdown(options=['0', '1'],
                                                           value='0',
                                                           layout=widgets.Layout(width='10%'))])
         self.monitor_index_ui = monitor_index_ui.children[1]
 
         monitor_ui = widgets.HBox([widgets.Label("Monitor TOF Range",
-                                                 layout=widgets.Layout(width=left_column_width)),
+                                                 layout=widgets.Layout(width=self.left_column_width)),
                                    widgets.IntRangeSlider(value=[800, 12500],
                                                           min=500,
                                                           max=16600,
@@ -284,20 +548,19 @@ class TopazConfigGenerator(object):
                                       description='Read UB')
 
         ub_file_selected_ui = widgets.HBox([widgets.Label("UB File Selected:",
-                                                          layout=widgets.Layout(width='25%')),
+                                                          layout=widgets.Layout(width='20%')),
                                             widgets.Label("N/A",
-                                                          layout=widgets.Layout(width='70%'))])
+                                                          layout=widgets.Layout(width='80%'))])
         ub_file_selected_ui.children[0].add_class("mylabel_key")
         self.ub_file_selected_ui = ub_file_selected_ui
 
         def ub_flag_changed(value):
             display_file_selection_flag = value['new']
+            self.ub_ui.activate_status(not display_file_selection_flag)
             if display_file_selection_flag:
-                self.ub_ui.layout.visibility = 'visible'
-                self.ub_file_selected_ui.layout.visibility = 'visible'
+                ub_file_selected_ui.layout.visibility = 'visible'
             else:
-                self.ub_ui.layout.visibility = 'hidden'
-                self.ub_file_selected_ui.layout.visibility = 'hidden'
+                ub_file_selected_ui.layout.visibility = 'hidden'
 
         self.ub_flag_ui = ub_flag_ui
         ub_flag_ui.observe(ub_flag_changed, names='value')
@@ -306,6 +569,7 @@ class TopazConfigGenerator(object):
         def select_ub_file(selection):
             ub_file_selected_ui.children[1].value = selection
 
+        display(ub_file_selected_ui)
         self.ub_ui = MyFileSelectorPanel(instruction='Select UB File (*.mat)',
                                          start_dir=os.path.join(working_dir, 'shared'),
                                          next=select_ub_file)
@@ -314,8 +578,12 @@ class TopazConfigGenerator(object):
         self.ub_ui.show()
         ub_flag_changed({'new': self.ub_flag_ui.value})
 
-        display(ub_file_selected_ui)
-        ub_file_selected_ui.layout.visibility = 'hidden'
+
+    def parameters_2(self):
+
+        def cell_type_changed(value):
+            centering_ui.children[1].options = self.cell_type_dict[value['new']]
+            centering_ui.children[1].value = self.cell_type_dict[value['new']][0]
 
         # ****** Cell ********
 
@@ -331,7 +599,7 @@ class TopazConfigGenerator(object):
             i.e. use None if cylindrical integration is used!  "))
 
         cell_type_ui = widgets.HBox([widgets.Label("Cell Type:",
-                                                   layout=widgets.Layout(width=left_column_width)),
+                                                   layout=widgets.Layout(width=self.left_column_width)),
                                      widgets.Dropdown(options=self.cell_type,
                                                       value='Monoclinic',
                                                       layout=widgets.Layout(width='20%'))])
@@ -339,7 +607,7 @@ class TopazConfigGenerator(object):
         self.cell_type_ui = cell_type_ui.children[1]
 
         centering_ui = widgets.HBox([widgets.Label("Centering:",
-                                                   layout=widgets.Layout(width=left_column_width)),
+                                                   layout=widgets.Layout(width=self.left_column_width)),
                                      widgets.Dropdown(options=self.cell_type_dict['Monoclinic'],
                                                       value='P',
                                                       layout=widgets.Layout(width='20%'))])
@@ -362,7 +630,7 @@ class TopazConfigGenerator(object):
         as it should be for predicting peaks to integrate.</li></ul>"))
 
         peak_ui = widgets.HBox([widgets.Label("Number of Peaks:",
-                                              layout=widgets.Layout(width=left_column_width)),
+                                              layout=widgets.Layout(width=self.left_column_width)),
                                 widgets.IntSlider(value=300,
                                                   min=100,
                                                   max=3000,
@@ -442,11 +710,12 @@ class TopazConfigGenerator(object):
                                 widgets.Dropdown(options=['Sphere', 'Ellipse', 'Cylindrical', 'Fit Peaks'],
                                                  value='Ellipse',
                                                  layout=widgets.Layout(width='20%'))])
+        self.inte_ui = inte_ui.children[1]
         display(inte_ui)
 
         _answer_ikeda = False
 
-        #         display(HTML("<h2>Integration Control Parameters</h2>"))
+        # display(HTML("<h2>Integration Control Parameters</h2>"))
 
         peak_ui = widgets.HBox([widgets.Label("Peak Radius",
                                               layout=widgets.Layout(width='25%')),
@@ -457,6 +726,7 @@ class TopazConfigGenerator(object):
                                                     readout_format='.3f',
                                                     layout=widgets.Layout(width='30%')),
                                 widgets.Label("\u00c5")])
+        self.peak_ui = peak_ui.children[1]
 
         bkg_ui = widgets.HBox([widgets.Label("Background Inner and Outer Radius",
                                              layout=widgets.Layout(width='25%')),
@@ -467,6 +737,8 @@ class TopazConfigGenerator(object):
                                                         readout_format='.3f',
                                                         layout=widgets.Layout(width='30%')),
                                widgets.Label("\u00c5")])
+        self.bkg_ui = bkg_ui.children[1]
+
 
         def on_peak_changed(change):
             new_range = [change['new'], change['new'] * 1.2]
@@ -481,6 +753,7 @@ class TopazConfigGenerator(object):
         inte_flag_ui = widgets.HBox([widgets.Label("Integrate if Edge Peak?",
                                                    layout=widgets.Layout(width='15%')),
                                      widgets.Checkbox(value=True)])
+        self.inte_flag_ui = inte_flag_ui.children[1]
         vertical_layout.append(inte_flag_ui)
         ### end
 
@@ -493,8 +766,17 @@ class TopazConfigGenerator(object):
                                                               readout_format='.3f',
                                                               layout=widgets.Layout(width='30%')),
                                           widgets.Label("\u00c5")])
+        self.ellipse_region_radius_ui = ellipse_region_ui.children[1]
         vertical_layout.append(ellipse_region_ui)
 
+        ellipse_size_ui = widgets.HBox([widgets.Label("Ellipse Size Specified",
+                                                      layout=widgets.Layout(width='25%')),
+                                        widgets.Checkbox(value=True,
+                                                         layout=widgets.Layout(width='20%'))])
+
+        self.ellipse_size_ui = ellipse_size_ui
+        self.ellipse_size_ui_checkbox = ellipse_size_ui.children[1]
+        vertical_layout.append(ellipse_size_ui)
         integration_ui = widgets.VBox(vertical_layout)
         display(integration_ui)
 
@@ -542,9 +824,8 @@ class TopazConfigGenerator(object):
 
         inte_method_changed({'new': 'Ellipse'})
         inte_ui.children[1].observe(inte_method_changed, names='value')
-        self.inte_flag_ui = inte_flag_ui
+        # self.inte_flag_ui = inte_flag_ui
 
-        inte_flag_ui = self.inte_flag_ui
         #_answer_ikeda = str(inte_flag_ui.children[1].value)
 
         # display(HTML("<h2>Cylindrical Integration Control Parameters</h2>"))
@@ -558,7 +839,7 @@ class TopazConfigGenerator(object):
                                                       readout_format="0.3f",
                                                       layout=widgets.Layout(width='30%')),
                                   widgets.Label("\u00c5")])
-
+        self.cylinder_radius_ui = self.radius_ui.children[1]
         self.length_ui = widgets.HBox([widgets.Label("Cylinder Length",
                                                 layout=widgets.Layout(width='15%')),
                                   widgets.FloatSlider(value=0.3,
@@ -568,6 +849,7 @@ class TopazConfigGenerator(object):
                                                       readout_format="0.3f",
                                                       layout=widgets.Layout(width='30%')),
                                   widgets.Label("\u00c5")])
+        self.cylinder_length_ui = self.length_ui.children[1]
 
         self.v_box = widgets.VBox([self.radius_ui, self.length_ui])
         display(self.v_box)
@@ -609,6 +891,7 @@ class TopazConfigGenerator(object):
                                                         max=50,
                                                         layout=widgets.Layout(width='30%'))])
 
+        self.bad_pixels_ui = bad_pixels_ui.children[1]
         display(bad_pixels_ui)
 
         # ****** Experiment Name ********
@@ -617,6 +900,7 @@ class TopazConfigGenerator(object):
 
         exp_name_ui = widgets.Text("",
                                    layout=widgets.Layout(width="50%"))
+        self.exp_name_ui = exp_name_ui
         display(exp_name_ui)
 
         # ****** Run Numbers to Reduce ********
@@ -627,6 +911,7 @@ class TopazConfigGenerator(object):
                                widgets.Text(value="",
                                             layout=widgets.Layout(width='40%'),
                                             placeholder='1,4:5,10,20,30:40')])
+        self.run_ui = run_ui.children[1]
         display(run_ui)
 
         import multiprocessing
@@ -649,15 +934,17 @@ class TopazConfigGenerator(object):
                                                      min=1,
                                                      max=nbr_processor,
                                                      layout=widgets.Layout(width='20%'))])
+        self.process_ui = process_ui.children[1]
         display(process_ui)
 
 
     def advanced_options(self):
 
         display(HTML("<br><br>"))
-        pass_layout_ui = widgets.HBox([widgets.Label(" >>> Advanced Options Password <<<",
+        pass_layout_ui = widgets.HBox([widgets.Label("Advanced Options Password: ",
                                                      layout=widgets.Layout(width='25%')),
-                                       widgets.Text("",
+                                       widgets.Text(value="",
+                                                    placeholder='password',
                                                     layout=widgets.Layout(width='10%'))])
 
         MASTER_PASSWORD = 'topaz'
@@ -778,10 +1065,57 @@ class TopazConfigGenerator(object):
         config['max_pred_dspacing'] = max_pred_dspacing
 
         # integration method
+        inte_method = self.inte_ui.value
+        use_ikeda_carpenter = False
+        if inte_method == 'Ellipse':
+            config['use_ellipse_integration'] = True
+        elif inte_method == 'Sphere':
+            config['use_sphere_integration'] = True
+        elif inte_method == 'Cylindrical':
+            config['use_cylindrical_integration'] = True
+        elif inte_method == 'Fit Peaks':
+            use_ikeda_carpenter = True
+            config['use_fit_peaks_integration'] = True
 
+        config['peak_radius'] = self.peak_ui.value
+        [bkg_inner_radius, bkg_outer_radius] = self.bkg_ui.value
+        config['bkg_inner_radius'] = bkg_inner_radius
+        config['bkg_output_radius'] = bkg_outer_radius
 
+        config['integrate_if_edge_peak'] = self.inte_flag_ui.value
 
+        config['ellipse_region_radius'] = self.ellipse_region_radius_ui.value
+        config['ellipse_size_specified'] = self.ellipse_size_ui_checkbox.value
+        config['use_ikeda_carpenter'] = use_ikeda_carpenter
 
-        # for debugging
+        # bad edge pixels
+        config['n_bad_edge_pixels'] = self.bad_pixels_ui.value
+
+        # cylinder radius and length
+        config['cylinder_radius'] = self.cylinder_radius_ui.value
+        config['cylinder_length'] = self.cylinder_length_ui.value
+
+        # exp name
+        config['exp_name'] = self.exp_name_ui.value
+
+        # run number to reduce
+        config['run_nums'] = self.run_ui.value
+
+        # max processes
+        config['max_processes'] = self.process_ui.value
+
+        # # for debugging
+        # for _key in config:
+        #     print("{} -> {}".format(_key, config[_key]))
+
+        config_text = ""
         for _key in config:
-            print("{} -> {}".format(_key, config[_key]))
+            config_text += "{} {}\n".format(_key, config[_key])
+
+        output_folder = config['output_directory']
+        config_file_name = 'tmp.cfg'
+
+        full_config = os.path.join(output_folder, config_file_name)
+        make_ascii_file_from_string(text=config_text, filename=full_config)
+
+        display(HTML("<h2>Config file created: </h2>" + full_config))
