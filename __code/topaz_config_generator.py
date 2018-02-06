@@ -31,6 +31,7 @@ class TopazConfigGenerator(object):
               'use_monitor_counts': False,
               'min_tof': 1000,
               'max_tof': 16600,
+              'monitor_index': 0,
               'min_monitor_tof': 800,
               'max_monitor_tof': 12500,
               'read_UB': True,
@@ -121,11 +122,11 @@ class TopazConfigGenerator(object):
         display(HTML("<h2>Specify calibration file(s)</h2><br>SNAP requires two calibration files, one for each bank. \
                      If the default detector position is to be used, specify <strong>None</strong> as the calibration file name."))
 
-        calibration1_ui = widgets.HBox([widgets.Label("Calibration File #1:",
+        calibration1_ui = widgets.HBox([widgets.Label("Calibration File:",
                                                       layout=widgets.Layout(width='15%')),
                                         widgets.Dropdown(options=list_of_calibration_file,
                                                          layout=widgets.Layout(width='60%'))])
-
+        self.calibration_file_ui = calibration1_ui.children[1]
         display(calibration1_ui)
 
         # ****** Goniometer z Offset correction ********
@@ -153,6 +154,8 @@ class TopazConfigGenerator(object):
                                                        continuous_update=False,
                                                        layout=widgets.Layout(width='30%'))])
 
+        self.zoffset_ui = zoffset_ui.children[1]
+        self.xoffset_ui = xoffset_ui.children[1]
         offset_ui = widgets.VBox([zoffset_ui, xoffset_ui])
         display(offset_ui)
 
@@ -164,9 +167,9 @@ class TopazConfigGenerator(object):
         def select_input_data_folder(selection):
             select_input_data_folder_ui.children[1].value = selection
 
-        input_folder_ui = None
-        def re_select_input_data_folder(arg):
-            input_folder_ui.show()
+        # input_folder_ui = None
+        # def re_select_input_data_folder(arg):
+        #     input_folder_ui.show()
 
         # input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='',
         #                                                        start_dir=os.path.join(working_dir, 'data'),
@@ -184,6 +187,7 @@ class TopazConfigGenerator(object):
                                                                   layout=widgets.Layout(width='70%'))])
 
         select_input_data_folder_ui.children[0].add_class("mylabel_key")
+        self.input_data_folder_ui = select_input_data_folder_ui.children[1]
         display(select_input_data_folder_ui)
 
         # ****** Select or Create Output Folder ********
@@ -211,11 +215,8 @@ class TopazConfigGenerator(object):
                                                                   layout=widgets.Layout(width='70%'))])
 
         select_output_data_folder_ui.children[0].add_class("mylabel_key")
+        self.output_data_folder_ui = select_input_data_folder_ui.children[1]
         display(select_output_data_folder_ui)
-
-
-
-
 
         # ****** Use Monitor Counts ?********
 
@@ -226,6 +227,7 @@ class TopazConfigGenerator(object):
 
         monitor_counts_flag_ui = widgets.Checkbox(value=False,
                                                   description='Use Monitor Counts')
+        self.monitor_counts_flag_ui = monitor_counts_flag_ui
         display(monitor_counts_flag_ui)
 
         # ****** TOF and Monitor ********
@@ -247,12 +249,14 @@ class TopazConfigGenerator(object):
                                                       layout=widgets.Layout(width='50%')),
                                widgets.Label("\u00B5s",
                                              layout=widgets.Layout(width='20%'))])
+        self.tof_ui = tof_ui.children[1]
 
         monitor_index_ui = widgets.HBox([widgets.Label("Monitor Index",
                                                        layout=widgets.Layout(width=left_column_width)),
                                          widgets.Dropdown(options=['0', '1'],
                                                           value='0',
                                                           layout=widgets.Layout(width='10%'))])
+        self.monitor_index_ui = monitor_index_ui.children[1]
 
         monitor_ui = widgets.HBox([widgets.Label("Monitor TOF Range",
                                                  layout=widgets.Layout(width=left_column_width)),
@@ -265,6 +269,7 @@ class TopazConfigGenerator(object):
                                                           layout=widgets.Layout(width='50%')),
                                    widgets.Label("\u00B5s",
                                                  layout=widgets.Layout(width='20%'))])
+        self.monitor_tof_ui = monitor_ui.children[1]
 
         tof_ui = widgets.VBox([tof_ui, monitor_index_ui, monitor_ui])
 
@@ -278,13 +283,39 @@ class TopazConfigGenerator(object):
         ub_flag_ui = widgets.Checkbox(value=False,
                                       description='Read UB')
 
+        ub_file_selected_ui = widgets.HBox([widgets.Label("UB File Selected:",
+                                                          layout=widgets.Layout(width='25%')),
+                                            widgets.Label("N/A",
+                                                          layout=widgets.Layout(width='70%'))])
+        ub_file_selected_ui.children[0].add_class("mylabel_key")
+        self.ub_file_selected_ui = ub_file_selected_ui
+
+        def ub_flag_changed(value):
+            display_file_selection_flag = value['new']
+            if display_file_selection_flag:
+                self.ub_ui.layout.visibility = 'visible'
+                self.ub_file_selected_ui.layout.visibility = 'visible'
+            else:
+                self.ub_ui.layout.visibility = 'hidden'
+                self.ub_file_selected_ui.layout.visibility = 'hidden'
+
+        self.ub_flag_ui = ub_flag_ui
+        ub_flag_ui.observe(ub_flag_changed, names='value')
         display(ub_flag_ui)
 
-        if ub_flag_ui.value:
-            ub_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select UB File (*.mat)',
-                                                         start_dir=os.path.join(working_dir, 'shared'))
+        def select_ub_file(selection):
+            ub_file_selected_ui.children[1].value = selection
 
-            ub_ui.show()
+        self.ub_ui = MyFileSelectorPanel(instruction='Select UB File (*.mat)',
+                                         start_dir=os.path.join(working_dir, 'shared'),
+                                         next=select_ub_file)
+
+        # init display
+        self.ub_ui.show()
+        ub_flag_changed({'new': self.ub_flag_ui.value})
+
+        display(ub_file_selected_ui)
+        ub_file_selected_ui.layout.visibility = 'hidden'
 
         # ****** Cell ********
 
@@ -305,12 +336,14 @@ class TopazConfigGenerator(object):
                                                       value='Monoclinic',
                                                       layout=widgets.Layout(width='20%'))])
         cell_type_ui.children[1].observe(cell_type_changed, names='value')
+        self.cell_type_ui = cell_type_ui.children[1]
 
         centering_ui = widgets.HBox([widgets.Label("Centering:",
                                                    layout=widgets.Layout(width=left_column_width)),
                                      widgets.Dropdown(options=self.cell_type_dict['Monoclinic'],
                                                       value='P',
                                                       layout=widgets.Layout(width='20%'))])
+        self.centering_ui = centering_ui.children[1]
         # centering_ui.children[1].observe(centering_changed, names='value')
 
         cell_ui = widgets.VBox([cell_type_ui, centering_ui])
@@ -334,6 +367,7 @@ class TopazConfigGenerator(object):
                                                   min=100,
                                                   max=3000,
                                                   layout=widgets.Layout(width='30%'))])
+        self.peak_ui = peak_ui.children[1]
         display(peak_ui)
 
         # ****** min_d, max_d and Tolerance ********
@@ -351,6 +385,7 @@ class TopazConfigGenerator(object):
                                                     step=1,
                                                     layout=widgets.Layout(width='30%')),
                              widgets.Label("\u00c5")])
+        self.d_ui = d_ui.children[1]
 
         tolerance_ui = widgets.HBox([widgets.Label("Tolerance",
                                                    layout=widgets.Layout(width='10%')),
@@ -359,6 +394,7 @@ class TopazConfigGenerator(object):
                                                          max=0.51,
                                                          step=0.01,
                                                          layout=widgets.Layout(width='30%'))])
+        self.tolerance_ui = tolerance_ui.children[1]
 
         d_tolerance_ui = widgets.VBox([d_ui, tolerance_ui])
 
@@ -374,6 +410,7 @@ class TopazConfigGenerator(object):
                                                    layout=widgets.Layout(width='20%')),
                                      widgets.Checkbox(value=False,
                                                       layout=widgets.Layout(width='20%'))])
+        self.pred_flag_ui = pred_flag_ui.children[1]
 
         pred_ui = widgets.HBox([widgets.Label("Predicted Wavelengths",
                                               layout=widgets.Layout(width='20%')),
@@ -382,6 +419,7 @@ class TopazConfigGenerator(object):
                                                          max=3.6,
                                                          layout=widgets.Layout(width='35%')),
                                 widgets.Label("\u00c5")])
+        self.pred_ui = pred_ui.children[1]
 
         pred_dspacing_ui = widgets.HBox([widgets.Label("Predicted dspacing",
                                                        layout=widgets.Layout(width='20%')),
@@ -390,6 +428,7 @@ class TopazConfigGenerator(object):
                                                                   max=12,
                                                                   layout=widgets.Layout(width='35%')),
                                          widgets.Label("\u00c5")])
+        self.pred_dspacing_ui = pred_dspacing_ui.children[1]
 
         predicted_ui = widgets.VBox([pred_flag_ui, pred_ui, pred_dspacing_ui])
         display(predicted_ui)
@@ -681,3 +720,68 @@ class TopazConfigGenerator(object):
 
         display(pass_layout_ui)
 
+    def create_config(self):
+
+        config = self.config
+
+        # calibration file
+        config['calibration_file_1'] = self.calibration_file_ui.value
+
+        # goniometer z offset correction
+        config['z_offset'] = self.zoffset_ui.value
+        config['x_offset'] = self.xoffset_ui.value
+
+        # input data folder
+        config['data_directory'] = self.input_data_folder_ui.value
+
+        # output folder
+        config['output_directory'] = self.output_data_folder_ui.value
+
+        # monitor counts
+        config['use_monitor_counts'] = self.monitor_counts_flag_ui.value
+
+        # tof and monitor
+        [min_tof, max_tof] = self.tof_ui.value
+        config['min_tof'] = min_tof
+        config['max_tof'] = max_tof
+
+        config['monitor_index'] = self.monitor_index_ui.value
+
+        [min_monitor_tof, max_monitor_tof] = self.monitor_tof_ui.value
+        config['min_monitor_tof'] = min_monitor_tof
+        config['max_monitor_tof'] = max_monitor_tof
+
+        # UB
+        config['read_UB'] = self.ub_flag_ui.value
+        config['UB_filename'] = self.ub_file_selected_ui.children[1].value
+
+        # cell
+        config['cell_type'] = self.cell_type_ui.value
+        config['centering'] = self.centering_ui.value
+
+        # number of peaks
+        config['num_peaks_to_find'] = self.peak_ui.value
+
+        # min_d, max_d and tolerance
+        [min_d, max_d] = self.d_ui.value
+        config['min_d'] = min_d
+        config['max_d'] = max_d
+        config['tolerance'] = self.tolerance_ui.value
+
+        # predicted peak
+        config['integrate_predicted_peaks'] = self.pred_flag_ui.value
+        [min_pred_wl, max_pred_wl] = self.pred_ui.value
+        config['min_pred_wl'] = min_pred_wl
+        config['max_pred_wl'] = max_pred_wl
+        [min_pred_dspacing, max_pred_dspacing] = self.pred_dspacing_ui.value
+        config['min_pred_dspacing'] = min_pred_dspacing
+        config['max_pred_dspacing'] = max_pred_dspacing
+
+        # integration method
+
+
+
+
+        # for debugging
+        for _key in config:
+            print("{} -> {}".format(_key, config[_key]))
