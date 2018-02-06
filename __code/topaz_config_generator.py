@@ -7,6 +7,11 @@ from IPython.core.display import HTML
 from IPython.display import display
 
 
+class MyFileSelectorPanel(ipywe.fileselector.FileSelectorPanel):
+
+    def remove(self):
+        pass
+
 class TopazConfigGenerator(object):
 
     ikeda_flag_ui = None
@@ -85,8 +90,21 @@ class TopazConfigGenerator(object):
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
+        self.__define_css_format()
         self.__create_cell_type_centering_dict()
         self._run()
+
+    def __define_css_format(self):
+
+        HTML("""
+            <style>
+           .mylabel_key {
+              font-style: bold;
+              color: black;
+              font-size: 20px;
+           }
+           </style>
+        """)
 
     def __create_cell_type_centering_dict(self):
         self.cell_type_dict = defaultdict()
@@ -111,6 +129,8 @@ class TopazConfigGenerator(object):
         list_of_calibration_file = glob.glob(os.path.join(calib_folder, 'shared/calibrations') + '/2017C/*.DetCal')
         list_of_calibration_file.append('None')
 
+        # ****** Specify calibration file(s) ********
+
         display(HTML("<h2>Specify calibration file(s)</h2><br>SNAP requires two calibration files, one for each bank. \
                      If the default detector position is to be used, specify <strong>None</strong> as the calibration file name."))
 
@@ -121,7 +141,7 @@ class TopazConfigGenerator(object):
 
         display(calibration1_ui)
 
-        # Test correction for Goniometer z offset
+        # ****** Goniometer z Offset correction ********
 
         display(HTML("<h2>Goniometer z Offset Correction</h2><br>Test correction for Goniometer z offset"))
 
@@ -149,19 +169,68 @@ class TopazConfigGenerator(object):
         offset_ui = widgets.VBox([zoffset_ui, xoffset_ui])
         display(offset_ui)
 
+        # ****** Select Input Data Folder ********
+
         display(HTML("<h2>Select Input Data Folder</h2>"))
 
-        input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='',
-                                                               start_dir=os.path.join(working_dir, 'data'),
-                                                               type='directory')
+        select_input_data_folder_ui = None
+        def select_input_data_folder(selection):
+            select_input_data_folder_ui.children[1].value = selection
+
+        input_folder_ui = None
+        def re_select_input_data_folder(arg):
+            input_folder_ui.show()
+
+        # input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='',
+        #                                                        start_dir=os.path.join(working_dir, 'data'),
+        #                                                        next=select_input_data_folder,
+        #                                                        type='directory')
+        input_folder_ui = MyFileSelectorPanel(instruction='',
+                                              start_dir=os.path.join(working_dir, 'data'),
+                                              next=select_input_data_folder,
+                                              type='directory')
         input_folder_ui.show()
 
+        select_input_data_folder_ui = widgets.HBox([widgets.Label("Input Data Folder Selected:",
+                                                                  layout=widgets.Layout(width='25%')),
+                                                    widgets.Label("N/A",
+                                                                  layout=widgets.Layout(width='70%'))])
+
+        select_input_data_folder_ui.children[0].add_class("mylabel_key")
+        display(select_input_data_folder_ui)
+
+        # ****** Select or Create Output Folder ********
+
         display(HTML("<h2>Select or Create Output Folder</h2>"))
-        output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Location of Output Folder',
-                                                                start_dir=os.path.join(working_dir, 'shared'),
-                                                                type='directory',
-                                                                newdir_toolbar_button=True)
+
+        select_output_data_folder_ui = None
+        def select_output_data_folder(selection):
+            select_output_data_folder_ui.children[1].value = selection
+
+        # output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Location of Output Folder',
+        #                                                         start_dir=os.path.join(working_dir, 'shared'),
+        #                                                         type='directory',
+        #                                                         newdir_toolbar_button=True)
+        output_folder_ui = MyFileSelectorPanel(instruction='Location of Output Folder',
+                                               start_dir=os.path.join(working_dir, 'shared'),
+                                               type='directory',
+                                               next=select_output_data_folder,
+                                               newdir_toolbar_button=True)
         output_folder_ui.show()
+
+        select_output_data_folder_ui = widgets.HBox([widgets.Label("Output Data Folder Selected:",
+                                                                  layout=widgets.Layout(width='25%')),
+                                                    widgets.Label("N/A",
+                                                                  layout=widgets.Layout(width='70%'))])
+
+        select_output_data_folder_ui.children[0].add_class("mylabel_key")
+        display(select_output_data_folder_ui)
+
+
+
+
+
+        # ****** Use Monitor Counts ?********
 
         display(HTML("<h2>Use Monitor Counts ?</h2><br> If use_monitor_counts is True, then the integrated beam monitor \
             counts will be used for scaling. <br>If use_monitor_counts is False, \
@@ -171,6 +240,8 @@ class TopazConfigGenerator(object):
         monitor_counts_flag_ui = widgets.Checkbox(value=False,
                                                   description='Use Monitor Counts')
         display(monitor_counts_flag_ui)
+
+        # ****** TOF and Monitor ********
 
         display(HTML("<h2>TOF and Monitor</h2><br>Min & max tof determine the range of events loaded.<br> Min & max monitor tof \
                     determine the range of tofs integrated in the monitor data to get the \
@@ -212,6 +283,8 @@ class TopazConfigGenerator(object):
 
         display(tof_ui)
 
+        # ****** UB ********
+
         display(HTML("<h2>UB</h2><br>Read the UB matrix from file. This option will be applied to each run and used for \
             combined file. This option is especially helpful for 2nd frame TOPAZ data."))
 
@@ -225,6 +298,8 @@ class TopazConfigGenerator(object):
                                                          start_dir=os.path.join(working_dir, 'shared'))
 
             ub_ui.show()
+
+        # ****** Cell ********
 
         display(HTML("<h2>Cell</h2><br>Specifiy a conventional cell type and centering.<br>If these are None, only \
             one .mat and .integrate file will be written for this run, and they will \
@@ -255,6 +330,8 @@ class TopazConfigGenerator(object):
 
         display(cell_ui)
 
+        # ****** Number of Peaks ********
+
         display(HTML("<h2>Number of Peaks</h2><br> Number of peaks to find, per run, both for getting the UB matrix, \
         AND to determine how many peaks are integrated, if peak positions are \
         NOT predicted. <br><br> <strong>NOTE:</strong> This number must be choosen carefully. <ul><li> If too \
@@ -271,6 +348,8 @@ class TopazConfigGenerator(object):
                                                   max=3000,
                                                   layout=widgets.Layout(width='30%'))])
         display(peak_ui)
+
+        # ****** min_d, max_d and Tolerance ********
 
         display(HTML("<h2>min_d, max_d and Tolerance</h2><br>min_d, max_d and tolerance control indexing peaks.<br><br>max_d is also \
             used to specify a threshold for the separation between peaks \
@@ -297,6 +376,8 @@ class TopazConfigGenerator(object):
         d_tolerance_ui = widgets.VBox([d_ui, tolerance_ui])
 
         display(d_tolerance_ui)
+
+        # ****** Predicted Peak ********
 
         display(HTML("<h2>Predicted Peak</h2><br> If predicted peak positions are to be integrated, \
             then the integrate_predicted_peaks flag should be set to True and the range \
@@ -325,6 +406,8 @@ class TopazConfigGenerator(object):
 
         predicted_ui = widgets.VBox([pred_flag_ui, pred_ui, pred_dspacing_ui])
         display(predicted_ui)
+
+        # ****** Integration Method ********
 
         display(HTML("<h2>Integration Method</h2><br> Select one of the following integration method."))
 
@@ -489,6 +572,8 @@ class TopazConfigGenerator(object):
         display(self.fit_peaks_vertical_layout)
         self.fit_peaks_vertical_layout.layout.visibility = 'hidden'
 
+        # ****** Bad Edge Pixels ********
+
         display(HTML("<h2>Bad Edge Pixels</h2>"))
 
         bad_pixels_ui = widgets.HBox([widgets.Label("Nbr bad edge pixels:",
@@ -500,11 +585,15 @@ class TopazConfigGenerator(object):
 
         display(bad_pixels_ui)
 
+        # ****** Experiment Name ********
+
         display(HTML("<h2>Experiment Name</h2>"))
 
         exp_name_ui = widgets.Text("",
                                    layout=widgets.Layout(width="50%"))
         display(exp_name_ui)
+
+        # ****** Run Numbers to Reduce ********
 
         display(HTML("<h2>Run Numbers to Reduce</h2><br>Specify the run numbers that should be reduced."))
 
@@ -516,6 +605,8 @@ class TopazConfigGenerator(object):
 
         import multiprocessing
         nbr_processor = multiprocessing.cpu_count()
+
+        # ****** Number of Processes ********
 
         display(HTML("<h2>Number of Processes</h2><br>This controls the maximum number of processes that will be run \
             simultaneously locally, or that will be simultaneously submitted to slurm. \
@@ -583,7 +674,7 @@ class TopazConfigGenerator(object):
                     self.reduce_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Reduce Python Script ',
                                                                      start_dir=os.path.join(
                                                                          self.working_dir,
-                                                                         'shared/reduce/'))
+                                                                         'shared/'))
 
                     self.reduce_ui.show()
                     self.password_found = True
