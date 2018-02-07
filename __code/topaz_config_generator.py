@@ -1133,7 +1133,7 @@ class TopazConfigGenerator(object):
         config['exp_name'] = self.exp_name_ui.value
 
         # run number to reduce
-        config['run_nums'] = self.run_ui.value
+        config['run_nums'] = self.run_ui.value.replace(" ", "")
 
         # max processes
         config['max_processes'] = self.process_ui.value
