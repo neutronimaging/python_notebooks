@@ -275,6 +275,8 @@ class TopazConfigGenerator(object):
     reduce_ui = None
     reduce_label_ui = None
 
+    reduce_one_run_script = 'N/A'
+
     left_column_width = '15%'
 
     # for config file output
@@ -953,6 +955,9 @@ class TopazConfigGenerator(object):
         password = []
         str_password = ''
 
+        self.select_advanced_data_folder_ui = None
+        self.advanced_ui = None
+
         def on_pass_changed(change):
 
             # global password_found
@@ -977,30 +982,37 @@ class TopazConfigGenerator(object):
             # recompose passowrd
             str_password = ''.join(password)
 
+            label_ui = None
+            def select_advanced_file(selection):
+                label_ui.value = selection
+                self.reduce_one_run_script = selection
+
             if str_password == MASTER_PASSWORD:
 
                 if self.password_found == False:  # to only display widgets once
-                    self.reduce_label_ui = widgets.Label("Reduce One Run Script",
-                                                    layout=widgets.Layout(width='15%'))
-                    display(self.reduce_label_ui)
 
-                    self.reduce_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Reduce Python Script ',
-                                                                     start_dir=os.path.join(
-                                                                         self.working_dir,
-                                                                         'shared/'))
+                    self.select_advanced_data_folder_ui = widgets.HBox([widgets.Label("Reduce One Run Script:",
+                                                                              layout=widgets.Layout(width='25%')),
+                                                                widgets.Label(self.reduce_one_run_script,
+                                                                              layout=widgets.Layout(width='70%'))])
+                    label_ui = self.select_advanced_data_folder_ui.children[1]
+                    display(self.select_advanced_data_folder_ui)
 
-                    self.reduce_ui.show()
+                    self.advanced_ui = MyFileSelectorPanel(instruction='Select Reduce Python Script ',
+                                                         start_dir=os.path.join(self.working_dir,'shared/'),
+                                                         next=select_advanced_file)
+
+                    self.advanced_ui.show()
                     self.password_found = True
 
                 else:
                     self.password_found = False
 
             else:
-                try:
-                    self.reduce_label_ui.close()
-                    self.reduce_ui.remove()
-                except:
-                    pass
+                if self.select_advanced_data_folder_ui:
+                    self.select_advanced_data_folder_ui.close()
+                if self.advanced_ui:
+                    self.advanced_ui.remove()
 
         pass_ui = pass_layout_ui.children[1]
         pass_ui.observe(on_pass_changed, names='value')
