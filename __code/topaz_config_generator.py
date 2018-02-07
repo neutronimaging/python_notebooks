@@ -389,7 +389,7 @@ class TopazConfigGenerator(object):
 
         # ****** Select Input Data Folder ********
 
-        display(HTML("<h2>Select Input Data Folder</h2>"))
+        display(HTML("<h2 id='input_directory'>Select Input Data Folder</h2>"))
 
         select_input_data_folder_ui = None
         def select_input_data_folder(selection):
@@ -415,7 +415,7 @@ class TopazConfigGenerator(object):
 
         # ****** Select or Create Output Folder ********
 
-        display(HTML("<h2>Select or Create Output Folder</h2>"))
+        display(HTML("<h2 id='output_directory'>Select or Create Output Folder</h2>"))
 
         select_output_data_folder_ui = None
 
@@ -457,7 +457,7 @@ class TopazConfigGenerator(object):
 
         # ****** Specify calibration file(s) ********
 
-        display(HTML("<h2>Specify calibration file(s)</h2><br>SNAP requires two calibration files, one for each bank. \
+        display(HTML("<h2 id='calibration_file'>Specify calibration file(s)</h2><br>SNAP requires two calibration files, one for each bank. \
                      If the default detector position is to be used, specify <strong>None</strong> as the calibration file name."))
 
         calibration1_ui = widgets.HBox([widgets.Label("Calibration File:",
@@ -556,7 +556,7 @@ class TopazConfigGenerator(object):
 
         # ****** UB ********
 
-        display(HTML("<h2>UB</h2><br>Read the UB matrix from file. This option will be applied to each run and used for \
+        display(HTML("<h2 id='ub_filename'>UB</h2><br>Read the UB matrix from file. This option will be applied to each run and used for \
             combined file. This option is especially helpful for 2nd frame TOPAZ data."))
 
         ub_flag_ui = widgets.Checkbox(value=False,
@@ -650,7 +650,7 @@ class TopazConfigGenerator(object):
                                                   min=100,
                                                   max=3000,
                                                   layout=widgets.Layout(width='30%'))])
-        self.peak_ui = peak_ui.children[1]
+        self.number_peak_ui = peak_ui.children[1]
         display(peak_ui)
 
         # ****** min_d, max_d and Tolerance ********
@@ -920,7 +920,7 @@ class TopazConfigGenerator(object):
 
         # ****** Run Numbers to Reduce ********
 
-        display(HTML("<h2>Run Numbers to Reduce</h2><br>Specify the run numbers that should be reduced."))
+        display(HTML("<h2 id='run_nums'>Run Numbers to Reduce</h2><br>Specify the run numbers that should be reduced."))
 
         run_ui = widgets.HBox([widgets.Label("Run Numbers:", layout=widgets.Layout(width='10%')),
                                widgets.Text(value="",
@@ -1044,10 +1044,16 @@ class TopazConfigGenerator(object):
         config['x_offset'] = self.xoffset_ui.value
 
         # input data folder
-        config['data_directory'] = os.path.abspath(self.input_data_folder_ui.value)
+        _data_directory = self.input_data_folder_ui.value
+        if not _data_directory == 'N/A':
+            _data_directory = os.path.abspath(self.input_data_folder_ui.value)
+        config['data_directory'] = _data_directory
 
         # output folder
-        config['output_directory'] = os.path.abspath(self.output_data_folder_ui.value)
+        _output_folder = self.output_data_folder_ui.value
+        if not _output_folder == 'N/A':
+            _output_folder = os.path.abspath(_output_folder)
+        config['output_directory'] = _output_folder
 
         # monitor counts
         config['use_monitor_counts'] = self.monitor_counts_flag_ui.value
@@ -1065,14 +1071,17 @@ class TopazConfigGenerator(object):
 
         # UB
         config['read_UB'] = self.ub_flag_ui.value
-        config['UB_filename'] = os.path.abspath(self.ub_file_selected_ui.children[1].value)
+        ub_filename = self.ub_file_selected_ui.children[1].value
+        if not ub_filename == 'N/A':
+            ub_filename = os.path.abspath(ub_filename)
+        config['UB_filename'] = ub_filename
 
         # cell
         config['cell_type'] = self.cell_type_ui.value
         config['centering'] = self.centering_ui.value
 
         # number of peaks
-        config['num_peaks_to_find'] = self.peak_ui.value
+        config['num_peaks_to_find'] = self.number_peak_ui.value
 
         # min_d, max_d and tolerance
         [min_d, max_d] = self.d_ui.value
@@ -1105,7 +1114,7 @@ class TopazConfigGenerator(object):
         config['peak_radius'] = self.peak_ui.value
         [bkg_inner_radius, bkg_outer_radius] = self.bkg_ui.value
         config['bkg_inner_radius'] = bkg_inner_radius
-        config['bkg_output_radius'] = bkg_outer_radius
+        config['bkg_outer_radius'] = bkg_outer_radius
 
         config['integrate_if_edge_peak'] = self.inte_flag_ui.value
 
@@ -1133,25 +1142,80 @@ class TopazConfigGenerator(object):
         # for _key in config:
         #     print("{} -> {}".format(_key, config[_key]))
 
-        config_text = ""
-        for _key in config:
-            config_text += "{} {}\n".format(_key, config[_key])
+        # checking that we have the minimum info to create config
+        config_status_dict = self.check_config_can_be_created(config)
 
-        output_folder = config['output_directory']
+        if config_status_dict['status']:
 
-        # make sure folder exist
-        if not os.path.exists(output_folder):
-            display(HTML('<h2><span style="color:red">Folder does not exist! Please create folder first</span></h2>'))
-            display(HTML("<h2>Name of folder: </h2>" + output_folder))
+            config_text = ""
+            for _key in config:
+                config_text += "{} {}\n".format(_key, config[_key])
 
-        # check we have write permission to this file
-        config_file_name = self.config_file_ui.value + '.cfg'
+            output_folder = config['output_directory']
 
-        full_config = os.path.abspath(os.path.join(output_folder, config_file_name))
-        try:
-            make_ascii_file_from_string(text=config_text, filename=full_config)
-            display(HTML("<h2>Config file created: </h2>" + full_config))
-        except OSError:
-            display(HTML('<h2><span style="color:red">You do not have write permission to this file!</span></h2>'))
-            display(HTML("<h2>Name of folder: </h2>" + output_folder))
+            # make sure folder exist
+            if not os.path.exists(output_folder):
+                display(HTML('<h2><span style="color:red">Folder does not exist! Please create folder first</span></h2>'))
+                display(HTML("<h2>Name of folder: </h2>" + output_folder))
+
+            # check we have write permission to this file
+            config_file_name = self.config_file_ui.value + '.cfg'
+
+            full_config = os.path.abspath(os.path.join(output_folder, config_file_name))
+            try:
+                make_ascii_file_from_string(text=config_text, filename=full_config)
+                display(HTML("<h2>Config file created: </h2>" + full_config))
+            except OSError:
+                display(HTML('<h2><span style="color:red">You do not have write permission to this file!</span></h2>'))
+                display(HTML("<h2>Name of folder: </h2>" + output_folder))
+
+        else:
+
+            list_missing_parameters = config_status_dict['missing_parameters']
+            list_tags = config_status_dict['list_tags']
+
+            tags_para = zip(list_tags, list_missing_parameters)
+
+            display(HTML('<h2><span style="color:red">Missing Parameters to Create Config File!</span></h2>'))
+#            display(HTML('<a href="#input_data_folder">input data folder</a>'))
+            for _tags, _missing_item in tags_para:
+                display(HTML('-> <a href="#' + _tags + '">' + _missing_item + '</a>'))
+
+    def check_config_can_be_created(self, config):
+
+        list_missing_parameters = []
+        list_tags = []
+        _status = True
+
+        if config['calibration_file_1'] == 'N/A':
+            _status = False
+            list_missing_parameters.append('Calibration File 1 Name')
+            list_tags.append('calibration_file')
+
+        if config['data_directory'] == 'N/A':
+            _status = False
+            list_missing_parameters.append('Input Data Folder Name')
+            list_tags.append('input_directory')
+
+        if config['output_directory'] == 'N/A':
+            _status = False
+            list_missing_parameters.append('Output Folder Name')
+            list_tags.append('output_directory')
+
+        if config['read_UB']:
+            if config['UB_filename'] == 'N/A':
+                _status = False
+                list_missing_parameters.append('UB File Name')
+                list_tags.append('ub_filename')
+
+        if config['run_nums'] == '':
+            _status = False
+            list_missing_parameters.append('Run Numbers')
+            list_tags.append('run_nums')
+
+        config_status_dict = {'status': _status,
+                              'missing_parameters': list_missing_parameters,
+                              'list_tags': list_tags}
+
+        return config_status_dict
 
