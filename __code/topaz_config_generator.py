@@ -372,6 +372,19 @@ class TopazConfigGenerator(object):
             for _item in _list:
                 self.cell_type_dict.setdefault(_item, []).append(_key)
 
+    def define_config_file_name(self):
+
+        display(HTML("<h2>Define Config File Name</h2>"))
+
+        config_file_ui = widgets.HBox([widgets.Label("Config File Name:",
+                                                     layout=widgets.Layout(width='15%')),
+                                       widgets.Text("tmp",
+                                                    layout=widgets.Layout(width='80%')),
+                                       widgets.Label(".cfg",
+                                                     layout=widgets.Layout(width='5%'))])
+        self.config_file_ui = config_file_ui.children[1]
+        display(config_file_ui)
+
     def select_input_data_folder(self):
 
         # ****** Select Input Data Folder ********
@@ -1024,17 +1037,17 @@ class TopazConfigGenerator(object):
         config = self.config
 
         # calibration file
-        config['calibration_file_1'] = self.calibration_file_ui.value
+        config['calibration_file_1'] = os.path.abspath(self.calibration_file_ui.value)
 
         # goniometer z offset correction
         config['z_offset'] = self.zoffset_ui.value
         config['x_offset'] = self.xoffset_ui.value
 
         # input data folder
-        config['data_directory'] = self.input_data_folder_ui.value
+        config['data_directory'] = os.path.abspath(self.input_data_folder_ui.value)
 
         # output folder
-        config['output_directory'] = self.output_data_folder_ui.value
+        config['output_directory'] = os.path.abspath(self.output_data_folder_ui.value)
 
         # monitor counts
         config['use_monitor_counts'] = self.monitor_counts_flag_ui.value
@@ -1052,7 +1065,7 @@ class TopazConfigGenerator(object):
 
         # UB
         config['read_UB'] = self.ub_flag_ui.value
-        config['UB_filename'] = self.ub_file_selected_ui.children[1].value
+        config['UB_filename'] = os.path.abspath(self.ub_file_selected_ui.children[1].value)
 
         # cell
         config['cell_type'] = self.cell_type_ui.value
@@ -1125,9 +1138,20 @@ class TopazConfigGenerator(object):
             config_text += "{} {}\n".format(_key, config[_key])
 
         output_folder = config['output_directory']
-        config_file_name = 'tmp.cfg'
 
-        full_config = os.path.join(output_folder, config_file_name)
-        make_ascii_file_from_string(text=config_text, filename=full_config)
+        # make sure folder exist
+        if not os.path.exists(output_folder):
+            display(HTML('<h2><span style="color:red">Folder does not exist! Please create folder first</span></h2>'))
+            display(HTML("<h2>Name of folder: </h2>" + output_folder))
 
-        display(HTML("<h2>Config file created: </h2>" + full_config))
+        # check we have write permission to this file
+        config_file_name = self.config_file_ui.value + '.cfg'
+
+        full_config = os.path.abspath(os.path.join(output_folder, config_file_name))
+        try:
+            make_ascii_file_from_string(text=config_text, filename=full_config)
+            display(HTML("<h2>Config file created: </h2>" + full_config))
+        except OSError:
+            display(HTML('<h2><span style="color:red">You do not have write permission to this file!</span></h2>'))
+            display(HTML("<h2>Name of folder: </h2>" + output_folder))
+
