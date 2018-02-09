@@ -4,6 +4,7 @@ import glob
 import os
 from ipywidgets import widgets
 from IPython.core.display import display
+from IPython.core.display import HTML
 
 
 class System(object):
@@ -67,15 +68,66 @@ class System(object):
                 if len(user_list_folders) > 0:
                     default_value = user_list_folders[0]
 
-        hbox = widgets.HBox([widgets.Label("Select Working Folder",
+        help_ui = widgets.Button(description="HELP",
+                                 button_style='info')
+        help_ui.on_click(cls.select_ipts_help)
+
+        top_hbox = widgets.HBox([widgets.Label("IPTS-"),
+                                 widgets.Text(value="",
+                                              layout=widgets.Layout(width='10%')),
+                                 widgets.Label("DOES NOT EXIST!",
+                                               layout=widgets.Layout(width='20%'))])
+        cls.result_label = top_hbox.children[2]
+        cls.result_label.add_class("result_label")
+        or_label = widgets.Label("OR")
+        bottom_hbox = widgets.HBox([widgets.Label("Select Folder",
                                            layout=widgets.Layout(width="20%")),
                              widgets.Select(options=user_list_folders,
-                                            value=default_value),
+                                            value=default_value,
+                                            layout=widgets.Layout(height='300px')),
                              ])
-        display(hbox)
+        cls.user_list_folders = user_list_folders
+        box = widgets.VBox([top_hbox, or_label, bottom_hbox, help_ui])
+        display(box)
 
-        cls.working_dir_ui = hbox.children[1]
+        cls.working_dir_ui = bottom_hbox.children[1]
+        cls.manual_ipts_entry_ui = top_hbox.children[1]
+        cls.manual_ipts_entry_ui.observe(cls.check_ipts_input, names='value')
 
+    @classmethod
+    def select_ipts_help(cls, value):
+        import webbrowser
+        webbrowser.open("https://neutronimaging.pages.ornl.gov")
+
+    @classmethod
+    def check_ipts_input(cls, value):
+        ipts = value['new']
+        full_ipts = 'IPTS-{}'.format(ipts)
+        if os.path.exists(os.path.join(cls.start_path, full_ipts)):
+            display(HTML("""
+                       <style>
+                       .result_label {
+                          font-style: bold;
+                          color: green;
+                          font-size: 18px;
+                       }
+                       </style>
+                       """))
+            cls.result_label.value = "OK!"
+            #select IPTS folder defined
+            cls.working_dir_ui.value = full_ipts
+
+        else:
+            display(HTML("""
+                       <style>
+                       .result_label {
+                          font-style: bold;
+                          color: red;
+                          font-size: 18px;
+                       }
+                       </style>
+                       """))
+            cls.result_label.value = "DOES NOT EXIST!"
 
     @classmethod
     def get_working_dir(cls):
