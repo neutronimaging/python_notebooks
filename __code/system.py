@@ -97,7 +97,7 @@ class System(object):
     @classmethod
     def select_ipts_help(cls, value):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov")
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/select_ipts/")
 
     @classmethod
     def check_ipts_input(cls, value):

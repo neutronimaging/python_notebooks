@@ -106,8 +106,15 @@ class Interface(QMainWindow):
         self.integrated_image_size['height'] = _height
         self.integrated_image_size['width'] = _width
 
+    def _clean_image(self, image):
+        _result_inf = np.where(np.isinf(image))
+        image[_result_inf] = np.NaN
+        return image
+
     def display_image(self):
-        self.ui.image_view.setImage(np.transpose(self.integrated_image))
+        _image = np.transpose(self.integrated_image)
+        _image = self._clean_image(_image)
+        self.ui.image_view.setImage(_image)
 
     def remove_row_entry(self, row):
         _roi_id = self.list_roi[row]['id']

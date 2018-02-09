@@ -312,7 +312,8 @@ class NormalizationHandler(object):
         def _plot_images(index):
             _ = plt.figure(num=data_type, figsize=(5, 5))
             ax_img = plt.subplot(111)
-            ax_img.imshow(sample_array[index], cmap='viridis')
+            my_imshow= ax_img.imshow(sample_array[index], cmap='viridis')
+            plt.colorbar(my_imshow)
 
         _ = widgets.interact(_plot_images,
                      index=widgets.IntSlider(min=0,
