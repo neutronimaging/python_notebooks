@@ -24,6 +24,12 @@ from __code import file_handler
 
 class WaterIntakeProfileCalculator(object):
 
+    dict_files = {'list_images': [],   # list of full file name images
+                  'list_data': [],
+                  'list_time_stamp': [],
+                  'list_time_stamp_user_format': [],
+                  }
+
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
 
@@ -38,10 +44,15 @@ class WaterIntakeProfileCalculator(object):
         list_images = self.files_ui.selected
         dict_time_stamp = retrieve_time_stamp(list_images)
         self.__sort_files_using_time_stamp(dict_time_stamp)
-
+        self.__load_files()
 
 
     # Helper functions
+    def __load_files(self):
+        o_load = Normalization()
+        o_load.load(file=self.dict_time_stamp['list_images'], notebook=True)
+        self.dict_files['list_data'] = o_load.data['sample']['data']
+
     def __sort_files_using_time_stamp(self, dict_time_stamp):
         """Using the time stamp information, all the files will be sorted in ascending order of time stamp"""
 
@@ -61,7 +72,7 @@ class WaterIntakeProfileCalculator(object):
         sorted_list_time_stamp = time_stamp[sort_index]
         sorted_list_time_stamp_user_format = time_stamp_user_format[sort_index]
 
-        self.dict_time_stamp = {'list_images': sorted_list_images,
+        self.dict_time_stamp = {'list_images': list(sorted_list_images),
                                 'list_time_stamp': sorted_list_time_stamp,
                                 'list_time_stamp_user_format': sorted_list_time_stamp_user_format}
 
