@@ -7,6 +7,8 @@ from PIL import Image
 import glob
 from collections import Counter, namedtuple
 import re
+import pytz
+import datetime
 
 from ipywidgets.widgets import interact
 from ipywidgets import widgets
@@ -14,6 +16,7 @@ from IPython.core.display import display, HTML
 
 import NeuNorm
 from NeuNorm.normalization import Normalization
+from __code.metadata_handler import MetadataHandler
 
 
 def test_image(file_name, threshold=5000):
@@ -246,6 +249,68 @@ def remove_file_from_list(list_files=[], regular_expression=''):
 
     return list_files
 
+def convert_to_human_readable_format(timestamp):
+    """Convert the unix time stamp into a human readable time format
+
+    Format return will look like  "2018-01-29 10:30:25"
+    """
+    return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
+    # TIFF files from CG1D have EPICS timestamps.  From the Controls
+    # Wiki:
+    #
+    # > EPICS timestamp. The timestamp is made when the image is read
+    # > out from the camera. Format is seconds.nanoseconds since Jan 1st
+    # > 00:00 1990.
+
+    # Convert seconds since "EPICS epoch" to seconds since the "UNIX
+    # epoch" so that Python can understand it.  I got the offset by
+    # calculating the number of seconds between the two epochs at
+    # https://www.epochconverter.com/
+    EPOCH_OFFSET = 631152000
+    EPOCH_OFFSET = 0
+    unix_epoch_timestamp = EPOCH_OFFSET + epics_timestamp
+
+    return unix_epoch_timestamp
+
+def retrieve_time_stamp(list_images):
+    [_, ext] = os.path.splitext(list_images[0])
+    if ext.lower() in ['.tiff', '.tif']:
+        ext = 'tif'
+    elif ext.lower() == '.fits':
+        ext = 'fits'
+    else:
+        raise ValueError
+
+    box = widgets.HBox([widgets.Label("Retrieving Time Stamp",
+                                      layout=widgets.Layout(width='20%')),
+                        widgets.IntProgress(min=0,
+                                            max=len(list_images),
+                                            value=0,
+                                            layout=widgets.Layout(width='50%'))
+                        ])
+    progress_bar = box.children[1]
+    display(box)
+
+    list_time_stamp = []
+    list_time_stamp_user_format = []
+    for _index, _file in enumerate(list_images):
+        _time_stamp = MetadataHandler.get_time_stamp(file_name=_file, ext=ext)
+        _time_stamp = _convert_epics_timestamp_to_rfc3339_timestamp(_time_stamp)
+        list_time_stamp.append(_time_stamp)
+
+        _user_format = convert_to_human_readable_format(_time_stamp)
+        list_time_stamp_user_format.append(_user_format)
+        progress_bar.value = _index + 1
+
+    box.close()
+    display(HTML("Time stamps retrieved!"))
+
+    return {'list_images': list_images,
+            'list_time_stamp': list_time_stamp,
+            'list_time_stamp_user_format': list_time_stamp_user_format}
 
 class ListMostDominantExtension(object):
     Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))
