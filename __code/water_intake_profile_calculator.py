@@ -15,11 +15,74 @@ import matplotlib.gridspec as gridspec
 import pytz
 import datetime
 
+import pyqtgraph as pg
+from pyqtgraph.dockarea import *
+
+try:
+    from PyQt4.QtGui import QFileDialog
+    from PyQt4 import QtCore, QtGui
+    from PyQt4.QtGui import QMainWindow
+except ImportError:
+    from PyQt5.QtWidgets import QFileDialog
+    from PyQt5 import QtCore, QtGui
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+
 from NeuNorm.normalization import Normalization
 
 from __code.metadata_handler import MetadataHandler
 from __code.file_handler import retrieve_time_stamp
 from __code import file_handler
+
+from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
+
+class WaterIntakeProfileSelector(QMainWindow):
+
+    def __init__(self, parent=None):
+
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+            (maybe hidden behind this browser!)</span>'))
+
+        QMainWindow.__init__(self, parent=parent)
+        self.ui = UiMainWindow()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Profile Selector")
+
+        self._init_pyqtgraph()
+
+    def _init_pyqtgraph(self):
+        area = DockArea()
+        area.setVisible(True)
+        d1 = Dock("Sample Image", size=(200, 300))
+        d2 = Dock("Profile", size=(200, 100))
+
+        area.addDock(d1, 'top')
+        area.addDock(d2, 'bottom')
+
+        # image view
+        self.ui.image_view = pg.ImageView()
+        self.ui.image_view.ui.menuBtn.hide()
+        self.ui.image_view.ui.roiBtn.hide()
+        d1.addWidget(self.ui.image_view)
+
+        # profile
+        self.profile = pg.PlotWidget(title='Profile')
+        self.profile.plot()
+        d2.addWidget(self.profile)
+
+        # set up layout
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(area)
+        self.ui.widget.setLayout(vertical_layout)
+
+    def slider_changed(self):
+        pass
+
+    def ok_button_clicked(self):
+        # do soemthing here
+        self.close()
+
+    def cancel_button_clicked(self):
+        self.close()
 
 
 class WaterIntakeProfileCalculator(object):

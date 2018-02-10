@@ -306,7 +306,6 @@ def retrieve_time_stamp(list_images):
         progress_bar.value = _index + 1
 
     box.close()
-    display(HTML("Time stamps retrieved!"))
 
     return {'list_images': list_images,
             'list_time_stamp': list_time_stamp,
