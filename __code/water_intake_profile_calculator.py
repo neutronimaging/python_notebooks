@@ -59,9 +59,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         area.setVisible(True)
         d1 = Dock("Sample Image", size=(200, 300))
         d2 = Dock("Profile", size=(200, 100))
+        d3 = Dock("Water Intake", size=(200, 400))
 
         area.addDock(d1, 'top')
         area.addDock(d2, 'bottom')
+        area.addDock(d3, 'right')
 
         # image view
         self.ui.image_view = pg.ImageView()
@@ -73,6 +75,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.profile = pg.PlotWidget(title='Profile')
         self.profile.plot()
         d2.addWidget(self.profile)
+
+        # water intake
+        self.water_intake = pg.PlotWidget(title='Water Intake')
+        self.water_intake.plot()
+        d3.addWidget(self.water_intake)
 
         # set up layout
         vertical_layout = QtGui.QVBoxLayout()

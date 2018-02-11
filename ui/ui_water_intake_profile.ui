@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>840</height>
+    <height>843</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -194,6 +194,39 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Profile Algorithms</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QRadioButton" name="radioButton">
+            <property name="text">
+             <string>Add</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_2">
+            <property name="text">
+             <string>Mean</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_3">
+            <property name="text">
+             <string>Median</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -286,16 +319,22 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Export</string>
     </property>
     <addaction name="actionExport_Profile"/>
+    <addaction name="actionWater_Intake"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExport_Profile">
    <property name="text">
-    <string>Export Profile ...</string>
+    <string>Profiles ...</string>
+   </property>
+  </action>
+  <action name="actionWater_Intake">
+   <property name="text">
+    <string>Water Intake ...</string>
    </property>
   </action>
  </widget>
