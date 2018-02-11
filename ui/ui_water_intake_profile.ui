@@ -61,7 +61,7 @@
           <item>
            <widget class="QLabel" name="file_index_value">
             <property name="text">
-             <string>0</string>
+             <string>2</string>
             </property>
            </widget>
           </item>
@@ -79,9 +79,9 @@
            </spacer>
           </item>
           <item>
-           <widget class="QCheckBox" name="ignore_first_image_checkbox">
+           <widget class="QLabel" name="label_10">
             <property name="text">
-             <string>Ignore First Image</string>
+             <string>NB: First image is ignored</string>
             </property>
            </widget>
           </item>
@@ -342,7 +342,7 @@
  <connections>
   <connection>
    <sender>file_index_slider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>slider_changed()</slot>
    <hints>
@@ -401,22 +401,6 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>419</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ignore_first_image_checkbox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>ignore_first_image_checked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>721</x>
-     <y>456</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>421</y>
     </hint>
    </hints>
   </connection>

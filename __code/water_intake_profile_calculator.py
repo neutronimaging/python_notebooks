@@ -38,6 +38,7 @@ from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
 class WaterIntakeProfileSelector(QMainWindow):
 
     list_data = []
+    ignore_first_image_checked = True
 
     def __init__(self, parent=None, dict_data={}):
 
@@ -49,7 +50,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Profile Selector")
 
-        self.list_data = dict_data['list_data']
+        self.list_data = dict_data['list_data'][1:]
         self._init_pyqtgraph()
         self._init_widgets()
         self.update_image()
@@ -89,20 +90,19 @@ class WaterIntakeProfileSelector(QMainWindow):
     def _init_widgets(self):
         nbr_files = len(self.list_data)
         self.ui.file_index_slider.setMaximum(nbr_files)
-        self.ui.file_index_slider.setValue(0)
+        self.ui.file_index_slider.setMinimum(2)
+        self.ui.file_index_slider.setValue(2)
+
+        print(self.ui.file_index_slider.minimum())
+        print(self.ui.file_index_slider.maximum())
 
     def update_image(self):
         index_selected = self.ui.file_index_slider.value()
         _image = self.list_data[index_selected]
         self.ui.image_view.setImage(_image)
 
-    # widgets
-    def ignore_first_image_checked(self, value):
-        print(value)
-
-    def slider_changed(self):
-        new_value = self.ui.file_index_slider.value()
-        self.ui.file_index_value.setText(str(new_value))
+    def slider_changed(self, value):
+        self.ui.file_index_value.setText(str(value))
 
     def help_button_clicked(self):
         import webbrowser
