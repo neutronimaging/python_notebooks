@@ -95,6 +95,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.cancel_button)
         spacerItem3 = QtWidgets.QSpacerItem(408, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem3)
+        self.help_button = QtWidgets.QPushButton(self.centralwidget)
+        self.help_button.setObjectName("help_button")
+        self.horizontalLayout.addWidget(self.help_button)
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem4)
         self.ok_button = QtWidgets.QPushButton(self.centralwidget)
         self.ok_button.setMinimumSize(QtCore.QSize(53, 46))
         self.ok_button.setMaximumSize(QtCore.QSize(53, 46))
@@ -120,6 +125,7 @@ class Ui_MainWindow(object):
         self.file_index_slider.sliderMoved['int'].connect(MainWindow.slider_changed)
         self.ok_button.clicked.connect(MainWindow.ok_button_clicked)
         self.cancel_button.clicked.connect(MainWindow.cancel_button_clicked)
+        self.help_button.clicked.connect(MainWindow.help_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -137,6 +143,7 @@ class Ui_MainWindow(object):
         self.label_8.setText(_translate("MainWindow", "Height:"))
         self.label_9.setText(_translate("MainWindow", "N/A"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel"))
+        self.help_button.setText(_translate("MainWindow", "HELP"))
         self.ok_button.setText(_translate("MainWindow", "OK"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionExport_Profile.setText(_translate("MainWindow", "Export Profile ..."))

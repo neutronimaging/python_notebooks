@@ -37,7 +37,9 @@ from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
 
 class WaterIntakeProfileSelector(QMainWindow):
 
-    def __init__(self, parent=None):
+    list_data = []
+
+    def __init__(self, parent=None, dict_data={}):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
@@ -47,7 +49,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Profile Selector")
 
+        self.list_data = dict_data['list_data']
         self._init_pyqtgraph()
+        self._init_widgets()
+        self.update_image()
 
     def _init_pyqtgraph(self):
         area = DockArea()
@@ -74,8 +79,21 @@ class WaterIntakeProfileSelector(QMainWindow):
         vertical_layout.addWidget(area)
         self.ui.widget.setLayout(vertical_layout)
 
-    def slider_changed(self):
+    def _init_widgets(self):
+        nbr_files = len(self.list_data)
+        self.ui.file_index_slider.setMaximum(nbr_files)
+        self.ui.file_index_slider.setValue(0)
+
+    def update_image(self):
         pass
+
+    def slider_changed(self):
+        new_value = self.ui.file_index_slider.value()
+        self.ui.file_index_value.setText(str(new_value))
+
+    def help_button_clicked(self):
+        import webbrowser
+        webbrowser.open("http://localhost:1313/en/tutorial/notebooks/water_intake_profile_calculator/")
 
     def ok_button_clicked(self):
         # do soemthing here
@@ -96,7 +114,16 @@ class WaterIntakeProfileCalculator(object):
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
 
+    def select_file_help(self, value):
+        import webbrowser
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile")
+
     def select_data(self):
+        help_ui = widgets.Button(description="HELP",
+                                 button_style='info')
+        help_ui.on_click(self.select_file_help)
+        display(help_ui)
+
         self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
                                                              start_dir=self.working_dir,
                                                              multiple=True)
