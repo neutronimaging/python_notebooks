@@ -92,7 +92,13 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.file_index_slider.setValue(0)
 
     def update_image(self):
-        pass
+        index_selected = self.ui.file_index_slider.value()
+        _image = self.list_data[index_selected]
+        self.ui.image_view.setImage(_image)
+
+    # widgets
+    def ignore_first_image_checked(self, value):
+        print(value)
 
     def slider_changed(self):
         new_value = self.ui.file_index_slider.value()

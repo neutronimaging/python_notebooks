@@ -404,6 +404,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>ignore_first_image_checkbox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ignore_first_image_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>721</x>
+     <y>456</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>421</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -414,5 +430,6 @@
   <slot>save_roi_table()</slot>
   <slot>cancel_button_clicked()</slot>
   <slot>help_button_clicked()</slot>
+  <slot>ignore_first_image_checked()</slot>
  </slots>
 </ui>

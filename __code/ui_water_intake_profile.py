@@ -95,6 +95,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.groupBox_2)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.radioButton = QtWidgets.QRadioButton(self.groupBox_2)
+        self.radioButton.setChecked(True)
         self.radioButton.setObjectName("radioButton")
         self.verticalLayout_3.addWidget(self.radioButton)
         self.radioButton_2 = QtWidgets.QRadioButton(self.groupBox_2)
@@ -148,6 +149,7 @@ class Ui_MainWindow(object):
         self.ok_button.clicked.connect(MainWindow.ok_button_clicked)
         self.cancel_button.clicked.connect(MainWindow.cancel_button_clicked)
         self.help_button.clicked.connect(MainWindow.help_button_clicked)
+        self.ignore_first_image_checkbox.toggled['bool'].connect(MainWindow.ignore_first_image_checked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
