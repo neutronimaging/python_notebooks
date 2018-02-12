@@ -217,7 +217,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         pass
 
     def export_profile_clicked(self):
-        pass
+
 
     def export_water_intake_clicked(self):
         pass
