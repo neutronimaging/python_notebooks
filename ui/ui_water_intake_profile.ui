@@ -201,7 +201,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QRadioButton" name="radioButton">
+           <widget class="QRadioButton" name="add_radioButton">
             <property name="text">
              <string>Add</string>
             </property>
@@ -211,14 +211,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_2">
+           <widget class="QRadioButton" name="mean_radioButton">
             <property name="text">
              <string>Mean</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_3">
+           <widget class="QRadioButton" name="median_radioButton">
             <property name="text">
              <string>Median</string>
             </property>
@@ -436,6 +436,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>add_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>profile_algo_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>711</x>
+     <y>528</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>421</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mean_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>profile_algo_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>711</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>421</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>median_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>profile_algo_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>711</x>
+     <y>562</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>421</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -449,5 +497,6 @@
   <slot>ignore_first_image_checked()</slot>
   <slot>export_profile_clicked()</slot>
   <slot>export_water_intake_clicked()</slot>
+  <slot>profile_algo_changed()</slot>
  </slots>
 </ui>

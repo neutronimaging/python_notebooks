@@ -38,6 +38,7 @@ from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
 class WaterIntakeProfileSelector(QMainWindow):
 
     list_data = []
+    current_image = []
     ignore_first_image_checked = True
     roi_width = 0.01
     roi = {'x0': 0, 'y0': 0, 'width': 200, 'height': 200}
@@ -87,6 +88,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         _roi_id.addScaleHandle([0, 0], [1, 1])
         self.ui.image_view.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(self.roi_moved)
+        self.roi_id = _roi_id
         d1.addWidget(self.ui.image_view)
 
         # profile
@@ -116,7 +118,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.file_index_slider.setMaximum(nbr_files)
         self.ui.file_index_slider.setMinimum(2)
         self.ui.file_index_slider.setValue(2)
+        self.update_labels()
 
+    def update_labels(self):
         _roi = self.roi
         _x0 = _roi['x0']
         _y0 = _roi['y0']
@@ -135,7 +139,38 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_water_intake_plot()
 
     def update_profile_plot(self):
-        pass
+        _image = self.current_image
+        _roi = self.roi
+
+        x0 = _roi['x0']
+        y0 = _roi['y0']
+        width = _roi['width']
+        height = _roi['height']
+
+        x1 = x0 + width
+        y1 = y0 + height
+
+        _image_of_roi = _image[y0:y1, x0:x1]
+        _profile_algo = self.get_profile_algo()
+        if _profile_algo == 'add':
+            _profile = np.sum(_image_of_roi, axis=1)
+        elif _profile_algo == 'mean':
+            _profile = np.mean(_image_of_roi, axis=1)
+        elif _profile_algo == 'median':
+            _profile = np.median(_image_of_roi, axis=1)
+        else:
+            _profile = []
+        self.profile.clear()
+        self.profile.plot(_profile)
+
+    def get_profile_algo(self):
+        if self.ui.add_radioButton.isChecked():
+            return 'add'
+        elif self.ui.mean_radioButton.isChecked():
+            return 'mean'
+        elif self.ui.median_radioButton.isChecked():
+            return 'median'
+        return ''
 
     def update_water_intake_plot(self):
         pass
@@ -147,15 +182,36 @@ class WaterIntakeProfileSelector(QMainWindow):
         pass
 
     def roi_moved(self):
-        pass
+        region = self.roi_id.getArraySlice(self.current_image, self.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        width = np.abs(x1-x0)
+        height = np.abs(y1-y0)
+        self.roi['x0'] = x0
+        self.roi['y0'] = y0
+        self.roi['width'] = width-1
+        self.roi['height'] = height-1
+        self.update_labels()
+        self.update_profile_plot()
 
     def update_image(self):
         index_selected = self.ui.file_index_slider.value()
-        _image = self.list_data[index_selected]
+        _image = self.list_data[index_selected-1]
+        self.current_image = _image
         self.ui.image_view.setImage(_image)
 
     def slider_changed(self, value):
         self.ui.file_index_value.setText(str(value))
+        self.update_image()
+        self.update_profile_plot()
+
+    def profile_algo_changed(self):
+        print("profile algo changed")
+        self.update_profile_plot()
 
     def help_button_clicked(self):
         import webbrowser
