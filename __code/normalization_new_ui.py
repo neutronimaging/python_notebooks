@@ -409,7 +409,7 @@ class NormalizationHandler(object):
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-                            'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+            #                'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
         else:
             _list_roi = []
             for _key in dict_roi.keys():
