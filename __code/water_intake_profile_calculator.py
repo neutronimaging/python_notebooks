@@ -39,6 +39,8 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     list_data = []
     ignore_first_image_checked = True
+    roi_width = 0.01
+    roi = {'x0': 0, 'y0': 0, 'width': 200, 'height': 200}
 
     def __init__(self, parent=None, dict_data={}):
 
@@ -54,6 +56,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self._init_pyqtgraph()
         self._init_widgets()
         self.update_image()
+        self.update_plots()
 
     def _init_pyqtgraph(self):
         area = DockArea()
@@ -70,6 +73,20 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.image_view = pg.ImageView()
         self.ui.image_view.ui.menuBtn.hide()
         self.ui.image_view.ui.roiBtn.hide()
+
+        _color = QtGui.QColor(62, 13, 244)
+        _pen = QtGui.QPen()
+        _pen.setColor(_color)
+        _pen.setWidthF(self.roi_width)
+        _x0 = self.roi['x0']
+        _y0 = self.roi['y0']
+        _width = self.roi['width']
+        _height = self.roi['height']
+        _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
+        _roi_id.addScaleHandle([1, 1], [0, 0])
+        _roi_id.addScaleHandle([0, 0], [1, 1])
+        self.ui.image_view.addItem(_roi_id)
+        _roi_id.sigRegionChanged.connect(self.roi_moved)
         d1.addWidget(self.ui.image_view)
 
         # profile
@@ -80,7 +97,14 @@ class WaterIntakeProfileSelector(QMainWindow):
         # water intake
         self.water_intake = pg.PlotWidget(title='Water Intake')
         self.water_intake.plot()
-        d3.addWidget(self.water_intake)
+        self.ui.water_intake_refresh_button = QtGui.QPushButton("Refresh Water Intake Plot")
+        self.ui.water_intake_refresh_button.clicked.connect(self.refresh_water_intake_plot_clicked)
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(self.water_intake)
+        vertical_layout.addWidget(self.ui.water_intake_refresh_button)
+        wi_widget = QtGui.QWidget()
+        wi_widget.setLayout(vertical_layout)
+        d3.addWidget(wi_widget)
 
         # set up layout
         vertical_layout = QtGui.QVBoxLayout()
@@ -93,8 +117,37 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.file_index_slider.setMinimum(2)
         self.ui.file_index_slider.setValue(2)
 
-        print(self.ui.file_index_slider.minimum())
-        print(self.ui.file_index_slider.maximum())
+        _roi = self.roi
+        _x0 = _roi['x0']
+        _y0 = _roi['y0']
+        _width = _roi['width']
+        _height = _roi['height']
+        self.ui.x0.setText(str(_x0))
+        self.ui.y0.setText(str(_y0))
+        self.ui.width.setText(str(_width))
+        self.ui.height.setText(str(_height))
+
+    def refresh_water_intake_plot_clicked(self):
+        pass
+
+    def update_plots(self):
+        self.update_profile_plot()
+        self.update_water_intake_plot()
+
+    def update_profile_plot(self):
+        pass
+
+    def update_water_intake_plot(self):
+        pass
+
+    def export_profile_clicked(self):
+        pass
+
+    def export_water_intake_clicked(self):
+        pass
+
+    def roi_moved(self):
+        pass
 
     def update_image(self):
         index_selected = self.ui.file_index_slider.value()

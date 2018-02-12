@@ -119,7 +119,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="label_5">
+          <widget class="QLabel" name="x0">
            <property name="minimumSize">
             <size>
              <width>100</width>
@@ -145,7 +145,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLabel" name="label_7">
+          <widget class="QLabel" name="y0">
            <property name="text">
             <string>N/A</string>
            </property>
@@ -159,7 +159,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QLabel" name="label_6">
+          <widget class="QLabel" name="width">
            <property name="text">
             <string>N/A</string>
            </property>
@@ -173,7 +173,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QLabel" name="label_9">
+          <widget class="QLabel" name="height">
            <property name="text">
             <string>N/A</string>
            </property>
@@ -404,6 +404,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionExport_Profile</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_profile_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>421</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionWater_Intake</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_water_intake_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>421</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -415,5 +447,7 @@
   <slot>cancel_button_clicked()</slot>
   <slot>help_button_clicked()</slot>
   <slot>ignore_first_image_checked()</slot>
+  <slot>export_profile_clicked()</slot>
+  <slot>export_water_intake_clicked()</slot>
  </slots>
 </ui>
