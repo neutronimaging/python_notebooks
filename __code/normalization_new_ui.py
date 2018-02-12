@@ -77,7 +77,7 @@ class Panel:
     current_state_label_ui = None
     prev_button_ui = None
     next_button_ui = None
-    o_norm = None
+    o_norm_handler = None
 
     df_panel = None
     
@@ -259,10 +259,11 @@ class DFSelectionPanel(Panel):
 
     def next_button_clicked(self, event):
         self.remove()
-        o_norm = NormalizationHandler(files=self.files,
+        o_norm_handler = NormalizationHandler(files=self.files,
                                       working_dir=self.working_dir)
-        o_norm.load_data()
-        self.top_object.o_norm = o_norm
+        o_norm_handler.load_data()
+        self.top_object.o_norm_handler = o_norm_handler
+        self.top_object.o_norm = o_norm_handler.o_norm
 
 class NormalizationHandler(object):
     
@@ -285,7 +286,7 @@ class NormalizationHandler(object):
         self.o_norm.load(file=list_sample, notebook=True)
         self.data.sample = self.o_norm.data['sample']['data']
         self.list_file_names = list_sample
-        
+
         # ob
         list_ob = self.files.ob
         self.o_norm.load(file=list_ob, data_type='ob', notebook=True)
@@ -296,7 +297,8 @@ class NormalizationHandler(object):
         if list_df:
             self.o_norm.load(file=list_df, data_type='df', notebook=True)
             self.data.df = self.o_norm.data['df']['data']
-        
+
+
     def get_data(self, data_type='sample'):
         if data_type == 'sample':
             return self.data.sample
