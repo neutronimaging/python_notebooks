@@ -37,6 +37,62 @@ from __code import file_handler
 
 from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
 
+
+class MeanRangeCalculation(object):
+    '''
+    Mean value of all the counts between left_pixel and right pixel
+    '''
+
+    def __init__(self, data=None):
+        self.data = data
+        self.nbr_pixel = len(self.data)
+
+    def calculate_left_right_mean(self, pixel=-1):
+        _data = self.data
+        _nbr_pixel = self.nbr_pixel
+
+        self.left_mean = np.mean(_data[0:pixel+1])
+        self.right_mean = np.mean(_data[pixel+1:_nbr_pixel])
+
+    def calculate_delta_mean_square(self):
+        self.delta_square = np.square(self.left_mean - self.right_mean)
+
+
+class WaterIntakeHandler(object):
+    """This class calculates the water intake position of a set of profiles"""
+
+    dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
+
+    def __init__(self, dict_profiles={}):
+        self.dict_profiles = dict_profiles
+        self.calculate()
+
+    def calculate(self):
+        _dict_profiles = self.dict_profiles
+        nbr_pixels = len(_dict_profiles['0']['data'])
+        nbr_files = len(_dict_profiles.keys())
+
+        water_intake_deltatime = []
+        water_intake_peak = []
+        for _index_file in np.arange(nbr_files):
+            _profile = _dict_profiles[str(_index_file)]
+            _profile_data = _profile['data']
+            _delta_time = _profile['delta_time']
+            delta_array = []
+            for _pixel in np.range(0, nbr_pixels-1):
+                _o_range = MeanRangeCalculation(data=_profile_data)
+                _o_range.calculate_left_right_mean(pixel=_pixel)
+                _o_range.calculate_delta_mean_square()
+                delta_array.append(_o_range.delta_square)
+
+            peak_value = delta_array.index(max(delta_array[0: nbr_pixel -5]))
+            water_intake_peak.append(peak_value)
+            water_intake_deltatime.append(_delta_time)
+
+        self.water_intake_peak = water_intake_peak
+        self.water_intake_deltatime = water_intake_deltatime
+
+
 class WaterIntakeProfileSelector(QMainWindow):
 
     list_data = []
@@ -46,6 +102,7 @@ class WaterIntakeProfileSelector(QMainWindow):
     roi_width = 0.01
     roi = {'x0': 0, 'y0': 0, 'width': 200, 'height': 200}
     table_column_width = [350, 150, 200]
+    dict_profiles = {} # contain all the profiles just before calculating the water intake
 
     def __init__(self, parent=None, dict_data={}):
 
@@ -214,6 +271,8 @@ class WaterIntakeProfileSelector(QMainWindow):
             _profile = []
         self.profile.clear()
         self.profile.plot(_profile)
+        self.profile.setLabel('left', 'Counts')
+        self.profile.setLabel('bottom', 'Y pixels')
 
     def get_profile_algo(self):
         if self.ui.add_radioButton.isChecked():
@@ -225,7 +284,46 @@ class WaterIntakeProfileSelector(QMainWindow):
         return ''
 
     def update_water_intake_plot(self):
-        pass
+        self.calculate_all_profiles()
+        o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles)
+        delta_time = o_water_intake_handler.water_intake_deltatime
+        peak = o_water_intake_handler.water_intake_peak
+
+        self.water_intake.plot(delta_time, peak)
+        self.water_intake.setLabel('left', 'Counts')
+        self.water_intake.setLabel('bottom', 'Delta Time')
+
+    def calculate_all_profiles(self):
+        dict_data = self.dict_data
+
+        list_images = dict_data['list_images']
+        list_time_stamp = dict_data['list_time_stamp']
+        list_data = dict_data['list_data']
+        list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+        _algo_used = self.get_profile_algo()
+
+        time_stamp_first_file = list_time_stamp[0]
+
+        nbr_images = len(list_images)
+        dict_profiles = {}
+        for index in np.arange(1, nbr_images):
+            _image = list_data[index]
+            _image_of_roi = _image[y0:y1, x0:x1]
+            if _algo_used == 'add':
+                _profile = np.sum(_image_of_roi, axis=1)
+            elif _algo_used == 'mean':
+                _profile = np.mean(_image_of_roi, axis=1)
+            elif _algo_used == 'median':
+                _profile = np.median(_image_of_roi, axis=1)
+            else:
+                raise NotImplementedError
+
+            time_stamp = list_time_stamp[index]
+            delta_time = time_stamp - time_stamp_first_file
+
+            dict_profiles[str(index)] = {'data': _profile,
+                                         'delta_time': delta_time}
+        self.dict_profiles = dict_profiles
 
     def export_profile_clicked(self):
         #select output folder
@@ -294,12 +392,8 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         self.eventProgress.setVisible(False)
 
-
     def export_water_intake_clicked(self):
         pass
-
-    def display_imported_files_clicked(self):
-        print("displaying imported files")
 
     def roi_moved(self):
         region = self.roi_id.getArraySlice(self.current_image, self.ui.image_view.imageItem)
