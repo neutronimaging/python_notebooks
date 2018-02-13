@@ -269,6 +269,7 @@ class NormalizationHandler(object):
     data = None
     integrated_sample = []
     working_dir = ''
+    o_norm = None
 
     normalized_data_array = []
 
@@ -405,6 +406,7 @@ class NormalizationHandler(object):
 
         if dict_roi is None:
             #try:
+            self.o_norm.df_correction()
             self.o_norm.normalization(notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
@@ -429,6 +431,7 @@ class NormalizationHandler(object):
                 _list_roi.append(_roi)
 
             # try:
+            self.o_norm.df_correction()
             self.o_norm.normalization(roi=_list_roi, notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
