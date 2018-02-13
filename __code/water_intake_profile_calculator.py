@@ -18,6 +18,8 @@ import datetime
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
+from __code.file_handler import make_ascii_file
+
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
@@ -62,6 +64,15 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_image()
         self.update_plots()
         self.update_infos_tab()
+        self.init_statusbar()
+
+    def init_statusbar(self):
+        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress.setMinimumSize(20, 14)
+        self.eventProgress.setMaximumSize(540, 100)
+        self.eventProgress.setVisible(False)
+        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+        self.setStyleSheet("QStatusBar{padding-left:8px;color:red;font-weight:bold;}")
 
     def _init_pyqtgraph(self):
         area = DockArea()
@@ -217,6 +228,71 @@ class WaterIntakeProfileSelector(QMainWindow):
         pass
 
     def export_profile_clicked(self):
+        #select output folder
+        _export_folder = QFileDialog.getExistingDirectory(self, caption = "Select Output Folder",
+                                                         options=QFileDialog.ShowDirsOnly)
+        export_folder = os.path.abspath(_export_folder)
+
+        dict_data = self.dict_data
+        list_images = dict_data['list_images']
+        list_time_stamp = dict_data['list_time_stamp']
+        list_data = dict_data['list_data']
+        list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+        _algo_used = self.get_profile_algo()
+
+        # get metadata roi selection
+        _roi = self.roi
+        x0 = _roi['x0']
+        y0 = _roi['y0']
+        width = _roi['width']
+        height = _roi['height']
+        x1 = x0 + width
+        y1 = y0 + height
+
+        input_folder = os.path.dirname(list_images[0])
+
+        nbr_images = len(list_images)
+        self.eventProgress.setMinimum(1)
+        self.eventProgress.setMaximum(nbr_images)
+        self.eventProgress.setValue(1)
+        self.eventProgress.setVisible(True)
+
+        for index in np.arange(1, nbr_images):
+            _short_file_name = os.path.basename(list_images[index])
+            [_basename, _] = os.path.splitext(_short_file_name)
+            output_file_name = os.path.join(export_folder, _basename + '_profile.txt')
+
+            metadata = []
+            metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
+            metadata.append("# Profile over ROI selected integrated along x-axis")
+            metadata.append("# folder: {}".format(input_folder))
+            metadata.append("# filename: {}".format(_short_file_name))
+            metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
+            metadata.append("# timestamp (user format): {}".format(list_time_stamp_user_format[index]))
+            metadata.append("# algorithm used: {}".format(_algo_used))
+            metadata.append("# ")
+            metadata.append("# pixel, counts")
+
+            _image = list_data[index]
+            _image_of_roi = _image[y0:y1, x0:x1]
+            if _algo_used == 'add':
+                _profile = np.sum(_image_of_roi, axis=1)
+            elif _algo_used == 'mean':
+                _profile = np.mean(_image_of_roi, axis=1)
+            elif _algo_used == 'median':
+                _profile = np.median(_image_of_roi, axis=1)
+            else:
+                raise NotImplementedError
+
+            data = []
+            for _pixel_index, _counts in enumerate(_profile):
+                _line = "{}, {}".format(_pixel_index+y0, _counts)
+                data.append(_line)
+
+            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
+            self.eventProgress.setValue(index)
+
+        self.eventProgress.setVisible(False)
 
 
     def export_water_intake_clicked(self):
