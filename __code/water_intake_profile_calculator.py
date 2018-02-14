@@ -100,6 +100,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     dict_data = {}
     dict_data_raw = {} # dict data untouched (not sorted)
+    list_images_raw = [] # use to reste dict_data
 
     current_image = []
     ignore_first_image_checked = True
@@ -121,6 +122,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.dict_data_raw = dict_data
         self.dict_data = dict_data
         self.list_data = dict_data['list_data'][1:]
+        self.list_images_raw = dict_data['list_images']
+
         self._init_pyqtgraph()
         self._init_widgets()
         self.sort_dict_data()
@@ -298,9 +301,6 @@ class WaterIntakeProfileSelector(QMainWindow):
         delta_time = o_water_intake_handler.water_intake_deltatime
         peak = o_water_intake_handler.water_intake_peak
 
-        print(delta_time)
-        print(peak)
-
         self.water_intake.plot(delta_time, peak)
         self.water_intake.setLabel('left', 'Counts')
         self.water_intake.setLabel('bottom', 'Delta Time')
@@ -466,26 +466,31 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.time_between_runs_spinBox.setEnabled(is_sorting_by_name)
         self.ui.time_between_runs_units_label.setEnabled(is_sorting_by_name)
         self.__sort_files(is_by_name=is_sorting_by_name)
+        self.update_infos_tab()
 
     def __sort_files(self, is_by_name=True):
         # reformat name to make sure the last digit have 4 digits
-        self._fix_index_of_files()
+        if is_by_name:
+            self._fix_index_of_files()
+        else:
+            self._reset_list_of_files()
+
+    def _reset_list_of_files(self):
+        list_images_raw = self.list_images_raw
+        self.dict_data_raw['list_images'] = list_images_raw
 
     def _fix_index_of_files(self):
         """reformat file name to make sure index has 4 digits
         """
-        print("in fix_index_of_files")
-        _dict_data = self.dict_data
-        list_files = _dict_data['list_images']
+        _dict_data_raw = self.dict_data_raw
+        list_files = _dict_data_raw['list_images']
         formated_list_files = []
 
         re_string = r"^(?P<part1>\w*)_(?P<index>\d+)$"
         for _file in list_files:
-            print(_file)
             dirname = os.path.dirname(_file)
             basename = os.path.basename(_file)
             [base, ext] = os.path.splitext(basename)
-            print("base is: {}".format(base))
             m = re.match(re_string, base)
             if m is None:
                 raise ValueError
@@ -494,11 +499,10 @@ class WaterIntakeProfileSelector(QMainWindow):
                 index = np.int(m.group('index'))
                 new_index = "{:04d}".format(index)
                 new_file = os.path.join(dirname, part1 + '_' + new_index + ext)
-                print("new file is {}".format(new_file))
                 formated_list_files.append(new_file)
 
         self.dict_data['list_images'] = formated_list_files
-        print(formated_list_files)
+
 
     def time_between_runs_spinBox_changed(self):
         pass
