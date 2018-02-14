@@ -17,9 +17,9 @@ class MetadataHandler(object):
                 time_stamp_string = "{}.{}".format(time_stamp_s, time_stamp_ns)
                 time_stamp = float(time_stamp_string)
             except:
-                time_stamp = os.path.getmtime(file_name)
+                time_stamp = os.path.getctime(file_name)
         elif ext == 'fits':
-            time_stamp = os.path.getmtime(file_name)
+            time_stamp = os.path.getctime(file_name)
 
         else:
             raise NotImplemented

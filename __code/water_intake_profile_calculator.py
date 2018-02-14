@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import re
+import re
 import pandas as pd
 
 import matplotlib.gridspec as gridspec
@@ -69,23 +70,23 @@ class WaterIntakeHandler(object):
 
     def calculate(self):
         _dict_profiles = self.dict_profiles
-        nbr_pixels = len(_dict_profiles['0']['data'])
+        nbr_pixels = len(_dict_profiles['1']['data'])
         nbr_files = len(_dict_profiles.keys())
 
         water_intake_deltatime = []
         water_intake_peak = []
-        for _index_file in np.arange(nbr_files):
+        for _index_file in np.arange(1, nbr_files):
             _profile = _dict_profiles[str(_index_file)]
             _profile_data = _profile['data']
             _delta_time = _profile['delta_time']
             delta_array = []
-            for _pixel in np.range(0, nbr_pixels-1):
+            for _pixel in np.arange(0, nbr_pixels-1):
                 _o_range = MeanRangeCalculation(data=_profile_data)
                 _o_range.calculate_left_right_mean(pixel=_pixel)
                 _o_range.calculate_delta_mean_square()
                 delta_array.append(_o_range.delta_square)
 
-            peak_value = delta_array.index(max(delta_array[0: nbr_pixel -5]))
+            peak_value = delta_array.index(max(delta_array[0: nbr_pixels -5]))
             water_intake_peak.append(peak_value)
             water_intake_deltatime.append(_delta_time)
 
@@ -96,7 +97,10 @@ class WaterIntakeHandler(object):
 class WaterIntakeProfileSelector(QMainWindow):
 
     list_data = []
+
     dict_data = {}
+    dict_data_raw = {} # dict data untouched (not sorted)
+
     current_image = []
     ignore_first_image_checked = True
     roi_width = 0.01
@@ -114,10 +118,12 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Profile Selector")
 
+        self.dict_data_raw = dict_data
         self.dict_data = dict_data
         self.list_data = dict_data['list_data'][1:]
         self._init_pyqtgraph()
         self._init_widgets()
+        self.sort_dict_data()
         self.update_image()
         self.update_plots()
         self.update_infos_tab()
@@ -130,6 +136,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
         self.setStyleSheet("QStatusBar{padding-left:8px;color:red;font-weight:bold;}")
+
+    def sort_dict_data(self):
+        pass
 
     def _init_pyqtgraph(self):
         area = DockArea()
@@ -241,7 +250,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.height.setText(str(_height))
 
     def refresh_water_intake_plot_clicked(self):
-        pass
+        self.update_water_intake_plot()
 
     def update_plots(self):
         self.update_profile_plot()
@@ -289,6 +298,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         delta_time = o_water_intake_handler.water_intake_deltatime
         peak = o_water_intake_handler.water_intake_peak
 
+        print(delta_time)
+        print(peak)
+
         self.water_intake.plot(delta_time, peak)
         self.water_intake.setLabel('left', 'Counts')
         self.water_intake.setLabel('bottom', 'Delta Time')
@@ -296,13 +308,23 @@ class WaterIntakeProfileSelector(QMainWindow):
     def calculate_all_profiles(self):
         dict_data = self.dict_data
 
+        _roi = self.roi
+
+        x0 = _roi['x0']
+        y0 = _roi['y0']
+        width = _roi['width']
+        height = _roi['height']
+
+        x1 = x0 + width
+        y1 = y0 + height
+
         list_images = dict_data['list_images']
         list_time_stamp = dict_data['list_time_stamp']
         list_data = dict_data['list_data']
         list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
         _algo_used = self.get_profile_algo()
 
-        time_stamp_first_file = list_time_stamp[0]
+        time_stamp_first_file = float(list_time_stamp[0])
 
         nbr_images = len(list_images)
         dict_profiles = {}
@@ -318,7 +340,7 @@ class WaterIntakeProfileSelector(QMainWindow):
             else:
                 raise NotImplementedError
 
-            time_stamp = list_time_stamp[index]
+            time_stamp = float(list_time_stamp[index])
             delta_time = time_stamp - time_stamp_first_file
 
             dict_profiles[str(index)] = {'data': _profile,
@@ -437,6 +459,50 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_image()
         self.update_profile_plot()
 
+    # files sorting
+    def sorting_files_checkbox_clicked(self):
+        is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
+        self.ui.time_between_runs_label.setEnabled(is_sorting_by_name)
+        self.ui.time_between_runs_spinBox.setEnabled(is_sorting_by_name)
+        self.ui.time_between_runs_units_label.setEnabled(is_sorting_by_name)
+        self.__sort_files(is_by_name=is_sorting_by_name)
+
+    def __sort_files(self, is_by_name=True):
+        # reformat name to make sure the last digit have 4 digits
+        self._fix_index_of_files()
+
+    def _fix_index_of_files(self):
+        """reformat file name to make sure index has 4 digits
+        """
+        print("in fix_index_of_files")
+        _dict_data = self.dict_data
+        list_files = _dict_data['list_images']
+        formated_list_files = []
+
+        re_string = r"^(?P<part1>\w*)_(?P<index>\d+)$"
+        for _file in list_files:
+            print(_file)
+            dirname = os.path.dirname(_file)
+            basename = os.path.basename(_file)
+            [base, ext] = os.path.splitext(basename)
+            print("base is: {}".format(base))
+            m = re.match(re_string, base)
+            if m is None:
+                raise ValueError
+            else:
+                part1 = m.group('part1')
+                index = np.int(m.group('index'))
+                new_index = "{:04d}".format(index)
+                new_file = os.path.join(dirname, part1 + '_' + new_index + ext)
+                print("new file is {}".format(new_file))
+                formated_list_files.append(new_file)
+
+        self.dict_data['list_images'] = formated_list_files
+        print(formated_list_files)
+
+    def time_between_runs_spinBox_changed(self):
+        pass
+
     def profile_algo_changed(self):
         self.update_profile_plot()
 
@@ -479,12 +545,11 @@ class WaterIntakeProfileCalculator(object):
 
         self.files_ui.show()
 
-    def sort_and_load(self):
+    def load(self):
         list_images = self.files_ui.selected
-        dict_time_stamp = retrieve_time_stamp(list_images)
-        self.__sort_files_using_time_stamp(dict_time_stamp)
+        self.dict_files = retrieve_time_stamp(list_images)
+        #self.__sort_files_using_time_stamp(self.dict_files)
         self.__load_files()
-
 
     # Helper functions
     def __load_files(self):
