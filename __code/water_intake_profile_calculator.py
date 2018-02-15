@@ -507,6 +507,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.time_between_runs_units_label.setEnabled(is_sorting_by_name)
         self.__sort_files(is_by_name=is_sorting_by_name)
         self.update_infos_tab()
+        self.update_plots()
 
     def __sort_files(self, is_by_name=True):
         # reformat name to make sure the last digit have 4 digits
@@ -514,6 +515,29 @@ class WaterIntakeProfileSelector(QMainWindow):
             self._fix_index_of_files()
         else:
             self._reset_list_of_files()
+
+        dict_data = self.dict_data
+        list_images = np.array(dict_data['list_images'])
+        list_time_stamp = np.array(dict_data['list_time_stamp'])
+        list_time_stamp_user_format = np.array(dict_data['list_time_stamp_user_format'])
+        list_data = np.array(dict_data['list_data'])
+
+        if is_by_name:
+            sort_index = np.argsort(list_images)
+        else:
+            sort_index = np.argsort(list_time_stamp)
+
+        sorted_list_images = list_images[sort_index]
+        sorted_list_time_stamp = list_time_stamp[sort_index]
+        sorted_list_time_stamp_user_format = list_time_stamp_user_format[sort_index]
+        sorted_list_data = list_data[sort_index]
+
+        dict_data['list_images': list(sorted_list_images),
+                  'list_time_stamp': list(sorted_list_time_stamp),
+                  'list_time_stamp_user_format': list(sorted_list_time_stamp_user_format),
+                  'list_data': sorted_list_data]
+
+        self.dict_data = dict_data
 
     def _reset_list_of_files(self):
         list_images_raw = self.list_images_raw
@@ -524,7 +548,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         """
         _dict_data_raw = self.dict_data_raw
         list_files = _dict_data_raw['list_images']
+        list_time_stamp = []
         formated_list_files = []
+
+        time_stamp = 0
+        delta_time = self.ui.time_between_runs_spinBox.value()
 
         re_string = r"^(?P<part1>\w*)_(?P<index>\d+)$"
         for _file in list_files:
@@ -540,9 +568,11 @@ class WaterIntakeProfileSelector(QMainWindow):
                 new_index = "{:04d}".format(index)
                 new_file = os.path.join(dirname, part1 + '_' + new_index + ext)
                 formated_list_files.append(new_file)
+            list_time_stamp.append(time_stamp)
+            time_stamp += delta_time
 
         self.dict_data['list_images'] = formated_list_files
-
+        self.dict_data['list_time_stamp'] = list_time_stamp
 
     def time_between_runs_spinBox_changed(self):
         pass
