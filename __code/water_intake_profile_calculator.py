@@ -256,6 +256,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         list_time_stamp = dict_data['list_time_stamp']
         list_time_stamp_user = dict_data['list_time_stamp_user_format']
 
+        self.__clear_infos_table()
+
         for _row, _file_name in enumerate(list_files):
             _short_name = os.path.basename(_file_name)
             _time_stamp_unix = list_time_stamp[_row]
@@ -265,6 +267,11 @@ class WaterIntakeProfileSelector(QMainWindow):
                                                col0=_short_name,
                                                col1=_time_stamp_unix,
                                                col2=_time_stamp_user)
+
+    def __clear_infos_table(self):
+        nbr_row = self.ui.tableWidget.rowCount()
+        for _row in np.arange(nbr_row):
+            self.ui.tableWidget.removeRow(0)
 
     def __insert_information_in_table(self, row, col0, col1, col2):
         self.ui.tableWidget.insertRow(row)
@@ -532,10 +539,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         sorted_list_time_stamp_user_format = list_time_stamp_user_format[sort_index]
         sorted_list_data = list_data[sort_index]
 
-        dict_data['list_images': list(sorted_list_images),
-                  'list_time_stamp': list(sorted_list_time_stamp),
-                  'list_time_stamp_user_format': list(sorted_list_time_stamp_user_format),
-                  'list_data': sorted_list_data]
+        dict_data['list_images'] = list(sorted_list_images)
+        dict_data['list_time_stamp'] = list(sorted_list_time_stamp)
+        dict_data['list_time_stamp_user_format'] = list(sorted_list_time_stamp_user_format)
+        dict_data['list_data'] = sorted_list_data
 
         self.dict_data = dict_data
 
