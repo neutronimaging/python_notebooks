@@ -585,12 +585,13 @@ class WaterIntakeProfileCalculator(object):
 
         self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
                                                              start_dir=self.working_dir,
+                                                             next=self.load,
                                                              multiple=True)
 
         self.files_ui.show()
 
-    def load(self):
-        list_images = self.files_ui.selected
+    def load(self, list_images):
+        # list_images = self.files_ui.selected
         self.dict_files = retrieve_time_stamp(list_images)
         #self.__sort_files_using_time_stamp(self.dict_files)
         self.__load_files()
