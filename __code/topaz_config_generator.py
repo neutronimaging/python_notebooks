@@ -11,6 +11,30 @@ from IPython.display import display
 from __code.file_handler import make_ascii_file_from_string
 
 
+class ConfigLoader(object):
+
+    def __init__(self, working_dir=''):
+        self.working_dir = working_dir
+
+    def select_config_file(self):
+        self.config_file_ui = MyFileSelectorPanel(instruction='Select Configuration File (*.config)',
+                                                  start_dir=self.working_dir)
+        self.config_file_ui.show()
+
+    def get_config_file_selected(self):
+        return self.config_file_ui.selected
+
+
+class ConfigParser(object):
+
+
+    def __init__(self, config_file=''):
+        if config_file:
+            self.parse_config(config_file = config_file)
+
+    def parse_config(self, config_file=''):
+        pass
+
 class MyFileSelectorPanel:
     """Files and directories selector"""
 
@@ -26,7 +50,7 @@ class MyFileSelectorPanel:
     label_layout = ipyw.Layout(width="250px")
     layout = ipyw.Layout()
 
-    def js_alert(m):
+    def js_alert(self, m):
         js = "<script>alert('%s');</script>" % m
         display(HTML(js))
         return
@@ -162,7 +186,7 @@ class MyFileSelectorPanel:
         v = del_ftime(v)
         if self.multiple:
             if len(v) != 1:
-                js_alert("Please select a directory")
+                self.js_alert("Please select a directory")
                 return
             v = v[0]
         p = os.path.abspath(os.path.join(self.curdir, v))
@@ -186,13 +210,13 @@ class MyFileSelectorPanel:
         if self.type == 'file':
             for p in paths:
                 if not os.path.isfile(p):
-                    js_alert("Please select file(s)")
+                    self.js_alert("Please select file(s)")
                     return
         else:
             assert self.type == 'directory'
             for p in paths:
                 if not os.path.isdir(p):
-                    js_alert("Please select directory(s)")
+                    self.js_alert("Please select directory(s)")
                     return
         # set output
         if self.multiple:
