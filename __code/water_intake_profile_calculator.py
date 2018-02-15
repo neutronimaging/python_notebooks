@@ -89,7 +89,6 @@ class WaterIntakeHandler(object):
             peak_value = delta_array.index(max(delta_array[0: nbr_pixels -5]))
             water_intake_peak.append(peak_value)
             water_intake_deltatime.append(_delta_time)
-            print("for delta_time:{}, we found peak_value: {}".format(_delta_time, peak_value))
 
         self.water_intake_peak = water_intake_peak
         self.water_intake_deltatime = water_intake_deltatime
@@ -120,8 +119,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Profile Selector")
 
-        self.dict_data_raw = dict_data
-        self.dict_data = dict_data
+        self.dict_data_raw = dict_data.copy()
+        self.dict_data = dict_data.copy()
         self.list_data = dict_data['list_data'][1:]
         self.list_images_raw = dict_data['list_images']
 
@@ -366,7 +365,6 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.water_intake.setLabel('bottom', 'Delta Time')
 
     def calculate_all_profiles(self):
-
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
 
         dict_data = self.dict_data
