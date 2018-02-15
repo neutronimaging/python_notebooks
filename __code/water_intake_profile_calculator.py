@@ -124,21 +124,61 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.list_data = dict_data['list_data'][1:]
         self.list_images_raw = dict_data['list_images']
 
+        self.init_statusbar()
         self._init_pyqtgraph()
         self._init_widgets()
         self.sort_dict_data()
         self.update_image()
         self.update_plots()
         self.update_infos_tab()
-        self.init_statusbar()
 
     def init_statusbar(self):
+
+        _width_labels = 40
+        _height_labels = 30
+
+        # x0, y0, width and height of selection
+        roi_label = QtGui.QLabel("ROI selected:  ")
+        _x0_label = QtGui.QLabel("X0:")
+        self.x0_value = QtGui.QLabel("0")
+        self.x0_value.setFixedSize(_width_labels, _height_labels)
+        _y0_label = QtGui.QLabel("Y0:")
+        self.y0_value = QtGui.QLabel("0")
+        self.y0_value.setFixedSize(_width_labels, _height_labels)
+        _width_label = QtGui.QLabel("Width:")
+        self.width_value = QtGui.QLabel("20")
+        self.width_value.setFixedSize(_width_labels, _height_labels)
+        _height_label = QtGui.QLabel("Height:")
+        self.height_value = QtGui.QLabel("20")
+        self.height_value.setFixedSize(_width_labels, _height_labels)
+
+        hori_layout = QtGui.QHBoxLayout()
+        hori_layout.addWidget(roi_label)
+        hori_layout.addWidget(_x0_label)
+        hori_layout.addWidget(self.x0_value)
+        hori_layout.addWidget(_y0_label)
+        hori_layout.addWidget(self.y0_value)
+        hori_layout.addWidget(_width_label)
+        hori_layout.addWidget(self.width_value)
+        hori_layout.addWidget(_height_label)
+        hori_layout.addWidget(self.height_value)
+
+        # spacer
+        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        hori_layout.addItem(spacerItem)
+
+        # progress bar
         self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        self.eventProgress.setMinimumSize(20, 14)
-        self.eventProgress.setMaximumSize(540, 100)
+        self.eventProgress.setMinimumSize(300, 20)
+        self.eventProgress.setMaximumSize(300, 20)
         self.eventProgress.setVisible(False)
-        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+        hori_layout.addWidget(self.eventProgress)
         self.setStyleSheet("QStatusBar{padding-left:8px;color:red;font-weight:bold;}")
+
+        # add status bar in main ui
+        bottom_widget = QtGui.QWidget()
+        bottom_widget.setLayout(hori_layout)
+        self.ui.statusbar.addPermanentWidget(bottom_widget)
 
     def sort_dict_data(self):
         pass
@@ -247,10 +287,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         _y0 = _roi['y0']
         _width = _roi['width']
         _height = _roi['height']
-        self.ui.x0.setText(str(_x0))
-        self.ui.y0.setText(str(_y0))
-        self.ui.width.setText(str(_width))
-        self.ui.height.setText(str(_height))
+        self.x0_value.setText(str(_x0))
+        self.y0_value.setText(str(_y0))
+        self.width_value.setText(str(_width))
+        self.height_value.setText(str(_height))
 
     def refresh_water_intake_plot_clicked(self):
         self.update_water_intake_plot()
