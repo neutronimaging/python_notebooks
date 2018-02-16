@@ -7,22 +7,45 @@ import time
 from collections import defaultdict
 from IPython.core.display import HTML
 from IPython.display import display
+import pandas as pd
 
 from __code.file_handler import make_ascii_file_from_string
 
 
 class ConfigLoader(object):
 
+    config_dict = {}
+
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
 
     def select_config_file(self):
+        hbox = widgets.HBox([widgets.Label("Configuration File Selected:",
+                                           layout=widgets.Layout(width='20%')),
+                             widgets.Label("N/A",
+                                           layout=widgets.Layout(width='80%'))])
+        self.config_selected_label = hbox.children[1]
+        display(hbox)
+
         self.config_file_ui = MyFileSelectorPanel(instruction='Select Configuration File (*.config)',
+                                                  next=self.load_config,
                                                   start_dir=self.working_dir)
         self.config_file_ui.show()
 
-    def get_config_file_selected(self):
-        return self.config_file_ui.selected
+    def load_config(self, config_file_name):
+        self.config_selected_label.value = config_file_name
+        try:
+            pd_config = pd.read_csv(config_file_name, sep=' ')
+        except:
+            display(HTML("Error loading config file {}!".format(config_file_name)))
+            return
+
+        list_para_name = pd_config['instrument_name']
+        list_para_value = pd_config['TOPAZ']
+
+        config_dict = dict(zip(list_para_name, list_para_value))
+        [config_dict['config_name'], _] = os.path.splitext(os.path.basename(config_file_name))
+        self.config_dict = config_dict
 
 
 class ConfigParser(object):
@@ -243,7 +266,6 @@ class MyFileSelectorPanel:
     def remove(self):
         close(self.panel)
 
-
 def close(w):
     "recursively close a widget"
     if hasattr(w, 'children'):
@@ -252,7 +274,6 @@ def close(w):
             continue
     w.close()
     return
-
 
 def create_file_times(paths):
     """returns a list of file modify time"""
@@ -269,7 +290,6 @@ def create_file_times(paths):
         except OSError:
             ftimes.append("Unknown or Permission Denied")
     return ftimes
-
 
 def create_nametime_labels(entries, ftimes):
     if not entries:
@@ -373,8 +393,9 @@ class TopazConfigGenerator(object):
 
     cell_type_dict = {}
 
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir='', config_dict={}):
         self.working_dir = working_dir
+        self.config_dict = config_dict
         self.init_css()
         self.__create_cell_type_centering_dict()
 
@@ -396,13 +417,20 @@ class TopazConfigGenerator(object):
             for _item in _list:
                 self.cell_type_dict.setdefault(_item, []).append(_key)
 
+    def __get_dict_parameter_value(self, parameter, default_value=''):
+        if self.config_dict[parameter]:
+            return self.config_dict[parameter]
+        else:
+            return default_value
+
     def define_config_file_name(self):
 
-        display(HTML("<h2>Define Config File Name</h2>"))
+        _default_config = self__get_dict_parameter_value('config_name')
 
+        display(HTML("<h2>Define Config File Name</h2>"))
         config_file_ui = widgets.HBox([widgets.Label("Config File Name:",
                                                      layout=widgets.Layout(width='15%')),
-                                       widgets.Text("tmp",
+                                       widgets.Text(_default_config,
                                                     layout=widgets.Layout(width='80%')),
                                        widgets.Label(".cfg",
                                                      layout=widgets.Layout(width='5%'))])
@@ -415,21 +443,28 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2 id='input_directory'>Select Input Data Folder</h2>"))
 
+        _input_data_folder = self.__get_dict_parameter_value('data_directory', default_value='N/A')
+
         select_input_data_folder_ui = None
         def select_input_data_folder(selection):
             select_input_data_folder_ui.children[1].value = selection
 
         select_input_data_folder_ui = widgets.HBox([widgets.Label("Input Data Folder Selected:",
                                                                   layout=widgets.Layout(width='25%')),
-                                                    widgets.Label("N/A",
+                                                    widgets.Label(_input_data_folder,
                                                                   layout=widgets.Layout(width='70%'))])
 
         select_input_data_folder_ui.children[0].add_class("mylabel_key")
         self.input_data_folder_ui = select_input_data_folder_ui.children[1]
         display(select_input_data_folder_ui)
 
+        if not (_input_data_folder == 'N/A'):
+            start_dir = os.path.dirname(_input_data_folder)
+        else:
+            stat_dir = os.path.join(self.working_dir, 'data')
+
         input_folder_ui = MyFileSelectorPanel(instruction='',
-                                              start_dir=os.path.join(self.working_dir, 'data'),
+                                              start_dir=start_dir,
                                               next=select_input_data_folder,
                                               type='directory')
         input_folder_ui.show()
