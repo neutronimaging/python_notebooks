@@ -3,18 +3,11 @@ import ipywe.fileselector
 from IPython.core.display import HTML
 from IPython.core.display import display
 from ipywidgets import widgets
-from ipywidgets.widgets import interact
 
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import re
-import re
-import pandas as pd
-
-import matplotlib.gridspec as gridspec
-import pytz
-import datetime
+import glob
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
@@ -31,10 +24,9 @@ except ImportError:
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from NeuNorm.normalization import Normalization
-
 from __code.metadata_handler import MetadataHandler
 from __code.file_handler import retrieve_time_stamp
-from __code import file_handler
+from __code.file_format_reader import DscReader
 
 from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
 
@@ -102,6 +94,7 @@ class WaterIntakeProfileSelector(QMainWindow):
     dict_data_raw = {} # dict data untouched (not sorted)
     list_images_raw = [] # use to reste dict_data
     dict_water_intake = {}
+    dic_disc = {} # dictionary created when loading dsc folder
 
     current_image = []
     ignore_first_image_checked = True
@@ -124,6 +117,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.dict_data = dict_data.copy()
         self.list_data = dict_data['list_data'][1:]
         self.list_images_raw = dict_data['list_images']
+        self.working_dir = os.path.dirname(self.list_images_raw[0])
 
         self.init_statusbar()
         self._init_pyqtgraph()
@@ -425,117 +419,122 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def export_profile_clicked(self):
         #select output folder
-        _export_folder = QFileDialog.getExistingDirectory(self, caption = "Select Output Folder",
-                                                         options=QFileDialog.ShowDirsOnly)
-        export_folder = os.path.abspath(_export_folder)
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
+                                                          caption = "Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            export_folder = os.path.abspath(_export_folder)
 
-        dict_data = self.dict_data
-        list_images = dict_data['list_images']
-        list_time_stamp = dict_data['list_time_stamp']
-        list_data = dict_data['list_data']
-        list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
-        _algo_used = self.get_profile_algo()
+            dict_data = self.dict_data
+            list_images = dict_data['list_images']
+            list_time_stamp = dict_data['list_time_stamp']
+            list_data = dict_data['list_data']
+            list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+            _algo_used = self.get_profile_algo()
 
-        # get metadata roi selection
-        _roi = self.roi
-        x0 = _roi['x0']
-        y0 = _roi['y0']
-        width = _roi['width']
-        height = _roi['height']
-        x1 = x0 + width
-        y1 = y0 + height
+            # get metadata roi selection
+            _roi = self.roi
+            x0 = _roi['x0']
+            y0 = _roi['y0']
+            width = _roi['width']
+            height = _roi['height']
+            x1 = x0 + width
+            y1 = y0 + height
 
-        input_folder = os.path.dirname(list_images[0])
+            input_folder = os.path.dirname(list_images[0])
 
-        nbr_images = len(list_images)
-        self.eventProgress.setMinimum(1)
-        self.eventProgress.setMaximum(nbr_images)
-        self.eventProgress.setValue(1)
-        self.eventProgress.setVisible(True)
+            nbr_images = len(list_images)
+            self.eventProgress.setMinimum(1)
+            self.eventProgress.setMaximum(nbr_images)
+            self.eventProgress.setValue(1)
+            self.eventProgress.setVisible(True)
 
-        for index in np.arange(1, nbr_images):
-            _short_file_name = os.path.basename(list_images[index])
-            [_basename, _] = os.path.splitext(_short_file_name)
-            output_file_name = os.path.join(export_folder, _basename + '_profile.txt')
+            for index in np.arange(1, nbr_images):
+                _short_file_name = os.path.basename(list_images[index])
+                [_basename, _] = os.path.splitext(_short_file_name)
+                output_file_name = os.path.join(export_folder, _basename + '_profile.txt')
 
-            metadata = []
-            metadata.append("# Profile over ROI selected integrated along x-axis")
-            metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
-            metadata.append("# folder: {}".format(input_folder))
-            metadata.append("# filename: {}".format(_short_file_name))
-            metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
-            metadata.append("# timestamp (user format): {}".format(list_time_stamp_user_format[index]))
-            metadata.append("# algorithm used: {}".format(_algo_used))
-            metadata.append("# ")
-            metadata.append("# pixel, counts")
+                metadata = []
+                metadata.append("# Profile over ROI selected integrated along x-axis")
+                metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
+                metadata.append("# folder: {}".format(input_folder))
+                metadata.append("# filename: {}".format(_short_file_name))
+                metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
+                metadata.append("# timestamp (user format): {}".format(list_time_stamp_user_format[index]))
+                metadata.append("# algorithm used: {}".format(_algo_used))
+                metadata.append("# ")
+                metadata.append("# pixel, counts")
 
-            _image = list_data[index]
-            _image_of_roi = _image[y0:y1, x0:x1]
-            if _algo_used == 'add':
-                _profile = np.sum(_image_of_roi, axis=1)
-            elif _algo_used == 'mean':
-                _profile = np.mean(_image_of_roi, axis=1)
-            elif _algo_used == 'median':
-                _profile = np.median(_image_of_roi, axis=1)
-            else:
-                raise NotImplementedError
+                _image = list_data[index]
+                _image_of_roi = _image[y0:y1, x0:x1]
+                if _algo_used == 'add':
+                    _profile = np.sum(_image_of_roi, axis=1)
+                elif _algo_used == 'mean':
+                    _profile = np.mean(_image_of_roi, axis=1)
+                elif _algo_used == 'median':
+                    _profile = np.median(_image_of_roi, axis=1)
+                else:
+                    raise NotImplementedError
 
-            data = []
-            for _pixel_index, _counts in enumerate(_profile):
-                _line = "{}, {}".format(_pixel_index+y0, _counts)
-                data.append(_line)
+                data = []
+                for _pixel_index, _counts in enumerate(_profile):
+                    _line = "{}, {}".format(_pixel_index+y0, _counts)
+                    data.append(_line)
 
-            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
+                make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
 
-            self.eventProgress.setValue(index)
+                self.eventProgress.setValue(index)
 
-        self.eventProgress.setVisible(False)
-        display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
+            self.eventProgress.setVisible(False)
+            display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
 
     def export_water_intake_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
                                                           caption = 'Select Output Folder',
                                                           options = QFileDialog.ShowDirsOnly)
-        export_folder = os.path.abspath(_export_folder)
+        if _export_folder:
+            export_folder = os.path.abspath(_export_folder)
 
-        dict_water_intake = self.dict_water_intake
-        if dict_water_intake == {}:
-            return
+            dict_water_intake = self.dict_water_intake
+            if dict_water_intake == {}:
+                return
 
-        x_axis = dict_water_intake['xaxis']
-        y_axis = dict_water_intake['yaxis']
-        nbr_files = len(x_axis)
+            x_axis = dict_water_intake['xaxis']
+            y_axis = dict_water_intake['yaxis']
+            nbr_files = len(x_axis)
 
-        # metadata
-        _algo_used = self.get_profile_algo()
-        _roi = self.roi
-        x0 = _roi['x0']
-        y0 = _roi['y0']
-        width = _roi['width']
-        height = _roi['height']
+            # metadata
+            _algo_used = self.get_profile_algo()
+            _roi = self.roi
+            x0 = _roi['x0']
+            y0 = _roi['y0']
+            width = _roi['width']
+            height = _roi['height']
 
-        list_images = self.dict_data['list_images']
-        full_input_folder = os.path.dirname(list_images[0])
-        short_input_folder = os.path.basename(full_input_folder)
+            list_images = self.dict_data['list_images']
+            full_input_folder = os.path.dirname(list_images[0])
+            short_input_folder = os.path.basename(full_input_folder)
 
-        yaxis_label = self.__get_water_intake_yaxis_label()
-        if yaxis_label == 'distance':
-            yaxis_label += "(mm)"
+            yaxis_label = self.__get_water_intake_yaxis_label()
+            if yaxis_label == 'distance':
+                yaxis_label += "(mm)"
 
-        metadata = []
-        metadata.append("# Water Intake Signal ")
-        metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
-        metadata.append("# input folder: {}".format(full_input_folder))
-        metadata.append("# algorithm used: {}".format(_algo_used))
-        metadata.append("# ")
-        metadata.append("# Time(s), {}".format(yaxis_label))
+            metadata = []
+            metadata.append("# Water Intake Signal ")
+            metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
+            metadata.append("# input folder: {}".format(full_input_folder))
+            metadata.append("# algorithm used: {}".format(_algo_used))
+            metadata.append("# ")
+            metadata.append("# Time(s), {}".format(yaxis_label))
 
-        export_file_name = "water_intake_of_{}_with_{}input_files.txt".format(short_input_folder, nbr_files)
-        full_export_file_name = os.path.join(export_folder, export_file_name)
+            export_file_name = "water_intake_of_{}_with_{}input_files.txt".format(short_input_folder, nbr_files)
+            full_export_file_name = os.path.join(export_folder, export_file_name)
 
-        data = [ "{}, {}".format(_x_axis, _y_axis) for _x_axis, _y_axis in zip(x_axis, y_axis)]
-        display(HTML("Exported water intake file: {}".format(full_export_file_name)))
-        make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim='1d')
+            data = [ "{}, {}".format(_x_axis, _y_axis) for _x_axis, _y_axis in zip(x_axis, y_axis)]
+            display(HTML("Exported water intake file: {}".format(full_export_file_name)))
+            make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim='1d')
 
     def __get_water_intake_yaxis_label(self):
         if self.ui.pixel_radioButton.isChecked():
@@ -644,12 +643,6 @@ class WaterIntakeProfileSelector(QMainWindow):
             self.dict_data['list_time_stamp'] = new_time_stamp
 
     def _reset_dict(self):
-        # list_images_raw = self.dict_data_raw['list_images'].copy()
-        # list_time_stamp = self.dict_data_raw['list_time_stamp'].copy()
-        # list_data = self.dict_data_raw['list_data'].copy()
-        # self.dict_data['list_images'] = list_images_raw
-        # self.dict_data['list_time_stamp'] = list_time_stamp
-        # self.dict_data['list_data'] = list_data
         self.dict_data = self.dict_data_raw.copy()
 
     def _fix_index_of_files(self):
@@ -685,34 +678,70 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def export_table_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
                                                           caption = 'Select Output Folder',
                                                           options = QFileDialog.ShowDirsOnly)
-        export_folder = os.path.abspath(_export_folder)
 
-        dict_data = self.dict_data
-        list_images = dict_data['list_images']
-        input_folder = os.path.basename(os.path.dirname(list_images[0]))
+        if _export_folder:
+            export_folder = os.path.abspath(_export_folder)
 
-        output_file_name = os.path.join(export_folder, input_folder + '_sorting_table.txt')
+            dict_data = self.dict_data
+            list_images = dict_data['list_images']
+            input_folder = os.path.basename(os.path.dirname(list_images[0]))
 
-        list_time = dict_data['list_time_stamp']
-        list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+            output_file_name = os.path.join(export_folder, input_folder + '_sorting_table.txt')
 
-        is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
-        if is_sorting_by_name:
-            _time_label = 'Time Stamp (unix)'
-        else:
-            _time_label = 'Delta Time (s)'
+            list_time = dict_data['list_time_stamp']
+            list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
 
-        metadata = ["#File Name, {}, Time Stamp (user format)".format(_time_label)]
-        data = ["{}. {}, {}".format(_file, _time, _timer_user) for (_file, _time, _timer_user) in
-                zip(list_images, list_time, list_time_stamp_user_format)]
+            is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
+            if is_sorting_by_name:
+                _time_label = 'Time Stamp (unix)'
+            else:
+                _time_label = 'Delta Time (s)'
 
-        make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
-        display(HTML("Table has been exported in {}".format(output_file_name)))
+            metadata = ["#File Name, {}, Time Stamp (user format)".format(_time_label)]
+            data = ["{}. {}, {}".format(_file, _time, _timer_user) for (_file, _time, _timer_user) in
+                    zip(list_images, list_time, list_time_stamp_user_format)]
+
+            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
+            display(HTML("Table has been exported in {}".format(output_file_name)))
 
     def import_dsc_clicked(self):
-        pass
+        _dsc_folder = QFileDialog.getExistingDirectory(self,
+                                                       directory=self.working_dir,
+                                                       caption = 'Select Output Folder',
+                                                       options = QFileDialog.ShowDirsOnly)
+        if _dsc_folder:
+            dsc_folder = os.path.abspath(_dsc_folder)
+
+            list_dsc_files = glob.glob(os.path.join(dsc_folder, "*.dsc"))
+            o_dsc_reader = DscReader(list_files = list_dsc_files)
+            o_dsc_reader.read()
+            o_dsc_reader.build_coresponding_file_image_name()
+            o_dsc_reader.make_tif_file_name_the_key()
+            self.dict_time_stamp_vs_tiff = o_dsc_reader.dict_time_stamp_vs_tiff
+            self.match_dsc_timestamp_with_original_dict_data()
+            self.sorting_files_checkbox_clicked()
+            self.update_infos_tab()
+            self.update_plots()
+
+    def match_dsc_timestamp_with_original_dict_data(self):
+        dict_disc = self.dict_time_stamp_vs_tiff
+        dict_data_raw = self.dict_data_raw
+
+        list_images = dict_data_raw['list_images']
+
+        new_list_time_stamp = []
+        new_list_time_stamp_user_format = []
+
+        for _key in list_images:
+            _short_key = os.path.basename(_key)
+            new_list_time_stamp.append(dict_disc[_short_key]['time_stamp'])
+            new_list_time_stamp_user_format.append(dict_disc[_short_key]['time_stamp_user_format'])
+
+        self.dict_data_raw['list_time_stamp'] = new_list_time_stamp.copy()
+        self.dict_data_raw['list_time_stamp_user_format'] = new_list_time_stamp_user_format.copy()
 
     def help_button_clicked(self):
         import webbrowser

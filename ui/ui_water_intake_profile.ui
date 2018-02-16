@@ -472,21 +472,27 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menuFile_2">
     <property name="title">
-     <string>Export</string>
+     <string>File</string>
     </property>
-    <addaction name="actionExport_Profile"/>
-    <addaction name="actionWater_Intake"/>
+    <widget class="QMenu" name="menuImport_2">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="actionDsc"/>
+    </widget>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="actionProfiles"/>
+     <addaction name="actionWater_Intake_2"/>
+    </widget>
+    <addaction name="menuImport_2"/>
+    <addaction name="menuExport"/>
    </widget>
-   <widget class="QMenu" name="menuImport">
-    <property name="title">
-     <string>Import</string>
-    </property>
-    <addaction name="actionDsc_files"/>
-   </widget>
-   <addaction name="menuImport"/>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExport_Profile">
@@ -516,7 +522,22 @@
   </action>
   <action name="actionDsc_files">
    <property name="text">
-    <string>dsc files</string>
+    <string>dsc files ...</string>
+   </property>
+  </action>
+  <action name="actionDsc">
+   <property name="text">
+    <string>dsc ...</string>
+   </property>
+  </action>
+  <action name="actionWater_Intake_2">
+   <property name="text">
+    <string>Water Intake ...</string>
+   </property>
+  </action>
+  <action name="actionProfiles">
+   <property name="text">
+    <string>Profiles ...</string>
    </property>
   </action>
  </widget>
@@ -787,6 +808,54 @@
     <hint type="sourcelabel">
      <x>990</x>
      <y>1091</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>535</x>
+     <y>632</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionProfiles</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_profile_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>535</x>
+     <y>632</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionWater_Intake_2</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_water_intake_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>535</x>
+     <y>632</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDsc</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>import_dsc_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>535</x>
