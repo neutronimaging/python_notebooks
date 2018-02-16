@@ -535,16 +535,17 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def __sort_files(self, is_by_name=True):
         # reformat name to make sure the last digit have 4 digits
+        print("__sort_files")
         if is_by_name:
             self._fix_index_of_files()
         else:
-            self._reset_list_of_files()
+            self._reset_dict()
 
         dict_data = self.dict_data
-        list_images = np.array(dict_data['list_images'])
-        list_time_stamp = np.array(dict_data['list_time_stamp'])
-        list_time_stamp_user_format = np.array(dict_data['list_time_stamp_user_format'])
-        list_data = np.array(dict_data['list_data'])
+        list_images = np.array(dict_data['list_images'].copy())
+        list_time_stamp = np.array(dict_data['list_time_stamp'].copy())
+        list_time_stamp_user_format = np.array(dict_data['list_time_stamp_user_format'].copy())
+        list_data = np.array(dict_data['list_data'].copy())
 
         if is_by_name:
             sort_index = np.argsort(list_images)
@@ -570,17 +571,20 @@ class WaterIntakeProfileSelector(QMainWindow):
             new_time_stamp = np.arange(nbr_files) * delta_time
             self.dict_data['list_time_stamp'] = new_time_stamp
 
-    def _reset_list_of_files(self):
-        list_images_raw = self.dict_data_raw['list_images']
-        list_time_stamp = self.dict_data_raw['list_time_stamp']
-        self.dict_data['list_images'] = list_images_raw
-        self.dict_data['list_time_stamp'] = list_time_stamp
+    def _reset_dict(self):
+        # list_images_raw = self.dict_data_raw['list_images'].copy()
+        # list_time_stamp = self.dict_data_raw['list_time_stamp'].copy()
+        # list_data = self.dict_data_raw['list_data'].copy()
+        # self.dict_data['list_images'] = list_images_raw
+        # self.dict_data['list_time_stamp'] = list_time_stamp
+        # self.dict_data['list_data'] = list_data
+        self.dict_data = self.dict_data_raw.copy()
 
     def _fix_index_of_files(self):
         """reformat file name to make sure index has 4 digits
         """
         _dict_data_raw = self.dict_data_raw
-        list_files = _dict_data_raw['list_images']
+        list_files = _dict_data_raw['list_images'].copy()
         formated_list_files = []
 
         re_string = r"^(?P<part1>\w*)_(?P<index>\d+)$"
@@ -598,6 +602,7 @@ class WaterIntakeProfileSelector(QMainWindow):
                 new_file = os.path.join(dirname, part1 + '_' + new_index + ext)
                 formated_list_files.append(new_file)
 
+        self.dict_data = self.dict_data_raw.copy()
         self.dict_data['list_images'] = formated_list_files
 
     def time_between_runs_spinBox_changed(self):
@@ -669,9 +674,9 @@ class WaterIntakeProfileCalculator(object):
     def __sort_files_using_time_stamp(self, dict_time_stamp):
         """Using the time stamp information, all the files will be sorted in ascending order of time stamp"""
 
-        list_images = dict_time_stamp['list_images']
-        list_time_stamp = dict_time_stamp['list_time_stamp']
-        list_time_stamp_user_format = dict_time_stamp['list_time_stamp_user_format']
+        list_images = dict_time_stamp['list_images'].copy()
+        list_time_stamp = dict_time_stamp['list_time_stamp'].copy()
+        list_time_stamp_user_format = dict_time_stamp['list_time_stamp_user_format'].copy()
 
         list_images = np.array(list_images)
         time_stamp = np.array(list_time_stamp)
