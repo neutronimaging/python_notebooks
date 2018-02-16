@@ -683,6 +683,37 @@ class WaterIntakeProfileSelector(QMainWindow):
     def profile_algo_changed(self):
         self.update_profile_plot()
 
+    def export_table_button_clicked(self):
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          caption = 'Select Output Folder',
+                                                          options = QFileDialog.ShowDirsOnly)
+        export_folder = os.path.abspath(_export_folder)
+
+        dict_data = self.dict_data
+        list_images = dict_data['list_images']
+        input_folder = os.path.basename(os.path.dirname(list_images[0]))
+
+        output_file_name = os.path.join(export_folder, input_folder + '_sorting_table.txt')
+
+        list_time = dict_data['list_time_stamp']
+        list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+
+        is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
+        if is_sorting_by_name:
+            _time_label = 'Time Stamp (unix)'
+        else:
+            _time_label = 'Delta Time (s)'
+
+        metadata = ["#File Name, {}, Time Stamp (user format)".format(_time_label)]
+        data = ["{}. {}, {}".format(_file, _time, _timer_user) for (_file, _time, _timer_user) in
+                zip(list_images, list_time, list_time_stamp_user_format)]
+
+        make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
+        display(HTML("Table has been exported in {}".format(output_file_name)))
+
+    def import_dsc_clicked(self):
+        pass
+
     def help_button_clicked(self):
         import webbrowser
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/water_intake_profile_calculator/")

@@ -196,7 +196,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="export_table_button">
               <property name="text">
                <string>Export Table ...</string>
               </property>
@@ -479,6 +479,13 @@
     <addaction name="actionExport_Profile"/>
     <addaction name="actionWater_Intake"/>
    </widget>
+   <widget class="QMenu" name="menuImport">
+    <property name="title">
+     <string>Import</string>
+    </property>
+    <addaction name="actionDsc_files"/>
+   </widget>
+   <addaction name="menuImport"/>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -505,6 +512,11 @@
   <action name="actionBy_File_Name">
    <property name="text">
     <string>by File Name</string>
+   </property>
+  </action>
+  <action name="actionDsc_files">
+   <property name="text">
+    <string>dsc files</string>
    </property>
   </action>
  </widget>
@@ -750,6 +762,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDsc_files</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>import_dsc_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>535</x>
+     <y>632</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>export_table_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_table_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>990</x>
+     <y>1091</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>535</x>
+     <y>632</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -769,5 +813,7 @@
   <slot>time_between_runs_spinBox_changed()</slot>
   <slot>_water_intake_yaxis_checkbox_changed()</slot>
   <slot>_pixel_size_spinBox_changed()</slot>
+  <slot>import_dsc_clicked()</slot>
+  <slot>export_table_button_clicked()</slot>
  </slots>
 </ui>
