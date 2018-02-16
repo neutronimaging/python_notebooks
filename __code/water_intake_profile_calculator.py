@@ -101,6 +101,7 @@ class WaterIntakeProfileSelector(QMainWindow):
     dict_data = {}
     dict_data_raw = {} # dict data untouched (not sorted)
     list_images_raw = [] # use to reste dict_data
+    dict_water_intake = {}
 
     current_image = []
     ignore_first_image_checked = True
@@ -359,6 +360,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         peak = o_water_intake_handler.water_intake_peak
         peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
 
+        self.dict_water_intake = {}
+        self.dict_water_intake['xaxis'] = delta_time
+        self.dict_water_intake['yaxis'] = peak
+
         self.water_intake.clear()
         self.water_intake.plot(delta_time, peak)
         self.water_intake.setLabel('left', 'Pixel Position')
@@ -446,8 +451,8 @@ class WaterIntakeProfileSelector(QMainWindow):
             output_file_name = os.path.join(export_folder, _basename + '_profile.txt')
 
             metadata = []
-            metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
             metadata.append("# Profile over ROI selected integrated along x-axis")
+            metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
             metadata.append("# folder: {}".format(input_folder))
             metadata.append("# filename: {}".format(_short_file_name))
             metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
@@ -473,12 +478,60 @@ class WaterIntakeProfileSelector(QMainWindow):
                 data.append(_line)
 
             make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
+
             self.eventProgress.setValue(index)
 
         self.eventProgress.setVisible(False)
+        display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
 
     def export_water_intake_clicked(self):
-        pass
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          caption = 'Select Output Folder',
+                                                          options = QFileDialog.ShowDirsOnly)
+        export_folder = os.path.abspath(_export_folder)
+
+        dict_water_intake = self.dict_water_intake
+        if dict_water_intake == {}:
+            return
+
+        x_axis = dict_water_intake['xaxis']
+        y_axis = dict_water_intake['yaxis']
+        nbr_files = len(x_axis)
+
+        # metadata
+        _algo_used = self.get_profile_algo()
+        _roi = self.roi
+        x0 = _roi['x0']
+        y0 = _roi['y0']
+        width = _roi['width']
+        height = _roi['height']
+
+        list_images = self.dict_data['list_images']
+        full_input_folder = os.path.dirname(list_images[0])
+        short_input_folder = os.path.basename(full_input_folder)
+
+        yaxis_label = self.__get_water_intake_yaxis_label()
+
+        metadata = []
+        metadata.append("# Water Intake Signal ")
+        metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
+        metadata.append("# input folder: {}".format(full_input_folder))
+        metadata.append("# algorithm used: {}".format(_algo_used))
+        metadata.append("# ")
+        metadata.append("# Time(s), {}".format(yaxis_label))
+
+        export_file_name = "water_intake_of_{}_with_{}input_files.txt".format(short_input_folder, nbr_files)
+        full_export_file_name = os.path.join(export_folder, export_file_name)
+
+        data = [ "{}, {}".format(_x_axis, _y_axis) for _x_axis, _y_axis in zip(x_axis, y_axis)]
+        display(HTML("Exported water intake file: {}".format(full_export_file_name)))
+        make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim='1d')
+
+    def __get_water_intake_yaxis_label(self):
+        if self.ui.pixel_radioButton.isChecked():
+            return 'pixel'
+        else:
+            return 'distance'
 
     def roi_moved(self):
         region = self.roi_id.getArraySlice(self.current_image, self.ui.image_view.imageItem)
@@ -522,6 +575,12 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_image()
         self.update_profile_plot()
 
+    def _water_intake_yaxis_checkbox_changed(self):
+        _status = self.ui.distance_radioButton.isChecked()
+        self.ui.water_intake_distance_label.setEnabled(_status)
+        self.ui.pixel_size_spinBox.setEnabled(_status)
+        self.ui.pixel_size_units.setEnabled(_status)
+
     # files sorting
     def sorting_files_checkbox_clicked(self):
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
@@ -535,7 +594,6 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def __sort_files(self, is_by_name=True):
         # reformat name to make sure the last digit have 4 digits
-        print("__sort_files")
         if is_by_name:
             self._fix_index_of_files()
         else:
