@@ -360,13 +360,21 @@ class WaterIntakeProfileSelector(QMainWindow):
         peak = o_water_intake_handler.water_intake_peak
         peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
 
+        if self.ui.pixel_radioButton.isChecked(): # pixel
+            peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+            y_label = 'Pixel Position'
+        else: # distance
+            pixel_size = self.ui.pixel_size_spinBox.value()
+            peak = [np.float(_peak) * pixel_size for _peak in peak]
+            y_label = 'Distance (mm)'
+
         self.dict_water_intake = {}
         self.dict_water_intake['xaxis'] = delta_time
         self.dict_water_intake['yaxis'] = peak
 
         self.water_intake.clear()
-        self.water_intake.plot(delta_time, peak)
-        self.water_intake.setLabel('left', 'Pixel Position')
+        self.water_intake.plot(delta_time, peak, symbolPen=None, pen=None, symbol='o', symbolBruch=(200,200,200,50))
+        self.water_intake.setLabel('left', y_label)
         self.water_intake.setLabel('bottom', 'Delta Time')
 
     def calculate_all_profiles(self):
@@ -511,6 +519,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         short_input_folder = os.path.basename(full_input_folder)
 
         yaxis_label = self.__get_water_intake_yaxis_label()
+        if yaxis_label == 'distance':
+            yaxis_label += "(mm)"
 
         metadata = []
         metadata.append("# Water Intake Signal ")
@@ -580,6 +590,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.water_intake_distance_label.setEnabled(_status)
         self.ui.pixel_size_spinBox.setEnabled(_status)
         self.ui.pixel_size_units.setEnabled(_status)
+        self.update_water_intake_plot()
+
+    def _pixel_size_spinBox_changed(self):
+        self.update_water_intake_plot()
 
     # files sorting
     def sorting_files_checkbox_clicked(self):

@@ -234,6 +234,9 @@ class Ui_MainWindow(object):
         self.sort_files_by_time_radioButton.clicked.connect(MainWindow.sorting_files_checkbox_clicked)
         self.sort_files_by_name_radioButton.clicked.connect(MainWindow.sorting_files_checkbox_clicked)
         self.time_between_runs_spinBox.valueChanged['double'].connect(MainWindow.time_between_runs_spinBox_changed)
+        self.pixel_radioButton.clicked.connect(MainWindow._water_intake_yaxis_checkbox_changed)
+        self.distance_radioButton.clicked.connect(MainWindow._water_intake_yaxis_checkbox_changed)
+        self.pixel_size_spinBox.editingFinished.connect(MainWindow._pixel_size_spinBox_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

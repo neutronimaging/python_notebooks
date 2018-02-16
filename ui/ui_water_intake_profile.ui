@@ -734,6 +734,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pixel_size_spinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>_pixel_size_spinBox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>771</x>
+     <y>1168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>828</x>
+     <y>1235</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -752,5 +768,6 @@
   <slot>sorting_files_checkbox_clicked()</slot>
   <slot>time_between_runs_spinBox_changed()</slot>
   <slot>_water_intake_yaxis_checkbox_changed()</slot>
+  <slot>_pixel_size_spinBox_changed()</slot>
  </slots>
 </ui>
