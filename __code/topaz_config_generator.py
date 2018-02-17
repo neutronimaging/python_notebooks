@@ -4,6 +4,7 @@ import ipywe.fileselector
 import ipywidgets as ipyw
 import os
 import time
+import numpy as np
 from collections import defaultdict
 from IPython.core.display import HTML
 from IPython.display import display
@@ -417,21 +418,21 @@ class TopazConfigGenerator(object):
             for _item in _list:
                 self.cell_type_dict.setdefault(_item, []).append(_key)
 
-    def __get_dict_parameter_value(self, parameter, default_value=''):
+    def __get_dict_parameter_value(self, parameter):
         if self.config_dict[parameter]:
             return self.config_dict[parameter]
         else:
-            return default_value
+            return self.config[parameter]
 
     def define_config_file_name(self):
 
-        _default_config = self__get_dict_parameter_value('config_name')
+        _default_config = self.__get_dict_parameter_value('config_name')
 
         display(HTML("<h2>Define Config File Name</h2>"))
         config_file_ui = widgets.HBox([widgets.Label("Config File Name:",
-                                                     layout=widgets.Layout(width='15%')),
+                                                     layout=widgets.Layout(width='20%')),
                                        widgets.Text(_default_config,
-                                                    layout=widgets.Layout(width='80%')),
+                                                    layout=widgets.Layout(width='75%')),
                                        widgets.Label(".cfg",
                                                      layout=widgets.Layout(width='5%'))])
         self.config_file_ui = config_file_ui.children[1]
@@ -443,7 +444,7 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2 id='input_directory'>Select Input Data Folder</h2>"))
 
-        _input_data_folder = self.__get_dict_parameter_value('data_directory', default_value='N/A')
+        _input_data_folder = self.__get_dict_parameter_value('data_directory')
 
         select_input_data_folder_ui = None
         def select_input_data_folder(selection):
@@ -458,10 +459,10 @@ class TopazConfigGenerator(object):
         self.input_data_folder_ui = select_input_data_folder_ui.children[1]
         display(select_input_data_folder_ui)
 
-        if not (_input_data_folder == 'N/A'):
-            start_dir = os.path.dirname(_input_data_folder)
+        if not (_input_data_folder == 'N/A') and os.path.exists(_input_data_folder):
+            start_dir = _input_data_folder
         else:
-            stat_dir = os.path.join(self.working_dir, 'data')
+            start_dir = os.path.join(self.working_dir, 'data')
 
         input_folder_ui = MyFileSelectorPanel(instruction='',
                                               start_dir=start_dir,
@@ -475,16 +476,21 @@ class TopazConfigGenerator(object):
         # ****** Select or Create Output Folder ********
 
         display(HTML("<h2 id='output_directory'>Select or Create Output Folder</h2>"))
+        _output_data_folder = self.__get_dict_parameter_value('output_directory')
 
         select_output_data_folder_ui = None
 
         def select_output_data_folder(selection):
             select_output_data_folder_ui.children[1].value = selection
 
-        default_output_folder = os.path.join(self.working_dir, 'shared')
+        if not (_output_data_folder == 'N/A') and os.path.exists(_output_data_folder):
+            start_dir = _output_data_folder
+        else:
+            start_dir = os.path.join(self.working_dir, 'shared')
+
         select_output_data_folder_ui = widgets.HBox([widgets.Label("Output Data Folder Selected:",
                                                                    layout=widgets.Layout(width='25%')),
-                                                     widgets.Label(default_output_folder,
+                                                     widgets.Label(start_dir,
                                                                    layout=widgets.Layout(width='70%'))])
 
         select_output_data_folder_ui.children[0].add_class("mylabel_key")
@@ -492,14 +498,13 @@ class TopazConfigGenerator(object):
         display(select_output_data_folder_ui)
 
         output_folder_ui = MyFileSelectorPanel(instruction='Location of Output Folder',
-                                               start_dir=default_output_folder,
+                                               start_dir=start_dir,
                                                type='directory',
                                                next=select_output_data_folder,
                                                newdir_toolbar_button=True)
         output_folder_ui.show()
 
     def parameters_1(self):
-
         # def cell_type_changed(value):
         #     centering_ui.children[1].options = self.cell_type_dict[value['new']]
         #     centering_ui.children[1].value = self.cell_type_dict[value['new']][0]
@@ -513,6 +518,9 @@ class TopazConfigGenerator(object):
         calib_folder = os.path.dirname(working_dir)
         list_of_calibration_file = glob.glob(os.path.join(calib_folder, 'shared/calibrations') + '/2017C/*.DetCal')
         list_of_calibration_file.append('None')
+        _calibration_file = self.__get_dict_parameter_value('calibration_file_1')
+        if not (_calibration_file is None) and os.path.exists(_calibration_file):
+            list_of_calibration_file = [_calibration_file] + list_of_calibration_file
 
         # ****** Specify calibration file(s) ********
 
@@ -530,12 +538,21 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2>Goniometer z Offset Correction</h2><br>Test correction for Goniometer z offset"))
 
+        _z_offset = np.float(self.__get_dict_parameter_value('z_offset'))
+        _x_offset = np.float(self.__get_dict_parameter_value('x_offset'))
+
         offset_min_value = -10.0
         offset_max_value = +10.0
 
+        if not (offset_min_value <= _x_offset <= offset_max_value):
+            _x_offset = 0.0
+
+        if not (offset_min_value <= _z_offset <= offset_max_value):
+            _z_offset = 0.0
+
         zoffset_ui = widgets.HBox([widgets.Label("z_offset:",
                                                  layout=widgets.Layout(width='5%')),
-                                   widgets.FloatSlider(value=0.0,
+                                   widgets.FloatSlider(value=_z_offset,
                                                        min=offset_min_value,
                                                        max=offset_max_value,
                                                        readout_format='.2f',
@@ -544,7 +561,7 @@ class TopazConfigGenerator(object):
 
         xoffset_ui = widgets.HBox([widgets.Label("x_offset:",
                                                  layout=widgets.Layout(width='5%')),
-                                   widgets.FloatSlider(value=0.0,
+                                   widgets.FloatSlider(value=_x_offset,
                                                        min=offset_min_value,
                                                        max=offset_max_value,
                                                        readout_format='.2f',
@@ -564,7 +581,9 @@ class TopazConfigGenerator(object):
             then the integrated proton charge will be used for scaling. <br><br>These \
             values will be listed under MONCNT in the integrate file."))
 
-        monitor_counts_flag_ui = widgets.Checkbox(value=False,
+        _str_monitor_flag = self.__get_dict_parameter_value('use_monitor_counts')
+        _monitor_flag  = _str_monitor_flag in ["True", "true"]
+        monitor_counts_flag_ui = widgets.Checkbox(value=_monitor_flag,
                                                   description='Use Monitor Counts')
         self.monitor_counts_flag_ui = monitor_counts_flag_ui
         display(monitor_counts_flag_ui)
