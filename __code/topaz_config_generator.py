@@ -45,6 +45,7 @@ class ConfigLoader(object):
         list_para_value = pd_config['TOPAZ']
 
         config_dict = dict(zip(list_para_name, list_para_value))
+        # adding config_name tag that contains the name of the loaded config name
         [config_dict['config_name'], _] = os.path.splitext(os.path.basename(config_file_name))
         self.config_dict = config_dict
 
@@ -362,6 +363,7 @@ class ConfigDict(object):
               'run_nums': '',
               'slurm_queue_name': 'None',
               'max_processes': 8,
+              'config_name': 'tmp.config',
               }
 
     def __init__(self, config_dict={}):
@@ -462,10 +464,14 @@ class TopazConfigGenerator(object):
                       }
 
     cell_type_dict = {}
+    o_config_dict = None
 
-    def __init__(self, working_dir='', config_dict={}):
+    def __init__(self, working_dir='', config_dict_loaded={}):
         self.working_dir = working_dir
-        self.config_dict = config_dict
+        self.config_dict_loaded = config_dict_loaded
+
+        self.o_config_dict = ConfigDict(config_dict=config_dict_loaded)
+
         self.init_css()
         self.__create_cell_type_centering_dict()
 
@@ -495,7 +501,7 @@ class TopazConfigGenerator(object):
 
     def define_config_file_name(self):
 
-        _default_config = self.__get_dict_parameter_value('config_name')
+        _default_config = self.o_config_dict.get_parameter_value('config_name')
 
         display(HTML("<h2>Define Config File Name</h2>"))
         config_file_ui = widgets.HBox([widgets.Label("Config File Name:",
@@ -513,7 +519,7 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2 id='input_directory'>Select Input Data Folder</h2>"))
 
-        _input_data_folder = self.__get_dict_parameter_value('data_directory')
+        _input_data_folder = self.o_config_dict.get_parameter_value('data_directory')
 
         select_input_data_folder_ui = None
         def select_input_data_folder(selection):
@@ -545,7 +551,7 @@ class TopazConfigGenerator(object):
         # ****** Select or Create Output Folder ********
 
         display(HTML("<h2 id='output_directory'>Select or Create Output Folder</h2>"))
-        _output_data_folder = self.__get_dict_parameter_value('output_directory')
+        _output_data_folder = self.o_config_dict.get_parameter_value('output_directory')
 
         select_output_data_folder_ui = None
 
@@ -587,7 +593,7 @@ class TopazConfigGenerator(object):
         calib_folder = os.path.dirname(working_dir)
         list_of_calibration_file = glob.glob(os.path.join(calib_folder, 'shared/calibrations') + '/2017C/*.DetCal')
         list_of_calibration_file.append('None')
-        _calibration_file = self.__get_dict_parameter_value('calibration_file_1')
+        _calibration_file = self.o_config_dict.get_parameter_value('calibration_file_1')
         if not (_calibration_file is None) and os.path.exists(_calibration_file):
             list_of_calibration_file = [_calibration_file] + list_of_calibration_file
 
@@ -607,8 +613,8 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2>Goniometer z Offset Correction</h2><br>Test correction for Goniometer z offset"))
 
-        _z_offset = np.float(self.__get_dict_parameter_value('z_offset'))
-        _x_offset = np.float(self.__get_dict_parameter_value('x_offset'))
+        _z_offset = self.o_config_dict.get_parameter_value('z_offset')
+        _x_offset = self.o_config_dict.get_parameter_value('x_offset')
 
         offset_min_value = -10.0
         offset_max_value = +10.0
@@ -642,7 +648,6 @@ class TopazConfigGenerator(object):
         offset_ui = widgets.VBox([zoffset_ui, xoffset_ui])
         display(offset_ui)
 
-
         # ****** Use Monitor Counts ?********
 
         display(HTML("<h2>Use Monitor Counts ?</h2><br> If use_monitor_counts is True, then the integrated beam monitor \
@@ -650,8 +655,7 @@ class TopazConfigGenerator(object):
             then the integrated proton charge will be used for scaling. <br><br>These \
             values will be listed under MONCNT in the integrate file."))
 
-        _str_monitor_flag = self.__get_dict_parameter_value('use_monitor_counts')
-        _monitor_flag  = _str_monitor_flag in ["True", "true"]
+        _monitor_flag = self.o_config_dict.get_parameter_value('use_monitor_counts')
         monitor_counts_flag_ui = widgets.Checkbox(value=_monitor_flag,
                                                   description='Use Monitor Counts')
         self.monitor_counts_flag_ui = monitor_counts_flag_ui
