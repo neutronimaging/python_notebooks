@@ -66,7 +66,7 @@ class MyFileSelectorPanel:
     # If ipywidgets version 5.3 or higher is used, the "width="
     # statement should change the width of the file selector. "width="
     # doesn't appear to work in earlier versions.
-    select_layout = ipyw.Layout(width="750px")
+    select_layout = ipyw.Layout(width="750px", height="250px")
     select_multiple_layout = ipyw.Layout(width="750px",
                                          display="flex", flex_flow="column")
     button_layout = ipyw.Layout(margin="5px 40px")
@@ -370,7 +370,11 @@ class ConfigDict(object):
         self.config_dict = config_dict
 
     def get_parameter_value(self, parameter):
+
         para_type = type(self.config[parameter])
+        if self.config_dict == {}:
+            return self.config[parameter]
+
         if self.config_dict[parameter]:
             config_para = self.config_dict[parameter]
             if isinstance(config_para, bool):
@@ -667,10 +671,11 @@ class TopazConfigGenerator(object):
                     determine the range of tofs integrated in the monitor data to get the \
                     total monitor counts. <br>You need these even if Use Monitor Counts is False."))
 
-
+        _min_tof = self.o_config_dict.get_parameter_value('min_tof')
+        _max_tof = self.o_config_dict.get_parameter_value('max_tof')
         tof_ui = widgets.HBox([widgets.Label("TOF Range",
                                              layout=widgets.Layout(width=self.left_column_width)),
-                               widgets.IntRangeSlider(value=[1000, 16600],
+                               widgets.IntRangeSlider(value=[_min_tof, _max_tof],
                                                       min=500,
                                                       max=16600,
                                                       step=1,
@@ -681,16 +686,19 @@ class TopazConfigGenerator(object):
                                              layout=widgets.Layout(width='20%'))])
         self.tof_ui = tof_ui.children[1]
 
+        _monitor_index = self.o_config_dict.get_parameter_value('monitor_index')
         monitor_index_ui = widgets.HBox([widgets.Label("Monitor Index",
                                                        layout=widgets.Layout(width=self.left_column_width)),
                                          widgets.Dropdown(options=['0', '1'],
-                                                          value='0',
+                                                          value=str(_monitor_index),
                                                           layout=widgets.Layout(width='10%'))])
         self.monitor_index_ui = monitor_index_ui.children[1]
 
+        _min_monitor_tof = self.o_config_dict.get_parameter_value('min_monitor_tof')
+        _max_monitor_tof = self.o_config_dict.get_parameter_value('max_monitor_tof')
         monitor_ui = widgets.HBox([widgets.Label("Monitor TOF Range",
                                                  layout=widgets.Layout(width=self.left_column_width)),
-                                   widgets.IntRangeSlider(value=[800, 12500],
+                                   widgets.IntRangeSlider(value=[_min_monitor_tof, _max_monitor_tof],
                                                           min=500,
                                                           max=16600,
                                                           step=1,
@@ -710,12 +718,14 @@ class TopazConfigGenerator(object):
         display(HTML("<h2 id='ub_filename'>UB</h2><br>Read the UB matrix from file. This option will be applied to each run and used for \
             combined file. This option is especially helpful for 2nd frame TOPAZ data."))
 
-        ub_flag_ui = widgets.Checkbox(value=False,
+        _ub_flag = self.o_config_dict.get_parameter_value('read_UB')
+        ub_flag_ui = widgets.Checkbox(value=_ub_flag,
                                       description='Read UB')
 
+        _ub_file = self.o_config_dict.get_parameter_value('UB_filename')
         ub_file_selected_ui = widgets.HBox([widgets.Label("UB File Selected:",
                                                           layout=widgets.Layout(width='20%')),
-                                            widgets.Label("N/A",
+                                            widgets.Label(_ub_file,
                                                           layout=widgets.Layout(width='80%'))])
         ub_file_selected_ui.children[0].add_class("mylabel_key")
         self.ub_file_selected_ui = ub_file_selected_ui
@@ -735,15 +745,18 @@ class TopazConfigGenerator(object):
         def select_ub_file(selection):
             ub_file_selected_ui.children[1].value = selection
 
+        if _ub_file == 'nan':
+            _ub_path = os.path.join(working_dir, 'shared')
+        else:
+            _ub_path = os.path.dirname(_ub_file)
         display(ub_file_selected_ui)
         self.ub_ui = MyFileSelectorPanel(instruction='Select UB File (*.mat)',
-                                         start_dir=os.path.join(working_dir, 'shared'),
+                                         start_dir=_ub_path,
                                          next=select_ub_file)
 
         # init display
         self.ub_ui.show()
         ub_flag_changed({'new': self.ub_flag_ui.value})
-
 
     def parameters_2(self):
 
