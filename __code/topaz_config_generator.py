@@ -879,9 +879,11 @@ class TopazConfigGenerator(object):
                                 widgets.Label("\u00c5")])
         self.pred_ui = pred_ui.children[1]
 
+        _min_spacing = self.o_config_dict.get_parameter_value('min_pred_dspacing')
+        _max_spacing = self.o_config_dict.get_parameter_value('max_pred_dspacing')
         pred_dspacing_ui = widgets.HBox([widgets.Label("Predicted dspacing",
                                                        layout=widgets.Layout(width='20%')),
-                                         widgets.FloatRangeSlider(value=[0.5, 11.0],
+                                         widgets.FloatRangeSlider(value=[_min_spacing, _max_spacing],
                                                                   min=.25,
                                                                   max=12,
                                                                   layout=widgets.Layout(width='35%')),
@@ -895,10 +897,34 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2>Integration Method</h2><br> Select one of the following integration method."))
 
+        _use_sphere = self.o_config_dict.get_parameter_value('use_sphere_integration')
+        _use_ellipse = self.o_config_dict.get_parameter_value('use_ellipse_integration')
+        _use_fit_peaks = self.o_config_dict.get_parameter_value('use_fit_peaks_integration')
+        # _use_cylindrical = self.o_config_dict.get_parameter_value('use_cylindrical_integration')
+        _loaded_value = {}
+
+        print("_use_sphere: {}".format(_use_sphere))
+        print("_use_ellipse: {}".format(_use_ellipse))
+        print("use_fit_peaks: {}".format(_use_fit_peaks))
+
+
+        if _use_sphere:
+            _loaded_value['new'] = 'Sphere'
+            _value = 'Sphere'
+        elif _use_ellipse:
+            _loaded_value['new'] = 'Ellipse'
+            _value = 'Ellipse'
+        elif _use_fit_peaks:
+            _loaded_value['new'] = 'Fit Peaks'
+            _value = 'Fit Peaks'
+        else:
+            _loaded_value['new'] = 'Cylindrical'
+            _value = 'Cylindrical'
+
         inte_ui = widgets.HBox([widgets.Label("Integration Method",
                                               layout=widgets.Layout(width='15%')),
                                 widgets.Dropdown(options=['Sphere', 'Ellipse', 'Cylindrical', 'Fit Peaks'],
-                                                 value='Ellipse',
+                                                 value=_value,
                                                  layout=widgets.Layout(width='20%'))])
         self.inte_ui = inte_ui.children[1]
         display(inte_ui)
@@ -907,9 +933,10 @@ class TopazConfigGenerator(object):
 
         # display(HTML("<h2>Integration Control Parameters</h2>"))
 
+        _peak_radius = self.o_config_dict.get_parameter_value('peak_radius')
         peak_ui = widgets.HBox([widgets.Label("Peak Radius",
                                               layout=widgets.Layout(width='25%')),
-                                widgets.FloatSlider(value=0.13,
+                                widgets.FloatSlider(value=_peak_radius,
                                                     min=0.05,
                                                     max=0.25,
                                                     step=0.001,
@@ -918,9 +945,11 @@ class TopazConfigGenerator(object):
                                 widgets.Label("\u00c5")])
         self.peak_ui = peak_ui.children[1]
 
+        _bkg_inner = self.o_config_dict.get_parameter_value('bkg_inner_radius')
+        _bkg_outer = self.o_config_dict.get_parameter_value('bkg_outer_radius')
         bkg_ui = widgets.HBox([widgets.Label("Background Inner and Outer Radius",
                                              layout=widgets.Layout(width='25%')),
-                               widgets.FloatRangeSlider(value=[0.14, 0.15],
+                               widgets.FloatRangeSlider(value=[_bkg_inner, _bkg_outer],
                                                         min=peak_ui.children[1].value,
                                                         max=0.2,
                                                         step=0.001,
@@ -928,7 +957,6 @@ class TopazConfigGenerator(object):
                                                         layout=widgets.Layout(width='30%')),
                                widgets.Label("\u00c5")])
         self.bkg_ui = bkg_ui.children[1]
-
 
         def on_peak_changed(change):
             new_range = [change['new'], change['new'] * 1.2]
@@ -940,16 +968,18 @@ class TopazConfigGenerator(object):
         vertical_layout = [peak_ui, bkg_ui]
 
         ## will be display only if Sphere has been selected
+        _inte_flag = self.o_config_dict.get_parameter_value('integrate_if_edge_peak')
         inte_flag_ui = widgets.HBox([widgets.Label("Integrate if Edge Peak?",
                                                    layout=widgets.Layout(width='15%')),
-                                     widgets.Checkbox(value=True)])
+                                     widgets.Checkbox(value=_inte_flag)])
         self.inte_flag_ui = inte_flag_ui.children[1]
         vertical_layout.append(inte_flag_ui)
         ### end
 
+        _ellipse_radius = self.o_config_dict.get_parameter_value('ellipse_region_radius')
         ellipse_region_ui = widgets.HBox([widgets.Label("Ellipse Region Radius",
                                                         layout=widgets.Layout(width='25%')),
-                                          widgets.FloatSlider(value=0.20,
+                                          widgets.FloatSlider(value=_ellipse_radius,
                                                               min=bkg_ui.children[1].value[1],
                                                               max=0.30,
                                                               step=0.001,
@@ -959,9 +989,10 @@ class TopazConfigGenerator(object):
         self.ellipse_region_radius_ui = ellipse_region_ui.children[1]
         vertical_layout.append(ellipse_region_ui)
 
+        _ellipse_flag = self.o_config_dict.get_parameter_value('ellipse_size_specified')
         ellipse_size_ui = widgets.HBox([widgets.Label("Ellipse Size Specified",
                                                       layout=widgets.Layout(width='25%')),
-                                        widgets.Checkbox(value=True,
+                                        widgets.Checkbox(value=_ellipse_flag,
                                                          layout=widgets.Layout(width='20%'))])
 
         self.ellipse_size_ui = ellipse_size_ui
@@ -976,7 +1007,6 @@ class TopazConfigGenerator(object):
         bkg_ui.children[1].observe(on_back_outer_changed, names='value')
 
         def inte_method_changed(value):
-
 
             _visibility_inte_flag = 'hidden'
             _cylindrical_flag = 'hidden'
@@ -1020,9 +1050,10 @@ class TopazConfigGenerator(object):
 
         # display(HTML("<h2>Cylindrical Integration Control Parameters</h2>"))
 
+        _cylinder_radius = self.o_config_dict.get_parameter_value('cylinder_radius')
         self.radius_ui = widgets.HBox([widgets.Label("Cylinder Radius",
                                                 layout=widgets.Layout(width='15%')),
-                                  widgets.FloatSlider(value=0.05,
+                                  widgets.FloatSlider(value=_cylinder_radius,
                                                       min=0.02,
                                                       max=0.1,
                                                       step=0.001,
@@ -1030,9 +1061,11 @@ class TopazConfigGenerator(object):
                                                       layout=widgets.Layout(width='30%')),
                                   widgets.Label("\u00c5")])
         self.cylinder_radius_ui = self.radius_ui.children[1]
+
+        _cylinder_length = self.o_config_dict.get_parameter_value('cylinder_length')
         self.length_ui = widgets.HBox([widgets.Label("Cylinder Length",
                                                 layout=widgets.Layout(width='15%')),
-                                  widgets.FloatSlider(value=0.3,
+                                  widgets.FloatSlider(value=_cylinder_length,
                                                       min=0.1,
                                                       max=0.5,
                                                       step=0.01,
@@ -1070,13 +1103,17 @@ class TopazConfigGenerator(object):
         display(self.fit_peaks_vertical_layout)
         self.fit_peaks_vertical_layout.layout.visibility = 'hidden'
 
+        # run method that disable or not widgets
+        inte_method_changed(_loaded_value)
+
         # ****** Bad Edge Pixels ********
 
         display(HTML("<h2>Bad Edge Pixels</h2>"))
 
+        _bad_pixels = self.o_config_dict.get_parameter_value('n_bad_edge_pixels')
         bad_pixels_ui = widgets.HBox([widgets.Label("Nbr bad edge pixels:",
                                                     layout=widgets.Layout(width='15%')),
-                                      widgets.IntSlider(value=0,
+                                      widgets.IntSlider(value=_bad_pixels,
                                                         min=0,
                                                         max=50,
                                                         layout=widgets.Layout(width='30%'))])
@@ -1088,7 +1125,8 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2>Experiment Name</h2>"))
 
-        exp_name_ui = widgets.Text("",
+        _exp = self.o_config_dict.get_parameter_value('exp_name')
+        exp_name_ui = widgets.Text(_exp,
                                    layout=widgets.Layout(width="50%"))
         self.exp_name_ui = exp_name_ui
         display(exp_name_ui)
@@ -1097,15 +1135,20 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2 id='run_nums'>Run Numbers to Reduce</h2><br>Specify the run numbers that should be reduced."))
 
+        _run_nums = self.o_config_dict.get_parameter_value('run_nums')
         run_ui = widgets.HBox([widgets.Label("Run Numbers:", layout=widgets.Layout(width='10%')),
-                               widgets.Text(value="",
+                               widgets.Text(value=_run_nums,
                                             layout=widgets.Layout(width='40%'),
-                                            placeholder='1,4:5,10,20,30:40')])
+                                            placeholder='1,4:5,10,20,30:40'),
+                               widgets.Label("1,4:5,10,20,30:40",
+                                             layout=widgets.Layout(width='10%'))])
         self.run_ui = run_ui.children[1]
         display(run_ui)
 
         import multiprocessing
         nbr_processor = multiprocessing.cpu_count()
+        if nbr_processor > 6:
+            nbr_processor = 6
 
         # ****** Number of Processes ********
 
@@ -1119,8 +1162,13 @@ class TopazConfigGenerator(object):
             max_processes, as some processes finish, new ones will be started, until \
             all runs have been processed."))
 
+        _max_processes = self.o_config_dict.get_parameter_value('max_processes')
+
+        # make sure we do not use more processes that max allowed
+        if _max_processes > nbr_processor:
+            _max_processes = nbr_processor
         process_ui = widgets.HBox([widgets.Label("Nbr Processes:", layout=widgets.Layout(width='10%')),
-                                   widgets.IntSlider(value=nbr_processor - 1,
+                                   widgets.IntSlider(value=_max_processes,
                                                      min=1,
                                                      max=nbr_processor,
                                                      layout=widgets.Layout(width='20%'))])
@@ -1146,6 +1194,7 @@ class TopazConfigGenerator(object):
         self.select_advanced_data_folder_ui = None
         self.advanced_ui = None
 
+        self.reduce_one_run_script = self.o_config_dict.get_parameter_value('reduce_one_run_script')
         def on_pass_changed(change):
 
             # global password_found
@@ -1175,6 +1224,7 @@ class TopazConfigGenerator(object):
                 label_ui.value = selection
                 self.reduce_one_run_script = selection
 
+
             if str_password == MASTER_PASSWORD:
 
                 if self.password_found == False:  # to only display widgets once
@@ -1187,8 +1237,8 @@ class TopazConfigGenerator(object):
                     display(self.select_advanced_data_folder_ui)
 
                     self.advanced_ui = MyFileSelectorPanel(instruction='Select Reduce Python Script ',
-                                                         start_dir=os.path.join(self.working_dir,'shared/'),
-                                                         next=select_advanced_file)
+                                                           start_dir=os.path.join(self.working_dir,'shared/'),
+                                                           next=select_advanced_file)
 
                     self.advanced_ui.show()
                     self.password_found = True
