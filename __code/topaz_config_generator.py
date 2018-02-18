@@ -761,6 +761,8 @@ class TopazConfigGenerator(object):
     def parameters_2(self):
 
         def cell_type_changed(value):
+            ## clear first
+            # centering_ui.children[1].options = []
             centering_ui.children[1].options = self.cell_type_dict[value['new']]
             centering_ui.children[1].value = self.cell_type_dict[value['new']][0]
 
@@ -777,18 +779,20 @@ class TopazConfigGenerator(object):
             Cell transformation is not applied to cylindrical profiles, \
             i.e. use None if cylindrical integration is used!  "))
 
+        _cell_type = self.o_config_dict.get_parameter_value('cell_type')
         cell_type_ui = widgets.HBox([widgets.Label("Cell Type:",
                                                    layout=widgets.Layout(width=self.left_column_width)),
                                      widgets.Dropdown(options=self.cell_type,
-                                                      value='Monoclinic',
+                                                      value=_cell_type,
                                                       layout=widgets.Layout(width='20%'))])
         cell_type_ui.children[1].observe(cell_type_changed, names='value')
         self.cell_type_ui = cell_type_ui.children[1]
 
+        _centering = self.o_config_dict.get_parameter_value('centering')
         centering_ui = widgets.HBox([widgets.Label("Centering:",
                                                    layout=widgets.Layout(width=self.left_column_width)),
                                      widgets.Dropdown(options=self.cell_type_dict['Monoclinic'],
-                                                      value='P',
+                                                      value=_centering,
                                                       layout=widgets.Layout(width='20%'))])
         self.centering_ui = centering_ui.children[1]
         # centering_ui.children[1].observe(centering_changed, names='value')
@@ -808,9 +812,10 @@ class TopazConfigGenerator(object):
         few peaks to be integrated, and the UB matrix may not be as accurate \
         as it should be for predicting peaks to integrate.</li></ul>"))
 
+        _number_peaks = self.o_config_dict.get_parameter_value('num_peaks_to_find')
         peak_ui = widgets.HBox([widgets.Label("Number of Peaks:",
                                               layout=widgets.Layout(width=self.left_column_width)),
-                                widgets.IntSlider(value=300,
+                                widgets.IntSlider(value=_number_peaks,
                                                   min=100,
                                                   max=3000,
                                                   layout=widgets.Layout(width='30%'))])
@@ -824,9 +829,11 @@ class TopazConfigGenerator(object):
             returned by FindPeaksMD, so it should be specified somewhat larger \
             than the largest cell edge in the Niggli reduced cell for the sample."))
 
+        _min_d = self.o_config_dict.get_parameter_value('min_d')
+        _max_d = self.o_config_dict.get_parameter_value('max_d')
         d_ui = widgets.HBox([widgets.Label("d",
                                            layout=widgets.Layout(width='1%')),
-                             widgets.IntRangeSlider(value=[5, 25],
+                             widgets.IntRangeSlider(value=[_min_d, _max_d],
                                                     min=3,
                                                     max=90,
                                                     step=1,
@@ -834,9 +841,10 @@ class TopazConfigGenerator(object):
                              widgets.Label("\u00c5")])
         self.d_ui = d_ui.children[1]
 
+        _tolerance = self.o_config_dict.get_parameter_value('tolerance')
         tolerance_ui = widgets.HBox([widgets.Label("Tolerance",
                                                    layout=widgets.Layout(width='10%')),
-                                     widgets.FloatSlider(value=0.12,
+                                     widgets.FloatSlider(value=_tolerance,
                                                          min=0.06,
                                                          max=0.51,
                                                          step=0.01,
@@ -853,15 +861,18 @@ class TopazConfigGenerator(object):
             then the integrate_predicted_peaks flag should be set to True and the range \
             of wavelengths and d-spacings must be specified"))
 
+        _pred_flag = self.o_config_dict.get_parameter_value('integrate_predicted_peaks')
         pred_flag_ui = widgets.HBox([widgets.Label("Integrate Predicted Peaks?",
                                                    layout=widgets.Layout(width='20%')),
-                                     widgets.Checkbox(value=False,
+                                     widgets.Checkbox(value=_pred_flag,
                                                       layout=widgets.Layout(width='20%'))])
         self.pred_flag_ui = pred_flag_ui.children[1]
 
+        _min_pred = self.o_config_dict.get_parameter_value('min_pred_wl')
+        _max_pred = self.o_config_dict.get_parameter_value('max_pred_wl')
         pred_ui = widgets.HBox([widgets.Label("Predicted Wavelengths",
                                               layout=widgets.Layout(width='20%')),
-                                widgets.FloatRangeSlider(value=[0.5, 3.4],
+                                widgets.FloatRangeSlider(value=[_min_pred, _max_pred],
                                                          min=.25,
                                                          max=3.6,
                                                          layout=widgets.Layout(width='35%')),
