@@ -455,9 +455,10 @@ class TopazConfigGenerator(object):
                  'Tetragonal',
                  'Rhombohedral',
                  'Hexagonal',
-                 'Cubic']
+                 'Cubic',
+                 'None']
 
-    centering_mode = {'P': cell_type.copy(),
+    centering_mode = {'P': cell_type[:-1],
                       'I': ['Tetragonal', 'Monoclinic', 'Cubic'],
                       'A': ['Monoclinic', 'Orthorhombic'],
                       'B': ['Monoclinic', 'Orthorhombic'],
@@ -465,6 +466,7 @@ class TopazConfigGenerator(object):
                       'F': ['Orthorhombic', 'Cubic'],
                       'Robv': ['Rhombohedral'],
                       'Rrev': ['Rhombohedral'],
+                      'None': ['None']
                       }
 
     cell_type_dict = {}
@@ -543,6 +545,10 @@ class TopazConfigGenerator(object):
             start_dir = _input_data_folder
         else:
             start_dir = os.path.join(self.working_dir, 'data')
+            if not os.path.exists(start_dir):
+                start_dir = self.working_dir
+                if not os.path.exists(start_dir):
+                    start_dir = '/'
 
         input_folder_ui = MyFileSelectorPanel(instruction='',
                                               start_dir=start_dir,
@@ -567,6 +573,10 @@ class TopazConfigGenerator(object):
             start_dir = _output_data_folder
         else:
             start_dir = os.path.join(self.working_dir, 'shared')
+            if not os.path.exists(start_dir):
+                start_dir = self.working_dir
+                if not os.path.exists(start_dir):
+                    start_dir = '/'
 
         select_output_data_folder_ui = widgets.HBox([widgets.Label("Output Data Folder Selected:",
                                                                    layout=widgets.Layout(width='25%')),
