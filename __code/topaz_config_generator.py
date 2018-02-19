@@ -506,13 +506,14 @@ class TopazConfigGenerator(object):
     def define_config_file_name(self):
 
         _default_config = self.o_config_dict.get_parameter_value('config_name')
+        [_name_config, _] = os.path.splitext(_default_config)
 
         display(HTML("<h2>Define Config File Name</h2>"))
         config_file_ui = widgets.HBox([widgets.Label("Config File Name:",
                                                      layout=widgets.Layout(width='20%')),
-                                       widgets.Text(_default_config,
+                                       widgets.Text(_name_config,
                                                     layout=widgets.Layout(width='75%')),
-                                       widgets.Label(".cfg",
+                                       widgets.Label(".config",
                                                      layout=widgets.Layout(width='5%'))])
         self.config_file_ui = config_file_ui.children[1]
         display(config_file_ui)
