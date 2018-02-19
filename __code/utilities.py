@@ -3,10 +3,11 @@ import os
 import re
 import shutil
 from configparser import RawConfigParser
-import glob
+#import glob
+import itertools
 from shutil import copyfile
 
-from ipywidgets.widgets import interact
+#from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 
@@ -220,7 +221,126 @@ def copy_files(dict_old_new_names={}, new_output_folder=''):
         w1.value = _index + 1
 
 
+class ListRunsParser(object):
+    """
+    will clean up the current_list_of_runs with the new added runs
+    ex: [1,2,3,4,7] -> 1:4,7
+    if a new run is already in the list of runs, it will then be removed from the list
+    ex: [1,2,3,4] with new run [1] -> 2:4
+    """
+
+    list_current_runs = []  # ['1','10','2','30','4']
+    int_list_current_runs = []  # [1, 2, 4, 10, 30]
+
+    def __init__(self, current_runs=''):
+        if current_runs:
+            self.make_discrete_list_of_runs(str_current_runs=current_runs)
+
+    def make_discrete_list_of_runs(self, str_current_runs=''):
+        spans = (el.partition(':')[::2] for el in str_current_runs.split(','))
+        ranges = (np.arange(int(s), int(e) + 1 if e else int(s) + 1)
+                  for s, e in spans)
+        all_nums = itertools.chain.from_iterable(ranges)
+        _all_nums = set(all_nums)
+        self.list_current_runs = [str(_run) for _run in _all_nums]
+
+    def new_runs(self, list_runs=[]):
+        """add new runs, remove already existing ones"""
+
+        # find list of runs to remove
+        list_runs = set(list_runs)
+        _list_runs_to_remove = set(list_runs.intersection(self.list_current_runs))
+
+        # remove the runs from list_runs and list_current_runs
+        clean_list_runs = list(list_runs - _list_runs_to_remove)
+        clean_list_current_runs = list(set(self.list_current_runs) - _list_runs_to_remove)
+
+        new_list_current_runs = clean_list_runs + clean_list_current_runs
+        self.list_current_runs = new_list_current_runs
+
+        # go from string to int
+        int_new_list_current_runs = [np.int(_run) for _run in new_list_current_runs]
+
+        # sort them to prepare them for output format
+        int_new_list_current_runs.sort()
+        self.int_list_current_runs = int_new_list_current_runs
+
+        if int_new_list_current_runs == []:
+            self.str_list_current_runs = ""
+            return
+
+        # create output string format
+
+        # only 1 run
+        if len(int_new_list_current_runs) == 1:
+            self.str_list_current_runs = str(int_new_list_current_runs[0])
+            return
+
+        # more than 1 run
+
+        # create full matching list
+
+        print("full_list_runs: ")
+        print(self.int_list_current_runs)
+
+        def match_list(reference_list=[], our_list=[]):
+            _index = 0
+            _ref_list_and_our_list = zip(our_list, reference_list)
+            for _ref_run, _our_run in _ref_list_and_our_list:
+                if _ref_run == _our_run:
+                    _index += 1
+                    continue
+                break
+
+            return _index
+
+        _index = 0
+        _groups = []
+        _our_list = self.int_list_current_runs[_index: ]
+        _list_full_reference = np.arange(_our_list[0], _our_list[-1]+1)
+
+        while _our_list:
+
+            print("_list_full_reference: {}".format(_list_full_reference))
+            print("_our_list: {}".format(_our_list))
+
+            _ref_index = match_list(reference_list=_list_full_reference,
+                                    our_list=_our_list)
+
+            print("_ref_index: {}".format(_ref_index))
+
+            _group = [_our_list[0], _our_list[_ref_index-1]]
+            _groups.append(_group)
+
+            print("group is {}".format(_group))
+
+            _our_list = _our_list[_ref_index:]
+            if len(_our_list) == 1:
+                _groups.append([_our_list])
+                break
+
+            print("now _our_list is: {}".format(_our_list))
+            _list_full_reference = np.arange(_our_list[0], _our_list[-1]+1)
+
+            print("")
+
+        print("_groups: {}".format(_groups))
 
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

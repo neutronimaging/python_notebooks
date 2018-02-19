@@ -4,6 +4,7 @@ import ipywe.fileselector
 import ipywidgets as ipyw
 import os
 import time
+import re
 import numpy as np
 from collections import defaultdict
 from IPython.core.display import HTML
@@ -529,7 +530,7 @@ class TopazConfigGenerator(object):
         _input_data_folder = self.o_config_dict.get_parameter_value('data_directory')
 
         select_input_data_folder_ui = None
-        def select_input_data_folder(selection):
+        def _select_input_data_folder(selection):
             select_input_data_folder_ui.children[1].value = selection
 
         select_input_data_folder_ui = widgets.HBox([widgets.Label("Input Data Folder Selected:",
@@ -540,6 +541,7 @@ class TopazConfigGenerator(object):
         select_input_data_folder_ui.children[0].add_class("mylabel_key")
         self.input_data_folder_ui = select_input_data_folder_ui.children[1]
         display(select_input_data_folder_ui)
+
 
         if not (_input_data_folder == 'N/A') and os.path.exists(_input_data_folder):
             start_dir = _input_data_folder
@@ -552,7 +554,7 @@ class TopazConfigGenerator(object):
 
         input_folder_ui = MyFileSelectorPanel(instruction='',
                                               start_dir=start_dir,
-                                              next=select_input_data_folder,
+                                              next=_select_input_data_folder,
                                               type='directory')
         input_folder_ui.show()
 
@@ -1146,15 +1148,54 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2 id='run_nums'>Run Numbers to Reduce</h2><br>Specify the run numbers that should be reduced."))
 
+        # retrieve list of runs from data folder
+        _path_to_look_for = os.path.abspath(os.path.join(self.input_data_folder_ui.value, 'TOPAZ_*_event.nxs'))
+        list_of_event_nxs = glob.glob(_path_to_look_for)
+
+        list_of_runs = []
+        if list_of_event_nxs:
+            re_string = r"^TOPAZ_(?P<run>\d+)_event.nxs$"
+            for _nexus in list_of_event_nxs:
+                _short_nexus = os.path.basename(_nexus)
+                m = re.match(re_string, _short_nexus)
+                if m:
+                    _run = m.group('run')
+                    list_of_runs.append(_run)
+
         _run_nums = self.o_config_dict.get_parameter_value('run_nums')
         run_ui = widgets.HBox([widgets.Label("Run Numbers:", layout=widgets.Layout(width='10%')),
                                widgets.Text(value=_run_nums,
                                             layout=widgets.Layout(width='40%'),
                                             placeholder='1,4:5,10,20,30:40'),
-                               widgets.Label("1,4:5,10,20,30:40",
-                                             layout=widgets.Layout(width='10%'))])
+                               widgets.Label("Select (SHIFT/CTRL for Multi. Selection ->",
+                                             layout=widgets.Layout(width='25%')),
+                               widgets.SelectMultiple(options=list_of_runs,
+                                                      layout=widgets.Layout(width='10%',
+                                                                            height='200px'))])
         self.run_ui = run_ui.children[1]
         display(run_ui)
+
+        def user_made_selection(selection):
+            list_run_selected = selection['value']
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+        # listen to selection to autopopulate the list of runs when user click runs
+        run_ui.children[3].observe(user_made_selection, 'value')
+
+        if list_of_runs == []:
+            run_ui.children[3].visibility = 'hidden'
 
         import multiprocessing
         nbr_processor = multiprocessing.cpu_count()
