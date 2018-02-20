@@ -1163,39 +1163,33 @@ class TopazConfigGenerator(object):
                     list_of_runs.append(_run)
 
         _run_nums = self.o_config_dict.get_parameter_value('run_nums')
+
+        # listen to selection to autopopulate the list of runs when user click runs
+        if list_of_runs == []:
+            _visibility = 'hidden'
+            _message = 'No event NeXus found in the input folder!'
+        else:
+            _visibility = 'visible'
+            _message = "Select (SHIFT/CTRL for Multi. Selection ->"
+
         run_ui = widgets.HBox([widgets.Label("Run Numbers:", layout=widgets.Layout(width='10%')),
                                widgets.Text(value=_run_nums,
                                             layout=widgets.Layout(width='40%'),
                                             placeholder='1,4:5,10,20,30:40'),
-                               widgets.Label("Select (SHIFT/CTRL for Multi. Selection ->",
-                                             layout=widgets.Layout(width='25%')),
+                               widgets.Label(_message,
+                                             layout=widgets.Layout(width='22%')),
                                widgets.SelectMultiple(options=list_of_runs,
                                                       layout=widgets.Layout(width='10%',
+                                                                            visibility=_visibility,
                                                                             height='200px'))])
         self.run_ui = run_ui.children[1]
         display(run_ui)
 
+
         def user_made_selection(selection):
             list_run_selected = selection['value']
 
-            
-
-
-
-
-
-
-
-
-
-
-
-
-        # listen to selection to autopopulate the list of runs when user click runs
         run_ui.children[3].observe(user_made_selection, 'value')
-
-        if list_of_runs == []:
-            run_ui.children[3].visibility = 'hidden'
 
         import multiprocessing
         nbr_processor = multiprocessing.cpu_count()
