@@ -311,7 +311,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_water_intake_plot()
 
     def update_profile_plot(self):
-        _image = self.current_image
+        index_selected = self.ui.file_index_slider.value()
+        _image = self.dict_data['list_data'][index_selected-1]
+#        _image = self.current_image
         _roi = self.roi
 
         x0 = _roi['x0']
@@ -333,7 +335,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         else:
             _profile = []
         self.profile.clear()
-        self.profile.plot(_profile)
+
+        x_axis = np.arange(len(_profile)) + np.int(y0)
+        self.profile.plot(x_axis, _profile)
         self.profile.setLabel('left', 'Counts')
         self.profile.setLabel('bottom', 'Y pixels')
 
@@ -352,7 +356,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles)
         delta_time = o_water_intake_handler.water_intake_deltatime
         peak = o_water_intake_handler.water_intake_peak
-        peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+        # peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
 
         if self.ui.pixel_radioButton.isChecked(): # pixel
             peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
@@ -375,7 +379,6 @@ class WaterIntakeProfileSelector(QMainWindow):
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
 
         dict_data = self.dict_data
-
         _roi = self.roi
 
         x0 = _roi['x0']
