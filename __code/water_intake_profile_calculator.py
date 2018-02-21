@@ -24,7 +24,6 @@ except ImportError:
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from NeuNorm.normalization import Normalization
-from __code.metadata_handler import MetadataHandler
 from __code.file_handler import retrieve_time_stamp
 from __code.file_format_reader import DscReader
 
@@ -111,7 +110,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle("Profile Selector")
+        self.setWindowTitle("Water Intake Calculator")
 
         self.dict_data_raw = dict_data.copy()
         self.dict_data = dict_data.copy()
@@ -599,6 +598,8 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     # files sorting
     def sorting_files_checkbox_clicked(self):
+        # hourglass
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
         self.ui.time_between_runs_label.setEnabled(is_sorting_by_name)
         self.ui.time_between_runs_spinBox.setEnabled(is_sorting_by_name)
@@ -607,6 +608,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_infos_tab(is_by_name=is_sorting_by_name)
         self.update_image()
         self.update_plots()
+        QApplication.restoreOverrideCursor()
 
     def __sort_files(self, is_by_name=True):
         # reformat name to make sure the last digit have 4 digits

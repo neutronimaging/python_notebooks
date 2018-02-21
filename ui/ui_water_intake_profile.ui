@@ -721,7 +721,7 @@
   </connection>
   <connection>
    <sender>time_between_runs_spinBox</sender>
-   <signal>valueChanged(double)</signal>
+   <signal>editingFinished()</signal>
    <receiver>MainWindow</receiver>
    <slot>time_between_runs_spinBox_changed()</slot>
    <hints>

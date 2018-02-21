@@ -1,35 +1,38 @@
-
-# coding: utf-8
-
-import os, glob, time
 import ipywidgets as ipyw
-from IPython.display import display, HTML, clear_output
-# This try-except should not be necessary anymore.
-# The testing is now done in ../tests.
-try:
-    from ._utils import js_alert
-except Exception:
-    # only used if testing in this directory without installing
-    from _utils import js_alert
+import os
+import time
+from IPython.core.display import HTML
 
-class FileSelectorPanel:
 
-    """Files and directories selector
-    """
-    
-    #If ipywidgets version 5.3 or higher is used, the "width="
-    #statement should change the width of the file selector. "width="
-    #doesn't appear to work in earlier versions.
-    select_layout = ipyw.Layout(width="750px")
-    select_multiple_layout = ipyw.Layout(width="750px", display="flex", flex_flow="column")
+class MyFileSelectorPanel:
+    """Files and directories selector"""
+
+    # If ipywidgets version 5.3 or higher is used, the "width="
+    # statement should change the width of the file selector. "width="
+    # doesn't appear to work in earlier versions.
+    select_layout = ipyw.Layout(width="750px", height="260px")
+    select_multiple_layout = ipyw.Layout(
+        width="750px", height="260px", display="flex", flex_flow="column")
     button_layout = ipyw.Layout(margin="5px 40px")
+    toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px")
+    toolbar_box_layout = ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px')
     label_layout = ipyw.Layout(width="250px")
     layout = ipyw.Layout()
-    
-    def __init__(self, instruction, start_dir=".", type='file', next=None, multiple=False):
+
+    def js_alert(self, m):
+        js = "<script>alert('%s');</script>" % m
+        display(HTML(js))
+        return
+
+    def __init__(
+            self,
+            instruction,
+            start_dir=".", type='file', next=None,
+            multiple=False, newdir_toolbar_button=False,
+            custom_layout=None
+    ):
         """
         Create FileSelectorPanel instance
-
         Parameters
         ----------
         instruction : str
@@ -42,19 +45,64 @@ class FileSelectorPanel:
             if True, multiple files/dirs can be selected
         next : function
             callback function to execute after the selection is selected
+        newdir_toolbar_button : bool
+            If true, a button to create new directory is added to the toolbar
         """
-        if not type in ['file', 'directory']:
+        if type not in ['file', 'directory']:
             raise ValueError("type must be either file or directory")
+        if custom_layout:
+            for k, v in custom_layout.items():
+                name = '%s_layout' % k
+                assert name in dir(self), "Invalid layout item: %s" % name
+                setattr(self, name, v)
+                continue
         self.instruction = instruction
         self.type = type
         self.multiple = multiple
+        self.newdir_toolbar_button = newdir_toolbar_button
         self.createPanel(os.path.abspath(start_dir))
         self.next = next
         return
 
+    def activate_status(self, is_disabled=True):
+        self.button_layout.disabled = is_disabled
+        self.ok.disabled = is_disabled
+        self.jumpto_input.disabled = is_disabled
+        self.enterdir.disabled = is_disabled
+        self.jumpto_button.disabled = is_disabled
+        self.select.disabled = is_disabled
+
     def createPanel(self, curdir):
+        self.header = ipyw.Label(self.instruction, layout=self.label_layout)
+        self.footer = ipyw.HTML("")
+        self.body = self.createBody(curdir)
+        self.panel = ipyw.VBox(children=[self.header, self.body, self.footer])
+        return
+
+    def createBody(self, curdir):
         self.curdir = curdir
-        explanation = ipyw.Label(self.instruction,layout=self.label_layout)
+        self.footer.value = "Please wait..."
+        # toolbar
+        # "jump to"
+        self.jumpto_input = jumpto_input = ipyw.Text(
+            value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width='500px')
+        )
+        jumpto_button = ipyw.Button(description="Jump", layout=self.toolbar_button_layout)
+        jumpto_button.on_click(self.handle_jumpto)
+        jumpto = ipyw.HBox(children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout)
+        self.jumpto_button = jumpto
+        if self.newdir_toolbar_button:
+            # "new dir"
+            self.newdir_input = newdir_input = ipyw.Text(
+                value="", placeholder="new dir name", description="New subdir: ",
+                layout=ipyw.Layout(width='180px'))
+            newdir_button = ipyw.Button(description="Create", layout=self.toolbar_button_layout)
+            newdir_button.on_click(self.handle_newdir)
+            newdir = ipyw.HBox(children=[newdir_input, newdir_button], layout=self.toolbar_box_layout)
+            toolbar = ipyw.HBox(children=[jumpto, newdir])
+        else:
+            toolbar = ipyw.HBox(children=[jumpto])
+        # entries in this starting dir
         entries_files = sorted(os.listdir(curdir))
         entries_paths = [os.path.join(curdir, e) for e in entries_files]
         entries_ftime = create_file_times(entries_paths)
@@ -77,7 +125,7 @@ class FileSelectorPanel:
            to include the display="flex" and flex_flow="column" statements. In ipywidgets 6.0,
            this doesn't work because the styles of the select and select multiple widgets are
            not the same.
-        
+
         self.select = widget(
             value=value, options=entries,
             description="Select",
@@ -89,25 +137,47 @@ class FileSelectorPanel:
         self.ok = ipyw.Button(description='Select', layout=self.button_layout)
         self.ok.on_click(self.validate)
         buttons = ipyw.HBox(children=[self.enterdir, self.ok])
-        self.widgets = [explanation, self.select, buttons]
-        self.panel = ipyw.VBox(children=self.widgets, layout=self.layout)
-        return	
-    
+        lower_panel = ipyw.VBox(children=[self.select, buttons],
+                                layout=ipyw.Layout(border='1px solid lightgrey', margin='5px', padding='10px'))
+        body = ipyw.VBox(children=[toolbar, lower_panel], layout=self.layout)
+        self.footer.value = ""
+        return body
+
+    def changeDir(self, path):
+        close(self.body)
+        self.body = self.createBody(path)
+        self.panel.children = [self.header, self.body, self.footer]
+        return
+
+    def handle_jumpto(self, s):
+        v = self.jumpto_input.value
+        if not os.path.isdir(v): return
+        self.changeDir(v)
+        return
+
+    def handle_newdir(self, s):
+        v = self.newdir_input.value
+        path = os.path.join(self.curdir, v)
+        try:
+            os.makedirs(path)
+        except:
+            return
+        self.changeDir(path)
+        return
+
     def handle_enterdir(self, s):
         v = self.select.value
         v = del_ftime(v)
         if self.multiple:
-            if len(v)!=1:
-                js_alert("Please select a directory")
+            if len(v) != 1:
+                self.js_alert("Please select a directory")
                 return
             v = v[0]
         p = os.path.abspath(os.path.join(self.curdir, v))
         if os.path.isdir(p):
-            self.remove()
-            self.createPanel(p)
-            self.show()
+            self.changeDir(p)
         return
-    
+
     def validate(self, s):
         v = self.select.value
         v = del_ftime(v)
@@ -122,13 +192,13 @@ class FileSelectorPanel:
         if self.type == 'file':
             for p in paths:
                 if not os.path.isfile(p):
-                    js_alert("Please select file(s)")
+                    self.js_alert("Please select file(s)")
                     return
         else:
             assert self.type == 'directory'
             for p in paths:
                 if not os.path.isdir(p):
-                    js_alert("Please select directory(s)")
+                    self.js_alert("Please select directory(s)")
                     return
         # set output
         if self.multiple:
@@ -136,102 +206,62 @@ class FileSelectorPanel:
         else:
             self.selected = paths[0]
         # clean up
-        self.remove()
+        # self.remove()  ## fileselector stays alive
         # next step
         if self.next:
             self.next(self.selected)
         return
 
     def show(self):
-        display(HTML("""
-        <style type="text/css">
-        .jupyter-widgets select option {
-            font-family: "Lucida Console", Monaco, monospace;
-        }
-        </style>
-        """))
         display(self.panel)
-
-    def result(self):
-        _result = self.widgets[1].value
-        if self.multiple:
-            _selection = [_folder.split('|')[0].strip() for _folder in _result]
-            return _selection
-        else:
-            return _result.split('|')[0].strip()
-    
-    def result_full_path(self):
-        _result = self.widgets[1].value
-        if self.multiple:
-            _selection = [_folder.split('|')[0].strip() for _folder in _result]
-            full_path = [os.path.join(self.curdir, _file) for _file in _selection]
-        else:
-            _result = _result.split('|')[0].strip()
-            full_path = os.path.join(self.curdir, _result)
-        return full_path    
+        return
 
     def remove(self):
-        for w in self.widgets: w.close()
-        self.panel.close()
+        close(self.panel)
 
+
+
+def close(w):
+    "recursively close a widget"
+    if hasattr(w, 'children'):
+        for c in w.children:
+            close(c)
+            continue
+    w.close()
+    return
 
 def create_file_times(paths):
-    "returns a list of file modify time"
+    """returns a list of file modify time"""
     ftimes = []
     for f in paths:
-        if os.path.isdir(f):
-            ftimes.append("Directory")
-        else:
-            ftime_sec = os.path.getmtime(f)
-            ftime_tuple = time.localtime(ftime_sec)
-            ftime = time.asctime(ftime_tuple)
-            ftimes.append(ftime)
+        try:
+            if os.path.isdir(f):
+                ftimes.append("Directory")
+            else:
+                ftime_sec = os.path.getmtime(f)
+                ftime_tuple = time.localtime(ftime_sec)
+                ftime = time.asctime(ftime_tuple)
+                ftimes.append(ftime)
+        except OSError:
+            ftimes.append("Unknown or Permission Denied")
     return ftimes
 
 def create_nametime_labels(entries, ftimes):
-    if not entries: return []
+    if not entries:
+        return []
     max_len = max(len(e) for e in entries)
     n_spaces = 5
-    fmt_str = ' %-' + str(max_len+n_spaces) + "s|" + ' '*n_spaces + '%s'
+    fmt_str = ' %-' + str(max_len + n_spaces) + "s|" + ' ' * n_spaces + '%s'
     label_list = [fmt_str % (e, f) for e, f in zip(entries, ftimes)]
     return label_list
 
 def del_ftime(file_label):
-    "file_label is either a str or a tuple of strings"
+    """file_label is either a str or a tuple of strings"""
     if isinstance(file_label, tuple):
         return tuple(del_ftime(s) for s in file_label)
-    else:    
+    else:
         file_label_new = file_label.strip()
         if file_label_new != "." and file_label_new != "..":
             file_label_new = file_label_new.split("|")[0].rstrip()
-    return(file_label_new)
-
-def test1():
-    panel = FileSelectorPanel("instruction", start_dir=".")
-    print('\n'.join(panel._entries))
-    panel.handle_enterdir(".")
-    return
-
-def test2():
-    s = " __init__.py          |     Tue Jun 13 23:24:05 2017"
-    assert del_ftime(s) == '__init__.py'
-    s = ' . '
-    assert del_ftime(s) == '.'
-    s = (" __init__.py          |     Tue Jan 13 23:24:05 2017",
-         " _utils.py            |     Mon Feb 11 12:00:00 2017")
-    dels = del_ftime(s)
-    expected = ("__init__.py", "_utils.py")
-    for e, r in zip(dels, expected):
-        assert e == r
-    return
-
-
-def main():
-    #test1()
-    test2()
-    return
-
-if __name__ == '__main__': main()
-
-
+    return (file_label_new)
 
