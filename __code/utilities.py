@@ -279,10 +279,6 @@ class ListRunsParser(object):
         # more than 1 run
 
         # create full matching list
-
-        print("full_list_runs: ")
-        print(self.int_list_current_runs)
-
         def match_list(reference_list=[], our_list=[]):
             _index = 0
             _ref_list_and_our_list = zip(our_list, reference_list)
@@ -299,33 +295,48 @@ class ListRunsParser(object):
         _our_list = self.int_list_current_runs[_index: ]
         _list_full_reference = np.arange(_our_list[0], _our_list[-1]+1)
 
-        while _our_list:
+        print("new list: {}".format(_our_list))
 
-            print("_list_full_reference: {}".format(_list_full_reference))
-            print("_our_list: {}".format(_our_list))
+        while _our_list:
 
             _ref_index = match_list(reference_list=_list_full_reference,
                                     our_list=_our_list)
 
-            print("_ref_index: {}".format(_ref_index))
-
             _group = [_our_list[0], _our_list[_ref_index-1]]
+            # print("_group: {}".format(_group))
             _groups.append(_group)
-
-            print("group is {}".format(_group))
 
             _our_list = _our_list[_ref_index:]
             if len(_our_list) == 1:
-                _groups.append([_our_list])
+                _groups.append(_our_list)
                 break
 
-            print("now _our_list is: {}".format(_our_list))
-            _list_full_reference = np.arange(_our_list[0], _our_list[-1]+1)
+            if len(_our_list) == 0:
+                break
 
-            print("")
+            _list_full_reference = np.arange(_our_list[0], _our_list[-1]+1)
 
         print("_groups: {}".format(_groups))
 
+        list_runs = []
+        for _group in _groups:
+
+            if len(_group) == 2:
+                [_left_value, _right_value] = _group
+
+                if _left_value == _right_value:
+                    list_runs.append(str(_left_value))
+                elif _right_value == (_left_value + 1):
+                    list_runs.append(str(_left_value))
+                    list_runs.append(str(_right_value))
+                else:
+                    list_runs.append("{}:{}".format(_left_value, _right_value))
+
+            else:
+                list_runs.append(str(_group[0]))
+
+        str_runs = ",".join(list_runs)
+        print(str_runs)
 
 
 
