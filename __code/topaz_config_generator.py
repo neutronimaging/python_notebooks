@@ -1,11 +1,11 @@
 import glob
 from ipywidgets import widgets
-import ipywe.fileselector
-import ipywidgets as ipyw
+# import ipywe.fileselector
+# import ipywidgets as ipyw
 import os
-import time
+# import time
 import re
-import numpy as np
+# import numpy as np
 from collections import defaultdict
 from IPython.core.display import HTML
 from IPython.display import display
@@ -283,6 +283,15 @@ class TopazConfigGenerator(object):
 
     def select_input_data_folder(self):
 
+        def update_list_of_runs(list_of_runs):
+            if list_of_runs == []:
+                self.run_ui_selectMultiple.layout.visibility = 'hidden'
+                self.runs_label.text = 'No event NeXus found in the input folder!'
+            else:
+                self.run_ui_selectMultiple.layout.visibility = 'visible'
+                self.runs_label.text  = "Select (SHIFT/CTRL for Multi. Selection ->"
+                self.run_ui_selectMultiple.options = list_of_runs
+
         # ****** Select Input Data Folder ********
 
         display(HTML("<h2 id='input_directory'>Select Input Data Folder</h2>"))
@@ -293,6 +302,22 @@ class TopazConfigGenerator(object):
         def _select_input_data_folder(selection):
             select_input_data_folder_ui.children[1].value = selection
 
+            # update the list of runs display at the bottom of the page if user select new input data folder
+            _path_to_look_for = os.path.abspath(os.path.join(self.input_data_folder_ui.value, 'TOPAZ_*_event.nxs'))
+            list_of_event_nxs = glob.glob(_path_to_look_for)
+
+            list_of_runs = []
+            if list_of_event_nxs:
+                re_string = r"^TOPAZ_(?P<run>\d+)_event.nxs$"
+                for _nexus in list_of_event_nxs:
+                    _short_nexus = os.path.basename(_nexus)
+                    m = re.match(re_string, _short_nexus)
+                    if m:
+                        _run = m.group('run')
+                        list_of_runs.append(_run)
+
+            update_list_of_runs(list_of_runs)
+
         select_input_data_folder_ui = widgets.HBox([widgets.Label("Input Data Folder Selected:",
                                                                   layout=widgets.Layout(width='25%')),
                                                     widgets.Label(_input_data_folder,
@@ -301,7 +326,6 @@ class TopazConfigGenerator(object):
         select_input_data_folder_ui.children[0].add_class("mylabel_key")
         self.input_data_folder_ui = select_input_data_folder_ui.children[1]
         display(select_input_data_folder_ui)
-
 
 
         if not (_input_data_folder == 'N/A') and os.path.exists(_input_data_folder):
@@ -945,13 +969,17 @@ class TopazConfigGenerator(object):
                                                                             visibility=_visibility,
                                                                             height='200px'))])
         self.run_ui = run_ui.children[1]
+        self.runs_label = run_ui.children[2]
         display(run_ui)
 
-
         def user_made_selection(selection):
-            list_run_selected = selection['value']
+            # list_run_selected = selection['value']
+            print(selection)
 
-        run_ui.children[3].observe(user_made_selection, 'value')
+
+
+        self.run_ui_selectMultiple = run_ui.children[3]
+        self.run_ui_selectMultiple.observe(user_made_selection, 'value')
 
         import multiprocessing
         nbr_processor = multiprocessing.cpu_count()
