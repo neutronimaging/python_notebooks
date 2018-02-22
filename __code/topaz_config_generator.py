@@ -935,55 +935,6 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2 id='run_nums'>Run Numbers to Reduce</h2><br>Specify the run numbers that should be reduced."))
 
-        # # retrieve list of runs from data folder
-        # _path_to_look_for = os.path.abspath(os.path.join(self.input_data_folder_ui.value, 'TOPAZ_*_event.nxs'))
-        # list_of_event_nxs = glob.glob(_path_to_look_for)
-        #
-        # list_of_runs = []
-        # if list_of_event_nxs:
-        #     re_string = r"^TOPAZ_(?P<run>\d+)_event.nxs$"
-        #     for _nexus in list_of_event_nxs:
-        #         _short_nexus = os.path.basename(_nexus)
-        #         m = re.match(re_string, _short_nexus)
-        #         if m:
-        #             _run = m.group('run')
-        #             list_of_runs.append(_run)
-        #
-        # _run_nums = self.o_config_dict.get_parameter_value('run_nums')
-        #
-        # # listen to selection to autopopulate the list of runs when user click runs
-        # if list_of_runs == []:
-        #     _visibility = 'hidden'
-        #     _message = 'No event NeXus found in the input folder!'
-        # else:
-        #     _visibility = 'visible'
-        #     _message = "Select (SHIFT/CTRL for Multi. Selection ->"
-        #
-        # run_ui = widgets.HBox([widgets.Label("Run Numbers:", layout=widgets.Layout(width='10%')),
-        #                        widgets.Text(value=_run_nums,
-        #                                     layout=widgets.Layout(width='40%'),
-        #                                     placeholder='1,4:5,10,20,30:40'),
-        #                        widgets.Label(_message,
-        #                                      layout=widgets.Layout(width='22%')),
-        #                        widgets.SelectMultiple(options=list_of_runs,
-        #                                               layout=widgets.Layout(width='10%',
-        #                                                                     visibility=_visibility,
-        #                                                                     height='200px'))])
-        # self.run_ui = run_ui.children[1]
-        # self.runs_label = run_ui.children[2]
-        # display(run_ui)
-        #
-        # def user_made_selection(selection):
-        #     # list_run_selected = selection['value']
-        #     print(selection)
-        #
-        # self.run_ui_selectMultiple = run_ui.children[3]
-        # self.run_ui_selectMultiple.observe(user_made_selection, 'value')
-
-        # WORK IN PROGRESS ====================================
-
-        ## widgets event handler
-
         self.full_list_of_runs_selected = []
         self.list_of_runs_already_selected = []
 
@@ -1078,7 +1029,7 @@ class TopazConfigGenerator(object):
                 if m:
                     _run = m.group('run')
                     list_of_runs.append(_run)
-
+        self.list_of_runs = list_of_runs
 
         # listen to selection to autopopulate the list of runs when user click runs
         if list_of_runs == []:
@@ -1107,19 +1058,21 @@ class TopazConfigGenerator(object):
         self.run_numbers_error_ui = first_row_ui.children[2]
 
         col_1_ui = widgets.VBox([widgets.Label("Full list of runs"),
-                                 widgets.SelectMultiple(options=self.list_runs,
+                                 widgets.SelectMultiple(options=self.list_of_runs,
                                                         layout=widgets.Layout(height='150px',
                                                                               width='100px'))],
                                 layout=widgets.Layout(width='120px'))
         col_1_ui.children[1].observe(full_list_of_runs_changed, 'value')
 
-        col_2_ui = widgets.VBox([widgets.Button(description="Add ->")],
-                                layout=widgets.Layout(width='170px',
+        col_2_ui = widgets.VBox([widgets.Button(description="Add ->",
+                                                layout=widgets.Layout(border='1px solid blue',
+                                                                      width='120px'))],
+                                layout=widgets.Layout(width='160px',
                                                       align_self='center'))
         col_2_ui.children[0].on_click(add_button_clicked)
 
         col_3_ui = widgets.VBox([widgets.Label("Selected runs"),
-                                 widgets.SelectMultiple(options=[],
+                                 widgets.SelectMultiple(options=self.list_runs,
                                                         layout=widgets.Layout(height='150px',
                                                                               width='100px'))],
                                 layout=widgets.Layout(width='120px'))
@@ -1128,7 +1081,8 @@ class TopazConfigGenerator(object):
         self.selected_runs_ui = col_3_ui.children[1]
 
         col_4_ui = widgets.Button(description="Remove",
-                                  layout=widgets.Layout(width='170px',
+                                  layout=widgets.Layout(width='120px',
+                                                        border='1px solid red',
                                                         align_self='flex-end'))
         col_4_ui.on_click(remove_button_clicked)
 
@@ -1149,9 +1103,6 @@ class TopazConfigGenerator(object):
         self.full_run_numbers_layout = second_row_ui
 
         display(layout_ui)
-
-        ## END OF WORK IN PROGRESS
-
 
         # ****** Number of Processes ********
 
@@ -1206,10 +1157,6 @@ class TopazConfigGenerator(object):
 
         self.reduce_one_run_script = self.o_config_dict.get_parameter_value('reduce_one_run_script')
         def on_pass_changed(change):
-
-            # global password_found
-            # global reduce_ui
-            # global reduce_label_ui
 
             new_len_pass = len(change['new'])
             old_len_pass = len(password)
@@ -1368,7 +1315,7 @@ class TopazConfigGenerator(object):
         config['exp_name'] = self.exp_name_ui.value
 
         # run number to reduce
-        config['run_nums'] = self.run_ui.value.replace(" ", "")
+        config['run_nums'] = self.run_numbers_text_ui.value.replace(" ", "")
 
         # max processes
         config['max_processes'] = self.process_ui.value
@@ -1394,7 +1341,7 @@ class TopazConfigGenerator(object):
                 display(HTML("<h2>Name of folder: </h2>" + output_folder))
 
             # check we have write permission to this file
-            config_file_name = self.config_file_ui.value + '.cfg'
+            config_file_name = self.config_file_ui.value + '.config'
 
             full_config = os.path.abspath(os.path.join(output_folder, config_file_name))
             try:
