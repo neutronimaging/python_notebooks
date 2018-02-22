@@ -277,7 +277,7 @@ class ListRunsParser(object):
         # only 1 run
         if len(int_new_list_current_runs) == 1:
             self.str_list_current_runs = str(int_new_list_current_runs[0])
-            return
+            return str(int_new_list_current_runs[0])
 
         # more than 1 run
 

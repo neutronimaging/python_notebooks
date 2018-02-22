@@ -13,6 +13,7 @@ import pandas as pd
 
 from __code.file_handler import make_ascii_file_from_string
 from __code.fileselector import MyFileSelectorPanel
+from __code.utilities import ListRunsParser
 
 
 class ConfigLoader(object):
@@ -284,13 +285,13 @@ class TopazConfigGenerator(object):
     def select_input_data_folder(self):
 
         def update_list_of_runs(list_of_runs):
+            self.full_list_of_runs_ui.options = list_of_runs
             if list_of_runs == []:
-                self.run_ui_selectMultiple.layout.visibility = 'hidden'
-                self.runs_label.text = 'No event NeXus found in the input folder!'
+                self.run_numbers_error_ui.value = ">> Format Error! <<"
+                self.full_run_numbers_layout.layout.visibility = 'hidden'
             else:
-                self.run_ui_selectMultiple.layout.visibility = 'visible'
-                self.runs_label.text  = "Select (SHIFT/CTRL for Multi. Selection ->"
-                self.run_ui_selectMultiple.options = list_of_runs
+                self.run_numbers_error_ui.value = ""
+                self.full_run_numbers_layout.layout.visibility = 'visible'
 
         # ****** Select Input Data Folder ********
 
@@ -317,6 +318,7 @@ class TopazConfigGenerator(object):
                         list_of_runs.append(_run)
 
             update_list_of_runs(list_of_runs)
+            self.list_of_runs = list_of_runs
 
         select_input_data_folder_ui = widgets.HBox([widgets.Label("Input Data Folder Selected:",
                                                                   layout=widgets.Layout(width='25%')),
@@ -326,7 +328,6 @@ class TopazConfigGenerator(object):
         select_input_data_folder_ui.children[0].add_class("mylabel_key")
         self.input_data_folder_ui = select_input_data_folder_ui.children[1]
         display(select_input_data_folder_ui)
-
 
         if not (_input_data_folder == 'N/A') and os.path.exists(_input_data_folder):
             start_dir = _input_data_folder
@@ -702,10 +703,10 @@ class TopazConfigGenerator(object):
         # _use_cylindrical = self.o_config_dict.get_parameter_value('use_cylindrical_integration')
         _loaded_value = {}
 
-        print("_use_sphere: {}".format(_use_sphere))
-        print("_use_ellipse: {}".format(_use_ellipse))
-        print("use_fit_peaks: {}".format(_use_fit_peaks))
-
+        # print("_use_sphere: {}".format(_use_sphere))
+        # print("_use_ellipse: {}".format(_use_ellipse))
+        # print("use_fit_peaks: {}".format(_use_fit_peaks))
+        #
 
         if _use_sphere:
             _loaded_value['new'] = 'Sphere'
@@ -934,7 +935,137 @@ class TopazConfigGenerator(object):
 
         display(HTML("<h2 id='run_nums'>Run Numbers to Reduce</h2><br>Specify the run numbers that should be reduced."))
 
-        # retrieve list of runs from data folder
+        # # retrieve list of runs from data folder
+        # _path_to_look_for = os.path.abspath(os.path.join(self.input_data_folder_ui.value, 'TOPAZ_*_event.nxs'))
+        # list_of_event_nxs = glob.glob(_path_to_look_for)
+        #
+        # list_of_runs = []
+        # if list_of_event_nxs:
+        #     re_string = r"^TOPAZ_(?P<run>\d+)_event.nxs$"
+        #     for _nexus in list_of_event_nxs:
+        #         _short_nexus = os.path.basename(_nexus)
+        #         m = re.match(re_string, _short_nexus)
+        #         if m:
+        #             _run = m.group('run')
+        #             list_of_runs.append(_run)
+        #
+        # _run_nums = self.o_config_dict.get_parameter_value('run_nums')
+        #
+        # # listen to selection to autopopulate the list of runs when user click runs
+        # if list_of_runs == []:
+        #     _visibility = 'hidden'
+        #     _message = 'No event NeXus found in the input folder!'
+        # else:
+        #     _visibility = 'visible'
+        #     _message = "Select (SHIFT/CTRL for Multi. Selection ->"
+        #
+        # run_ui = widgets.HBox([widgets.Label("Run Numbers:", layout=widgets.Layout(width='10%')),
+        #                        widgets.Text(value=_run_nums,
+        #                                     layout=widgets.Layout(width='40%'),
+        #                                     placeholder='1,4:5,10,20,30:40'),
+        #                        widgets.Label(_message,
+        #                                      layout=widgets.Layout(width='22%')),
+        #                        widgets.SelectMultiple(options=list_of_runs,
+        #                                               layout=widgets.Layout(width='10%',
+        #                                                                     visibility=_visibility,
+        #                                                                     height='200px'))])
+        # self.run_ui = run_ui.children[1]
+        # self.runs_label = run_ui.children[2]
+        # display(run_ui)
+        #
+        # def user_made_selection(selection):
+        #     # list_run_selected = selection['value']
+        #     print(selection)
+        #
+        # self.run_ui_selectMultiple = run_ui.children[3]
+        # self.run_ui_selectMultiple.observe(user_made_selection, 'value')
+
+        # WORK IN PROGRESS ====================================
+
+        ## widgets event handler
+
+        self.full_list_of_runs_selected = []
+        self.list_of_runs_already_selected = []
+
+        o_parser = ListRunsParser(current_runs="")
+
+        def run_numbers_text_changed(value):
+            new_text = value['new']
+            _error_label_visibility = 'hidden'
+            list_current_runs = []
+            try:
+                o_parser = ListRunsParser(current_runs=new_text)
+                list_current_runs = o_parser.list_current_runs
+            except ValueError:
+                _error_label_visibility = 'visible'
+
+            self.run_numbers_error_ui.value = ">> Format Error! <<"
+            self.run_numbers_error_ui.layout.visibility = _error_label_visibility
+
+            # check runs that do not exist in full_list_of_runs
+            list_runs_do_not_exist = []
+            list_runs_do_exist = []
+            for _run in list_current_runs:
+                if _run in self.list_of_runs:
+                    list_runs_do_exist.append(_run)
+                else:
+                    list_runs_do_not_exist.append(_run)
+
+            if list_runs_do_not_exist:
+                self.last_row_ui.layout.visibility = 'visible'
+                self.last_row_ui.children[1].value = ",".join(list_runs_do_not_exist)
+            else:
+                self.last_row_ui.layout.visibility = 'hidden'
+
+            # only display in the middle widget, the runs that do exist
+            list_runs_do_exist.sort()
+            self.selected_runs_ui.options = list_runs_do_exist
+
+        def full_list_of_runs_changed(value):
+            self.full_list_of_runs_selected = value['new']
+
+        def selected_runs_ui_changed(value):
+            pass
+
+        def add_button_clicked(value):
+            for _run in self.full_list_of_runs_selected:
+                self.list_of_runs_already_selected.append(_run)
+
+            self.list_of_runs_already_selected = list(set(self.list_of_runs_already_selected))
+            self.list_of_runs_already_selected.sort()
+
+            self.selected_runs_ui.options = self.list_of_runs_already_selected
+
+            o_parser = ListRunsParser()
+            new_str_runs = o_parser.new_runs(self.list_of_runs_already_selected)
+
+            self.run_numbers_text_ui.value = new_str_runs
+
+        def remove_button_clicked(value):
+            list_of_runs_to_remove = set(self.selected_runs_ui.value)
+            list_of_runs_already_selected = set(self.list_of_runs_already_selected)
+
+            new_list_of_runs_already_selected = list_of_runs_already_selected - list_of_runs_to_remove
+            new_list_of_runs_already_selected = list(new_list_of_runs_already_selected)
+            new_list_of_runs_already_selected.sort()
+            new_list_of_runs_already_selected = set(new_list_of_runs_already_selected)
+            self.selected_runs_ui.options = new_list_of_runs_already_selected
+            list_of_runs_already_selected = list(new_list_of_runs_already_selected)
+
+            str_list_of_runs_already_selected = ",".join(list_of_runs_already_selected)
+
+            if len(list_of_runs_already_selected) > 1:
+                o_parser = ListRunsParser(current_runs=str_list_of_runs_already_selected)
+                new_str_runs = o_parser.new_runs()
+            elif len(list_of_runs_already_selected) == 1:
+                new_str_runs = str(list_of_runs_already_selected[0])
+            else:
+                new_str_runs = ''
+
+            self.run_numbers_text_ui.value = new_str_runs
+            self.list_of_runs_already_selected = list_of_runs_already_selected
+
+        ## initialize
         _path_to_look_for = os.path.abspath(os.path.join(self.input_data_folder_ui.value, 'TOPAZ_*_event.nxs'))
         list_of_event_nxs = glob.glob(_path_to_look_for)
 
@@ -948,45 +1079,86 @@ class TopazConfigGenerator(object):
                     _run = m.group('run')
                     list_of_runs.append(_run)
 
-        _run_nums = self.o_config_dict.get_parameter_value('run_nums')
 
         # listen to selection to autopopulate the list of runs when user click runs
         if list_of_runs == []:
             _visibility = 'hidden'
-            _message = 'No event NeXus found in the input folder!'
+            _message = '>> No event NeXus found in the input folder! <<'
         else:
             _visibility = 'visible'
-            _message = "Select (SHIFT/CTRL for Multi. Selection ->"
+            _message = ''
 
-        run_ui = widgets.HBox([widgets.Label("Run Numbers:", layout=widgets.Layout(width='10%')),
-                               widgets.Text(value=_run_nums,
-                                            layout=widgets.Layout(width='40%'),
-                                            placeholder='1,4:5,10,20,30:40'),
-                               widgets.Label(_message,
-                                             layout=widgets.Layout(width='22%')),
-                               widgets.SelectMultiple(options=list_of_runs,
-                                                      layout=widgets.Layout(width='10%',
-                                                                            visibility=_visibility,
-                                                                            height='200px'))])
-        self.run_ui = run_ui.children[1]
-        self.runs_label = run_ui.children[2]
-        display(run_ui)
+        self._run_nums = self.o_config_dict.get_parameter_value('run_nums')
+        o_parser = ListRunsParser(current_runs=self._run_nums)
+        self.list_runs = o_parser.list_current_runs
 
-        def user_made_selection(selection):
-            # list_run_selected = selection['value']
-            print(selection)
+        ## build UI
+
+        first_row_ui = widgets.HBox([widgets.Label("Run numbers:",
+                                                   layout=widgets.Layout(width='10%')),
+                                     widgets.Text(self._run_nums,
+                                                  placeholder='',
+                                                  layout=widgets.Layout(width='40%')),
+                                     widgets.Label(_message,
+                                                   layout=widgets.Layout(visibility='visible',
+                                                                         color='red'))])
+        first_row_ui.children[1].observe(run_numbers_text_changed, 'value')
+        self.run_numbers_text_ui = first_row_ui.children[1]
+        self.run_numbers_error_ui = first_row_ui.children[2]
+
+        col_1_ui = widgets.VBox([widgets.Label("Full list of runs"),
+                                 widgets.SelectMultiple(options=self.list_runs,
+                                                        layout=widgets.Layout(height='150px',
+                                                                              width='100px'))],
+                                layout=widgets.Layout(width='120px'))
+        col_1_ui.children[1].observe(full_list_of_runs_changed, 'value')
+
+        col_2_ui = widgets.VBox([widgets.Button(description="Add ->")],
+                                layout=widgets.Layout(width='170px',
+                                                      align_self='center'))
+        col_2_ui.children[0].on_click(add_button_clicked)
+
+        col_3_ui = widgets.VBox([widgets.Label("Selected runs"),
+                                 widgets.SelectMultiple(options=[],
+                                                        layout=widgets.Layout(height='150px',
+                                                                              width='100px'))],
+                                layout=widgets.Layout(width='120px'))
+        col_3_ui.children[1].observe(selected_runs_ui_changed, 'value')
+        self.full_list_of_runs_ui = col_1_ui.children[1]
+        self.selected_runs_ui = col_3_ui.children[1]
+
+        col_4_ui = widgets.Button(description="Remove",
+                                  layout=widgets.Layout(width='170px',
+                                                        align_self='flex-end'))
+        col_4_ui.on_click(remove_button_clicked)
+
+        second_row_ui = widgets.HBox([col_1_ui, col_2_ui, col_3_ui, col_4_ui],
+                                     layout=widgets.Layout(border='1px solid lightgrey',
+                                                           padding='3px',
+                                                           margin='5px 5px 5px 5px',
+                                                           visibility=_visibility,
+                                                           width='50%'))
+
+        self.last_row_ui = widgets.HBox([widgets.Label("Invalid run(s):",
+                                                  layout=widgets.Layout(width='8%')),
+                                    widgets.Label("",
+                                                  layout=widgets.Layout(width='80%'))],
+                                   layout=widgets.Layout(visibility='hidden'))
+
+        layout_ui = widgets.VBox([first_row_ui, second_row_ui, self.last_row_ui])
+        self.full_run_numbers_layout = second_row_ui
+
+        display(layout_ui)
+
+        ## END OF WORK IN PROGRESS
 
 
-
-        self.run_ui_selectMultiple = run_ui.children[3]
-        self.run_ui_selectMultiple.observe(user_made_selection, 'value')
+        # ****** Number of Processes ********
 
         import multiprocessing
         nbr_processor = multiprocessing.cpu_count()
         if nbr_processor > 6:
             nbr_processor = 6
-
-        # ****** Number of Processes ********
 
         display(HTML("<h2>Number of Processes</h2><br>This controls the maximum number of processes that will be run \
             simultaneously locally, or that will be simultaneously submitted to slurm. \
