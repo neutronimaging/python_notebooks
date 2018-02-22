@@ -240,8 +240,11 @@ class ListRunsParser(object):
         spans = (el.partition(':')[::2] for el in str_current_runs.split(','))
         ranges = (np.arange(int(s), int(e) + 1 if e else int(s) + 1)
                   for s, e in spans)
-        all_nums = itertools.chain.from_iterable(ranges)
-        _all_nums = set(all_nums)
+        try:
+            all_nums = itertools.chain.from_iterable(ranges)
+            _all_nums = set(all_nums)
+        except ValueError:
+            raise ValueError("Check format of input")
         self.list_current_runs = [str(_run) for _run in _all_nums]
 
     def new_runs(self, list_runs=[]):
@@ -295,7 +298,7 @@ class ListRunsParser(object):
         _our_list = self.int_list_current_runs[_index: ]
         _list_full_reference = np.arange(_our_list[0], _our_list[-1]+1)
 
-        print("new list: {}".format(_our_list))
+        # print("new list: {}".format(_our_list))
 
         while _our_list:
 
@@ -316,7 +319,7 @@ class ListRunsParser(object):
 
             _list_full_reference = np.arange(_our_list[0], _our_list[-1]+1)
 
-        print("_groups: {}".format(_groups))
+        # print("_groups: {}".format(_groups))
 
         list_runs = []
         for _group in _groups:
@@ -336,7 +339,8 @@ class ListRunsParser(object):
                 list_runs.append(str(_group[0]))
 
         str_runs = ",".join(list_runs)
-        print(str_runs)
+        # print(str_runs)
+        return str_runs
 
 
 
