@@ -6,14 +6,17 @@ import os
 # import time
 import re
 # import numpy as np
+import shutil
 from collections import defaultdict
 from IPython.core.display import HTML
 from IPython.display import display
 import pandas as pd
+import subprocess
 
 from __code.file_handler import make_ascii_file_from_string
 from __code.fileselector import MyFileSelectorPanel
 from __code.utilities import ListRunsParser
+from __code.topaz_config import python_files_to_copy, topaz_python_script
 
 
 class ConfigLoader(object):
@@ -1236,6 +1239,7 @@ class TopazConfigGenerator(object):
         if not _output_folder == 'N/A':
             _output_folder = os.path.abspath(_output_folder)
         config['output_directory'] = _output_folder
+        self.output_folder = _output_folder
 
         # monitor counts
         config['use_monitor_counts'] = self.monitor_counts_flag_ui.value
@@ -1344,6 +1348,7 @@ class TopazConfigGenerator(object):
             config_file_name = self.config_file_ui.value + '.config'
 
             full_config = os.path.abspath(os.path.join(output_folder, config_file_name))
+            self.full_config = full_config
             try:
                 make_ascii_file_from_string(text=config_text, filename=full_config)
                 display(HTML("<h2>Config file created: </h2>" + full_config))
@@ -1401,3 +1406,27 @@ class TopazConfigGenerator(object):
 
         return config_status_dict
 
+    def run_ruduction(self):
+
+        _output_folder = self.output_folder
+
+        # copy all the python files used by the main python script
+        for _file in python_files_to_copy :
+            shutil.copyfile(_file, _output_folder)
+
+        # copy the python script to run
+        shutil.copyfile(topaz_python_script, _output_folder)
+
+        # move to output folder
+        os.chdir(_output_folder)
+
+        _script_to_run = "python {} {}".format(topaz_python_script, self.full_config)
+        p = subprocess,Popen(_script_to_run,
+                             shell=True,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+
+        for line in p.stdout.readlines():
+            print(line)
+
+        retval = p.wait()
