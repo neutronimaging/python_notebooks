@@ -1439,6 +1439,7 @@ class TopazConfigGenerator(object):
             os.chdir(_output_folder)
 
             _script_to_run = "python2.7 {} {}".format(topaz_python_script, self.full_config)
+            display(HTML("Running > " + _script_to_run))
             p = subprocess.Popen(_script_to_run,
                                  shell=True,
                                  stdout=subprocess.PIPE,
