@@ -527,6 +527,8 @@ class TopazConfigGenerator(object):
                                       description='Read UB')
 
         _ub_file = self.o_config_dict.get_parameter_value('UB_filename')
+        if _ub_file == '':
+            _ub_file = 'N/A'
         ub_file_selected_ui = widgets.HBox([widgets.Label("UB File Selected:",
                                                           layout=widgets.Layout(width='20%')),
                                             widgets.Label(_ub_file,
@@ -549,7 +551,8 @@ class TopazConfigGenerator(object):
         def select_ub_file(selection):
             ub_file_selected_ui.children[1].value = selection
 
-        if _ub_file == 'nan':
+        _ub_file = self.o_config_dict.get_parameter_value('UB_filename')
+        if _ub_file == '':
             _ub_path = os.path.join(self.working_dir, 'shared')
         else:
             _ub_path = os.path.dirname(_ub_file)

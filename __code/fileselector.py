@@ -2,6 +2,7 @@ import ipywidgets as ipyw
 import os
 import time
 from IPython.core.display import HTML
+from IPython.display import display
 
 
 class MyFileSelectorPanel:
@@ -90,7 +91,7 @@ class MyFileSelectorPanel:
         jumpto_button = ipyw.Button(description="Jump", layout=self.toolbar_button_layout)
         jumpto_button.on_click(self.handle_jumpto)
         jumpto = ipyw.HBox(children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout)
-        self.jumpto_button = jumpto
+        self.jumpto_button = jumpto_button
         if self.newdir_toolbar_button:
             # "new dir"
             self.newdir_input = newdir_input = ipyw.Text(
