@@ -16,7 +16,7 @@ import subprocess
 from __code.file_handler import make_ascii_file_from_string
 from __code.fileselector import MyFileSelectorPanel
 from __code.utilities import ListRunsParser
-from __code.topaz_config import topaz_python_script
+from __code.topaz_config import topaz_python_script, list_supl_python_script
 
 
 class ConfigLoader(object):
@@ -1359,6 +1359,7 @@ class TopazConfigGenerator(object):
             except OSError:
                 display(HTML('<h2><span style="color:red">You do not have write permission to this file!</span></h2>'))
                 display(HTML("<h2>Name of folder: </h2>" + output_folder))
+                display(HTML('-> <a href="#output_directory"> Jump to output folder selection</a>'))
 
         else:
 
@@ -1422,17 +1423,17 @@ class TopazConfigGenerator(object):
 
             _output_folder = self.output_folder
 
-            # # copy all the python files used by the main python script
-            # for _file in python_files_to_copy :
-            #     shutil.copyfile(_file, _output_folder)
-            #
-            # # copy the python script to run
-            # shutil.copyfile(topaz_python_script, _output_folder)
+            # copy all the python files used by the main python script
+            for _file in python_files_to_copy :
+                shutil.copyfile(_file, _output_folder)
+
+            # copy the python script to run
+            shutil.copyfile(topaz_python_script, _output_folder)
 
             # move to output folder
             os.chdir(_output_folder)
 
-            _script_to_run = "python {} {}".format(topaz_python_script, self.full_config)
+            _script_to_run = "python2.7 {} {}".format(topaz_python_script, self.full_config)
             p = subprocess.Popen(_script_to_run,
                                  shell=True,
                                  stdout=subprocess.PIPE,
