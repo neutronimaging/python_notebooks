@@ -320,6 +320,7 @@ class TopazConfigGenerator(object):
                         _run = m.group('run')
                         list_of_runs.append(_run)
 
+            list_of_runs.sort()
             update_list_of_runs(list_of_runs)
             self.list_of_runs = list_of_runs
 
@@ -549,7 +550,7 @@ class TopazConfigGenerator(object):
             ub_file_selected_ui.children[1].value = selection
 
         if _ub_file == 'nan':
-            _ub_path = os.path.join(working_dir, 'shared')
+            _ub_path = os.path.join(self.working_dir, 'shared')
         else:
             _ub_path = os.path.dirname(_ub_file)
         display(ub_file_selected_ui)
@@ -1406,7 +1407,7 @@ class TopazConfigGenerator(object):
 
         return config_status_dict
 
-    def run_ruduction(self):
+    def run_reduction(self):
 
         _output_folder = self.output_folder
 
@@ -1421,7 +1422,7 @@ class TopazConfigGenerator(object):
         os.chdir(_output_folder)
 
         _script_to_run = "python {} {}".format(topaz_python_script, self.full_config)
-        p = subprocess,Popen(_script_to_run,
+        p = subprocess.Popen(_script_to_run,
                              shell=True,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
