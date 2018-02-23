@@ -16,7 +16,7 @@ import subprocess
 from __code.file_handler import make_ascii_file_from_string
 from __code.fileselector import MyFileSelectorPanel
 from __code.utilities import ListRunsParser
-from __code.topaz_config import topaz_python_script, list_supl_python_script
+from __code.topaz_config import topaz_python_script, topaz_reduction_path
 
 
 class ConfigLoader(object):
@@ -113,7 +113,7 @@ class ConfigDict(object):
               'cylinder_radius': 0.05,
               'cylinder_length': 0.30,
               'exp_name': '',
-              'reduce_one_run_script': 'ReduceSCD_OneRun_xz_offset.py',
+              'reduce_one_run_script': '/SNS/TOPAZ/shared/calibrations/Reduction/ReduceSCD_OneRun_xz_offset.py',
               'run_nums': '',
               'slurm_queue_name': 'None',
               'max_processes': 8,
@@ -197,7 +197,7 @@ class TopazConfigGenerator(object):
               'cylinder_radius': 0.05,
               'cylinder_length': 0.30,
               'exp_name': '',
-              'reduce_one_run_script': 'ReduceSCD_OneRun_xz_offset.py',
+              'reduce_one_run_script': '/SNS/TOPAZ/shared/calibrations/Reduction/ReduceSCD_OneRun_xz_offset.py',
               'run_nums': '',
               'slurm_queue_name': 'None',
               'max_processes': 8,
@@ -1200,8 +1200,13 @@ class TopazConfigGenerator(object):
                     label_ui = self.select_advanced_data_folder_ui.children[1]
                     display(self.select_advanced_data_folder_ui)
 
+                    advanced_folder = topaz_reduction_path
+                    if not os.path.exists(advanced_folder):
+                        advanced_folder = self.working_folder
+
+
                     self.advanced_ui = MyFileSelectorPanel(instruction='Select Reduce Python Script ',
-                                                           start_dir=os.path.join(self.working_dir,'shared/'),
+                                                           start_dir=advanced_folder,
                                                            next=select_advanced_file)
 
                     self.advanced_ui.show()
@@ -1423,12 +1428,12 @@ class TopazConfigGenerator(object):
 
             _output_folder = self.output_folder
 
-            # copy all the python files used by the main python script
-            for _file in python_files_to_copy :
-                shutil.copyfile(_file, _output_folder)
-
-            # copy the python script to run
-            shutil.copyfile(topaz_python_script, _output_folder)
+            # # copy all the python files used by the main python script
+            # for _file in python_files_to_copy :
+            #     shutil.copyfile(_file, _output_folder)
+            #
+            # # copy the python script to run
+            # shutil.copyfile(topaz_python_script, _output_folder)
 
             # move to output folder
             os.chdir(_output_folder)
