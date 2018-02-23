@@ -16,7 +16,7 @@ import subprocess
 from __code.file_handler import make_ascii_file_from_string
 from __code.fileselector import MyFileSelectorPanel
 from __code.utilities import ListRunsParser
-from __code.topaz_config import python_files_to_copy, topaz_python_script
+from __code.topaz_config import topaz_python_script
 
 
 class ConfigLoader(object):
@@ -1410,12 +1410,12 @@ class TopazConfigGenerator(object):
 
         _output_folder = self.output_folder
 
-        # copy all the python files used by the main python script
-        for _file in python_files_to_copy :
-            shutil.copyfile(_file, _output_folder)
-
-        # copy the python script to run
-        shutil.copyfile(topaz_python_script, _output_folder)
+        # # copy all the python files used by the main python script
+        # for _file in python_files_to_copy :
+        #     shutil.copyfile(_file, _output_folder)
+        #
+        # # copy the python script to run
+        # shutil.copyfile(topaz_python_script, _output_folder)
 
         # move to output folder
         os.chdir(_output_folder)

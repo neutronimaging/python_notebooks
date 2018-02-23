@@ -1,2 +1,1 @@
-python_files_to_copy = ['']
-topaz_python_script = ""
+topaz_python_script = "/SNS/TOPAZ/shared/calibrations/Reduction/ReduceSCD_Parallel.py"
