@@ -930,7 +930,7 @@ class TopazConfigGenerator(object):
 
         # ****** Experiment Name ********
 
-        display(HTML("<h2>Experiment Name</h2>"))
+        display(HTML("<h2 id='exp_name'>Experiment Name</h2>"))
 
         _exp = self.o_config_dict.get_parameter_value('exp_name')
         exp_name_ui = widgets.Text(_exp,
@@ -1399,6 +1399,11 @@ class TopazConfigGenerator(object):
                 list_missing_parameters.append('UB File Name')
                 list_tags.append('ub_filename')
 
+        if config['exp_name'] == '':
+            _status = False
+            list_missing_parameters.append("Experiment Name")
+            list_tags.append('exp_name')
+
         if config['run_nums'] == '':
             _status = False
             list_missing_parameters.append('Run Numbers')
@@ -1408,29 +1413,37 @@ class TopazConfigGenerator(object):
                               'missing_parameters': list_missing_parameters,
                               'list_tags': list_tags}
 
+        self.reduction_status = _status
         return config_status_dict
 
     def run_reduction(self):
 
-        _output_folder = self.output_folder
+        if self.reduction_status:
 
-        # # copy all the python files used by the main python script
-        # for _file in python_files_to_copy :
-        #     shutil.copyfile(_file, _output_folder)
-        #
-        # # copy the python script to run
-        # shutil.copyfile(topaz_python_script, _output_folder)
+            _output_folder = self.output_folder
 
-        # move to output folder
-        os.chdir(_output_folder)
+            # # copy all the python files used by the main python script
+            # for _file in python_files_to_copy :
+            #     shutil.copyfile(_file, _output_folder)
+            #
+            # # copy the python script to run
+            # shutil.copyfile(topaz_python_script, _output_folder)
 
-        _script_to_run = "python {} {}".format(topaz_python_script, self.full_config)
-        p = subprocess.Popen(_script_to_run,
-                             shell=True,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+            # move to output folder
+            os.chdir(_output_folder)
 
-        for line in p.stdout.readlines():
-            print(line)
+            _script_to_run = "python {} {}".format(topaz_python_script, self.full_config)
+            p = subprocess.Popen(_script_to_run,
+                                 shell=True,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
 
-        retval = p.wait()
+            for line in p.stdout.readlines():
+                print(line)
+
+            retval = p.wait()
+
+        else:
+            display(HTML('<span style="font-size: 20px; color:red">Please check the missing ' + \
+                         'information to create the config file (needed to run the reduction)!</span>'))
+

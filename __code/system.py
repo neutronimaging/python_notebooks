@@ -5,7 +5,7 @@ import os
 from ipywidgets import widgets
 from IPython.core.display import display
 from IPython.core.display import HTML
-
+from IPython.display import clear_output
 
 class System(object):
 
@@ -14,6 +14,16 @@ class System(object):
 
     @classmethod
     def select_working_dir(cls, debugger_folder='', system_folder=''):
+
+        display(HTML("""
+                   <style>
+                   .result_label {
+                      font-style: bold;
+                      color: red;
+                      font-size: 18px;
+                   }
+                   </style>
+                   """))
 
         username = getpass.getuser()
 
@@ -104,29 +114,29 @@ class System(object):
         ipts = value['new']
         full_ipts = 'IPTS-{}'.format(ipts)
         if os.path.exists(os.path.join(cls.start_path, full_ipts)):
-            display(HTML("""
-                       <style>
-                       .result_label {
-                          font-style: bold;
-                          color: green;
-                          font-size: 18px;
-                       }
-                       </style>
-                       """))
-            cls.result_label.value = "OK!"
+            # display(HTML("""
+            #            <style>
+            #            .result_label {
+            #               font-style: bold;
+            #               color: green;
+            #               font-size: 18px;
+            #            }
+            #            </style>
+            #            """))
+            cls.result_label.value = "OK"
             #select IPTS folder defined
             cls.working_dir_ui.value = full_ipts
 
         else:
-            display(HTML("""
-                       <style>
-                       .result_label {
-                          font-style: bold;
-                          color: red;
-                          font-size: 18px;
-                       }
-                       </style>
-                       """))
+            # display(HTML("""
+            #            <style>
+            #            .result_label {
+            #               font-style: bold;
+            #               color: red;
+            #               font-size: 18px;
+            #            }
+            #            </style>
+            #            """))
             cls.result_label.value = "DOES NOT EXIST!"
 
     @classmethod
