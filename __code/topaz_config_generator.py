@@ -131,8 +131,8 @@ class ConfigDict(object):
 
         if self.config_dict[parameter]:
             config_para = self.config_dict[parameter]
-            if isinstance(config_para, bool):
-                if config_para in ["True", "true"]:
+            if isinstance(self.config[parameter], bool):
+                if self.config_dict[parameter] in ["True", "true"]:
                     return True
                 else:
                     return False
@@ -347,7 +347,7 @@ class TopazConfigGenerator(object):
                                               next=_select_input_data_folder,
                                               type='directory')
         input_folder_ui.show()
-        display(widgets.Label("FOOTER should stay footer!!!!"))
+        display(widgets.Label(""))
 
 
     def select_output_folder(self):
