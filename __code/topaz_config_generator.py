@@ -1438,7 +1438,7 @@ class TopazConfigGenerator(object):
             # move to output folder
             os.chdir(_output_folder)
 
-            _script_to_run = "python2.7 {} {}".format(topaz_python_script, self.full_config)
+            _script_to_run = "__code/TOPAZ_run_reduction.sh {} {}".format(topaz_python_script, self.full_config)
             display(HTML("Running > " + _script_to_run))
             p = subprocess.Popen(_script_to_run,
                                  shell=True,
