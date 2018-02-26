@@ -1435,20 +1435,26 @@ class TopazConfigGenerator(object):
             # # copy the python script to run
             # shutil.copyfile(topaz_python_script, _output_folder)
 
+            # get topaz shell script full path
+            #current_dir = os.getcwd()
+            #shell_script = os.path.join(current_dir, '__code/TOPAZ_run_reduction.sh')
+
+
             # move to output folder
-            os.chdir(_output_folder)
+            #os.chdir(_output_folder)
 
-            _script_to_run = "__code/TOPAZ_run_reduction.sh {} {}".format(topaz_python_script, self.full_config)
-            display(HTML("Running > " + _script_to_run))
-            p = subprocess.Popen(_script_to_run,
-                                 shell=True,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
+            _script_to_run = "python {} {}".format(topaz_python_script, self.full_config)
+            display(HTML("Copy/Paste the following command in a terminal session > " + _script_to_run))
 
-            for line in p.stdout.readlines():
-                print(line)
-
-            retval = p.wait()
+            # p = subprocess.Popen(_script_to_run,
+            #                      shell=True,
+            #                      stdout=subprocess.PIPE,
+            #                      stderr=subprocess.STDOUT)
+            #
+            # for line in p.stdout.readlines():
+            #     print(line)
+            #
+            # retval = p.wait()
 
         else:
             display(HTML('<span style="font-size: 20px; color:red">Please check the missing ' + \
