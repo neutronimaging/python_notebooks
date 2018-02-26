@@ -1444,7 +1444,8 @@ class TopazConfigGenerator(object):
             #os.chdir(_output_folder)
 
             _script_to_run = "python {} {}".format(topaz_python_script, self.full_config)
-            display(HTML("Copy/Paste the following command in a terminal session > " + _script_to_run))
+            display(HTML("Copy/Paste the following command in a terminal session and hit ENTER " +
+                         "<br><br><span style='font-size: 20px; color:green'> " + _script_to_run + "</span>"))
 
             # p = subprocess.Popen(_script_to_run,
             #                      shell=True,
