@@ -327,23 +327,13 @@ class WaterIntakeProfileSelector(QMainWindow):
         y1 = y0 + height
 
         _image_of_roi = _image[y0:y1, x0:x1]
-        _profile_algo = self.get_profile_algo()
 
         if self.is_inte_along_x_axis:
-            axis_to_integrate = 1
             y_axis_label = 'Y pixels'
         else:
-            axis_to_integrate = 0
             y_axis_label = 'X pixels'
 
-        if _profile_algo == 'add':
-            _profile = np.sum(_image_of_roi, axis=axis_to_integrate)
-        elif _profile_algo == 'mean':
-            _profile = np.mean(_image_of_roi, axis=axis_to_integrate)
-        elif _profile_algo == 'median':
-            _profile = np.median(_image_of_roi, axis=axis_to_integrate)
-        else:
-            _profile = []
+        _profile = self.get_profile(_image_of_roi)
         self.profile.clear()
 
         x_axis = np.arange(len(_profile)) + np.int(y0)
@@ -402,31 +392,18 @@ class WaterIntakeProfileSelector(QMainWindow):
         list_images = dict_data['list_images']
         list_time_stamp = dict_data['list_time_stamp']
         list_data = dict_data['list_data']
-        _algo_used = self.get_profile_algo()
 
         if is_sorting_by_name:
             time_stamp_first_file = 0
         else:
             time_stamp_first_file = float(list_time_stamp[0])
 
-        if self.is_inte_along_x_axis:
-            axis_to_integrate = 1
-        else:
-            axis_to_integrate = 0
-
         nbr_images = len(list_images)
         dict_profiles = {}
         for index in np.arange(1, nbr_images):
             _image = list_data[index]
             _image_of_roi = _image[y0:y1, x0:x1]
-            if _algo_used == 'add':
-                _profile = np.sum(_image_of_roi, axis=axis_to_integrate)
-            elif _algo_used == 'mean':
-                _profile = np.mean(_image_of_roi, axis=axis_to_integrate)
-            elif _algo_used == 'median':
-                _profile = np.median(_image_of_roi, axis=axis_to_integrate)
-            else:
-                raise NotImplementedError
+            _profile = self.get_profile(_image_of_roi)
 
             time_stamp = float(list_time_stamp[index])
             delta_time = time_stamp - time_stamp_first_file
@@ -469,10 +446,8 @@ class WaterIntakeProfileSelector(QMainWindow):
             self.eventProgress.setVisible(True)
 
             if self.is_inte_along_x_axis:
-                axis_to_integrate = 1
                 inte_direction = 'x_axis'
             else:
-                axis_to_integrate = 0
                 inte_direction = 'y_axis'
 
             for index in np.arange(1, nbr_images):
@@ -494,14 +469,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
                 _image = list_data[index]
                 _image_of_roi = _image[y0:y1, x0:x1]
-                if _algo_used == 'add':
-                    _profile = np.sum(_image_of_roi, axis=axis_to_integrate)
-                elif _algo_used == 'mean':
-                    _profile = np.mean(_image_of_roi, axis=axis_to_integrate)
-                elif _algo_used == 'median':
-                    _profile = np.median(_image_of_roi, axis=axis_to_integrate)
-                else:
-                    raise NotImplementedError
+                _profile = self.get_profile(_image_of_roi)
 
                 data = []
                 for _pixel_index, _counts in enumerate(_profile):
@@ -514,6 +482,25 @@ class WaterIntakeProfileSelector(QMainWindow):
 
             self.eventProgress.setVisible(False)
             display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
+
+    def get_profile(self, image):
+        """return the 1D profile of the image using the correct integration direction"""
+
+        if self.is_inte_along_x_axis:
+            _axis_to_integrate = 1
+        else:
+            _axis_to_integrate = 0
+        _algo_used = self.get_profile_algo()
+
+        if _algo_used == 'add':
+            _profile = np.sum(image, axis=_axis_to_integrate)
+        elif _algo_used == 'mean':
+            _profile = np.mean(image, axis=_axis_to_integrate)
+        elif _algo_used == 'median':
+            _profile = np.median(image, axis=_axis_to_integrate)
+        else:
+            raise NotImplementedError
+        return _profile
 
     def export_water_intake_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
