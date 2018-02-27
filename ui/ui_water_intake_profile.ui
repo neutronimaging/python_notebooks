@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1071</width>
-    <height>1151</height>
+    <width>885</width>
+    <height>828</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>400</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -28,7 +34,7 @@
       </property>
       <widget class="QWidget" name="widget" native="true">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -36,7 +42,7 @@
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>600</height>
+         <height>300</height>
         </size>
        </property>
       </widget>
@@ -137,6 +143,9 @@
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetFixedSize</enum>
+            </property>
             <item>
              <widget class="QGroupBox" name="groupBox_2">
               <property name="sizePolicy">
@@ -494,7 +503,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1071</width>
+     <width>885</width>
      <height>22</height>
     </rect>
    </property>
