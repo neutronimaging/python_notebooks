@@ -102,6 +102,9 @@ class WaterIntakeProfileSelector(QMainWindow):
     table_column_width = [350, 150, 200]
     dict_profiles = {} # contain all the profiles just before calculating the water intake
 
+    # by default, we integrate over the x-axis
+    is_inte_along_x_axis = True
+
     def __init__(self, parent=None, dict_data={}):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -325,12 +328,20 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         _image_of_roi = _image[y0:y1, x0:x1]
         _profile_algo = self.get_profile_algo()
+
+        if self.is_inte_along_x_axis:
+            axis_to_integrate = 1
+            y_axis_label = 'Y pixels'
+        else:
+            axis_to_integrate = 0
+            y_axis_label = 'X pixels'
+
         if _profile_algo == 'add':
-            _profile = np.sum(_image_of_roi, axis=1)
+            _profile = np.sum(_image_of_roi, axis=axis_to_integrate)
         elif _profile_algo == 'mean':
-            _profile = np.mean(_image_of_roi, axis=1)
+            _profile = np.mean(_image_of_roi, axis=axis_to_integrate)
         elif _profile_algo == 'median':
-            _profile = np.median(_image_of_roi, axis=1)
+            _profile = np.median(_image_of_roi, axis=axis_to_integrate)
         else:
             _profile = []
         self.profile.clear()
@@ -338,7 +349,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         x_axis = np.arange(len(_profile)) + np.int(y0)
         self.profile.plot(x_axis, _profile)
         self.profile.setLabel('left', 'Counts')
-        self.profile.setLabel('bottom', 'Y pixels')
+        self.profile.setLabel('bottom', y_axis_label)
 
     def get_profile_algo(self):
         if self.ui.add_radioButton.isChecked():
@@ -398,17 +409,22 @@ class WaterIntakeProfileSelector(QMainWindow):
         else:
             time_stamp_first_file = float(list_time_stamp[0])
 
+        if self.is_inte_along_x_axis:
+            axis_to_integrate = 1
+        else:
+            axis_to_integrate = 0
+
         nbr_images = len(list_images)
         dict_profiles = {}
         for index in np.arange(1, nbr_images):
             _image = list_data[index]
             _image_of_roi = _image[y0:y1, x0:x1]
             if _algo_used == 'add':
-                _profile = np.sum(_image_of_roi, axis=1)
+                _profile = np.sum(_image_of_roi, axis=axis_to_integrate)
             elif _algo_used == 'mean':
-                _profile = np.mean(_image_of_roi, axis=1)
+                _profile = np.mean(_image_of_roi, axis=axis_to_integrate)
             elif _algo_used == 'median':
-                _profile = np.median(_image_of_roi, axis=1)
+                _profile = np.median(_image_of_roi, axis=axis_to_integrate)
             else:
                 raise NotImplementedError
 
@@ -452,6 +468,13 @@ class WaterIntakeProfileSelector(QMainWindow):
             self.eventProgress.setValue(1)
             self.eventProgress.setVisible(True)
 
+            if self.is_inte_along_x_axis:
+                axis_to_integrate = 1
+                inte_direction = 'x_axis'
+            else:
+                axis_to_integrate = 0
+                inte_direction = 'y_axis'
+
             for index in np.arange(1, nbr_images):
                 _short_file_name = os.path.basename(list_images[index])
                 [_basename, _] = os.path.splitext(_short_file_name)
@@ -460,6 +483,7 @@ class WaterIntakeProfileSelector(QMainWindow):
                 metadata = []
                 metadata.append("# Profile over ROI selected integrated along x-axis")
                 metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
+                metadata.append("# integration direction: {}".format(inte_direction))
                 metadata.append("# folder: {}".format(input_folder))
                 metadata.append("# filename: {}".format(_short_file_name))
                 metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
@@ -471,11 +495,11 @@ class WaterIntakeProfileSelector(QMainWindow):
                 _image = list_data[index]
                 _image_of_roi = _image[y0:y1, x0:x1]
                 if _algo_used == 'add':
-                    _profile = np.sum(_image_of_roi, axis=1)
+                    _profile = np.sum(_image_of_roi, axis=axis_to_integrate)
                 elif _algo_used == 'mean':
-                    _profile = np.mean(_image_of_roi, axis=1)
+                    _profile = np.mean(_image_of_roi, axis=axis_to_integrate)
                 elif _algo_used == 'median':
-                    _profile = np.median(_image_of_roi, axis=1)
+                    _profile = np.median(_image_of_roi, axis=axis_to_integrate)
                 else:
                     raise NotImplementedError
 
@@ -523,9 +547,15 @@ class WaterIntakeProfileSelector(QMainWindow):
             if yaxis_label == 'distance':
                 yaxis_label += "(mm)"
 
+            if self.is_inte_along_x_axis:
+                inte_direction = 'x_axis'
+            else:
+                inte_direction = 'y_axis'
+
             metadata = []
             metadata.append("# Water Intake Signal ")
             metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
+            metadata.append("# integration direction: {}".format(inte_direction))
             metadata.append("# input folder: {}".format(full_input_folder))
             metadata.append("# algorithm used: {}".format(_algo_used))
             metadata.append("# ")
@@ -747,6 +777,10 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         self.dict_data_raw['list_time_stamp'] = new_list_time_stamp.copy()
         self.dict_data_raw['list_time_stamp_user_format'] = new_list_time_stamp_user_format.copy()
+
+    def integration_direction_changed(self):
+        self.is_inte_along_x_axis = self.ui.x_axis_integration_radioButton.isChecked()
+        self.update_plots()
 
     def help_button_clicked(self):
         import webbrowser

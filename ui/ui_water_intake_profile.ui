@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1071</width>
-    <height>1265</height>
+    <height>1151</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
         </size>
        </property>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -176,6 +176,32 @@
                 <widget class="QRadioButton" name="median_radioButton">
                  <property name="text">
                   <string>Median</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="title">
+               <string>Integration Direction</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_5">
+               <item>
+                <widget class="QRadioButton" name="x_axis_integration_radioButton">
+                 <property name="text">
+                  <string>along x-axis</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="y_axis_integration_radioButton">
+                 <property name="text">
+                  <string>along y-axis</string>
                  </property>
                 </widget>
                </item>
@@ -550,8 +576,8 @@
    <slot>slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>297</x>
-     <y>833</y>
+     <x>376</x>
+     <y>728</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -567,7 +593,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1058</x>
-     <y>1231</y>
+     <y>1117</y>
     </hint>
     <hint type="destinationlabel">
      <x>685</x>
@@ -582,8 +608,8 @@
    <slot>cancel_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>64</x>
-     <y>1231</y>
+     <x>76</x>
+     <y>1117</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -599,7 +625,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>956</x>
-     <y>1231</y>
+     <y>1117</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -647,7 +673,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1035</x>
-     <y>898</y>
+     <y>793</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -663,7 +689,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1035</x>
-     <y>921</y>
+     <y>816</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -679,7 +705,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1035</x>
-     <y>944</y>
+     <y>839</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -694,8 +720,8 @@
    <slot>sorting_files_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>1166</y>
+     <x>131</x>
+     <y>1057</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -710,8 +736,8 @@
    <slot>sorting_files_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
-     <y>1166</y>
+     <x>225</x>
+     <y>1057</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -726,8 +752,8 @@
    <slot>time_between_runs_spinBox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>411</x>
-     <y>1165</y>
+     <x>440</x>
+     <y>1059</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -742,12 +768,12 @@
    <slot>_water_intake_yaxis_checkbox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>550</x>
-     <y>1167</y>
+     <x>568</x>
+     <y>1057</y>
     </hint>
     <hint type="destinationlabel">
      <x>551</x>
-     <y>1202</y>
+     <y>1150</y>
     </hint>
    </hints>
   </connection>
@@ -758,12 +784,12 @@
    <slot>_water_intake_yaxis_checkbox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>618</x>
-     <y>1166</y>
+     <x>654</x>
+     <y>1057</y>
     </hint>
     <hint type="destinationlabel">
      <x>619</x>
-     <y>1219</y>
+     <y>1150</y>
     </hint>
    </hints>
   </connection>
@@ -774,12 +800,12 @@
    <slot>_pixel_size_spinBox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>771</x>
-     <y>1168</y>
+     <x>807</x>
+     <y>1059</y>
     </hint>
     <hint type="destinationlabel">
      <x>828</x>
-     <y>1235</y>
+     <y>1150</y>
     </hint>
    </hints>
   </connection>
@@ -806,8 +832,8 @@
    <slot>export_table_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>990</x>
-     <y>1091</y>
+     <x>1056</x>
+     <y>993</y>
     </hint>
     <hint type="destinationlabel">
      <x>535</x>
@@ -863,6 +889,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>x_axis_integration_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>integration_direction_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>954</x>
+     <y>902</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>836</x>
+     <y>1098</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>y_axis_integration_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>integration_direction_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>966</x>
+     <y>920</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>850</x>
+     <y>1121</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -884,5 +942,6 @@
   <slot>_pixel_size_spinBox_changed()</slot>
   <slot>import_dsc_clicked()</slot>
   <slot>export_table_button_clicked()</slot>
+  <slot>integration_direction_changed()</slot>
  </slots>
 </ui>
