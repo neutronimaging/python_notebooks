@@ -6,15 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>885</width>
-    <height>828</height>
+    <width>1071</width>
+    <height>1151</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>400</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -34,7 +28,7 @@
       </property>
       <widget class="QWidget" name="widget" native="true">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -42,7 +36,7 @@
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>300</height>
+         <height>600</height>
         </size>
        </property>
       </widget>
@@ -112,9 +106,12 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="label_10">
+           <widget class="QCheckBox" name="ignore_first_image_checkbox">
             <property name="text">
-             <string>NB: First image is ignored</string>
+             <string>Ignore first image</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -143,9 +140,6 @@
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_3">
-            <property name="sizeConstraint">
-             <enum>QLayout::SetFixedSize</enum>
-            </property>
             <item>
              <widget class="QGroupBox" name="groupBox_2">
               <property name="sizePolicy">
@@ -503,7 +497,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>885</width>
+     <width>1071</width>
      <height>22</height>
     </rect>
    </property>
@@ -586,7 +580,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>376</x>
-     <y>728</y>
+     <y>725</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -930,6 +924,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>ignore_first_image_checkbox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ignore_first_image_checkbox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>970</x>
+     <y>705</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>612</x>
+     <y>1091</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slider_changed()</slot>
@@ -940,7 +950,6 @@
   <slot>save_roi_table()</slot>
   <slot>cancel_button_clicked()</slot>
   <slot>help_button_clicked()</slot>
-  <slot>ignore_first_image_checked()</slot>
   <slot>export_profile_clicked()</slot>
   <slot>export_water_intake_clicked()</slot>
   <slot>profile_algo_changed()</slot>
@@ -952,5 +961,6 @@
   <slot>import_dsc_clicked()</slot>
   <slot>export_table_button_clicked()</slot>
   <slot>integration_direction_changed()</slot>
+  <slot>ignore_first_image_checkbox_clicked()</slot>
  </slots>
 </ui>

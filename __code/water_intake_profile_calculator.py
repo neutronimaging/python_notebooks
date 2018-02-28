@@ -117,7 +117,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         self.dict_data_raw = dict_data.copy()
         self.dict_data = dict_data.copy()
-        self.list_data = dict_data['list_data'][1:]
+        self.list_data = dict_data['list_data'].copy()
         self.list_images_raw = dict_data['list_images']
         self.working_dir = os.path.dirname(self.list_images_raw[0])
 
@@ -237,8 +237,14 @@ class WaterIntakeProfileSelector(QMainWindow):
     def _init_widgets(self):
         nbr_files = len(self.list_data)
         self.ui.file_index_slider.setMaximum(nbr_files)
-        self.ui.file_index_slider.setMinimum(2)
-        self.ui.file_index_slider.setValue(2)
+
+        if self.ui.ignore_first_image_checkbox.isChecked():
+            _min = 2
+        else:
+            _min = 1
+
+        self.ui.file_index_slider.setMinimum(_min)
+        self.ui.file_index_slider.setValue(_min)
         self.update_labels()
 
         # update size of table columns
@@ -768,6 +774,9 @@ class WaterIntakeProfileSelector(QMainWindow):
     def integration_direction_changed(self):
         self.is_inte_along_x_axis = self.ui.x_axis_integration_radioButton.isChecked()
         self.update_plots()
+
+    def ignore_first_image_checkbox_clicked(self):
+
 
     def help_button_clicked(self):
         import webbrowser
