@@ -357,6 +357,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         return ''
 
     def update_water_intake_plot(self):
+        # hourglass cursor
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self.calculate_all_profiles()
 
         o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles)
@@ -380,6 +382,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.water_intake.plot(delta_time, peak, symbolPen=None, pen=None, symbol='o', symbolBruch=(200,200,200,50))
         self.water_intake.setLabel('left', y_label)
         self.water_intake.setLabel('bottom', 'Delta Time')
+        QApplication.restoreOverrideCursor()
 
     def calculate_all_profiles(self):
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
@@ -590,10 +593,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         return image
 
     def _force_range(self, image):
-        range_max = 1.2
-        _result_range = np.where(image > range_max)
-        image[_result_range] = np.NaN
         return image
+        # range_max = 1.2
+        # _result_range = np.where(image > range_max)
+        # image[_result_range] = np.NaN
+        # return image
 
     def update_image(self):
         index_selected = self.ui.file_index_slider.value()
@@ -776,7 +780,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_plots()
 
     def ignore_first_image_checkbox_clicked(self):
-
+        pass
 
     def help_button_clicked(self):
         import webbrowser
