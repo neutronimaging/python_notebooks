@@ -234,17 +234,22 @@ class WaterIntakeProfileSelector(QMainWindow):
         vertical_layout.addWidget(area)
         self.ui.widget.setLayout(vertical_layout)
 
-    def _init_widgets(self):
+    def _init_widgets(self, ignore_first_image=True, first_init=True):
         nbr_files = len(self.list_data)
         self.ui.file_index_slider.setMaximum(nbr_files)
 
-        if self.ui.ignore_first_image_checkbox.isChecked():
+        if ignore_first_image:
             _min = 2
         else:
             _min = 1
 
+        if first_init:
+            _value = _min
+        else:
+            _value = self.ui.file_index_slider.value()
+
         self.ui.file_index_slider.setMinimum(_min)
-        self.ui.file_index_slider.setValue(_min)
+        self.ui.file_index_slider.setValue(_value)
         self.update_labels()
 
         # update size of table columns
@@ -252,7 +257,13 @@ class WaterIntakeProfileSelector(QMainWindow):
         for _col in range(nbr_columns):
             self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
 
-    def update_infos_tab(self, is_by_name=False):
+    def update_infos_tab(self):
+
+        if self.ui.sort_files_by_name_radioButton.isChecked():
+            is_by_name = True
+        else:
+            is_by_name = False
+
         dict_data = self.dict_data
 
         _time_column_label = 'Time Stamp (Unix format)'
@@ -265,6 +276,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         list_files = dict_data['list_images']
         list_time_stamp = dict_data['list_time_stamp']
         list_time_stamp_user = dict_data['list_time_stamp_user_format']
+
+        if self.ui.ignore_first_image_checkbox.isChecked():
+            list_files = list_files[1:]
+            list_time_stamp = list_time_stamp[1:]
+            list_time_stamp_user = list_time_stamp_user[1:]
 
         self.__clear_infos_table()
 
@@ -631,14 +647,16 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.time_between_runs_label.setEnabled(is_sorting_by_name)
         self.ui.time_between_runs_spinBox.setEnabled(is_sorting_by_name)
         self.ui.time_between_runs_units_label.setEnabled(is_sorting_by_name)
-        self.__sort_files(is_by_name=is_sorting_by_name)
-        self.update_infos_tab(is_by_name=is_sorting_by_name)
+        self.__sort_files()
+        self.update_infos_tab()
         self.update_image()
         self.update_plots()
         QApplication.restoreOverrideCursor()
 
-    def __sort_files(self, is_by_name=True):
+    def __sort_files(self):
         # reformat name to make sure the last digit have 4 digits
+        is_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
+
         if is_by_name:
             self._fix_index_of_files()
         else:
@@ -780,7 +798,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_plots()
 
     def ignore_first_image_checkbox_clicked(self):
-        pass
+        ignore_first_image = self.ui.ignore_first_image_checkbox.isChecked()
+        self._init_widgets(ignore_first_image=ignore_first_image, first_init=False)
+        self.update_infos_tab()
+        self.update_image()
+        self.update_profile_plot()
 
     def help_button_clicked(self):
         import webbrowser
