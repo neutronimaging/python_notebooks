@@ -232,6 +232,35 @@ class WaterIntakeProfileSelector(QMainWindow):
         # set up layout
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(area)
+
+        # add progress bar
+
+        label = QtGui.QLabel("File Index:")
+        label.setMinimumSize(QtCore.QSize(60, 30))
+        label.setMaximumSize(QtCore.QSize(60, 30))
+        hori_layout = QtGui.QHBoxLayout()
+        self.ui.file_index_slider = QtGui.QSlider()
+        self.ui.file_index_slider.setMinimumSize(QtCore.QSize(400, 40))
+        self.ui.file_index_slider.setMaximumSize(QtCore.QSize(40, 40))
+        self.ui.file_index_slider.setOrientation(QtCore.Qt.Horizontal)
+        self.ui.file_index_slider.setTickPosition(QtGui.QSlider.TicksBelow)
+        self.ui.file_index_slider.setTickInterval(1)
+
+        self.ui.file_index_slider.valueChanged['int'].connect(self.slider_changed)
+        self.ui.file_index_value = QtGui.QLabel()
+        self.ui.file_index_value.setMinimumSize(QtCore.QSize(40, 30))
+        self.ui.file_index_value.setMaximumSize(QtCore.QSize(40, 30))
+
+        spacerItem3 = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+
+        hori_layout.addWidget(label)
+        hori_layout.addWidget(self.ui.file_index_slider)
+        hori_layout.addWidget(self.ui.file_index_value)
+        hori_layout.addItem(spacerItem3)
+        bottom_widget = QtGui.QWidget()
+        bottom_widget.setLayout(hori_layout)
+        vertical_layout.addWidget(bottom_widget)
+
         self.ui.widget.setLayout(vertical_layout)
 
     def _init_widgets(self, ignore_first_image=True, first_init=True):
