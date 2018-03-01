@@ -38,7 +38,8 @@ class ConfigLoader(object):
                                                   next=self.load_config,
                                                   start_dir=self.working_dir,
                                                   filters={'config': ['*.config']},
-                                                  default_filter='config')
+                                                  default_filter='config',
+                                                  stay_alive=True)
         self.config_file_ui.show()
 
     def load_config(self, config_file_name):
@@ -348,7 +349,8 @@ class TopazConfigGenerator(object):
         input_folder_ui = MyFileSelectorPanel(instruction='',
                                               start_dir=start_dir,
                                               next=_select_input_data_folder,
-                                              type='directory')
+                                              type='directory',
+                                              stay_alive=True)
         input_folder_ui.show()
         display(widgets.Label(""))
 
@@ -387,7 +389,8 @@ class TopazConfigGenerator(object):
                                                start_dir=start_dir,
                                                type='directory',
                                                next=select_output_data_folder,
-                                               newdir_toolbar_button=True)
+                                               newdir_toolbar_button=True,
+                                               stay_alive=True)
         output_folder_ui.show()
 
     def parameters_1(self):
@@ -566,7 +569,8 @@ class TopazConfigGenerator(object):
         display(ub_file_selected_ui)
         self.ub_ui = MyFileSelectorPanel(instruction='Select UB File (*.mat)',
                                          start_dir=_ub_path,
-                                         next=select_ub_file)
+                                         next=select_ub_file,
+                                         stay_alive=True)
 
         # init display
         self.ub_ui.show()
@@ -1213,7 +1217,8 @@ class TopazConfigGenerator(object):
 
                     self.advanced_ui = MyFileSelectorPanel(instruction='Select Reduce Python Script ',
                                                            start_dir=advanced_folder,
-                                                           next=select_advanced_file)
+                                                           next=select_advanced_file,
+                                                           stay_alive=True)
 
                     self.advanced_ui.show()
                     self.password_found = True
