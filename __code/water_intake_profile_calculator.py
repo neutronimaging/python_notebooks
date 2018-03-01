@@ -178,7 +178,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.statusbar.addPermanentWidget(bottom_widget)
 
     def sort_dict_data(self):
-        pass
+        self.sorting_files_checkbox_clicked()
 
     def _init_pyqtgraph(self):
         area = DockArea()
