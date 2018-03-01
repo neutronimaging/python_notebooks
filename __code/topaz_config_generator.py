@@ -36,7 +36,9 @@ class ConfigLoader(object):
 
         self.config_file_ui = MyFileSelectorPanel(instruction='Select Configuration File (*.config)',
                                                   next=self.load_config,
-                                                  start_dir=self.working_dir)
+                                                  start_dir=self.working_dir,
+                                                  filters={'config': ['*.config']},
+                                                  default_filter='config')
         self.config_file_ui.show()
 
     def load_config(self, config_file_name):
@@ -225,6 +227,7 @@ class TopazConfigGenerator(object):
 
     cell_type_dict = {}
     o_config_dict = None
+    display_config_to_super_user = False
 
     def __init__(self, working_dir='', config_dict_loaded={}):
         self.working_dir = working_dir
@@ -538,7 +541,11 @@ class TopazConfigGenerator(object):
 
         def ub_flag_changed(value):
             display_file_selection_flag = value['new']
-            self.ub_ui.activate_status(not display_file_selection_flag)
+            if display_file_selection_flag:
+                self.ub_ui.enable()
+            else:
+                self.ub_ui.disable()
+            # self.ub_ui.activate_status(not display_file_selection_flag)
             if display_file_selection_flag:
                 ub_file_selected_ui.layout.visibility = 'visible'
             else:
@@ -1141,7 +1148,6 @@ class TopazConfigGenerator(object):
         self.process_ui = process_ui.children[1]
         display(process_ui)
 
-
     def advanced_options(self):
 
         display(HTML("<br><br>"))
@@ -1188,9 +1194,9 @@ class TopazConfigGenerator(object):
                 label_ui.value = selection
                 self.reduce_one_run_script = selection
 
-
             if str_password == MASTER_PASSWORD:
 
+                self.display_config_to_super_user = True
                 if self.password_found == False:  # to only display widgets once
 
                     self.select_advanced_data_folder_ui = widgets.HBox([widgets.Label("Reduce One Run Script:",
@@ -1202,7 +1208,7 @@ class TopazConfigGenerator(object):
 
                     advanced_folder = topaz_reduction_path
                     if not os.path.exists(advanced_folder):
-                        advanced_folder = self.working_folder
+                        advanced_folder = self.working_dir
 
 
                     self.advanced_ui = MyFileSelectorPanel(instruction='Select Reduce Python Script ',
@@ -1216,6 +1222,9 @@ class TopazConfigGenerator(object):
                     self.password_found = False
 
             else:
+
+                self.display_config_to_super_user = False
+
                 if self.select_advanced_data_folder_ui:
                     self.select_advanced_data_folder_ui.close()
                 if self.advanced_ui:
@@ -1361,6 +1370,25 @@ class TopazConfigGenerator(object):
             try:
                 make_ascii_file_from_string(text=config_text, filename=full_config)
                 display(HTML("<h2>Config file created: </h2>" + full_config))
+
+                # display content of config file if user is super user
+                if self.display_config_to_super_user:
+                    list_hori_layout = []
+                    _key_width = "20%"
+                    _value_width = "80%"
+                    for _key in config:
+
+                        _hori_layout = widgets.HBox([widgets.Label("{}:".format(_key),
+                                                                   layout=widgets.Layout(width=_key_width)),
+                                                     widgets.Label("{}".format(config[_key]),
+                                                                   layout=widgets.Layout(width=_value_width))])
+                        list_hori_layout.append(_hori_layout)
+
+                    verti_layout = widgets.VBox(list_hori_layout,
+                                                layout=widgets.Layout(border="1px solid grey"))
+                    display(verti_layout)
+
+
             except OSError:
                 display(HTML('<h2><span style="color:red">You do not have write permission to this file!</span></h2>'))
                 display(HTML("<h2>Name of folder: </h2>" + output_folder))

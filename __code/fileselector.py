@@ -1,4 +1,5 @@
 import ipywidgets as ipyw
+import glob
 import os
 import time
 from IPython.core.display import HTML
@@ -11,12 +12,13 @@ class MyFileSelectorPanel:
     # If ipywidgets version 5.3 or higher is used, the "width="
     # statement should change the width of the file selector. "width="
     # doesn't appear to work in earlier versions.
-    select_layout = ipyw.Layout(width="750px", height="260px")
+    select_layout = ipyw.Layout(width="99%", height="260px")
     select_multiple_layout = ipyw.Layout(
-        width="750px", height="260px", display="flex", flex_flow="column")
-    button_layout = ipyw.Layout(margin="5px 40px")
-    toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px")
-    toolbar_box_layout = ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px')
+        width="99%", height="260px", display="flex", flex_flow="column")
+    button_layout = ipyw.Layout(margin="5px 40px", border='1px solid gray')
+    toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px", border='1px solid gray')
+    toolbar_box_layout = ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px',
+                                     width='100%')
     label_layout = ipyw.Layout(width="250px")
     layout = ipyw.Layout()
 
@@ -30,7 +32,9 @@ class MyFileSelectorPanel:
             instruction,
             start_dir=".", type='file', next=None,
             multiple=False, newdir_toolbar_button=False,
-            custom_layout=None
+            custom_layout=None,
+            filters=dict(), default_filter=None,
+            stay_alive=False,
     ):
         """
         Create FileSelectorPanel instance
@@ -48,6 +52,11 @@ class MyFileSelectorPanel:
             callback function to execute after the selection is selected
         newdir_toolbar_button : bool
             If true, a button to create new directory is added to the toolbar
+        filters: dictionary
+            each key will be the search message for the user, such as "Ascii", "notebooks"
+            the value will be the search engine, such as "*.txt" or "*.ipynb"
+        stay_alive: bool (False by default)
+            if True, the fileselector won't disapear after selection of a file/directory
         """
         if type not in ['file', 'directory']:
             raise ValueError("type must be either file or directory")
@@ -59,19 +68,15 @@ class MyFileSelectorPanel:
                 continue
         self.instruction = instruction
         self.type = type
+        self.filters = filters;
+        self.default_filter = default_filter;
+        self.cur_filter = None
         self.multiple = multiple
         self.newdir_toolbar_button = newdir_toolbar_button
         self.createPanel(os.path.abspath(start_dir))
         self.next = next
+        self.stay_alive = stay_alive
         return
-
-    def activate_status(self, is_disabled=True):
-        self.button_layout.disabled = is_disabled
-        self.ok.disabled = is_disabled
-        self.jumpto_input.disabled = is_disabled
-        self.enterdir.disabled = is_disabled
-        self.jumpto_button.disabled = is_disabled
-        self.select.disabled = is_disabled
 
     def createPanel(self, curdir):
         self.header = ipyw.Label(self.instruction, layout=self.label_layout)
@@ -83,11 +88,10 @@ class MyFileSelectorPanel:
     def createBody(self, curdir):
         self.curdir = curdir
         self.footer.value = "Please wait..."
-        # toolbar
+        # toolbar on the top
         # "jump to"
         self.jumpto_input = jumpto_input = ipyw.Text(
-            value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width='500px')
-        )
+            value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width='100%'))
         jumpto_button = ipyw.Button(description="Jump", layout=self.toolbar_button_layout)
         jumpto_button.on_click(self.handle_jumpto)
         jumpto = ipyw.HBox(children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout)
@@ -104,7 +108,13 @@ class MyFileSelectorPanel:
         else:
             toolbar = ipyw.HBox(children=[jumpto])
         # entries in this starting dir
-        entries_files = sorted(os.listdir(curdir))
+
+        if self.filters:
+            self.createFilterWidget()
+            entries_files = self.getFilteredEntries()
+        else:
+            entries_files = sorted(os.listdir(curdir))
+
         entries_paths = [os.path.join(curdir, e) for e in entries_files]
         entries_ftime = create_file_times(entries_paths)
         entries = create_nametime_labels(entries_files, entries_ftime)
@@ -131,18 +141,73 @@ class MyFileSelectorPanel:
             value=value, options=entries,
             description="Select",
             layout=self.select_layout) """
-        # enter directory button
-        self.enterdir = ipyw.Button(description='Enter directory', layout=self.button_layout)
-        self.enterdir.on_click(self.handle_enterdir)
+
+        # ------------------------------------------------------------
+        # |  (filter)                                                |
+        # |  Entries _______________________         | Change Dir |  |
+        # |          _______________________                         |
+        # |          _______________________                         |
+        # |          _______________________                         |
+        # |          _______________________             | Select |  |
+        # ------------------------------------------------------------
+        # left
+        left_widgets = []
+        if self.filters: left_widgets.append(self.filter_widget)
+        left_widgets.append(self.select)
+        left_vbox = ipyw.VBox(left_widgets, layout=ipyw.Layout(width="80%"))
+        # right
+        # change directory button
+        self.changedir = ipyw.Button(description='Change directory', layout=self.button_layout)
+        self.changedir.on_click(self.handle_changedir)
         # select button
-        self.ok = ipyw.Button(description='Select', layout=self.button_layout)
+        import copy
+        ok_layout = cloneLayout(self.button_layout)
+        ok_layout.margin = 'auto 40px 5px';
+        ok_layout.border = "1px solid blue"
+        self.ok = ipyw.Button(description='Select', layout=ok_layout)
         self.ok.on_click(self.validate)
-        buttons = ipyw.HBox(children=[self.enterdir, self.ok])
-        lower_panel = ipyw.VBox(children=[self.select, buttons],
-                                layout=ipyw.Layout(border='1px solid lightgrey', margin='5px', padding='10px'))
-        body = ipyw.VBox(children=[toolbar, lower_panel], layout=self.layout)
+        right_vbox = ipyw.VBox(children=[self.changedir, self.ok])
+        select_panel = ipyw.HBox(
+            children=[left_vbox, right_vbox],
+            layout=ipyw.Layout(border='1px solid lightgrey', margin='5px', padding='10px')
+        )
+        body = ipyw.VBox(children=[toolbar, select_panel], layout=self.layout)
         self.footer.value = ""
         return body
+
+    def createFilterWidget(self):
+        if 'All' not in self.filters: self.filters.update(All=['*.*'])
+        self.cur_filter = self.cur_filter or self.filters[self.default_filter or 'All']
+        self.filter_widget = ipyw.Dropdown(
+            options=self.filters,
+            value=self.cur_filter,
+            layout=ipyw.Layout(align_self='flex-end', width='15%'))
+        self.filter_widget.observe(self.handle_filter_changed, names='value')
+        return
+
+    def getFilteredEntries(self):
+        curdir = self.curdir
+        cur_filter = self.filter_widget.value
+        list_files = glob.glob(os.path.join(curdir, cur_filter[0]))
+        # filter out dirs, they will be added below
+        list_files = filter(lambda o: not os.path.isdir(o), list_files)
+        list_files = list(map(os.path.basename, list_files))
+        list_dirs = [o for o in os.listdir(curdir) if os.path.isdir(os.path.join(curdir, o))]
+        self.footer.value += '<p>' + ' '.join(list_dirs) + '</p>'
+        entries = list_dirs + list_files
+        return entries
+
+    def handle_filter_changed(self, value):
+        self.cur_filter = value['new']
+        self.changeDir(self.curdir)
+
+    def disable(self):
+        disable(self.panel)
+        return
+
+    def enable(self):
+        enable(self.panel)
+        return
 
     def changeDir(self, path):
         close(self.body)
@@ -166,12 +231,12 @@ class MyFileSelectorPanel:
         self.changeDir(path)
         return
 
-    def handle_enterdir(self, s):
+    def handle_changedir(self, s):
         v = self.select.value
         v = del_ftime(v)
         if self.multiple:
             if len(v) != 1:
-                self.js_alert("Please select a directory")
+                js_alert("Please select a directory")
                 return
             v = v[0]
         p = os.path.abspath(os.path.join(self.curdir, v))
@@ -193,21 +258,23 @@ class MyFileSelectorPanel:
         if self.type == 'file':
             for p in paths:
                 if not os.path.isfile(p):
-                    self.js_alert("Please select file(s)")
+                    js_alert("Please select file(s)")
                     return
         else:
             assert self.type == 'directory'
             for p in paths:
                 if not os.path.isdir(p):
-                    self.js_alert("Please select directory(s)")
+                    js_alert("Please select directory(s)")
                     return
         # set output
         if self.multiple:
             self.selected = paths
         else:
             self.selected = paths[0]
-        # clean up
-        # self.remove()  ## fileselector stays alive
+
+        # clean up unless user choose not to
+        if not self.stay_alive: self.remove()
+
         # next step
         if self.next:
             self.next(self.selected)
@@ -221,6 +288,48 @@ class MyFileSelectorPanel:
         close(self.panel)
 
 
+# XXX css for big select area XXX
+display(HTML("""
+<style type="text/css">
+.jupyter-widgets select option {font-family: "Lucida Console", Monaco, monospace;}
+div.output_subarea {padding: 0px;}
+div.output_subarea > div {margin: 0.4em;}
+</style>
+"""))
+
+def cloneLayout(l):
+    c = ipyw.Layout()
+    for k,v in l.get_state().items():
+        if k.startswith('_'): continue
+        setattr(c, k, v)
+    return c
+
+def close(w):
+    "recursively close a widget"
+    recursive_op(w, lambda x: x.close())
+    return
+
+def disable(w):
+    "recursively disable a widget"
+    def _(w):
+        w.disabled = True
+    recursive_op(w, _)
+    return
+
+def enable(w):
+    "recursively enable a widget"
+    def _(w):
+        w.disabled = False
+    recursive_op(w, _)
+    return
+
+def recursive_op(w, single_op):
+    if hasattr(w, 'children'):
+        for c in w.children:
+            recursive_op(c, single_op)
+            continue
+    single_op(w)
+    return
 
 def close(w):
     "recursively close a widget"
@@ -247,6 +356,7 @@ def create_file_times(paths):
             ftimes.append("Unknown or Permission Denied")
     return ftimes
 
+
 def create_nametime_labels(entries, ftimes):
     if not entries:
         return []
@@ -255,6 +365,7 @@ def create_nametime_labels(entries, ftimes):
     fmt_str = ' %-' + str(max_len + n_spaces) + "s|" + ' ' * n_spaces + '%s'
     label_list = [fmt_str % (e, f) for e, f in zip(entries, ftimes)]
     return label_list
+
 
 def del_ftime(file_label):
     """file_label is either a str or a tuple of strings"""
@@ -265,4 +376,3 @@ def del_ftime(file_label):
         if file_label_new != "." and file_label_new != "..":
             file_label_new = file_label_new.split("|")[0].rstrip()
     return (file_label_new)
-
