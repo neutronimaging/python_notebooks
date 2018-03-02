@@ -105,6 +105,8 @@ class WaterIntakeProfileSelector(QMainWindow):
     # by default, we integrate over the x-axis
     is_inte_along_x_axis = True
 
+    histogram_level = []
+
     def __init__(self, parent=None, dict_data={}):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -125,8 +127,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self._init_pyqtgraph()
         self._init_widgets()
         self.sort_dict_data()
-        self.update_image()
-        self.update_plots()
+        self.update_water_intake_plot()
         self.update_infos_tab()
 
     def init_statusbar(self):
@@ -193,6 +194,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         # image view
         self.ui.image_view = pg.ImageView()
+
         self.ui.image_view.ui.menuBtn.hide()
         self.ui.image_view.ui.roiBtn.hide()
 
@@ -264,6 +266,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.widget.setLayout(vertical_layout)
 
     def _init_widgets(self, ignore_first_image=True, first_init=True):
+        self.ui.file_index_slider.blockSignals(True)
+
         nbr_files = len(self.list_data)
         self.ui.file_index_slider.setMaximum(nbr_files)
 
@@ -285,6 +289,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         nbr_columns = self.ui.tableWidget.columnCount()
         for _col in range(nbr_columns):
             self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
+
+        self.ui.file_index_slider.blockSignals(False)
 
     def update_infos_tab(self):
 
@@ -645,6 +651,12 @@ class WaterIntakeProfileSelector(QMainWindow):
         # return image
 
     def update_image(self):
+        first_update = False
+        if self.histogram_level == []:
+            first_update = True
+        _histo_widget = self.ui.image_view.getHistogramWidget()
+        self.histogram_level = _histo_widget.getLevels()
+
         index_selected = self.ui.file_index_slider.value()
         _image = self.dict_data['list_data'][index_selected-1]
         _image = np.transpose(_image)
@@ -652,6 +664,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         _image = self._force_range(_image)
         self.current_image = _image
         self.ui.image_view.setImage(_image)
+
+        if not first_update:
+            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
     def slider_changed(self, value):
         self.ui.file_index_value.setText(str(value))
