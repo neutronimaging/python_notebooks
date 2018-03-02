@@ -1,7 +1,7 @@
 import glob
 from ipywidgets import widgets
-# import ipywe.fileselector
-# import ipywidgets as ipyw
+#import ipywe.fileselector as MyFileSelectorPanel
+#import ipywidgets as ipyw
 import os
 # import time
 import re
@@ -14,6 +14,7 @@ import pandas as pd
 import subprocess
 
 from __code.file_handler import make_ascii_file_from_string
+from __code.file_handler import read_ascii
 from __code.fileselector import MyFileSelectorPanel
 from __code.utilities import ListRunsParser
 from __code.topaz_config import topaz_python_script, topaz_reduction_path
@@ -44,19 +45,34 @@ class ConfigLoader(object):
 
     def load_config(self, config_file_name):
         self.config_selected_label.value = config_file_name
-        try:
-            pd_config = pd.read_csv(config_file_name, sep=' ')
-        except:
-            display(HTML("Error loading config file {}!".format(config_file_name)))
-            return
+        #try:
+        #pd_config = pd.read_csv(config_file_name, sep=' ', comment='#')
 
-        list_para_name = pd_config['instrument_name']
-        list_para_value = pd_config['TOPAZ']
+        full_config = read_ascii(config_file_name)
+        config_array = full_config.split('\n')
 
-        config_dict = dict(zip(list_para_name, list_para_value))
-        # adding config_name tag that contains the name of the loaded config name
+        config_dict = dict()
+        for _line in config_array:
+            if (not (_line.startswith('#'))) and (not (_line == '')):
+                _new_line = re.sub('\s+', ',', _line)
+                my_split = _new_line.split(',')
+                _key = my_split[0]
+                _value = my_split[1]
+                config_dict[_key] = _value
+
         [config_dict['config_name'], _] = os.path.splitext(os.path.basename(config_file_name))
         self.config_dict = config_dict
+
+        # except:
+        #     display(HTML("Error loading config file {}!".format(config_file_name)))
+        #     return
+
+        # list_para_name = pd_config['instrument_name']
+        # list_para_value = pd_config['TOPAZ']
+
+        # config_dict = dict(zip(list_para_name, list_para_value))
+        # adding config_name tag that contains the name of the loaded config name
+
 
 
 class ConfigParser(object):
@@ -130,6 +146,9 @@ class ConfigDict(object):
 
         para_type = type(self.config[parameter])
         if self.config_dict == {}:
+            return self.config[parameter]
+
+        if not (parameter in self.config_dict.keys()):
             return self.config[parameter]
 
         if self.config_dict[parameter]:
@@ -570,7 +589,8 @@ class TopazConfigGenerator(object):
         self.ub_ui = MyFileSelectorPanel(instruction='Select UB File (*.mat)',
                                          start_dir=_ub_path,
                                          next=select_ub_file,
-                                         stay_alive=True)
+                                         stay_alive=True,
+                                         filters={'UB files': ['*.mat']})
 
         # init display
         self.ub_ui.show()

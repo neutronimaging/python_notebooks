@@ -297,6 +297,12 @@ div.output_subarea > div {margin: 0.4em;}
 </style>
 """))
 
+
+def js_alert(m):
+    js = "<script>alert('%s');</script>" % m
+    display(HTML(js))
+    return
+
 def cloneLayout(l):
     c = ipyw.Layout()
     for k,v in l.get_state().items():

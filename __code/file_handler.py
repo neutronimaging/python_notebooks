@@ -7,15 +7,11 @@ from PIL import Image
 import glob
 from collections import Counter, namedtuple
 import re
-import pytz
 import datetime
 
-from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 
-import NeuNorm
-from NeuNorm.normalization import Normalization
 from __code.metadata_handler import MetadataHandler
 
 
