@@ -193,7 +193,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         area.addDock(d3, 'right')
 
         # image view
-        self.ui.image_view = pg.ImageView()
+        self.ui.image_view = pg.ImageView(view=pg.PlotItem())
 
         self.ui.image_view.ui.menuBtn.hide()
         self.ui.image_view.ui.roiBtn.hide()
