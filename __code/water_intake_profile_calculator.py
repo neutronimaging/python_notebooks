@@ -679,7 +679,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.__sort_files()
         self.update_infos_tab()
         self.update_image()
-        self.update_plots()
+        # self.update_plots()
+        self.update_profile_plot()
         QApplication.restoreOverrideCursor()
 
     def __sort_files(self):
@@ -736,6 +737,7 @@ class WaterIntakeProfileSelector(QMainWindow):
             dirname = os.path.dirname(_file)
             basename = os.path.basename(_file)
             [base, ext] = os.path.splitext(basename)
+            base = base.replace(" ","") # remove white spaces in name of file
             m = re.match(re_string, base)
             if m is None:
                 raise ValueError
