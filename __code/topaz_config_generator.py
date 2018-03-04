@@ -67,6 +67,8 @@ class ConfigLoader(object):
         #     display(HTML("Error loading config file {}!".format(config_file_name)))
         #     return
 
+        display(HTML("Configuration file has been loaded with success!"))
+
         # list_para_name = pd_config['instrument_name']
         # list_para_value = pd_config['TOPAZ']
 
