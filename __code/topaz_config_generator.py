@@ -629,9 +629,10 @@ class TopazConfigGenerator(object):
         self.cell_type_ui = cell_type_ui.children[1]
 
         _centering = self.o_config_dict.get_parameter_value('centering')
+
         centering_ui = widgets.HBox([widgets.Label("Centering:",
                                                    layout=widgets.Layout(width=self.left_column_width)),
-                                     widgets.Dropdown(options=self.cell_type_dict['Monoclinic'],
+                                     widgets.Dropdown(options=self.cell_type_dict[_cell_type],
                                                       value=_centering,
                                                       layout=widgets.Layout(width='20%'))])
         self.centering_ui = centering_ui.children[1]
