@@ -55,12 +55,12 @@ class WaterIntakeHandler(object):
 
     dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
 
-    def __init__(self, dict_profiles={}, ignore_first_image=True):
+    def __init__(self, dict_profiles={}, ignore_first_image=True, algorithm_selected='sliding_average'):
         self.dict_profiles = dict_profiles
         self.ignore_first_image = ignore_first_image
-        self.calculate()
+        self.calculate(algorithm_selected)
 
-    def calculate(self):
+    def calculate(self, algorithm_selected):
         _dict_profiles = self.dict_profiles
         nbr_pixels = len(_dict_profiles['1']['data'])
         nbr_files = len(_dict_profiles.keys())
@@ -382,9 +382,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_water_intake_plot()
         self.update_profile_plot_water_intake_peak()
 
-    def update_plots(self):
+    def update_plots(self, algorithm_selected='sliding_average'):
         self.update_profile_plot()
-        self.update_water_intake_plot()
+        self.update_water_intake_plot(algorithm_selected=algorithm_selected)
         self.update_profile_plot_water_intake_peak()
 
     def update_profile_plot(self):
@@ -425,13 +425,14 @@ class WaterIntakeProfileSelector(QMainWindow):
             return 'median'
         return ''
 
-    def update_water_intake_plot(self):
+    def update_water_intake_plot(self, algorithm_selected='sliding_average'):
         # hourglass cursor
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self.calculate_all_profiles()
 
         o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles,
-                                                    ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked())
+                                                    ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked(),
+                                                    algorithm_selected=algorithm_selected)
         delta_time = o_water_intake_handler.water_intake_deltatime
         peak = o_water_intake_handler.water_intake_peak
 
@@ -886,6 +887,15 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         self.dict_data_raw['list_time_stamp'] = new_list_time_stamp.copy()
         self.dict_data_raw['list_time_stamp_user_format'] = new_list_time_stamp_user_format.copy()
+
+    def algorithm_changed(self):
+        if self.ui.sliding_average_checkBox.isChecked():
+            # using default algorithm
+            self.algorithm_selected = 'sliding_average'
+        else:
+            # Victoria's algorithm using error function
+            self.algorithm_selected = 'error_function'
+        self.update_plots(algorithm_selected=self.algorithm_selected)
 
     def integration_direction_changed(self):
         self.is_inte_along_x_axis = self.ui.x_axis_integration_radioButton.isChecked()
