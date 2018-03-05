@@ -55,8 +55,9 @@ class WaterIntakeHandler(object):
 
     dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
 
-    def __init__(self, dict_profiles={}):
+    def __init__(self, dict_profiles={}, ignore_first_image=True):
         self.dict_profiles = dict_profiles
+        self.ignore_first_image = ignore_first_image
         self.calculate()
 
     def calculate(self):
@@ -64,9 +65,16 @@ class WaterIntakeHandler(object):
         nbr_pixels = len(_dict_profiles['1']['data'])
         nbr_files = len(_dict_profiles.keys())
 
+        if self.ignore_first_image:
+            _start_file = 1
+            _end_file = nbr_files+1
+        else:
+            _start_file = 0
+            _end_file = nbr_files
+
         water_intake_deltatime = []
         water_intake_peak = []
-        for _index_file in np.arange(1, nbr_files):
+        for _index_file in np.arange(_start_file, _end_file):
             _profile = _dict_profiles[str(_index_file)]
             _profile_data = _profile['data']
             _delta_time = _profile['delta_time']
@@ -106,6 +114,9 @@ class WaterIntakeProfileSelector(QMainWindow):
     is_inte_along_x_axis = True
 
     histogram_level = []
+
+    # array of water intake values
+    water_intake_peaks = []
 
     # state of the image
     image_view_state = {}
@@ -219,6 +230,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         # profile
         self.profile = pg.PlotWidget(title='Profile')
         self.profile.plot()
+        self.profile_vline = pg.InfiniteLine(angle=90, movable=False)
+        self.profile.addItem(self.profile_vline, ignoreBounds=True)
         d2.addWidget(self.profile)
 
         # water intake
@@ -414,9 +427,12 @@ class WaterIntakeProfileSelector(QMainWindow):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self.calculate_all_profiles()
 
-        o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles)
+        o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles,
+                                                    ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked())
         delta_time = o_water_intake_handler.water_intake_deltatime
         peak = o_water_intake_handler.water_intake_peak
+
+        self.water_intake_peaks = peak
         # peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
 
         if self.ui.pixel_radioButton.isChecked(): # pixel
@@ -435,6 +451,14 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.water_intake.plot(delta_time, peak, symbolPen=None, pen=None, symbol='o', symbolBruch=(200,200,200,50))
         self.water_intake.setLabel('left', y_label)
         self.water_intake.setLabel('bottom', 'Delta Time')
+
+        # display value of current water intake peak in profile plot
+        _water_intake_peaks = self.water_intake_peaks
+        index_selected = self.ui.file_index_slider.value()
+        #print("water intake peaks: {}".format(_water_intake_peaks))
+
+        #self.profile_vline.setPos(peak)
+
         QApplication.restoreOverrideCursor()
 
     def calculate_all_profiles(self):
@@ -460,9 +484,14 @@ class WaterIntakeProfileSelector(QMainWindow):
         else:
             time_stamp_first_file = float(list_time_stamp[0])
 
+        if self.ui.ignore_first_image_checkbox.isChecked():
+            first_image = 1
+        else:
+            first_image = 0
+
         nbr_images = len(list_images)
         dict_profiles = {}
-        for index in np.arange(1, nbr_images):
+        for index in np.arange(first_image, nbr_images):
             _image = list_data[index]
             _image_of_roi = _image[y0:y1, x0:x1]
             _profile = self.get_profile(_image_of_roi)
