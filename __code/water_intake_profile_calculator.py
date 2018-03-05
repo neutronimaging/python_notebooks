@@ -107,6 +107,9 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     histogram_level = []
 
+    # state of the image
+    image_view_state = {}
+
     def __init__(self, parent=None, dict_data={}):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -131,7 +134,6 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_infos_tab()
 
     def init_statusbar(self):
-
         _width_labels = 40
         _height_labels = 30
 
@@ -651,6 +653,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         # return image
 
     def update_image(self):
+
+        _view = self.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
         first_update = False
         if self.histogram_level == []:
             first_update = True
@@ -664,6 +671,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         _image = self._force_range(_image)
         self.current_image = _image
         self.ui.image_view.setImage(_image)
+        _view_box.setState(_state)
 
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
