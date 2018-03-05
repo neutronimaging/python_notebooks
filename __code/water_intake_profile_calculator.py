@@ -142,6 +142,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self._init_widgets()
         self.sort_dict_data()
         self.update_water_intake_plot()
+        self.update_profile_plot_water_intake_peak()
         self.update_infos_tab()
 
     def init_statusbar(self):
@@ -379,10 +380,12 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def refresh_water_intake_plot_clicked(self):
         self.update_water_intake_plot()
+        self.update_profile_plot_water_intake_peak()
 
     def update_plots(self):
         self.update_profile_plot()
         self.update_water_intake_plot()
+        self.update_profile_plot_water_intake_peak()
 
     def update_profile_plot(self):
         index_selected = self.ui.file_index_slider.value()
@@ -452,14 +455,21 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.water_intake.setLabel('left', y_label)
         self.water_intake.setLabel('bottom', 'Delta Time')
 
+        QApplication.restoreOverrideCursor()
+
+    def update_profile_plot_water_intake_peak(self):
+
         # display value of current water intake peak in profile plot
         _water_intake_peaks = self.water_intake_peaks
         index_selected = self.ui.file_index_slider.value()
-        #print("water intake peaks: {}".format(_water_intake_peaks))
+        if self.ui.ignore_first_image_checkbox.isChecked():
+            index_selected -= 2
+        else:
+            index_selected -= 1
 
-        #self.profile_vline.setPos(peak)
-
-        QApplication.restoreOverrideCursor()
+        self.profile_vline = pg.InfiniteLine(angle=90, movable=False,
+                                             pos=_water_intake_peaks[index_selected] + np.int(self.roi['y0']))
+        self.profile.addItem(self.profile_vline, ignoreBounds=True)
 
     def calculate_all_profiles(self):
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
@@ -709,6 +719,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.file_index_value.setText(str(value))
         self.update_image()
         self.update_profile_plot()
+        self.update_profile_plot_water_intake_peak()
 
     def _water_intake_yaxis_checkbox_changed(self):
         _status = self.ui.distance_radioButton.isChecked()
