@@ -8,6 +8,8 @@ import numpy as np
 import os
 import re
 import glob
+from scipy.special import erf
+from scipy.optimize import curve_fit
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
@@ -55,12 +57,58 @@ class WaterIntakeHandler(object):
 
     dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
 
+    water_intake_peak_sliding_average = []
+    water_intake_peak_erf = []
+    water_intake_deltatime = []
+
+    dict_error_function_parameters = {}
+
     def __init__(self, dict_profiles={}, ignore_first_image=True, algorithm_selected='sliding_average'):
         self.dict_profiles = dict_profiles
         self.ignore_first_image = ignore_first_image
-        self.calculate(algorithm_selected)
 
-    def calculate(self, algorithm_selected):
+        if algorithm_selected == 'sliding_average':
+            self.calculate_using_sliding_average()
+        else:
+            self.calculate_using_erf()
+
+    def calculate_using_erf(self):
+        _dict_profiles = self.dict_profiles
+        nbr_files = len(_dict_profiles.keys())
+
+        if self.ignore_first_image:
+            _start_file = 1
+            _end_file = nbr_files + 1
+        else:
+            _start_file = 0
+            _end_file = nbr_files
+
+        dict_error_function_parameters = dict()
+
+        for _index_file in np.arange(_start_file, _end_file):
+            _profile = _dict_profiles[str(_index_file)]
+            ydata = _profile['data']
+            xdata = _profile['delta_time']
+
+            popt = self.fitting_algorithm(xdata, ydata)
+
+            _local_dict = {'c': popt[0],
+                           'w': popt[1],
+                           'm': popt[2],
+                           'n': popt[3]}
+
+            dict_error_function_parameters[str(_index_file)] = _local_dict
+
+        self.dict_error_function_parameters = dict_error_function_parameters
+
+    def fitting_function(self, x, c, w, m, n):
+        return ((m-n)/2.) * erf((x-c)/w) + (m+n)/2.
+
+    def fitting_algorithm(self, xdata, ydata):
+        popt, _ = curve_fit(self.fitting_function, xdata, ydata, maxfev=3000)
+        return popt
+
+    def calculate_using_sliding_average(self):
         _dict_profiles = self.dict_profiles
         nbr_pixels = len(_dict_profiles['1']['data'])
         nbr_files = len(_dict_profiles.keys())
@@ -89,7 +137,7 @@ class WaterIntakeHandler(object):
             water_intake_peak.append(peak_value)
             water_intake_deltatime.append(_delta_time)
 
-        self.water_intake_peak = water_intake_peak
+        self.water_intake_peak_sliding_average = water_intake_peak
         self.water_intake_deltatime = water_intake_deltatime
 
 
@@ -434,9 +482,14 @@ class WaterIntakeProfileSelector(QMainWindow):
                                                     ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked(),
                                                     algorithm_selected=algorithm_selected)
         delta_time = o_water_intake_handler.water_intake_deltatime
-        peak = o_water_intake_handler.water_intake_peak
 
-        self.water_intake_peaks = peak
+        if algorithm_selected == 'sliding_average':
+            peak = o_water_intake_handler.water_intake_peak_sliding_average
+            self.water_intake_peaks_sliding_average = peak
+        else:
+            peak = o_water_intake_handler.water_intake_peak_erf
+            self.water_intake_peaks_erf = peak
+
         # peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
 
         if self.ui.pixel_radioButton.isChecked(): # pixel
@@ -459,9 +512,13 @@ class WaterIntakeProfileSelector(QMainWindow):
         QApplication.restoreOverrideCursor()
 
     def update_profile_plot_water_intake_peak(self):
-
         # display value of current water intake peak in profile plot
-        _water_intake_peaks = self.water_intake_peaks
+        algorithm_selected = self.algorithm_selected
+        if algorithm_selected == 'sliding_average':
+            _water_intake_peaks = self.water_intake_peaks_sliding_average
+        else:
+            _water_intake_peaks = self.water_intake_peaks_erf
+
         index_selected = self.ui.file_index_slider.value()
         if self.ui.ignore_first_image_checkbox.isChecked():
             index_selected -= 2
