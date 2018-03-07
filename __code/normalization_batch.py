@@ -80,6 +80,7 @@ class Panel:
     o_norm_handler = None
 
     df_panel = None
+    top_object = None
     
     def __init__(self, prev_button=False, next_button=True, state='sample', working_dir='',
                 top_object=None):
@@ -197,9 +198,9 @@ class WizardPanel:
     sample_panel = None
 
     def __init__(self, sample_panel=None):
-        display(widgets.Label("Selection of All Input Files",
-                              layout=self.label_layout))
-
+        # display(widgets.Label("Selection of All Input Files",
+        #                       layout=self.label_layout))
+        #
         self.sample_panel = sample_panel
         self.sample_panel.show()
         return
@@ -210,10 +211,11 @@ class SampleSelectionPanel(Panel):
     files = None
     o_norm = None
     
-    def __init__(self, prev_button=False, next_button=True, working_dir=''):
+    def __init__(self, prev_button=False, next_button=True, working_dir='', top_object=None):
         super(SampleSelectionPanel, self).__init__(prev_button=prev_button,
                                                    next_button=next_button,
-                                                   working_dir=working_dir)
+                                                   working_dir=working_dir,
+                                                   top_object=top_object)
 
     def next_button_clicked(self, event):
         self.remove()
@@ -260,13 +262,15 @@ class DFSelectionPanel(Panel):
     def next_button_clicked(self, event):
         self.remove()
         o_norm_handler = NormalizationHandler(files=self.files,
-                                      working_dir=self.working_dir)
+                                              working_dir=self.working_dir)
         o_norm_handler.load_data()
         self.top_object.o_norm_handler = o_norm_handler
         self.top_object.o_norm = o_norm_handler.o_norm
 
 class NormalizationHandler(object):
-    
+    """This class will load a subset of the sample, just enough to be able to
+    select ROI"""
+
     data = None
     integrated_sample = []
     working_dir = ''
@@ -283,167 +287,26 @@ class NormalizationHandler(object):
         self.o_norm = Normalization()
         
         # sample
-        list_sample = self.files.sample
+        full_list_sample = self.files.sample
+        nbr_full_list_sampled = len(full_list_sample)
+
+        if nbr_full_list_sampled > 3:
+            new_list_sample = [full_list_sample[0],
+                               full_list_sample[np.int(nbr_full_list_sampled/2)],
+                               full_list_sample[-1]]
+            list_sample = new_list_sample
+
         self.o_norm.load(file=list_sample, notebook=True)
         self.data.sample = self.o_norm.data['sample']['data']
         self.list_file_names = list_sample
-
-        # ob
-        list_ob = self.files.ob
-        self.o_norm.load(file=list_ob, data_type='ob', notebook=True)
-        self.data.ob = self.o_norm.data['ob']['data']
-        
-        # df
-        list_df = self.files.df
-        if list_df:
-            self.o_norm.load(file=list_df, data_type='df', notebook=True)
-            self.data.df = self.o_norm.data['df']['data']
-
-
-    def get_data(self, data_type='sample'):
-        if data_type == 'sample':
-            return self.data.sample
-        elif data_type == 'ob':
-            return self.data.ob
-        else:
-            return self.data.df
-        
-    def plot_images(self, data_type='sample'):
-
-        sample_array = self.get_data(data_type=data_type)
-
-        def _plot_images(index):
-            _ = plt.figure(num=data_type, figsize=(5, 5))
-            ax_img = plt.subplot(111)
-            my_imshow= ax_img.imshow(sample_array[index], cmap='viridis')
-            plt.colorbar(my_imshow)
-
-        _ = widgets.interact(_plot_images,
-                     index=widgets.IntSlider(min=0,
-                                             max=len(self.get_data(data_type=data_type)) - 1,
-                                             step=1,
-                                             value=0,
-                                             description='{} Index'.format(data_type),
-                                             continuous_update=False))
-
-    def calculate_integrated_sample(self):
-        if len(self.data.sample) > 1:
-            integrated_array = np.array([_array for _array in self.data.sample])
-            self.integrated_sample = integrated_array.mean(axis=0)
-        else:
-            self.integrated_sample = np.squeeze(self.data.sample)
-
-    def with_or_without_roi(self):
-        label1 = widgets.Label("Do you want to select a region of interest (ROI) that will make sure that the " +
-                              "sample background matches the OB background")
-        label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
-        box = widgets.HBox([widgets.Label("With or Without ROI?"),
-                            widgets.RadioButtons(options=['yes','no'],
-                                                value='yes',
-                                                layout=widgets.Layout(width='50%'))])
-        self.with_or_without_radio_button = box.children[1]
-        vertical = widgets.VBox([label1, label2, box])
-        display(vertical)
-
-    def select_sample_roi(self):
-
-        if self.with_or_without_radio_button.value == 'no':
-            label2 = widgets.Label("-> You chose not to select any ROI! Next step: Normalization")
-            display(label2)
-            return
-
-        label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
-        display(label2)
-
-        if self.integrated_sample == []:
-            self.calculate_integrated_sample()
-
-        _integrated_sample = self.integrated_sample
-        [height, width] = np.shape(_integrated_sample)
-
-        def plot_roi(x_left, y_top, width, height):
-            _ = plt.figure(figsize=(5, 5))
-            ax_img = plt.subplot(111)
-            ax_img.imshow(_integrated_sample,
-                          cmap='viridis',
-                          interpolation=None)
-
-            _rectangle = patches.Rectangle((x_left, y_top),
-                                           width,
-                                           height,
-                                           edgecolor='white',
-                                           linewidth=2,
-                                           fill=False)
-            ax_img.add_patch(_rectangle)
-
-            return [x_left, y_top, width, height]
-
-        self.roi_selection = widgets.interact(plot_roi,
-                                      x_left=widgets.IntSlider(min=0,
-                                                               max=width,
-                                                               step=1,
-                                                               value=0,
-                                                               description='X Left',
-                                                               continuous_update=False),
-                                      y_top=widgets.IntSlider(min=0,
-                                                              max=height,
-                                                              value=0,
-                                                              step=1,
-                                                              description='Y Top',
-                                                              continuous_update=False),
-                                      width=widgets.IntSlider(min=0,
-                                                              max=width - 1,
-                                                              step=1,
-                                                              value=60,
-                                                              description="Width",
-                                                              continuous_update=False),
-                                      height=widgets.IntSlider(min=0,
-                                                               max=height - 1,
-                                                               step=1,
-                                                               value=100,
-                                                               description='Height',
-                                                               continuous_update=False))
-
-    def run_normalization(self, dict_roi=None):
-
-        if dict_roi is None:
-            #try:
-            self.o_norm.df_correction()
-            self.o_norm.normalization(notebook=True)
-            self.normalized_data_array = self.o_norm.get_normalized_data()
-            #except:
-            #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-            #                'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
-        else:
-            _list_roi = []
-            for _key in dict_roi.keys():
-                _roi = dict_roi[_key]
-                x0 = _roi['x0']
-                y0 = _roi['y0']
-                x1 = _roi['x1']
-                y1 = _roi['y1']
-
-                x_left = np.min([x0, x1])
-                y_top = np.min([y0, y1])
-
-                width_roi = np.abs(x0 - x1)
-                height_roi = np.abs(y0 - y1)
-
-                _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
-                _list_roi.append(_roi)
-
-            # try:
-            self.o_norm.df_correction()
-            self.o_norm.normalization(roi=_list_roi, notebook=True)
-            self.normalized_data_array = self.o_norm.get_normalized_data()
-            #except:
-            #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-            #                 'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
 
     def select_export_folder(self):
 
         def display_file_selector_from_shared(ev):
             start_dir = os.path.join(self.working_dir, 'shared')
+            if not os.path.exists(start_dir):
+                start_dir = self.working_dir
+
             self.output_folder_ui.remove()
             self.display_file_selector(start_dir=start_dir)
 
@@ -451,6 +314,9 @@ class NormalizationHandler(object):
             import getpass
             _user = getpass.getuser()
             start_dir = os.path.join('/SNS/users', _user)
+            if not os.path.exists(start_dir):
+                start_dir = self.working_dir
+
             self.output_folder_ui.remove()
             self.display_file_selector(start_dir=start_dir)
 
@@ -459,52 +325,95 @@ class NormalizationHandler(object):
         button_layout = widgets.Layout(width='30%',
                                        border='1px solid gray')
 
-        hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
+        self.hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
                                             button_style='success',
                                             layout=button_layout),
                              widgets.Button(description="Jump to My Home Folder",
                                             button_style='success',
                                             layout=button_layout)])
-        go_to_shared_button_ui = hbox.children[0]
-        go_to_home_button_ui = hbox.children[1]
+        go_to_shared_button_ui = self.hbox.children[0]
+        go_to_home_button_ui = self.hbox.children[1]
 
         go_to_shared_button_ui.on_click(display_file_selector_from_shared)
         go_to_home_button_ui.on_click(display_file_selector_from_home)
 
-        display(hbox)
-
+        display(self.hbox)
         self.display_file_selector()
 
     def display_file_selector(self, start_dir=''):
 
-        print(start_dir)
+        def remove_buttons(ev):
+            self.hbox.close()
+
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
                                                                      start_dir=start_dir,
                                                                      multiple=False,
+                                                                     next=remove_buttons,
                                                                      type='directory')
         self.output_folder_ui.show()
 
-
-    def export(self):
-
+    def export(self, rois={}):
         base_folder = os.path.basename(os.path.dirname(self.list_file_names[0])) + '_normalized'
         output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected, base_folder))
         utilities.make_dir(dir=output_folder)
+        self.normalized(rois=rois, output_folder=output_folder)
 
-        w = widgets.IntProgress()
-        w.max = len(self.files.sample)
-        display(w)
+        display(HTML('<span style="font-size: 20px; color:blue">The normalized images are currently being ' +
+                     'created in </span><span style="font-size: 20px; color:green">' + output_folder + \
+                     '<br><br></span><span style="font-size: 20px; color:blue">Feel free to start another reduction now!</span>'))
 
-        for _index, _file in enumerate(self.list_file_names):
-            basename = os.path.basename(_file)
-            _base, _ext = os.path.splitext(basename)
-            output_file_name = os.path.join(output_folder, _base + '.tiff')
-            file_handler.make_tiff(filename=output_file_name, data=self.normalized_data_array[_index])
+    def prepare_file_names_for_command_line(self, list_files):
+        if list_files:
+            list_files_new_format = []
+            for _file in list_files:
+                new_file = _file.replace(" ", "\\ ")
+                list_files_new_format.append(new_file)
 
-            w.value = _index + 1
+            str_files = ",".join(list_files_new_format)
+            return str_files
+        return list_files
 
-        display(HTML('<span style="font-size: 20px; color:blue">The normalized images have been ' +
-                     'created in ' + output_folder + '</span>'))
+    def normalized(self, rois={}, output_folder=''):
 
-        
-        
+        py_script = os.path.abspath("./__code/normalization_script.py")
+        command_line = 'python {}'.format(py_script)
+
+        # sample files
+        str_sample_files = self.prepare_file_names_for_command_line(self.files.sample)
+        command_line += " -sf={}".format(str_sample_files)
+
+        # ob files
+        str_ob_files = self.prepare_file_names_for_command_line(self.files.ob)
+        command_line += ' -of={}'.format(str_ob_files)
+
+        # df files
+        if self.files.df:
+            str_df_files = self.prepare_file_names_for_command_line(self.files.df)
+            command_line += ' -df={}'.format(str_df_files)
+
+        # roi
+        if not rois == {}:
+            _list_roi = []
+            for _key in rois.keys():
+                _roi = rois[_key]
+                x0 = _roi['x0']
+                y0 = _roi['y0']
+                x1 = _roi['x1']
+                y1 = _roi['y1']
+                _list_roi.append("{},{},{},{}".format(x0, y0, x1, y1))
+            str_list_roi = ":".join(_list_roi)
+            command_line += ' -rois={}'.format(str_list_roi)
+
+        # output
+        output_folder = output_folder.replace(" ", "\\ ")
+        command_line += ' --output={} &'.format(output_folder)
+
+        # print("command line > {}".format(command_line))
+        os.system(command_line)
+
+
+
+
+
+
+
