@@ -442,11 +442,48 @@ class NormalizationHandler(object):
 
     def select_export_folder(self):
 
+        def display_file_selector_from_shared(ev):
+            start_dir = os.path.join(self.working_dir, 'shared')
+            self.output_folder_ui.remove()
+            self.display_file_selector(start_dir=start_dir)
+
+        def display_file_selector_from_home(ev):
+            import getpass
+            _user = getpass.getuser()
+            start_dir = os.path.join('/SNS/users', _user)
+            self.output_folder_ui.remove()
+            self.display_file_selector(start_dir=start_dir)
+
+        ipts = os.path.basename(self.working_dir)
+
+        button_layout = widgets.Layout(width='30%',
+                                       border='1px solid gray')
+
+        hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
+                                            button_style='success',
+                                            layout=button_layout),
+                             widgets.Button(description="Jump to My Home Folder",
+                                            button_style='success',
+                                            layout=button_layout)])
+        go_to_shared_button_ui = hbox.children[0]
+        go_to_home_button_ui = hbox.children[1]
+
+        go_to_shared_button_ui.on_click(display_file_selector_from_shared)
+        go_to_home_button_ui.on_click(display_file_selector_from_home)
+
+        display(hbox)
+
+        self.display_file_selector()
+
+    def display_file_selector(self, start_dir=''):
+
+        print(start_dir)
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
-                                                                     start_dir=self.working_dir,
+                                                                     start_dir=start_dir,
                                                                      multiple=False,
                                                                      type='directory')
         self.output_folder_ui.show()
+
 
     def export(self):
 
