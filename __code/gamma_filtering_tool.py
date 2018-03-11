@@ -32,7 +32,7 @@ class Interface(QMainWindow):
 
     live_data = []
 
-    table_columns_size = [600, 50, 50]
+    table_columns_size = [700, 100, 100]
 
     def __init__(self, parent=None, list_of_files=None):
 
@@ -49,6 +49,8 @@ class Interface(QMainWindow):
         self.init_pyqtgraph()
         self.init_widgets()
         self.init_table()
+
+        self.slider_moved(slider_position=1)
 
     def init_table(self):
         for _row, _file in enumerate(self.list_files):
@@ -99,6 +101,7 @@ class Interface(QMainWindow):
         self.update_raw_image(file_index=slider_position-1)
         self.calculate_and_display_corrected_image(file_index=slider_position-1)
         self.calculate_and_display_diff_image(file_index=slider_position-1)
+        self.ui.file_index_value.setText(str(slider_position))
 
     def calculate_and_display_diff_image(self, file_index=1):
         pass
@@ -110,7 +113,7 @@ class Interface(QMainWindow):
         o_norm = Normalization()
         file_name = self.list_files[file_index]
         o_norm.load(file=file_name, gamma_filter=False)
-        _image = o_norm.data['sample']['data']
+        _image = o_norm.data['sample']['data'][0]
         self.ui.raw_image_view.setImage(_image)
 
     def init_statusbar(self):
