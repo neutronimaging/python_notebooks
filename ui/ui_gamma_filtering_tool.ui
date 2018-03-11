@@ -28,8 +28,15 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QWidget" name="left_widget" native="true"/>
-          <widget class="QWidget" name="widget_3" native="true"/>
-          <widget class="QWidget" name="widget_2" native="true"/>
+          <widget class="QWidget" name="center_widget" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+          <widget class="QWidget" name="right_widget" native="true"/>
          </widget>
         </item>
        </layout>
@@ -41,21 +48,21 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="file_index_label">
               <property name="text">
                <string>File Index</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSlider" name="horizontalSlider">
+             <widget class="QSlider" name="file_index_slider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_2">
+             <widget class="QLabel" name="file_index_value">
               <property name="text">
                <string>0</string>
               </property>
@@ -103,7 +110,35 @@
          </layout>
         </item>
         <item>
-         <widget class="QTableWidget" name="tableWidget"/>
+         <widget class="QTableWidget" name="tableWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>80</height>
+           </size>
+          </property>
+          <column>
+           <property name="text">
+            <string>Files</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Number Gamma Pixels</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>% Gamma Pixels</string>
+           </property>
+          </column>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -163,8 +198,8 @@
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>59</x>
-     <y>602</y>
+     <x>71</x>
+     <y>689</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -179,12 +214,28 @@
    <slot>apply_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>886</x>
-     <y>602</y>
+     <x>923</x>
+     <y>689</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
      <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_index_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>268</x>
+     <y>332</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>344</x>
+     <y>679</y>
     </hint>
    </hints>
   </connection>
@@ -197,5 +248,6 @@
   <slot>sector_changed()</slot>
   <slot>guide_color_changed()</slot>
   <slot>grid_size_changed()</slot>
+  <slot>slider_moved()</slot>
  </slots>
 </ui>
