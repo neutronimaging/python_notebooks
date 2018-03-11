@@ -43,37 +43,31 @@ class Interface(QMainWindow):
         self.ui.setupUi(self)
         # self.init_statusbar()
 
-        # self.ui.image_view = pg.ImageView()
-        # self.ui.image_view.ui.roiBtn.hide()
-        # self.ui.image_view.ui.menuBtn.hide()
-        #
-        # bottom_layout = QtGui.QHBoxLayout()
-        #
-        # # file index slider
-        # label_1 = QtGui.QLabel("File Index")
-        # self.ui.slider = QtGui.QSlider(QtCore.Qt.Horizontal)
-        # self.ui.slider.setMaximum(len(self.list_files) - 1)
-        # self.ui.slider.setMinimum(0)
-        # self.ui.slider.valueChanged.connect(self.file_index_changed)
-        #
-        # # spacer
-        # spacer = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        #
-        # bottom_layout.addWidget(label_1)
-        # bottom_layout.addWidget(self.ui.slider)
-        # bottom_layout.addItem(spacer)
-        #
-        # bottom_widget = QtGui.QWidget()
-        # bottom_widget.setLayout(bottom_layout)
-        #
-        # vertical_layout = QtGui.QVBoxLayout()
-        # vertical_layout.addWidget(self.ui.image_view)
-        # vertical_layout.addWidget(bottom_widget)
-        #
-        # self.ui.widget.setLayout(vertical_layout)
-        #
-        # self.init_widgets()
-        # self.file_index_changed()
+        self.init_pyqtgraph()
+        self.init_widgets()
+
+    def init_pyqtgraph(self):
+
+        self.ui.raw_image_view = pg.ImageView()
+        self.ui.raw_image_view.ui.roiBtn.hide()
+        self.ui.raw_image_view.ui.menuBtn.hide()
+        left_layout = QtGui.QHBoxLayout()
+        left_layout.addWiget(self.ui.raw_image_view)
+        self.ui.left_widget.setLayout(left_layout)
+
+        self.ui.filtered_image_view = pg.ImageView()
+        self.ui.filtered_image_view.ui.roiBtn.hide()
+        self.ui.filtered_image_view.ui.menuBtn.hide()
+        center_layout = QtGui.QHBoxLayout()
+        center_layout.addWidget(self.ui.filtered_image_view)
+        self.ui.left_widget.setLayout(center_layout)
+
+        self.ui.diff_image_view = pg.ImageView()
+        self.ui.diff_image_view.ui.roiBtn.hide()
+        self.ui.diff_image_view.ui.menuBtn.hide()
+        right_layout = QtGui.QHBoxLayout()
+        right_layout.addWidget(self.ui.diff_image_view)
+        self.ui.left_widget.setLayout(right_layout)
 
     def init_widgets(self):
         pass

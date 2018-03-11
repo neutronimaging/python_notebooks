@@ -27,7 +27,7 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QWidget" name="widget" native="true"/>
+          <widget class="QWidget" name="left_widget" native="true"/>
           <widget class="QWidget" name="widget_3" native="true"/>
           <widget class="QWidget" name="widget_2" native="true"/>
          </widget>
