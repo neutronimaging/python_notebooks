@@ -63,6 +63,12 @@ class Interface(QMainWindow):
         self.init_statusbar()
         self.slider_moved(slider_position=1)
 
+        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
+        self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
+
+
     def init_statusbar(self):
         _width_labels = 40
         _height_labels = 30
@@ -138,8 +144,8 @@ class Interface(QMainWindow):
                 self.x_value.setText(str(mouse_x))
                 self.y_value.setText(str(mouse_y))
 
-                _raw_value = self.live_raw_image[mouse_y, mouse_x]
-                _filtered_value = self.live_filtered_image[mouse_y, mouse_x]
+                _raw_value = self.live_raw_image[mouse_x, mouse_y]
+                _filtered_value = self.live_filtered_image[mouse_x, mouse_y]
                 _diff_value = _raw_value - _filtered_value
 
                 self.raw_value.setText("{:.03f}".format(_raw_value))
@@ -183,7 +189,7 @@ class Interface(QMainWindow):
         area.addDock(d2, 'right', d1)
         area.addDock(d3, 'right')
 
-        self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
         self.ui.raw_image_view.view.setAutoVisible(y=True)
@@ -196,7 +202,7 @@ class Interface(QMainWindow):
                                     slot=self.mouse_moved_in_raw_image)
         d1.addWidget(self.ui.raw_image_view)
 
-        self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name='filtered_image')
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
         # self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
@@ -208,7 +214,7 @@ class Interface(QMainWindow):
                                     slot=self.mouse_moved_in_filtered_image)
         d2.addWidget(self.ui.filtered_image_view)
 
-        self.ui.diff_image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.diff_image_view = pg.ImageView(view=pg.PlotItem(), name='diff_image')
         self.ui.diff_image_view.ui.roiBtn.hide()
         self.ui.diff_image_view.ui.menuBtn.hide()
         # self.diff_vLine = pg.InfiniteLine(angle=90, movable=False)
@@ -223,6 +229,11 @@ class Interface(QMainWindow):
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(area)
         self.ui.image_widget.setLayout(vertical_layout)
+
+        # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        # self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        # self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
+        # self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
 
     def init_widgets(self):
         table_column_size = self.table_columns_size
