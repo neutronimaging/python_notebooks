@@ -63,12 +63,6 @@ class Interface(QMainWindow):
         self.init_statusbar()
         self.slider_moved(slider_position=1)
 
-        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
-        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
-        self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
-        self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
-
-
     def init_statusbar(self):
         _width_labels = 40
         _height_labels = 30
@@ -153,14 +147,14 @@ class Interface(QMainWindow):
                 self.diff_value.setText("{:.03f}".format(_diff_value))
 
                 ### does not work !!!!!!
-                self.raw_hline.setPos(mouse_point.y())
-                self.raw_vline.setPos(mouse_point.x())
-
-                self.filtered_hline.setPos(mouse_point.y())
-                self.filtered_vline.setPos(mouse_point.x())
-
-                self.diff_hline.setPos(mouse_point.y())
-                self.diff_vline.setPos(mouse_point.x())
+                # self.raw_hline.setPos(mouse_point.y())
+                # self.raw_vline.setPos(mouse_point.x())
+                #
+                # self.filtered_hline.setPos(mouse_point.y())
+                # self.filtered_vline.setPos(mouse_point.x())
+                #
+                # self.diff_hline.setPos(mouse_point.y())
+                # self.diff_vline.setPos(mouse_point.x())
 
             else:
                 self.x_value.setText("N/A")
@@ -250,10 +244,67 @@ class Interface(QMainWindow):
             self.ui.file_index_slider.setMaximum(nbr_files)
 
     def slider_moved(self, slider_position):
+
         self.display_raw_image(file_index=slider_position-1)
         self.display_corrected_image(file_index=slider_position-1)
         self.calculate_and_display_diff_image(file_index=slider_position-1)
         self.ui.file_index_value.setText(str(slider_position))
+
+        self.reset_states()
+
+        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
+        self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
+
+    def display_raw_image(self, file_index):
+        _view = self.ui.raw_image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        self.state_of_raw = _state
+
+        first_update = False
+        if self.raw_histogram_level == []:
+            first_update = True
+        _histo_widget = self.ui.raw_image_view.getHistogramWidget()
+        self.raw_histogram_level = _histo_widget.getLevels()
+
+        o_norm = Normalization()
+        file_name = self.list_files[file_index]
+        o_norm.load(file=file_name, gamma_filter=False)
+        _image = o_norm.data['sample']['data'][0]
+
+        # self.ui.raw_image_view.clear()
+        _image = np.transpose(_image)
+        self.ui.raw_image_view.setImage(_image)
+
+        #_view_box.setState(_state)
+        self.live_raw_image = _image
+
+        self.raw_image_size = np.shape(_image)
+
+        if not first_update:
+            _histo_widget.setLevels(self.raw_histogram_level[0],
+                                    self.raw_histogram_level[1])
+
+    def reset_states(self):
+        _state = self.state_of_raw
+
+        # raw
+        _view = self.ui.raw_image_view.getView()
+        _view_box = _view.getViewBox()
+        _view_box.setState(_state)
+
+        # filtered
+        _view = self.ui.filtered_image_view.getView()
+        _view_box = _view.getViewBox()
+        _view_box.setState(_state)
+
+        # diff
+        _view = self.ui.diff_image_view.getView()
+        _view_box = _view.getViewBox()
+        _view_box.setState(_state)
 
     def calculate_and_display_diff_image(self, file_index=1):
         _view = self.ui.diff_image_view.getView()
@@ -268,7 +319,7 @@ class Interface(QMainWindow):
 
         _image = self.live_raw_image - self.live_filtered_image
 
-        self.ui.diff_image_view.clear()
+        #self.ui.diff_image_view.clear()
         self.ui.diff_image_view.setImage(_image)
         _view_box.setState(_state)
         self.live_diff_image = _image
@@ -293,7 +344,7 @@ class Interface(QMainWindow):
         o_norm.load(file=file_name, gamma_filter=True)
         _image = o_norm.data['sample']['data'][0]
 
-        self.ui.filtered_image_view.clear()
+        #self.ui.filtered_image_view.clear()
         _image = np.transpose(_image)
         self.ui.filtered_image_view.setImage(_image)
         _view_box.setState(_state)
@@ -303,37 +354,12 @@ class Interface(QMainWindow):
             _histo_widget.setLevels(self.filtered_histogram_level[0],
                                     self.filtered_histogram_level[1])
 
-    def display_raw_image(self, file_index):
-        _view = self.ui.raw_image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        first_update = False
-        if self.raw_histogram_level == []:
-            first_update = True
-        _histo_widget = self.ui.raw_image_view.getHistogramWidget()
-        self.raw_histogram_level = _histo_widget.getLevels()
-
-        o_norm = Normalization()
-        file_name = self.list_files[file_index]
-        o_norm.load(file=file_name, gamma_filter=False)
-        _image = o_norm.data['sample']['data'][0]
-
-        # self.ui.raw_image_view.clear()
-        _image = np.transpose(_image)
-        self.ui.raw_image_view.setImage(_image)
-        _view_box.setState(_state)
-        self.live_raw_image = _image
-
-        self.raw_image_size = np.shape(_image)
-
-        if not first_update:
-            _histo_widget.setLevels(self.raw_histogram_level[0],
-                                    self.raw_histogram_level[1])
 
     def apply_clicked(self):
-        # do stuff
-        self.close()
+        pass
+
+
+        # self.close()
 
     def cancel_clicked(self):
         self.close()
