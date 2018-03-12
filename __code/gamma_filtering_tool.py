@@ -3,6 +3,7 @@ from IPython.display import display
 import os
 import numpy as np
 import pyqtgraph as pg
+from pyqtgraph.dockarea import *
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -62,26 +63,34 @@ class Interface(QMainWindow):
 
     def init_pyqtgraph(self):
 
+        area = DockArea()
+        area.setVisible(True)
+        d1 = Dock("Raw", size=(200, 200))
+        d2 = Dock("Gamma Filtered", size=(200, 200))
+        d3 = Dock("Raw - Gamma", size=(200, 200))
+
+        area.addDock(d1, 'left')
+        area.addDock(d2, 'right', d1)
+        area.addDock(d3, 'right')
+
         self.ui.raw_image_view = pg.ImageView()
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
-        left_layout = QtGui.QHBoxLayout()
-        left_layout.addWidget(self.ui.raw_image_view)
-        self.ui.left_widget.setLayout(left_layout)
+        d1.addWidget(self.ui.raw_image_view)
 
         self.ui.filtered_image_view = pg.ImageView()
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
-        center_layout = QtGui.QHBoxLayout()
-        center_layout.addWidget(self.ui.filtered_image_view)
-        self.ui.center_widget.setLayout(center_layout)
+        d2.addWidget(self.ui.filtered_image_view)
 
         self.ui.diff_image_view = pg.ImageView()
         self.ui.diff_image_view.ui.roiBtn.hide()
         self.ui.diff_image_view.ui.menuBtn.hide()
-        right_layout = QtGui.QHBoxLayout()
-        right_layout.addWidget(self.ui.diff_image_view)
-        self.ui.right_widget.setLayout(right_layout)
+        d3.addWidget(self.ui.diff_image_view)
+
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(area)
+        self.ui.image_widget.setLayout(vertical_layout)
 
     def init_widgets(self):
         table_column_size = self.table_columns_size
