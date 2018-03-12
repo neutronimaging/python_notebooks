@@ -41,6 +41,9 @@ class Interface(QMainWindow):
 
     live_raw_image = []
     live_filtered_image = []
+    live_diff_image = []
+
+    raw_image_size = []
 
     def __init__(self, parent=None, list_of_files=None):
 
@@ -57,8 +60,50 @@ class Interface(QMainWindow):
         self.init_pyqtgraph()
         self.init_widgets()
         self.init_table()
-
+        self.init_statusbar()
         self.slider_moved(slider_position=1)
+
+    def init_statusbar(self):
+        _width_labels = 40
+        _height_labels = 30
+
+        # x0, y0, width and height of selection
+        _x_label = QtGui.QLabel("X:")
+        self.x_value = QtGui.QLabel("N/A")
+        self.x_value.setFixedSize(_width_labels, _height_labels)
+        _y_label = QtGui.QLabel("Y:")
+        self.y_value = QtGui.QLabel("N/A")
+        self.y_value.setFixedSize(_width_labels, _height_labels)
+        raw_label = QtGui.QLabel("  Counts Raw:")
+        self.raw_value = QtGui.QLabel("N/A")
+        self.raw_value.setFixedSize(_width_labels, _height_labels)
+        filtered_label = QtGui.QLabel("  Counts Filtered:")
+        self.filtered_value = QtGui.QLabel("N/A")
+        self.filtered_value.setFixedSize(_width_labels, _height_labels)
+        diff_label = QtGui.QLabel("  Counts Diff.:")
+        self.diff_value = QtGui.QLabel("N/A")
+        self.diff_value.setFixedSize(_width_labels, _height_labels)
+
+        hori_layout = QtGui.QHBoxLayout()
+        hori_layout.addWidget(_x_label)
+        hori_layout.addWidget(self.x_value)
+        hori_layout.addWidget(_y_label)
+        hori_layout.addWidget(self.y_value)
+        hori_layout.addWidget(raw_label)
+        hori_layout.addWidget(self.raw_value)
+        hori_layout.addWidget(filtered_label)
+        hori_layout.addWidget(self.filtered_value)
+        hori_layout.addWidget(diff_label)
+        hori_layout.addWidget(self.diff_value)
+
+        # spacer
+        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        hori_layout.addItem(spacerItem)
+
+        # add status bar in main ui
+        bottom_widget = QtGui.QWidget()
+        bottom_widget.setLayout(hori_layout)
+        self.ui.statusbar.addPermanentWidget(bottom_widget)
 
     def init_table(self):
         for _row, _file in enumerate(self.list_files):
@@ -68,8 +113,62 @@ class Interface(QMainWindow):
             _item = QtGui.QTableWidgetItem(_short_file)
             self.ui.tableWidget.setItem(_row, 0, _item)
 
+    def mouse_moved_in_any_image(self, evt, image='raw'):
+        pos = evt[0]
+
+        if image == 'raw':
+            image_view = self.ui.raw_image_view
+        elif image == 'filtered':
+            image_view = self.ui.filtered_image_view
+        else:
+            image_view = self.ui.diff_image_view
+
+        if image_view.view.sceneBoundingRect().contains(pos):
+
+            [height, width] = self.raw_image_size
+
+            #mouse_point = self.ui.raw_image_view.view.vb.mapSceneToView(pos)
+            mouse_point = image_view.view.getViewBox().mapSceneToView(pos)
+            mouse_x = int(mouse_point.x())
+            mouse_y = int(mouse_point.y())
+
+            if (mouse_x >= 0 and mouse_x < width) and \
+                    (mouse_y >= 0 and mouse_y < height):
+                self.x_value.setText(str(mouse_x))
+                self.y_value.setText(str(mouse_y))
+
+                _raw_value = self.live_raw_image[mouse_y, mouse_x]
+                _filtered_value = self.live_filtered_image[mouse_y, mouse_x]
+                _diff_value = _raw_value - _filtered_value
+
+                self.raw_value.setText("{:.03f}".format(_raw_value))
+                self.filtered_value.setText("{:.03f}".format(_filtered_value))
+                self.diff_value.setText("{:.03f}".format(_diff_value))
+
+                self.raw_hline.setPos(mouse_point.y())
+                self.raw_vline.setPos(mouse_point.x())
+
+                self.filtered_hline.setPos(mouse_point.y())
+                self.filtered_vline.setPos(mouse_point.x())
+
+                self.diff_hline.setPos(mouse_point.y())
+                self.diff_vline.setPos(mouse_point.x())
+
+            else:
+                self.x_value.setText("N/A")
+                self.y_value.setText("N/A")
+                self.raw_value.setText("N/A")
+                self.filtered_value.setText("N/A")
+                self.diff_value.setText("N/A")
+
     def mouse_moved_in_raw_image(self, evt):
-        print(evt)
+        self.mouse_moved_in_any_image(evt, image='raw')
+
+    def mouse_moved_in_filtered_image(self, evt):
+        self.mouse_moved_in_any_image(evt, image='filtered')
+
+    def mouse_moved_in_diff_image(self, evt):
+        self.mouse_moved_in_any_image(evt, image='diff')
 
     def init_pyqtgraph(self):
         area = DockArea()
@@ -86,11 +185,11 @@ class Interface(QMainWindow):
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
         self.ui.raw_image_view.view.setAutoVisible(y=True)
-        vLine = pg.InfiniteLine(angle=90, movable=False)
-        hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.ui.raw_image_view.addItem(vLine, ignoreBounds=False)
-        self.ui.raw_image_view.addItem(hLine, ignoreBounds=False)
-        self.proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
+        self.raw_vLine = pg.InfiniteLine(angle=90, movable=False)
+        self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
+        self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
+        self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
+        self.raw_proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_raw_image)
         d1.addWidget(self.ui.raw_image_view)
@@ -98,11 +197,25 @@ class Interface(QMainWindow):
         self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
+        self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
+        self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
+        self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
+        self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
+        self.filtered_proxy = pg.SignalProxy(self.ui.filtered_image_view.view.scene().sigMouseMoved,
+                                    rateLimit=60,
+                                    slot=self.mouse_moved_in_filtered_image)
         d2.addWidget(self.ui.filtered_image_view)
 
         self.ui.diff_image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.diff_image_view.ui.roiBtn.hide()
         self.ui.diff_image_view.ui.menuBtn.hide()
+        self.diff_vLine = pg.InfiniteLine(angle=90, movable=False)
+        self.diff_hLine = pg.InfiniteLine(angle=0, movable=False)
+        self.ui.diff_image_view.addItem(self.diff_vLine, ignoreBounds=True)
+        self.ui.diff_image_view.addItem(self.diff_hLine, ignoreBounds=True)
+        self.diff_proxy = pg.SignalProxy(self.ui.diff_image_view.view.scene().sigMouseMoved,
+                                    rateLimit=60,
+                                    slot=self.mouse_moved_in_diff_image)
         d3.addWidget(self.ui.diff_image_view)
 
         vertical_layout = QtGui.QVBoxLayout()
@@ -145,7 +258,7 @@ class Interface(QMainWindow):
         self.ui.diff_image_view.clear()
         self.ui.diff_image_view.setImage(_image)
         _view_box.setState(_state)
-        self.live_filtered_image = _image
+        self.live_diff_image = _image
 
         if not first_update:
             _histo_widget.setLevels(self.diff_filtered_histogram_level[0], self.diff_filtered_histogram_level[1])
@@ -167,6 +280,7 @@ class Interface(QMainWindow):
         _image = o_norm.data['sample']['data'][0]
 
         self.ui.filtered_image_view.clear()
+        _image = np.transpose(_image)
         self.ui.filtered_image_view.setImage(_image)
         _view_box.setState(_state)
         self.live_filtered_image = _image
@@ -191,19 +305,15 @@ class Interface(QMainWindow):
         _image = o_norm.data['sample']['data'][0]
 
         self.ui.raw_image_view.clear()
+        _image = np.transpose(_image)
         self.ui.raw_image_view.setImage(_image)
         _view_box.setState(_state)
         self.live_raw_image = _image
 
+        self.raw_image_size = np.shape(_image)
+
         if not first_update:
             _histo_widget.setLevels(self.raw_histogram_level[0], self.raw_histogram_level[1])
-
-    def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        self.eventProgress.setMinimumSize(20, 14)
-        self.eventProgress.setMaximumSize(540, 100)
-        self.eventProgress.setVisible(False)
-        self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
     def apply_clicked(self):
         # do stuff
