@@ -33,7 +33,7 @@ class Interface(QMainWindow):
 
     live_data = []
 
-    table_columns_size = [700, 100, 100]
+    table_columns_size = [800, 150, 150]
 
     raw_histogram_level = []
     filtered_histogram_level = []
@@ -68,6 +68,9 @@ class Interface(QMainWindow):
             _item = QtGui.QTableWidgetItem(_short_file)
             self.ui.tableWidget.setItem(_row, 0, _item)
 
+    def mouse_moved_in_raw_image(self, evt):
+        print(evt)
+
     def init_pyqtgraph(self):
         area = DockArea()
         area.setVisible(True)
@@ -82,6 +85,14 @@ class Interface(QMainWindow):
         self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
+        self.ui.raw_image_view.view.setAutoVisible(y=True)
+        vLine = pg.InfiniteLine(angle=90, movable=False)
+        hLine = pg.InfiniteLine(angle=0, movable=False)
+        self.ui.raw_image_view.addItem(vLine, ignoreBounds=False)
+        self.ui.raw_image_view.addItem(hLine, ignoreBounds=False)
+        self.proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
+                                    rateLimit=60,
+                                    slot=self.mouse_moved_in_raw_image)
         d1.addWidget(self.ui.raw_image_view)
 
         self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem())
@@ -113,7 +124,7 @@ class Interface(QMainWindow):
             self.ui.file_index_slider.setMaximum(nbr_files)
 
     def slider_moved(self, slider_position):
-        self.dispplay_raw_image(file_index=slider_position-1)
+        self.display_raw_image(file_index=slider_position-1)
         self.display_corrected_image(file_index=slider_position-1)
         self.calculate_and_display_diff_image(file_index=slider_position-1)
         self.ui.file_index_value.setText(str(slider_position))

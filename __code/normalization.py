@@ -285,19 +285,19 @@ class NormalizationHandler(object):
         
         # sample
         list_sample = self.files.sample
-        self.o_norm.load(file=list_sample, notebook=True)
+        self.o_norm.load(file=list_sample, notebook=True, gamma_filter=True)
         self.data.sample = self.o_norm.data['sample']['data']
         self.list_file_names = list_sample
 
         # ob
         list_ob = self.files.ob
-        self.o_norm.load(file=list_ob, data_type='ob', notebook=True)
+        self.o_norm.load(file=list_ob, data_type='ob', notebook=True, gamma_filter=True)
         self.data.ob = self.o_norm.data['ob']['data']
 
         # df
         list_df = self.files.df
         if list_df:
-            self.o_norm.load(file=list_df, data_type='df', notebook=True)
+            self.o_norm.load(file=list_df, data_type='df', notebook=True, gamma_filter=True)
             self.data.df = self.o_norm.data['df']['data']
 
 
