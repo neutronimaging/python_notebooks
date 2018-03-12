@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
+import pprint
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -61,7 +62,7 @@ class Interface(QMainWindow):
         self.init_widgets()
         self.init_table()
         self.init_statusbar()
-        self.slider_moved(slider_position=1)
+        self.slider_moved(slider_position=1, first_move=True)
 
     def init_statusbar(self):
         _width_labels = 40
@@ -243,19 +244,24 @@ class Interface(QMainWindow):
             self.ui.file_index_slider.setMinimum(1)
             self.ui.file_index_slider.setMaximum(nbr_files)
 
-    def slider_moved(self, slider_position):
+    def slider_moved(self, slider_position, first_move=False):
 
         self.display_raw_image(file_index=slider_position-1)
         self.display_corrected_image(file_index=slider_position-1)
         self.calculate_and_display_diff_image(file_index=slider_position-1)
         self.ui.file_index_value.setText(str(slider_position))
 
-        self.reset_states()
+        self.reset_states(first_move=first_move)
 
-        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
-        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
         self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
         self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
+        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+
+        # if first_move:
+        #     _view = self.ui.raw_image_view.getView()
+        #     _view_box = _view.getViewBox()
+        #     _view_box.autoRange(items=[self.ui.raw_image_view])
 
     def display_raw_image(self, file_index):
         _view = self.ui.raw_image_view.getView()
@@ -288,8 +294,13 @@ class Interface(QMainWindow):
             _histo_widget.setLevels(self.raw_histogram_level[0],
                                     self.raw_histogram_level[1])
 
-    def reset_states(self):
+    def reset_states(self, first_move=False):
         _state = self.state_of_raw
+        # raw_image_size = self.raw_image_size
+        # # _state['targetRange'] = [[-270, raw_image_size[1]+270],
+        # #                          [-350, raw_image_size[]+350]]
+        # # _state['viewRange'] = [[-270, raw_image_size[0] + 270],
+        # #                       [-350, raw_image_size[1] + 350]]
 
         # raw
         _view = self.ui.raw_image_view.getView()
@@ -356,9 +367,12 @@ class Interface(QMainWindow):
 
 
     def apply_clicked(self):
+        _view = self.ui.raw_image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+        pprint.pprint(_state)
+
         pass
-
-
         # self.close()
 
     def cancel_clicked(self):
