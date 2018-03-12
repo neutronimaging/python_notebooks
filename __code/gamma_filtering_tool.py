@@ -97,7 +97,8 @@ class Interface(QMainWindow):
         hori_layout.addWidget(self.diff_value)
 
         # spacer
-        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding,
+                                       QtGui.QSizePolicy.Expanding)
         hori_layout.addItem(spacerItem)
 
         # add status bar in main ui
@@ -145,6 +146,7 @@ class Interface(QMainWindow):
                 self.filtered_value.setText("{:.03f}".format(_filtered_value))
                 self.diff_value.setText("{:.03f}".format(_diff_value))
 
+                ### does not work !!!!!!
                 self.raw_hline.setPos(mouse_point.y())
                 self.raw_vline.setPos(mouse_point.x())
 
@@ -185,10 +187,10 @@ class Interface(QMainWindow):
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
         self.ui.raw_image_view.view.setAutoVisible(y=True)
-        self.raw_vLine = pg.InfiniteLine(angle=90, movable=False)
-        self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
-        self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
+        # self.raw_vLine = pg.InfiniteLine(angle=90, movable=False)
+        # self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
+        # self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
+        # self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
         self.raw_proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_raw_image)
@@ -197,10 +199,10 @@ class Interface(QMainWindow):
         self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
-        self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
-        self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
-        self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
+        # self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
+        # self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
+        # self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
+        # self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
         self.filtered_proxy = pg.SignalProxy(self.ui.filtered_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_filtered_image)
@@ -209,10 +211,10 @@ class Interface(QMainWindow):
         self.ui.diff_image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.diff_image_view.ui.roiBtn.hide()
         self.ui.diff_image_view.ui.menuBtn.hide()
-        self.diff_vLine = pg.InfiniteLine(angle=90, movable=False)
-        self.diff_hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.ui.diff_image_view.addItem(self.diff_vLine, ignoreBounds=True)
-        self.ui.diff_image_view.addItem(self.diff_hLine, ignoreBounds=True)
+        # self.diff_vLine = pg.InfiniteLine(angle=90, movable=False)
+        # self.diff_hLine = pg.InfiniteLine(angle=0, movable=False)
+        # self.ui.diff_image_view.addItem(self.diff_vLine, ignoreBounds=True)
+        # self.ui.diff_image_view.addItem(self.diff_hLine, ignoreBounds=True)
         self.diff_proxy = pg.SignalProxy(self.ui.diff_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_diff_image)
@@ -261,7 +263,8 @@ class Interface(QMainWindow):
         self.live_diff_image = _image
 
         if not first_update:
-            _histo_widget.setLevels(self.diff_filtered_histogram_level[0], self.diff_filtered_histogram_level[1])
+            _histo_widget.setLevels(self.diff_filtered_histogram_level[0],
+                                    self.diff_filtered_histogram_level[1])
 
     def display_corrected_image(self, file_index=0):
         _view = self.ui.filtered_image_view.getView()
@@ -286,7 +289,8 @@ class Interface(QMainWindow):
         self.live_filtered_image = _image
 
         if not first_update:
-            _histo_widget.setLevels(self.filtered_histogram_level[0], self.filtered_histogram_level[1])
+            _histo_widget.setLevels(self.filtered_histogram_level[0],
+                                    self.filtered_histogram_level[1])
 
     def display_raw_image(self, file_index):
         _view = self.ui.raw_image_view.getView()
@@ -304,7 +308,7 @@ class Interface(QMainWindow):
         o_norm.load(file=file_name, gamma_filter=False)
         _image = o_norm.data['sample']['data'][0]
 
-        self.ui.raw_image_view.clear()
+        # self.ui.raw_image_view.clear()
         _image = np.transpose(_image)
         self.ui.raw_image_view.setImage(_image)
         _view_box.setState(_state)
@@ -313,7 +317,8 @@ class Interface(QMainWindow):
         self.raw_image_size = np.shape(_image)
 
         if not first_update:
-            _histo_widget.setLevels(self.raw_histogram_level[0], self.raw_histogram_level[1])
+            _histo_widget.setLevels(self.raw_histogram_level[0],
+                                    self.raw_histogram_level[1])
 
     def apply_clicked(self):
         # do stuff
