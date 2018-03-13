@@ -183,20 +183,14 @@ class Interface(QMainWindow):
 
                 _raw_value = self.live_raw_image[mouse_x, mouse_y]
                 _filtered_value = self.live_filtered_image[mouse_x, mouse_y]
-                _diff_value = _raw_value - _filtered_value
 
                 self.raw_value.setText("{:.03f}".format(_raw_value))
                 self.filtered_value.setText("{:.03f}".format(_filtered_value))
 
-                ### does not work !!!!!!
-                # self.raw_hline.setPos(mouse_point.y())
-                # self.raw_vline.setPos(mouse_point.x())
-                #
-                # self.filtered_hline.setPos(mouse_point.y())
-                # self.filtered_vline.setPos(mouse_point.x())
-                #
-                # self.diff_hline.setPos(mouse_point.y())
-                # self.diff_vline.setPos(mouse_point.x())
+                self.raw_hLine.setPos(mouse_point.y())
+                self.raw_vLine.setPos(mouse_point.x())
+                self.filtered_hLine.setPos(mouse_point.y())
+                self.filtered_vLine.setPos(mouse_point.x())
 
             else:
                 self.x_value.setText("N/A")
@@ -230,10 +224,10 @@ class Interface(QMainWindow):
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
         self.ui.raw_image_view.view.setAutoVisible(y=True)
-        # self.raw_vLine = pg.InfiniteLine(angle=90, movable=False)
-        # self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
-        # self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
-        # self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
+        self.raw_vLine = pg.InfiniteLine(angle=90, movable=False)
+        self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
+        self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
+        self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
         self.raw_proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_raw_image)
@@ -242,10 +236,10 @@ class Interface(QMainWindow):
         self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name='filtered_image')
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
-        # self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
-        # self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
-        # self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
-        # self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
+        self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
+        self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
+        self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
+        self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
         self.filtered_proxy = pg.SignalProxy(self.ui.filtered_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_filtered_image)
