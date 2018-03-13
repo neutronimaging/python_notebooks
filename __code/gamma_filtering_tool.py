@@ -296,7 +296,6 @@ class Interface(QMainWindow):
         o_norm.load(file=file_name, gamma_filter=False)
         _image = o_norm.data['sample']['data'][0]
 
-        # self.ui.raw_image_view.clear()
         _image = np.transpose(_image)
         self.ui.raw_image_view.setImage(_image)
 
