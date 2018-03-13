@@ -34,7 +34,7 @@ class Interface(QMainWindow):
 
     live_data = []
 
-    table_columns_size = [800, 150, 150]
+    table_columns_size = [600, 150, 150]
 
     raw_histogram_level = []
     filtered_histogram_level = []
@@ -56,13 +56,13 @@ class Interface(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
-        # self.init_statusbar()
 
         self.init_pyqtgraph()
         self.init_widgets()
         self.init_table()
         self.init_statusbar()
         self.slider_moved(slider_position=1, first_move=True)
+        self.fill_table()
 
     def init_statusbar(self):
         _width_labels = 40
@@ -81,9 +81,6 @@ class Interface(QMainWindow):
         filtered_label = QtGui.QLabel("  Counts Filtered:")
         self.filtered_value = QtGui.QLabel("N/A")
         self.filtered_value.setFixedSize(_width_labels, _height_labels)
-        diff_label = QtGui.QLabel("  Counts Diff.:")
-        self.diff_value = QtGui.QLabel("N/A")
-        self.diff_value.setFixedSize(_width_labels, _height_labels)
 
         hori_layout = QtGui.QHBoxLayout()
         hori_layout.addWidget(_x_label)
@@ -94,8 +91,6 @@ class Interface(QMainWindow):
         hori_layout.addWidget(self.raw_value)
         hori_layout.addWidget(filtered_label)
         hori_layout.addWidget(self.filtered_value)
-        hori_layout.addWidget(diff_label)
-        hori_layout.addWidget(self.diff_value)
 
         # spacer
         spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding,
@@ -114,6 +109,34 @@ class Interface(QMainWindow):
             _short_file = os.path.basename(_file)
             _item = QtGui.QTableWidgetItem(_short_file)
             self.ui.tableWidget.setItem(_row, 0, _item)
+
+    def fill_table(self):
+
+        raw_image_size = self.raw_image_size
+        total_nbr_pixels = raw_image_size[0] * raw_image_size[1]
+
+        for _row, _file in enumerate(self.list_files):
+
+            o_norm = Normalization()
+            o_norm.load(file=_file)
+            _raw_data = o_norm.data['sample']['data']
+            nbr_pixel_corrected = self.get_number_pixel_gamma_corrected(data=_raw_data)
+
+            # number of pixel corrected
+            _item = QtGui.QTableWidgetItem("{}/{}".format(nbr_pixel_corrected, total_nbr_pixels))
+            self.ui.tableWidget.setItem(_row, 1, _item)
+
+            # percentage of pixel corrected
+            _item = QtGui.QTableWidgetItem("{:.02f}%".format(nbr_pixel_corrected*100/total_nbr_pixels))
+            self.ui.tableWidget.setItem(_row, 2, _item)
+
+    def get_number_pixel_gamma_corrected(self, data=[]):
+
+        filtering_coefficient = self.ui.filtering_coefficient_value.value()
+        mean_counts = np.mean(data)
+        _data = np.copy(data)
+        gamma_indexes = np.where(filtering_coefficient * _data > mean_counts)
+        return len(gamma_indexes[0])
 
     def mouse_moved_in_any_image(self, evt, image='raw'):
         pos = evt[0]
@@ -145,7 +168,6 @@ class Interface(QMainWindow):
 
                 self.raw_value.setText("{:.03f}".format(_raw_value))
                 self.filtered_value.setText("{:.03f}".format(_filtered_value))
-                self.diff_value.setText("{:.03f}".format(_diff_value))
 
                 ### does not work !!!!!!
                 # self.raw_hline.setPos(mouse_point.y())
@@ -162,16 +184,12 @@ class Interface(QMainWindow):
                 self.y_value.setText("N/A")
                 self.raw_value.setText("N/A")
                 self.filtered_value.setText("N/A")
-                self.diff_value.setText("N/A")
 
     def mouse_moved_in_raw_image(self, evt):
         self.mouse_moved_in_any_image(evt, image='raw')
 
     def mouse_moved_in_filtered_image(self, evt):
         self.mouse_moved_in_any_image(evt, image='filtered')
-
-    def mouse_moved_in_diff_image(self, evt):
-        self.mouse_moved_in_any_image(evt, image='diff')
 
     def init_pyqtgraph(self):
         area = DockArea()
@@ -209,26 +227,12 @@ class Interface(QMainWindow):
                                     slot=self.mouse_moved_in_filtered_image)
         d2.addWidget(self.ui.filtered_image_view)
 
-        # self.ui.diff_image_view = pg.ImageView(view=pg.PlotItem(), name='diff_image')
-        # self.ui.diff_image_view.ui.roiBtn.hide()
-        # self.ui.diff_image_view.ui.menuBtn.hide()
-        # # self.diff_vLine = pg.InfiniteLine(angle=90, movable=False)
-        # # self.diff_hLine = pg.InfiniteLine(angle=0, movable=False)
-        # # self.ui.diff_image_view.addItem(self.diff_vLine, ignoreBounds=True)
-        # # self.ui.diff_image_view.addItem(self.diff_hLine, ignoreBounds=True)
-        # self.diff_proxy = pg.SignalProxy(self.ui.diff_image_view.view.scene().sigMouseMoved,
-        #                             rateLimit=60,
-        #                             slot=self.mouse_moved_in_diff_image)
-        # d3.addWidget(self.ui.diff_image_view)
-        #
-        # vertical_layout = QtGui.QVBoxLayout()
-        # vertical_layout.addWidget(area)
-        # self.ui.image_widget.setLayout(vertical_layout)
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(area)
+        self.ui.image_widget.setLayout(vertical_layout)
 
-        # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
-        # self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
-        # self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
-        # self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
+        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
 
     def init_widgets(self):
         table_column_size = self.table_columns_size
@@ -250,23 +254,14 @@ class Interface(QMainWindow):
         pass
 
     def slider_moved(self, slider_position, first_move=False):
-
         self.display_raw_image(file_index=slider_position-1)
         self.display_corrected_image(file_index=slider_position-1)
         # self.calculate_and_display_diff_image(file_index=slider_position-1)
         self.ui.file_index_value.setText(str(slider_position))
 
-        self.reset_states(first_move=first_move)
+        self.reset_states()
 
-        # self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
-        # self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
-        # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
         self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
-
-        # if first_move:
-        #     _view = self.ui.raw_image_view.getView()
-        #     _view_box = _view.getViewBox()
-        #     _view_box.autoRange(items=[self.ui.raw_image_view])
 
     def display_raw_image(self, file_index):
         _view = self.ui.raw_image_view.getView()
@@ -290,7 +285,6 @@ class Interface(QMainWindow):
         _image = np.transpose(_image)
         self.ui.raw_image_view.setImage(_image)
 
-        #_view_box.setState(_state)
         self.live_raw_image = _image
 
         self.raw_image_size = np.shape(_image)
@@ -299,13 +293,8 @@ class Interface(QMainWindow):
             _histo_widget.setLevels(self.raw_histogram_level[0],
                                     self.raw_histogram_level[1])
 
-    def reset_states(self, first_move=False):
+    def reset_states(self):
         _state = self.state_of_raw
-        # raw_image_size = self.raw_image_size
-        # # _state['targetRange'] = [[-270, raw_image_size[1]+270],
-        # #                          [-350, raw_image_size[]+350]]
-        # # _state['viewRange'] = [[-270, raw_image_size[0] + 270],
-        # #                       [-350, raw_image_size[1] + 350]]
 
         # raw
         _view = self.ui.raw_image_view.getView()
@@ -316,11 +305,6 @@ class Interface(QMainWindow):
         _view = self.ui.filtered_image_view.getView()
         _view_box = _view.getViewBox()
         _view_box.setState(_state)
-
-        # # diff
-        # _view = self.ui.diff_image_view.getView()
-        # _view_box = _view.getViewBox()
-        # _view_box.setState(_state)
 
     def calculate_and_display_diff_image(self, file_index=1):
         _view = self.ui.diff_image_view.getView()
@@ -370,15 +354,8 @@ class Interface(QMainWindow):
             _histo_widget.setLevels(self.filtered_histogram_level[0],
                                     self.filtered_histogram_level[1])
 
-
     def apply_clicked(self):
-        _view = self.ui.raw_image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-        pprint.pprint(_state)
-
-        pass
-        # self.close()
+        self.close()
 
     def cancel_clicked(self):
         self.close()
