@@ -79,28 +79,51 @@
              </spacer>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>Filtering Coefficient</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="filtering_coefficient_value">
-                <property name="maximum">
-                 <double>1.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.010000000000000</double>
-                </property>
-                <property name="value">
-                 <double>0.100000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QLabel" name="label_3">
+              <property name="minimumSize">
+               <size>
+                <width>120</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>120</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filtering Coefficient</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="filtering_coefficient_value">
+              <property name="minimumSize">
+               <size>
+                <width>40</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>40</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>40</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>0.1</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -247,7 +270,7 @@
   </connection>
   <connection>
    <sender>file_index_slider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>slider_moved()</slot>
    <hints>
@@ -258,6 +281,22 @@
     <hint type="destinationlabel">
      <x>467</x>
      <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filtering_coefficient_value</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>filtering_coefficient_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>893</x>
+     <y>454</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>752</x>
+     <y>697</y>
     </hint>
    </hints>
   </connection>
@@ -272,5 +311,6 @@
   <slot>grid_size_changed()</slot>
   <slot>slider_moved()</slot>
   <slot>slider_clicked()</slot>
+  <slot>filtering_coefficient_changed()</slot>
  </slots>
 </ui>

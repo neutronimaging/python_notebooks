@@ -19,6 +19,7 @@ from NeuNorm.normalization import Normalization
 
 from __code.ui_gamma_filtering_tool  import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
+from __code.decorators import wait_cursor
 
 
 class InterfaceHandler(FileFolderBrowser):
@@ -33,6 +34,7 @@ class InterfaceHandler(FileFolderBrowser):
 class Interface(QMainWindow):
 
     live_data = []
+    default_filtering_coefficient_value = 0.1
 
     table_columns_size = [600, 150, 150]
 
@@ -61,7 +63,7 @@ class Interface(QMainWindow):
         self.init_widgets()
         self.init_table()
         self.init_statusbar()
-        self.slider_moved(slider_position=1, first_move=True)
+        self.slider_moved()
         self.fill_table()
 
     def init_statusbar(self):
@@ -110,15 +112,33 @@ class Interface(QMainWindow):
             _item = QtGui.QTableWidgetItem(_short_file)
             self.ui.tableWidget.setItem(_row, 0, _item)
 
-    def fill_table(self):
+    def __get_filtering_coefficient_value(self):
+        """retrieve the gamma filtered value and make sure it's a float number and
+        it stays between 0 and 1"""
+        value = self.ui.filtering_coefficient_value.text()
+        try:
+            float_value = np.float(value)
+        except:
+            self.ui.filtering_coefficient_value.setText(str(self.default_filtering_coefficient_value))
+            return self.default_filtering_coefficient_value
 
+        if float_value < 0:
+            float_value = 0
+            self.ui.filtering_coefficient_value.setText(str(float_value))
+        elif float_value > 1:
+            float_value = 1
+            self.ui.filtering_coefficient_value.setText(str(float_value))
+
+        return float_value
+
+    def fill_table(self):
         raw_image_size = self.raw_image_size
         total_nbr_pixels = raw_image_size[0] * raw_image_size[1]
 
         for _row, _file in enumerate(self.list_files):
 
             o_norm = Normalization()
-            o_norm.load(file=_file)
+            o_norm.load(file=_file, gamma_filter=True, threshold=self.__get_filtering_coefficient_value())
             _raw_data = o_norm.data['sample']['data']
             nbr_pixel_corrected = self.get_number_pixel_gamma_corrected(data=_raw_data)
 
@@ -131,8 +151,7 @@ class Interface(QMainWindow):
             self.ui.tableWidget.setItem(_row, 2, _item)
 
     def get_number_pixel_gamma_corrected(self, data=[]):
-
-        filtering_coefficient = self.ui.filtering_coefficient_value.value()
+        filtering_coefficient = self.__get_filtering_coefficient_value()
         mean_counts = np.mean(data)
         _data = np.copy(data)
         gamma_indexes = np.where(filtering_coefficient * _data > mean_counts)
@@ -184,6 +203,11 @@ class Interface(QMainWindow):
                 self.y_value.setText("N/A")
                 self.raw_value.setText("N/A")
                 self.filtered_value.setText("N/A")
+
+    @wait_cursor
+    def filtering_coefficient_changed(self):
+        self.fill_table()
+        self.slider_moved()
 
     def mouse_moved_in_raw_image(self, evt):
         self.mouse_moved_in_any_image(evt, image='raw')
@@ -249,19 +273,16 @@ class Interface(QMainWindow):
             self.ui.file_index_slider.setMaximum(nbr_files)
 
     def slider_clicked(self):
-        slider_position = self.ui.file_index_slider.value()
-        self.slider_moved(slider_position)
-        pass
+        self.slider_moved()
 
-    def slider_moved(self, slider_position, first_move=False):
+    def slider_moved(self):
+        slider_position = self.ui.file_index_slider.value()
         self.display_raw_image(file_index=slider_position-1)
         self.display_corrected_image(file_index=slider_position-1)
-        # self.calculate_and_display_diff_image(file_index=slider_position-1)
         self.ui.file_index_value.setText(str(slider_position))
-
         self.reset_states()
-
         self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
 
     def display_raw_image(self, file_index):
         _view = self.ui.raw_image_view.getView()
@@ -306,28 +327,6 @@ class Interface(QMainWindow):
         _view_box = _view.getViewBox()
         _view_box.setState(_state)
 
-    def calculate_and_display_diff_image(self, file_index=1):
-        _view = self.ui.diff_image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        first_update = False
-        if self.diff_filtered_histogram_level == []:
-            first_update = True
-        _histo_widget = self.ui.diff_image_view.getHistogramWidget()
-        self.diff_filtered_histogram_level = _histo_widget.getLevels()
-
-        _image = self.live_raw_image - self.live_filtered_image
-
-        #self.ui.diff_image_view.clear()
-        self.ui.diff_image_view.setImage(_image)
-        _view_box.setState(_state)
-        self.live_diff_image = _image
-
-        if not first_update:
-            _histo_widget.setLevels(self.diff_filtered_histogram_level[0],
-                                    self.diff_filtered_histogram_level[1])
-
     def display_corrected_image(self, file_index=0):
         _view = self.ui.filtered_image_view.getView()
         _view_box = _view.getViewBox()
@@ -341,7 +340,7 @@ class Interface(QMainWindow):
 
         o_norm = Normalization()
         file_name = self.list_files[file_index]
-        o_norm.load(file=file_name, gamma_filter=True)
+        o_norm.load(file=file_name, gamma_filter=True, threshold=self.__get_filtering_coefficient_value())
         _image = o_norm.data['sample']['data'][0]
 
         #self.ui.filtered_image_view.clear()

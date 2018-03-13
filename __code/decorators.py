@@ -1,5 +1,13 @@
 import os
 
+try:
+    from PyQt4.QtGui import QApplication
+    from PyQt4 import QtCore
+except ImportError:
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5 import QtCore
+
+
 def format_directory(function):
     '''
     This decorator will make sure the directory format is correct for the right
@@ -18,4 +26,16 @@ def format_directory(function):
         return function(dir=dir, **kwargs)
                 
     return new_function
-        
+
+
+def wait_cursor(function):
+    """
+    Add a wait cursor during the running of the function
+    """
+
+    def wrapper(*args, **kwargs):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        function(*args, **kwargs)
+        QApplication.restoreOverrideCursor()
+
+    return wrapper
