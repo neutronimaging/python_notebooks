@@ -178,11 +178,11 @@ class Interface(QMainWindow):
         area.setVisible(True)
         d1 = Dock("Raw", size=(200, 200))
         d2 = Dock("Gamma Filtered", size=(200, 200))
-        d3 = Dock("Raw - Gamma", size=(200, 200))
+        # d3 = Dock("Raw - Gamma", size=(200, 200))
 
         area.addDock(d1, 'left')
         area.addDock(d2, 'right', d1)
-        area.addDock(d3, 'right')
+        # area.addDock(d3, 'right')
 
         self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
         self.ui.raw_image_view.ui.roiBtn.hide()
@@ -209,21 +209,21 @@ class Interface(QMainWindow):
                                     slot=self.mouse_moved_in_filtered_image)
         d2.addWidget(self.ui.filtered_image_view)
 
-        self.ui.diff_image_view = pg.ImageView(view=pg.PlotItem(), name='diff_image')
-        self.ui.diff_image_view.ui.roiBtn.hide()
-        self.ui.diff_image_view.ui.menuBtn.hide()
-        # self.diff_vLine = pg.InfiniteLine(angle=90, movable=False)
-        # self.diff_hLine = pg.InfiniteLine(angle=0, movable=False)
-        # self.ui.diff_image_view.addItem(self.diff_vLine, ignoreBounds=True)
-        # self.ui.diff_image_view.addItem(self.diff_hLine, ignoreBounds=True)
-        self.diff_proxy = pg.SignalProxy(self.ui.diff_image_view.view.scene().sigMouseMoved,
-                                    rateLimit=60,
-                                    slot=self.mouse_moved_in_diff_image)
-        d3.addWidget(self.ui.diff_image_view)
-
-        vertical_layout = QtGui.QVBoxLayout()
-        vertical_layout.addWidget(area)
-        self.ui.image_widget.setLayout(vertical_layout)
+        # self.ui.diff_image_view = pg.ImageView(view=pg.PlotItem(), name='diff_image')
+        # self.ui.diff_image_view.ui.roiBtn.hide()
+        # self.ui.diff_image_view.ui.menuBtn.hide()
+        # # self.diff_vLine = pg.InfiniteLine(angle=90, movable=False)
+        # # self.diff_hLine = pg.InfiniteLine(angle=0, movable=False)
+        # # self.ui.diff_image_view.addItem(self.diff_vLine, ignoreBounds=True)
+        # # self.ui.diff_image_view.addItem(self.diff_hLine, ignoreBounds=True)
+        # self.diff_proxy = pg.SignalProxy(self.ui.diff_image_view.view.scene().sigMouseMoved,
+        #                             rateLimit=60,
+        #                             slot=self.mouse_moved_in_diff_image)
+        # d3.addWidget(self.ui.diff_image_view)
+        #
+        # vertical_layout = QtGui.QVBoxLayout()
+        # vertical_layout.addWidget(area)
+        # self.ui.image_widget.setLayout(vertical_layout)
 
         # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
         # self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
@@ -244,18 +244,23 @@ class Interface(QMainWindow):
             self.ui.file_index_slider.setMinimum(1)
             self.ui.file_index_slider.setMaximum(nbr_files)
 
+    def slider_clicked(self):
+        slider_position = self.ui.file_index_slider.value()
+        self.slider_moved(slider_position)
+        pass
+
     def slider_moved(self, slider_position, first_move=False):
 
         self.display_raw_image(file_index=slider_position-1)
         self.display_corrected_image(file_index=slider_position-1)
-        self.calculate_and_display_diff_image(file_index=slider_position-1)
+        # self.calculate_and_display_diff_image(file_index=slider_position-1)
         self.ui.file_index_value.setText(str(slider_position))
 
         self.reset_states(first_move=first_move)
 
-        self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
-        self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
-        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        # self.ui.filtered_image_view.view.getViewBox().setXLink('diff_image')
+        # self.ui.filtered_image_view.view.getViewBox().setYLink('diff_image')
+        # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
         self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
 
         # if first_move:
@@ -312,10 +317,10 @@ class Interface(QMainWindow):
         _view_box = _view.getViewBox()
         _view_box.setState(_state)
 
-        # diff
-        _view = self.ui.diff_image_view.getView()
-        _view_box = _view.getViewBox()
-        _view_box.setState(_state)
+        # # diff
+        # _view = self.ui.diff_image_view.getView()
+        # _view_box = _view.getViewBox()
+        # _view_box.setState(_state)
 
     def calculate_and_display_diff_image(self, file_index=1):
         _view = self.ui.diff_image_view.getView()

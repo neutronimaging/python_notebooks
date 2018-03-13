@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1413</width>
-    <height>727</height>
+    <width>936</width>
+    <height>722</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
         </size>
        </property>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -188,7 +188,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1413</width>
+     <width>936</width>
      <height>22</height>
     </rect>
    </property>
@@ -204,8 +204,8 @@
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>71</x>
-     <y>689</y>
+     <x>72</x>
+     <y>688</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -220,12 +220,28 @@
    <slot>apply_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>923</x>
-     <y>689</y>
+     <x>922</x>
+     <y>688</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
      <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_index_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slider_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>146</x>
+     <y>695</y>
     </hint>
    </hints>
   </connection>
@@ -236,12 +252,12 @@
    <slot>slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>268</x>
-     <y>332</y>
+     <x>215</x>
+     <y>456</y>
     </hint>
     <hint type="destinationlabel">
-     <x>344</x>
-     <y>679</y>
+     <x>467</x>
+     <y>360</y>
     </hint>
    </hints>
   </connection>
@@ -255,5 +271,6 @@
   <slot>guide_color_changed()</slot>
   <slot>grid_size_changed()</slot>
   <slot>slider_moved()</slot>
+  <slot>slider_clicked()</slot>
  </slots>
 </ui>
