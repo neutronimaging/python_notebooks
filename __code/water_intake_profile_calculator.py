@@ -72,6 +72,10 @@ class WaterIntakeHandler(object):
         else:
             self.calculate_using_erf()
 
+    @staticmethod
+    def fitting_function(x, c, w, m, n):
+        return ((m-n)/2.) * erf((x-c)/w) + (m+n)/2.
+
     def calculate_using_erf(self):
         _dict_profiles = self.dict_profiles
         nbr_files = len(_dict_profiles.keys())
@@ -84,28 +88,31 @@ class WaterIntakeHandler(object):
             _end_file = nbr_files
 
         dict_error_function_parameters = dict()
-
+        water_intake_peaks_erf = []
         for _index_file in np.arange(_start_file, _end_file):
             _profile = _dict_profiles[str(_index_file)]
             ydata = _profile['data']
             xdata = _profile['delta_time']
 
-            popt = self.fitting_algorithm(xdata, ydata)
+            popt = self.fitting_algorithm(ydata)
 
             _local_dict = {'c': popt[0],
                            'w': popt[1],
                            'm': popt[2],
                            'n': popt[3]}
 
+            _peak = popt[0] + (popt[1]/np.sqrt(2))
+            water_intake_peaks_erf.append(_peak)
+
             dict_error_function_parameters[str(_index_file)] = _local_dict
 
+        self.water_intake_peaks_erf = water_intake_peaks_erf
         self.dict_error_function_parameters = dict_error_function_parameters
 
-    def fitting_function(self, x, c, w, m, n):
-        return ((m-n)/2.) * erf((x-c)/w) + (m+n)/2.
 
-    def fitting_algorithm(self, xdata, ydata):
-        popt, _ = curve_fit(self.fitting_function, xdata, ydata, maxfev=3000)
+    def fitting_algorithm(self, ydata):
+        fitting_xdata = np.arange(len(ydata))
+        popt, _ = curve_fit(self.fitting_function, fitting_xdata, ydata, maxfev=3000)
         return popt
 
     def calculate_using_sliding_average(self):
@@ -168,6 +175,8 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     # state of the image
     image_view_state = {}
+
+    algorithm_selected = 'sliding_average'
 
     def __init__(self, parent=None, dict_data={}):
 
@@ -430,9 +439,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_water_intake_plot()
         self.update_profile_plot_water_intake_peak()
 
-    def update_plots(self, algorithm_selected='sliding_average'):
+    def update_plots(self):
         self.update_profile_plot()
-        self.update_water_intake_plot(algorithm_selected=algorithm_selected)
+        self.update_water_intake_plot()
         self.update_profile_plot_water_intake_peak()
 
     def update_profile_plot(self):
@@ -460,6 +469,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.profile.clear()
 
         x_axis = np.arange(len(_profile)) + np.int(y0)
+        self.live_x_axis = x_axis
         self.profile.plot(x_axis, _profile)
         self.profile.setLabel('left', 'Counts')
         self.profile.setLabel('bottom', y_axis_label)
@@ -473,9 +483,20 @@ class WaterIntakeProfileSelector(QMainWindow):
             return 'median'
         return ''
 
-    def update_water_intake_plot(self, algorithm_selected='sliding_average'):
+    def get_algorithm_selected(self):
+        if self.ui.sliding_average_checkBox.isChecked():
+            return 'sliding_average'
+        elif self.ui.error_function_checkBox.isChecked():
+            return 'error_function'
+        else:
+            raise ValueError("algorithm not implemented yet!")
+
+    def update_water_intake_plot(self):
         # hourglass cursor
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+
+        algorithm_selected = self.get_algorithm_selected()
+
         self.calculate_all_profiles()
 
         o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles,
@@ -486,9 +507,12 @@ class WaterIntakeProfileSelector(QMainWindow):
         if algorithm_selected == 'sliding_average':
             peak = o_water_intake_handler.water_intake_peak_sliding_average
             self.water_intake_peaks_sliding_average = peak
-        else:
+        elif algorithm_selected == 'error_function':
             peak = o_water_intake_handler.water_intake_peak_erf
             self.water_intake_peaks_erf = peak
+            self.dict_error_function_parameters = o_water_intake_handler.dict_error_function_parameters
+        else:
+            raise NotImplementedError("Algorithm not implemented yet!")
 
         # peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
 
@@ -528,6 +552,22 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.profile_vline = pg.InfiniteLine(angle=90, movable=False,
                                              pos=_water_intake_peaks[index_selected] + np.int(self.roi['y0']))
         self.profile.addItem(self.profile_vline, ignoreBounds=True)
+
+
+        # display fitting function for error function
+        if self.get_algorithm_selected() == 'error_function':
+            dict_error_function_parameters = self.dict_error_function_parameters
+            _fit_parameters = dict_error_function_parameters[str(index_selected+1)]
+
+            xdata = self.live_x_axis
+            fitting_xdata = np.arange(len(xdata))
+            ydata = WaterIntakeHandler.fitting_function(fitting_xdata,
+                                                        _fit_parameters['c'],
+                                                        _fit_parameters['w'],
+                                                        _fit_parameters['m'],
+                                                        _fit_parameters['m'])
+
+            self.profile.plot(xdata, ydata, 'r')
 
     def calculate_all_profiles(self):
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
@@ -946,13 +986,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.dict_data_raw['list_time_stamp_user_format'] = new_list_time_stamp_user_format.copy()
 
     def algorithm_changed(self):
-        if self.ui.sliding_average_checkBox.isChecked():
-            # using default algorithm
-            self.algorithm_selected = 'sliding_average'
-        else:
-            # Victoria's algorithm using error function
-            self.algorithm_selected = 'error_function'
-        self.update_plots(algorithm_selected=self.algorithm_selected)
+        self.update_plots()
 
     def integration_direction_changed(self):
         self.is_inte_along_x_axis = self.ui.x_axis_integration_radioButton.isChecked()
