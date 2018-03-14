@@ -337,7 +337,6 @@ class WaterIntakeProfileSelector(QMainWindow):
         vertical_layout.addWidget(area)
 
         # add progress bar
-
         label = QtGui.QLabel("File Index:")
         label.setMinimumSize(QtCore.QSize(60, 30))
         label.setMaximumSize(QtCore.QSize(60, 30))
@@ -614,10 +613,16 @@ class WaterIntakeProfileSelector(QMainWindow):
         else:
             _water_intake_peaks = self.water_intake_peaks_erf.copy()
             is_data_from_max_to_min = self.is_data_from_max_to_min
-            if is_data_from_max_to_min:
-                peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['y0'])
+            if self.is_inte_along_x_axis:
+                if is_data_from_max_to_min:
+                    peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['y0'])
+                else:
+                    peak_value = np.int(self.roi['height'] + self.roi['y0'] - _water_intake_peaks[index_selected])
             else:
-                peak_value = np.int(self.roi['height'] + self.roi['y0'] - _water_intake_peaks[index_selected])
+                if is_data_from_max_to_min:
+                    peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['x0'])
+                else:
+                    peak_value = np.int(self.roi['width'] + self.roi['x0'] - _water_intake_peaks[index_selected])
 
         self.profile_vline = pg.InfiniteLine(angle=90, movable=False,
                                              pos=peak_value)
