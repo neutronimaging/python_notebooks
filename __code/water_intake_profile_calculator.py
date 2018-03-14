@@ -10,6 +10,7 @@ import re
 import glob
 from scipy.special import erf
 from scipy.optimize import curve_fit
+import pprint
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
@@ -85,10 +86,12 @@ class WaterIntakeHandler(object):
             _end_file = nbr_files + 1
         else:
             _start_file = 0
-            _end_file = nbr_files
+            _end_file = nbr_files + 1
 
         dict_error_function_parameters = dict()
         water_intake_peaks_erf = []
+        delta_time = []
+
         for _index_file in np.arange(_start_file, _end_file):
             _profile = _dict_profiles[str(_index_file)]
             ydata = _profile['data']
@@ -101,14 +104,15 @@ class WaterIntakeHandler(object):
                            'm': popt[2],
                            'n': popt[3]}
 
-            _peak = popt[0] + (popt[1]/np.sqrt(2))
+            _peak = np.int(popt[0] + (popt[1]/np.sqrt(2)))
             water_intake_peaks_erf.append(_peak)
+            delta_time.append(xdata)
 
             dict_error_function_parameters[str(_index_file)] = _local_dict
 
         self.water_intake_peaks_erf = water_intake_peaks_erf
         self.dict_error_function_parameters = dict_error_function_parameters
-
+        self.water_intake_deltatime = delta_time
 
     def fitting_algorithm(self, ydata):
         fitting_xdata = np.arange(len(ydata))
@@ -172,6 +176,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     # array of water intake values
     water_intake_peaks = []
+    water_intake_peaks_erf = []
 
     # state of the image
     image_view_state = {}
@@ -502,15 +507,17 @@ class WaterIntakeProfileSelector(QMainWindow):
         o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles,
                                                     ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked(),
                                                     algorithm_selected=algorithm_selected)
-        delta_time = o_water_intake_handler.water_intake_deltatime
 
         if algorithm_selected == 'sliding_average':
             peak = o_water_intake_handler.water_intake_peak_sliding_average
-            self.water_intake_peaks_sliding_average = peak
+            self.water_intake_peaks_sliding_average = peak.copy()
+            delta_time = o_water_intake_handler.water_intake_deltatime
+
         elif algorithm_selected == 'error_function':
-            peak = o_water_intake_handler.water_intake_peak_erf
-            self.water_intake_peaks_erf = peak
+            peak = o_water_intake_handler.water_intake_peaks_erf
+            self.water_intake_peaks_erf = peak.copy()
             self.dict_error_function_parameters = o_water_intake_handler.dict_error_function_parameters
+            delta_time = o_water_intake_handler.water_intake_deltatime
         else:
             raise NotImplementedError("Algorithm not implemented yet!")
 
@@ -529,7 +536,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.dict_water_intake['yaxis'] = peak
 
         self.water_intake.clear()
-        self.water_intake.plot(delta_time, peak, symbolPen=None, pen=None, symbol='o', symbolBruch=(200,200,200,50))
+        self.water_intake.plot(delta_time, peak, symbolPen=None,
+                               pen=None,
+                               symbol='o',
+                               symbolBruch=(200,200,200,50))
         self.water_intake.setLabel('left', y_label)
         self.water_intake.setLabel('bottom', 'Delta Time')
 
@@ -537,11 +547,11 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def update_profile_plot_water_intake_peak(self):
         # display value of current water intake peak in profile plot
-        algorithm_selected = self.algorithm_selected
+        algorithm_selected = self.get_algorithm_selected()
         if algorithm_selected == 'sliding_average':
-            _water_intake_peaks = self.water_intake_peaks_sliding_average
+            _water_intake_peaks = self.water_intake_peaks_sliding_average.copy()
         else:
-            _water_intake_peaks = self.water_intake_peaks_erf
+            _water_intake_peaks = self.water_intake_peaks_erf.copy()
 
         index_selected = self.ui.file_index_slider.value()
         if self.ui.ignore_first_image_checkbox.isChecked():
@@ -553,9 +563,9 @@ class WaterIntakeProfileSelector(QMainWindow):
                                              pos=_water_intake_peaks[index_selected] + np.int(self.roi['y0']))
         self.profile.addItem(self.profile_vline, ignoreBounds=True)
 
-
         # display fitting function for error function
         if self.get_algorithm_selected() == 'error_function':
+
             dict_error_function_parameters = self.dict_error_function_parameters
             _fit_parameters = dict_error_function_parameters[str(index_selected+1)]
 
@@ -565,9 +575,9 @@ class WaterIntakeProfileSelector(QMainWindow):
                                                         _fit_parameters['c'],
                                                         _fit_parameters['w'],
                                                         _fit_parameters['m'],
-                                                        _fit_parameters['m'])
+                                                        _fit_parameters['n'])
 
-            self.profile.plot(xdata, ydata, 'r')
+            self.profile.plot(xdata, ydata, pen=(255,0,0))
 
     def calculate_all_profiles(self):
         is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
@@ -849,7 +859,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         is_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
 
         if is_by_name:
-            self._fix_index_of_files()
+            try:
+                self._fix_index_of_files()
+            except ValueError:
+                pass
         else:
             self._reset_dict()
 

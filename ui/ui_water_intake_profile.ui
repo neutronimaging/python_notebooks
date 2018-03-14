@@ -39,7 +39,7 @@
         </property>
         <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -57,10 +57,16 @@
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="QTableWidget" name="tableWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>0</height>
+                <height>150</height>
                </size>
               </property>
               <column>
