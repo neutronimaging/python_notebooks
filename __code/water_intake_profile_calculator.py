@@ -64,6 +64,9 @@ class WaterIntakeHandler(object):
 
     dict_error_function_parameters = {}
 
+    # fitting by error function requires that the signal goes from max to min values
+    is_data_from_max_to_min = True
+
     def __init__(self, dict_profiles={}, ignore_first_image=True, algorithm_selected='sliding_average'):
         self.dict_profiles = dict_profiles
         self.ignore_first_image = ignore_first_image
@@ -77,6 +80,21 @@ class WaterIntakeHandler(object):
     def fitting_function(x, c, w, m, n):
         return ((m-n)/2.) * erf((x-c)/w) + (m+n)/2.
 
+    def are_data_from_max_to_min(self, ydata):
+        nbr_points = len(ydata)
+        nbr_point_for_investigation = np.int(nbr_points * 0.1)
+
+        mean_first_part = np.mean(ydata[0:nbr_point_for_investigation])
+
+        ydata = ydata.copy()
+        ydata_reversed = ydata[::-1]
+        mean_last_part = np.mean(ydata_reversed[0: nbr_point_for_investigation])
+
+        if mean_first_part > mean_last_part:
+            return True
+        else:
+            return False
+
     def calculate_using_erf(self):
         _dict_profiles = self.dict_profiles
         nbr_files = len(_dict_profiles.keys())
@@ -86,7 +104,7 @@ class WaterIntakeHandler(object):
             _end_file = nbr_files + 1
         else:
             _start_file = 0
-            _end_file = nbr_files + 1
+            _end_file = nbr_files
 
         dict_error_function_parameters = dict()
         water_intake_peaks_erf = []
@@ -96,6 +114,11 @@ class WaterIntakeHandler(object):
             _profile = _dict_profiles[str(_index_file)]
             ydata = _profile['data']
             xdata = _profile['delta_time']
+
+            is_data_from_max_to_min = self.are_data_from_max_to_min(ydata)
+            self.is_data_from_max_to_min = is_data_from_max_to_min
+            if not is_data_from_max_to_min:
+                ydata = ydata[::-1]
 
             popt = self.fitting_algorithm(ydata)
 
@@ -363,6 +386,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.file_index_slider.setValue(_value)
         self.update_labels()
 
+        # splitter
+        self.ui.splitter.setSizes([800, 100])
+
         # update size of table columns
         nbr_columns = self.ui.tableWidget.columnCount()
         for _col in range(nbr_columns):
@@ -518,10 +544,21 @@ class WaterIntakeProfileSelector(QMainWindow):
             self.water_intake_peaks_erf = peak.copy()
             self.dict_error_function_parameters = o_water_intake_handler.dict_error_function_parameters
             delta_time = o_water_intake_handler.water_intake_deltatime
+            self.is_data_from_max_to_min = o_water_intake_handler.is_data_from_max_to_min
         else:
             raise NotImplementedError("Algorithm not implemented yet!")
 
         # peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+
+
+
+
+
+
+
+
+
+
 
         if self.ui.pixel_radioButton.isChecked(): # pixel
             peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
@@ -547,27 +584,35 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def update_profile_plot_water_intake_peak(self):
         # display value of current water intake peak in profile plot
-        algorithm_selected = self.get_algorithm_selected()
-        if algorithm_selected == 'sliding_average':
-            _water_intake_peaks = self.water_intake_peaks_sliding_average.copy()
-        else:
-            _water_intake_peaks = self.water_intake_peaks_erf.copy()
-
         index_selected = self.ui.file_index_slider.value()
         if self.ui.ignore_first_image_checkbox.isChecked():
             index_selected -= 2
         else:
             index_selected -= 1
 
+        algorithm_selected = self.get_algorithm_selected()
+        if algorithm_selected == 'sliding_average':
+            _water_intake_peaks = self.water_intake_peaks_sliding_average.copy()
+            peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['y0'])
+        else:
+            _water_intake_peaks = self.water_intake_peaks_erf.copy()
+            is_data_from_max_to_min = self.is_data_from_max_to_min
+            if is_data_from_max_to_min:
+                peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['y0'])
+            else:
+                peak_value = np.int(self.roi['height'] + self.roi['y0'] - _water_intake_peaks[index_selected])
+
         self.profile_vline = pg.InfiniteLine(angle=90, movable=False,
-                                             pos=_water_intake_peaks[index_selected] + np.int(self.roi['y0']))
+                                             pos=peak_value)
         self.profile.addItem(self.profile_vline, ignoreBounds=True)
 
         # display fitting function for error function
         if self.get_algorithm_selected() == 'error_function':
 
-            dict_error_function_parameters = self.dict_error_function_parameters
-            _fit_parameters = dict_error_function_parameters[str(index_selected+1)]
+            index_selected = self.ui.file_index_slider.value()-1
+            dict_error_function_parameters = self.dict_error_function_parameters.copy()
+            # pprint.pprint(dict_error_function_parameters)
+            _fit_parameters = dict_error_function_parameters[str(index_selected)]
 
             xdata = self.live_x_axis
             fitting_xdata = np.arange(len(xdata))
@@ -576,6 +621,9 @@ class WaterIntakeProfileSelector(QMainWindow):
                                                         _fit_parameters['w'],
                                                         _fit_parameters['m'],
                                                         _fit_parameters['n'])
+
+            if not is_data_from_max_to_min:
+                ydata = ydata[::-1]
 
             self.profile.plot(xdata, ydata, pen=(255,0,0))
 
@@ -1010,7 +1058,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self._init_widgets(ignore_first_image=ignore_first_image, first_init=False)
         self.update_infos_tab()
         self.update_image()
-        self.update_profile_plot()
+        self.update_plots()
 
     def help_button_clicked(self):
         import webbrowser
