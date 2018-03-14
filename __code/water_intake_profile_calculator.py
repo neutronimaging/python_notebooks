@@ -540,7 +540,10 @@ class WaterIntakeProfileSelector(QMainWindow):
             delta_time = o_water_intake_handler.water_intake_deltatime
 
             if self.ui.pixel_radioButton.isChecked():  # pixel
-                peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+                if self.is_inte_along_x_axis:
+                    peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+                else:
+                    peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
                 y_label = 'Pixel Position'
             else:  # distance
                 pixel_size = self.ui.pixel_size_spinBox.value()
@@ -556,25 +559,31 @@ class WaterIntakeProfileSelector(QMainWindow):
 
             if self.ui.pixel_radioButton.isChecked():  # pixel
                 if self.is_data_from_max_to_min:
-                    peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+                    if self.is_inte_along_x_axis:
+                        peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+                    else:
+                        peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
+
                 else:
-                    peak = [np.int(self.roi['y0']) + np.int(self.roi['height']) - _peak for _peak in peak]
+                    if self.is_inte_along_x_axis:
+                        peak = [np.int(self.roi['y0']) + np.int(self.roi['height']) - _peak for _peak in peak]
+                    else:
+                        peak = [np.int(self.roi['x0']) + np.int(self.roi['width']) - _peak for _peak in peak]
+
                 y_label = 'Pixel Position'
             else:  # distance
                 pixel_size = self.ui.pixel_size_spinBox.value()
                 if not self.is_data_from_max_to_min:
-                    peak = [np.int(self.roi['y0']) + np.int(self.roi['height']) - _peak for _peak in peak]
+                    if self.is_inte_along_x_axis:
+                        peak = [np.int(self.roi['y0']) + np.int(self.roi['height']) - _peak for _peak in peak]
+                    else:
+                        peak = [np.int(self.roi['x0']) + np.int(self.roi['width']) - _peak for _peak in peak]
+
                 peak = [np.float(_peak) * pixel_size for _peak in peak]
                 y_label = 'Distance (mm)'
 
         else:
             raise NotImplementedError("Algorithm not implemented yet!")
-
-
-
-
-
-
 
         self.dict_water_intake = {}
         self.dict_water_intake['xaxis'] = delta_time

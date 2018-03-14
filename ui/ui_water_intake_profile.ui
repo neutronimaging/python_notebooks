@@ -193,7 +193,7 @@
            <item>
             <widget class="QRadioButton" name="x_axis_integration_radioButton">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>along x-axis</string>
@@ -206,7 +206,7 @@
            <item>
             <widget class="QRadioButton" name="y_axis_integration_radioButton">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>along y-axis</string>
