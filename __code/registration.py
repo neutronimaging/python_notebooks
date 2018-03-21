@@ -45,6 +45,9 @@ class RegistrationUi(QMainWindow):
     reference_image_index = 0
     reference_image = []
 
+    # image currently display in image_view
+    live_image = []
+
     def __init__(self, parent=None, data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -66,6 +69,9 @@ class RegistrationUi(QMainWindow):
         self.init_widgets()
         self.init_table()
 
+        # display line profile
+        self.profile_line_moved()
+
     # initialization
     def init_pyqtgrpah(self):
         area = DockArea()
@@ -80,7 +86,11 @@ class RegistrationUi(QMainWindow):
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.image_view.ui.menuBtn.hide()
         self.ui.image_view.ui.roiBtn.hide()
+        # profile selection tool
+        self.ui.profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
+        self.ui.image_view.addItem(self.ui.profile_line)
         d1.addWidget(self.ui.image_view)
+        self.ui.profile_line.sigRegionChanged.connect(self.profile_line_moved)
 
         # profile
         self.ui.profile = pg.PlotWidget(title='Profile')
@@ -141,6 +151,15 @@ class RegistrationUi(QMainWindow):
         #select first row
         self.select_row_in_table(0)
 
+    def profile_line_moved(self):
+        """update profile plot"""
+        d2 = self.ui.profile_line.getArrayRegion(self.live_image, self.ui.image_view.imageItem)
+        self.ui.profile.clear()
+        self.ui.profile.plot(d2)
+
+        image_selected = self.get_image_selected()
+        reference_image = self.reference_image
+
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
         table_registration = self.table_registration
@@ -168,9 +187,13 @@ class RegistrationUi(QMainWindow):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
 
-    def display_image(self):
+    def get_image_selected(self):
         index_selected = self.ui.file_slider.value()
         _image = self.data_dict['data'][index_selected]
+        return _image
+
+    def display_image(self):
+        _image = self.get_image_selected()
 
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
@@ -186,13 +209,12 @@ class RegistrationUi(QMainWindow):
         _opacity_image = _opacity_coefficient / 100.
         _image = np.transpose(_image) * _opacity_image
 
-        _reference_image = np.transpose(self.reference_image) * _opacity_image
         _opacity_reference = 1 - _opacity_image
         _reference_image = np.transpose(self.reference_image) * _opacity_reference
 
         _final_image = _reference_image + _image
-
         self.ui.image_view.setImage(_final_image)
+        self.live_image = _final_image
 
         _view_box.setState(_state)
 
@@ -223,12 +245,14 @@ class RegistrationUi(QMainWindow):
         row = self.ui.tableWidget.currentRow()
         self.ui.file_slider.setValue(row+1)
         self.display_image()
+        self.profile_line_moved()
         self.ui.file_slider.blockSignals(False)
 
     def slider_file_changed(self, index_selected):
         self.ui.tableWidget.blockSignals(True)
         self.display_image()
         self.select_row_in_table(row=index_selected-1)
+        self.profile_line_moved()
         self.ui.tableWidget.blockSignals(False)
 
     def help_button_clicked(self):
