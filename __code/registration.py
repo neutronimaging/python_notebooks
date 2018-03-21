@@ -43,6 +43,7 @@ class RegistrationUi(QMainWindow):
 
     # by default, the reference image is the first image
     reference_image_index = 0
+    reference_image = []
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -58,6 +59,7 @@ class RegistrationUi(QMainWindow):
                                                                      #'data': [[...],[...]]],
                                                                      #'metadata': [],
                                                                      #'shape': {}}
+        self.reference_image = self.data_dict['data'][self.reference_image_index]
 
         # initialization
         self.init_pyqtgrpah()
@@ -180,8 +182,17 @@ class RegistrationUi(QMainWindow):
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
 
-        _image = np.transpose(_image)
-        self.ui.image_view.setImage(_image)
+        _opacity_coefficient = self.ui.opacity_slider.value() # betwween 0 and 100
+        _opacity_image = _opacity_coefficient / 100.
+        _image = np.transpose(_image) * _opacity_image
+
+        _reference_image = np.transpose(self.reference_image) * _opacity_image
+        _opacity_reference = 1 - _opacity_image
+        _reference_image = np.transpose(self.reference_image) * _opacity_reference
+
+        _final_image = _reference_image + _image
+
+        self.ui.image_view.setImage(_final_image)
 
         _view_box.setState(_state)
 
@@ -204,6 +215,9 @@ class RegistrationUi(QMainWindow):
 
     # Event handler
 
+    def opacity_changed(self, opacity_value):
+        self.display_image()
+
     def table_row_clicked(self):
         self.ui.file_slider.blockSignals(True)
         row = self.ui.tableWidget.currentRow()
@@ -212,8 +226,10 @@ class RegistrationUi(QMainWindow):
         self.ui.file_slider.blockSignals(False)
 
     def slider_file_changed(self, index_selected):
+        self.ui.tableWidget.blockSignals(True)
         self.display_image()
         self.select_row_in_table(row=index_selected-1)
+        self.ui.tableWidget.blockSignals(False)
 
     def help_button_clicked(self):
         import webbrowser

@@ -65,7 +65,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QSlider" name="verticalSlider">
+              <widget class="QSlider" name="opacity_slider">
                <property name="cursor">
                 <cursorShape>SizeVerCursor</cursorShape>
                </property>
@@ -415,8 +415,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>366</x>
-     <y>375</y>
+     <x>499</x>
+     <y>448</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -431,8 +431,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>421</x>
-     <y>376</y>
+     <x>554</x>
+     <y>448</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -456,6 +456,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>opacity_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>opacity_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>963</x>
+     <y>188</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>917</x>
+     <y>-4</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ok_button_clicked()</slot>
@@ -463,5 +479,6 @@
   <slot>slider_file_changed()</slot>
   <slot>table_row_clicked()</slot>
   <slot>item_activated()</slot>
+  <slot>opacity_changed()</slot>
  </slots>
 </ui>
