@@ -79,8 +79,6 @@ class RegistrationUi(QMainWindow):
     # initialization
     def init_pyqtgrpah(self):
 
-        ## Tab 1
-
         area = DockArea()
         area.setVisible(True)
         d1 = Dock("Registered Image", size=(400, 600))
@@ -109,27 +107,6 @@ class RegistrationUi(QMainWindow):
         vertical_layout.addWidget(area)
 
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
-
-        ## Tab 2 - selected image
-        self.ui.selected_image_view = pg.ImageView(view=pg.PlotItem())
-        self.ui.selected_image_view.ui.menuBtn.hide()
-        self.ui.selected_image_view.ui.roiBtn.hide()
-        self.ui.selected_profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
-        self.ui.selected_image_view.addItem(self.ui.selected_profile_line)
-
-        vertical_layout_2 = QtGui.QVBoxLayout()
-        vertical_layout_2.addWidget(self.ui.selected_image_view)
-        self.ui.selected_widget.setLayout(vertical_layout_2)
-
-        ## Tab 3 - reference image
-        self.ui.reference_image_view = pg.ImageView(view=pg.PlotItem())
-        self.ui.reference_image_view.ui.menuBtn.hide()
-        self.ui.reference_image_view.ui.roiBtn.hide()
-        vertical_layout_3 = QtGui.QVBoxLayout()
-        vertical_layout_3.addWidget(self.ui.reference_image_view)
-        self.ui.reference_widget.setLayout(vertical_layout_3)
-        self.ui.reference_profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
-        self.ui.reference_image_view.addItem(self.ui.reference_profile_line)
 
     def init_widgets(self):
         """size and label of any widgets"""
@@ -206,9 +183,9 @@ class RegistrationUi(QMainWindow):
         self.ui.profile.plot(d2)
 
 
-
-        self.ui.selected_profile_line.setPos((x0, y0))
-        self.ui.selected_profile_line.setSize((x1-x0, y1-y0))
+        #
+        # self.ui.selected_profile_line.setPos((x0, y0))
+        # self.ui.selected_profile_line.setSize((x1-x0, y1-y0))
 
 
         # image_selected = self.get_image_selected()
@@ -279,25 +256,6 @@ class RegistrationUi(QMainWindow):
 
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
-
-        # tab 2 - reference image
-        _view = self.ui.selected_image_view.getView()
-        _view_box = _view.getViewBox()
-        _histo_widget_selected = self.ui.selected_image_view.getHistogramWidget()
-        _histo_widget_selected.setLevels(self.histogram_level[0], self.histogram_level[1])
-        self.ui.selected_image_view.setImage(_image)
-        _view_box.setState(_state)
-        _histo_widget_selected.setLevels(self.histogram_level[0], self.histogram_level[1])
-
-        # tab 3 - reference image
-        if self.new_reference_image:
-            _ref_view = self.ui.reference_image_view.getView()
-            _ref_view_box = _ref_view.getViewBox()
-            _ref_histo_widget_selected = self.ui.reference_image_view.getHistogramWidget()
-            _reference_image = np.transpose(self.reference_image)
-            self.ui.reference_image_view.setImage(_reference_image)
-            _ref_view_box.setState(_state)
-            _ref_histo_widget_selected.setLevels(self.histogram_level[0], self.histogram_level[1])
 
     def select_row_in_table(self, row=0):
         nbr_col = self.ui.tableWidget.columnCount()
