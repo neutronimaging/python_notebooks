@@ -48,6 +48,8 @@ class RegistrationUi(QMainWindow):
     # image currently display in image_view
     live_image = []
 
+    new_reference_image = True
+
     def __init__(self, parent=None, data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -72,8 +74,13 @@ class RegistrationUi(QMainWindow):
         # display line profile
         self.profile_line_moved()
 
+        self.new_reference_image = False
+
     # initialization
     def init_pyqtgrpah(self):
+
+        ## Tab 1
+
         area = DockArea()
         area.setVisible(True)
         d1 = Dock("Registered Image", size=(400, 600))
@@ -103,6 +110,27 @@ class RegistrationUi(QMainWindow):
 
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
+        ## Tab 2 - selected image
+        self.ui.selected_image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.selected_image_view.ui.menuBtn.hide()
+        self.ui.selected_image_view.ui.roiBtn.hide()
+        self.ui.selected_profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
+        self.ui.selected_image_view.addItem(self.ui.selected_profile_line)
+
+        vertical_layout_2 = QtGui.QVBoxLayout()
+        vertical_layout_2.addWidget(self.ui.selected_image_view)
+        self.ui.selected_widget.setLayout(vertical_layout_2)
+
+        ## Tab 3 - reference image
+        self.ui.reference_image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.reference_image_view.ui.menuBtn.hide()
+        self.ui.reference_image_view.ui.roiBtn.hide()
+        vertical_layout_3 = QtGui.QVBoxLayout()
+        vertical_layout_3.addWidget(self.ui.reference_image_view)
+        self.ui.reference_widget.setLayout(vertical_layout_3)
+        self.ui.reference_profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
+        self.ui.reference_image_view.addItem(self.ui.reference_profile_line)
+
     def init_widgets(self):
         """size and label of any widgets"""
         self.ui.splitter.setSizes([800, 100])
@@ -117,10 +145,9 @@ class RegistrationUi(QMainWindow):
         self.ui.file_slider.setMinimum(1)
         self.ui.file_slider.setMaximum(nbr_files-1)
 
-        # reference image
+        # selected image
         reference_image = self.data_dict['file_name'][0]
         self.ui.reference_image_label.setText(reference_image)
-
 
     def init_table(self):
         """populate the table with list of file names and default xoffset, yoffset and rotation"""
@@ -153,12 +180,44 @@ class RegistrationUi(QMainWindow):
 
     def profile_line_moved(self):
         """update profile plot"""
+
+        # print(np.shape(self.ui.profile_line.getArrayRegion(self.live_image,
+        #                                                    self.ui.image_view.imageItem,
+        #                                                    returnMappedCoords=True)))
+
+
+        # region = self.ui.profile_line.getArraySlice(self.live_image,
+        #                                          self.ui.image_view.imageItem)
+        #
+        # x0 = region[0][0].start
+        # x1 = region[0][0].stop
+        # y0 = region[0][1].start
+        # y1 = region[0][1].stop
+
+
+
+        # print("x end is: {}".format(region[0][0].stop))
+        # print("y start is: {}".format(region[0][1].start))
+        # print("y end is: {}".format(region[0][1].stop))
+        # print()
+
         d2 = self.ui.profile_line.getArrayRegion(self.live_image, self.ui.image_view.imageItem)
         self.ui.profile.clear()
         self.ui.profile.plot(d2)
 
-        image_selected = self.get_image_selected()
-        reference_image = self.reference_image
+
+
+        self.ui.selected_profile_line.setPos((x0, y0))
+        self.ui.selected_profile_line.setSize((x1-x0, y1-y0))
+
+
+        # image_selected = self.get_image_selected()
+        # reference_image = self.reference_image
+        #
+        # pts = self.ui.profile_line.getSceneHandlePositions()
+        # mapped_pts = ([self.ui.profile_line.mapSceneToParent(pt[1]) for pt in pts])
+        #
+
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
@@ -205,21 +264,40 @@ class RegistrationUi(QMainWindow):
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
 
+        # tab 1
         _opacity_coefficient = self.ui.opacity_slider.value() # betwween 0 and 100
         _opacity_image = _opacity_coefficient / 100.
         _image = np.transpose(_image) * _opacity_image
 
-        _opacity_reference = 1 - _opacity_image
-        _reference_image = np.transpose(self.reference_image) * _opacity_reference
+        _opacity_selected = 1 - _opacity_image
+        _reference_image = np.transpose(self.reference_image) * _opacity_selected
 
         _final_image = _reference_image + _image
         self.ui.image_view.setImage(_final_image)
         self.live_image = _final_image
-
         _view_box.setState(_state)
 
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
+
+        # tab 2 - reference image
+        _view = self.ui.selected_image_view.getView()
+        _view_box = _view.getViewBox()
+        _histo_widget_selected = self.ui.selected_image_view.getHistogramWidget()
+        _histo_widget_selected.setLevels(self.histogram_level[0], self.histogram_level[1])
+        self.ui.selected_image_view.setImage(_image)
+        _view_box.setState(_state)
+        _histo_widget_selected.setLevels(self.histogram_level[0], self.histogram_level[1])
+
+        # tab 3 - reference image
+        if self.new_reference_image:
+            _ref_view = self.ui.reference_image_view.getView()
+            _ref_view_box = _ref_view.getViewBox()
+            _ref_histo_widget_selected = self.ui.reference_image_view.getHistogramWidget()
+            _reference_image = np.transpose(self.reference_image)
+            self.ui.reference_image_view.setImage(_reference_image)
+            _ref_view_box.setState(_state)
+            _ref_histo_widget_selected.setLevels(self.histogram_level[0], self.histogram_level[1])
 
     def select_row_in_table(self, row=0):
         nbr_col = self.ui.tableWidget.columnCount()
