@@ -123,7 +123,10 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="previous_image_button">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Prev. Image</string>
             </property>
@@ -143,7 +146,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="next_Image_button">
             <property name="text">
              <string>Next Image</string>
             </property>
@@ -397,7 +400,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>993</x>
-     <y>1015</y>
+     <y>1114</y>
     </hint>
     <hint type="destinationlabel">
      <x>685</x>
@@ -413,7 +416,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>112</x>
-     <y>1015</y>
+     <y>1114</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -428,8 +431,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>499</x>
-     <y>448</y>
+     <x>632</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -444,8 +447,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>554</x>
-     <y>448</y>
+     <x>687</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -485,6 +488,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>previous_image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous_image_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>68</x>
+     <y>333</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>377</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>next_Image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>next_image_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>932</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1000</x>
+     <y>418</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ok_button_clicked()</slot>
@@ -493,5 +528,7 @@
   <slot>table_row_clicked()</slot>
   <slot>item_activated()</slot>
   <slot>opacity_changed()</slot>
+  <slot>previous_image_button_clicked()</slot>
+  <slot>next_image_button_clicked()</slot>
  </slots>
 </ui>

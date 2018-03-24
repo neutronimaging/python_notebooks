@@ -309,6 +309,9 @@ class RegistrationUi(QMainWindow):
 
         self.ui.tableWidget.showRow(row)
 
+    def check_status_next_prev_image_button(self):
+        pass
+
     # Event handler
 
     def opacity_changed(self, opacity_value):
@@ -339,6 +342,12 @@ class RegistrationUi(QMainWindow):
 
     def cancel_button_clicked(self):
         self.close()
+
+    def previous_image_button_clicked(self):
+        pass
+
+    def next_button_image_clicked(self):
+        pass
 
 
 class RegistrationFileSelection(object):
