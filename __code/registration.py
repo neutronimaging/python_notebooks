@@ -110,7 +110,7 @@ class RegistrationUi(QMainWindow):
 
     def init_widgets(self):
         """size and label of any widgets"""
-        self.ui.splitter.setSizes([800, 100])
+        self.ui.splitter_2.setSizes([800, 100])
 
         # update size of table columns
         nbr_columns = self.ui.tableWidget.columnCount()
@@ -155,45 +155,65 @@ class RegistrationUi(QMainWindow):
         #select first row
         self.select_row_in_table(0)
 
+    def _intermediates_points(self, p1, p2):
+        """"Return a list of nb_points equally spaced points
+        between p1 and p2
+
+        p1 = [x0, y0]
+        p2 = [x1, y1]
+        """
+
+        # nb_points ?
+        nb_points = np.int(3 * max([np.abs(p1[0] - p2[0]), np.abs(p2[1] - p1[1])]))
+
+        x_spacing = (p2[0] - p1[0]) / (nb_points + 1)
+        y_spacing = (p2[1] - p1[1]) / (nb_points + 1)
+
+        full_array = [[np.int(p1[0] + i * x_spacing), np.int(p1[1] + i * y_spacing)]
+                      for i in range(1, nb_points + 1)]
+
+        clean_array = []
+        for _points in full_array:
+            if _points in clean_array:
+                continue
+            clean_array.append(_points)
+
+        return clean_array
+
     def profile_line_moved(self):
         """update profile plot"""
-
-        # print(np.shape(self.ui.profile_line.getArrayRegion(self.live_image,
-        #                                                    self.ui.image_view.imageItem,
-        #                                                    returnMappedCoords=True)))
-
-
-        # region = self.ui.profile_line.getArraySlice(self.live_image,
-        #                                          self.ui.image_view.imageItem)
-        #
-        # x0 = region[0][0].start
-        # x1 = region[0][0].stop
-        # y0 = region[0][1].start
-        # y1 = region[0][1].stop
-
-
-
-        # print("x end is: {}".format(region[0][0].stop))
-        # print("y start is: {}".format(region[0][1].start))
-        # print("y end is: {}".format(region[0][1].stop))
-        # print()
-
-        d2 = self.ui.profile_line.getArrayRegion(self.live_image, self.ui.image_view.imageItem)
         self.ui.profile.clear()
-        self.ui.profile.plot(d2)
 
+        region = self.ui.profile_line.getArraySlice(self.live_image,
+                                                     self.ui.image_view.imageItem)
 
-        #
-        # self.ui.selected_profile_line.setPos((x0, y0))
-        # self.ui.selected_profile_line.setSize((x1-x0, y1-y0))
+        x0 = region[0][0].start + 3
+        x1 = region[0][0].stop - 3
+        y0 = region[0][1].start + 3
+        y1 = region[0][1].stop - 3
 
+        p1 = [x0, y0]
+        p2 = [x1, y1]
 
-        # image_selected = self.get_image_selected()
-        # reference_image = self.reference_image
-        #
-        # pts = self.ui.profile_line.getSceneHandlePositions()
-        # mapped_pts = ([self.ui.profile_line.mapSceneToParent(pt[1]) for pt in pts])
-        #
+        intermediate_points = self._intermediates_points(p1, p2)
+        xaxis = np.arange(len(intermediate_points))
+
+        # profile selected
+        selected_image = self.live_image
+        profile_selected = [selected_image[_point[0],
+                                           _point[1]] for _point in intermediate_points]
+
+        self.ui.profile.plot(xaxis, profile_selected)
+
+        # d2 = self.ui.profile_line.getArrayRegion(self.live_image, self.ui.image_view.imageItem)
+        # self.ui.profile.plot(d2)
+
+        # profile reference
+        reference_image = np.transpose(self.reference_image)
+        profile_reference = [reference_image[_point[0],
+                                             _point[1]] for _point in intermediate_points]
+
+        self.ui.profile.plot(xaxis, profile_reference, pen=(255,0,0))
 
 
     def populate_table(self):
