@@ -182,10 +182,13 @@ class RegistrationUi(QMainWindow):
 
     def profile_line_moved(self):
         """update profile plot"""
+        if self.live_image == []:
+            return
+
         self.ui.profile.clear()
 
         region = self.ui.profile_line.getArraySlice(self.live_image,
-                                                     self.ui.image_view.imageItem)
+                                                    self.ui.image_view.imageItem)
 
         x0 = region[0][0].start + 3
         x1 = region[0][0].stop - 3
@@ -244,12 +247,27 @@ class RegistrationUi(QMainWindow):
         self.ui.tableWidget.setItem(row, col, item)
 
     def get_image_selected(self):
+        """to get the image iselected, we will use the table selection as the new version
+        allows several rows"""
         index_selected = self.ui.file_slider.value()
-        _image = self.data_dict['data'][index_selected]
+
+        table_selection = self.ui.tableWidget.selectedRanges()
+        if table_selection == []:
+            return []
+
+        table_selection = table_selection[0]
+        top_row = table_selection.topRow()+1   # offset because first image is reference image
+        bottom_row = table_selection.bottomRow() + 2
+
+        _image = np.mean(self.data_dict['data'][top_row:bottom_row], axis=0)
+
+        # _image = self.data_dict['data'][index_selected]
         return _image
 
     def display_image(self):
         _image = self.get_image_selected()
+        if _image == []:
+            return
 
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
@@ -306,8 +324,8 @@ class RegistrationUi(QMainWindow):
 
     def slider_file_changed(self, index_selected):
         self.ui.tableWidget.blockSignals(True)
-        self.display_image()
         self.select_row_in_table(row=index_selected-1)
+        self.display_image()
         self.profile_line_moved()
         self.ui.tableWidget.blockSignals(False)
 
