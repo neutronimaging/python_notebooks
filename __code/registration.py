@@ -119,7 +119,7 @@ class RegistrationUi(QMainWindow):
 
         # update slidewidget of files
         nbr_files = len(self.data_dict['file_name'])
-        self.ui.file_slider.setMinimum(1)
+        self.ui.file_slider.setMinimum(0)
         self.ui.file_slider.setMaximum(nbr_files-1)
 
         # selected image
@@ -136,10 +136,6 @@ class RegistrationUi(QMainWindow):
 
         _row_index = 0
         for _file_index, _file in enumerate(list_file_names):
-
-            # first row is the reference row
-            if _file_index == self.reference_image_index:
-                continue
 
             _row_infos = {}
 
@@ -240,13 +236,20 @@ class RegistrationUi(QMainWindow):
 
     def __insert_table_row(self, infos={}, row=-1):
         self.ui.tableWidget.insertRow(row)
-        self.__set_item(row, 0, infos['filename'])
-        self.__set_item(row, 1, infos['xoffset'])
-        self.__set_item(row, 2, infos['rotation'])
 
-    def __set_item(self, row=0, col=0, value=''):
+        is_reference_image = False
+        if row == self.reference_image_index:
+            is_reference_image = True
+
+        self.__set_item(row, 0, infos['filename'], is_reference_image=is_reference_image)
+        self.__set_item(row, 1, infos['xoffset'], is_reference_image=is_reference_image)
+        self.__set_item(row, 2, infos['rotation'], is_reference_image=is_reference_image)
+
+    def __set_item(self, row=0, col=0, value='', is_reference_image=False):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
+        if is_reference_image:
+            item.setBackground(QtGui.QColor(50,250,50))
 
     def get_image_selected(self):
         """to get the image iselected, we will use the table selection as the new version
