@@ -310,7 +310,35 @@ class RegistrationUi(QMainWindow):
         self.ui.tableWidget.showRow(row)
 
     def check_status_next_prev_image_button(self):
-        pass
+        """this will enable or not the prev or next button next to the slider file image"""
+        current_row_selected = self.ui.file_slider.value()
+        min_slider_value = self.ui.file_slider.minimum()
+        max_slider_value = self.ui.file_slider.maximum()
+
+        _prev = True
+        _next = True
+
+        print("current_row_selected: {}".format(current_row_selected))
+        print("max_slider_value: {}".format(max_slider_value))
+
+        if current_row_selected == min_slider_value:
+            _prev = False
+        elif current_row_selected == max_slider_value:
+            _next = False
+
+        self.ui.previous_image_button.setEnabled(_prev)
+        self.ui.next_image_button.setEnabled(_next)
+
+    def change_slider(self, offset=+1):
+        self.ui.file_slider.blockSignals(True)
+        current_row_selected = self.ui.file_slider.value()
+        new_row_selected = current_row_selected + offset - 1
+        self.select_row_in_table(row=new_row_selected)
+        self.ui.file_slider.setValue(new_row_selected+1)
+        self.check_status_next_prev_image_button()
+        self.display_image()
+        self.profile_line_moved()
+        self.ui.file_slider.blockSignals(False)
 
     # Event handler
 
@@ -344,10 +372,10 @@ class RegistrationUi(QMainWindow):
         self.close()
 
     def previous_image_button_clicked(self):
-        pass
+        self.change_slider(offset = -1)
 
-    def next_button_image_clicked(self):
-        pass
+    def next_image_button_clicked(self):
+        self.change_slider(offset = +1)
 
 
 class RegistrationFileSelection(object):
