@@ -126,6 +126,9 @@ class RegistrationUi(QMainWindow):
         reference_image = self.data_dict['file_name'][0]
         self.ui.reference_image_label.setText(reference_image)
 
+        # selection slider
+        self.ui.selection_groupBox.setVisible(False)
+
     def init_table(self):
         """populate the table with list of file names and default xoffset, yoffset and rotation"""
         list_file_names = self.data_dict['file_name']
@@ -217,7 +220,6 @@ class RegistrationUi(QMainWindow):
                                              _point[1]] for _point in intermediate_points]
 
         self.ui.profile.plot(xaxis, profile_reference, pen=(255,0,0))
-
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
@@ -318,9 +320,6 @@ class RegistrationUi(QMainWindow):
         _prev = True
         _next = True
 
-        print("current_row_selected: {}".format(current_row_selected))
-        print("max_slider_value: {}".format(max_slider_value))
-
         if current_row_selected == min_slider_value:
             _prev = False
         elif current_row_selected == max_slider_value:
@@ -340,6 +339,17 @@ class RegistrationUi(QMainWindow):
         self.profile_line_moved()
         self.ui.file_slider.blockSignals(False)
 
+    def check_selection_slider_status(self):
+        selection = self.ui.tableWidget.selectedRanges()
+        if selection:
+            top_row = selection[0].topRow()
+            bottom_row = selection[0].bottomRow()
+            if np.abs(bottom_row - top_row) >= 1:
+                self.ui.selection_groupBox.setVisible(True)
+            else:
+                self.ui.selection_groupBox.setVisible(False)
+
+
     # Event handler
 
     def opacity_changed(self, opacity_value):
@@ -351,6 +361,7 @@ class RegistrationUi(QMainWindow):
         self.ui.file_slider.setValue(row+1)
         self.display_image()
         self.profile_line_moved()
+        self.check_selection_slider_status()
         self.ui.file_slider.blockSignals(False)
 
     def slider_file_changed(self, index_selected):
