@@ -31,6 +31,7 @@ from NeuNorm.normalization import Normalization
 
 
 from __code.ui_registration  import Ui_MainWindow as UiMainWindow
+from __code.ui_registration_tool import Ui_MainWindow as UiMainWindowTool
 
 
 class RegistrationUi(QMainWindow):
@@ -54,6 +55,10 @@ class RegistrationUi(QMainWindow):
 
     new_reference_image = True
     list_rgb_profile_color = []
+
+    # registration tool ui
+    registration_tool_ui = None
+
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -539,6 +544,44 @@ class RegistrationUi(QMainWindow):
         # self.update_selection_images()
         self.display_image()
         self.profile_line_moved()
+
+    def registration_tool_button_clicked(self):
+        o_registration_tool = RegistrationToolLauncher(parent=self)
+
+
+class RegistrationToolLauncher(object):
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+        if self.parent.registration_tool_ui == None:
+            tool_ui = RegistrationTool(parent=parent)
+            tool_ui.show()
+            self.parent.registration_tool_ui = tool_ui
+        else:
+            self.parent.registration_tool_ui.setFocus()
+            self.parent.registration_tool_ui.activateWindow()
+
+
+class RegistrationTool(QMainWindow):
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent = parent
+        QMainWindow.__init__(self, parent=parent)
+        self.ui = UiMainWindowTool()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Registration Tool")
+
+        self.initialize_widgets()
+
+    def initialize_widgets(self):
+        pass
+
+
 
 
 class RegistrationFileSelection(object):

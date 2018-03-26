@@ -25,6 +25,43 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="registration_tool_button">
+        <property name="text">
+         <string>Registration Tool ...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QSplitter" name="splitter_2">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -304,6 +341,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_3">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="maximumSize">
               <size>
                <width>110</width>
@@ -646,7 +686,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>46</x>
-     <y>74</y>
+     <y>116</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -686,6 +726,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>registration_tool_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>registration_tool_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>454</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>362</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ok_button_clicked()</slot>
@@ -699,5 +755,6 @@
   <slot>selection_all_clicked()</slot>
   <slot>selection_slider_changed()</slot>
   <slot>selection_slider_moved()</slot>
+  <slot>registration_tool_button_clicked()</slot>
  </slots>
 </ui>
