@@ -208,22 +208,72 @@ class RegistrationUi(QMainWindow):
         intermediate_points = self._intermediates_points(p1, p2)
         xaxis = np.arange(len(intermediate_points))
 
-        # profile selected
-        selected_image = self.live_image
-        profile_selected = [selected_image[_point[0],
-                                           _point[1]] for _point in intermediate_points]
+        # profiles selected
+        # if only one row selected !
+        if self.ui.selection_groupBox.isVisible():
 
-        self.ui.profile.plot(xaxis, profile_selected, name='Working Image')
+            if self.ui.selection_all.isChecked():
+                min_row = np.int(self.ui.opacity_selection_slider.minimum()/100)
+                max_row = np.int(self.ui.opacity_selection_slider.maximum()/100)
 
-        # d2 = self.ui.profile_line.getArrayRegion(self.live_image, self.ui.image_view.imageItem)
-        # self.ui.profile.plot(d2)
+                for _index in np.arange(min_row, max_row+1):
+                    if _index == self.reference_image_index:
+                        continue
 
-        # profile reference
+                    _data = self.data_dict['data'][_index]
+                    _filename = os.path.basename(self.data_dict['file_name'][_index])
+                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                    self.ui.profile.plot(xaxis, _profile, name=_filename)
+
+            else: # selection slider
+                slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
+                from_index = np.int(slider_index)
+                _data = self.data_dict['data'][from_index]
+                _filename = os.path.basename(self.data_dict['file_name'][from_index])
+                _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                self.ui.profile.plot(xaxis, _profile, name=_filename)
+
+                if from_index == slider_index:
+                    pass
+
+                else:
+                    to_index = np.int(slider_index + 1)
+                    _data = self.data_dict['data'][to_index]
+                    _filename = os.path.basename(self.data_dict['file_name'][to_index])
+                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                    self.ui.profile.plot(xaxis, _profile, name=_filename)
+
+        else:
+
+            table_selection = self.ui.tableWidget.selectedRanges()
+            if table_selection == []:
+                return []
+
+            table_selection = table_selection[0]
+            row_selected = table_selection.topRow()  # offset because first image is reference image
+
+            if not row_selected == self.reference_image_index:
+                _data = self.data_dict['data'][row_selected]
+                _filename = os.path.basename(self.data_dict['file_name'][row_selected])
+                _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                self.ui.profile.plot(xaxis, _profile, name=_filename)
+
+
+
+        # selected_image = self.live_image
+        # profile_selected = [selected_image[_point[0],
+        #                                    _point[1]] for _point in intermediate_points]
+        #
+        # self.ui.profile.plot(xaxis, profile_selected, name='Selected Image')
+
+
+        # Always display profile reference
         reference_image = np.transpose(self.reference_image)
         profile_reference = [reference_image[_point[0],
                                              _point[1]] for _point in intermediate_points]
 
-        self.ui.profile.plot(xaxis, profile_reference, pen=(255,0,0), name='Reference Image')
+        reference_file_name = os.path.basename(self.data_dict['file_name'][self.reference_image_index])
+        self.ui.profile.plot(xaxis, profile_reference, pen=[255,0,0], name='Reference: {}'.format(reference_file_name))
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
@@ -278,27 +328,33 @@ class RegistrationUi(QMainWindow):
         return _image
 
     def display_image(self):
-        # if all selected
-        if self.ui.selection_all.isChecked():
+
+        # if only one row selected !
+        if self.ui.selection_groupBox.isVisible():
+            # if all selected
+            if self.ui.selection_all.isChecked():
+                _image = self.get_image_selected()
+            else:  # display selected images according to slider position
+
+                # retrieve slider infos
+                slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
+
+                from_index = np.int(slider_index)
+                to_index = np.int(slider_index + 1)
+
+                if from_index == slider_index:
+                    _image = self.data_dict['data'][from_index]
+                else:
+                    _from_image = self.data_dict['data'][from_index]
+
+                    _to_image = self.data_dict['data'][to_index]
+
+                    _from_coefficient = np.abs(to_index - slider_index)
+                    _to_coefficient = np.abs(slider_index - from_index)
+                    _image = _from_image * _from_coefficient + _to_image * _to_coefficient
+
+        else: # only 1 row selected
             _image = self.get_image_selected()
-        else:  # display selected images according to slider position
-
-            # retrieve slider infos
-            slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
-
-            from_index = np.int(slider_index)
-            to_index = np.int(slider_index + 1)
-
-            if from_index == slider_index:
-                _image = self.data_dict['data'][from_index]
-            else:
-                _from_image = self.data_dict['data'][from_index]
-
-                _to_image = self.data_dict['data'][to_index]
-
-                _from_coefficient = np.abs(to_index - slider_index)
-                _to_coefficient = np.abs(slider_index - from_index)
-                _image = _from_image * _from_coefficient + _to_image * _to_coefficient
 
         if _image == []:
             return
@@ -409,6 +465,7 @@ class RegistrationUi(QMainWindow):
         row = self.ui.tableWidget.currentRow()
         self.ui.file_slider.setValue(row)
         self.display_image()
+        self.check_selection_slider_status()
         self.profile_line_moved()
         self.check_selection_slider_status()
         self.check_status_next_prev_image_button()
@@ -448,14 +505,17 @@ class RegistrationUi(QMainWindow):
         for _widget in list_widgets:
             _widget.setEnabled(not _is_checked)
         self.display_image()
+        self.profile_line_moved()
 
     def selection_slider_changed(self):
         # self.update_selection_images()
         self.display_image()
+        self.profile_line_moved()
 
     def selection_slider_moved(self):
         # self.update_selection_images()
         self.display_image()
+        self.profile_line_moved()
 
 
 class RegistrationFileSelection(object):
