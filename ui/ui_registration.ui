@@ -106,6 +106,12 @@
                <property name="maximum">
                 <number>100</number>
                </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>10</number>
+               </property>
                <property name="value">
                 <number>100</number>
                </property>
@@ -113,13 +119,16 @@
                 <enum>Qt::Vertical</enum>
                </property>
                <property name="invertedAppearance">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="invertedControls">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="tickPosition">
                 <enum>QSlider::TicksBothSides</enum>
+               </property>
+               <property name="tickInterval">
+                <number>100</number>
                </property>
               </widget>
              </item>

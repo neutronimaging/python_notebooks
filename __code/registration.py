@@ -275,10 +275,77 @@ class RegistrationUi(QMainWindow):
         if self.ui.selection_all.isChecked():
             self.display_image()
         else: # display selected images according to slider position
-            pass
+
+            # retrieve slider infos
+            # min_slider_index = np.int(self.ui.opacity_selection_slider.minimum()/100)
+            # max_slider_index = np.int(self.ui.opacity_selection_slider.maximum()/100)
+            slider_index = self.ui.opacity_selection_slider.sliderPosition()/100
+
+            from_index = np.int(slider_index)
+            to_index = np.int(slider_index+1)
+
+            if from_index == slider_index:
+                _image = self.data_dict['data'][from_index]
+            else:
+                _from_image = self.data_dict['data'][from_index]
+
+                _to_image = self.data_dict['data'][to_index]
+
+                _from_coefficient = np.abs(to_index - slider_index)
+                _to_coefficient = np.abs(slider_index - from_index)
+                _image = _from_image * _from_coefficient + _to_image * _to_coefficient
+
+
+            _view = self.ui.image_view.getView()
+            _view_box = _view.getViewBox()
+            _state = _view_box.getState()
+
+            first_update = False
+            if self.histogram_level == []:
+                first_update = True
+            _histo_widget = self.ui.image_view.getHistogramWidget()
+            self.histogram_level = _histo_widget.getLevels()
+
+            _opacity_coefficient = self.ui.opacity_slider.value()  # betwween 0 and 100
+            _opacity_image = _opacity_coefficient / 100.
+            _image = np.transpose(_image) * _opacity_image
+
+            _opacity_selected = 1 - _opacity_image
+            _reference_image = np.transpose(self.reference_image) * _opacity_selected
+
+            _final_image = _reference_image + _image
+            self.ui.image_view.setImage(_final_image)
+            self.live_image = _final_image
+            _view_box.setState(_state)
+
+            if not first_update:
+                _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
     def display_image(self):
-        _image = self.get_image_selected()
+        # if all selected
+        if self.ui.selection_all.isChecked():
+            _image = self.get_image_selected()
+        else:  # display selected images according to slider position
+
+            # retrieve slider infos
+            # min_slider_index = np.int(self.ui.opacity_selection_slider.minimum()/100)
+            # max_slider_index = np.int(self.ui.opacity_selection_slider.maximum()/100)
+            slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
+
+            from_index = np.int(slider_index)
+            to_index = np.int(slider_index + 1)
+
+            if from_index == slider_index:
+                _image = self.data_dict['data'][from_index]
+            else:
+                _from_image = self.data_dict['data'][from_index]
+
+                _to_image = self.data_dict['data'][to_index]
+
+                _from_coefficient = np.abs(to_index - slider_index)
+                _to_coefficient = np.abs(slider_index - from_index)
+                _image = _from_image * _from_coefficient + _to_image * _to_coefficient
+
         if _image == []:
             return
 
@@ -292,8 +359,7 @@ class RegistrationUi(QMainWindow):
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
 
-        # tab 1
-        _opacity_coefficient = self.ui.opacity_slider.value() # betwween 0 and 100
+        _opacity_coefficient = self.ui.opacity_slider.value()  # betwween 0 and 100
         _opacity_image = _opacity_coefficient / 100.
         _image = np.transpose(_image) * _opacity_image
 
@@ -307,6 +373,36 @@ class RegistrationUi(QMainWindow):
 
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
+
+
+        # _image = self.get_image_selected()
+        # if _image == []:
+        #     return
+        #
+        # _view = self.ui.image_view.getView()
+        # _view_box = _view.getViewBox()
+        # _state = _view_box.getState()
+        #
+        # first_update = False
+        # if self.histogram_level == []:
+        #     first_update = True
+        # _histo_widget = self.ui.image_view.getHistogramWidget()
+        # self.histogram_level = _histo_widget.getLevels()
+        #
+        # _opacity_coefficient = self.ui.opacity_slider.value() # betwween 0 and 100
+        # _opacity_image = _opacity_coefficient / 100.
+        # _image = np.transpose(_image) * _opacity_image
+        #
+        # _opacity_selected = 1 - _opacity_image
+        # _reference_image = np.transpose(self.reference_image) * _opacity_selected
+        #
+        # _final_image = _reference_image + _image
+        # self.ui.image_view.setImage(_final_image)
+        # self.live_image = _final_image
+        # _view_box.setState(_state)
+        #
+        # if not first_update:
+        #     _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
     def select_row_in_table(self, row=0):
         nbr_col = self.ui.tableWidget.columnCount()
@@ -366,11 +462,11 @@ class RegistrationUi(QMainWindow):
             bottom_row = selection[0].bottomRow()
             if np.abs(bottom_row - top_row) >= 1: # show selection images widgets
                 self.ui.selection_groupBox.setVisible(True)
-                self.ui.top_row_label.setValue("Row {}".format(top_row))
-                self.ui.bottom_row_label.setValue("Row {}".format(bottom_row))
-                self.ui.opacity_selection_slider.setMinimum(top_row)
-                self.ui.opacity_selection_slider.setMaximum(bottom_row)
-                self.ui.opacity_selection_slider.setValue(top_row)
+                self.ui.top_row_label.setText("Row {}".format(top_row+1))
+                self.ui.bottom_row_label.setText("Row {}".format(bottom_row+1))
+                self.ui.opacity_selection_slider.setMinimum(top_row*100)
+                self.ui.opacity_selection_slider.setMaximum(bottom_row*100)
+                self.ui.opacity_selection_slider.setSliderPosition(top_row*100)
                 _file_index_status = False
             else:
                 self.ui.selection_groupBox.setVisible(False)
@@ -427,13 +523,15 @@ class RegistrationUi(QMainWindow):
                         self.ui.opacity_selection_slider]
         for _widget in list_widgets:
             _widget.setEnabled(not _is_checked)
-        self.update_selection_images()
+        self.display_image()
 
     def selection_slider_changed(self):
-        self.update_selection_images()
+        # self.update_selection_images()
+        self.display_image()
 
     def selection_slider_moved(self):
-        self.update_selection_images()
+        # self.update_selection_images()
+        self.display_image()
 
 
 class RegistrationFileSelection(object):
