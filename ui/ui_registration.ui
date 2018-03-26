@@ -236,7 +236,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="next_Image_button">
+           <widget class="QPushButton" name="next_image_button">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Next Image</string>
             </property>
@@ -346,17 +349,17 @@
            </column>
            <column>
             <property name="text">
-             <string>Xoffset</string>
+             <string>Xoffset (pixels)</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>Yoffset</string>
+             <string>Yoffset (pixels)</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>Rotation</string>
+             <string>Rotation (degrees)</string>
             </property>
            </column>
           </widget>
@@ -595,7 +598,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>next_Image_button</sender>
+   <sender>next_image_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>next_image_button_clicked()</slot>

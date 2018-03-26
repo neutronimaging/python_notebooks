@@ -128,6 +128,7 @@ class RegistrationUi(QMainWindow):
 
         # selection slider
         self.ui.selection_groupBox.setVisible(False)
+        self.ui.next_image_button.setEnabled(True)
 
     def init_table(self):
         """populate the table with list of file names and default xoffset, yoffset and rotation"""
@@ -243,7 +244,8 @@ class RegistrationUi(QMainWindow):
 
         self.__set_item(row, 0, infos['filename'], is_reference_image=is_reference_image)
         self.__set_item(row, 1, infos['xoffset'], is_reference_image=is_reference_image)
-        self.__set_item(row, 2, infos['rotation'], is_reference_image=is_reference_image)
+        self.__set_item(row, 2, infos['yoffset'], is_reference_image=is_reference_image)
+        self.__set_item(row, 3, infos['rotation'], is_reference_image=is_reference_image)
 
     def __set_item(self, row=0, col=0, value='', is_reference_image=False):
         item = QtGui.QTableWidgetItem(str(value))
@@ -316,16 +318,16 @@ class RegistrationUi(QMainWindow):
 
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
-        current_row_selected = self.ui.file_slider.value()
+        current_slider_value = self.ui.file_slider.value()
         min_slider_value = self.ui.file_slider.minimum()
         max_slider_value = self.ui.file_slider.maximum()
 
         _prev = True
         _next = True
 
-        if current_row_selected == min_slider_value:
+        if current_slider_value == min_slider_value:
             _prev = False
-        elif current_row_selected == max_slider_value:
+        elif current_slider_value == max_slider_value:
             _next = False
 
         self.ui.previous_image_button.setEnabled(_prev)
@@ -333,10 +335,10 @@ class RegistrationUi(QMainWindow):
 
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
-        current_row_selected = self.ui.file_slider.value()
-        new_row_selected = current_row_selected + offset - 1
+        current_slider_value = self.ui.file_slider.value()
+        new_row_selected = current_slider_value + offset
         self.select_row_in_table(row=new_row_selected)
-        self.ui.file_slider.setValue(new_row_selected+1)
+        self.ui.file_slider.setValue(new_row_selected)
         self.check_status_next_prev_image_button()
         self.display_image()
         self.profile_line_moved()
@@ -351,7 +353,6 @@ class RegistrationUi(QMainWindow):
                 self.ui.selection_groupBox.setVisible(True)
             else:
                 self.ui.selection_groupBox.setVisible(False)
-
 
     # Event handler
 
@@ -369,7 +370,7 @@ class RegistrationUi(QMainWindow):
 
     def slider_file_changed(self, index_selected):
         self.ui.tableWidget.blockSignals(True)
-        self.select_row_in_table(row=index_selected-1)
+        self.select_row_in_table(row=index_selected)
         self.display_image()
         self.profile_line_moved()
         self.ui.tableWidget.blockSignals(False)
