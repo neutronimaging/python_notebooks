@@ -263,12 +263,11 @@ class RegistrationUi(QMainWindow):
             return []
 
         table_selection = table_selection[0]
-        top_row = table_selection.topRow()+1   # offset because first image is reference image
-        bottom_row = table_selection.bottomRow() + 2
+        top_row = table_selection.topRow()   # offset because first image is reference image
+        bottom_row = table_selection.bottomRow() + 1
 
         _image = np.mean(self.data_dict['data'][top_row:bottom_row], axis=0)
 
-        # _image = self.data_dict['data'][index_selected]
         return _image
 
     def display_image(self):
@@ -362,7 +361,7 @@ class RegistrationUi(QMainWindow):
     def table_row_clicked(self):
         self.ui.file_slider.blockSignals(True)
         row = self.ui.tableWidget.currentRow()
-        self.ui.file_slider.setValue(row+1)
+        self.ui.file_slider.setValue(row)
         self.display_image()
         self.profile_line_moved()
         self.check_selection_slider_status()
