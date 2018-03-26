@@ -270,6 +270,13 @@ class RegistrationUi(QMainWindow):
 
         return _image
 
+    def update_selection_images(self):
+        # if all selected
+        if self.ui.selection_all.isChecked():
+            self.display_image()
+        else: # display selected images according to slider position
+            pass
+
     def display_image(self):
         _image = self.get_image_selected()
         if _image == []:
@@ -357,8 +364,13 @@ class RegistrationUi(QMainWindow):
 
             top_row = selection[0].topRow()
             bottom_row = selection[0].bottomRow()
-            if np.abs(bottom_row - top_row) >= 1:
+            if np.abs(bottom_row - top_row) >= 1: # show selection images widgets
                 self.ui.selection_groupBox.setVisible(True)
+                self.ui.top_row_label.setValue("Row {}".format(top_row))
+                self.ui.bottom_row_label.setValue("Row {}".format(bottom_row))
+                self.ui.opacity_selection_slider.setMinimum(top_row)
+                self.ui.opacity_selection_slider.setMaximum(bottom_row)
+                self.ui.opacity_selection_slider.setValue(top_row)
                 _file_index_status = False
             else:
                 self.ui.selection_groupBox.setVisible(False)
@@ -406,6 +418,22 @@ class RegistrationUi(QMainWindow):
 
     def next_image_button_clicked(self):
         self.change_slider(offset = +1)
+
+    def selection_all_clicked(self):
+        _is_checked = self.ui.selection_all.isChecked()
+
+        list_widgets = [self.ui.top_row_label,
+                        self.ui.bottom_row_label,
+                        self.ui.opacity_selection_slider]
+        for _widget in list_widgets:
+            _widget.setEnabled(not _is_checked)
+        self.update_selection_images()
+
+    def selection_slider_changed(self):
+        self.update_selection_images()
+
+    def selection_slider_moved(self):
+        self.update_selection_images()
 
 
 class RegistrationFileSelection(object):
