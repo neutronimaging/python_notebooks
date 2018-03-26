@@ -16,6 +16,7 @@ import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
 from __code.file_handler import make_ascii_file
+from __code.color import  Color
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -38,17 +39,21 @@ class RegistrationUi(QMainWindow):
 
     table_column_width = [650, 80, 80, 80]
 
+
     # image view
     histogram_level = []
 
     # by default, the reference image is the first image
     reference_image_index = 0
     reference_image = []
+    color_reference_background = QtGui.QColor(50, 250, 50)
+    color_reference_profile = [50, 250, 50]
 
     # image currently display in image_view
     live_image = []
 
     new_reference_image = True
+    list_rgb_profile_color = []
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -70,6 +75,7 @@ class RegistrationUi(QMainWindow):
         self.init_pyqtgrpah()
         self.init_widgets()
         self.init_table()
+        self.init_parameters()
 
         # display line profile
         self.profile_line_moved()
@@ -77,6 +83,11 @@ class RegistrationUi(QMainWindow):
         self.new_reference_image = False
 
     # initialization
+    def init_parameters(self):
+        nbr_files = len(self.data_dict['file_name'])
+        _color = Color()
+        self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
+
     def init_pyqtgrpah(self):
 
         area = DockArea()
@@ -223,7 +234,9 @@ class RegistrationUi(QMainWindow):
                     _data = self.data_dict['data'][_index]
                     _filename = os.path.basename(self.data_dict['file_name'][_index])
                     _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                    self.ui.profile.plot(xaxis, _profile, name=_filename)
+                    self.ui.profile.plot(xaxis, _profile,
+                                         name=_filename,
+                                         pen=self.list_rgb_profile_color[_index])
 
             else: # selection slider
                 slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
@@ -231,7 +244,10 @@ class RegistrationUi(QMainWindow):
                 _data = self.data_dict['data'][from_index]
                 _filename = os.path.basename(self.data_dict['file_name'][from_index])
                 _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                self.ui.profile.plot(xaxis, _profile, name=_filename)
+                self.ui.profile.plot(xaxis,
+                                     _profile,
+                                     name=_filename,
+                                     pen=self.list_rgb_profile_color[from_index])
 
                 if from_index == slider_index:
                     pass
@@ -241,7 +257,10 @@ class RegistrationUi(QMainWindow):
                     _data = self.data_dict['data'][to_index]
                     _filename = os.path.basename(self.data_dict['file_name'][to_index])
                     _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                    self.ui.profile.plot(xaxis, _profile, name=_filename)
+                    self.ui.profile.plot(xaxis,
+                                         _profile,
+                                         name=_filename,
+                                         pen=self.list_rgb_profile_color[to_index])
 
         else:
 
@@ -256,8 +275,10 @@ class RegistrationUi(QMainWindow):
                 _data = self.data_dict['data'][row_selected]
                 _filename = os.path.basename(self.data_dict['file_name'][row_selected])
                 _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                self.ui.profile.plot(xaxis, _profile, name=_filename)
-
+                self.ui.profile.plot(xaxis,
+                                     _profile,
+                                     name=_filename,
+                                     pen=self.list_rgb_profile_color[row_selected])
 
 
         # selected_image = self.live_image
@@ -273,7 +294,9 @@ class RegistrationUi(QMainWindow):
                                              _point[1]] for _point in intermediate_points]
 
         reference_file_name = os.path.basename(self.data_dict['file_name'][self.reference_image_index])
-        self.ui.profile.plot(xaxis, profile_reference, pen=[255,0,0], name='Reference: {}'.format(reference_file_name))
+        self.ui.profile.plot(xaxis, profile_reference,
+                             pen=self.color_reference_profile,
+                             name='Reference: {}'.format(reference_file_name))
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
@@ -308,7 +331,7 @@ class RegistrationUi(QMainWindow):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if is_reference_image:
-            item.setBackground(QtGui.QColor(50,250,50))
+            item.setBackground(self.color_reference_background)
 
     def get_image_selected(self):
         """to get the image iselected, we will use the table selection as the new version
