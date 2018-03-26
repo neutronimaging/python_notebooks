@@ -344,14 +344,28 @@ class RegistrationUi(QMainWindow):
         self.ui.file_slider.blockSignals(False)
 
     def check_selection_slider_status(self):
+        """
+        if there is more than one row selected, we need to display the left slider but also
+        we need to disable the next, prev buttons and file index slider
+        """
         selection = self.ui.tableWidget.selectedRanges()
         if selection:
+
+            list_file_index_widgets = [self.ui.previous_image_button,
+                                       self.ui.file_slider,
+                                       self.ui.next_image_button]
+
             top_row = selection[0].topRow()
             bottom_row = selection[0].bottomRow()
             if np.abs(bottom_row - top_row) >= 1:
                 self.ui.selection_groupBox.setVisible(True)
+                _file_index_status = False
             else:
                 self.ui.selection_groupBox.setVisible(False)
+                _file_index_status = True
+
+            for _widget in list_file_index_widgets:
+                _widget.setVisible(_file_index_status)
 
     # Event handler
 
@@ -365,6 +379,7 @@ class RegistrationUi(QMainWindow):
         self.display_image()
         self.profile_line_moved()
         self.check_selection_slider_status()
+        self.check_status_next_prev_image_button()
         self.ui.file_slider.blockSignals(False)
 
     def slider_file_changed(self, index_selected):
@@ -372,6 +387,7 @@ class RegistrationUi(QMainWindow):
         self.select_row_in_table(row=index_selected)
         self.display_image()
         self.profile_line_moved()
+        self.check_status_next_prev_image_button()
         self.ui.tableWidget.blockSignals(False)
 
     def help_button_clicked(self):
