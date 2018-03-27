@@ -190,7 +190,7 @@ class RegistrationUi(QMainWindow):
             yoffset = np.int(self.ui.tableWidget.item(_row, 2).text())
             rotate_angle = np.float(self.ui.tableWidget.item(_row, 3).text())
 
-            _data = data_raw[_row]
+            _data = data_raw[_row].copy()
             _data  = transform.rotate(_data, rotate_angle)
             _data = shift(_data, (yoffset, xoffset), )
 
@@ -629,6 +629,8 @@ class RegistrationTool(QMainWindow):
                              'height': 100},
                    'rotate': {'width': 100,
                               'height': 200},
+                   'small_rotate': {'width': 50,
+                                    'height': 100},
                    }
 
     list_arrow_widgets = []
@@ -663,6 +665,12 @@ class RegistrationTool(QMainWindow):
         rotate_right_file = os.path.abspath(os.path.join(_file_path, 'static/rotate_right.png'))
         self.ui.rotate_right_button.setIcon(QtGui.QIcon(rotate_right_file))
 
+        small_rotate_left_file = os.path.abspath(os.path.join(_file_path, 'static/small_rotate_left.png'))
+        self.ui.small_rotate_left_button.setIcon(QtGui.QIcon(small_rotate_left_file))
+
+        small_rotate_right_file = os.path.abspath(os.path.join(_file_path, 'static/small_rotate_right.png'))
+        self.ui.small_rotate_right_button.setIcon(QtGui.QIcon(small_rotate_right_file))
+
         self.list_arrow_widgets = [self.ui.up_button,
                               self.ui.down_button,
                               self.ui.left_button,
@@ -672,10 +680,17 @@ class RegistrationTool(QMainWindow):
                               height = self.button_size['arrow']['height'])
 
         self.list_rotate_widgets = [self.ui.rotate_left_button,
-                               self.ui.rotate_right_button]
+                                    self.ui.rotate_right_button]
         self._set_widgets_size(widgets = self.list_rotate_widgets,
                               width = self.button_size['rotate']['width'],
                               height = self.button_size['rotate']['height'])
+
+        self.list_small_rotate_widgets = [self.ui.small_rotate_left_button,
+                                        self.ui.small_rotate_right_button]
+        self._set_widgets_size(widgets = self.list_small_rotate_widgets,
+                              width = self.button_size['small_rotate']['width'],
+                              height = self.button_size['small_rotate']['height'])
+
 
     def _set_widgets_size(self, widgets=[], width=10, height=10):
         for _widget in widgets:
@@ -694,6 +709,9 @@ class RegistrationTool(QMainWindow):
                 _widget.setEnabled(_enabled)
 
             for _widget in self.list_rotate_widgets:
+                _widget.setEnabled(_enabled)
+
+            for _widget in self.list_small_rotate_widgets:
                 _widget.setEnabled(_enabled)
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
@@ -743,6 +761,7 @@ class RegistrationTool(QMainWindow):
                 self.parent.ui.tableWidget.item(_row, 3).setText("{:.2f}".format(_new_value))
 
         self.parent.ui.tableWidget.blockSignals(False)
+        self.parent.table_cell_modified()
 
     # event handler
     def left_button_clicked(self):
@@ -757,11 +776,18 @@ class RegistrationTool(QMainWindow):
     def down_button_clicked(self):
         self.modified_selected_images(motion='down')
 
-    def rotate_left_button_clicked(self):
+    def small_rotate_left_button_clicked(self):
         self.modified_selected_images(rotation=-.1)
 
-    def rotate_right_button_clicked(self):
+    def small_rotate_right_button_clicked(self):
         self.modified_selected_images(rotation=.1)
+
+    def rotate_left_button_clicked(self):
+        self.modified_selected_images(rotation=-1)
+
+    def rotate_right_button_clicked(self):
+        self.modified_selected_images(rotation=1)
+
 
 
 class RegistrationFileSelection(object):
