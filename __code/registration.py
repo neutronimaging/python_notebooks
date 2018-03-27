@@ -483,6 +483,26 @@ class RegistrationUi(QMainWindow):
             for _widget in list_file_index_widgets:
                 _widget.setVisible(_file_index_status)
 
+    # Utilities
+
+    def get_list_row_selected(self):
+        table_selection = self.ui.tableWidget.selectedRanges()
+        if table_selection == []:
+            return None
+
+        table_selection = table_selection[0]
+        top_row = table_selection.topRow()
+        bottom_row = table_selection.bottomRow() + 1
+
+        return np.arange(top_row, bottom_row)
+
+    def check_registration_tool_widgets(self):
+        """if the registration tool is active, and the reference image is the only row selected,
+        disable the widgets"""
+        if self.registration_tool_ui:
+            self.registration_tool_ui.update_status_widgets()
+
+
     # Event handler
 
     def opacity_changed(self, opacity_value):
@@ -497,6 +517,7 @@ class RegistrationUi(QMainWindow):
         self.profile_line_moved()
         self.check_selection_slider_status()
         self.check_status_next_prev_image_button()
+        self.check_registration_tool_widgets()
         self.ui.file_slider.blockSignals(False)
 
     def slider_file_changed(self, index_selected):
@@ -516,7 +537,7 @@ class RegistrationUi(QMainWindow):
         self.close()
 
     def export_button_clicked(self):
-        pass000
+        pass
 
     def closeEvent(self, event=None):
         if self.registration_tool_ui:
@@ -578,6 +599,9 @@ class RegistrationTool(QMainWindow):
                               'height': 200},
                    }
 
+    list_arrow_widgets = []
+    list_rotate_widgets = []
+
     def __init__(self, parent=None):
         self.parent = parent
         QMainWindow.__init__(self, parent=parent)
@@ -585,6 +609,7 @@ class RegistrationTool(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Registration Tool")
         self.initialize_widgets()
+        self.update_status_widgets()
 
     def initialize_widgets(self):
         _file_path = os.path.dirname(__file__)
@@ -606,23 +631,43 @@ class RegistrationTool(QMainWindow):
         rotate_right_file = os.path.abspath(os.path.join(_file_path, 'static/rotate_right.png'))
         self.ui.rotate_right_button.setIcon(QtGui.QIcon(rotate_right_file))
 
-        list_arrow_widgets = [self.ui.up_button,
+        self.list_arrow_widgets = [self.ui.up_button,
                               self.ui.down_button,
                               self.ui.left_button,
                               self.ui.right_button]
-        self._set_widgets_size(widgets = list_arrow_widgets,
+        self._set_widgets_size(widgets = self.list_arrow_widgets,
                               width = self.button_size['arrow']['width'],
                               height = self.button_size['arrow']['height'])
 
-        list_rotate_widgets = [self.ui.rotate_left_button,
+        self.list_rotate_widgets = [self.ui.rotate_left_button,
                                self.ui.rotate_right_button]
-        self._set_widgets_size(widgets = list_rotate_widgets,
+        self._set_widgets_size(widgets = self.list_rotate_widgets,
                               width = self.button_size['rotate']['width'],
                               height = self.button_size['rotate']['height'])
 
     def _set_widgets_size(self, widgets=[], width=10, height=10):
         for _widget in widgets:
             _widget.setIconSize(QtCore.QSize(width, height))
+
+    def update_status_widgets(self):
+            list_row_selected = self.parent.get_list_row_selected()
+            _enabled = True
+
+            print("list_row_selected: {}".format(list_row_selected))
+
+            if not list_row_selected == []:
+                if len(list_row_selected) == 1:
+                    if list_row_selected[0] == self.parent.reference_image_index:
+                        _enabled = False
+
+            for _widget in self.list_arrow_widgets:
+                _widget.setEnabled(_enabled)
+
+            for _widget in self.list_rotate_widgets:
+                _widget.setEnabled(_enabled)
+
+    def closeEvent(self, a0: QtGui.QCloseEvent):
+        self.parent.registration_tool_ui = None
 
 
 class RegistrationFileSelection(object):
