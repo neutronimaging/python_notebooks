@@ -575,13 +575,19 @@ class RegistrationTool(QMainWindow):
         self.ui = UiMainWindowTool()
         self.ui.setupUi(self)
         self.setWindowTitle("Registration Tool")
-
         self.initialize_widgets()
 
     def initialize_widgets(self):
-        pass
+        _file_path = os.path.dirname(__file__)
+        up_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/up_arrow.png'))
+        self.ui.up_button.setIcon(QtGui.QIcon(up_arrow_file))
 
 
+        self.ui.down_button.setIcon(QtGui.QIcon("./static/down_arrow.png"))
+        self.ui.right_button.setIcon(QtGui.QIcon("./static/right_arrow.png"))
+        self.ui.left_button.setIcon(QtGui.QIcon("./static/left_arrow.png"))
+        self.ui.rotate_left_button.setIcon(QtGui.QIcon("./static/rotate_left.png"))
+        self.ui.rotate_right_button.setIcon(QtGui.QIcon("./static/rotate_right_png"))
 
 
 class RegistrationFileSelection(object):
