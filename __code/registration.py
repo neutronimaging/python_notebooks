@@ -669,6 +669,67 @@ class RegistrationTool(QMainWindow):
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.parent.registration_tool_ui = None
 
+    def modified_selected_images(self, motion=None, rotation=0):
+        # retrieve row selected and changed values
+        list_row_selected = self.parent.get_list_row_selected()
+        for _row in list_row_selected:
+
+            # we never modified the reference image
+            if _row == self.parent.reference_image_index:
+                continue
+
+            if motion:
+
+                # left and right - > we works with xoffset, column 1
+                if motion in ['left', 'right']:
+                    _old_value = np.int(self.parent.ui.tableWidget.item(_row, 1).text())
+
+                    if motion == 'left':
+                        xoffset = -1
+                    else:
+                        xoffset = 1
+
+                    _new_value = _old_value + xoffset
+                    self.parent.ui.tableWidget.item(_row, 1).setText(str(_new_value))
+
+                else: # up and down -> yoffset, column 2
+
+                    _old_value = np.int(self.parent.ui.tableWidget.item(_row, 2).text())
+
+                    if motion == 'up':
+                        yoffset = -1
+                    else:
+                        yoffset = 1
+
+                    _new_value = _old_value + yoffset
+                    self.parent.ui.tableWidget.item(_row, 2).setText(str(_new_value))
+
+            if rotation: # column 3
+                pass
+
+
+
+
+
+    # event handler
+    def left_button_clicked(self):
+        self.modified_selected_images(motion='left')
+
+    def right_button_clicked(self):
+        self.modified_selected_images(motion='right')
+
+    def up_button_clicked(self):
+        self.modified_selected_images(motion='up')
+
+    def down_button_clicked(self):
+        self.modified_selected_images(motion='down')
+
+    def rotate_left_button_clicked(self):
+        self.modified_selected_images(rotation=-1)
+
+    def rotate_right_button_clicked(self):
+        self.modified_selected_images(rotate=1)
+
 
 class RegistrationFileSelection(object):
 

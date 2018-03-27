@@ -257,5 +257,110 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>up_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>187</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>361</x>
+     <y>269</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>359</x>
+     <y>320</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>198</x>
+     <y>494</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>201</x>
+     <y>526</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>41</x>
+     <y>320</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotate_left_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>rotate_left_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>269</x>
+     <y>276</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>262</x>
+     <y>375</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotate_right_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>rotate_right_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>337</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>up_button_clicked()</slot>
+  <slot>right_button_clicked()</slot>
+  <slot>down_button_clicked()</slot>
+  <slot>left_button_clicked()</slot>
+  <slot>rotate_left_button_clicked()</slot>
+  <slot>rotate_right_button_clicked()</slot>
+ </slots>
 </ui>

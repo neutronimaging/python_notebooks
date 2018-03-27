@@ -101,6 +101,12 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.up_button.clicked.connect(MainWindow.up_button_clicked)
+        self.right_button.clicked.connect(MainWindow.right_button_clicked)
+        self.down_button.clicked.connect(MainWindow.down_button_clicked)
+        self.left_button.clicked.connect(MainWindow.left_button_clicked)
+        self.rotate_left_button.clicked.connect(MainWindow.rotate_left_button_clicked)
+        self.rotate_right_button.clicked.connect(MainWindow.rotate_right_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
