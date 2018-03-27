@@ -229,7 +229,7 @@ class Ui_MainWindow(object):
         self.actionProfiles.setObjectName("actionProfiles")
 
         self.retranslateUi(MainWindow)
-        self.export_button.clicked.connect(MainWindow.ok_button_clicked)
+        self.export_button.clicked.connect(MainWindow.export_button_clicked)
         self.help_button.clicked.connect(MainWindow.help_button_clicked)
         self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
         self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)

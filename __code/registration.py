@@ -515,8 +515,12 @@ class RegistrationUi(QMainWindow):
         # do soemthing here
         self.close()
 
-    def cancel_button_clicked(self):
-        self.close()
+    def export_button_clicked(self):
+        pass000
+
+    def closeEvent(self, event=None):
+        if self.registration_tool_ui:
+            self.registration_tool_ui.close()
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
@@ -619,7 +623,6 @@ class RegistrationTool(QMainWindow):
     def _set_widgets_size(self, widgets=[], width=10, height=10):
         for _widget in widgets:
             _widget.setIconSize(QtCore.QSize(width, height))
-            # _widget.setFixedHeight(height)
 
 
 class RegistrationFileSelection(object):
@@ -648,3 +651,6 @@ class RegistrationFileSelection(object):
                                                              multiple=True)
 
         self.files_ui.show()
+
+    def close(self):
+        self.parent.registration_tool_ui = None

@@ -554,7 +554,7 @@
    <sender>export_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>ok_button_clicked()</slot>
+   <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>993</x>
@@ -744,7 +744,6 @@
   </connection>
  </connections>
  <slots>
-  <slot>ok_button_clicked()</slot>
   <slot>help_button_clicked()</slot>
   <slot>slider_file_changed()</slot>
   <slot>table_row_clicked()</slot>
@@ -756,5 +755,6 @@
   <slot>selection_slider_changed()</slot>
   <slot>selection_slider_moved()</slot>
   <slot>registration_tool_button_clicked()</slot>
+  <slot>export_button_clicked()</slot>
  </slots>
 </ui>
