@@ -669,7 +669,7 @@ class RegistrationTool(QMainWindow):
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.parent.registration_tool_ui = None
 
-    def modified_selected_images(self, motion=None, rotation=0):
+    def modified_selected_images(self, motion=None, rotation=0.):
         # retrieve row selected and changed values
         list_row_selected = self.parent.get_list_row_selected()
         for _row in list_row_selected:
@@ -704,11 +704,11 @@ class RegistrationTool(QMainWindow):
                     _new_value = _old_value + yoffset
                     self.parent.ui.tableWidget.item(_row, 2).setText(str(_new_value))
 
-            if rotation: # column 3
-                pass
+            if not rotation == 0: # column 3
 
-
-
+                _old_value = np.float(self.parent.ui.tableWidget.item(_row, 3).text())
+                _new_value = _old_value + rotation
+                self.parent.ui.tableWidget.item(_row, 3).setText("{:.2f}".format(_new_value))
 
 
     # event handler
@@ -725,10 +725,10 @@ class RegistrationTool(QMainWindow):
         self.modified_selected_images(motion='down')
 
     def rotate_left_button_clicked(self):
-        self.modified_selected_images(rotation=-1)
+        self.modified_selected_images(rotation=-.1)
 
     def rotate_right_button_clicked(self):
-        self.modified_selected_images(rotate=1)
+        self.modified_selected_images(rotation=.1)
 
 
 class RegistrationFileSelection(object):
