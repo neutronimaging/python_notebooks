@@ -568,6 +568,11 @@ class RegistrationToolLauncher(object):
 class RegistrationTool(QMainWindow):
 
     parent = None
+    button_size = {'arrow': {'width': 100,
+                             'height': 100},
+                   'rotate': {'width': 100,
+                              'height': 200},
+                   }
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -582,12 +587,39 @@ class RegistrationTool(QMainWindow):
         up_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/up_arrow.png'))
         self.ui.up_button.setIcon(QtGui.QIcon(up_arrow_file))
 
+        down_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/down_arrow.png'))
+        self.ui.down_button.setIcon(QtGui.QIcon(down_arrow_file))
 
-        self.ui.down_button.setIcon(QtGui.QIcon("./static/down_arrow.png"))
-        self.ui.right_button.setIcon(QtGui.QIcon("./static/right_arrow.png"))
-        self.ui.left_button.setIcon(QtGui.QIcon("./static/left_arrow.png"))
-        self.ui.rotate_left_button.setIcon(QtGui.QIcon("./static/rotate_left.png"))
-        self.ui.rotate_right_button.setIcon(QtGui.QIcon("./static/rotate_right_png"))
+        right_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/right_arrow.png'))
+        self.ui.right_button.setIcon(QtGui.QIcon(right_arrow_file))
+
+        left_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/left_arrow.png'))
+        self.ui.left_button.setIcon(QtGui.QIcon(left_arrow_file))
+
+        rotate_left_file = os.path.abspath(os.path.join(_file_path, 'static/rotate_left.png'))
+        self.ui.rotate_left_button.setIcon(QtGui.QIcon(rotate_left_file))
+
+        rotate_right_file = os.path.abspath(os.path.join(_file_path, 'static/rotate_right.png'))
+        self.ui.rotate_right_button.setIcon(QtGui.QIcon(rotate_right_file))
+
+        list_arrow_widgets = [self.ui.up_button,
+                              self.ui.down_button,
+                              self.ui.left_button,
+                              self.ui.right_button]
+        self._set_widgets_size(widgets = list_arrow_widgets,
+                              width = self.button_size['arrow']['width'],
+                              height = self.button_size['arrow']['height'])
+
+        list_rotate_widgets = [self.ui.rotate_left_button,
+                               self.ui.rotate_right_button]
+        self._set_widgets_size(widgets = list_rotate_widgets,
+                              width = self.button_size['rotate']['width'],
+                              height = self.button_size['rotate']['height'])
+
+    def _set_widgets_size(self, widgets=[], width=10, height=10):
+        for _widget in widgets:
+            _widget.setIconSize(QtCore.QSize(width, height))
+            # _widget.setFixedHeight(height)
 
 
 class RegistrationFileSelection(object):
