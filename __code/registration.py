@@ -6,6 +6,9 @@ from ipywidgets import widgets
 
 import numpy as np
 import os
+from skimage import transform
+from scipy.ndimage.interpolation import shift
+
 import re
 import glob
 from scipy.special import erf
@@ -74,6 +77,10 @@ class RegistrationUi(QMainWindow):
                                                                      #'data': [[...],[...]]],
                                                                      #'metadata': [],
                                                                      #'shape': {}}
+
+        # untouched array of images (used to move and rotate images)
+        self.data_dict_raw = data_dict.copy()
+
         self.reference_image = self.data_dict['data'][self.reference_image_index]
 
         # initialization
@@ -171,6 +178,23 @@ class RegistrationUi(QMainWindow):
 
         #select first row
         self.select_row_in_table(0)
+
+    def modified_images(self, list_row=[]):
+        """using data_dict_raw images, will apply offset and rotation parameters
+        and will save them in data_dict for plotting"""
+
+        data_raw = self.data_dict_raw['data']
+        for _row in list_row:
+
+            xoffset = np.int(self.ui.tableWidget.item(_row, 1).text())
+            yoffset = np.int(self.ui.tableWidget.item(_row, 2).text())
+            rotate_angle = np.float(self.ui.tableWidget.item(_row, 3).text())
+
+            _data = data_raw[_row]
+            _data  = transform.rotate(_data, rotate_angle)
+            _data = shift(_data, (yoffset, xoffset), )
+
+            self.data_dict['data'][_row] = _data
 
     def _intermediates_points(self, p1, p2):
         """"Return a list of nb_points equally spaced points
@@ -305,10 +329,12 @@ class RegistrationUi(QMainWindow):
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
+        self.ui.tableWidget.blockSignals(True)
         table_registration = self.table_registration
         for _row in table_registration.keys():
             _row_infos = table_registration[_row]
             self.__insert_table_row(infos=_row_infos, row=_row)
+        self.ui.tableWidget.blockSignals(False)
 
     def refresh_table(self):
         """refresh table contain by removing first everything before repopulating it"""
@@ -520,6 +546,12 @@ class RegistrationUi(QMainWindow):
         self.check_registration_tool_widgets()
         self.ui.file_slider.blockSignals(False)
 
+    def table_cell_modified(self, row, column):
+        list_row_selected = self.get_list_row_selected()
+        self.modified_images(list_row=list_row_selected)
+        self.display_image()
+        self.profile_line_moved()
+
     def slider_file_changed(self, index_selected):
         self.ui.tableWidget.blockSignals(True)
         self.select_row_in_table(row=index_selected)
@@ -653,8 +685,6 @@ class RegistrationTool(QMainWindow):
             list_row_selected = self.parent.get_list_row_selected()
             _enabled = True
 
-            print("list_row_selected: {}".format(list_row_selected))
-
             if not list_row_selected == []:
                 if len(list_row_selected) == 1:
                     if list_row_selected[0] == self.parent.reference_image_index:
@@ -671,6 +701,8 @@ class RegistrationTool(QMainWindow):
 
     def modified_selected_images(self, motion=None, rotation=0.):
         # retrieve row selected and changed values
+        self.parent.ui.tableWidget.blockSignals(True)
+
         list_row_selected = self.parent.get_list_row_selected()
         for _row in list_row_selected:
 
@@ -710,6 +742,7 @@ class RegistrationTool(QMainWindow):
                 _new_value = _old_value + rotation
                 self.parent.ui.tableWidget.item(_row, 3).setText("{:.2f}".format(_new_value))
 
+        self.parent.ui.tableWidget.blockSignals(False)
 
     # event handler
     def left_button_clicked(self):

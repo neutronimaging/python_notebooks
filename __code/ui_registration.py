@@ -241,6 +241,7 @@ class Ui_MainWindow(object):
         self.opacity_selection_slider.sliderPressed.connect(MainWindow.selection_slider_changed)
         self.opacity_selection_slider.sliderMoved['int'].connect(MainWindow.selection_slider_moved)
         self.registration_tool_button.clicked.connect(MainWindow.registration_tool_button_clicked)
+        self.tableWidget.cellChanged['int','int'].connect(MainWindow.table_cell_modified)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

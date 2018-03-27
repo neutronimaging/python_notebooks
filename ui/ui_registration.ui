@@ -742,6 +742,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>cellChanged(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_cell_modified()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>624</x>
+     <y>760</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>692</x>
+     <y>1120</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -756,5 +772,6 @@
   <slot>selection_slider_moved()</slot>
   <slot>registration_tool_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
+  <slot>table_cell_modified()</slot>
  </slots>
 </ui>

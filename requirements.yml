@@ -8,6 +8,7 @@ jupyter
 scipy
 matplotlib
 -c neutrons ipywe
+scikit-image
 
 _nb_ext_conf=0.3.0=py35_0
 anaconda-client=1.6.0=py35_0
