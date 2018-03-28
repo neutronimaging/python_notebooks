@@ -870,7 +870,7 @@ class RegistrationAuto(object):
 
     def __init__(self, reference_image=[], floating_images=[]):
         self.reference_image = reference_image
-        self.list_images = list_images
+        self.list_images = floating_images
 
 
     def auto_align(self):
