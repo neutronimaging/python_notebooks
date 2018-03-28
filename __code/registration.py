@@ -631,7 +631,7 @@ class RegistrationUi(QMainWindow):
         self.profile_line_moved()
 
     def manual_registration_button_clicked(self):
-        o_registration_tool = RegistrationToolLauncher(parent=self)
+        o_registration_tool = RegistrationManualLauncher(parent=self)
 
     def auto_registration_button_clicked(self):
         _are_you_sure_message = QtGui.QMessageBox()
@@ -650,7 +650,7 @@ class RegistrationUi(QMainWindow):
             o_auto_register.auto_align()
 
 
-class RegistrationToolLauncher(object):
+class RegistrationManualLauncher(object):
 
     parent = None
 
@@ -658,7 +658,7 @@ class RegistrationToolLauncher(object):
         self.parent = parent
 
         if self.parent.registration_tool_ui == None:
-            tool_ui = RegistrationTool(parent=parent)
+            tool_ui = RegistrationManual(parent=parent)
             tool_ui.show()
             self.parent.registration_tool_ui = tool_ui
         else:
@@ -666,7 +666,7 @@ class RegistrationToolLauncher(object):
             self.parent.registration_tool_ui.activateWindow()
 
 
-class RegistrationTool(QMainWindow):
+class RegistrationManual(QMainWindow):
 
     parent = None
     button_size = {'arrow': {'width': 100,
