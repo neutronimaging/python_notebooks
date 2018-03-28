@@ -645,8 +645,10 @@ class RegistrationUi(QMainWindow):
 
     def _msgbtn(self, button_id):
         if button_id.text() == "&Yes":
-            #auto alignment
-            pass
+            o_auto_register = RegistrationAuto(reference_image=self.reference_image,
+                                               floating_images=self.data_dict['data'])
+            o_auto_register.auto_align()
+
 
 class RegistrationToolLauncher(object):
 
@@ -860,3 +862,17 @@ class RegistrationFileSelection(object):
 
     def close(self):
         self.parent.registration_tool_ui = None
+
+
+class RegistrationAuto(object):
+
+    registered_parameters = {}
+
+    def __init__(self, reference_image=[], floating_images=[]):
+        self.reference_image = reference_image
+        self.list_images = list_images
+
+
+    def auto_align(self):
+        pass
+
