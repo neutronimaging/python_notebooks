@@ -636,7 +636,7 @@ class RegistrationUi(QMainWindow):
     def auto_registration_button_clicked(self):
         _are_you_sure_message = QtGui.QMessageBox()
         _are_you_sure_message.setIcon(QtGui.QMessageBox.Warning)
-        _are_you_sure_message.setText("Do you want to automatically realign all the images!")
+        _are_you_sure_message.setText("Are you sure you want to automatically realign ALL the images!")
         _are_you_sure_message.setWindowTitle("Automatic Alignment")
         _are_you_sure_message.setDetailedText("This will overwrite any manual alignment you made to the data!")
         _are_you_sure_message.setStandardButtons(QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
@@ -645,6 +645,7 @@ class RegistrationUi(QMainWindow):
 
     def _msgbtn(self, button_id):
         if button_id.text() == "&Yes":
+            #auto alignment
             pass
 
 class RegistrationToolLauncher(object):
