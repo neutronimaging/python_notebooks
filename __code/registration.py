@@ -630,9 +630,22 @@ class RegistrationUi(QMainWindow):
         self.display_image()
         self.profile_line_moved()
 
-    def registration_tool_button_clicked(self):
+    def manual_registration_button_clicked(self):
         o_registration_tool = RegistrationToolLauncher(parent=self)
 
+    def auto_registration_button_clicked(self):
+        _are_you_sure_message = QtGui.QMessageBox()
+        _are_you_sure_message.setIcon(QtGui.QMessageBox.Warning)
+        _are_you_sure_message.setText("Do you want to automatically realign all the images!")
+        _are_you_sure_message.setWindowTitle("Automatic Alignment")
+        _are_you_sure_message.setDetailedText("This will overwrite any manual alignment you made to the data!")
+        _are_you_sure_message.setStandardButtons(QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
+        _are_you_sure_message.buttonClicked.connect(self._msgbtn)
+        result = _are_you_sure_message.exec_()
+
+    def _msgbtn(self, button_id):
+        if button_id.text() == "&Yes":
+            pass
 
 class RegistrationToolLauncher(object):
 
@@ -808,14 +821,13 @@ class RegistrationTool(QMainWindow):
         self.modified_selected_images(rotation=.1)
 
     def small_rotate_right_button_clicked(self):
-        self.modified_selected_images(rotation=.1)
+        self.modified_selected_images(rotation=-.1)
 
     def rotate_left_button_clicked(self):
         self.modified_selected_images(rotation=1)
 
     def rotate_right_button_clicked(self):
         self.modified_selected_images(rotation=-1)
-
 
 
 class RegistrationFileSelection(object):

@@ -40,9 +40,41 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="registration_tool_button">
+       <widget class="QPushButton" name="pushButton">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Registration Tool ...</string>
+         <string>Auto Registration</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="manual_registration_button">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Manual Registration ...</string>
         </property>
        </widget>
       </item>
@@ -727,13 +759,13 @@
    </hints>
   </connection>
   <connection>
-   <sender>registration_tool_button</sender>
+   <sender>manual_registration_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>registration_tool_button_clicked()</slot>
+   <slot>manual_registration_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>454</x>
+     <x>630</x>
      <y>46</y>
     </hint>
     <hint type="destinationlabel">
@@ -758,6 +790,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>auto_registration_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>458</x>
+     <y>63</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -770,8 +818,9 @@
   <slot>selection_all_clicked()</slot>
   <slot>selection_slider_changed()</slot>
   <slot>selection_slider_moved()</slot>
-  <slot>registration_tool_button_clicked()</slot>
+  <slot>manual_registration_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
   <slot>table_cell_modified()</slot>
+  <slot>auto_registration_button_clicked()</slot>
  </slots>
 </ui>
