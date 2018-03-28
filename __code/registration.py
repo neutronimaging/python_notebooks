@@ -8,6 +8,7 @@ import numpy as np
 import os
 from skimage import transform
 from scipy.ndimage.interpolation import shift
+import copy
 
 import re
 import glob
@@ -79,7 +80,7 @@ class RegistrationUi(QMainWindow):
                                                                      #'shape': {}}
 
         # untouched array of images (used to move and rotate images)
-        self.data_dict_raw = data_dict.copy()
+        self.data_dict_raw = copy.deepcopy(data_dict)
 
         self.reference_image = self.data_dict['data'][self.reference_image_index]
 
@@ -183,7 +184,7 @@ class RegistrationUi(QMainWindow):
         """using data_dict_raw images, will apply offset and rotation parameters
         and will save them in data_dict for plotting"""
 
-        data_raw = self.data_dict_raw['data']
+        data_raw = self.data_dict_raw['data'].copy()
         for _row in list_row:
 
             xoffset = np.int(self.ui.tableWidget.item(_row, 1).text())
@@ -260,7 +261,7 @@ class RegistrationUi(QMainWindow):
                     if _index == self.reference_image_index:
                         continue
 
-                    _data = self.data_dict['data'][_index]
+                    _data = np.transpose(self.data_dict['data'][_index])
                     _filename = os.path.basename(self.data_dict['file_name'][_index])
                     _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
                     self.ui.profile.plot(xaxis, _profile,
@@ -270,7 +271,7 @@ class RegistrationUi(QMainWindow):
             else: # selection slider
                 slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
                 from_index = np.int(slider_index)
-                _data = self.data_dict['data'][from_index]
+                _data = np.transpose(self.data_dict['data'][from_index])
                 _filename = os.path.basename(self.data_dict['file_name'][from_index])
                 _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
                 self.ui.profile.plot(xaxis,
@@ -283,7 +284,7 @@ class RegistrationUi(QMainWindow):
 
                 else:
                     to_index = np.int(slider_index + 1)
-                    _data = self.data_dict['data'][to_index]
+                    _data = np.transpose(self.data_dict['data'][to_index])
                     _filename = os.path.basename(self.data_dict['file_name'][to_index])
                     _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
                     self.ui.profile.plot(xaxis,
@@ -301,7 +302,7 @@ class RegistrationUi(QMainWindow):
             row_selected = table_selection.topRow()  # offset because first image is reference image
 
             if not row_selected == self.reference_image_index:
-                _data = self.data_dict['data'][row_selected]
+                _data = np.transpose(self.data_dict['data'][row_selected])
                 _filename = os.path.basename(self.data_dict['file_name'][row_selected])
                 _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
                 self.ui.profile.plot(xaxis,
@@ -528,7 +529,6 @@ class RegistrationUi(QMainWindow):
         if self.registration_tool_ui:
             self.registration_tool_ui.update_status_widgets()
 
-
     # Event handler
 
     def opacity_changed(self, opacity_value):
@@ -565,7 +565,6 @@ class RegistrationUi(QMainWindow):
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/registration/")
 
     def ok_button_clicked(self):
-        # do soemthing here
         self.close()
 
     def export_button_clicked(self):
@@ -761,7 +760,7 @@ class RegistrationTool(QMainWindow):
                 self.parent.ui.tableWidget.item(_row, 3).setText("{:.2f}".format(_new_value))
 
         self.parent.ui.tableWidget.blockSignals(False)
-        self.parent.table_cell_modified()
+        self.parent.table_cell_modified(-1, -1)
 
     # event handler
     def left_button_clicked(self):
@@ -777,16 +776,16 @@ class RegistrationTool(QMainWindow):
         self.modified_selected_images(motion='down')
 
     def small_rotate_left_button_clicked(self):
-        self.modified_selected_images(rotation=-.1)
+        self.modified_selected_images(rotation=.1)
 
     def small_rotate_right_button_clicked(self):
         self.modified_selected_images(rotation=.1)
 
     def rotate_left_button_clicked(self):
-        self.modified_selected_images(rotation=-1)
+        self.modified_selected_images(rotation=1)
 
     def rotate_right_button_clicked(self):
-        self.modified_selected_images(rotation=1)
+        self.modified_selected_images(rotation=-1)
 
 
 
