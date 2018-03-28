@@ -94,6 +94,8 @@ class RegistrationUi(QMainWindow):
         self.profile_line_moved()
 
         self.new_reference_image = False
+        self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
+
 
     # initialization
     def init_parameters(self):
@@ -154,6 +156,9 @@ class RegistrationUi(QMainWindow):
         # selection slider
         self.ui.selection_groupBox.setVisible(False)
         self.ui.next_image_button.setEnabled(True)
+
+        # selected vs reference slider
+        self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
 
     def init_table(self):
         """populate the table with list of file names and default xoffset, yoffset and rotation"""
@@ -295,20 +300,19 @@ class RegistrationUi(QMainWindow):
         else:
 
             table_selection = self.ui.tableWidget.selectedRanges()
-            if table_selection == []:
-                return []
+            if not table_selection == []:
 
-            table_selection = table_selection[0]
-            row_selected = table_selection.topRow()  # offset because first image is reference image
+                table_selection = table_selection[0]
+                row_selected = table_selection.topRow()
 
-            if not row_selected == self.reference_image_index:
-                _data = np.transpose(self.data_dict['data'][row_selected])
-                _filename = os.path.basename(self.data_dict['file_name'][row_selected])
-                _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                self.ui.profile.plot(xaxis,
-                                     _profile,
-                                     name=_filename,
-                                     pen=self.list_rgb_profile_color[row_selected])
+                if not row_selected == self.reference_image_index:
+                    _data = np.transpose(self.data_dict['data'][row_selected])
+                    _filename = os.path.basename(self.data_dict['file_name'][row_selected])
+                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                    self.ui.profile.plot(xaxis,
+                                         _profile,
+                                         name=_filename,
+                                         pen=self.list_rgb_profile_color[row_selected])
 
 
         # selected_image = self.live_image
@@ -326,7 +330,7 @@ class RegistrationUi(QMainWindow):
         reference_file_name = os.path.basename(self.data_dict['file_name'][self.reference_image_index])
         self.ui.profile.plot(xaxis, profile_reference,
                              pen=self.color_reference_profile,
-                             name='Reference: {}'.format(reference_file_name))
+                             name='Ref.: {}'.format(reference_file_name))
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
@@ -364,11 +368,12 @@ class RegistrationUi(QMainWindow):
         self.ui.tableWidget.setItem(row, col, item)
         if is_reference_image:
             item.setBackground(self.color_reference_background)
+            item.setFlags(QtCore.Qt.ItemIsEnabled)
 
     def get_image_selected(self):
         """to get the image iselected, we will use the table selection as the new version
         allows several rows"""
-        index_selected = self.ui.file_slider.value()
+        # index_selected = self.ui.file_slider.value()
 
         table_selection = self.ui.tableWidget.selectedRanges()
         if table_selection == []:
@@ -379,12 +384,11 @@ class RegistrationUi(QMainWindow):
         bottom_row = table_selection.bottomRow() + 1
 
         _image = np.mean(self.data_dict['data'][top_row:bottom_row], axis=0)
-
         return _image
 
     def display_image(self):
 
-        # if only one row selected !
+        # if more than one row selected !
         if self.ui.selection_groupBox.isVisible():
             # if all selected
             if self.ui.selection_all.isChecked():
@@ -411,8 +415,11 @@ class RegistrationUi(QMainWindow):
         else: # only 1 row selected
             _image = self.get_image_selected()
 
-        if _image == []:
+        if _image == []: # display only reference image
+            self.display_only_reference_image()
             return
+
+        self.ui.selection_reference_opacity_groupBox.setVisible(True)
 
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
@@ -434,6 +441,28 @@ class RegistrationUi(QMainWindow):
         _final_image = _reference_image + _image
         self.ui.image_view.setImage(_final_image)
         self.live_image = _final_image
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
+
+    def display_only_reference_image(self):
+
+        self.ui.selection_reference_opacity_groupBox.setVisible(False)
+
+        _view = self.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.histogram_level == []:
+            first_update = True
+        _histo_widget = self.ui.image_view.getHistogramWidget()
+        self.histogram_level = _histo_widget.getLevels()
+
+        _image = np.transpose(self.reference_image)
+        self.ui.image_view.setImage(_image)
+        self.live_image = _image
         _view_box.setState(_state)
 
         if not first_update:
