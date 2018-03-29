@@ -8,6 +8,7 @@ import numpy as np
 import os
 from skimage import transform
 from scipy.ndimage.interpolation import shift
+from skimage.feature import register_translation
 import copy
 
 import re
@@ -90,6 +91,7 @@ class RegistrationUi(QMainWindow):
         self.init_widgets()
         self.init_table()
         self.init_parameters()
+        self.init_statusbar()
 
         # display line profile
         self.profile_line_moved()
@@ -98,6 +100,13 @@ class RegistrationUi(QMainWindow):
         self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
 
     # initialization
+    def init_statusbar(self):
+        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress.setMinimumSize(300, 20)
+        self.eventProgress.setMaximumSize(300, 20)
+        self.eventProgress.setVisible(False)
+        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+
     def init_parameters(self):
         nbr_files = len(self.data_dict['file_name'])
         _color = Color()
@@ -358,12 +367,12 @@ class RegistrationUi(QMainWindow):
         if row == self.reference_image_index:
             is_reference_image = True
 
-        self.__set_item(row, 0, infos['filename'], is_reference_image=is_reference_image)
-        self.__set_item(row, 1, infos['xoffset'], is_reference_image=is_reference_image)
-        self.__set_item(row, 2, infos['yoffset'], is_reference_image=is_reference_image)
-        self.__set_item(row, 3, infos['rotation'], is_reference_image=is_reference_image)
+        self.set_item(row, 0, infos['filename'], is_reference_image=is_reference_image)
+        self.set_item(row, 1, infos['xoffset'], is_reference_image=is_reference_image)
+        self.set_item(row, 2, infos['yoffset'], is_reference_image=is_reference_image)
+        self.set_item(row, 3, infos['rotation'], is_reference_image=is_reference_image)
 
-    def __set_item(self, row=0, col=0, value='', is_reference_image=False):
+    def set_item(self, row=0, col=0, value='', is_reference_image=False):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if is_reference_image:
@@ -649,8 +658,10 @@ class RegistrationUi(QMainWindow):
         result = _are_you_sure_message.exec_()
 
     def _msgbtn(self, button_id):
+        QtGui.QApplication.processEvents()
         if button_id.text() == "&Yes":
-            o_auto_register = RegistrationAuto(reference_image=self.reference_image,
+            o_auto_register = RegistrationAuto(parent=self,
+                                               reference_image=self.reference_image,
                                                floating_images=self.data_dict['data'])
             o_auto_register.auto_align()
 
@@ -873,11 +884,29 @@ class RegistrationAuto(object):
 
     registered_parameters = {}
 
-    def __init__(self, reference_image=[], floating_images=[]):
+    def __init__(self, parent=None, reference_image=[], floating_images=[]):
+        self.parent = parent
         self.reference_image = reference_image
         self.list_images = floating_images
 
-
     def auto_align(self):
-        pass
+        _ref_image = self.reference_image
+        _list_images = self.list_images
+
+        nbr_images = len(_list_images)
+        self.parent.eventProgress.setMaximum(nbr_images)
+        self.parent.eventProgress.setValue(0)
+        self.parent.eventProgress.setVisible(True)
+
+        for _row,_image in enumerate(_list_images):
+            [yoffset, xoffset], error, diffphase = register_translation(_ref_image,
+                                                                        _image)
+            if not _row == self.parent.reference_image_index:
+                self.parent.set_item(row=_row, col=1, value=xoffset)
+                self.parent.set_item(row=_row, col=2, value=yoffset)
+
+            self.parent.eventProgress.setValue(_row+1)
+            QtGui.QApplication.processEvents()
+
+        self.parent.eventProgress.setVisible(False)
 
