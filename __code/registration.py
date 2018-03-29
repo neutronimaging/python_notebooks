@@ -83,6 +83,7 @@ class RegistrationUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
 
         self.reference_image = self.data_dict['data'][self.reference_image_index]
+        self.working_dir = os.path.basename(self.data_dict['file_name'][0])
 
         # initialization
         self.init_pyqtgrpah()
@@ -95,7 +96,6 @@ class RegistrationUi(QMainWindow):
 
         self.new_reference_image = False
         self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
-
 
     # initialization
     def init_parameters(self):
@@ -597,7 +597,12 @@ class RegistrationUi(QMainWindow):
         self.close()
 
     def export_button_clicked(self):
-        pass
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
+                                                          caption = "Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            print("export folder {}".format(_export_folder))
 
     def closeEvent(self, event=None):
         if self.registration_tool_ui:
