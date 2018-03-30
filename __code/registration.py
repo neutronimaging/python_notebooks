@@ -655,7 +655,7 @@ class RegistrationUi(QMainWindow):
         _are_you_sure_message.setDetailedText("This will overwrite any manual alignment you made to the data!")
         _are_you_sure_message.setStandardButtons(QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
         _are_you_sure_message.buttonClicked.connect(self._msgbtn)
-        result = _are_you_sure_message.exec_()
+        _are_you_sure_message.exec_()
 
     def _msgbtn(self, button_id):
         QtGui.QApplication.processEvents()
