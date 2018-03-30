@@ -907,7 +907,7 @@ class RegistrationAuto(object):
                 self.parent.set_item(row=_row, col=2, value=yoffset)
 
             self.parent.eventProgress.setValue(_row+1)
-            self.parent.process_events()
+            # self.parent.process_events()
 
         self.parent.eventProgress.setVisible(False)
 
@@ -944,15 +944,15 @@ class ExportRegistration(object):
 
             o_norm = Normalization()
             o_norm.load(data=_data_registered)
-            o_norm.data['sample']['metadata'] = data_dict_raw['metadata'][_row]
+            o_norm.data['sample']['metadata'] = [data_dict_raw['metadata'][_row]]
             o_norm.data['sample']['file_name'][0] = _filename
-            pprint.pprint(o_norm.data['sample'])
+            # pprint.pprint(o_norm.data['sample'])
+            # self.parent.testing_o_norm = o_norm
             o_norm.export(folder=self.export_folder, data_type='sample')
 
-            self.parent.testing_o_norm = o_norm
-
             self.parent.eventProgress.setValue(_row+1)
-            # self.parent.process_events()
+            QtGui.QApplication.processEvents()
+
 
         self.parent.eventProgress.setVisible(False)
 
