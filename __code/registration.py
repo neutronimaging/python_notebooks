@@ -26,17 +26,18 @@ from __code.color import  Color
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
+    from PyQt4.QtGui import QMainWindow, QDialog
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
 
 from NeuNorm.normalization import Normalization
 
 
 from __code.ui_registration  import Ui_MainWindow as UiMainWindow
 from __code.ui_registration_tool import Ui_MainWindow as UiMainWindowTool
+from __code.ui_registration_auto_confirmation import Ui_Dialog as UiDialog
 
 
 class RegistrationUi(QMainWindow):
@@ -63,7 +64,7 @@ class RegistrationUi(QMainWindow):
 
     # registration tool ui
     registration_tool_ui = None
-
+    registration_auto_confirmation_ui = None
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -650,14 +651,15 @@ class RegistrationUi(QMainWindow):
         o_registration_tool = RegistrationManualLauncher(parent=self)
 
     def auto_registration_button_clicked(self):
-        _are_you_sure_message = QtGui.QMessageBox()
-        _are_you_sure_message.setIcon(QtGui.QMessageBox.Warning)
-        _are_you_sure_message.setText("Are you sure you want to automatically realign ALL the images!")
-        _are_you_sure_message.setWindowTitle("Automatic Alignment")
-        _are_you_sure_message.setDetailedText("This will overwrite any manual alignment you made to the data!")
-        _are_you_sure_message.setStandardButtons(QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
-        _are_you_sure_message.buttonClicked.connect(self._msgbtn)
-        _are_you_sure_message.exec_()
+        o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)
+        # _are_you_sure_message = QtGui.QMessageBox()
+        # _are_you_sure_message.setIcon(QtGui.QMessageBox.Warning)
+        # _are_you_sure_message.setText("Are you sure you want to automatically realign ALL the images!")
+        # _are_you_sure_message.setWindowTitle("Automatic Alignment")
+        # _are_you_sure_message.setDetailedText("This will overwrite any manual alignment you made to the data!")
+        # _are_you_sure_message.setStandardButtons(QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
+        # _are_you_sure_message.buttonClicked.connect(self._msgbtn)
+        # _are_you_sure_message.exec_()
 
     def _msgbtn(self, button_id):
         if button_id.text() == "&Yes":
@@ -879,6 +881,42 @@ class RegistrationFileSelection(object):
 
     def close(self):
         self.parent.registration_tool_ui = None
+
+
+class RegistrationAutoConfirmationLauncher(object):
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent=parent
+
+        if self.parent.registration_auto_confirmation_ui == None:
+            conf_ui = RegistrationManualAutoConfirmation(parent=parent)
+            conf_ui.show()
+            self.parent.registration_auto_confirmation_ui = conf_ui
+        else:
+            self.parent.registration_auto_confirmation_ui.setFocus()
+            self.parent.registration_auto_confirmation_ui.activateWindow()
+
+
+class RegistrationManualAutoConfirmation(QDialog):
+
+    def __init__(self, parent=None):
+        self.parent=parent
+        QDialog.__init__(self, parent=None)
+        self.ui = UiDialog()
+        self.ui.setupUi(self)
+
+        self.initialize_widgets()
+
+    def initialize_widgets(self):
+        _file_path = os.path.dirname(__file__)
+        warning_image_file = os.path.abspath(os.path.join(_file_path, 'static/warning_icon.png'))
+        warning_image = QtGui.QPixmap(warning_image_file)
+        self.ui.warning_label.setPixmap(warning_image)
+
+# pixmap = QPixmap(sys.argv[1])
+#    8 label.setPixmap(pixmap)
 
 
 class RegistrationAuto(object):
