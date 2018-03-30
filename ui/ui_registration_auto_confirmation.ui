@@ -130,5 +130,42 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>yes_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>393</x>
+     <y>246</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>298</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>no_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>45</x>
+     <y>239</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>57</x>
+     <y>171</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>yes_button_clicked()</slot>
+  <slot>no_button_clicked()</slot>
+ </slots>
 </ui>

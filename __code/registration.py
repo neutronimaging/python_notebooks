@@ -661,12 +661,11 @@ class RegistrationUi(QMainWindow):
         # _are_you_sure_message.buttonClicked.connect(self._msgbtn)
         # _are_you_sure_message.exec_()
 
-    def _msgbtn(self, button_id):
-        if button_id.text() == "&Yes":
-            o_auto_register = RegistrationAuto(parent=self,
-                                               reference_image=self.reference_image,
-                                               floating_images=self.data_dict['data'])
-            o_auto_register.auto_align()
+    def start_auto_registration(self):
+        o_auto_register = RegistrationAuto(parent=self,
+                                           reference_image=self.reference_image,
+                                           floating_images=self.data_dict['data'])
+        o_auto_register.auto_align()
 
 
 class RegistrationManualLauncher(object):
@@ -777,7 +776,7 @@ class RegistrationManual(QMainWindow):
             for _widget in self.list_small_rotate_widgets:
                 _widget.setEnabled(_enabled)
 
-    def closeEvent(self, a0: QtGui.QCloseEvent):
+    def closeEvent(self, c):
         self.parent.registration_tool_ui = None
 
     def modified_selected_images(self, motion=None, rotation=0.):
@@ -915,8 +914,18 @@ class RegistrationManualAutoConfirmation(QDialog):
         warning_image = QtGui.QPixmap(warning_image_file)
         self.ui.warning_label.setPixmap(warning_image)
 
-# pixmap = QPixmap(sys.argv[1])
-#    8 label.setPixmap(pixmap)
+    def yes_button_clicked(self):
+        self.parent.registration_auto_confirmation_ui.close()
+        self.parent.registration_auto_confirmation_ui = None
+        self.parent.start_auto_registration()
+
+    def no_button_clicked(self):
+        self.closeEvent()
+
+    def closeEvent(self, event=None):
+        self.parent.registration_auto_confirmation_ui.close()
+        self.parent.registration_auto_confirmation_ui = None
+
 
 
 class RegistrationAuto(object):
@@ -945,7 +954,7 @@ class RegistrationAuto(object):
                 self.parent.set_item(row=_row, col=2, value=yoffset)
 
             self.parent.eventProgress.setValue(_row+1)
-            # self.parent.process_events()
+            QtGui.QApplication.processEvents()
 
         self.parent.eventProgress.setVisible(False)
 
