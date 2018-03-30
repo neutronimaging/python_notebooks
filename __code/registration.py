@@ -661,12 +661,13 @@ class RegistrationUi(QMainWindow):
         _are_you_sure_message.exec_()
 
     def _msgbtn(self, button_id):
-        QtGui.QApplication.processEvents()
         if button_id.text() == "&Yes":
             o_auto_register = RegistrationAuto(parent=self,
                                                reference_image=self.reference_image,
                                                floating_images=self.data_dict['data'])
             o_auto_register.auto_align()
+
+
 
 
 class RegistrationManualLauncher(object):
@@ -909,7 +910,7 @@ class RegistrationAuto(object):
                 self.parent.set_item(row=_row, col=2, value=yoffset)
 
             self.parent.eventProgress.setValue(_row+1)
-            QtGui.QApplication.processEvents()
+            self.parent.process_events()
 
         self.parent.eventProgress.setVisible(False)
 
@@ -950,7 +951,7 @@ class ExportRegistration(object):
             o_norm.export(folder=self.export_folder, data_type='sample')
 
             self.parent.eventProgress.setValue(_row+1)
-            QtGui.QApplication.processEvents()
+            self.parent.process_events()
 
         self.parent.eventProgress.setVisible(False)
 
