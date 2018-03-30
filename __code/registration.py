@@ -82,7 +82,6 @@ class RegistrationUi(QMainWindow):
 
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
-
         self.reference_image = self.data_dict['data'][self.reference_image_index]
         self.working_dir = os.path.basename(self.data_dict['file_name'][0])
 
@@ -668,8 +667,6 @@ class RegistrationUi(QMainWindow):
             o_auto_register.auto_align()
 
 
-
-
 class RegistrationManualLauncher(object):
 
     parent = None
@@ -940,18 +937,22 @@ class ExportRegistration(object):
                 _data_registered = self.registered_data(raw_data=_data,
                                                         xoffset=_xoffset,
                                                         yoffset=_yoffset,
-                                                        rotataion=_rotation)
+                                                        rotation=_rotation)
             else:
 
                 _data_registered = _data
 
             o_norm = Normalization()
             o_norm.load(data=_data_registered)
+            o_norm.data['sample']['metadata'] = data_dict_raw['metadata'][_row]
             o_norm.data['sample']['file_name'][0] = _filename
+            pprint.pprint(o_norm.data['sample'])
             o_norm.export(folder=self.export_folder, data_type='sample')
 
+            self.parent.testing_o_norm = o_norm
+
             self.parent.eventProgress.setValue(_row+1)
-            self.parent.process_events()
+            # self.parent.process_events()
 
         self.parent.eventProgress.setVisible(False)
 
