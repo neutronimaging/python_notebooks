@@ -762,7 +762,10 @@ class RegistrationManual(QMainWindow):
             list_row_selected = self.parent.get_list_row_selected()
             _enabled = True
 
-            if not list_row_selected == []:
+            if list_row_selected is None:
+                _enabled = False
+
+            elif not list_row_selected == []:
                 if len(list_row_selected) == 1:
                     if list_row_selected[0] == self.parent.reference_image_index:
                         _enabled = False
