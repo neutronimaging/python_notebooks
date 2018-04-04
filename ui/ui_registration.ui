@@ -94,6 +94,73 @@
      </layout>
     </item>
     <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Grid</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QCheckBox" name="grid_display_checkBox">
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Display</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>      </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Size</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="grid_size_slider">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="QSplitter" name="splitter_2">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -621,8 +688,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>765</x>
-     <y>508</y>
+     <x>876</x>
+     <y>594</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -637,8 +704,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>820</x>
-     <y>508</y>
+     <x>876</x>
+     <y>594</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -669,8 +736,8 @@
    <slot>opacity_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>963</x>
-     <y>188</y>
+     <x>970</x>
+     <y>391</y>
     </hint>
     <hint type="destinationlabel">
      <x>917</x>
@@ -685,8 +752,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>81</x>
-     <y>511</y>
+     <x>94</x>
+     <y>597</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -702,7 +769,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>993</x>
-     <y>511</y>
+     <y>597</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -717,8 +784,8 @@
    <slot>selection_all_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>46</x>
-     <y>116</y>
+     <x>70</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -733,8 +800,8 @@
    <slot>selection_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>52</x>
-     <y>181</y>
+     <x>61</x>
+     <y>406</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -806,6 +873,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>grid_display_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_display_checkBox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>109</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>81</x>
+     <y>54</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>grid_size_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_size_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>437</x>
+     <y>107</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>436</x>
+     <y>36</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>grid_size_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_size_slider_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>848</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>871</x>
+     <y>47</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -822,5 +937,8 @@
   <slot>export_button_clicked()</slot>
   <slot>table_cell_modified()</slot>
   <slot>auto_registration_button_clicked()</slot>
+  <slot>grid_display_checkBox_clicked()</slot>
+  <slot>grid_size_slider_moved()</slot>
+  <slot>grid_size_slider_pressed()</slot>
  </slots>
 </ui>

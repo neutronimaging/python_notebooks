@@ -46,7 +46,6 @@ class RegistrationUi(QMainWindow):
 
     table_column_width = [650, 80, 80, 80]
 
-
     # image view
     histogram_level = []
 
@@ -455,6 +454,25 @@ class RegistrationUi(QMainWindow):
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
+    def display_live_image(self):
+        """no calculation will be done. This will only display the reference image
+        but will display or not the grid on top"""
+        live_image = self.live_image
+        self.ui.image_view.setImage(live_image)
+
+        # we do not want a grid on top
+        if not self.ui.grid_display_checkBox.isChecked():
+            return
+
+        grid_size = self.ui.grid_size_slider.value()
+        [height, width] = np.shape(live_image)
+
+
+
+
+
+
+
     def display_only_reference_image(self):
 
         self.ui.selection_reference_opacity_groupBox.setVisible(False)
@@ -652,20 +670,21 @@ class RegistrationUi(QMainWindow):
 
     def auto_registration_button_clicked(self):
         o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)
-        # _are_you_sure_message = QtGui.QMessageBox()
-        # _are_you_sure_message.setIcon(QtGui.QMessageBox.Warning)
-        # _are_you_sure_message.setText("Are you sure you want to automatically realign ALL the images!")
-        # _are_you_sure_message.setWindowTitle("Automatic Alignment")
-        # _are_you_sure_message.setDetailedText("This will overwrite any manual alignment you made to the data!")
-        # _are_you_sure_message.setStandardButtons(QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
-        # _are_you_sure_message.buttonClicked.connect(self._msgbtn)
-        # _are_you_sure_message.exec_()
 
     def start_auto_registration(self):
         o_auto_register = RegistrationAuto(parent=self,
                                            reference_image=self.reference_image,
                                            floating_images=self.data_dict['data'])
         o_auto_register.auto_align()
+
+    def grid_display_checkBox_clicked(self):
+        self.display_live_image()
+
+    def grid_size_slider_moved(self, position):
+        self.display_live_image()
+
+    def grid_size_slider_pressed(self):
+        self.display_live_image()
 
 
 class RegistrationManualLauncher(object):
