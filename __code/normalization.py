@@ -405,12 +405,23 @@ class NormalizationHandler(object):
                                                                description='Height',
                                                                continuous_update=False))
 
+    def select_gamma_coefficient(self):
+        self.gamma_coeff_ui = widgets.HBox([widgets.Label("Gamma Coefficient:",
+                                          layout=widgets.Layout(width="20%")),
+                            widgets.FloatSlider(value=0.8,
+                                                min=0,
+                                                max=1,
+                                                layout=widgets.Layout(width="50%"))])
+        display(self.gamma_coeff_ui)
+
     def run_normalization(self, dict_roi=None):
+
+        gamma_coefficient = self.gamma_coeff_ui.children[1].value
 
         if dict_roi is None:
             #try:
             self.o_norm.df_correction()
-            self.o_norm.normalization(notebook=True)
+            self.o_norm.normalization(notebook=True, gamma_filter=True, threshold=gamma_coefficient)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
@@ -435,7 +446,7 @@ class NormalizationHandler(object):
 
             # try:
             self.o_norm.df_correction()
-            self.o_norm.normalization(roi=_list_roi, notebook=True)
+            self.o_norm.normalization(roi=_list_roi, notebook=True, gamma_filter=True, threshold=gamma_coefficient)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
