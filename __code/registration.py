@@ -58,6 +58,11 @@ class RegistrationUi(QMainWindow):
     # image currently display in image_view
     live_image = []
 
+    # grid on top of images
+    grid_view = {'pos': None,
+                 'adj': None,
+                 'color': (255, 0, 0, 255, 1)}
+
     new_reference_image = True
     list_rgb_profile_color = []
 
@@ -454,6 +459,44 @@ class RegistrationUi(QMainWindow):
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
+    def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
+        """calculate the matrix that defines the vertical and horizontal lines
+        that allow pyqtgraph to display the grid"""
+
+        pos_adj_dict = {}
+
+        # pos - each matrix defines one side of the line
+        pos = []
+        adj = []
+
+        # vertical lines
+        x = 0
+        index = 0
+        while (x <= width):
+            one_edge = [x, 0]
+            other_edge = [x, height]
+            pos.append(one_edge)
+            pos.append(other_edge)
+            adj.append([index, index+1])
+            x += grid_size
+            index += 2
+
+        # vertical lines
+        y = 0
+        while (y <= height):
+            one_edge = [0, y]
+            other_edge = [width, y]
+            pos.append(one_edge)
+            pos.append(other_edge)
+            adj.append([index, index+1])
+            y += grid_size
+            index += 2
+
+        pos_adj_dict['pos'] = np.array(pos)
+        pos_adj_dict['adj'] = np.array(adj)
+
+        return pos_adj_dict
+
     def display_live_image(self):
         """no calculation will be done. This will only display the reference image
         but will display or not the grid on top"""
@@ -467,10 +510,28 @@ class RegistrationUi(QMainWindow):
         grid_size = self.ui.grid_size_slider.value()
         [height, width] = np.shape(live_image)
 
+        pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
+                                                  height=height,
+                                                  width=width)
+        pos = pos_adj_dict['pos']
+        adj = pos_adj_dict['adj']
 
+        line_color = self.grid_view['color']
+        lines = np.array([line_color for n in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
 
+        print("lines")
+        pprint.pprint(lines)
 
-
+        grid = pg.GraphItem()
+        self.ui.image_view.addItem(grid)
+        grid.setData(pos=pos,
+                     adj=adj,
+                     pen=lines,
+                     symbol=None,
+                     pxMode=False)
 
 
     def display_only_reference_image(self):
