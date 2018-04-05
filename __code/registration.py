@@ -61,7 +61,8 @@ class RegistrationUi(QMainWindow):
     # grid on top of images
     grid_view = {'pos': None,
                  'adj': None,
-                 'color': (255, 0, 0, 255, 1)}
+                 'item': None,
+                 'color': (0, 0, 255, 255, 1)}
 
     new_reference_image = True
     list_rgb_profile_color = []
@@ -501,9 +502,27 @@ class RegistrationUi(QMainWindow):
         """no calculation will be done. This will only display the reference image
         but will display or not the grid on top"""
         live_image = self.live_image
+
+        _view = self.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+        first_update = False
+        if self.histogram_level == []:
+            first_update = True
+        _histo_widget = self.ui.image_view.getHistogramWidget()
+        self.histogram_level = _histo_widget.getLevels()
+
         self.ui.image_view.setImage(live_image)
 
+        _view_box.setState(_state)
+        if not first_update:
+            _histo_widget.setLevels(self.histogram_level[0],
+                                    self.histogram_level[1])
+
         # we do not want a grid on top
+        if self.grid_view['item']:
+            self.ui.image_view.removeItem(self.grid_view['item'])
+
         if not self.ui.grid_display_checkBox.isChecked():
             return
 
@@ -522,8 +541,6 @@ class RegistrationUi(QMainWindow):
                                 ('blue', np.ubyte), ('alpha', np.ubyte),
                                 ('width', float)])
 
-        print("lines")
-        pprint.pprint(lines)
 
         grid = pg.GraphItem()
         self.ui.image_view.addItem(grid)
@@ -532,6 +549,7 @@ class RegistrationUi(QMainWindow):
                      pen=lines,
                      symbol=None,
                      pxMode=False)
+        self.grid_view['item'] = grid
 
 
     def display_only_reference_image(self):
