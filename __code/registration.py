@@ -206,8 +206,8 @@ class RegistrationUi(QMainWindow):
         data_raw = self.data_dict_raw['data'].copy()
         for _row in list_row:
 
-            xoffset = np.int(self.ui.tableWidget.item(_row, 1).text())
-            yoffset = np.int(self.ui.tableWidget.item(_row, 2).text())
+            xoffset = np.int(np.float(self.ui.tableWidget.item(_row, 1).text()))
+            yoffset = np.int(np.float(self.ui.tableWidget.item(_row, 2).text()))
             rotate_angle = np.float(self.ui.tableWidget.item(_row, 3).text())
 
             _data = data_raw[_row].copy()
