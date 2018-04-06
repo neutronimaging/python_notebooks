@@ -12,6 +12,7 @@ from NeuNorm.normalization import Normalization
 from NeuNorm.roi import ROI
 
 from __code import utilities, file_handler
+from __code.config import gamma_filtering_coefficient
 
 
 def close(w):
@@ -522,7 +523,7 @@ class GammaCoefficient(object):
     def select_gamma_coefficient(self):
         self.gamma_coeff_ui = widgets.HBox([widgets.Label("Gamma Coefficient:",
                                             layout=widgets.Layout(width="20%")),
-                              widgets.FloatSlider(value=0.8,
+                              widgets.FloatSlider(value=gamma_filtering_coefficient,
                                                   min=0,
                                                   max=1,
                                                   layout=widgets.Layout(width="50%"))])
