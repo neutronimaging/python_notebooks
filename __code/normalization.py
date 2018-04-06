@@ -81,14 +81,17 @@ class Panel:
 
     df_panel = None
     
-    def __init__(self, prev_button=False, next_button=True, state='sample', working_dir='',
-                top_object=None):
+    def __init__(self, prev_button=False, next_button=True, state='sample',
+                 working_dir='',
+                 top_object=None,
+                 gamma_coefficient=0.9):
 
         self.prev_button = prev_button
         self.next_button = next_button
         self.state = state
         self.working_dir = working_dir
         self.top_object = top_object
+        self.gamma_threshold = gamma_coefficient
 
     def init_ui(self, files=None):
 
@@ -210,11 +213,12 @@ class SampleSelectionPanel(Panel):
     files = None
     o_norm = None
     
-    def __init__(self, prev_button=False, next_button=True, working_dir='', top_object=None):
+    def __init__(self, prev_button=False, next_button=True, working_dir='', top_object=None, gamma_coefficient=None):
         super(SampleSelectionPanel, self).__init__(prev_button=prev_button,
                                                    next_button=next_button,
                                                    working_dir=working_dir,
-                                                   top_object=top_object)
+                                                   top_object=top_object,
+                                                   gamma_coefficient=gamma_coefficient)
 
     def next_button_clicked(self, event):
         self.remove()
@@ -261,7 +265,8 @@ class DFSelectionPanel(Panel):
     def next_button_clicked(self, event):
         self.remove()
         o_norm_handler = NormalizationHandler(files=self.files,
-                                      working_dir=self.working_dir)
+                                              working_dir=self.working_dir,
+                                              gamma_threshold=self.gamma_threshold)
         o_norm_handler.load_data()
         self.top_object.o_norm_handler = o_norm_handler
         self.top_object.o_norm = o_norm_handler.o_norm
@@ -275,29 +280,33 @@ class NormalizationHandler(object):
 
     normalized_data_array = []
 
-    def __init__(self, files=None, working_dir=''):
+    def __init__(self, files=None, working_dir='', gamma_threshold=0.9):
         self.files = files
         self.working_dir = working_dir
         self.data = Data()
+        self.gamma_threshold = gamma_threshold
 
     def load_data(self):
         self.o_norm = Normalization()
         
         # sample
         list_sample = self.files.sample
-        self.o_norm.load(file=list_sample, notebook=True, gamma_filter=True)
+        self.o_norm.load(file=list_sample, notebook=True, gamma_filter=True,
+                         threshold=self.gamma_threshold)
         self.data.sample = self.o_norm.data['sample']['data']
         self.list_file_names = list_sample
 
         # ob
         list_ob = self.files.ob
-        self.o_norm.load(file=list_ob, data_type='ob', notebook=True, gamma_filter=True)
+        self.o_norm.load(file=list_ob, data_type='ob', notebook=True, gamma_filter=True,
+                         threshold=self.gamma_threshold)
         self.data.ob = self.o_norm.data['ob']['data']
 
         # df
         list_df = self.files.df
         if list_df:
-            self.o_norm.load(file=list_df, data_type='df', notebook=True, gamma_filter=True)
+            self.o_norm.load(file=list_df, data_type='df', notebook=True, gamma_filter=True,
+                             threshold=self.gamma_threshold)
             self.data.df = self.o_norm.data['df']['data']
 
 
@@ -405,23 +414,13 @@ class NormalizationHandler(object):
                                                                description='Height',
                                                                continuous_update=False))
 
-    def select_gamma_coefficient(self):
-        self.gamma_coeff_ui = widgets.HBox([widgets.Label("Gamma Coefficient:",
-                                          layout=widgets.Layout(width="20%")),
-                            widgets.FloatSlider(value=0.8,
-                                                min=0,
-                                                max=1,
-                                                layout=widgets.Layout(width="50%"))])
-        display(self.gamma_coeff_ui)
 
     def run_normalization(self, dict_roi=None):
-
-        gamma_coefficient = self.gamma_coeff_ui.children[1].value
 
         if dict_roi is None:
             #try:
             self.o_norm.df_correction()
-            self.o_norm.normalization(notebook=True, gamma_filter=True, threshold=gamma_coefficient)
+            self.o_norm.normalization(notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
@@ -446,7 +445,7 @@ class NormalizationHandler(object):
 
             # try:
             self.o_norm.df_correction()
-            self.o_norm.normalization(roi=_list_roi, notebook=True, gamma_filter=True, threshold=gamma_coefficient)
+            self.o_norm.normalization(roi=_list_roi, notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
@@ -518,5 +517,17 @@ class NormalizationHandler(object):
         display(HTML('<span style="font-size: 20px; color:blue">The normalized images have been ' +
                      'created in ' + output_folder + '</span>'))
 
-        
+class GammaCoefficient(object):
+
+    def select_gamma_coefficient(self):
+        self.gamma_coeff_ui = widgets.HBox([widgets.Label("Gamma Coefficient:",
+                                            layout=widgets.Layout(width="20%")),
+                              widgets.FloatSlider(value=0.8,
+                                                  min=0,
+                                                  max=1,
+                                                  layout=widgets.Layout(width="50%"))])
+        display(self.gamma_coeff_ui)
+
+    def get_coefficient(self):
+        return self.gamma_coeff_ui.children[1].value
         
