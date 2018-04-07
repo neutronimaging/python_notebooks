@@ -11,16 +11,11 @@ from scipy.ndimage.interpolation import shift
 from skimage.feature import register_translation
 import copy
 
-import re
-import glob
-from scipy.special import erf
-from scipy.optimize import curve_fit
 import pprint
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
-from __code.file_handler import make_ascii_file
 from __code.color import  Color
 
 try:
@@ -38,6 +33,7 @@ from NeuNorm.normalization import Normalization
 from __code.ui_registration  import Ui_MainWindow as UiMainWindow
 from __code.ui_registration_tool import Ui_MainWindow as UiMainWindowTool
 from __code.ui_registration_auto_confirmation import Ui_Dialog as UiDialog
+from __code.ui_registration_markers import Ui_Dialog as UiDialogMarkers
 
 
 class RegistrationUi(QMainWindow):
@@ -67,9 +63,10 @@ class RegistrationUi(QMainWindow):
     new_reference_image = True
     list_rgb_profile_color = []
 
-    # registration tool ui
+    # external registration ui
     registration_tool_ui = None
     registration_auto_confirmation_ui = None
+    registration_markers_ui = None
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -750,6 +747,9 @@ class RegistrationUi(QMainWindow):
     def auto_registration_button_clicked(self):
         o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)
 
+    def markers_registration_button_clicked(self):
+        o_markers_registration = RegistrationMarkersLauncher(parent=self)
+
     def start_auto_registration(self):
         o_auto_register = RegistrationAuto(parent=self,
                                            reference_image=self.reference_image,
@@ -764,6 +764,39 @@ class RegistrationUi(QMainWindow):
 
     def grid_size_slider_pressed(self):
         self.display_live_image()
+
+
+class RegistrationMarkersLauncher(object):
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+        if self.parent.registration_markers_ui == None:
+            markers_ui = RegistrationMarkers(parent=parent)
+            markers_ui.show()
+            self.parent.registration_markers_ui = markers_ui
+        else:
+            self.parent.registration_markers_ui.setFocus()
+            self.parent.registration_markers_ui.activateWindow()
+
+
+class RegistrationMarkers(QDialog):
+
+    def __init__(self, parent=None):
+        self.parent = parent
+        QDialog.__init__(self, parent=None)
+        self.ui = UiDialogMarkers()
+        self.ui.setupUi(self)
+
+        # self.initialize_widgets()
+
+    def closeEvent(self, c):
+        self.parent.registration_markers_ui = None
+
+
+
 
 
 class RegistrationManualLauncher(object):
