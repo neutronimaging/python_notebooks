@@ -766,39 +766,6 @@ class RegistrationUi(QMainWindow):
         self.display_live_image()
 
 
-class RegistrationMarkersLauncher(object):
-
-    parent = None
-
-    def __init__(self, parent=None):
-        self.parent = parent
-
-        if self.parent.registration_markers_ui == None:
-            markers_ui = RegistrationMarkers(parent=parent)
-            markers_ui.show()
-            self.parent.registration_markers_ui = markers_ui
-        else:
-            self.parent.registration_markers_ui.setFocus()
-            self.parent.registration_markers_ui.activateWindow()
-
-
-class RegistrationMarkers(QDialog):
-
-    def __init__(self, parent=None):
-        self.parent = parent
-        QDialog.__init__(self, parent=None)
-        self.ui = UiDialogMarkers()
-        self.ui.setupUi(self)
-
-        # self.initialize_widgets()
-
-    def closeEvent(self, c):
-        self.parent.registration_markers_ui = None
-
-
-
-
-
 class RegistrationManualLauncher(object):
 
     parent = None
@@ -1144,6 +1111,89 @@ class ExportRegistration(object):
         _data = shift(_data, (yoffset, xoffset))
 
         return _data
+
+
+class RegistrationMarkersLauncher(object):
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+        if self.parent.registration_markers_ui == None:
+            markers_ui = RegistrationMarkers(parent=parent)
+            markers_ui.show()
+            self.parent.registration_markers_ui = markers_ui
+            self.parent.registration_markers_ui.init_widgets()
+
+        else:
+            self.parent.registration_markers_ui.setFocus()
+            self.parent.registration_markers_ui.activateWindow()
+
+
+class RegistrationMarkers(QDialog):
+    """dialog ui that will allow to add or remove markers
+    This UI will also allow to change the color of the marker and to change
+    their position linearly when selecting 2 of them (gradual increase between the 2)
+    """
+
+    column_size = [330, 50, 50]
+    markers_table = {}
+
+    def __init__(self, parent=None):
+        self.parent = parent
+        QDialog.__init__(self, parent=None)
+        self.ui = UiDialogMarkers()
+        self.ui.setupUi(self)
+
+        self.nbr_files = len(self.parent.data_dict['file_name'])
+
+    def init_widgets(self):
+        table = QtGui.QTableWidget(self.nbr_files, 3)
+        table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
+        table.setAlternatingRowColors(True)
+
+        for _col, _size in enumerate(self.column_size):
+            table.setColumnWidth(_col, self.column_size[_col])
+
+        marker_name = self.get_marker_name()
+        _ = self.ui.tabWidget.addTab(table, marker_name)
+        self.markers_table[marker_name] = table
+
+    def add_marker_button_clicked(self):
+        table = QtGui.QTableWidget(self.nbr_files, 3)
+        table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
+        table.setAlternatingRowColors(True)
+
+        for _col, _size in enumerate(self.column_size):
+            table.setColumnWidth(_col, self.column_size[_col])
+
+        new_marker_name = self.get_marker_name()
+        _ = self.ui.tabWidget.addTab(table, new_marker_name)
+        self.markers_table[new_marker_name] = table
+
+    def get_marker_name(self):
+        markers_table = self.markers_table
+        keys = markers_table.keys()
+        _marker_name = "1"
+        if keys is None:
+            return _marker_name
+
+        while True:
+            if _marker_name in markers_table:
+                _marker_name = str(int(_marker_name)+1)
+            else:
+                return _marker_name
+
+    def remove_marker_button_clicked(self):
+        _current_tab = self.ui.tabWidget.currentIndex()
+        _tab_title = self.ui.tabWidget.tabText(_current_tab)
+
+        self.markers_table.pop(_tab_title)
+        self.ui.tabWidget.removeTab(_current_tab)
+
+    def closeEvent(self, c):
+        self.parent.registration_markers_ui = None
 
 
 
