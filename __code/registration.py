@@ -1128,7 +1128,7 @@ class RegistrationMarkersLauncher(object):
             markers_ui = RegistrationMarkers(parent=parent)
             markers_ui.show()
             self.parent.registration_markers_ui = markers_ui
-            self.parent.registration_markers_ui.add_marker_button_clicked()
+            self.parent.registration_markers_ui.init_widgets()
 
         else:
             self.parent.registration_markers_ui.setFocus()
@@ -1148,18 +1148,6 @@ class RegistrationMarkers(QDialog):
         self.ui.setupUi(self)
 
         self.nbr_files = len(self.parent.data_dict['file_name'])
-
-    # def init_widgets(self):
-    #     table = QtGui.QTableWidget(self.nbr_files, 3)
-    #     table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
-    #     table.setAlternatingRowColors(True)
-    #
-    #     for _col, _size in enumerate(self.column_size):
-    #         table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
-    #
-    #     marker_name = self.get_marker_name()
-    #     _ = self.ui.tabWidget.addTab(table, marker_name)
-    #     self.parent.markers_table[marker_name] = table
 
     def resizing_column(self, index_column, old_size, new_size):
         """let's collect the size of the column in the current tab and then
@@ -1182,6 +1170,16 @@ class RegistrationMarkers(QDialog):
                 for _col, _size in enumerate(self.parent.markers_table_column_width):
                     _table_ui.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
+    def init_widgets(self):
+        if self.parent.markers_table == {}:
+            self.add_marker_button_clicked()
+        else:
+            self.populate_using_markers_table()
+
+
+    def markers_table(self):
+        pass
+
     def add_marker_button_clicked(self):
         table = QtGui.QTableWidget(self.nbr_files, 3)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
@@ -1195,9 +1193,31 @@ class RegistrationMarkers(QDialog):
         _ = self.ui.tabWidget.addTab(table, new_marker_name)
         self.parent.markers_table[new_marker_name] = table
 
+        for _row, _file in enumerate(self.parent.data_dict['file_name']):
+            _short_file = os.path.basename(_file)
+            x = MarkerDefaultPosition.x
+            y = MarkerDefaultPosition.y
+            self.__insert_table_row(table, _row, _short_file, x, y)
+
         # activate last index
         number_of_tabs = self.ui.tabWidget.count()
         self.ui.tabWidget.setCurrentIndex(number_of_tabs-1)
+
+    def __insert_table_row(self, table_ui, row, file, x, y):
+        table_ui.insertRow(row)
+
+        # file name
+        _item = QtGui.QTableWidgetItem(file)
+        table_ui.setItem(row, 0, _item)
+        _item.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+
+        # x
+        _item = QtGui.QTableWidgetItem(str(x))
+        table_ui.setItem(row, 1, _item)
+
+        # y
+        _item = QtGui.QTableWidgetItem(str(y))
+        table_ui.setItem(row, 2, _item)
 
     def get_marker_name(self):
         markers_table = self.parent.markers_table
@@ -1236,6 +1256,10 @@ class RegistrationMarkers(QDialog):
         self.parent.registration_markers_ui = None
 
 
+class MarkerDefaultPosition:
+
+    x = 0
+    y = 0
 
 
 
