@@ -1176,9 +1176,9 @@ class RegistrationMarkers(QDialog):
         else:
             self.populate_using_markers_table()
 
-
-    def markers_table(self):
-        pass
+    def populate_using_markers_table(self):
+        for _key in self.parent.markers_table:
+            _ = self.ui.tabWidget.addTab(self.parent.markers_table[_key], "dfdfdf")
 
     def add_marker_button_clicked(self):
         table = QtGui.QTableWidget(self.nbr_files, 3)
