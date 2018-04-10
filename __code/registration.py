@@ -1195,6 +1195,10 @@ class RegistrationMarkers(QDialog):
         _ = self.ui.tabWidget.addTab(table, new_marker_name)
         self.parent.markers_table[new_marker_name] = table
 
+        # activate last index
+        number_of_tabs = self.ui.tabWidget.count()
+        self.ui.tabWidget.setCurrentIndex(number_of_tabs-1)
+
     def get_marker_name(self):
         markers_table = self.parent.markers_table
         keys = markers_table.keys()
