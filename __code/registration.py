@@ -68,6 +68,10 @@ class RegistrationUi(QMainWindow):
     registration_auto_confirmation_ui = None
     registration_markers_ui = None
 
+    # markers table
+    markers_table = {}
+    markers_table_column_width = [330, 50, 50]
+
     def __init__(self, parent=None, data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -1137,9 +1141,6 @@ class RegistrationMarkers(QDialog):
     their position linearly when selecting 2 of them (gradual increase between the 2)
     """
 
-    column_size = [330, 50, 50]
-    markers_table = {}
-
     def __init__(self, parent=None):
         self.parent = parent
         QDialog.__init__(self, parent=None)
@@ -1154,26 +1155,26 @@ class RegistrationMarkers(QDialog):
         table.setAlternatingRowColors(True)
 
         for _col, _size in enumerate(self.column_size):
-            table.setColumnWidth(_col, self.column_size[_col])
+            table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
         marker_name = self.get_marker_name()
         _ = self.ui.tabWidget.addTab(table, marker_name)
-        self.markers_table[marker_name] = table
+        self.parent.markers_table[marker_name] = table
 
     def add_marker_button_clicked(self):
         table = QtGui.QTableWidget(self.nbr_files, 3)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
         table.setAlternatingRowColors(True)
 
-        for _col, _size in enumerate(self.column_size):
-            table.setColumnWidth(_col, self.column_size[_col])
+        for _col, _size in enumerate(self.parent.markers_table_column_width):
+            table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
         new_marker_name = self.get_marker_name()
         _ = self.ui.tabWidget.addTab(table, new_marker_name)
-        self.markers_table[new_marker_name] = table
+        self.parent.markers_table[new_marker_name] = table
 
     def get_marker_name(self):
-        markers_table = self.markers_table
+        markers_table = self.parent.markers_table
         keys = markers_table.keys()
         _marker_name = "1"
         if keys is None:
@@ -1189,10 +1190,23 @@ class RegistrationMarkers(QDialog):
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
 
-        self.markers_table.pop(_tab_title)
+        self.parent.markers_table.pop(_tab_title)
         self.ui.tabWidget.removeTab(_current_tab)
 
+    def save_column_size(self):
+        # using first table
+        for _key in self.parent.markers_table.keys():
+            _table_ui = self.parent.markers_table[_key]
+            nbr_column = _table_ui.columnCount()
+            table_column_width = []
+            for _col in np.arange(nbr_column):
+                _width = _table_ui.columnWidth(_col)
+                table_column_width.append(_width)
+            break
+        self.parent.markers_table_column_width = table_column_width
+
     def closeEvent(self, c):
+        self.save_column_size()
         self.parent.registration_markers_ui = None
 
 
