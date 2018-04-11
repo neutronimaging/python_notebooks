@@ -1152,10 +1152,11 @@ class RegistrationMarkers(QDialog):
     def resizing_column(self, index_column, old_size, new_size):
         """let's collect the size of the column in the current tab and then
         resize all the other columns of the other table"""
+
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
 
-        _live_table_ui = self.parent.markers_table[_tab_title]
+        _live_table_ui = self.parent.markers_table[_tab_title]['ui']
         nbr_column = _live_table_ui.columnCount()
         table_column_width = []
         for _col in np.arange(nbr_column):
@@ -1165,7 +1166,7 @@ class RegistrationMarkers(QDialog):
         self.parent.markers_table_column_width = table_column_width
 
         for _key in self.parent.markers_table.keys():
-            _table_ui = self.parent.markers_table[_key]
+            _table_ui = self.parent.markers_table[_key]['ui']
             if not (_table_ui == _live_table_ui):
                 for _col, _size in enumerate(self.parent.markers_table_column_width):
                     _table_ui.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
@@ -1177,8 +1178,19 @@ class RegistrationMarkers(QDialog):
             self.populate_using_markers_table()
 
     def populate_using_markers_table(self):
-        for _key in self.parent.markers_table:
-            _ = self.ui.tabWidget.addTab(self.parent.markers_table[_key], "dfdfdf")
+        for _key_tab_name in self.parent.markers_table:
+
+            _table = QtGui.QTableWidget(self.nbr_files, 3)
+            _table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
+            _table.setAlternatingRowColors(True)
+
+            for _col, _size in enumerate(self.parent.markers_table_column_width):
+                _table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
+
+            _table.horizontalHeader().sectionResized.connect(self.resizing_column)
+
+            self.parent.markers_table[_key_tab_name]['ui'] = _table
+            _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
 
     def add_marker_button_clicked(self):
         table = QtGui.QTableWidget(self.nbr_files, 3)
@@ -1191,17 +1203,25 @@ class RegistrationMarkers(QDialog):
         table.horizontalHeader().sectionResized.connect(self.resizing_column)
         new_marker_name = self.get_marker_name()
         _ = self.ui.tabWidget.addTab(table, new_marker_name)
-        self.parent.markers_table[new_marker_name] = table
 
+        _marker_dict = {}
+        _marker_dict['ui'] = table
+
+        _data_dict = {}
         for _row, _file in enumerate(self.parent.data_dict['file_name']):
             _short_file = os.path.basename(_file)
             x = MarkerDefaultPosition.x
             y = MarkerDefaultPosition.y
             self.__populate_table_row(table, _row, _short_file, x, y)
+            _data_dict[_short_file] = {'x': x, 'y': y}
+
+        _marker_dict['data'] = _data_dict
 
         # activate last index
         number_of_tabs = self.ui.tabWidget.count()
         self.ui.tabWidget.setCurrentIndex(number_of_tabs-1)
+
+        self.parent.markers_table[new_marker_name] = _marker_dict
 
     def __populate_table_row(self, table_ui, row, file, x, y):
         # file name
@@ -1240,7 +1260,7 @@ class RegistrationMarkers(QDialog):
     def save_column_size(self):
         # using first table
         for _key in self.parent.markers_table.keys():
-            _table_ui = self.parent.markers_table[_key]
+            _table_ui = self.parent.markers_table[_key]['ui']
             nbr_column = _table_ui.columnCount()
             table_column_width = []
             for _col in np.arange(nbr_column):
