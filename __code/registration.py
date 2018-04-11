@@ -1241,6 +1241,28 @@ class RegistrationMarkers(QDialog):
             break
         self.parent.markers_table_column_width = table_column_width
 
+    def save_current_table(self):
+        _current_tab = self.ui.tabWidget.currentIndex()
+        _tab_title = self.ui.tabWidget.tabText(_current_tab)
+
+        # retrieve master markers dictionary
+        markers_table = self.parent.markers_table
+        # current table ui
+        table_ui = markers_table[_tab_title]['ui']
+        table_data = markers_table[_tab_title]['data']
+
+        nbr_row = table_ui.rowCount()
+        for _row in np.arange(nbr_row):
+            file_name = str(table_ui.item(_row, 0).text())
+            x = np.int(str(table_ui.item(_row, 1).text()))
+            y = np.int(str(table_ui.item(_row, 2).text()))
+
+            table_data[file_name]['x'] = x
+            table_data[file_name]['y'] = y
+
+        markers_table[_tab_title]['data'] = table_data
+        self.parent.markers_table = markers_table
+
     # Event handler
 
     def remove_marker_button_clicked(self):
@@ -1281,7 +1303,7 @@ class RegistrationMarkers(QDialog):
         self.parent.markers_table[new_marker_name] = _marker_dict
 
     def table_cell_modified(self):
-        print("table cell modified")
+        self.save_current_table()
 
     def closeEvent(self, c):
         self.save_column_size()
