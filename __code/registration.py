@@ -716,6 +716,8 @@ class RegistrationUi(QMainWindow):
     def closeEvent(self, event=None):
         if self.registration_tool_ui:
             self.registration_tool_ui.close()
+        if self.registration_markers_ui:
+            self.registration_markers_ui.close()
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
