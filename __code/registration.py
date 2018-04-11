@@ -207,6 +207,49 @@ class RegistrationUi(QMainWindow):
         #select first row
         self.select_row_in_table(0)
 
+    def display_markers(self, all=False):
+        print("display_markers")
+        if self.registration_markers_ui is None:
+            return
+
+        if all is False:
+            _current_tab = self.registration_markers_ui.ui.tabWidget.currentIndex()
+            _tab_title = self.registration_markers_ui.ui.tabWidget.tabText(_current_tab)
+            self.display_markers_of_tab(marker_name=_tab_title)
+        else:
+            for _index, _marker_name in enumerate(self.markers_table.keys()):
+                self.display_markers_of_tab(marker_name=_marker_name)
+
+    def display_markers_of_tab(self, marker_name=0):
+        # get short name of file selected
+        list_row_selected = self.get_list_row_selected()
+        full_list_files = np.array(self.data_dict['file_name'])
+
+        list_file_selected = full_list_files[list_row_selected]
+        list_short_file_selected = [os.path.basename(_file) for _file in
+                                    list_file_selected]
+        for _file in list_short_file_selected:
+            _marker_data = self.markers_table[marker_name]['data'][_file]
+
+            x = _marker_data['x']
+            y = _marker_data['y']
+            width = MarkerDefaultSettings.width
+            height = MarkerDefaultSettings.height
+
+            _marker_ui = pg.RectROI([x,y], [width, height], pen=(0,9))
+            self.ui.image_view.addItem(_marker_ui)
+            _marker_ui.removeHandle(0)
+
+            _marker_data['marker_ui'] = _marker_ui
+
+    def close_all_markers(self):
+        for marker in self.markers_table.keys():
+            _data = self.markers_table[marker]['data']
+            for _file in _data:
+                _marker_ui = _data[_file]['marker_ui']
+                if _marker_ui:
+                   self.ui.image_view.removeItem(_marker_ui)
+
     def modified_images(self, list_row=[]):
         """using data_dict_raw images, will apply offset and rotation parameters
         and will save them in data_dict for plotting"""
@@ -1138,7 +1181,7 @@ class RegistrationMarkersLauncher(object):
             markers_ui.show()
             self.parent.registration_markers_ui = markers_ui
             self.parent.registration_markers_ui.init_widgets()
-
+            #self.parent.display_markers(all=True)
         else:
             self.parent.registration_markers_ui.setFocus()
             self.parent.registration_markers_ui.activateWindow()
@@ -1270,7 +1313,6 @@ class RegistrationMarkers(QDialog):
         markers_table[_tab_title]['data'] = table_data
         self.parent.markers_table = markers_table
 
-
     # Event handler =================================
 
     def remove_marker_button_clicked(self):
@@ -1279,6 +1321,7 @@ class RegistrationMarkers(QDialog):
 
         self.parent.markers_table.pop(_tab_title)
         self.ui.tabWidget.removeTab(_current_tab)
+        self.parent.display_markers(all=True)
 
     def add_marker_button_clicked(self):
         table = QtGui.QTableWidget(self.nbr_files, 3)
@@ -1297,8 +1340,8 @@ class RegistrationMarkers(QDialog):
         _data_dict = {}
         for _row, _file in enumerate(self.parent.data_dict['file_name']):
             _short_file = os.path.basename(_file)
-            x = MarkerDefaultPosition.x
-            y = MarkerDefaultPosition.y
+            x = MarkerDefaultSettings.x
+            y = MarkerDefaultSettings.y
             self.__populate_table_row(table, _row, _short_file, x, y)
             _data_dict[_short_file] = {'x': x, 'y': y}
 
@@ -1309,19 +1352,26 @@ class RegistrationMarkers(QDialog):
         self.ui.tabWidget.setCurrentIndex(number_of_tabs - 1)
         table.itemChanged.connect(self.table_cell_modified)
         self.parent.markers_table[new_marker_name] = _marker_dict
+        self.parent.display_markers(all=False)
 
     def table_cell_modified(self):
         self.save_current_table()
+        self.parent.display_markers(all=False)
 
     def closeEvent(self, c):
         self.save_column_size()
+        self.parent.close_all_markers()
         self.parent.registration_markers_ui = None
 
 
-class MarkerDefaultPosition:
+class MarkerDefaultSettings:
 
     x = 0
     y = 0
+
+    width = 50
+    height = 50
+    
 
 
 
