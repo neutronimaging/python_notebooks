@@ -69,7 +69,14 @@ class RegistrationUi(QMainWindow):
     registration_markers_ui = None
 
     # markers table
+    # markers_table = {'1': {'data': {'file_0': {'x': 0, 'y':10, 'marker_ui': None},
+    #                                 'file_1': {'x': 0, 'y':10, 'marker_ui': None},
+    #                                 'file_2': {'x': 0, 'y':10, 'marker_ui': None},
+    #                                   ... },
+    #                        'ui': None},
+    #                 {'2': .... }
     markers_table = {}
+
     markers_table_column_width = [330, 50, 50]
 
     def __init__(self, parent=None, data_dict=None):
@@ -1263,7 +1270,8 @@ class RegistrationMarkers(QDialog):
         markers_table[_tab_title]['data'] = table_data
         self.parent.markers_table = markers_table
 
-    # Event handler
+
+    # Event handler =================================
 
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
