@@ -73,7 +73,8 @@ class RegistrationUi(QMainWindow):
     #                                 'file_1': {'x': 0, 'y':10, 'marker_ui': None},
     #                                 'file_2': {'x': 0, 'y':10, 'marker_ui': None},
     #                                   ... },
-    #                        'ui': None},
+    #                        'ui': None,
+    #                        'color': None},
     #                 {'2': .... }
     markers_table = {}
 
@@ -208,7 +209,6 @@ class RegistrationUi(QMainWindow):
         self.select_row_in_table(0)
 
     def display_markers(self, all=False):
-        print("display_markers")
         if self.registration_markers_ui is None:
             return
 
@@ -220,7 +220,8 @@ class RegistrationUi(QMainWindow):
             for _index, _marker_name in enumerate(self.markers_table.keys()):
                 self.display_markers_of_tab(marker_name=_marker_name)
 
-    def display_markers_of_tab(self, marker_name=0):
+    def display_markers_of_tab(self, marker_name=''):
+        self.close_markers_of_tab(marker_name=marker_name)
         # get short name of file selected
         list_row_selected = self.get_list_row_selected()
         full_list_files = np.array(self.data_dict['file_name'])
@@ -228,6 +229,7 @@ class RegistrationUi(QMainWindow):
         list_file_selected = full_list_files[list_row_selected]
         list_short_file_selected = [os.path.basename(_file) for _file in
                                     list_file_selected]
+        pen = self.markers_table[marker_name]['color']
         for _file in list_short_file_selected:
             _marker_data = self.markers_table[marker_name]['data'][_file]
 
@@ -236,19 +238,31 @@ class RegistrationUi(QMainWindow):
             width = MarkerDefaultSettings.width
             height = MarkerDefaultSettings.height
 
-            _marker_ui = pg.RectROI([x,y], [width, height], pen=(0,9))
+            _marker_ui = pg.RectROI([x,y], [width, height], pen=pen)
             self.ui.image_view.addItem(_marker_ui)
             _marker_ui.removeHandle(0)
-
+            _marker_ui.sigRegionChanged.connect(self.marker_has_been_moved)
             _marker_data['marker_ui'] = _marker_ui
+
+    def marker_has_been_moved(self):
+        print("marker has been moved")
+
+    def close_markers_of_tab(self, marker_name=''):
+        _data = self.markers_table[marker_name]['data']
+        for _file in _data:
+            _marker_ui = _data[_file]['marker_ui']
+            if _marker_ui:
+                self.ui.image_view.removeItem(_marker_ui)
 
     def close_all_markers(self):
         for marker in self.markers_table.keys():
-            _data = self.markers_table[marker]['data']
-            for _file in _data:
-                _marker_ui = _data[_file]['marker_ui']
-                if _marker_ui:
-                   self.ui.image_view.removeItem(_marker_ui)
+            self.close_marker_of_tab(marker_name = marker)
+            #
+            # _data = self.markers_table[marker]['data']
+            # for _file in _data:
+            #     _marker_ui = _data[_file]['marker_ui']
+            #     if _marker_ui:
+            #        self.ui.image_view.removeItem(_marker_ui)
 
     def modified_images(self, list_row=[]):
         """using data_dict_raw images, will apply offset and rotation parameters
@@ -1323,6 +1337,10 @@ class RegistrationMarkers(QDialog):
         self.ui.tabWidget.removeTab(_current_tab)
         self.parent.display_markers(all=True)
 
+    def get_current_selected_color(self):
+        color = self.ui.marker_color_widget.currentText()
+        return MarkerDefaultSettings.color[color]
+
     def add_marker_button_clicked(self):
         table = QtGui.QTableWidget(self.nbr_files, 3)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
@@ -1336,6 +1354,7 @@ class RegistrationMarkers(QDialog):
 
         _marker_dict = {}
         _marker_dict['ui'] = table
+        _marker_dict['color'] = self.get_current_selected_color()
 
         _data_dict = {}
         for _row, _file in enumerate(self.parent.data_dict['file_name']):
@@ -1343,7 +1362,7 @@ class RegistrationMarkers(QDialog):
             x = MarkerDefaultSettings.x
             y = MarkerDefaultSettings.y
             self.__populate_table_row(table, _row, _short_file, x, y)
-            _data_dict[_short_file] = {'x': x, 'y': y}
+            _data_dict[_short_file] = {'x': x, 'y': y, 'marker_ui': None}
 
         _marker_dict['data'] = _data_dict
 
@@ -1353,6 +1372,13 @@ class RegistrationMarkers(QDialog):
         table.itemChanged.connect(self.table_cell_modified)
         self.parent.markers_table[new_marker_name] = _marker_dict
         self.parent.display_markers(all=False)
+
+    def marker_color_changed(self, color):
+        _current_tab = self.ui.tabWidget.currentIndex()
+        _tab_title = self.ui.tabWidget.tabText(_current_tab)
+        new_color = MarkerDefaultSettings.color[color]
+        self.parent.markers_table[_tab_title]['color'] = new_color
+        self.parent.display_markers_of_tab(marker_name=_tab_title)
 
     def table_cell_modified(self):
         self.save_current_table()
@@ -1372,7 +1398,14 @@ class MarkerDefaultSettings:
     width = 50
     height = 50
     
-
+    color = {'white': pg.mkPen('w', width=2),
+             'yellow': pg.mkPen('y', width=2),
+             'green': pg.mkPen('g', width=2),
+             'red': pg.mkPen('r', width=2),
+             'blue': pg.mkPen('b', width=2),
+             'cyan': pg.mkPen('c', width=2),
+             'black': pg.mkPen('k', width=2),
+             }
 
 
 

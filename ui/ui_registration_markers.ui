@@ -59,6 +59,47 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Color</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="marker_color_widget">
+       <item>
+        <property name="text">
+         <string>white</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>yellow</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>green</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>red</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>blue</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>black</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -91,8 +132,8 @@
    <slot>add_marker_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>448</x>
-     <y>31</y>
+     <x>580</x>
+     <y>49</y>
     </hint>
     <hint type="destinationlabel">
      <x>447</x>
@@ -107,8 +148,8 @@
    <slot>remove_marker_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>446</x>
-     <y>390</y>
+     <x>580</x>
+     <y>475</y>
     </hint>
     <hint type="destinationlabel">
      <x>446</x>
@@ -116,9 +157,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>marker_color_widget</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>marker_color_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>134</x>
+     <y>500</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>233</x>
+     <y>489</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>add_marker_button_clicked()</slot>
   <slot>remove_marker_button_clicked()</slot>
+  <slot>marker_color_changed()</slot>
  </slots>
 </ui>
