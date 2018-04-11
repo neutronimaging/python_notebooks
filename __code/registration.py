@@ -1197,15 +1197,13 @@ class RegistrationMarkers(QDialog):
             _short_file = os.path.basename(_file)
             x = MarkerDefaultPosition.x
             y = MarkerDefaultPosition.y
-            self.__insert_table_row(table, _row, _short_file, x, y)
+            self.__populate_table_row(table, _row, _short_file, x, y)
 
         # activate last index
         number_of_tabs = self.ui.tabWidget.count()
         self.ui.tabWidget.setCurrentIndex(number_of_tabs-1)
 
-    def __insert_table_row(self, table_ui, row, file, x, y):
-        table_ui.insertRow(row)
-
+    def __populate_table_row(self, table_ui, row, file, x, y):
         # file name
         _item = QtGui.QTableWidgetItem(file)
         table_ui.setItem(row, 0, _item)
