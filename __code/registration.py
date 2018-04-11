@@ -1198,39 +1198,9 @@ class RegistrationMarkers(QDialog):
                 y = _data_dict[_short_file]['y']
                 self.__populate_table_row(_table, _row, _short_file, x, y)
 
+            _table.itemChanged.connect(self.table_cell_modified)
             self.parent.markers_table[_key_tab_name]['ui'] = _table
             _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
-
-    def add_marker_button_clicked(self):
-        table = QtGui.QTableWidget(self.nbr_files, 3)
-        table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
-        table.setAlternatingRowColors(True)
-
-        for _col, _size in enumerate(self.parent.markers_table_column_width):
-            table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
-
-        table.horizontalHeader().sectionResized.connect(self.resizing_column)
-        new_marker_name = self.get_marker_name()
-        _ = self.ui.tabWidget.addTab(table, new_marker_name)
-
-        _marker_dict = {}
-        _marker_dict['ui'] = table
-
-        _data_dict = {}
-        for _row, _file in enumerate(self.parent.data_dict['file_name']):
-            _short_file = os.path.basename(_file)
-            x = MarkerDefaultPosition.x
-            y = MarkerDefaultPosition.y
-            self.__populate_table_row(table, _row, _short_file, x, y)
-            _data_dict[_short_file] = {'x': x, 'y': y}
-
-        _marker_dict['data'] = _data_dict
-
-        # activate last index
-        number_of_tabs = self.ui.tabWidget.count()
-        self.ui.tabWidget.setCurrentIndex(number_of_tabs-1)
-
-        self.parent.markers_table[new_marker_name] = _marker_dict
 
     def __populate_table_row(self, table_ui, row, file, x, y):
         # file name
@@ -1259,13 +1229,6 @@ class RegistrationMarkers(QDialog):
             else:
                 return _marker_name
 
-    def remove_marker_button_clicked(self):
-        _current_tab = self.ui.tabWidget.currentIndex()
-        _tab_title = self.ui.tabWidget.tabText(_current_tab)
-
-        self.parent.markers_table.pop(_tab_title)
-        self.ui.tabWidget.removeTab(_current_tab)
-
     def save_column_size(self):
         # using first table
         for _key in self.parent.markers_table.keys():
@@ -1277,6 +1240,48 @@ class RegistrationMarkers(QDialog):
                 table_column_width.append(_width)
             break
         self.parent.markers_table_column_width = table_column_width
+
+    # Event handler
+
+    def remove_marker_button_clicked(self):
+        _current_tab = self.ui.tabWidget.currentIndex()
+        _tab_title = self.ui.tabWidget.tabText(_current_tab)
+
+        self.parent.markers_table.pop(_tab_title)
+        self.ui.tabWidget.removeTab(_current_tab)
+
+    def add_marker_button_clicked(self):
+        table = QtGui.QTableWidget(self.nbr_files, 3)
+        table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
+        table.setAlternatingRowColors(True)
+        for _col, _size in enumerate(self.parent.markers_table_column_width):
+            table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
+
+        table.horizontalHeader().sectionResized.connect(self.resizing_column)
+        new_marker_name = self.get_marker_name()
+        _ = self.ui.tabWidget.addTab(table, new_marker_name)
+
+        _marker_dict = {}
+        _marker_dict['ui'] = table
+
+        _data_dict = {}
+        for _row, _file in enumerate(self.parent.data_dict['file_name']):
+            _short_file = os.path.basename(_file)
+            x = MarkerDefaultPosition.x
+            y = MarkerDefaultPosition.y
+            self.__populate_table_row(table, _row, _short_file, x, y)
+            _data_dict[_short_file] = {'x': x, 'y': y}
+
+        _marker_dict['data'] = _data_dict
+
+        # activate last index
+        number_of_tabs = self.ui.tabWidget.count()
+        self.ui.tabWidget.setCurrentIndex(number_of_tabs - 1)
+        table.itemChanged.connect(self.table_cell_modified)
+        self.parent.markers_table[new_marker_name] = _marker_dict
+
+    def table_cell_modified(self):
+        print("table cell modified")
 
     def closeEvent(self, c):
         self.save_column_size()
