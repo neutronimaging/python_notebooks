@@ -1189,6 +1189,13 @@ class RegistrationMarkers(QDialog):
 
             _table.horizontalHeader().sectionResized.connect(self.resizing_column)
 
+            _data_dict = self.parent.markers_table[_key_tab_name]['data']
+            for _row, _file in enumerate(self.parent.data_dict['file_name']):
+                _short_file = os.path.basename(_file)
+                x = _data_dict[_short_file]['x']
+                y = _data_dict[_short_file]['y']
+                self.__populate_table_row(_table, _row, _short_file, x, y)
+
             self.parent.markers_table[_key_tab_name]['ui'] = _table
             _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
 
