@@ -44,7 +44,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="auto_registration_button">
          <property name="minimumSize">
           <size>
            <width>200</width>
@@ -96,7 +96,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="marker_registration_button">
          <property name="minimumSize">
           <size>
            <width>200</width>
@@ -819,7 +819,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>70</x>
-     <y>222</y>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -867,7 +867,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>603</x>
-     <y>81</y>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
      <x>362</x>
@@ -892,14 +892,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>auto_registration_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>auto_registration_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>81</y>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
      <x>458</x>
@@ -915,7 +915,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>92</x>
-     <y>142</y>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>81</x>
@@ -930,8 +930,8 @@
    <slot>grid_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>576</x>
-     <y>144</y>
+     <x>715</x>
+     <y>141</y>
     </hint>
     <hint type="destinationlabel">
      <x>436</x>
@@ -947,7 +947,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>983</x>
-     <y>144</y>
+     <y>141</y>
     </hint>
     <hint type="destinationlabel">
      <x>871</x>
@@ -956,7 +956,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>marker_registration_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>markers_registration_button_clicked()</slot>

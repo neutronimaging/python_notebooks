@@ -749,6 +749,10 @@ class RegistrationUi(QMainWindow):
         if self.registration_tool_ui:
             self.registration_tool_ui.update_status_widgets()
 
+    def set_widget_status(self, list_ui=[], enabled=True):
+        for _ui in list_ui:
+            _ui.setEnabled(enabled)
+
     # Event handler
 
     def opacity_changed(self, opacity_value):
@@ -834,12 +838,16 @@ class RegistrationUi(QMainWindow):
     def manual_registration_button_clicked(self):
         """launch the manual registration tool"""
         o_registration_tool = RegistrationManualLauncher(parent=self)
+        self.set_widget_status(list_ui=[self.ui.auto_registration_button],
+                           enabled=False)
 
     def auto_registration_button_clicked(self):
         o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)
 
     def markers_registration_button_clicked(self):
         o_markers_registration = RegistrationMarkersLauncher(parent=self)
+        self.set_widget_status(list_ui=[self.ui.auto_registration_button],
+                           enabled=False)
 
     def start_auto_registration(self):
         o_auto_register = RegistrationAuto(parent=self,
@@ -969,6 +977,8 @@ class RegistrationManual(QMainWindow):
                 _widget.setEnabled(_enabled)
 
     def closeEvent(self, c):
+        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button],
+                           enabled=True)
         self.parent.registration_tool_ui = None
 
     def modified_selected_images(self, motion=None, rotation=0.):
@@ -1442,6 +1452,8 @@ class RegistrationMarkers(QDialog):
     def closeEvent(self, c):
         self.save_column_size()
         self.parent.close_all_markers()
+        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button],
+                           enabled=True)
         self.parent.registration_markers_ui = None
 
 
