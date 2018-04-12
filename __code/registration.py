@@ -1431,6 +1431,7 @@ class RegistrationMarkers(QDialog):
 
         self.parent.markers_table.pop(_tab_title)
         self.ui.tabWidget.removeTab(_current_tab)
+        self.parent.close_all_markers()
         self.parent.display_markers(all=True)
 
     def get_current_selected_color(self):
