@@ -74,7 +74,8 @@ class RegistrationUi(QMainWindow):
     #                                 'file_2': {'x': 0, 'y':10, 'marker_ui': None},
     #                                   ... },
     #                        'ui': None,
-    #                        'color': None},
+    #                        'color': {'qpen': None,
+    #                                  'name': ""},
     #                 {'2': .... }
     markers_table = {}
 
@@ -1374,7 +1375,7 @@ class RegistrationMarkers(QDialog):
 
     def get_current_selected_color(self):
         color = self.ui.marker_color_widget.currentText()
-        return MarkerDefaultSettings.color[color]
+        return (MarkerDefaultSettings.color[color], color)
 
     def add_marker_button_clicked(self):
         table = QtGui.QTableWidget(self.nbr_files, 3)
@@ -1389,7 +1390,10 @@ class RegistrationMarkers(QDialog):
 
         _marker_dict = {}
         _marker_dict['ui'] = table
-        _marker_dict['color'] = self.get_current_selected_color()
+
+        _qpen, _color_name = self.get_current_selected_color()
+        _marker_dict['color']['qpen'] = _qpen
+        _marker_dict['color']['name'] = _color_name
 
         _data_dict = {}
         for _row, _file in enumerate(self.parent.data_dict['file_name']):
