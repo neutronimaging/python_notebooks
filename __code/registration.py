@@ -461,7 +461,7 @@ class RegistrationUi(QMainWindow):
         self.ui.tableWidget.setItem(row, col, item)
         if is_reference_image:
             item.setBackground(self.color_reference_background)
-            item.setFlags(QtCore.Qt.ItemIsEnabled)
+            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def get_image_selected(self):
         """to get the image iselected, we will use the table selection as the new version
@@ -728,8 +728,10 @@ class RegistrationUi(QMainWindow):
 
     def get_list_row_selected(self):
         table_selection = self.ui.tableWidget.selectedRanges()
+
+        # that means we selected the first row
         if table_selection == []:
-            return None
+            return [0]
 
         table_selection = table_selection[0]
         top_row = table_selection.topRow()
@@ -758,6 +760,7 @@ class RegistrationUi(QMainWindow):
         self.check_selection_slider_status()
         self.check_status_next_prev_image_button()
         self.check_registration_tool_widgets()
+        self.display_markers(all=True)
         self.ui.file_slider.blockSignals(False)
 
     def table_cell_modified(self, row, column):
@@ -1258,7 +1261,21 @@ class RegistrationMarkers(QDialog):
             self.populate_using_markers_table()
 
     def update_markers_table_entry(self, marker_name='1', file=''):
-        pass
+        markers = self.parent.markers_table[marker_name]['data'][file]
+        table_ui = self.parent.markers_table[marker_name]['ui']
+        nbr_row = table_ui.rowCount()
+        table_ui.blockSignals(True)
+
+        x = str(markers['x'])
+        y = str(markers['y'])
+
+        for _row in np.arange(nbr_row):
+            _file_name_of_row = str(table_ui.item(_row, 0).text())
+            if _file_name_of_row == file:
+                table_ui.item(_row, 1).setText(x)
+                table_ui.item(_row, 2).setText(y)
+
+        table_ui.blockSignals(False)
 
     def populate_using_markers_table(self):
         for _key_tab_name in self.parent.markers_table:
