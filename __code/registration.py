@@ -127,6 +127,9 @@ class RegistrationUi(QMainWindow):
         _color = Color()
         self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
 
+        o_marker = MarkerDefaultSettings(image_reference=self.reference_image)
+        self.o_MarkerDefaultSettings = o_marker
+
     def init_pyqtgrpah(self):
 
         area = DockArea()
@@ -233,7 +236,7 @@ class RegistrationUi(QMainWindow):
         self.close_markers_of_tab(marker_name=marker_name)
         # get short name of file selected
         list_short_file_selected = self.get_list_short_file_selected()
-        pen = self.markers_table[marker_name]['color']
+        pen = self.markers_table[marker_name]['color']['qpen']
         for _file in list_short_file_selected:
             _marker_data = self.markers_table[marker_name]['data'][_file]
 
@@ -1391,15 +1394,16 @@ class RegistrationMarkers(QDialog):
         _marker_dict = {}
         _marker_dict['ui'] = table
 
-        _qpen, _color_name = self.get_current_selected_color()
+        (_qpen, _color_name) = self.get_current_selected_color()
+        _marker_dict['color'] = {}
         _marker_dict['color']['qpen'] = _qpen
         _marker_dict['color']['name'] = _color_name
 
         _data_dict = {}
         for _row, _file in enumerate(self.parent.data_dict['file_name']):
             _short_file = os.path.basename(_file)
-            x = MarkerDefaultSettings.x
-            y = MarkerDefaultSettings.y
+            x = self.parent.o_MarkerDefaultSettings.x
+            y = self.parent.o_MarkerDefaultSettings.y
             self.__populate_table_row(table, _row, _short_file, x, y)
             _data_dict[_short_file] = {'x': x, 'y': y, 'marker_ui': None}
 
@@ -1416,7 +1420,8 @@ class RegistrationMarkers(QDialog):
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
         new_color = MarkerDefaultSettings.color[color]
-        self.parent.markers_table[_tab_title]['color'] = new_color
+        self.parent.markers_table[_tab_title]['color']['qpen'] = new_color
+        self.parent.markers_table[_tab_title]['color']['name'] = color
         self.parent.display_markers_of_tab(marker_name=_tab_title)
 
     def table_cell_modified(self):
@@ -1427,8 +1432,10 @@ class RegistrationMarkers(QDialog):
         # first time, markers_table is still empty
         try:
             self.parent.markers_table[str(tab_index+1)]
-            color = self.parent.markers_table[str(tab_index+1)]['color']
-            print("color of tab_index {} is {}".format(tab_index, color))
+            color = self.parent.markers_table[str(tab_index+1)]['color']['name']
+            index_color = self.ui.marker_color_widget.findText(color)
+            self.ui.marker_color_widget.setCurrentIndex(index_color)
+            self.parent.display_markers()
         except KeyError:
             pass
 
@@ -1455,6 +1462,11 @@ class MarkerDefaultSettings:
              'black': pg.mkPen('k', width=2),
              }
 
+    def __init__(self, image_reference=[]):
+        if not image_reference == []:
+            [height, width] = np.shape(image_reference)
+            self.x = np.int(width/2)
+            self.y = np.int(height/2)
 
 
 
