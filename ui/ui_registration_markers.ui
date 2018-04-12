@@ -173,10 +173,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>Dialog</receiver>
+   <slot>marker_tab_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>555</x>
+     <y>157</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>add_marker_button_clicked()</slot>
   <slot>remove_marker_button_clicked()</slot>
   <slot>marker_color_changed()</slot>
+  <slot>marker_tab_changed()</slot>
  </slots>
 </ui>

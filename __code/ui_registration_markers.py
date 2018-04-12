@@ -57,6 +57,7 @@ class Ui_Dialog(object):
         self.add_marker_button.clicked.connect(Dialog.add_marker_button_clicked)
         self.remove_marker_button.clicked.connect(Dialog.remove_marker_button_clicked)
         self.marker_color_widget.currentIndexChanged['QString'].connect(Dialog.marker_color_changed)
+        self.tabWidget.currentChanged['int'].connect(Dialog.marker_tab_changed)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

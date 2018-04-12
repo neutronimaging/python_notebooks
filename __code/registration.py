@@ -1419,6 +1419,15 @@ class RegistrationMarkers(QDialog):
         self.save_current_table()
         self.parent.display_markers(all=False)
 
+    def marker_tab_changed(self, tab_index):
+        # first time, markers_table is still empty
+        try:
+            self.parent.markers_table[str(tab_index+1)]
+            color = self.parent.markers_table[str(tab_index+1)]['color']
+            print("color of tab_index {} is {}".format(tab_index, color))
+        except KeyError:
+            pass
+
     def closeEvent(self, c):
         self.save_column_size()
         self.parent.close_all_markers()
