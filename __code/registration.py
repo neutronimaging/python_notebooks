@@ -220,15 +220,18 @@ class RegistrationUi(QMainWindow):
             for _index, _marker_name in enumerate(self.markers_table.keys()):
                 self.display_markers_of_tab(marker_name=_marker_name)
 
-    def display_markers_of_tab(self, marker_name=''):
-        self.close_markers_of_tab(marker_name=marker_name)
-        # get short name of file selected
+    def get_list_short_file_selected(self):
         list_row_selected = self.get_list_row_selected()
         full_list_files = np.array(self.data_dict['file_name'])
-
         list_file_selected = full_list_files[list_row_selected]
         list_short_file_selected = [os.path.basename(_file) for _file in
                                     list_file_selected]
+        return list_short_file_selected
+
+    def display_markers_of_tab(self, marker_name=''):
+        self.close_markers_of_tab(marker_name=marker_name)
+        # get short name of file selected
+        list_short_file_selected = self.get_list_short_file_selected()
         pen = self.markers_table[marker_name]['color']
         for _file in list_short_file_selected:
             _marker_data = self.markers_table[marker_name]['data'][_file]
@@ -245,7 +248,24 @@ class RegistrationUi(QMainWindow):
             _marker_data['marker_ui'] = _marker_ui
 
     def marker_has_been_moved(self):
-        print("marker has been moved")
+        list_short_file_selected = self.get_list_short_file_selected()
+        for _index, _marker_name in enumerate(self.markers_table.keys()):
+            for _file in list_short_file_selected:
+                _marker_data = self.markers_table[_marker_name]['data'][_file]
+                marker_ui = _marker_data['marker_ui']
+
+                region = marker_ui.getArraySlice(self.live_image,
+                                                 self.ui.image_view.imageItem)
+
+                x0 = region[0][0].start
+                y0 = region[0][1].start
+
+                self.markers_table[_marker_name]['data'][_file]['x'] = x0
+                self.markers_table[_marker_name]['data'][_file]['y'] = y0
+
+                self.registration_markers_ui.update_markers_table_entry(marker_name=_marker_name,
+                                                                        file=_file)
+
 
     def close_markers_of_tab(self, marker_name=''):
         _data = self.markers_table[marker_name]['data']
@@ -256,13 +276,7 @@ class RegistrationUi(QMainWindow):
 
     def close_all_markers(self):
         for marker in self.markers_table.keys():
-            self.close_marker_of_tab(marker_name = marker)
-            #
-            # _data = self.markers_table[marker]['data']
-            # for _file in _data:
-            #     _marker_ui = _data[_file]['marker_ui']
-            #     if _marker_ui:
-            #        self.ui.image_view.removeItem(_marker_ui)
+            self.close_markers_of_tab(marker_name = marker)
 
     def modified_images(self, list_row=[]):
         """using data_dict_raw images, will apply offset and rotation parameters
@@ -1243,6 +1257,9 @@ class RegistrationMarkers(QDialog):
         else:
             self.populate_using_markers_table()
 
+    def update_markers_table_entry(self, marker_name='1', file=''):
+        pass
+
     def populate_using_markers_table(self):
         for _key_tab_name in self.parent.markers_table:
 
@@ -1265,6 +1282,7 @@ class RegistrationMarkers(QDialog):
             _table.itemChanged.connect(self.table_cell_modified)
             self.parent.markers_table[_key_tab_name]['ui'] = _table
             _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
+            self.parent.display_markers(all=False)
 
     def __populate_table_row(self, table_ui, row, file, x, y):
         # file name
