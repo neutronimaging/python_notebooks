@@ -1618,11 +1618,20 @@ class RegistrationMarkers(QDialog):
             pass
 
     def run_registration_button_clicked(self):
+        step = 1
+        self.parent.eventProgress.setMinimum(1)
+        self.parent.eventProgress.setMaximum(8)
+        self.parent.eventProgress.setValue(step)
+        self.parent.eventProgress.setVisible(True)
+        QtGui.QApplication.processEvents()
+
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         markers_table = self.parent.markers_table
 
         # init dictionary
         markers_list = {}
+        step += 1
+        self.parent.eventProgress.setValue(step)
         for _marker in markers_table.keys():
             _list_files = markers_table[_marker]['data']
             for _file in _list_files:
@@ -1630,12 +1639,19 @@ class RegistrationMarkers(QDialog):
             break
 
         # calculate mean marker Position for all images
+
+        step += 1
+        self.parent.eventProgress.setValue(step)
+        QtGui.QApplication.processEvents()
         for _marker in markers_table.keys():
             _list_files = markers_table[_marker]['data']
             for _file in _list_files:
                 markers_list[_file]['x'].append(markers_table[_marker]['data'][_file]['x'])
                 markers_list[_file]['y'].append(markers_table[_marker]['data'][_file]['y'])
 
+        step += 1
+        self.parent.eventProgress.setValue(step)
+        QtGui.QApplication.processEvents()
         for _file in markers_list.keys():
             markers_list[_file]['mean_x'] = np.mean(markers_list[_file]['x'])
             markers_list[_file]['mean_y'] = np.mean(markers_list[_file]['y'])
@@ -1646,6 +1662,9 @@ class RegistrationMarkers(QDialog):
 
         # calculate for all the other files, the x and y offset to apply and fill the master
         # table automatically
+        step += 1
+        self.parent.eventProgress.setValue(step)
+        QtGui.QApplication.processEvents()
         for _index, _file in enumerate(self.parent.data_dict['file_name']):
             _short_file = os.path.basename(_file)
 
@@ -1658,10 +1677,23 @@ class RegistrationMarkers(QDialog):
             self.parent.ui.tableWidget.item(_index, 1).setText(str(x_offset))
             self.parent.ui.tableWidget.item(_index, 2).setText(str(y_offset))
 
+        step += 1
+        self.parent.eventProgress.setValue(step)
+        QtGui.QApplication.processEvents()
         self.parent.modified_images(all_row=True)
+
+        step += 1
+        self.parent.eventProgress.setValue(step)
+        QtGui.QApplication.processEvents()
         self.parent.display_image()
+
+        step += 1
+        self.parent.eventProgress.setValue(step)
+        QtGui.QApplication.processEvents()
         self.parent.profile_line_moved()
+
         QApplication.restoreOverrideCursor()
+        self.parent.eventProgress.setVisible(False)
 
     def closeEvent(self, c):
         self.save_column_size()
