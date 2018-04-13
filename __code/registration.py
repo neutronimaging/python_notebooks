@@ -54,6 +54,7 @@ class RegistrationUi(QMainWindow):
     # by default, the reference image is the first image
     reference_image_index = 0
     reference_image = []
+    reference_image_short_name = ''
     color_reference_background = QtGui.QColor(50, 250, 50)
     color_reference_profile = [50, 250, 50]
 
@@ -106,7 +107,8 @@ class RegistrationUi(QMainWindow):
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
         self.reference_image = self.data_dict['data'][self.reference_image_index]
-        self.working_dir = os.path.basename(self.data_dict['file_name'][0])
+        self.working_dir = os.path.dirname(self.data_dict['file_name'][0])
+        self.reference_image_short_name = os.path.basename(self.data_dict['file_name'][0])
 
         # initialization
         self.init_pyqtgrpah()
@@ -1434,7 +1436,7 @@ class RegistrationMarkers(QDialog):
         markers_table[_tab_title]['data'] = table_data
         self.parent.markers_table = markers_table
 
-    def get_marker_name(self):
+    def get_current_marker_name(self):
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
         return _tab_title
@@ -1455,7 +1457,7 @@ class RegistrationMarkers(QDialog):
         cell_contain_to_copy = self.parent.marker_table_buffer_cell
         table_ui = self.get_current_table_ui()
         markers_table = self.parent.markers_table
-        marker_name = self.get_marker_name()
+        marker_name = self.get_current_marker_name()
         if column_selected == 1:
             marker_axis = 'x'
         else:
@@ -1605,6 +1607,32 @@ class RegistrationMarkers(QDialog):
             self.parent.display_markers()
         except KeyError:
             pass
+
+    def run_registration_button_clicked(self):
+        markers_table = self.parent.markers_table
+
+        # init dictionary
+        ref_list = {}
+        for _marker in markers_table.keys():
+            _list_files = markers_table[_marker]['data']
+            for _file in _list_files:
+                ref_list[_file] = {'x': [], 'y': []}
+            break
+
+        # calculate mean marker Position for all images
+        for _marker in markers_table.keys():
+            _list_files = markers_table[_marker]['data']
+            for _file in _list_files:
+                ref_list[_file]['x'].append(markers_table[_marker]['data'][_file]['x'])
+                ref_list[_file]['y'].append(markers_table[_marker]['data'][_file]['y'])
+
+
+        pprint.pprint(ref_list)
+
+
+
+
+
 
     def closeEvent(self, c):
         self.save_column_size()

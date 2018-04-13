@@ -47,9 +47,9 @@ class Ui_Dialog(object):
         self.horizontalLayout_2.addWidget(self.marker_color_widget)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
-        self.pushButton = QtWidgets.QPushButton(Dialog)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout_2.addWidget(self.pushButton)
+        self.run_registration_button = QtWidgets.QPushButton(Dialog)
+        self.run_registration_button.setObjectName("run_registration_button")
+        self.horizontalLayout_2.addWidget(self.run_registration_button)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
         self.retranslateUi(Dialog)
@@ -58,6 +58,7 @@ class Ui_Dialog(object):
         self.remove_marker_button.clicked.connect(Dialog.remove_marker_button_clicked)
         self.marker_color_widget.currentIndexChanged['QString'].connect(Dialog.marker_color_changed)
         self.tabWidget.currentChanged['int'].connect(Dialog.marker_tab_changed)
+        self.run_registration_button.clicked.connect(Dialog.run_registration_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -72,5 +73,5 @@ class Ui_Dialog(object):
         self.marker_color_widget.setItemText(3, _translate("Dialog", "red"))
         self.marker_color_widget.setItemText(4, _translate("Dialog", "blue"))
         self.marker_color_widget.setItemText(5, _translate("Dialog", "black"))
-        self.pushButton.setText(_translate("Dialog", "Run Registration Using Markers"))
+        self.run_registration_button.setText(_translate("Dialog", "Run Registration Using Markers"))
 
