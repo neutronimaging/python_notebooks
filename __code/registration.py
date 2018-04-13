@@ -20,11 +20,11 @@ from __code.color import  Color
 
 try:
     from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
+    from PyQt4 import QtCore, QtGui, QtWidgets
     from PyQt4.QtGui import QMainWindow, QDialog
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
+    from PyQt5 import QtCore, QtGui, QtWidgets
     from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
 
 from NeuNorm.normalization import Normalization
@@ -1275,8 +1275,8 @@ class RegistrationMarkersLauncher(object):
             self.parent.registration_markers_ui.init_widgets()
             #self.parent.display_markers(all=True)
         else:
-            self.parent.registration_markers_ui.setFocus()
             self.parent.registration_markers_ui.activateWindow()
+            self.parent.registration_markers_ui.setFocus()
 
 
 class RegistrationMarkers(QDialog):
@@ -1442,6 +1442,8 @@ class RegistrationMarkers(QDialog):
         table = QtGui.QTableWidget(self.nbr_files, 3)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
         table.setAlternatingRowColors(True)
+        table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
         for _col, _size in enumerate(self.parent.markers_table_column_width):
             table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
