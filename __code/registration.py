@@ -1439,31 +1439,56 @@ class RegistrationMarkers(QDialog):
     def paste_cell(self):
         pass
 
-    def get_column_selected(self):
+    def get_columns_selected(self):
+        """return the left and right columns selected"""
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
         markers_table = self.parent.markers_table
         table_ui = markers_table[_tab_title]['ui']
         table_selection = table_ui.selectedRanges()
         if table_selection == []:
-            return -1
+            return [-1, -1]
 
         table_selection = table_selection[0]
-        column_selected = table_selection.leftColumn()
-        return column_selected
+        left_column_selected = table_selection.leftColumn()
+        right_column_selected = table_selection.rightColumn()
+        return [left_column_selected, right_column_selected]
+
+    def get_rows_selected(self):
+        """return the top and the bottom rows selected"""
+        _current_tab = self.ui.tabWidget.currentIndex()
+        _tab_title = self.ui.tabWidget.tabText(_current_tab)
+        markers_table = self.parent.markers_table
+        table_ui = markers_table[_tab_title]['ui']
+        table_selection = table_ui.selectedRanges()
+        if table_selection == []:
+            return [-1, -1]
+
+        table_selection = table_selection[0]
+        top_row_selected = table_selection.topRow()
+        bottom_row_selected = table_selection.bottomRow()
+        return [top_row_selected, bottom_row_selected]
 
     # Event handler =================================
 
     def table_right_click(self, position):
-        """display context menu when user click the x or y column of the marker table"""
-        column_selected = self.get_column_selected()
-        if column_selected == 0:
+        """display context menu when user click the x or y column of the marker table.
+        also do not allow to copy when more than 1 column and 1 row have been selected"""
+        [left_column_selected, right_column_selected]= self.get_columns_selected()
+        if left_column_selected == 0:
             return
-        elif column_selected == -1:
+        elif left_column_selected == -1:
+            return
+        elif (right_column_selected - left_column_selected) > 0:
+            return
+
+        [top_row_selected, bottom_row_selected] = self.get_rows_selected()
+        if top_row_selected == -1:
             return
 
         menu = QtGui.QMenu(self)
-        copy_cell = menu.addAction("Copy")
+        if bottom_row_selected == top_row_selected:
+            copy_cell = menu.addAction("Copy")
         paste_cell = menu.addAction("Paste")
         action = menu.exec_(QtGui.QCursor.pos())
 
