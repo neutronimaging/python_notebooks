@@ -86,6 +86,7 @@ class RegistrationUi(QMainWindow):
     markers_table = {}
 
     markers_table_column_width = [330, 50, 50]
+    marker_table_buffer_cell = None
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -1433,18 +1434,42 @@ class RegistrationMarkers(QDialog):
         markers_table[_tab_title]['data'] = table_data
         self.parent.markers_table = markers_table
 
-    def copy_cell(self):
-        pass
+    def get_marker_name(self):
+        _current_tab = self.ui.tabWidget.currentIndex()
+        _tab_title = self.ui.tabWidget.tabText(_current_tab)
+        return _tab_title
 
-    def paste_cell(self):
-        pass
-
-    def get_columns_selected(self):
-        """return the left and right columns selected"""
+    def get_current_table_ui(self):
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
         markers_table = self.parent.markers_table
         table_ui = markers_table[_tab_title]['ui']
+        return table_ui
+
+    def copy_cell(self, row_selected=-1, column_selected=-1):
+        table_ui = self.get_current_table_ui()
+        cell_value = str(table_ui.item(row_selected, column_selected).text())
+        self.parent.marker_table_buffer_cell = cell_value
+
+    def paste_cell(self, top_row_selected=-1, bottom_row_selected=-1, column_selected=-1):
+        cell_contain_to_copy = self.parent.marker_table_buffer_cell
+        table_ui = self.get_current_table_ui()
+        markers_table = self.parent.markers_table
+        marker_name = self.get_marker_name()
+        if column_selected == 1:
+            marker_axis = 'x'
+        else:
+            marker_axis = 'y'
+        for _row in np.arange(top_row_selected, bottom_row_selected+1):
+            _file = str(table_ui.item(_row, 0).text())
+            markers_table[marker_name]['data'][_file][marker_axis] = cell_contain_to_copy
+            table_ui.item(_row, column_selected).setText(str(cell_contain_to_copy))
+
+        self.parent.markers_table = markers_table
+
+    def get_columns_selected(self):
+        """return the left and right columns selected"""
+        table_ui = self.get_current_table_ui()
         table_selection = table_ui.selectedRanges()
         if table_selection == []:
             return [-1, -1]
@@ -1456,10 +1481,7 @@ class RegistrationMarkers(QDialog):
 
     def get_rows_selected(self):
         """return the top and the bottom rows selected"""
-        _current_tab = self.ui.tabWidget.currentIndex()
-        _tab_title = self.ui.tabWidget.tabText(_current_tab)
-        markers_table = self.parent.markers_table
-        table_ui = markers_table[_tab_title]['ui']
+        table_ui = self.get_current_table_ui()
         table_selection = table_ui.selectedRanges()
         if table_selection == []:
             return [-1, -1]
@@ -1486,16 +1508,24 @@ class RegistrationMarkers(QDialog):
         if top_row_selected == -1:
             return
 
+        # initialize actions
+        copy_cell = None
+        paste_cell = None
+
         menu = QtGui.QMenu(self)
         if bottom_row_selected == top_row_selected:
             copy_cell = menu.addAction("Copy")
-        paste_cell = menu.addAction("Paste")
+        if not (self.parent.marker_table_buffer_cell is None):
+            paste_cell = menu.addAction("Paste")
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == copy_cell:
-            self.copy_cell()
+            self.copy_cell(row_selected=top_row_selected,
+                           column_selected=left_column_selected)
         elif action == paste_cell:
-            self.paste_cell()
+            self.paste_cell(top_row_selected=top_row_selected,
+                            bottom_row_selected=bottom_row_selected,
+                            column_selected=left_column_selected)
 
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
