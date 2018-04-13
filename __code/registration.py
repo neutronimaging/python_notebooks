@@ -1618,6 +1618,7 @@ class RegistrationMarkers(QDialog):
             pass
 
     def run_registration_button_clicked(self):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         markers_table = self.parent.markers_table
 
         # init dictionary
@@ -1660,7 +1661,7 @@ class RegistrationMarkers(QDialog):
         self.parent.modified_images(all_row=True)
         self.parent.display_image()
         self.parent.profile_line_moved()
-
+        QApplication.restoreOverrideCursor()
 
     def closeEvent(self, c):
         self.save_column_size()
