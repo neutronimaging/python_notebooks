@@ -115,7 +115,7 @@
      <item>
       <widget class="QPushButton" name="run_registration_button">
        <property name="text">
-        <string>Run Registration Using Markers</string>
+        <string>Align Images Using Markers</string>
        </property>
       </widget>
      </item>

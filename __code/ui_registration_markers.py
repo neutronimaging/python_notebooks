@@ -73,5 +73,5 @@ class Ui_Dialog(object):
         self.marker_color_widget.setItemText(3, _translate("Dialog", "red"))
         self.marker_color_widget.setItemText(4, _translate("Dialog", "blue"))
         self.marker_color_widget.setItemText(5, _translate("Dialog", "black"))
-        self.run_registration_button.setText(_translate("Dialog", "Run Registration Using Markers"))
+        self.run_registration_button.setText(_translate("Dialog", "Align Images Using Markers"))
 

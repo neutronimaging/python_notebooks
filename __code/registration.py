@@ -58,6 +58,8 @@ class RegistrationUi(QMainWindow):
     color_reference_background = QtGui.QColor(50, 250, 50)
     color_reference_profile = [50, 250, 50]
 
+    nbr_files = 0
+
     # image currently display in image_view
     live_image = []
 
@@ -108,7 +110,7 @@ class RegistrationUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
         self.reference_image = self.data_dict['data'][self.reference_image_index]
         self.working_dir = os.path.dirname(self.data_dict['file_name'][0])
-        self.reference_image_short_name = os.path.basename(self.data_dict['file_name'][0])
+        self.reference_image_short_name = str(os.path.basename(self.data_dict['file_name'][0]))
 
         # initialization
         self.init_pyqtgrpah()
@@ -133,6 +135,7 @@ class RegistrationUi(QMainWindow):
 
     def init_parameters(self):
         nbr_files = len(self.data_dict['file_name'])
+        self.nbr_files = nbr_files
         _color = Color()
         self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
 
@@ -338,11 +341,17 @@ class RegistrationUi(QMainWindow):
             self.close_markers_of_tab(marker_name = marker)
 
 
-    def modified_images(self, list_row=[]):
+    def modified_images(self, list_row=[], all_row=False):
         """using data_dict_raw images, will apply offset and rotation parameters
         and will save them in data_dict for plotting"""
 
         data_raw = self.data_dict_raw['data'].copy()
+
+        if all_row:
+            list_row = np.arange(0, self.nbr_files)
+        else:
+            list_row =list_row
+
         for _row in list_row:
 
             xoffset = np.int(np.float(self.ui.tableWidget.item(_row, 1).text()))
@@ -1612,26 +1621,45 @@ class RegistrationMarkers(QDialog):
         markers_table = self.parent.markers_table
 
         # init dictionary
-        ref_list = {}
+        markers_list = {}
         for _marker in markers_table.keys():
             _list_files = markers_table[_marker]['data']
             for _file in _list_files:
-                ref_list[_file] = {'x': [], 'y': []}
+                markers_list[_file] = {'x': [], 'y': []}
             break
 
         # calculate mean marker Position for all images
         for _marker in markers_table.keys():
             _list_files = markers_table[_marker]['data']
             for _file in _list_files:
-                ref_list[_file]['x'].append(markers_table[_marker]['data'][_file]['x'])
-                ref_list[_file]['y'].append(markers_table[_marker]['data'][_file]['y'])
+                markers_list[_file]['x'].append(markers_table[_marker]['data'][_file]['x'])
+                markers_list[_file]['y'].append(markers_table[_marker]['data'][_file]['y'])
 
+        for _file in markers_list.keys():
+            markers_list[_file]['mean_x'] = np.mean(markers_list[_file]['x'])
+            markers_list[_file]['mean_y'] = np.mean(markers_list[_file]['y'])
 
-        pprint.pprint(ref_list)
+        # calculate ref_x and ref_y (position of mean x and mean y of reference image)
+        ref_x = markers_list[self.parent.reference_image_short_name]['mean_x']
+        ref_y = markers_list[self.parent.reference_image_short_name]['mean_y']
 
+        # calculate for all the other files, the x and y offset to apply and fill the master
+        # table automatically
+        for _index, _file in enumerate(self.parent.data_dict['file_name']):
+            _short_file = os.path.basename(_file)
 
+            mean_x = markers_list[_short_file]['mean_x']
+            x_offset = ref_x - mean_x
 
+            mean_y = markers_list[_short_file]['mean_y']
+            y_offset = ref_y - mean_y
 
+            self.parent.ui.tableWidget.item(_index, 1).setText(str(x_offset))
+            self.parent.ui.tableWidget.item(_index, 2).setText(str(y_offset))
+
+        self.parent.modified_images(all_row=True)
+        self.parent.display_image()
+        self.parent.profile_line_moved()
 
 
     def closeEvent(self, c):
