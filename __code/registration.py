@@ -1244,8 +1244,8 @@ class ExportRegistration(object):
             _filename = list_file_names[_row]
             if not _row == self.parent.reference_image_index:
 
-                _xoffset = np.int(self.parent.ui.tableWidget.item(_row, 1).text())
-                _yoffset = np.int(self.parent.ui.tableWidget.item(_row, 2).text())
+                _xoffset = np.int(np.floor(np.float(self.parent.ui.tableWidget.item(_row, 1).text())))
+                _yoffset = np.int(np.floor(np.float(self.parent.ui.tableWidget.item(_row, 2).text())))
                 _rotation = np.float(self.parent.ui.tableWidget.item(_row, 3).text())
 
                 _data_registered = self.registered_data(raw_data=_data,
