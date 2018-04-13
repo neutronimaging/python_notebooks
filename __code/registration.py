@@ -27,6 +27,12 @@ except ImportError:
     from PyQt5 import QtCore, QtGui, QtWidgets
     from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
 
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
 from NeuNorm.normalization import Normalization
 
 
@@ -1344,11 +1350,15 @@ class RegistrationMarkers(QDialog):
             _table = QtGui.QTableWidget(self.nbr_files, 3)
             _table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
             _table.setAlternatingRowColors(True)
+            _table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+            _table.customContextMenuRequested.connect(self.table_right_click)
 
             for _col, _size in enumerate(self.parent.markers_table_column_width):
                 _table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
             _table.horizontalHeader().sectionResized.connect(self.resizing_column)
+
+
 
             _data_dict = self.parent.markers_table[_key_tab_name]['data']
             for _row, _file in enumerate(self.parent.data_dict['file_name']):
@@ -1425,6 +1435,9 @@ class RegistrationMarkers(QDialog):
 
     # Event handler =================================
 
+    def table_right_click(self, point):
+        print("right click")
+
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
@@ -1442,7 +1455,12 @@ class RegistrationMarkers(QDialog):
         table = QtGui.QTableWidget(self.nbr_files, 3)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
         table.setAlternatingRowColors(True)
-        table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        table.customContextMenuRequested.connect(self.table_right_click)
+
+        #table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        # QtCore.QObject.connect(_table, QtCore.SIGNAL(_fromUtf8("customContextMenuRequested(QPoint)")),
+        #                        self.table_right_click)
 
         for _col, _size in enumerate(self.parent.markers_table_column_width):
             table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
