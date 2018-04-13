@@ -1433,10 +1433,44 @@ class RegistrationMarkers(QDialog):
         markers_table[_tab_title]['data'] = table_data
         self.parent.markers_table = markers_table
 
+    def copy_cell(self):
+        pass
+
+    def paste_cell(self):
+        pass
+
+    def get_column_selected(self):
+        _current_tab = self.ui.tabWidget.currentIndex()
+        _tab_title = self.ui.tabWidget.tabText(_current_tab)
+        markers_table = self.parent.markers_table
+        table_ui = markers_table[_tab_title]['ui']
+        table_selection = table_ui.selectedRanges()
+        if table_selection == []:
+            return -1
+
+        table_selection = table_selection[0]
+        column_selected = table_selection.leftColumn()
+        return column_selected
+
     # Event handler =================================
 
-    def table_right_click(self, point):
-        print("right click")
+    def table_right_click(self, position):
+        """display context menu when user click the x or y column of the marker table"""
+        column_selected = self.get_column_selected()
+        if column_selected == 0:
+            return
+        elif column_selected == -1:
+            return
+
+        menu = QtGui.QMenu(self)
+        copy_cell = menu.addAction("Copy")
+        paste_cell = menu.addAction("Paste")
+        action = menu.exec_(QtGui.QCursor.pos())
+
+        if action == copy_cell:
+            self.copy_cell()
+        elif action == paste_cell:
+            self.paste_cell()
 
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
