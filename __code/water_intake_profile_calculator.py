@@ -108,6 +108,7 @@ class WaterIntakeHandler(object):
 
         dict_error_function_parameters = dict()
         water_intake_peaks_erf = []
+        water_intake_peaks_erf_error = []
         delta_time = []
 
         for _index_file in np.arange(_start_file, _end_file):
@@ -120,27 +121,41 @@ class WaterIntakeHandler(object):
             if not is_data_from_max_to_min:
                 ydata = ydata[::-1]
 
-            popt = self.fitting_algorithm(ydata)
+            (popt, pcov) = self.fitting_algorithm(ydata)
 
             _local_dict = {'c': popt[0],
                            'w': popt[1],
                            'm': popt[2],
                            'n': popt[3]}
 
+            error = np.sqrt(np.diag(pcov))
             _peak = np.int(popt[0] + (popt[1]/np.sqrt(2)))
             water_intake_peaks_erf.append(_peak)
+
+            for _i, _err in enumerate(error):
+                if np.isnan(_err):
+                    error[_i] = np.sqrt(popt[0])
+                elif np.isinf(_err):
+                    error[_i] = np.sqrt(popt[0])
+                else:
+                    error[_i] = _err
+
+            _peak_error = np.int(error[0] + (error[1]/np.sqrt(2)))
+
+            water_intake_peaks_erf_error.append(_peak_error)
             delta_time.append(xdata)
 
             dict_error_function_parameters[str(_index_file)] = _local_dict
 
         self.water_intake_peaks_erf = water_intake_peaks_erf
         self.dict_error_function_parameters = dict_error_function_parameters
+        self.dict_error_function_parameters_error = water_intake_peaks_erf_error
         self.water_intake_deltatime = delta_time
 
     def fitting_algorithm(self, ydata):
         fitting_xdata = np.arange(len(ydata))
-        popt, _ = curve_fit(self.fitting_function, fitting_xdata, ydata, maxfev=3000)
-        return popt
+        popt, pcov = curve_fit(self.fitting_function, fitting_xdata, ydata, maxfev=3000)
+        return (popt, pcov)
 
     def calculate_using_sliding_average(self):
         _dict_profiles = self.dict_profiles
@@ -187,7 +202,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     current_image = []
     ignore_first_image_checked = True
-    roi_width = 0.01
+    roi_width = 0.05
     roi = {'x0': 88, 'y0': 131, 'width': 142, 'height': 171}
     table_column_width = [350, 150, 200]
     dict_profiles = {} # contain all the profiles just before calculating the water intake
@@ -589,10 +604,38 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.dict_water_intake['yaxis'] = peak
 
         self.water_intake.clear()
-        self.water_intake.plot(delta_time, peak, symbolPen=None,
-                               pen=None,
-                               symbol='o',
-                               symbolBruch=(200,200,200,50))
+        if algorithm_selected == 'error_function':
+            error = o_water_intake_handler.dict_error_function_parameters_error
+            top = error
+            bottom = error
+            peak = np.array(peak)
+            self.dict_water_intake['error'] = error
+
+            # cleaning the error to make sure their values is not bigger than the peak value
+            for _index, _err in enumerate(error):
+                if _err > peak[_index]:
+                    error[_index] = np.sqrt(peak[_index])
+
+            # print("error: {}".format(error))
+            # print("bottom: {}".format(bottom))
+            # print("peak: {}".format(peak))
+
+            err = pg.ErrorBarItem(x=delta_time,
+                                  y=peak,
+                                  top=top,
+                                  bottom=bottom)
+
+            self.water_intake.addItem(err)
+            self.water_intake.plot(delta_time, peak, symbolPen=None,
+                                   pen=None,
+                                   symbol='o',
+                                   symbolBruch=(200,200,200,50))
+        else:
+            self.water_intake.plot(delta_time, peak, symbolPen=None,
+                                   pen=None,
+                                   symbol='o',
+                                   symbolBruch=(200,200,200,50))
+
         self.water_intake.setLabel('left', y_label)
         self.water_intake.setLabel('bottom', 'Delta Time')
 
@@ -795,15 +838,20 @@ class WaterIntakeProfileSelector(QMainWindow):
 
             x_axis = dict_water_intake['xaxis']
             y_axis = dict_water_intake['yaxis']
+
             nbr_files = len(x_axis)
 
             # metadata
             _algo_used = self.get_profile_algo()
+            _master_algo_used = self.get_algorithm_selected()
             _roi = self.roi
             x0 = _roi['x0']
             y0 = _roi['y0']
             width = _roi['width']
             height = _roi['height']
+
+            if _master_algo_used == 'error_function':
+                error = dict_water_intake['error']
 
             list_images = self.dict_data['list_images']
             full_input_folder = os.path.dirname(list_images[0])
@@ -824,13 +872,20 @@ class WaterIntakeProfileSelector(QMainWindow):
             metadata.append("# integration direction: {}".format(inte_direction))
             metadata.append("# input folder: {}".format(full_input_folder))
             metadata.append("# algorithm used: {}".format(_algo_used))
+            metadata.append("# calculation used: {}".format(_master_algo_used))
             metadata.append("# ")
-            metadata.append("# Time(s), {}".format(yaxis_label))
+            metadata.append("# Time(s), {}, error".format(yaxis_label))
 
             export_file_name = "water_intake_of_{}_with_{}input_files.txt".format(short_input_folder, nbr_files)
             full_export_file_name = os.path.join(export_folder, export_file_name)
 
-            data = [ "{}, {}".format(_x_axis, _y_axis) for _x_axis, _y_axis in zip(x_axis, y_axis)]
+            if _master_algo_used == 'error_function':
+                metadata.append("# Time(s), {}, error".format(yaxis_label))
+                data = [ "{}, {}, {}".format(_x_axis, _y_axis, _error) for _x_axis, _y_axis, _error in zip(x_axis, y_axis, error)]
+            else:
+                metadata.append("# Time(s), {}".format(yaxis_label))
+                data = [ "{}, {}".format(_x_axis, _y_axis) for _x_axis, _y_axis, _error in zip(x_axis, y_axis)]
+
             display(HTML("Exported water intake file: {}".format(full_export_file_name)))
             make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim='1d')
 
