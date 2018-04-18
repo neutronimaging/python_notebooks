@@ -515,15 +515,21 @@ class WaterIntakeProfileSelector(QMainWindow):
         while (index < len(_profile)):
             if np.mod(index, bin_size) != 0:
                 pass
-            else: # edve of bin
+            else: # end of bin
                 bins.append(index)
 
             index += 1
 
         bins = np.array(bins)
-        print(bins)
-        digitized = np.digitize(_profile, bins)
+        #digitized = np.digitize(_profile, bins)
         #_profile = [_profile[digitized == i].mean() for i in range(1, len(bins))]
+        #bins = bins[0:len(_profile)]
+
+        # make sure the size of profile agrees with the bin size defined
+        if not (np.mod(len(_profile), bin_size) == 0):
+            _profile = _profile[:-np.mod(len(_profile), bin_size)]
+        _profile = np.reshape(_profile, (np.int(len(_profile)/bin_size), bin_size))
+        _profile = np.mean(_profile, axis=1)
 
         self.profile.clear()
 
@@ -535,6 +541,8 @@ class WaterIntakeProfileSelector(QMainWindow):
             y_axis_label = 'X pixels'
             # x_axis = np.arange(0, len(_profile), bin_size) + np.int(x0)
             x_axis = bins + np.int(x0)
+
+        x_axis = x_axis[:len(_profile)]
 
         self.live_x_axis = x_axis
         self.profile.plot(x_axis, _profile)
