@@ -217,6 +217,62 @@
          </widget>
         </item>
         <item>
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>150</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Rebin</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>2</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Pixels</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="rebin_spinBox">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="groupBox_5">
           <property name="minimumSize">
            <size>
@@ -602,8 +658,8 @@
    <slot>ok_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>987</x>
-     <y>876</y>
+     <x>1407</x>
+     <y>1001</y>
     </hint>
     <hint type="destinationlabel">
      <x>685</x>
@@ -618,8 +674,8 @@
    <slot>help_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>885</x>
-     <y>876</y>
+     <x>111</x>
+     <y>1001</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -666,8 +722,8 @@
    <slot>profile_algo_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>961</x>
-     <y>187</y>
+     <x>850</x>
+     <y>87</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -682,8 +738,8 @@
    <slot>profile_algo_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>961</x>
-     <y>210</y>
+     <x>850</x>
+     <y>110</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -698,8 +754,8 @@
    <slot>profile_algo_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>961</x>
-     <y>233</y>
+     <x>850</x>
+     <y>133</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -714,8 +770,8 @@
    <slot>sorting_files_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>138</x>
-     <y>816</y>
+     <x>137</x>
+     <y>939</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -730,8 +786,8 @@
    <slot>sorting_files_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>225</x>
-     <y>816</y>
+     <x>224</x>
+     <y>939</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -746,8 +802,8 @@
    <slot>time_between_runs_spinBox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>440</x>
-     <y>818</y>
+     <x>439</x>
+     <y>941</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -762,8 +818,8 @@
    <slot>_water_intake_yaxis_checkbox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>568</x>
-     <y>816</y>
+     <x>567</x>
+     <y>939</y>
     </hint>
     <hint type="destinationlabel">
      <x>551</x>
@@ -778,8 +834,8 @@
    <slot>_water_intake_yaxis_checkbox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>654</x>
-     <y>816</y>
+     <x>653</x>
+     <y>939</y>
     </hint>
     <hint type="destinationlabel">
      <x>619</x>
@@ -794,8 +850,8 @@
    <slot>_pixel_size_spinBox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>807</x>
-     <y>818</y>
+     <x>806</x>
+     <y>941</y>
     </hint>
     <hint type="destinationlabel">
      <x>828</x>
@@ -826,8 +882,8 @@
    <slot>export_table_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>982</x>
-     <y>752</y>
+     <x>702</x>
+     <y>711</y>
     </hint>
     <hint type="destinationlabel">
      <x>535</x>
@@ -890,8 +946,8 @@
    <slot>integration_direction_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>961</x>
-     <y>301</y>
+     <x>850</x>
+     <y>201</y>
     </hint>
     <hint type="destinationlabel">
      <x>836</x>
@@ -906,8 +962,8 @@
    <slot>integration_direction_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>961</x>
-     <y>318</y>
+     <x>850</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>850</x>
@@ -922,8 +978,8 @@
    <slot>ignore_first_image_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>970</x>
-     <y>705</y>
+     <x>989</x>
+     <y>938</y>
     </hint>
     <hint type="destinationlabel">
      <x>612</x>
@@ -938,8 +994,8 @@
    <slot>algorithm_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>889</x>
-     <y>363</y>
+     <x>850</x>
+     <y>348</y>
     </hint>
     <hint type="destinationlabel">
      <x>760</x>
@@ -954,12 +1010,28 @@
    <slot>algorithm_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>900</x>
-     <y>387</y>
+     <x>850</x>
+     <y>365</y>
     </hint>
     <hint type="destinationlabel">
      <x>812</x>
      <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rebin_spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>rebin_slider_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>819</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>904</x>
+     <y>352</y>
     </hint>
    </hints>
   </connection>
@@ -986,5 +1058,6 @@
   <slot>integration_direction_changed()</slot>
   <slot>ignore_first_image_checkbox_clicked()</slot>
   <slot>algorithm_changed()</slot>
+  <slot>rebin_slider_changed()</slot>
  </slots>
 </ui>

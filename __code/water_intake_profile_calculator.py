@@ -505,14 +505,36 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         _image_of_roi = _image[y0:y1, x0:x1]
         _profile = self.get_profile(_image_of_roi)
+
+        # rebin profile
+        bin_size = self.ui.rebin_spinBox.value()
+
+        # calculate bin array
+        bins = []
+        index = 0
+        while (index < len(_profile)):
+            if np.mod(index, bin_size) != 0:
+                pass
+            else: # edve of bin
+                bins.append(index)
+
+            index += 1
+
+        bins = np.array(bins)
+        print(bins)
+        digitized = np.digitize(_profile, bins)
+        #_profile = [_profile[digitized == i].mean() for i in range(1, len(bins))]
+
         self.profile.clear()
 
         if self.is_inte_along_x_axis:
             y_axis_label = 'Y pixels'
-            x_axis = np.arange(len(_profile)) + np.int(y0)
+            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(y0)
+            x_axis = bins + np.int(y0)
         else:
             y_axis_label = 'X pixels'
-            x_axis = np.arange(len(_profile)) + np.int(x0)
+            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(x0)
+            x_axis = bins + np.int(x0)
 
         self.live_x_axis = x_axis
         self.profile.plot(x_axis, _profile)
@@ -1144,6 +1166,9 @@ class WaterIntakeProfileSelector(QMainWindow):
     def ok_button_clicked(self):
         # do soemthing here
         self.close()
+
+    def rebin_slider_changed(self, new_value):
+        self.update_plots()
 
     def cancel_button_clicked(self):
         self.close()
