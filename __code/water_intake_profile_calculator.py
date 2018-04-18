@@ -504,16 +504,16 @@ class WaterIntakeProfileSelector(QMainWindow):
         y1 = y0 + height
 
         _image_of_roi = _image[y0:y1, x0:x1]
-
-        if self.is_inte_along_x_axis:
-            y_axis_label = 'Y pixels'
-        else:
-            y_axis_label = 'X pixels'
-
         _profile = self.get_profile(_image_of_roi)
         self.profile.clear()
 
-        x_axis = np.arange(len(_profile)) + np.int(y0)
+        if self.is_inte_along_x_axis:
+            y_axis_label = 'Y pixels'
+            x_axis = np.arange(len(_profile)) + np.int(y0)
+        else:
+            y_axis_label = 'X pixels'
+            x_axis = np.arange(len(_profile)) + np.int(x0)
+
         self.live_x_axis = x_axis
         self.profile.plot(x_axis, _profile)
         self.profile.setLabel('left', 'Counts')
