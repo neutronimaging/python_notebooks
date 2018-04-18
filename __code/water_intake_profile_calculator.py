@@ -616,10 +616,6 @@ class WaterIntakeProfileSelector(QMainWindow):
                 if _err > peak[_index]:
                     error[_index] = np.sqrt(peak[_index])
 
-            # print("error: {}".format(error))
-            # print("bottom: {}".format(bottom))
-            # print("peak: {}".format(peak))
-
             err = pg.ErrorBarItem(x=delta_time,
                                   y=peak,
                                   top=top,
@@ -652,7 +648,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         algorithm_selected = self.get_algorithm_selected()
         if algorithm_selected == 'sliding_average':
             _water_intake_peaks = self.water_intake_peaks_sliding_average.copy()
-            peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['y0'])
+            if self.is_inte_along_x_axis:
+                _offset = np.int(self.roi['y0'])
+            else:
+                _offset = np.int(self.roi['x0'])
+            peak_value = _water_intake_peaks[index_selected] +_offset
         else:
             _water_intake_peaks = self.water_intake_peaks_erf.copy()
             is_data_from_max_to_min = self.is_data_from_max_to_min
@@ -806,7 +806,7 @@ class WaterIntakeProfileSelector(QMainWindow):
             display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
 
     def get_profile(self, image):
-        """return the 1D profile of the image using the correct integration direction"""
+        """return the 1D profile of the image using the correct integration method (add, mean, median)"""
 
         if self.is_inte_along_x_axis:
             _axis_to_integrate = 1
