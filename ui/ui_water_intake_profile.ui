@@ -307,6 +307,13 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QRadioButton" name="change_point_checkBox">
+             <property name="text">
+              <string>Change Point</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -1032,6 +1039,22 @@
     <hint type="destinationlabel">
      <x>904</x>
      <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>change_point_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>algorithm_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>789</x>
+     <y>373</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>709</x>
+     <y>517</y>
     </hint>
    </hints>
   </connection>

@@ -143,6 +143,9 @@ class Ui_MainWindow(object):
         self.error_function_checkBox = QtWidgets.QRadioButton(self.groupBox_5)
         self.error_function_checkBox.setObjectName("error_function_checkBox")
         self.verticalLayout_6.addWidget(self.error_function_checkBox)
+        self.change_point_checkBox = QtWidgets.QRadioButton(self.groupBox_5)
+        self.change_point_checkBox.setObjectName("change_point_checkBox")
+        self.verticalLayout_6.addWidget(self.change_point_checkBox)
         self.verticalLayout_3.addWidget(self.groupBox_5)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_3.addItem(spacerItem1)
@@ -298,6 +301,7 @@ class Ui_MainWindow(object):
         self.sliding_average_checkBox.clicked.connect(MainWindow.algorithm_changed)
         self.error_function_checkBox.clicked.connect(MainWindow.algorithm_changed)
         self.rebin_spinBox.valueChanged['int'].connect(MainWindow.rebin_slider_changed)
+        self.change_point_checkBox.clicked.connect(MainWindow.algorithm_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -322,6 +326,7 @@ class Ui_MainWindow(object):
         self.groupBox_5.setTitle(_translate("MainWindow", "Algorithm"))
         self.sliding_average_checkBox.setText(_translate("MainWindow", "Sliding Average"))
         self.error_function_checkBox.setText(_translate("MainWindow", "Error Function"))
+        self.change_point_checkBox.setText(_translate("MainWindow", "Change Point"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Sorting Files"))
         self.sort_files_by_time_radioButton.setText(_translate("MainWindow", "by Time Stamp"))
         self.sort_files_by_name_radioButton.setText(_translate("MainWindow", "by Name"))

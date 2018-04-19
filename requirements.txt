@@ -1,6 +1,7 @@
 NeuNorm
 neutronbraggedge
 sectorizedradialprofile
+changepy
 
 anaconda-client==1.6.0
 appdirs==1.4.3

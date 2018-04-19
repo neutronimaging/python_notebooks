@@ -11,6 +11,8 @@ import glob
 from scipy.special import erf
 from scipy.optimize import curve_fit
 import pprint
+from changepy import pelt
+from changepy.costs import normal_var
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
@@ -73,8 +75,12 @@ class WaterIntakeHandler(object):
 
         if algorithm_selected == 'sliding_average':
             self.calculate_using_sliding_average()
-        else:
+        elif algorithm_selected == 'error_function':
             self.calculate_using_erf()
+        elif algorithm_selected == 'change_point':
+            self.calculate_change_point()
+        else:
+            raise ValueError("algorithm not implemented yet!")
 
     @staticmethod
     def fitting_function(x, c, w, m, n):
@@ -94,6 +100,36 @@ class WaterIntakeHandler(object):
             return True
         else:
             return False
+
+    def calculate_change_point(self):
+        _dict_profiles = self.dict_profiles
+        nbr_files = len(_dict_profiles.keys())
+
+        if self.ignore_first_image:
+            _start_file = 1
+            _end_file = nbr_files+1
+        else:
+            _start_file = 0
+            _end_file = nbr_files
+
+        water_intake_peaks = []
+        water_intake_deltatime = []
+        for _index_file in np.arange(_start_file, _end_file):
+            _profile = _dict_profiles[str(_index_file)]
+            ydata = _profile['data']
+            xdata = _profile['delta_time']
+
+            var = np.mean(ydata)
+            result = pelt(normal_var(ydata, var), len(ydata))
+            if len(result) > 2:
+                peak = np.mean(result[2:])
+            else:
+                peak = np.mean(result[1:])
+            water_intake_peaks.append(peak)
+            water_intake_deltatime.append(xdata)
+
+        self.water_intake_peaks_change_point = water_intake_peaks
+        self.water_intake_deltatime = water_intake_deltatime
 
     def calculate_using_erf(self):
         _dict_profiles = self.dict_profiles
@@ -215,6 +251,7 @@ class WaterIntakeProfileSelector(QMainWindow):
     # array of water intake values
     water_intake_peaks = []
     water_intake_peaks_erf = []
+    water_intake_peak_change_point = []
 
     # state of the image
     image_view_state = {}
@@ -513,6 +550,8 @@ class WaterIntakeProfileSelector(QMainWindow):
             return 'sliding_average'
         elif self.ui.error_function_checkBox.isChecked():
             return 'error_function'
+        elif self.ui.change_point_checkBox.isChecked():
+            return "change_point"
         else:
             raise ValueError("algorithm not implemented yet!")
 
@@ -576,6 +615,23 @@ class WaterIntakeProfileSelector(QMainWindow):
                 peak = [np.float(_peak) * pixel_size for _peak in peak]
                 y_label = 'Distance (mm)'
 
+        elif algorithm_selected == 'change_point':
+
+            peak = o_water_intake_handler.water_intake_peaks_change_point
+            self.water_intake_peaks_change_point = peak.copy()
+            delta_time = o_water_intake_handler.water_intake_deltatime
+
+            if self.ui.pixel_radioButton.isChecked():  # pixel
+                if self.is_inte_along_x_axis:
+                    peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+                else:
+                    peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
+                y_label = 'Pixel Position'
+            else:  # distance
+                pixel_size = self.ui.pixel_size_spinBox.value()
+                peak = [np.float(_peak) * pixel_size for _peak in peak]
+                y_label = 'Distance (mm)'
+
         else:
             raise NotImplementedError("Algorithm not implemented yet!")
 
@@ -633,7 +689,7 @@ class WaterIntakeProfileSelector(QMainWindow):
             else:
                 _offset = np.int(self.roi['x0'])
             peak_value = _water_intake_peaks[index_selected] +_offset
-        else:
+        elif algorithm_selected == 'error_function':
             _water_intake_peaks = self.water_intake_peaks_erf.copy()
             is_data_from_max_to_min = self.is_data_from_max_to_min
             if self.is_inte_along_x_axis:
@@ -646,6 +702,15 @@ class WaterIntakeProfileSelector(QMainWindow):
                     peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['x0'])
                 else:
                     peak_value = np.int(self.roi['width'] + self.roi['x0'] - _water_intake_peaks[index_selected])
+        elif algorithm_selected == 'change_point':
+            _water_intake_peaks = self.water_intake_peaks_change_point.copy()
+            if self.is_inte_along_x_axis:
+                _offset = np.int(self.roi['y0'])
+            else:
+                _offset = np.int(self.roi['x0'])
+            peak_value = _water_intake_peaks[index_selected] +_offset
+        else:
+            raise NotImplemented
 
         self.profile_vline = pg.InfiniteLine(angle=90, movable=False,
                                              pos=peak_value)
@@ -1287,7 +1352,7 @@ class ProfileHandler(object):
                 pixel_profile = zip(_pixel_index, _profile)
 
                 data = []
-                for _pixel_index, _counts in enumerate(pixel_profile):
+                for _pixel_index, _counts in pixel_profile:
                     _line = "{}, {}".format(_pixel_index + y0, _counts)
                     data.append(_line)
 
