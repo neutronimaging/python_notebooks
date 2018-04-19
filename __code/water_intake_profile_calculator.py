@@ -491,63 +491,112 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def update_profile_plot(self):
         index_selected = self.ui.file_index_slider.value()
-        _image = self.dict_data['list_data'][index_selected-1]
-#        _image = self.current_image
-        _roi = self.roi
+        o_profile_handler = ProfileHandler(parent=self)
+        o_profile_handler.calculate_profile(index=index_selected)
+        o_profile_handler.plot()
 
-        x0 = _roi['x0']
-        y0 = _roi['y0']
-        width = _roi['width']
-        height = _roi['height']
+#         _image = self.dict_data['list_data'][index_selected-1]
+# #        _image = self.current_image
+#         _roi = self.roi
+#
+#         x0 = _roi['x0']
+#         y0 = _roi['y0']
+#         width = _roi['width']
+#         height = _roi['height']
+#
+#         x1 = x0 + width
+#         y1 = y0 + height
+#
+#         _image_of_roi = _image[y0:y1, x0:x1]
+#         _profile = self.get_profile(_image_of_roi)
+#
+#         # rebin profile
+#         bin_size = self.ui.rebin_spinBox.value()
+#
+#         # calculate bin array
+#         bins = []
+#         index = 0
+#         while (index < len(_profile)):
+#             if np.mod(index, bin_size) != 0:
+#                 pass
+#             else: # end of bin
+#                 bins.append(index)
+#
+#             index += 1
+#
+#         bins = np.array(bins)
+#         #digitized = np.digitize(_profile, bins)
+#         #_profile = [_profile[digitized == i].mean() for i in range(1, len(bins))]
+#         #bins = bins[0:len(_profile)]
+#
+#         # make sure the size of profile agrees with the bin size defined
+#         if not (np.mod(len(_profile), bin_size) == 0):
+#             _profile = _profile[:-np.mod(len(_profile), bin_size)]
+#         _profile = np.reshape(_profile, (np.int(len(_profile)/bin_size), bin_size))
+#         _profile = np.mean(_profile, axis=1)
+#
+#         self.profile.clear()
+#
+#         if self.is_inte_along_x_axis:
+#             y_axis_label = 'Y pixels'
+#             # x_axis = np.arange(0, len(_profile), bin_size) + np.int(y0)
+#             x_axis = bins + np.int(y0)
+#         else:
+#             y_axis_label = 'X pixels'
+#             # x_axis = np.arange(0, len(_profile), bin_size) + np.int(x0)
+#             x_axis = bins + np.int(x0)
+#
+#         x_axis = x_axis[:len(_profile)]
+#
+#         self.live_x_axis = x_axis
+#         self.profile.plot(x_axis, _profile)
+#         self.profile.setLabel('left', 'Counts')
+#         self.profile.setLabel('bottom', y_axis_label)
 
-        x1 = x0 + width
-        y1 = y0 + height
+    def calculate_all_profiles(self):
+        o_profile_handler = ProfileHandler(parent=self)
+        o_profile_handler.calculate_profile(all=True)
 
-        _image_of_roi = _image[y0:y1, x0:x1]
-        _profile = self.get_profile(_image_of_roi)
-
-        # rebin profile
-        bin_size = self.ui.rebin_spinBox.value()
-
-        # calculate bin array
-        bins = []
-        index = 0
-        while (index < len(_profile)):
-            if np.mod(index, bin_size) != 0:
-                pass
-            else: # end of bin
-                bins.append(index)
-
-            index += 1
-
-        bins = np.array(bins)
-        #digitized = np.digitize(_profile, bins)
-        #_profile = [_profile[digitized == i].mean() for i in range(1, len(bins))]
-        #bins = bins[0:len(_profile)]
-
-        # make sure the size of profile agrees with the bin size defined
-        if not (np.mod(len(_profile), bin_size) == 0):
-            _profile = _profile[:-np.mod(len(_profile), bin_size)]
-        _profile = np.reshape(_profile, (np.int(len(_profile)/bin_size), bin_size))
-        _profile = np.mean(_profile, axis=1)
-
-        self.profile.clear()
-
-        if self.is_inte_along_x_axis:
-            y_axis_label = 'Y pixels'
-            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(y0)
-            x_axis = bins + np.int(y0)
-        else:
-            y_axis_label = 'X pixels'
-            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(x0)
-            x_axis = bins + np.int(x0)
-
-        x_axis = x_axis[:len(_profile)]
-
-        self.live_x_axis = x_axis
-        self.profile.plot(x_axis, _profile)
-        self.profile.setLabel('left', 'Counts')
-        self.profile.setLabel('bottom', y_axis_label)
+        # is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
+        #
+        # dict_data = self.dict_data
+        # _roi = self.roi
+        #
+        # x0 = _roi['x0']
+        # y0 = _roi['y0']
+        # width = _roi['width']
+        # height = _roi['height']
+        #
+        # x1 = x0 + width
+        # y1 = y0 + height
+        #
+        # list_images = dict_data['list_images']
+        # list_time_stamp = dict_data['list_time_stamp']
+        # list_data = dict_data['list_data']
+        #
+        # if is_sorting_by_name:
+        #     time_stamp_first_file = 0
+        # else:
+        #     time_stamp_first_file = float(list_time_stamp[0])
+        #
+        # if self.ui.ignore_first_image_checkbox.isChecked():
+        #     first_image = 1
+        # else:
+        #     first_image = 0
+        #
+        # nbr_images = len(list_images)
+        # dict_profiles = {}
+        # for index in np.arange(first_image, nbr_images):
+        #     _image = list_data[index]
+        #     _image_of_roi = _image[y0:y1, x0:x1]
+        #     _profile = self.get_profile(_image_of_roi)
+        #
+        #     time_stamp = float(list_time_stamp[index])
+        #     delta_time = time_stamp - time_stamp_first_file
+        #
+        #     dict_profiles[str(index)] = {'data': _profile,
+        #                                  'delta_time': delta_time}
+        # self.dict_profiles = dict_profiles
 
     def get_profile_algo(self):
         if self.ui.add_radioButton.isChecked():
@@ -722,47 +771,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
             self.profile.plot(xdata, ydata, pen=(255,0,0))
 
-    def calculate_all_profiles(self):
-        is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
 
-        dict_data = self.dict_data
-        _roi = self.roi
-
-        x0 = _roi['x0']
-        y0 = _roi['y0']
-        width = _roi['width']
-        height = _roi['height']
-
-        x1 = x0 + width
-        y1 = y0 + height
-
-        list_images = dict_data['list_images']
-        list_time_stamp = dict_data['list_time_stamp']
-        list_data = dict_data['list_data']
-
-        if is_sorting_by_name:
-            time_stamp_first_file = 0
-        else:
-            time_stamp_first_file = float(list_time_stamp[0])
-
-        if self.ui.ignore_first_image_checkbox.isChecked():
-            first_image = 1
-        else:
-            first_image = 0
-
-        nbr_images = len(list_images)
-        dict_profiles = {}
-        for index in np.arange(first_image, nbr_images):
-            _image = list_data[index]
-            _image_of_roi = _image[y0:y1, x0:x1]
-            _profile = self.get_profile(_image_of_roi)
-
-            time_stamp = float(list_time_stamp[index])
-            delta_time = time_stamp - time_stamp_first_file
-
-            dict_profiles[str(index)] = {'data': _profile,
-                                         'delta_time': delta_time}
-        self.dict_profiles = dict_profiles
 
     def export_profile_clicked(self):
         #select output folder
@@ -1253,10 +1262,136 @@ class WaterIntakeProfileCalculator(object):
                            'list_time_stamp': sorted_list_time_stamp,
                            'list_time_stamp_user_format': sorted_list_time_stamp_user_format}
 
+class ProfileHandler(object):
 
+    _profile = []
+    _bins = []
+    x0 = 0
+    y0 = 0
+    x1 = 0
+    y1 = 0
 
+    def __init__(self, parent=None):
+        self.parent = parent
+        
+    def calculate_profile(self, all=False, index=0):
+        dict_data = self.parent.dict_data
+        _roi = self.parent.roi
+        [self.x0, self.y0, self.x1, self.y1] = self._get_roi_corners(_roi)
 
+        if all: # all profiles
+            list_images = dict_data['list_images']
+            list_time_stamp = dict_data['list_time_stamp']
+            list_data = dict_data['list_data']
 
+            is_sorting_by_name = self.parent.ui.sort_files_by_name_radioButton.isChecked()
+            if is_sorting_by_name:
+                time_stamp_first_file = 0
+            else:
+                time_stamp_first_file = float(list_time_stamp[0])
+
+            if self.parent.ui.ignore_first_image_checkbox.isChecked():
+                first_image = 1
+            else:
+                first_image = 0
+
+            nbr_images = len(list_images)
+            dict_profiles = {}
+            for index in np.arange(first_image, nbr_images):
+                _image = list_data[index]
+                _image_of_roi = _image[self.y0:self.y1, self.x0:self.x1]
+                _profile = self.get_profile(_image_of_roi)
+
+                time_stamp = float(list_time_stamp[index])
+                delta_time = time_stamp - time_stamp_first_file
+
+                dict_profiles[str(index)] = {'data': _profile,
+                                             'delta_time': delta_time}
+            self.parent.dict_profiles = dict_profiles
+
+        else: # only index
+            self.__calculate_individual_profile(index=index-1)
+
+    def __calculate_individual_profile(self, index=0):
+        _image = self.parent.dict_data['list_data'][index]
+        _image_of_roi = _image[self.y0:self.y1, self.x0:self.x1]
+        _profile = self.get_profile(_image_of_roi)
+
+        # rebin profile
+        bin_size = self.parent.ui.rebin_spinBox.value()
+
+        # calculate bin array
+        bins = []
+        index = 0
+        while (index < len(_profile)):
+            if np.mod(index, bin_size) != 0:
+                pass
+            else: # end of bin
+                bins.append(index)
+
+            index += 1
+
+        bins = np.array(bins)
+        #digitized = np.digitize(_profile, bins)
+        #_profile = [_profile[digitized == i].mean() for i in range(1, len(bins))]
+        #bins = bins[0:len(_profile)]
+
+        # make sure the size of profile agrees with the bin size defined
+        if not (np.mod(len(_profile), bin_size) == 0):
+            _profile = _profile[:-np.mod(len(_profile), bin_size)]
+        _profile = np.reshape(_profile, (np.int(len(_profile)/bin_size), bin_size))
+        _profile = np.mean(_profile, axis=1)
+
+        self._profile = _profile
+        self._bins = bins
+
+    def plot(self):
+        self.parent.profile.clear()
+        if self.parent.is_inte_along_x_axis:
+            y_axis_label = 'Y pixels'
+            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(y0)
+            x_axis = self._bins + np.int(self.y0)
+        else:
+            y_axis_label = 'X pixels'
+            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(x0)
+            x_axis = self._bins + np.int(self.x0)
+
+        x_axis = x_axis[:len(self._profile)]
+
+        self.parent.live_x_axis = x_axis
+        self.parent.profile.plot(x_axis, self._profile)
+        self.parent.profile.setLabel('left', 'Counts')
+        self.parent.profile.setLabel('bottom', y_axis_label)
+
+    def get_profile(self, image):
+        """return the 1D profile of the image using the correct integration method (add, mean, median)"""
+
+        if self.parent.is_inte_along_x_axis:
+            _axis_to_integrate = 1
+        else:
+            _axis_to_integrate = 0
+        _algo_used = self.parent.get_profile_algo()
+
+        if _algo_used == 'add':
+            _profile = np.sum(image, axis=_axis_to_integrate)
+        elif _algo_used == 'mean':
+            _profile = np.mean(image, axis=_axis_to_integrate)
+        elif _algo_used == 'median':
+            _profile = np.median(image, axis=_axis_to_integrate)
+        else:
+            raise NotImplementedError
+        return _profile
+
+    def _get_roi_corners(self, roi):
+        x0 = roi['x0']
+        y0 = roi['y0']
+        width = roi['width']
+        height = roi['height']
+
+        x1 = x0 + width
+        y1 = y0 + height
+
+        return [x0, y0, x1, y1]
 
 
 
