@@ -40,6 +40,7 @@ from __code.ui_registration  import Ui_MainWindow as UiMainWindow
 from __code.ui_registration_tool import Ui_MainWindow as UiMainWindowTool
 from __code.ui_registration_auto_confirmation import Ui_Dialog as UiDialog
 from __code.ui_registration_markers import Ui_Dialog as UiDialogMarkers
+from __code.registration_profile import RegistrationProfileUi
 
 
 class RegistrationUi(QMainWindow):
@@ -76,6 +77,7 @@ class RegistrationUi(QMainWindow):
     registration_tool_ui = None
     registration_auto_confirmation_ui = None
     registration_markers_ui = None
+    registration_profile_ui = None
 
     # markers table
     # markers_table = {'1': {'data': {'file_0': {'x': 0, 'y':10, 'marker_ui': None, 'label_ui': None},
@@ -872,6 +874,8 @@ class RegistrationUi(QMainWindow):
             self.registration_tool_ui.close()
         if self.registration_markers_ui:
             self.registration_markers_ui.close()
+        if self.registration_profile_ui:
+            self.registration_profile_ui.close()
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
@@ -914,6 +918,9 @@ class RegistrationUi(QMainWindow):
         self.set_widget_status(list_ui=[self.ui.auto_registration_button],
                            enabled=False)
 
+    def profile_registration_button_clicked(self):
+        o_registration_profile = RegistrationProfileLauncher(object)
+
     def start_auto_registration(self):
         o_auto_register = RegistrationAuto(parent=self,
                                            reference_image=self.reference_image,
@@ -928,6 +935,22 @@ class RegistrationUi(QMainWindow):
 
     def grid_size_slider_pressed(self):
         self.display_live_image()
+
+
+class RegistrationProfileLauncher(object):
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+        if self.parent.registration_profile_ui == None:
+            profile_ui = RegistrationProfileUi(parent=parent)
+            profile_ui.show()
+            self.parent.registration_profile_ui = profile_ui
+        else:
+            self.parent.registration_profile_ui.setFocus()
+            self.parent.registration_profile_ui.activateWindow()
 
 
 class RegistrationManualLauncher(object):
