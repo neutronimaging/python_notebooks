@@ -259,17 +259,22 @@
            </column>
            <column>
             <property name="text">
-             <string>Xoffset</string>
+             <string>x-peak</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>Yoffset</string>
+             <string>y-peak</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>Rotation</string>
+             <string>x-offset</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>y-offset</string>
             </property>
            </column>
           </widget>
