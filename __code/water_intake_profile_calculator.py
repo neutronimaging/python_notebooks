@@ -495,108 +495,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         o_profile_handler.calculate_profile(index=index_selected)
         o_profile_handler.plot()
 
-#         _image = self.dict_data['list_data'][index_selected-1]
-# #        _image = self.current_image
-#         _roi = self.roi
-#
-#         x0 = _roi['x0']
-#         y0 = _roi['y0']
-#         width = _roi['width']
-#         height = _roi['height']
-#
-#         x1 = x0 + width
-#         y1 = y0 + height
-#
-#         _image_of_roi = _image[y0:y1, x0:x1]
-#         _profile = self.get_profile(_image_of_roi)
-#
-#         # rebin profile
-#         bin_size = self.ui.rebin_spinBox.value()
-#
-#         # calculate bin array
-#         bins = []
-#         index = 0
-#         while (index < len(_profile)):
-#             if np.mod(index, bin_size) != 0:
-#                 pass
-#             else: # end of bin
-#                 bins.append(index)
-#
-#             index += 1
-#
-#         bins = np.array(bins)
-#         #digitized = np.digitize(_profile, bins)
-#         #_profile = [_profile[digitized == i].mean() for i in range(1, len(bins))]
-#         #bins = bins[0:len(_profile)]
-#
-#         # make sure the size of profile agrees with the bin size defined
-#         if not (np.mod(len(_profile), bin_size) == 0):
-#             _profile = _profile[:-np.mod(len(_profile), bin_size)]
-#         _profile = np.reshape(_profile, (np.int(len(_profile)/bin_size), bin_size))
-#         _profile = np.mean(_profile, axis=1)
-#
-#         self.profile.clear()
-#
-#         if self.is_inte_along_x_axis:
-#             y_axis_label = 'Y pixels'
-#             # x_axis = np.arange(0, len(_profile), bin_size) + np.int(y0)
-#             x_axis = bins + np.int(y0)
-#         else:
-#             y_axis_label = 'X pixels'
-#             # x_axis = np.arange(0, len(_profile), bin_size) + np.int(x0)
-#             x_axis = bins + np.int(x0)
-#
-#         x_axis = x_axis[:len(_profile)]
-#
-#         self.live_x_axis = x_axis
-#         self.profile.plot(x_axis, _profile)
-#         self.profile.setLabel('left', 'Counts')
-#         self.profile.setLabel('bottom', y_axis_label)
-
     def calculate_all_profiles(self):
         o_profile_handler = ProfileHandler(parent=self)
         o_profile_handler.calculate_profile(all=True)
-
-        # is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
-        #
-        # dict_data = self.dict_data
-        # _roi = self.roi
-        #
-        # x0 = _roi['x0']
-        # y0 = _roi['y0']
-        # width = _roi['width']
-        # height = _roi['height']
-        #
-        # x1 = x0 + width
-        # y1 = y0 + height
-        #
-        # list_images = dict_data['list_images']
-        # list_time_stamp = dict_data['list_time_stamp']
-        # list_data = dict_data['list_data']
-        #
-        # if is_sorting_by_name:
-        #     time_stamp_first_file = 0
-        # else:
-        #     time_stamp_first_file = float(list_time_stamp[0])
-        #
-        # if self.ui.ignore_first_image_checkbox.isChecked():
-        #     first_image = 1
-        # else:
-        #     first_image = 0
-        #
-        # nbr_images = len(list_images)
-        # dict_profiles = {}
-        # for index in np.arange(first_image, nbr_images):
-        #     _image = list_data[index]
-        #     _image_of_roi = _image[y0:y1, x0:x1]
-        #     _profile = self.get_profile(_image_of_roi)
-        #
-        #     time_stamp = float(list_time_stamp[index])
-        #     delta_time = time_stamp - time_stamp_first_file
-        #
-        #     dict_profiles[str(index)] = {'data': _profile,
-        #                                  'delta_time': delta_time}
-        # self.dict_profiles = dict_profiles
 
     def get_profile_algo(self):
         if self.ui.add_radioButton.isChecked():
@@ -774,75 +675,9 @@ class WaterIntakeProfileSelector(QMainWindow):
 
 
     def export_profile_clicked(self):
-        #select output folder
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption = "Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
-        if _export_folder:
-            export_folder = os.path.abspath(_export_folder)
-
-            dict_data = self.dict_data
-            list_images = dict_data['list_images']
-            list_time_stamp = dict_data['list_time_stamp']
-            list_data = dict_data['list_data']
-            list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
-            _algo_used = self.get_profile_algo()
-
-            # get metadata roi selection
-            _roi = self.roi
-            x0 = _roi['x0']
-            y0 = _roi['y0']
-            width = _roi['width']
-            height = _roi['height']
-            x1 = x0 + width
-            y1 = y0 + height
-
-            input_folder = os.path.dirname(list_images[0])
-
-            nbr_images = len(list_images)
-            self.eventProgress.setMinimum(1)
-            self.eventProgress.setMaximum(nbr_images)
-            self.eventProgress.setValue(1)
-            self.eventProgress.setVisible(True)
-
-            if self.is_inte_along_x_axis:
-                inte_direction = 'x_axis'
-            else:
-                inte_direction = 'y_axis'
-
-            for index in np.arange(1, nbr_images):
-                _short_file_name = os.path.basename(list_images[index])
-                [_basename, _] = os.path.splitext(_short_file_name)
-                output_file_name = os.path.join(export_folder, _basename + '_profile.txt')
-
-                metadata = []
-                metadata.append("# Profile over ROI selected integrated along x-axis")
-                metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
-                metadata.append("# integration direction: {}".format(inte_direction))
-                metadata.append("# folder: {}".format(input_folder))
-                metadata.append("# filename: {}".format(_short_file_name))
-                metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
-                metadata.append("# timestamp (user format): {}".format(list_time_stamp_user_format[index]))
-                metadata.append("# algorithm used: {}".format(_algo_used))
-                metadata.append("# ")
-                metadata.append("# pixel, counts")
-
-                _image = list_data[index]
-                _image_of_roi = _image[y0:y1, x0:x1]
-                _profile = self.get_profile(_image_of_roi)
-
-                data = []
-                for _pixel_index, _counts in enumerate(_profile):
-                    _line = "{}, {}".format(_pixel_index+y0, _counts)
-                    data.append(_line)
-
-                make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
-
-                self.eventProgress.setValue(index)
-
-            self.eventProgress.setVisible(False)
-            display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
+        o_profile_handler = ProfileHandler(parent=self)
+        o_profile_handler.calculate_profile(all=True)
+        o_profile_handler.export()
 
     def get_profile(self, image):
         """return the 1D profile of the image using the correct integration method (add, mean, median)"""
@@ -1276,44 +1111,23 @@ class ProfileHandler(object):
         
     def calculate_profile(self, all=False, index=0):
         dict_data = self.parent.dict_data
-        _roi = self.parent.roi
-        [self.x0, self.y0, self.x1, self.y1] = self._get_roi_corners(_roi)
+        self._save_roi_corners()
 
         if all: # all profiles
-            list_images = dict_data['list_images']
-            list_time_stamp = dict_data['list_time_stamp']
-            list_data = dict_data['list_data']
-
-            is_sorting_by_name = self.parent.ui.sort_files_by_name_radioButton.isChecked()
-            if is_sorting_by_name:
-                time_stamp_first_file = 0
-            else:
-                time_stamp_first_file = float(list_time_stamp[0])
-
             if self.parent.ui.ignore_first_image_checkbox.isChecked():
                 first_image = 1
             else:
                 first_image = 0
 
-            nbr_images = len(list_images)
-            dict_profiles = {}
+            nbr_images = len(dict_data['list_images'])
             for index in np.arange(first_image, nbr_images):
-                _image = list_data[index]
-                _image_of_roi = _image[self.y0:self.y1, self.x0:self.x1]
-                _profile = self.get_profile(_image_of_roi)
-
-                time_stamp = float(list_time_stamp[index])
-                delta_time = time_stamp - time_stamp_first_file
-
-                dict_profiles[str(index)] = {'data': _profile,
-                                             'delta_time': delta_time}
-            self.parent.dict_profiles = dict_profiles
+                self.__calculate_individual_profile(index_file=index, save=True)
 
         else: # only index
-            self.__calculate_individual_profile(index=index-1)
+            self.__calculate_individual_profile(index_file=index-1)
 
-    def __calculate_individual_profile(self, index=0):
-        _image = self.parent.dict_data['list_data'][index]
+    def __calculate_individual_profile(self, index_file=0, save=False):
+        _image = self.parent.dict_data['list_data'][index_file]
         _image_of_roi = _image[self.y0:self.y1, self.x0:self.x1]
         _profile = self.get_profile(_image_of_roi)
 
@@ -1332,9 +1146,6 @@ class ProfileHandler(object):
             index += 1
 
         bins = np.array(bins)
-        #digitized = np.digitize(_profile, bins)
-        #_profile = [_profile[digitized == i].mean() for i in range(1, len(bins))]
-        #bins = bins[0:len(_profile)]
 
         # make sure the size of profile agrees with the bin size defined
         if not (np.mod(len(_profile), bin_size) == 0):
@@ -1345,15 +1156,35 @@ class ProfileHandler(object):
         self._profile = _profile
         self._bins = bins
 
+        if save:
+            list_time_stamp = self.parent.dict_data['list_time_stamp']
+            is_sorting_by_name = self.parent.ui.sort_files_by_name_radioButton.isChecked()
+            if is_sorting_by_name:
+                time_stamp_first_file = 0
+            else:
+                time_stamp_first_file = float(list_time_stamp[0])
+
+            time_stamp = float(list_time_stamp[index_file])
+            delta_time = time_stamp - time_stamp_first_file
+
+            if self.parent.is_inte_along_x_axis:
+                x_axis = self._bins + np.int(self.y0)
+            else:
+                x_axis = self._bins + np.int(self.x0)
+
+            x_axis = x_axis[:len(self._profile)]
+
+            self.parent.dict_profiles[str(index_file)] = {'data': _profile,
+                                                          'x_axis': x_axis,
+                                                          'delta_time': delta_time}
+
     def plot(self):
         self.parent.profile.clear()
         if self.parent.is_inte_along_x_axis:
             y_axis_label = 'Y pixels'
-            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(y0)
             x_axis = self._bins + np.int(self.y0)
         else:
             y_axis_label = 'X pixels'
-            # x_axis = np.arange(0, len(_profile), bin_size) + np.int(x0)
             x_axis = self._bins + np.int(self.x0)
 
         x_axis = x_axis[:len(self._profile)]
@@ -1382,20 +1213,90 @@ class ProfileHandler(object):
             raise NotImplementedError
         return _profile
 
-    def _get_roi_corners(self, roi):
-        x0 = roi['x0']
-        y0 = roi['y0']
-        width = roi['width']
-        height = roi['height']
+    def _save_roi_corners(self):
+        _roi = self.parent.roi
+        self.x0 = _roi['x0']
+        self.y0 = _roi['y0']
+        width = _roi['width']
+        height = _roi['height']
+        self.x1 = self.x0 + width
+        self.y1 = self.y0 + height
 
-        x1 = x0 + width
-        y1 = y0 + height
+    def export(self):
+        # select output folder
+        _export_folder = QFileDialog.getExistingDirectory(self.parent,
+                                                          directory=self.parent.working_dir,
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            export_folder = os.path.abspath(_export_folder)
 
-        return [x0, y0, x1, y1]
+            dict_data = self.parent.dict_data
+            list_images = dict_data['list_images']
+            list_time_stamp = dict_data['list_time_stamp']
+            #list_data = dict_data['list_data']
+            list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+            _algo_used = self.parent.get_profile_algo()
 
+            # get metadata roi selection
+            _roi = self.parent.roi
+            x0 = _roi['x0']
+            y0 = _roi['y0']
+            width = _roi['width']
+            height = _roi['height']
+            # x1 = x0 + width
+            # y1 = y0 + height
 
+            input_folder = os.path.dirname(list_images[0])
 
+            nbr_images = len(list_images)
+            self.parent.eventProgress.setMinimum(1)
+            self.parent.eventProgress.setMaximum(nbr_images)
+            self.parent.eventProgress.setValue(1)
+            self.parent.eventProgress.setVisible(True)
 
+            if self.parent.is_inte_along_x_axis:
+                inte_direction = 'x_axis'
+            else:
+                inte_direction = 'y_axis'
 
+            if self.parent.ui.ignore_first_image_checkbox.isChecked():
+                first_image = 1
+            else:
+                first_image = 0
 
+            for index in np.arange(first_image, nbr_images):
+                _short_file_name = os.path.basename(list_images[index])
+                [_basename, _] = os.path.splitext(_short_file_name)
+                output_file_name = os.path.join(export_folder, _basename + '_profile.txt')
 
+                metadata = []
+                metadata.append("# Profile over ROI selected integrated along x-axis")
+                metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
+                metadata.append("# integration direction: {}".format(inte_direction))
+                metadata.append("# folder: {}".format(input_folder))
+                metadata.append("# filename: {}".format(_short_file_name))
+                metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
+                metadata.append("# timestamp (user format): {}".format(list_time_stamp_user_format[index]))
+                metadata.append("# algorithm used: {}".format(_algo_used))
+                metadata.append("# ")
+                metadata.append("# pixel, counts")
+
+                _profile = self.parent.dict_profiles[str(index)]['data']
+                _pixel_index = self.parent.dict_profiles[str(index)]['x_axis']
+                pixel_profile = zip(_pixel_index, _profile)
+
+                data = []
+                for _pixel_index, _counts in enumerate(pixel_profile):
+                    _line = "{}, {}".format(_pixel_index + y0, _counts)
+                    data.append(_line)
+
+                make_ascii_file(metadata=metadata,
+                                data=data,
+                                output_file_name=output_file_name,
+                                dim='1d')
+
+                self.parent.eventProgress.setValue(index)
+
+            self.parent.eventProgress.setVisible(False)
+            display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
