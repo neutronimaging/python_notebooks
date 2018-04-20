@@ -567,21 +567,11 @@ class WaterIntakeProfileSelector(QMainWindow):
                                                     ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked(),
                                                     algorithm_selected=algorithm_selected)
 
+        pixel_size = self.ui.pixel_size_spinBox.value()
         if algorithm_selected == 'sliding_average':
             peak = o_water_intake_handler.water_intake_peak_sliding_average
             self.water_intake_peaks_sliding_average = peak.copy()
             delta_time = o_water_intake_handler.water_intake_deltatime
-
-            if self.ui.pixel_radioButton.isChecked():  # pixel
-                if self.is_inte_along_x_axis:
-                    peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
-                else:
-                    peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
-                y_label = 'Pixel Position'
-            else:  # distance
-                pixel_size = self.ui.pixel_size_spinBox.value()
-                peak = [np.float(_peak) * pixel_size for _peak in peak]
-                y_label = 'Distance (mm)'
 
         elif algorithm_selected == 'error_function':
             peak = o_water_intake_handler.water_intake_peaks_erf
@@ -590,50 +580,33 @@ class WaterIntakeProfileSelector(QMainWindow):
             delta_time = o_water_intake_handler.water_intake_deltatime
             self.is_data_from_max_to_min = o_water_intake_handler.is_data_from_max_to_min
 
-            if self.ui.pixel_radioButton.isChecked():  # pixel
-                if self.is_data_from_max_to_min:
-                    if self.is_inte_along_x_axis:
-                        peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
-                    else:
-                        peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
-
-                else:
-                    if self.is_inte_along_x_axis:
-                        peak = [np.int(self.roi['y0']) + np.int(self.roi['height']) - _peak for _peak in peak]
-                    else:
-                        peak = [np.int(self.roi['x0']) + np.int(self.roi['width']) - _peak for _peak in peak]
-
-                y_label = 'Pixel Position'
-            else:  # distance
-                pixel_size = self.ui.pixel_size_spinBox.value()
+            # due to the fact that the pixel reported may be from the right
+            if self.is_inte_along_x_axis:
                 if not self.is_data_from_max_to_min:
-                    if self.is_inte_along_x_axis:
-                        peak = [np.int(self.roi['y0']) + np.int(self.roi['height']) - _peak for _peak in peak]
-                    else:
-                        peak = [np.int(self.roi['x0']) + np.int(self.roi['width']) - _peak for _peak in peak]
-
-                peak = [np.float(_peak) * pixel_size for _peak in peak]
-                y_label = 'Distance (mm)'
+                    peak = [np.int(self.roi['height'] - _peak) for _peak in peak]
+            else:
+                if not self.is_data_from_max_to_min:
+                    peak = [np.int(self.roi['width'] - peak) for peak in peak]
 
         elif algorithm_selected == 'change_point':
-
             peak = o_water_intake_handler.water_intake_peaks_change_point
             self.water_intake_peaks_change_point = peak.copy()
             delta_time = o_water_intake_handler.water_intake_deltatime
 
-            if self.ui.pixel_radioButton.isChecked():  # pixel
-                if self.is_inte_along_x_axis:
-                    peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
-                else:
-                    peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
-                y_label = 'Pixel Position'
-            else:  # distance
-                pixel_size = self.ui.pixel_size_spinBox.value()
-                peak = [np.float(_peak) * pixel_size for _peak in peak]
-                y_label = 'Distance (mm)'
-
         else:
             raise NotImplementedError("Algorithm not implemented yet!")
+
+        # we want absolute pixel value
+        if self.is_inte_along_x_axis:
+            peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+        else:
+            peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
+
+        if self.ui.pixel_radioButton.isChecked():  # pixel
+            y_label = 'Pixel Position'
+        else:  # distance
+            peak = [np.float(_peak) * pixel_size for _peak in peak]
+            y_label = 'Distance (mm)'
 
         self.dict_water_intake = {}
         self.dict_water_intake['xaxis'] = delta_time
