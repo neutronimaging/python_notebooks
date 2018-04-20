@@ -1,6 +1,9 @@
 from IPython.core.display import HTML
 from IPython.core.display import display
 
+import pyqtgraph as pg
+from pyqtgraph.dockarea import *
+
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui, QtWidgets
@@ -26,6 +29,7 @@ class RegistrationProfileUi(QMainWindow):
         self.setWindowTitle("Registration Profile Tool")
 
         self.init_widgets()
+        self.init_pyqtgraph()
 
         self.parent = parent
         if parent:
@@ -37,10 +41,48 @@ class RegistrationProfileUi(QMainWindow):
         else:
             raise ValueError("please provide data_dict")
 
+    ## Initialization
+
     def init_widgets(self):
         # no need to show save and close if not called from parent UI
         if self.parent is None:
             self.ui.save_and_close_button.setVisible(False)
+
+    def init_pyqtgraph(self):
+
+        area = DockArea()
+        area.setVisible(True)
+        d1 = Dock("Registered Image", size=(600, 600))
+        d2 = Dock("Horizontal Profile", size=(300, 200))
+        d3 = Dock("Vertical Profile", size=(300, 200))
+
+        area.addDock(d2, 'top')
+        area.addDock(d1, 'left', d2)
+        area.addDock(d3, 'bottom', d2)
+
+        # registered image ara (left dock)
+        self.ui.image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.image_view.ui.menuBtn.hide()
+        self.ui.image_view.ui.roiBtn.hide()
+        d1.addWidget(self.ui.image_view)
+
+        # horizontal profile area
+        self.ui.hori_profile = pg.PlotWidget(title='Horizontal Profile')
+        self.ui.hori_profile.plot()
+        self.hori_legend = self.ui.hori_profile.addLegend()
+        d2.addWidget(self.ui.hori_profile)
+
+        # vertical profile area
+        self.ui.verti_profile = pg.PlotWidget(title='Vertical Profile')
+        self.ui.verti_profile.plot()
+        self.verti_legend = self.ui.verti_profile.addLegend()
+        d3.addWidget(self.ui.verti_profile)
+
+        # set up layout
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(area)
+
+        self.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
     ## Event Handler
 
