@@ -2,6 +2,7 @@ from IPython.core.display import HTML
 from IPython.core.display import display
 
 import os
+import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
@@ -31,6 +32,9 @@ class RegistrationProfileUi(QMainWindow):
     reference_image_short_name = ''
     color_reference_background = QtGui.QColor(50, 250, 50)
 
+    # image display
+    histogram_level = []
+
     def __init__(self, parent=None, data_dict=None):
 
         QMainWindow.__init__(self, parent=parent)
@@ -55,6 +59,8 @@ class RegistrationProfileUi(QMainWindow):
 
         self.init_reference_image()
         self.init_table()
+
+        self.display_selected_row()
 
     ## Initialization
 
@@ -89,7 +95,7 @@ class RegistrationProfileUi(QMainWindow):
         area.addDock(d1, 'left', d2)
         area.addDock(d4, 'above', d1)
         area.addDock(d3, 'bottom', d2)
-        #area.moveDock(d1, 'above', d4)
+        area.moveDock(d1, 'above', d4)
 
         # registered image ara (left dock)
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
@@ -141,14 +147,73 @@ class RegistrationProfileUi(QMainWindow):
             self.__set_item(_row, 3, 'N/A')
             self.__set_item(_row, 4, 'N/A')
 
+        # select first row by default
+        self.select_table_row(0)
+
         self.ui.tableWidget.blockSignals(False)
+
+    def select_table_row(self, row):
+        nbr_col = self.ui.tableWidget.columnCount()
+        nbr_row = self.ui.tableWidget.rowCount()
+
+        # clear previous selection
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+        self.ui.tableWidget.setRangeSelected(full_range, False)
+
+        # select file of interest
+        selection_range = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+        self.ui.tableWidget.setRangeSelected(selection_range, True)
+
+        self.ui.tableWidget.showRow(row)
 
     def __set_item(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if row == self.reference_image_index:
             item.setBackground(self.color_reference_background)
-            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+
+    def get_selected_row(self):
+        """table only allows selection of one row at a time, so top and bottom row are the same"""
+        table_selection = self.ui.tableWidget.selectedRanges()
+        table_selection = table_selection[0]
+        top_row = table_selection.topRow()
+        return top_row
+
+    def display_selected_row(self):
+        selected_row = self.get_selected_row()
+        _image = self.data_dict['data'][selected_row]
+
+        # save and load histogram for consistancy between images
+        _view = self.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+        first_update = False
+        if self.histogram_level == []:
+            first_update = True
+        _histo_widget = self.ui.image_view.getHistogramWidget()
+        self.histogram_level = _histo_widget
+
+        ## display here according to transparency
+        if selected_row != self.reference_image_index:
+            _opacity_coefficient = self.ui.opacity_slider.value()  # betwween 0 and 100
+            _opacity_image = _opacity_coefficient / 100.
+            _image = np.transpose(_image) * _opacity_image
+
+            _opacity_selected = 1 - _opacity_image
+            _reference_image = np.transpose(self.reference_image) * _opacity_selected
+
+            _final_image = _reference_image + _image
+
+        else:
+            _final_image = self.reference_image
+
+        self.ui.image_view.setImage(_final_image)
+
+        _view_box.setState(_state)
+        if not first_update:
+            _histo_widget.setLevels(self.histogram_level[0],
+                                    self.histogram_level[1])
 
     ## Event Handler
 
