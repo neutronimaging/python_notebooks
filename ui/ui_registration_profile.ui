@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -259,28 +262,55 @@
            </column>
            <column>
             <property name="text">
-             <string>x-peak</string>
+             <string>X peak</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>y-peak</string>
+             <string>Y peak</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>x-offset</string>
+             <string>X offset</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>y-offset</string>
+             <string>Y offset</string>
             </property>
            </column>
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="registered_all_images_button">
+           <property name="text">
+            <string>Register All Images</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="cancel_button">
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
            <item>
             <widget class="QPushButton" name="help_button">
              <property name="minimumSize">
@@ -307,28 +337,16 @@
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>408</width>
+               <width>40</width>
                <height>20</height>
               </size>
              </property>
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="export_button">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>30</height>
-              </size>
-             </property>
+            <widget class="QPushButton" name="save_and_close_button">
              <property name="text">
-              <string>Export ...</string>
+              <string>Save and Close</string>
              </property>
             </widget>
            </item>
@@ -350,6 +368,13 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFiles">
+    <property name="title">
+     <string>Files</string>
+    </property>
+    <addaction name="actionExport_Images"/>
+   </widget>
+   <addaction name="menuFiles"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExport_Profile">
@@ -397,25 +422,14 @@
     <string>Profiles ...</string>
    </property>
   </action>
+  <action name="actionExport_Images">
+   <property name="text">
+    <string>Export Images ...</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>export_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>export_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>993</x>
-     <y>1114</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>685</x>
-     <y>625</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>help_button</sender>
    <signal>clicked()</signal>
@@ -423,7 +437,7 @@
    <slot>help_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
+     <x>526</x>
      <y>1114</y>
     </hint>
     <hint type="destinationlabel">
@@ -440,7 +454,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>876</x>
-     <y>594</y>
+     <y>520</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -456,43 +470,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>876</x>
-     <y>594</y>
+     <y>520</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
      <y>566</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tableWidget</sender>
-   <signal>itemSelectionChanged()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>table_row_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>503</x>
-     <y>789</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>503</x>
-     <y>574</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>opacity_slider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>opacity_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>970</x>
-     <y>391</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>917</x>
-     <y>-4</y>
     </hint>
    </hints>
   </connection>
@@ -504,7 +486,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>94</x>
-     <y>597</y>
+     <y>523</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -520,7 +502,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>993</x>
-     <y>597</y>
+     <y>523</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -529,41 +511,90 @@
    </hints>
   </connection>
   <connection>
-   <sender>tableWidget</sender>
-   <signal>cellChanged(int,int)</signal>
+   <sender>previous_image_button</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>table_cell_modified()</slot>
+   <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>624</x>
-     <y>760</y>
+     <x>115</x>
+     <y>513</y>
     </hint>
     <hint type="destinationlabel">
-     <x>692</x>
+     <x>5</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>previous_image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous_image_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>518</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>522</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>opacity_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>opacity_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>953</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>998</x>
+     <y>316</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancel_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cancel_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>1099</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
      <y>1120</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_and_close_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>save_and_close_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>889</x>
+     <y>1103</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>866</x>
+     <y>1121</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>help_button_clicked()</slot>
-  <slot>slider_file_changed()</slot>
-  <slot>table_row_clicked()</slot>
-  <slot>item_activated()</slot>
-  <slot>opacity_changed()</slot>
   <slot>previous_image_button_clicked()</slot>
-  <slot>next_image_button_clicked()</slot>
-  <slot>selection_all_clicked()</slot>
-  <slot>selection_slider_changed()</slot>
-  <slot>selection_slider_moved()</slot>
-  <slot>manual_registration_button_clicked()</slot>
-  <slot>export_button_clicked()</slot>
-  <slot>table_cell_modified()</slot>
-  <slot>auto_registration_button_clicked()</slot>
-  <slot>grid_display_checkBox_clicked()</slot>
-  <slot>grid_size_slider_moved()</slot>
-  <slot>grid_size_slider_pressed()</slot>
-  <slot>markers_registration_button_clicked()</slot>
-  <slot>profiler_registration_button_clicked()</slot>
+  <slot>opacity_slider_moved()</slot>
+  <slot>cancel_button_clicked()</slot>
+  <slot>save_and_close_button_clicked()</slot>
  </slots>
 </ui>
