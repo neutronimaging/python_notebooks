@@ -206,6 +206,13 @@
           </layout>
          </item>
          <item>
+          <widget class="QPushButton" name="calculate_markers_button">
+           <property name="text">
+            <string>Calculate Markers</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QTableWidget" name="tableWidget">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -590,11 +597,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>calculate_markers_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calculate_markers_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>602</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>668</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>previous_image_button_clicked()</slot>
   <slot>opacity_slider_moved()</slot>
   <slot>cancel_button_clicked()</slot>
   <slot>save_and_close_button_clicked()</slot>
+  <slot>calculate_markers_button_clicked()</slot>
  </slots>
 </ui>

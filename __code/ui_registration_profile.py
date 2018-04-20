@@ -106,6 +106,9 @@ class Ui_MainWindow(object):
         self.pushButton_3.setObjectName("pushButton_3")
         self.horizontalLayout_4.addWidget(self.pushButton_3)
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
+        self.calculate_markers_button = QtWidgets.QPushButton(self.layoutWidget1)
+        self.calculate_markers_button.setObjectName("calculate_markers_button")
+        self.verticalLayout_3.addWidget(self.calculate_markers_button)
         self.tableWidget = QtWidgets.QTableWidget(self.layoutWidget1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -203,6 +206,7 @@ class Ui_MainWindow(object):
         self.opacity_slider.sliderMoved['int'].connect(MainWindow.opacity_slider_moved)
         self.cancel_button.clicked.connect(MainWindow.cancel_button_clicked)
         self.save_and_close_button.clicked.connect(MainWindow.save_and_close_button_clicked)
+        self.calculate_markers_button.clicked.connect(MainWindow.calculate_markers_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -215,6 +219,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Reference Image:"))
         self.reference_image_label.setText(_translate("MainWindow", "N/A"))
         self.pushButton_3.setText(_translate("MainWindow", "Change ..."))
+        self.calculate_markers_button.setText(_translate("MainWindow", "Calculate Markers"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "File Name"))
         item = self.tableWidget.horizontalHeaderItem(1)
