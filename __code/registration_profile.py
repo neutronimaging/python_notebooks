@@ -21,6 +21,8 @@ class RegistrationProfileUi(QMainWindow):
 
     data_dict = None
 
+    table_column_width = [350, 100, 100, 100, 100]
+
     def __init__(self, parent=None, data_dict=None):
 
         QMainWindow.__init__(self, parent=parent)
@@ -30,6 +32,7 @@ class RegistrationProfileUi(QMainWindow):
 
         self.init_widgets()
         self.init_pyqtgraph()
+        self.init_statusbar()
 
         self.parent = parent
         if parent:
@@ -43,10 +46,24 @@ class RegistrationProfileUi(QMainWindow):
 
     ## Initialization
 
+    def init_statusbar(self):
+        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress.setMinimumSize(300, 20)
+        self.eventProgress.setMaximumSize(300, 20)
+        self.eventProgress.setVisible(True)
+        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+
     def init_widgets(self):
         # no need to show save and close if not called from parent UI
         if self.parent is None:
             self.ui.save_and_close_button.setVisible(False)
+
+        # table columns
+        self.ui.tableWidget.blockSignals(True)
+        nbr_columns = self.ui.tableWidget.columnCount()
+        for _col in range(nbr_columns):
+            self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
+        self.ui.tableWidget.blockSignals(False)
 
     def init_pyqtgraph(self):
 
