@@ -122,7 +122,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setFrameShadow(QtWidgets.QFrame.Plain)
         self.tableWidget.setDefaultDropAction(QtCore.Qt.IgnoreAction)
         self.tableWidget.setAlternatingRowColors(True)
-        self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.ContiguousSelection)
+        self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setGridStyle(QtCore.Qt.SolidLine)
         self.tableWidget.setObjectName("tableWidget")
@@ -207,6 +207,7 @@ class Ui_MainWindow(object):
         self.cancel_button.clicked.connect(MainWindow.cancel_button_clicked)
         self.save_and_close_button.clicked.connect(MainWindow.save_and_close_button_clicked)
         self.calculate_markers_button.clicked.connect(MainWindow.calculate_markers_button_clicked)
+        self.tableWidget.itemSelectionChanged.connect(MainWindow.table_row_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

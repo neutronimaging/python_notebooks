@@ -248,6 +248,9 @@ class RegistrationProfileUi(QMainWindow):
     def opacity_slider_moved(self, value):
         print("opacity slider")
 
+    def table_row_clicked(self):
+        print("table_row_clicked: ")
+
     def closeEvent(self, c):
         print("here")
         if self.parent:

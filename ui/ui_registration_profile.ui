@@ -251,7 +251,7 @@
             <bool>true</bool>
            </property>
            <property name="selectionMode">
-            <enum>QAbstractItemView::ContiguousSelection</enum>
+            <enum>QAbstractItemView::SingleSelection</enum>
            </property>
            <property name="selectionBehavior">
             <enum>QAbstractItemView::SelectRows</enum>
@@ -613,6 +613,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_row_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>704</x>
+     <y>800</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1001</x>
+     <y>879</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>previous_image_button_clicked()</slot>
@@ -620,5 +636,6 @@
   <slot>cancel_button_clicked()</slot>
   <slot>save_and_close_button_clicked()</slot>
   <slot>calculate_markers_button_clicked()</slot>
+  <slot>table_row_clicked()</slot>
  </slots>
 </ui>
