@@ -245,6 +245,7 @@ class RegistrationProfileUi(QMainWindow):
 
         else:
             _final_image = self.reference_image
+            _final_image = np.transpose(_final_image)
 
         self.ui.image_view.setImage(_final_image)
 
@@ -265,16 +266,19 @@ class RegistrationProfileUi(QMainWindow):
     def slider_file_changed(self, value):
         self._select_table_row(value)
         self._check_widgets()
+        self._display_selected_row()
 
     def previous_image_button_clicked(self):
         row_selected = self._get_selected_row()
         self._select_table_row(row_selected-1)
         self._check_widgets()
+        self._display_selected_row()
 
     def next_image_button_clicked(self):
         row_selected = self._get_selected_row()
         self._select_table_row(row_selected+1)
         self._check_widgets()
+        self._display_selected_row()
 
     def registered_all_images_button_clicked(self):
         print("registered all images")
@@ -288,14 +292,14 @@ class RegistrationProfileUi(QMainWindow):
         """save registered images back to the main UI"""
         self.cancel_button_clicked()
 
-    def opacity_slider_moved(self, value):
-        print("opacity slider")
+    def opacity_slider_moved(self, _):
+        self._display_selected_row()
 
     def table_row_clicked(self):
         self._check_widgets()
+        self._display_selected_row()
 
     def closeEvent(self, c):
-        print("here")
         if self.parent:
             self.parent.registration_profile_ui = None
         self.close()
