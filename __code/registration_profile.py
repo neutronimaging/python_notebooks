@@ -33,6 +33,7 @@ class RegistrationProfileUi(QMainWindow):
 
     # image display
     histogram_level = []
+    live_image = []
 
     roi = {'vertical': {'x0': 100,
                         'y0': 100,
@@ -301,6 +302,7 @@ class RegistrationProfileUi(QMainWindow):
             _final_image = np.transpose(_final_image)
 
         self.ui.image_view.setImage(_final_image)
+        self.live_image = _final_image
 
         _view_box.setState(_state)
         if not first_update:
@@ -310,10 +312,30 @@ class RegistrationProfileUi(QMainWindow):
     ## Event Handler
 
     def vertical_roi_moved(self):
-        print("vertical moved")
+        """when the vertical roi is moved, we need to make sure the width stays within the max we defined
+        and we need refresh the peak calculation"""
+        region = self.vertical_profile.getArraySlice(self.live_image, self.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        width = np.abs(x1-x0)
+        height = np.abs(y1-y0)
 
     def horizontal_roi_moved(self):
-        print("horizontal moved")
+        """when the horizontal roi is moved, we need to make sure the height stays within the max we defined
+        and we need to refresh the peak calculation"""
+        region = self.horizontal_profile.getArraySlice(self.live_image, self.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        width = np.abs(x1-x0)
+        height = np.abs(y1-y0)
 
     def calculate_markers_button_clicked(self):
         pass
