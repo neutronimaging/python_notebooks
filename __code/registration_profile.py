@@ -34,6 +34,25 @@ class RegistrationProfileUi(QMainWindow):
     # image display
     histogram_level = []
 
+    roi = {'vertical': {'x0': 100,
+                        'y0': 100,
+                        'width': 5,
+                        'height': 200,
+                        'max_width': 20,
+                        'max_height': 500,
+                        'color': QtGui.QColor(62, 13, 244),
+                        },
+           'horizontal': {'x0': 200,
+                          'y0': 200,
+                        'width': 200,
+                        'height': 5,
+                        'max_width': 500,
+                        'max_height': 20,
+                        'color': QtGui.QColor(13, 62, 150),
+                          },
+           'width': 0.05,
+           }
+
     def __init__(self, parent=None, data_dict=None):
 
         QMainWindow.__init__(self, parent=parent)
@@ -107,18 +126,52 @@ class RegistrationProfileUi(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
         d1.addWidget(self.ui.image_view)
 
+        # vertical rois
+        _color = self.roi['vertical']['color']
+        _pen = QtGui.QPen()
+        _pen.setColor(_color)
+        _pen.setWidthF(self.roi['width'])
+        _x0 = self.roi['vertical']['x0']
+        _y0 = self.roi['vertical']['y0']
+        _width = self.roi['vertical']['width']
+        _height = self.roi['vertical']['height']
+        _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
+        _roi_id.addScaleHandle([1, 1], [0, 0])
+        _roi_id.addScaleHandle([0, 0], [1, 1])
+        self.ui.image_view.addItem(_roi_id)
+        _roi_id.sigRegionChanged.connect(self.vertical_roi_moved)
+        self.vertical_profile = _roi_id
+        self.ui.image_view.addItem(self.vertical_profile)
+
+        # horizontal rois
+        _color = self.roi['horizontal']['color']
+        _pen = QtGui.QPen()
+        _pen.setColor(_color)
+        _pen.setWidthF(self.roi['width'])
+        _x0 = self.roi['horizontal']['x0']
+        _y0 = self.roi['horizontal']['y0']
+        _width = self.roi['horizontal']['width']
+        _height = self.roi['horizontal']['height']
+        _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
+        _roi_id.addScaleHandle([1, 1], [0, 0])
+        _roi_id.addScaleHandle([0, 0], [1, 1])
+        self.ui.image_view.addItem(_roi_id)
+        _roi_id.sigRegionChanged.connect(self.horizontal_roi_moved)
+        self.horizontal_profile = _roi_id
+        self.ui.image_view.addItem(self.horizontal_profile)
+
         # horizontal profile area
-        self.ui.hori_profile = pg.PlotWidget(title='Horizontal Profile')
+        self.ui.hori_profile = pg.PlotWidget()
         self.ui.hori_profile.plot()
         d2.addWidget(self.ui.hori_profile)
 
         # vertical profile area
-        self.ui.verti_profile = pg.PlotWidget(title='Vertical Profile')
+        self.ui.verti_profile = pg.PlotWidget()
         self.ui.verti_profile.plot()
         d3.addWidget(self.ui.verti_profile)
 
         # all peaks position
-        self.ui.peaks = pg.PlotWidget(title='All Peaks')
+        self.ui.peaks = pg.PlotWidget(title='Vertical and Horizontal Peaks')
         self.ui.peaks.plot()
         d4.addWidget(self.ui.peaks)
 
@@ -255,6 +308,12 @@ class RegistrationProfileUi(QMainWindow):
                                     self.histogram_level[1])
 
     ## Event Handler
+
+    def vertical_roi_moved(self):
+        print("vertical moved")
+
+    def horizontal_roi_moved(self):
+        print("horizontal moved")
 
     def calculate_markers_button_clicked(self):
         pass
