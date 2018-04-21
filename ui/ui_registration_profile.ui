@@ -486,22 +486,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>previous_image_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>previous_image_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>94</x>
-     <y>523</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>8</x>
-     <y>377</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>next_image_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
@@ -530,22 +514,6 @@
     <hint type="destinationlabel">
      <x>5</x>
      <y>297</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>previous_image_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>previous_image_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>50</x>
-     <y>518</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>7</x>
-     <y>522</y>
     </hint>
    </hints>
   </connection>

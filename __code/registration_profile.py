@@ -18,7 +18,6 @@ except ImportError:
 from __code.ui_registration_profile import Ui_MainWindow as UiMainWindowProfile
 
 
-
 class RegistrationProfileUi(QMainWindow):
 
     does_top_parent_exist = False
@@ -59,10 +58,15 @@ class RegistrationProfileUi(QMainWindow):
 
         self.init_reference_image()
         self.init_table()
+        self.init_slider()
 
-        self.display_selected_row()
+        self._display_selected_row()
+        self._check_widgets()
 
     ## Initialization
+
+    def init_slider(self):
+        self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
 
     def init_statusbar(self):
         self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
@@ -148,11 +152,44 @@ class RegistrationProfileUi(QMainWindow):
             self.__set_item(_row, 4, 'N/A')
 
         # select first row by default
-        self.select_table_row(0)
+        self._select_table_row(0)
 
         self.ui.tableWidget.blockSignals(False)
 
-    def select_table_row(self, row):
+    def _check_widgets(self):
+        """check status of all widgets when new image selected
+        Any interaction with the UI (slider, next and prev button) will update the
+        table first and then this method will take care of the rest
+        """
+        selected_row = self._get_selected_row()
+
+        # if reference image selected, no need to show slider on the side
+        if selected_row == self.reference_image_index:
+            opacity_slider_status = False
+        else:
+            opacity_slider_status = True
+        self.ui.selection_reference_opacity_groupBox.setVisible(opacity_slider_status)
+
+        # if first image selected, prev button should be disabled
+        if selected_row == 0:
+            prev_button_status = False
+        else:
+            prev_button_status = True
+        self.ui.previous_image_button.setEnabled(prev_button_status)
+
+        # if last image selected, next button should be disabled
+        nbr_row = self.ui.tableWidget.rowCount()
+        if selected_row == (nbr_row-1):
+            next_button_status = False
+        else:
+            next_button_status = True
+        self.ui.next_image_button.setEnabled(next_button_status)
+
+        self.ui.file_slider.setValue(selected_row)
+
+    def _select_table_row(self, row):
+        self.ui.tableWidget.blockSignals(True)
+
         nbr_col = self.ui.tableWidget.columnCount()
         nbr_row = self.ui.tableWidget.rowCount()
 
@@ -165,6 +202,7 @@ class RegistrationProfileUi(QMainWindow):
         self.ui.tableWidget.setRangeSelected(selection_range, True)
 
         self.ui.tableWidget.showRow(row)
+        self.ui.tableWidget.blockSignals(False)
 
     def __set_item(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
@@ -173,15 +211,15 @@ class RegistrationProfileUi(QMainWindow):
             item.setBackground(self.color_reference_background)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    def get_selected_row(self):
+    def _get_selected_row(self):
         """table only allows selection of one row at a time, so top and bottom row are the same"""
         table_selection = self.ui.tableWidget.selectedRanges()
         table_selection = table_selection[0]
         top_row = table_selection.topRow()
         return top_row
 
-    def display_selected_row(self):
-        selected_row = self.get_selected_row()
+    def _display_selected_row(self):
+        selected_row = self._get_selected_row()
         _image = self.data_dict['data'][selected_row]
 
         # save and load histogram for consistancy between images
@@ -225,13 +263,18 @@ class RegistrationProfileUi(QMainWindow):
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/registration/")
 
     def slider_file_changed(self, value):
-        pass
+        self._select_table_row(value)
+        self._check_widgets()
 
     def previous_image_button_clicked(self):
-        print("previous")
+        row_selected = self._get_selected_row()
+        self._select_table_row(row_selected-1)
+        self._check_widgets()
 
     def next_image_button_clicked(self):
-        pass
+        row_selected = self._get_selected_row()
+        self._select_table_row(row_selected+1)
+        self._check_widgets()
 
     def registered_all_images_button_clicked(self):
         print("registered all images")
@@ -249,7 +292,7 @@ class RegistrationProfileUi(QMainWindow):
         print("opacity slider")
 
     def table_row_clicked(self):
-        print("table_row_clicked: ")
+        self._check_widgets()
 
     def closeEvent(self, c):
         print("here")
