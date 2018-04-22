@@ -35,21 +35,21 @@ class RegistrationProfileUi(QMainWindow):
     histogram_level = []
     live_image = []
 
-    roi = {'vertical': {'x0': 100,
-                        'y0': 100,
+    roi = {'vertical': {'x0': 1000,
+                        'y0': 1000,
                         'width': 5,
                         'height': 200,
                         'max_width': 20,
                         'max_height': 500,
-                        'color': QtGui.QColor(62, 13, 244),
+                        'color': QtGui.QColor(255, 0, 0),
                         },
-           'horizontal': {'x0': 200,
-                          'y0': 200,
+           'horizontal': {'x0': 500,
+                          'y0': 500,
                         'width': 200,
                         'height': 5,
                         'max_width': 500,
                         'max_height': 20,
-                        'color': QtGui.QColor(13, 62, 150),
+                        'color': QtGui.QColor(0, 0, 255),
                           },
            'width': 0.05,
            }
@@ -137,8 +137,8 @@ class RegistrationProfileUi(QMainWindow):
         _width = self.roi['vertical']['width']
         _height = self.roi['vertical']['height']
         _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
-        _roi_id.addScaleHandle([1, 1], [0, 0])
-        _roi_id.addScaleHandle([0, 0], [1, 1])
+        # _roi_id.addScaleHandle([1, 1], [0, 0])
+        # _roi_id.addScaleHandle([0, 0], [1, 1])
         self.ui.image_view.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(self.vertical_roi_moved)
         self.vertical_profile = _roi_id
@@ -154,17 +154,38 @@ class RegistrationProfileUi(QMainWindow):
         _width = self.roi['horizontal']['width']
         _height = self.roi['horizontal']['height']
         _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
-        _roi_id.addScaleHandle([1, 1], [0, 0])
-        _roi_id.addScaleHandle([0, 0], [1, 1])
         self.ui.image_view.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(self.horizontal_roi_moved)
         self.horizontal_profile = _roi_id
         self.ui.image_view.addItem(self.horizontal_profile)
-
         # horizontal profile area
         self.ui.hori_profile = pg.PlotWidget()
         self.ui.hori_profile.plot()
-        d2.addWidget(self.ui.hori_profile)
+        # slider and height
+        label1 = QtGui.QLabel("Length")
+        hori_length = QtGui.QSlider(QtCore.Qt.Horizontal)
+        hori_length.setMinimum(10)
+        hori_length.setMaximum(500)
+        hori_length.setValue(200)
+        label2 = QtGui.QLabel("Width")
+        hori_width = QtGui.QSlider(QtCore.Qt.Horizontal)
+        hori_width.setMinimum(1)
+        hori_width.setMaximum(10)
+        hori_layout= QtGui.QHBoxLayout()
+        hori_layout.addWidget(label1)
+        hori_layout.addWidget(hori_length)
+        hori_layout.addWidget(label2)
+        hori_layout.addWidget(hori_width)
+        hori_widget = QtGui.QWidget()
+        hori_widget.setLayout(hori_layout)
+        full_hori_layout = QtGui.QVBoxLayout()
+        full_hori_layout.addWidget(self.ui.hori_profile)
+        full_hori_layout.addWidget(hori_widget)
+        full_hori_widget = QtGui.QWidget()
+        full_hori_widget.setLayout(full_hori_layout)
+        d2.addWidget(full_hori_widget)
+
+#        d2.addWidget(self.ui.hori_profile)
 
         # vertical profile area
         self.ui.verti_profile = pg.PlotWidget()
