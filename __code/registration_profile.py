@@ -185,12 +185,32 @@ class RegistrationProfileUi(QMainWindow):
         full_hori_widget.setLayout(full_hori_layout)
         d2.addWidget(full_hori_widget)
 
-#        d2.addWidget(self.ui.hori_profile)
-
         # vertical profile area
         self.ui.verti_profile = pg.PlotWidget()
         self.ui.verti_profile.plot()
-        d3.addWidget(self.ui.verti_profile)
+        # slider and height
+        label1 = QtGui.QLabel("Length")
+        verti_length = QtGui.QSlider(QtCore.Qt.Horizontal)
+        verti_length.setMinimum(10)
+        verti_length.setMaximum(500)
+        verti_length.setValue(200)
+        label2 = QtGui.QLabel("Width")
+        verti_width = QtGui.QSlider(QtCore.Qt.Horizontal)
+        verti_width.setMinimum(1)
+        verti_width.setMaximum(10)
+        verti_layout = QtGui.QHBoxLayout()
+        verti_layout.addWidget(label1)
+        verti_layout.addWidget(verti_length)
+        verti_layout.addWidget(label2)
+        verti_layout.addWidget(verti_width)
+        verti_widget = QtGui.QWidget()
+        verti_widget.setLayout(verti_layout)
+        full_verti_layout = QtGui.QVBoxLayout()
+        full_verti_layout.addWidget(self.ui.verti_profile)
+        full_verti_layout.addWidget(verti_widget)
+        full_verti_widget = QtGui.QWidget()
+        full_verti_widget.setLayout(full_verti_layout)
+        d3.addWidget(full_verti_widget)
 
         # all peaks position
         self.ui.peaks = pg.PlotWidget(title='Vertical and Horizontal Peaks')
