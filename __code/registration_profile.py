@@ -56,6 +56,7 @@ class RegistrationProfileUi(QMainWindow):
                         'max_length': 500,
                         'min_length': 10,
                         'color': QtGui.QColor(255, 0, 0),
+                        'profile': [],
                         },
            'horizontal': {'x0': 500,
                           'y0': 500,
@@ -66,6 +67,7 @@ class RegistrationProfileUi(QMainWindow):
                           'max_width': 50,
                           'min_width': 1,
                           'color': QtGui.QColor(0, 0, 255),
+                          'profile': [],
                           },
            'width': 0.05,
            }
@@ -100,7 +102,7 @@ class RegistrationProfileUi(QMainWindow):
         self._display_selected_row()
         self._check_widgets()
 
-        self.update_all_profile_plots()
+        self.update_hori_verti_profile_plot_of_selected_file()
 
     ## Initialization
 
@@ -416,7 +418,11 @@ class RegistrationProfileUi(QMainWindow):
         dict_roi['length'] = length
         dict_roi['width'] = width
 
-    def update_profiles_plots(self, is_horizontal=True):
+    def update_selected_file_profile_plots(self, is_horizontal=True):
+        index_seleted = self._get_selected_row()
+        self.update_single_profile(file_selected=index_seleted, is_horizontal=is_horizontal)
+
+    def update_single_profile(self, file_selected=-1, is_horizontal=True):
         if is_horizontal:
             dict_roi = self.roi['horizontal']
             profile_2d_ui = roi_ui = self.ui.hori_profile
@@ -442,12 +448,11 @@ class RegistrationProfileUi(QMainWindow):
                                                 is_horizontal=is_horizontal)
         profile_2d_ui.plot(xaxis, ref_profile, pen=[255, 255, 255])
 
-        index_seleted = self._get_selected_row()
-        if index_seleted != self.reference_image_index:
-            [xaxis, selected_profile] = self.get_profile(image_index=index_seleted,
+        if file_selected != self.reference_image_index:
+            [xaxis, selected_profile] = self.get_profile(image_index=file_selected,
                                                     x0=x0, y0=y0, width=width, height=height,
                                                     is_horizontal=is_horizontal)
-            profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[index_seleted])
+            profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
 
     def get_profile(self, image_index=0, x0=0, y0=0, width=1, height=1, is_horizontal=True):
 
@@ -468,9 +473,16 @@ class RegistrationProfileUi(QMainWindow):
 
         return [xaxis, profile]
 
-    def update_all_profile_plots(self):
-        self.update_profiles_plots(is_horizontal=True)
-        self.update_profiles_plots(is_horizontal=False)
+    def update_hori_verti_profile_plot_of_selected_file(self):
+        self.update_selected_file_profile_plots(is_horizontal=True)
+        self.update_selected_file_profile_plots(is_horizontal=False)
+
+    # def update_all_profile_plots(self):
+    #     nbr_files = len(self.data_dict['file_name'])
+    #     for _row in np.arange(nbr_files):
+    #         self.update_single_profile(file_selected=_row, is_horizontal=True)
+    #         self.update_single_profile(file_selected=_row, is_horizontal=False)
+
 
     ## Event Handler
 
@@ -492,7 +504,7 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['vertical']['width'] = width
         self.roi['vertical']['height'] = height
 
-        self.update_profiles_plots(is_horizontal=False)
+        self.update_selected_file_profile_plots(is_horizontal=False)
 
     def horizontal_roi_moved(self):
         """when the horizontal roi is moved, we need to make sure the height stays within the max we defined
@@ -512,7 +524,7 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['horizontal']['width'] = width
         self.roi['horizontal']['height'] = height
 
-        self.update_profiles_plots(is_horizontal=True)
+        self.update_selected_file_profile_plots(is_horizontal=True)
 
     def calculate_markers_button_clicked(self):
         pass
@@ -525,18 +537,21 @@ class RegistrationProfileUi(QMainWindow):
         self._select_table_row(value)
         self._check_widgets()
         self._display_selected_row()
+        self.update_hori_verti_profile_plot_of_selected_file()
 
     def previous_image_button_clicked(self):
         row_selected = self._get_selected_row()
         self._select_table_row(row_selected-1)
         self._check_widgets()
         self._display_selected_row()
+        self.update_hori_verti_profile_plot_of_selected_file()
 
     def next_image_button_clicked(self):
         row_selected = self._get_selected_row()
         self._select_table_row(row_selected+1)
         self._check_widgets()
         self._display_selected_row()
+        self.update_hori_verti_profile_plot_of_selected_file()
 
     def registered_all_images_button_clicked(self):
         print("registered all images")
@@ -556,7 +571,7 @@ class RegistrationProfileUi(QMainWindow):
     def table_row_clicked(self):
         self._check_widgets()
         self._display_selected_row()
-        self.update_all_profile_plots()
+        self.update_hori_verti_profile_plot_of_selected_file()
 
     def settings_clicked(self):
         pass
@@ -566,11 +581,11 @@ class RegistrationProfileUi(QMainWindow):
 
     def horizontal_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=True)
-        self.update_profiles_plots(is_horizontal=True)
+        self.update_single_profile(is_horizontal=True)
 
     def horizontal_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=True)
-        self.update_profiles_plots(is_horizontal=True)
+        self.update_single_profile(is_horizontal=True)
 
     def vertical_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=False)
@@ -578,7 +593,7 @@ class RegistrationProfileUi(QMainWindow):
 
     def vertical_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=False)
-        self.update_profiles_plots(is_horizontal=False)
+        self.update_single_profile(is_horizontal=False)
 
     def closeEvent(self, c):
         if self.parent:
