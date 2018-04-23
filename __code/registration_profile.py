@@ -3,6 +3,8 @@ from IPython.core.display import display
 
 import os
 import numpy as np
+from changepy import pelt
+from changepy.costs import normal_var
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
@@ -47,6 +49,8 @@ class RegistrationProfileUi(QMainWindow):
     histogram_level = []
     live_image = []
 
+    peak = []
+
     roi = {'vertical': {'x0': 1000,
                         'y0': 1000,
                         'width': 50,
@@ -56,7 +60,9 @@ class RegistrationProfileUi(QMainWindow):
                         'max_length': 500,
                         'min_length': 10,
                         'color': QtGui.QColor(255, 0, 0),
-                        'profile': [],
+                        'color-peak': (255, 0, 0),
+                        'yaxis': [],
+                        'profiles': {},
                         },
            'horizontal': {'x0': 500,
                           'y0': 500,
@@ -67,9 +73,12 @@ class RegistrationProfileUi(QMainWindow):
                           'max_width': 50,
                           'min_width': 1,
                           'color': QtGui.QColor(0, 0, 255),
-                          'profile': [],
+                          'color-peak': (0, 0, 255),
+                          'xaxis': [],
+                          'profiles': {}
                           },
            'width': 0.05,
+           'symbol': 'o',
            }
 
     def __init__(self, parent=None, data_dict=None):
@@ -111,6 +120,10 @@ class RegistrationProfileUi(QMainWindow):
         nbr_files = len(self.data_dict['file_name'])
         self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
 
+        # peak array
+        self.peak = {}
+        self.peak['vertical'] = np.zeros(nbr_files)
+        self.peak['horizontal'] = np.zeros(nbr_files)
 
     def init_slider(self):
         self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
@@ -424,13 +437,33 @@ class RegistrationProfileUi(QMainWindow):
 
     def update_single_profile(self, file_selected=-1, is_horizontal=True):
         if is_horizontal:
-            dict_roi = self.roi['horizontal']
             profile_2d_ui = roi_ui = self.ui.hori_profile
+            label = 'horizontal'
+        else:
+            profile_2d_ui = roi_ui = self.ui.verti_profile
+            label = 'vertical'
+
+        # clear previous profile
+        profile_2d_ui.clear()
+
+        # always display the reference image
+        [xaxis, ref_profile] = self.get_profile(image_index=self.reference_image_index,
+                                                is_horizontal=is_horizontal)
+        profile_2d_ui.plot(xaxis, ref_profile, pen=self.roi[label]['color-peak'])
+
+        if file_selected != self.reference_image_index:
+            [xaxis, selected_profile] = self.get_profile(image_index=file_selected,
+                                                         is_horizontal=is_horizontal)
+            profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
+
+    def get_profile(self, image_index=0, is_horizontal=True):
+
+        if is_horizontal:
+            dict_roi = self.roi['horizontal']
             real_width_term = 'length'
             real_height_term = 'width'
         else:
             dict_roi = self.roi['vertical']
-            profile_2d_ui = roi_ui = self.ui.verti_profile
             real_width_term = 'width'
             real_height_term = 'length'
 
@@ -438,23 +471,6 @@ class RegistrationProfileUi(QMainWindow):
         y0 = dict_roi['y0']
         width = dict_roi[real_width_term]
         height = dict_roi[real_height_term]
-
-        # clear previous profile
-        profile_2d_ui.clear()
-
-        # always display the reference image
-        [xaxis, ref_profile] = self.get_profile(image_index=self.reference_image_index,
-                                                x0=x0, y0=y0, width=width, height=height,
-                                                is_horizontal=is_horizontal)
-        profile_2d_ui.plot(xaxis, ref_profile, pen=[255, 255, 255])
-
-        if file_selected != self.reference_image_index:
-            [xaxis, selected_profile] = self.get_profile(image_index=file_selected,
-                                                    x0=x0, y0=y0, width=width, height=height,
-                                                    is_horizontal=is_horizontal)
-            profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
-
-    def get_profile(self, image_index=0, x0=0, y0=0, width=1, height=1, is_horizontal=True):
 
         x1 = width + x0
         y1 = height + y0
@@ -477,12 +493,69 @@ class RegistrationProfileUi(QMainWindow):
         self.update_selected_file_profile_plots(is_horizontal=True)
         self.update_selected_file_profile_plots(is_horizontal=False)
 
-    # def update_all_profile_plots(self):
-    #     nbr_files = len(self.data_dict['file_name'])
-    #     for _row in np.arange(nbr_files):
-    #         self.update_single_profile(file_selected=_row, is_horizontal=True)
-    #         self.update_single_profile(file_selected=_row, is_horizontal=False)
+    def calculate_all_profiles(self):
+        nbr_files = len(self.data_dict['file_name'])
+        for _row in np.arange(nbr_files):
+            self.calculate_profile(file_index=_row, is_horizontal=True)
+            self.calculate_profile(file_index=_row, is_horizontal=False)
 
+    def calculate_profile(self, file_index=-1, is_horizontal=True):
+        if is_horizontal:
+            [xaxis, profile] = self.get_profile(image_index=file_index, is_horizontal=True)
+            label = 'horizontal'
+        else:
+            [xaxis, profile] = self.get_profile(image_index=file_index, is_horizontal=False)
+            label = 'vertical'
+
+        _profile = {}
+        _profile['xaxis'] = xaxis
+        _profile['profile'] = profile
+
+        self.roi[label]['profiles'][str(file_index)] = _profile
+
+    def calculate_all_peaks(self):
+        nbr_files = len(self.data_dict['file_name'])
+        for _row in np.arange(nbr_files):
+            self.calculate_peak(file_index=_row, is_horizontal=True)
+            self.calculate_peak(file_index=_row, is_horizontal=False)
+
+    def calculate_peak(self, file_index=-1, is_horizontal=True):
+        if is_horizontal:
+            label = 'horizontal'
+        else:
+            label = 'vertical'
+
+        _profile = self.roi[label]['profiles'][str(file_index)]
+        #xaxis = _profile['xaxis']
+        yaxis = _profile['profile']
+
+        var = np.mean(yaxis)
+        result = pelt(normal_var(yaxis, var), len(yaxis))
+        if len(result) > 2:
+            peak = np.mean(result[2:])
+        else:
+            peak = np.mean(result[1:])
+
+        self.peak[label][file_index] = peak
+
+    def plot_peaks(self):
+        xaxis = np.arange(len(self.data_dict['file_name']))
+
+        self.ui.peaks.clear()
+
+        # horizontal
+        yaxis = self.peak['horizontal']
+        self.ui.peaks.plot(xaxis, yaxis,
+                           symbolBruch=self.roi['horizontal']['color-peak'],
+                           symbol=self.roi['symbol'],
+                           )
+
+        # vertical
+        yaxis = self.peak['vertical']
+        self.ui.peaks.plot(xaxis, yaxis,
+                           symbolBruch = self.roi['vertical']['color-peak'],
+                           symbol = self.roi['symbol'],
+                           )
 
     ## Event Handler
 
@@ -527,7 +600,9 @@ class RegistrationProfileUi(QMainWindow):
         self.update_selected_file_profile_plots(is_horizontal=True)
 
     def calculate_markers_button_clicked(self):
-        pass
+        self.calculate_all_profiles()
+        self.calculate_all_peaks()
+        self.plot_peaks()
 
     def help_button_clicked(self):
         import webbrowser
