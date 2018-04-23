@@ -78,7 +78,7 @@ class RegistrationProfileUi(QMainWindow):
                           'profiles': {}
                           },
            'width': 0.05,
-           'symbol': 'o',
+           'symbol': 'w',
            }
 
     def __init__(self, parent=None, data_dict=None):
@@ -546,15 +546,17 @@ class RegistrationProfileUi(QMainWindow):
         # horizontal
         yaxis = self.peak['horizontal']
         self.ui.peaks.plot(xaxis, yaxis,
-                           symbolBruch=self.roi['horizontal']['color-peak'],
-                           symbol=self.roi['symbol'],
+                           pen=self.roi['horizontal']['color-peak'],
+                           symbolBrush=self.roi['horizontal']['color-peak'],
+                           symbolPen=self.roi['symbol'],
                            )
 
         # vertical
         yaxis = self.peak['vertical']
         self.ui.peaks.plot(xaxis, yaxis,
-                           symbolBruch = self.roi['vertical']['color-peak'],
-                           symbol = self.roi['symbol'],
+                           pen=self.roi['vertical']['color-peak'],
+                           symbolBrush = self.roi['vertical']['color-peak'],
+                           symbolPen = self.roi['symbol'],
                            )
 
     ## Event Handler
