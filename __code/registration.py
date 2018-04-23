@@ -918,7 +918,7 @@ class RegistrationUi(QMainWindow):
         self.set_widget_status(list_ui=[self.ui.auto_registration_button],
                            enabled=False)
 
-    def profile_registration_button_clicked(self):
+    def profiler_registration_button_clicked(self):
         o_registration_profile = RegistrationProfileLauncher(object)
 
     def start_auto_registration(self):

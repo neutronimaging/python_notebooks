@@ -495,10 +495,28 @@ class RegistrationProfileUi(QMainWindow):
                                                 is_horizontal=is_horizontal)
         profile_2d_ui.plot(xaxis, ref_profile, pen=self.roi[label]['color-peak'])
 
+        # # display calculated peak
+        # if not self.roi[label]['profiles'] == {}:
+        #     self.calculate_peak(file_index=self.reference_image_index, is_horizontal=True)
+        #     peak = self.peak[label][file_selected]
+        #     self.profile_peak = pg.InfiniteLine(angle=90,
+        #                                         movable=False,
+        #                                         pos=peak)
+        #     profile_2d_ui.addItem(self.profile_peak,
+        #                           ignoreBounds=True)
+
         if file_selected != self.reference_image_index:
             [xaxis, selected_profile] = self.get_profile(image_index=file_selected,
                                                          is_horizontal=is_horizontal)
             profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
+            # if not self.roi[label]['profiles'] == {}:
+            #     self.calculate_peak(file_index=file_selected, is_horizontal=True)
+            #     peak = self.peak[label][file_selected]
+            #     self.profile_peak = pg.InfiniteLine(angle=90,
+            #                                         movable=False,
+            #                                         pos=peak)
+            #     profile_2d_ui.addItem(self.profile_peak,
+            #                           ignoreBounds=True)
 
     def get_profile(self, image_index=0, is_horizontal=True):
 
@@ -631,7 +649,6 @@ class RegistrationProfileUi(QMainWindow):
     ## Event Handler
 
     def full_reset(self):
-        print("here, full reset")
         self.data_dict = copy.deepcopy(self.raw_data_dict)
         self._display_selected_row()
 
