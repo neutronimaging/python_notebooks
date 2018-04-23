@@ -171,6 +171,9 @@ class RegistrationProfileUi(QMainWindow):
         _roi_id.sigRegionChanged.connect(self.horizontal_roi_moved)
         self.horizontal_profile = _roi_id
         self.ui.image_view.addItem(self.horizontal_profile)
+        
+        ## right area
+        
         # horizontal profile area
         self.ui.hori_profile = pg.PlotWidget()
         self.ui.hori_profile.plot()
@@ -414,6 +417,11 @@ class RegistrationProfileUi(QMainWindow):
 
         width = np.abs(x1-x0)
         height = np.abs(y1-y0)
+        
+        self.roi['vertical']['x0'] = x0
+        self.roi['vertical']['y0'] = y0
+        self.roi['vertical']['width'] = width
+        self.roi['vertical']['height'] = height
 
     def horizontal_roi_moved(self):
         """when the horizontal roi is moved, we need to make sure the height stays within the max we defined
@@ -427,6 +435,11 @@ class RegistrationProfileUi(QMainWindow):
 
         width = np.abs(x1-x0)
         height = np.abs(y1-y0)
+
+        self.roi['horizontal']['x0'] = x0
+        self.roi['horizontal']['y0'] = y0
+        self.roi['horizontal']['width'] = width
+        self.roi['horizontal']['height'] = height
 
     def calculate_markers_button_clicked(self):
         pass
