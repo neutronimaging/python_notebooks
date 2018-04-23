@@ -28,7 +28,7 @@ class RegistrationProfileUi(QMainWindow):
     does_top_parent_exist = False
 
     data_dict = None
-    table_column_width = [350, 100, 100, 100, 100]
+    table_column_width = [350, 150, 150, 150, 150]
     list_rgb_profile_color = []
 
     # reference file
@@ -49,7 +49,14 @@ class RegistrationProfileUi(QMainWindow):
     histogram_level = []
     live_image = []
 
-    peak = []
+    peak = {'horizontal': [],
+            'vertical': [],
+            }
+
+    offset = {'horizontal': [],
+              'vertical': [],
+             }
+
 
     roi = {'vertical': {'x0': 1000,
                         'y0': 1000,
@@ -124,6 +131,11 @@ class RegistrationProfileUi(QMainWindow):
         self.peak = {}
         self.peak['vertical'] = np.zeros(nbr_files)
         self.peak['horizontal'] = np.zeros(nbr_files)
+
+        # x and y offset
+        self.offset = {}
+        self.offset['vertical'] = np.zeros(nbr_files)
+        self.offset['horizontal'] = np.zeros(nbr_files)
 
     def init_slider(self):
         self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
@@ -304,6 +316,35 @@ class RegistrationProfileUi(QMainWindow):
         self._select_table_row(0)
 
         self.ui.tableWidget.blockSignals(False)
+
+    def clear_table(self):
+        nbr_row = self.ui.tableWidget.rowCount()
+        for _row in np.arange(nbr_row):
+            self.ui.tableWidget.removeRow(0)
+
+    def update_table(self):
+        # self.clear_table()
+
+        data_dict = self.data_dict
+        _list_files = data_dict['file_name']
+        _short_list_files = [os.path.basename(_file) for _file in _list_files]
+
+        peak = self.peak
+        offset = self.offset
+
+        self.ui.tableWidget.blockSignals(True)
+        for _row, _file in enumerate(_short_list_files):
+            self.ui.tableWidget.item(_row, 1).setText(str(peak['horizontal'][_row]))
+            self.ui.tableWidget.item(_row, 2).setText(str(peak['vertical'][_row]))
+            self.ui.tableWidget.item(_row, 3).setText(str(offset['horizontal'][_row]))
+            self.ui.tableWidget.item(_row, 4).setText(str(offset['vertical'][_row]))
+
+        # select first row by default
+        self._select_table_row(0)
+
+        self.ui.tableWidget.blockSignals(False)
+
+
 
     def _check_widgets(self):
         """check status of all widgets when new image selected
@@ -513,6 +554,19 @@ class RegistrationProfileUi(QMainWindow):
 
         self.roi[label]['profiles'][str(file_index)] = _profile
 
+    def calculate_all_offsets(self):
+        horizontal_reference = self.peak['horizontal'][self.reference_image_index]
+        vertical_reference = self.peak['vertical'][self.reference_image_index]
+
+        nbr_files = len(self.data_dict['file_name'])
+        for _row in np.arange(nbr_files):
+            xoffset = horizontal_reference - self.peak['horizontal'][_row]
+            yoffset = vertical_reference - self.peak['vertical'][_row]
+
+            self.offset['horizontal'][_row] = xoffset
+            self.offset['vertical'][_row] = yoffset
+
+
     def calculate_all_peaks(self):
         nbr_files = len(self.data_dict['file_name'])
         for _row in np.arange(nbr_files):
@@ -536,7 +590,7 @@ class RegistrationProfileUi(QMainWindow):
         else:
             peak = np.mean(result[1:])
 
-        self.peak[label][file_index] = peak
+        self.peak[label][file_index] = np.int(peak)
 
     def plot_peaks(self):
         xaxis = np.arange(len(self.data_dict['file_name']))
@@ -604,7 +658,9 @@ class RegistrationProfileUi(QMainWindow):
     def calculate_markers_button_clicked(self):
         self.calculate_all_profiles()
         self.calculate_all_peaks()
+        self.calculate_all_offsets()
         self.plot_peaks()
+        self.update_table()
 
     def help_button_clicked(self):
         import webbrowser
