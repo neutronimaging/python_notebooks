@@ -6,6 +6,8 @@ import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
+from __code.color import  Color
+
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui, QtWidgets
@@ -403,6 +405,55 @@ class RegistrationProfileUi(QMainWindow):
         dict_roi['length'] = length
         dict_roi['width'] = width
 
+    def update_profiles(self, is_horizontal=True):
+        if is_horizontal:
+            dict_roi = self.roi['horizontal']
+            profile_2d_ui = roi_ui = self.ui.hori_profile
+            real_width_term = 'length'
+            real_height_term = 'width'
+        else:
+            dict_roi = self.roi['vertical']
+            profile_2d_ui = roi_ui = self.ui.verti_profile
+            real_width_term = 'width'
+            real_height_term = 'length'
+
+        x0 = dict_roi['x0']
+        y0 = dict_roi['y0']
+        width = dict_roi[real_width_term]
+        height = dict_roi[real_height_term]
+
+        # clear previous profile
+        profile_2d_ui.clear()
+
+        # always display the reference image
+        [xaxis, ref_profile] = self.get_profile(image_index=self.reference_image_index,
+                                                x0=x0, y0=y0, width=width, height=height,
+                                                is_horizontal=is_horizontal)
+        profile_2d_ui.plot(xaxis, ref_profile, pen=[255, 255, 255])
+
+
+
+
+
+    def get_profile(self, image_index=0, x0=0, y0=0, width=1, height=1, is_horizontal=True):
+
+        x1 = width - x0
+        y1 = height - y0
+
+        image = self.data_dict['data'][image_index]
+        # _data = np.transpose(image)
+        image_cropped = image[x0:x1, y0:y1]
+        if is_horizontal:
+            integrate_axis = 1
+            xaxis = np.arange(x0, x1) + x0
+        else:
+            integrate_axis = 0
+            xaxis = np.arange(y0, y1) + y0
+
+        profile = np.mean(image_cropped, axis=integrate_axis)
+
+        return [xaxis, profile]
+
     ## Event Handler
 
     def vertical_roi_moved(self):
@@ -423,6 +474,8 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['vertical']['width'] = width
         self.roi['vertical']['height'] = height
 
+        self.update_profiles(is_horizontal=False)
+
     def horizontal_roi_moved(self):
         """when the horizontal roi is moved, we need to make sure the height stays within the max we defined
         and we need to refresh the peak calculation"""
@@ -440,6 +493,8 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['horizontal']['y0'] = y0
         self.roi['horizontal']['width'] = width
         self.roi['horizontal']['height'] = height
+
+        self.update_profiles(is_horizontal=True)
 
     def calculate_markers_button_clicked(self):
         pass
@@ -495,12 +550,15 @@ class RegistrationProfileUi(QMainWindow):
 
     def horizontal_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=True)
+        self.update_profiles(is_Horizontal=True)
 
     def vertical_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=False)
+        self.update_profiles(is_Horizontal=False)
 
     def vertical_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=False)
+        self.update_profiles(is_Horizontal=False)
 
     def closeEvent(self, c):
         if self.parent:
