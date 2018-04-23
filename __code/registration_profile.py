@@ -5,6 +5,8 @@ import os
 import numpy as np
 from changepy import pelt
 from changepy.costs import normal_var
+from scipy.ndimage.interpolation import shift
+import copy
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
@@ -28,6 +30,8 @@ class RegistrationProfileUi(QMainWindow):
     does_top_parent_exist = False
 
     data_dict = None
+    raw_data_dict = None
+
     table_column_width = [350, 150, 150, 150, 150]
     list_rgb_profile_color = []
 
@@ -56,7 +60,6 @@ class RegistrationProfileUi(QMainWindow):
     offset = {'horizontal': [],
               'vertical': [],
              }
-
 
     roi = {'vertical': {'x0': 1000,
                         'y0': 1000,
@@ -101,14 +104,16 @@ class RegistrationProfileUi(QMainWindow):
 
         self.parent = parent
         if parent:
-            self.data_dict = self.parent.data_dict
+            self.data_dict = copy.deepcopy(self.parent.data_dict)
             self.does_top_parent_exist = True
         elif data_dict:
             display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
                 (maybe hidden behind this browser!)</span>'))
-            self.data_dict = data_dict
+            self.data_dict = copy.deepcopy(data_dict)
         else:
             raise ValueError("please provide data_dict")
+
+        self.raw_data_dict = self.data_dict
 
         self.init_reference_image()
         self.init_table()
@@ -344,8 +349,6 @@ class RegistrationProfileUi(QMainWindow):
 
         self.ui.tableWidget.blockSignals(False)
 
-
-
     def _check_widgets(self):
         """check status of all widgets when new image selected
         Any interaction with the UI (slider, next and prev button) will update the
@@ -580,7 +583,6 @@ class RegistrationProfileUi(QMainWindow):
             label = 'vertical'
 
         _profile = self.roi[label]['profiles'][str(file_index)]
-        #xaxis = _profile['xaxis']
         yaxis = _profile['profile']
 
         var = np.mean(yaxis)
@@ -613,7 +615,25 @@ class RegistrationProfileUi(QMainWindow):
                            symbolPen = self.roi['symbol'],
                            )
 
+    def register_images(self):
+        self.calculate_markers_button_clicked()
+
+        data = self.raw_data_dict['data']
+        for _row, _data in enumerate(data):
+
+            xoffset = self.offset['horizontal'][_row]
+            yoffset = self.offset['vertical'][_row]
+
+            new_data = shift(_data, (yoffset, xoffset))
+
+            self.data_dict['data'][_row] = new_data
+
     ## Event Handler
+
+    def full_reset(self):
+        print("here, full reset")
+        self.data_dict = copy.deepcopy(self.raw_data_dict)
+        self._display_selected_row()
 
     def vertical_roi_moved(self):
         """when the vertical roi is moved, we need to make sure the width stays within the max we defined
@@ -687,7 +707,8 @@ class RegistrationProfileUi(QMainWindow):
         self.update_hori_verti_profile_plot_of_selected_file()
 
     def registered_all_images_button_clicked(self):
-        print("registered all images")
+        self.register_images()
+        self._display_selected_row()
 
     def cancel_button_clicked(self):
         if self.parent:

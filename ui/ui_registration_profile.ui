@@ -290,11 +290,41 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="registered_all_images_button">
-           <property name="text">
-            <string>Register All Images</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QPushButton" name="full_reset_button">
+             <property name="text">
+              <string>Full Reset</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="registered_all_images_button">
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Register All Images</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
@@ -636,6 +666,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>registered_all_images_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>registered_all_images_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>988</x>
+     <y>1059</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>582</x>
+     <y>1124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>full_reset_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>full_reset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>110</x>
+     <y>1058</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>322</x>
+     <y>1122</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>previous_image_button_clicked()</slot>
@@ -646,5 +708,7 @@
   <slot>table_row_clicked()</slot>
   <slot>export_images_clicked()</slot>
   <slot>settings_clicked()</slot>
+  <slot>registered_all_images_button_clicked()</slot>
+  <slot>full_reset()</slot>
  </slots>
 </ui>
