@@ -224,7 +224,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Reference Image:"))
         self.reference_image_label.setText(_translate("MainWindow", "N/A"))
         self.pushButton_3.setText(_translate("MainWindow", "Change ..."))
-        self.calculate_markers_button.setText(_translate("MainWindow", "Calculate Markers Position from Profiles"))
+        self.calculate_markers_button.setText(_translate("MainWindow", "Calculate Peaks Position from Profiles"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "File Name"))
         item = self.tableWidget.horizontalHeaderItem(1)

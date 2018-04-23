@@ -27,6 +27,7 @@ class RegistrationProfileUi(QMainWindow):
 
     data_dict = None
     table_column_width = [350, 100, 100, 100, 100]
+    list_rgb_profile_color = []
 
     # reference file
     reference_image_index = 0
@@ -94,13 +95,20 @@ class RegistrationProfileUi(QMainWindow):
         self.init_reference_image()
         self.init_table()
         self.init_slider()
+        self.init_parameters()
 
         self._display_selected_row()
         self._check_widgets()
 
-        self.update_all_profiles()
+        self.update_all_profile_plots()
 
     ## Initialization
+
+    def init_parameters(self):
+        _color = Color()
+        nbr_files = len(self.data_dict['file_name'])
+        self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
+
 
     def init_slider(self):
         self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
@@ -356,7 +364,7 @@ class RegistrationProfileUi(QMainWindow):
         if self.histogram_level == []:
             first_update = True
         _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget
+        self.histogram_level = _histo_widget.getLevels()
 
         ## display here according to transparency
         if selected_row != self.reference_image_index:
@@ -408,7 +416,7 @@ class RegistrationProfileUi(QMainWindow):
         dict_roi['length'] = length
         dict_roi['width'] = width
 
-    def update_profiles(self, is_horizontal=True):
+    def update_profiles_plots(self, is_horizontal=True):
         if is_horizontal:
             dict_roi = self.roi['horizontal']
             profile_2d_ui = roi_ui = self.ui.hori_profile
@@ -432,13 +440,14 @@ class RegistrationProfileUi(QMainWindow):
         [xaxis, ref_profile] = self.get_profile(image_index=self.reference_image_index,
                                                 x0=x0, y0=y0, width=width, height=height,
                                                 is_horizontal=is_horizontal)
-
-
         profile_2d_ui.plot(xaxis, ref_profile, pen=[255, 255, 255])
 
-
-
-
+        index_seleted = self._get_selected_row()
+        if index_seleted != self.reference_image_index:
+            [xaxis, selected_profile] = self.get_profile(image_index=index_seleted,
+                                                    x0=x0, y0=y0, width=width, height=height,
+                                                    is_horizontal=is_horizontal)
+            profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[index_seleted])
 
     def get_profile(self, image_index=0, x0=0, y0=0, width=1, height=1, is_horizontal=True):
 
@@ -459,9 +468,9 @@ class RegistrationProfileUi(QMainWindow):
 
         return [xaxis, profile]
 
-    def update_all_profiles(self):
-        self.update_profiles(is_horizontal=True)
-        self.update_profiles(is_horizontal=False)
+    def update_all_profile_plots(self):
+        self.update_profiles_plots(is_horizontal=True)
+        self.update_profiles_plots(is_horizontal=False)
 
     ## Event Handler
 
@@ -483,7 +492,7 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['vertical']['width'] = width
         self.roi['vertical']['height'] = height
 
-        self.update_profiles(is_horizontal=False)
+        self.update_profiles_plots(is_horizontal=False)
 
     def horizontal_roi_moved(self):
         """when the horizontal roi is moved, we need to make sure the height stays within the max we defined
@@ -503,7 +512,7 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['horizontal']['width'] = width
         self.roi['horizontal']['height'] = height
 
-        self.update_profiles(is_horizontal=True)
+        self.update_profiles_plots(is_horizontal=True)
 
     def calculate_markers_button_clicked(self):
         pass
@@ -547,6 +556,7 @@ class RegistrationProfileUi(QMainWindow):
     def table_row_clicked(self):
         self._check_widgets()
         self._display_selected_row()
+        self.update_all_profile_plots()
 
     def settings_clicked(self):
         pass
@@ -556,18 +566,19 @@ class RegistrationProfileUi(QMainWindow):
 
     def horizontal_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=True)
+        self.update_profiles_plots(is_horizontal=True)
 
     def horizontal_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=True)
-        self.update_profiles(is_horizontal=True)
+        self.update_profiles_plots(is_horizontal=True)
 
     def vertical_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=False)
-        self.update_profiles(is_horizontal=False)
+        self.update_profiles_plot(is_horizontal=False)
 
     def vertical_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=False)
-        self.update_profiles(is_horizontal=False)
+        self.update_profiles_plots(is_horizontal=False)
 
     def closeEvent(self, c):
         if self.parent:

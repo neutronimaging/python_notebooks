@@ -208,7 +208,7 @@
          <item>
           <widget class="QPushButton" name="calculate_markers_button">
            <property name="text">
-            <string>Calculate Markers Position from Profiles</string>
+            <string>Calculate Peaks Position from Profiles</string>
            </property>
           </widget>
          </item>
