@@ -192,7 +192,11 @@ class Ui_MainWindow(object):
         self.actionProfiles.setObjectName("actionProfiles")
         self.actionExport_Images = QtWidgets.QAction(MainWindow)
         self.actionExport_Images.setObjectName("actionExport_Images")
+        self.actionSettings = QtWidgets.QAction(MainWindow)
+        self.actionSettings.setObjectName("actionSettings")
         self.menuFiles.addAction(self.actionExport_Images)
+        self.menuFiles.addSeparator()
+        self.menuFiles.addAction(self.actionSettings)
         self.menubar.addAction(self.menuFiles.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -206,6 +210,8 @@ class Ui_MainWindow(object):
         self.save_and_close_button.clicked.connect(MainWindow.save_and_close_button_clicked)
         self.calculate_markers_button.clicked.connect(MainWindow.calculate_markers_button_clicked)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_row_clicked)
+        self.actionSettings.triggered.connect(MainWindow.settings_clicked)
+        self.actionExport_Images.triggered.connect(MainWindow.export_images_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -218,7 +224,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Reference Image:"))
         self.reference_image_label.setText(_translate("MainWindow", "N/A"))
         self.pushButton_3.setText(_translate("MainWindow", "Change ..."))
-        self.calculate_markers_button.setText(_translate("MainWindow", "Calculate Markers"))
+        self.calculate_markers_button.setText(_translate("MainWindow", "Calculate Markers Position from Profiles"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "File Name"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -244,4 +250,5 @@ class Ui_MainWindow(object):
         self.actionWater_Intake_2.setText(_translate("MainWindow", "Water Intake ..."))
         self.actionProfiles.setText(_translate("MainWindow", "Profiles ..."))
         self.actionExport_Images.setText(_translate("MainWindow", "Export Images ..."))
+        self.actionSettings.setText(_translate("MainWindow", "Settings ..."))
 

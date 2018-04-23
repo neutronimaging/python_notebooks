@@ -31,6 +31,14 @@ class RegistrationProfileUi(QMainWindow):
     reference_image_short_name = ''
     color_reference_background = QtGui.QColor(50, 250, 50)
 
+    # ui
+    horizontal_length_slider = None
+    horizontal_width_slider = None
+    horizontal_profile = None
+    vertical_length_slider = None
+    vertical_width_slider = None
+    vertical_profile = None # profile line in view
+
     # image display
     histogram_level = []
     live_image = []
@@ -137,8 +145,6 @@ class RegistrationProfileUi(QMainWindow):
         _width = self.roi['vertical']['width']
         _height = self.roi['vertical']['height']
         _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
-        # _roi_id.addScaleHandle([1, 1], [0, 0])
-        # _roi_id.addScaleHandle([0, 0], [1, 1])
         self.ui.image_view.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(self.vertical_roi_moved)
         self.vertical_profile = _roi_id
@@ -167,10 +173,14 @@ class RegistrationProfileUi(QMainWindow):
         hori_length.setMinimum(10)
         hori_length.setMaximum(500)
         hori_length.setValue(200)
+        hori_length.valueChanged.connect(self.horizontal_slider_length_changed)
+        self.horizontal_length_slider = hori_length
         label2 = QtGui.QLabel("Width")
         hori_width = QtGui.QSlider(QtCore.Qt.Horizontal)
         hori_width.setMinimum(1)
         hori_width.setMaximum(10)
+        hori_width.valueChanged.connect(self.horizontal_slider_width_changed)
+        self.horizontal_width_slider = hori_width
         hori_layout= QtGui.QHBoxLayout()
         hori_layout.addWidget(label1)
         hori_layout.addWidget(hori_length)
@@ -194,10 +204,14 @@ class RegistrationProfileUi(QMainWindow):
         verti_length.setMinimum(10)
         verti_length.setMaximum(500)
         verti_length.setValue(200)
+        verti_length.valueChanged.connect(self.vertical_slider_length_changed)
+        self.vertical_length_slider = verti_length
         label2 = QtGui.QLabel("Width")
         verti_width = QtGui.QSlider(QtCore.Qt.Horizontal)
         verti_width.setMinimum(1)
         verti_width.setMaximum(10)
+        verti_width.valueChanged.connect(self.vertical_slider_width_changed)
+        self.vertical_width_slider = verti_width
         verti_layout = QtGui.QHBoxLayout()
         verti_layout.addWidget(label1)
         verti_layout.addWidget(verti_length)
@@ -426,6 +440,18 @@ class RegistrationProfileUi(QMainWindow):
 
     def export_images_clicked(self):
         pass
+
+    def horizontal_slider_width_changed(self):
+        print("horizontal slider width changed")
+
+    def horizontal_slider_length_changed(self):
+        print("horizontal slider height changed")
+
+    def vertical_slider_width_changed(self):
+        print("vertical slider width changed")
+
+    def vertical_slider_length_changed(self):
+        print("vertical slider height changed")
 
     def closeEvent(self, c):
         if self.parent:
