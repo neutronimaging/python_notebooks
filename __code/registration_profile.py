@@ -421,6 +421,12 @@ class RegistrationProfileUi(QMainWindow):
         self._check_widgets()
         self._display_selected_row()
 
+    def settings_clicked(self):
+        pass
+
+    def export_images_clicked(self):
+        pass
+
     def closeEvent(self, c):
         if self.parent:
             self.parent.registration_profile_ui = None

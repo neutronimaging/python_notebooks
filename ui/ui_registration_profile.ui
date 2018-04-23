@@ -208,7 +208,7 @@
          <item>
           <widget class="QPushButton" name="calculate_markers_button">
            <property name="text">
-            <string>Calculate Markers</string>
+            <string>Calculate Markers Position from Profiles</string>
            </property>
           </widget>
          </item>
@@ -380,6 +380,8 @@
      <string>Files</string>
     </property>
     <addaction name="actionExport_Images"/>
+    <addaction name="separator"/>
+    <addaction name="actionSettings"/>
    </widget>
    <addaction name="menuFiles"/>
   </widget>
@@ -432,6 +434,11 @@
   <action name="actionExport_Images">
    <property name="text">
     <string>Export Images ...</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings ...</string>
    </property>
   </action>
  </widget>
@@ -597,6 +604,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSettings</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>settings_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>503</x>
+     <y>574</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExport_Images</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_images_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>503</x>
+     <y>574</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>previous_image_button_clicked()</slot>
@@ -605,5 +644,7 @@
   <slot>save_and_close_button_clicked()</slot>
   <slot>calculate_markers_button_clicked()</slot>
   <slot>table_row_clicked()</slot>
+  <slot>export_images_clicked()</slot>
+  <slot>settings_clicked()</slot>
  </slots>
 </ui>
