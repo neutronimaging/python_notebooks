@@ -3,6 +3,7 @@ from IPython.core.display import display
 
 import os
 import numpy as np
+
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
@@ -96,6 +97,8 @@ class RegistrationProfileUi(QMainWindow):
 
         self._display_selected_row()
         self._check_widgets()
+
+        self.update_all_profiles()
 
     ## Initialization
 
@@ -429,6 +432,8 @@ class RegistrationProfileUi(QMainWindow):
         [xaxis, ref_profile] = self.get_profile(image_index=self.reference_image_index,
                                                 x0=x0, y0=y0, width=width, height=height,
                                                 is_horizontal=is_horizontal)
+
+
         profile_2d_ui.plot(xaxis, ref_profile, pen=[255, 255, 255])
 
 
@@ -437,11 +442,11 @@ class RegistrationProfileUi(QMainWindow):
 
     def get_profile(self, image_index=0, x0=0, y0=0, width=1, height=1, is_horizontal=True):
 
-        x1 = width - x0
-        y1 = height - y0
+        x1 = width + x0
+        y1 = height + y0
 
         image = self.data_dict['data'][image_index]
-        # _data = np.transpose(image)
+        image = np.transpose(image)
         image_cropped = image[x0:x1, y0:y1]
         if is_horizontal:
             integrate_axis = 1
@@ -453,6 +458,10 @@ class RegistrationProfileUi(QMainWindow):
         profile = np.mean(image_cropped, axis=integrate_axis)
 
         return [xaxis, profile]
+
+    def update_all_profiles(self):
+        self.update_profiles(is_horizontal=True)
+        self.update_profiles(is_horizontal=False)
 
     ## Event Handler
 
@@ -550,15 +559,15 @@ class RegistrationProfileUi(QMainWindow):
 
     def horizontal_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=True)
-        self.update_profiles(is_Horizontal=True)
+        self.update_profiles(is_horizontal=True)
 
     def vertical_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=False)
-        self.update_profiles(is_Horizontal=False)
+        self.update_profiles(is_horizontal=False)
 
     def vertical_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=False)
-        self.update_profiles(is_Horizontal=False)
+        self.update_profiles(is_horizontal=False)
 
     def closeEvent(self, c):
         if self.parent:
