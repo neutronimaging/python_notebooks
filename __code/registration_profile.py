@@ -45,19 +45,23 @@ class RegistrationProfileUi(QMainWindow):
 
     roi = {'vertical': {'x0': 1000,
                         'y0': 1000,
-                        'width': 5,
-                        'height': 200,
-                        'max_width': 20,
-                        'max_height': 500,
+                        'width': 50,
+                        'length': 500,
+                        'max_width': 50,
+                        'min_width': 1,
+                        'max_length': 500,
+                        'min_length': 10,
                         'color': QtGui.QColor(255, 0, 0),
                         },
            'horizontal': {'x0': 500,
                           'y0': 500,
-                        'width': 200,
-                        'height': 5,
-                        'max_width': 500,
-                        'max_height': 20,
-                        'color': QtGui.QColor(0, 0, 255),
+                          'length': 500,
+                          'width': 50,
+                          'max_length': 500,
+                          'min_length': 10,
+                          'max_width': 50,
+                          'min_width': 1,
+                          'color': QtGui.QColor(0, 0, 255),
                           },
            'width': 0.05,
            }
@@ -69,8 +73,8 @@ class RegistrationProfileUi(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Registration Profile Tool")
 
-        self.init_widgets()
         self.init_pyqtgraph()
+        self.init_widgets()
         self.init_statusbar()
 
         self.parent = parent
@@ -115,6 +119,9 @@ class RegistrationProfileUi(QMainWindow):
             self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
         self.ui.tableWidget.blockSignals(False)
 
+        # splitter
+        self.ui.splitter_2.setSizes([800, 100])
+
     def init_pyqtgraph(self):
         area = DockArea()
         area.setVisible(True)
@@ -143,8 +150,8 @@ class RegistrationProfileUi(QMainWindow):
         _x0 = self.roi['vertical']['x0']
         _y0 = self.roi['vertical']['y0']
         _width = self.roi['vertical']['width']
-        _height = self.roi['vertical']['height']
-        _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
+        _length = self.roi['vertical']['length']
+        _roi_id = pg.ROI([_x0, _y0], [_width, _length], pen=_pen, scaleSnap=True)
         self.ui.image_view.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(self.vertical_roi_moved)
         self.vertical_profile = _roi_id
@@ -157,9 +164,9 @@ class RegistrationProfileUi(QMainWindow):
         _pen.setWidthF(self.roi['width'])
         _x0 = self.roi['horizontal']['x0']
         _y0 = self.roi['horizontal']['y0']
+        _length = self.roi['horizontal']['length']
         _width = self.roi['horizontal']['width']
-        _height = self.roi['horizontal']['height']
-        _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
+        _roi_id = pg.ROI([_x0, _y0], [_length, _width], pen=_pen, scaleSnap=True)
         self.ui.image_view.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(self.horizontal_roi_moved)
         self.horizontal_profile = _roi_id
@@ -170,15 +177,16 @@ class RegistrationProfileUi(QMainWindow):
         # slider and height
         label1 = QtGui.QLabel("Length")
         hori_length = QtGui.QSlider(QtCore.Qt.Horizontal)
-        hori_length.setMinimum(10)
-        hori_length.setMaximum(500)
-        hori_length.setValue(200)
+        hori_length.setMinimum(self.roi['horizontal']['min_length'])
+        hori_length.setMaximum(self.roi['horizontal']['max_length'])
+        hori_length.setValue(self.roi['horizontal']['length'])
         hori_length.valueChanged.connect(self.horizontal_slider_length_changed)
         self.horizontal_length_slider = hori_length
         label2 = QtGui.QLabel("Width")
         hori_width = QtGui.QSlider(QtCore.Qt.Horizontal)
-        hori_width.setMinimum(1)
-        hori_width.setMaximum(10)
+        hori_width.setMinimum(self.roi['horizontal']['min_width'])
+        hori_width.setMaximum(self.roi['horizontal']['max_width'])
+        hori_width.setValue(self.roi['horizontal']['width'])
         hori_width.valueChanged.connect(self.horizontal_slider_width_changed)
         self.horizontal_width_slider = hori_width
         hori_layout= QtGui.QHBoxLayout()
@@ -201,15 +209,16 @@ class RegistrationProfileUi(QMainWindow):
         # slider and height
         label1 = QtGui.QLabel("Length")
         verti_length = QtGui.QSlider(QtCore.Qt.Horizontal)
-        verti_length.setMinimum(10)
-        verti_length.setMaximum(500)
-        verti_length.setValue(200)
+        verti_length.setMinimum(self.roi['vertical']['min_length'])
+        verti_length.setMaximum(self.roi['vertical']['max_length'])
+        verti_length.setValue(self.roi['vertical']['length'])
         verti_length.valueChanged.connect(self.vertical_slider_length_changed)
         self.vertical_length_slider = verti_length
         label2 = QtGui.QLabel("Width")
         verti_width = QtGui.QSlider(QtCore.Qt.Horizontal)
-        verti_width.setMinimum(1)
-        verti_width.setMaximum(10)
+        verti_width.setMinimum(self.roi['vertical']['min_width'])
+        verti_width.setMaximum(self.roi['vertical']['max_width'])
+        verti_width.setValue(self.roi['vertical']['width'])
         verti_width.valueChanged.connect(self.vertical_slider_width_changed)
         self.vertical_width_slider = verti_width
         verti_layout = QtGui.QHBoxLayout()
@@ -364,6 +373,33 @@ class RegistrationProfileUi(QMainWindow):
             _histo_widget.setLevels(self.histogram_level[0],
                                     self.histogram_level[1])
 
+    def replot_profile_lines(self, is_horizontal=False):
+        if is_horizontal:
+            roi_ui = self.horizontal_profile
+            dict_roi = self.roi['horizontal']
+            width_slider_ui = self.horizontal_width_slider
+            length_slider_ui = self.horizontal_length_slider
+        else:
+            roi_ui = self.vertical_profile
+            dict_roi = self.roi['vertical']
+            width_slider_ui = self.vertical_width_slider
+            length_slider_ui = self.vertical_length_slider
+
+        x0 = dict_roi['x0']
+        y0 = dict_roi['y0']
+
+        width = width_slider_ui.value()
+        length = length_slider_ui.value()
+
+        roi_ui.setPos((x0, y0))
+        if is_horizontal:
+            roi_ui.setSize((length, width))
+        else:
+            roi_ui.setSize((width, length))
+
+        dict_roi['length'] = length
+        dict_roi['width'] = width
+
     ## Event Handler
 
     def vertical_roi_moved(self):
@@ -442,16 +478,16 @@ class RegistrationProfileUi(QMainWindow):
         pass
 
     def horizontal_slider_width_changed(self):
-        print("horizontal slider width changed")
+        self.replot_profile_lines(is_horizontal=True)
 
     def horizontal_slider_length_changed(self):
-        print("horizontal slider height changed")
+        self.replot_profile_lines(is_horizontal=True)
 
     def vertical_slider_width_changed(self):
-        print("vertical slider width changed")
+        self.replot_profile_lines(is_horizontal=False)
 
     def vertical_slider_length_changed(self):
-        print("vertical slider height changed")
+        self.replot_profile_lines(is_horizontal=False)
 
     def closeEvent(self, c):
         if self.parent:
