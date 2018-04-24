@@ -646,6 +646,16 @@ class RegistrationProfileUi(QMainWindow):
 
             self.data_dict['data'][_row] = new_data
 
+    def calculate_and_display_current_peak(self, force_recalculation=True, is_horizontal=True):
+        if force_recalculation:
+            print("calculate and display current peak with force calculation")
+        else:
+            print("calculate and display current peak without force calculation")
+
+    def calculate_and_display_hori_and_verti_peaks(self, force_recalculation=True):
+        self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=True)
+        self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=False)
+
     ## Event Handler
 
     def full_reset(self):
@@ -671,6 +681,7 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['vertical']['height'] = height
 
         self.update_selected_file_profile_plots(is_horizontal=False)
+        self.calculate_and_display_current_peak(is_horizontal=False)
 
     def horizontal_roi_moved(self):
         """when the horizontal roi is moved, we need to make sure the height stays within the max we defined
@@ -691,6 +702,7 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['horizontal']['height'] = height
 
         self.update_selected_file_profile_plots(is_horizontal=True)
+        self.calculate_and_display_current_peak(is_horizontal=True)
 
     def calculate_markers_button_clicked(self):
         self.calculate_all_profiles()
@@ -698,6 +710,7 @@ class RegistrationProfileUi(QMainWindow):
         self.calculate_all_offsets()
         self.plot_peaks()
         self.update_table()
+        self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
     def help_button_clicked(self):
         import webbrowser
@@ -708,6 +721,7 @@ class RegistrationProfileUi(QMainWindow):
         self._check_widgets()
         self._display_selected_row()
         self.update_hori_verti_profile_plot_of_selected_file()
+        self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
     def previous_image_button_clicked(self):
         row_selected = self._get_selected_row()
@@ -715,6 +729,7 @@ class RegistrationProfileUi(QMainWindow):
         self._check_widgets()
         self._display_selected_row()
         self.update_hori_verti_profile_plot_of_selected_file()
+        self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
     def next_image_button_clicked(self):
         row_selected = self._get_selected_row()
@@ -722,6 +737,7 @@ class RegistrationProfileUi(QMainWindow):
         self._check_widgets()
         self._display_selected_row()
         self.update_hori_verti_profile_plot_of_selected_file()
+        self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
     def registered_all_images_button_clicked(self):
         self.register_images()
@@ -743,6 +759,7 @@ class RegistrationProfileUi(QMainWindow):
         self._check_widgets()
         self._display_selected_row()
         self.update_hori_verti_profile_plot_of_selected_file()
+        self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
     def settings_clicked(self):
         pass
@@ -753,18 +770,23 @@ class RegistrationProfileUi(QMainWindow):
     def horizontal_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=True)
         self.update_single_profile(is_horizontal=True)
+        self.calculate_and_display_current_peak(is_horizontal=True)
 
     def horizontal_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=True)
         self.update_single_profile(is_horizontal=True)
+        self.calculate_and_display_current_peak(is_horizontal=True)
 
     def vertical_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=False)
         self.update_profiles_plot(is_horizontal=False)
+        self.calculate_and_display_current_peak(is_horizontal=False)
 
     def vertical_slider_length_changed(self):
         self.replot_profile_lines(is_horizontal=False)
         self.update_single_profile(is_horizontal=False)
+        self.calculate_and_display_current_peak(is_horizontal=False)
+
 
     def closeEvent(self, c):
         if self.parent:
