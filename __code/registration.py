@@ -1217,7 +1217,6 @@ class RegistrationManualAutoConfirmation(QDialog):
         self.parent.registration_auto_confirmation_ui = None
 
 
-
 class RegistrationAuto(object):
 
     registered_parameters = {}

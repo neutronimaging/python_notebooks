@@ -25,7 +25,7 @@ from pyqtgraph.dockarea import *
 from NeuNorm.normalization import Normalization
 
 from __code.ui_registration_profile import Ui_MainWindow as UiMainWindowProfile
-
+from __code.ui_registration_profile_settings import Ui_MainWindow as UiMainWindowSettings
 
 class RegistrationProfileUi(QMainWindow):
 
@@ -59,6 +59,10 @@ class RegistrationProfileUi(QMainWindow):
     # image display
     histogram_level = []
     live_image = []
+
+    # settings
+    max_delta_pixel_offset = 20
+    settings_ui = None
 
     peak = {'horizontal': [],
             'vertical': [],
@@ -826,7 +830,7 @@ class RegistrationProfileUi(QMainWindow):
         self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
     def settings_clicked(self):
-        pass
+        o_settings = SettingsLauncher(parent=self)
 
     def horizontal_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=True)
@@ -852,6 +856,43 @@ class RegistrationProfileUi(QMainWindow):
         if self.parent:
             self.parent.registration_profile_ui = None
         self.close()
+
+
+class SettingsLauncher(object):
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent=parent
+
+        if self.parent.settings_ui == None:
+            set_ui = Settings(parent=parent)
+            set_ui.show()
+            self.parent.settings_ui = set_ui
+        else:
+            self.parent.settings_ui.setFocus()
+            self.parent.settings_ui.activateWindow()
+
+class Settings(QMainWindow):
+
+    def __init__(self, parent=None):
+        self.parent = parent
+        QMainWindow.__init__(self, parent=None)
+        self.ui = UiMainWindowSettings()
+        self.ui.setupUi(self)
+
+        self.init_widgets()
+
+    def init_widgets(self):
+        self.ui.spinBox.setValue(self.parent.max_delta_pixel_offset)
+
+    def closeEvent(self, event=None):
+        self.parent.settings_ui.close()
+        self.parent.settings_ui = None
+
+    def ok_button_clicked(self):
+        self.parent.max_delta_pixel_offset = self.ui.spinBox.value()
+        self.closeEvent()
 
 
 class MeanRangeCalculation(object):

@@ -3,7 +3,7 @@
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -484,7 +484,7 @@
    <slot>help_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>526</x>
+     <x>375</x>
      <y>1114</y>
     </hint>
     <hint type="destinationlabel">
@@ -501,7 +501,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>876</x>
-     <y>428</y>
+     <y>425</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -517,7 +517,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>876</x>
-     <y>428</y>
+     <y>425</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -533,7 +533,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>993</x>
-     <y>431</y>
+     <y>428</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -549,7 +549,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>124</x>
-     <y>431</y>
+     <y>428</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -612,8 +612,8 @@
    <slot>calculate_markers_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>472</x>
-     <y>516</y>
+     <x>484</x>
+     <y>513</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -660,8 +660,8 @@
    <slot>registered_all_images_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>988</x>
-     <y>1059</y>
+     <x>751</x>
+     <y>1115</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>

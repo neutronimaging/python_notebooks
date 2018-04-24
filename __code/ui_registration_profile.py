@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
+        MainWindow.setWindowModality(QtCore.Qt.NonModal)
         MainWindow.resize(1007, 1149)
         MainWindow.setMinimumSize(QtCore.QSize(0, 300))
         MainWindow.setLayoutDirection(QtCore.Qt.LeftToRight)
