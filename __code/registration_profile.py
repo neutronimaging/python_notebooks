@@ -607,7 +607,6 @@ class RegistrationProfileUi(QMainWindow):
                 delta_array.append(_o_range.delta_square)
 
             peak_value = delta_array.index(max(delta_array[0: nbr_pixels -5]))
-            print("peak value: {}".format(peak_value))
 
         self.peak[label][file_index] = np.int(peak_value)
 
