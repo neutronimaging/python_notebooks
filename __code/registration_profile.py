@@ -49,6 +49,10 @@ class RegistrationProfileUi(QMainWindow):
     vertical_width_slider = None
     vertical_profile = None # profile line in view
 
+    # profiles infinite peam
+    hori_infinite_line = None
+    verti_infinite_line = None
+
     # image display
     histogram_level = []
     live_image = []
@@ -476,8 +480,8 @@ class RegistrationProfileUi(QMainWindow):
         dict_roi['width'] = width
 
     def update_selected_file_profile_plots(self, is_horizontal=True):
-        index_seleted = self._get_selected_row()
-        self.update_single_profile(file_selected=index_seleted, is_horizontal=is_horizontal)
+        index_selected = self._get_selected_row()
+        self.update_single_profile(file_selected=index_selected, is_horizontal=is_horizontal)
 
     def update_single_profile(self, file_selected=-1, is_horizontal=True):
         if is_horizontal:
@@ -647,10 +651,42 @@ class RegistrationProfileUi(QMainWindow):
             self.data_dict['data'][_row] = new_data
 
     def calculate_and_display_current_peak(self, force_recalculation=True, is_horizontal=True):
-        if force_recalculation:
-            print("calculate and display current peak with force calculation")
+        if is_horizontal:
+            label = 'horizontal'
         else:
-            print("calculate and display current peak without force calculation")
+            label = 'vertical'
+
+        if not force_recalculation:
+            peak = self.peak['label']
+            if peak == []:
+                force_recalculation = True
+            else:
+                self.display_current_peak(is_horizontal=is_horizontal)
+
+        if force_recalculation:
+            self.recalculate_current_peak(is_horizontal=is_horizontal)
+        else:
+            self.display_current_peak(is_horizontal=is_horizontal)
+
+    def recalculate_current_peak(self, is_horizontal=True):
+        pass
+
+    def display_current_peak(self, is_horizontal=True):
+        index_selected = self._get_selected_row()
+        if is_horizontal:
+            profile_2d_ui = roi_ui = self.ui.hori_profile
+            label = 'horizontal'
+            infinite_line = self.hori_infinite_line
+        else:
+            profile_2d_ui = roi_ui = self.ui.verti_profile
+            label = 'vertical'
+            infinite_line = self.verti_infinite_line
+        peak = self.peak[label][index_selected]
+
+        if not (infinite_line is None):
+            profile_2d_ui.removeItem(infinite_line)
+
+
 
     def calculate_and_display_hori_and_verti_peaks(self, force_recalculation=True):
         self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=True)
@@ -786,7 +822,6 @@ class RegistrationProfileUi(QMainWindow):
         self.replot_profile_lines(is_horizontal=False)
         self.update_single_profile(is_horizontal=False)
         self.calculate_and_display_current_peak(is_horizontal=False)
-
 
     def closeEvent(self, c):
         if self.parent:
