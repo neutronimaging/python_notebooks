@@ -22,6 +22,8 @@ except ImportError:
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
+from NeuNorm.normalization import Normalization
+
 from __code.ui_registration_profile import Ui_MainWindow as UiMainWindowProfile
 
 
@@ -111,10 +113,12 @@ class RegistrationProfileUi(QMainWindow):
         if parent:
             self.data_dict = copy.deepcopy(self.parent.data_dict)
             self.does_top_parent_exist = True
+            self.working_dir = self.parent.working_dir
         elif data_dict:
             display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
                 (maybe hidden behind this browser!)</span>'))
             self.data_dict = copy.deepcopy(data_dict)
+            self.working_dir = os.path.dirname(data_dict['file_name'][0])
         else:
             raise ValueError("please provide data_dict")
 
@@ -154,7 +158,7 @@ class RegistrationProfileUi(QMainWindow):
         self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(300, 20)
         self.eventProgress.setMaximumSize(300, 20)
-        self.eventProgress.setVisible(True)
+        self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
     def init_widgets(self):
@@ -799,9 +803,18 @@ class RegistrationProfileUi(QMainWindow):
             self.parent.registration_profile_ui = None
         self.close()
 
-    def save_and_close_button_clicked(self):
+    def export_button_clicked(self):
         """save registered images back to the main UI"""
-        self.cancel_button_clicked()
+        self.registered_all_images_button_clicked()
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
+                                                          caption = "Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            o_export = ExportRegistration(parent=self, export_folder=_export_folder)
+            o_export.run()
+            QtGui.QApplication.processEvents()
+
 
     def opacity_slider_moved(self, _):
         self._display_selected_row()
@@ -813,9 +826,6 @@ class RegistrationProfileUi(QMainWindow):
         self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
     def settings_clicked(self):
-        pass
-
-    def export_images_clicked(self):
         pass
 
     def horizontal_slider_width_changed(self):
@@ -862,4 +872,35 @@ class MeanRangeCalculation(object):
 
     def calculate_delta_mean_square(self):
         self.delta_square = np.square(self.left_mean - self.right_mean)
+
+class ExportRegistration(object):
+
+    def __init__(self, parent=None, export_folder=''):
+        self.parent = parent
+        self.export_folder = export_folder
+
+    def run(self):
+        data_dict = copy.deepcopy(self.parent.data_dict)
+        list_file_names = data_dict['file_name']
+        nbr_files = len(data_dict['data'])
+
+        self.parent.eventProgress.setMaximum(nbr_files)
+        self.parent.eventProgress.setValue(0)
+        self.parent.eventProgress.setVisible(True)
+
+        for _row, _data in enumerate(data_dict['data']):
+            _filename = list_file_names[_row]
+            _data_registered = np.array(_data)
+
+            o_norm = Normalization()
+            o_norm.load(data=_data_registered)
+            #o_norm.data['sample']['metadata'] = [data_dict['metadata'][_row]]
+            o_norm.data['sample']['metadata'] = ['']
+            o_norm.data['sample']['file_name'][0] = _filename
+            o_norm.export(folder=self.export_folder, data_type='sample')
+
+            self.parent.eventProgress.setValue(_row+1)
+            QtGui.QApplication.processEvents()
+
+        self.parent.eventProgress.setVisible(False)
 

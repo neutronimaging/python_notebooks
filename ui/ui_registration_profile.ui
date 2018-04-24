@@ -311,19 +311,6 @@
              </property>
             </spacer>
            </item>
-           <item>
-            <widget class="QPushButton" name="registered_all_images_button">
-             <property name="minimumSize">
-              <size>
-               <width>200</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Register All Images</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
          <item>
@@ -381,9 +368,22 @@
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="save_and_close_button">
+            <widget class="QPushButton" name="registered_all_images_button">
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Save and Close</string>
+              <string>Register All Images</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="export_button">
+             <property name="text">
+              <string>Register All Images and Export ...</string>
              </property>
             </widget>
            </item>
@@ -405,15 +405,13 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFiles">
+   <widget class="QMenu" name="menuMenu">
     <property name="title">
-     <string>Files</string>
+     <string>Menu</string>
     </property>
-    <addaction name="actionExport_Images"/>
-    <addaction name="separator"/>
-    <addaction name="actionSettings"/>
+    <addaction name="actionSettings_2"/>
    </widget>
-   <addaction name="menuFiles"/>
+   <addaction name="menuMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExport_Profile">
@@ -467,6 +465,11 @@
    </property>
   </action>
   <action name="actionSettings">
+   <property name="text">
+    <string>Settings ...</string>
+   </property>
+  </action>
+  <action name="actionSettings_2">
    <property name="text">
     <string>Settings ...</string>
    </property>
@@ -587,13 +590,13 @@
    </hints>
   </connection>
   <connection>
-   <sender>save_and_close_button</sender>
+   <sender>export_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>save_and_close_button_clicked()</slot>
+   <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>889</x>
+     <x>929</x>
      <y>1103</y>
     </hint>
     <hint type="destinationlabel">
@@ -635,26 +638,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionSettings</sender>
+   <sender>actionSettings_2</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>settings_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>503</x>
-     <y>574</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionExport_Images</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>export_images_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -703,12 +690,11 @@
   <slot>previous_image_button_clicked()</slot>
   <slot>opacity_slider_moved()</slot>
   <slot>cancel_button_clicked()</slot>
-  <slot>save_and_close_button_clicked()</slot>
   <slot>calculate_markers_button_clicked()</slot>
   <slot>table_row_clicked()</slot>
-  <slot>export_images_clicked()</slot>
   <slot>settings_clicked()</slot>
   <slot>registered_all_images_button_clicked()</slot>
   <slot>full_reset()</slot>
+  <slot>export_button_clicked()</slot>
  </slots>
 </ui>
