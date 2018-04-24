@@ -8,9 +8,6 @@ from changepy.costs import normal_var
 from scipy.ndimage.interpolation import shift
 import copy
 
-import pyqtgraph as pg
-from pyqtgraph.dockarea import *
-
 from __code.color import  Color
 
 try:
@@ -22,12 +19,16 @@ except ImportError:
     from PyQt5 import QtCore, QtGui, QtWidgets
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
+import pyqtgraph as pg
+from pyqtgraph.dockarea import *
+
 from __code.ui_registration_profile import Ui_MainWindow as UiMainWindowProfile
 
 
 class RegistrationProfileUi(QMainWindow):
 
     does_top_parent_exist = False
+    peak_algorithm = 'sliding_average'   # ''change_point'
 
     data_dict = None
     raw_data_dict = None
@@ -50,8 +51,8 @@ class RegistrationProfileUi(QMainWindow):
     vertical_profile = None # profile line in view
 
     # profiles infinite peam
-    hori_infinite_line = None
-    verti_infinite_line = None
+    hori_infinite_line_ui = None
+    verti_infinite_line_ui = None
 
     # image display
     histogram_level = []
@@ -499,31 +500,12 @@ class RegistrationProfileUi(QMainWindow):
                                                 is_horizontal=is_horizontal)
         profile_2d_ui.plot(xaxis, ref_profile, pen=self.roi[label]['color-peak'])
 
-        # # display calculated peak
-        # if not self.roi[label]['profiles'] == {}:
-        #     self.calculate_peak(file_index=self.reference_image_index, is_horizontal=True)
-        #     peak = self.peak[label][file_selected]
-        #     self.profile_peak = pg.InfiniteLine(angle=90,
-        #                                         movable=False,
-        #                                         pos=peak)
-        #     profile_2d_ui.addItem(self.profile_peak,
-        #                           ignoreBounds=True)
-
         if file_selected != self.reference_image_index:
             [xaxis, selected_profile] = self.get_profile(image_index=file_selected,
                                                          is_horizontal=is_horizontal)
             profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
-            # if not self.roi[label]['profiles'] == {}:
-            #     self.calculate_peak(file_index=file_selected, is_horizontal=True)
-            #     peak = self.peak[label][file_selected]
-            #     self.profile_peak = pg.InfiniteLine(angle=90,
-            #                                         movable=False,
-            #                                         pos=peak)
-            #     profile_2d_ui.addItem(self.profile_peak,
-            #                           ignoreBounds=True)
 
     def get_profile(self, image_index=0, is_horizontal=True):
-
         if is_horizontal:
             dict_roi = self.roi['horizontal']
             real_width_term = 'length'
@@ -546,10 +528,10 @@ class RegistrationProfileUi(QMainWindow):
         image_cropped = image[x0:x1, y0:y1]
         if is_horizontal:
             integrate_axis = 1
-            xaxis = np.arange(x0, x1) + x0
+            xaxis = np.arange(x0, x1)
         else:
             integrate_axis = 0
-            xaxis = np.arange(y0, y1) + y0
+            xaxis = np.arange(y0, y1)
 
         profile = np.mean(image_cropped, axis=integrate_axis)
 
@@ -607,14 +589,27 @@ class RegistrationProfileUi(QMainWindow):
         _profile = self.roi[label]['profiles'][str(file_index)]
         yaxis = _profile['profile']
 
-        var = np.mean(yaxis)
-        result = pelt(normal_var(yaxis, var), len(yaxis))
-        if len(result) > 2:
-            peak = np.mean(result[2:])
-        else:
-            peak = np.mean(result[1:])
+        if self.peak_algorithm == 'change_point':
+            var = np.mean(yaxis)
+            result = pelt(normal_var(yaxis, var), len(yaxis))
+            if len(result) > 2:
+                peak = np.mean(result[2:])
+            else:
+                peak = np.mean(result[1:])
 
-        self.peak[label][file_index] = np.int(peak)
+        else: # sliding average
+            _o_range = MeanRangeCalculation(data=yaxis)
+            nbr_pixels = len(yaxis)
+            delta_array = []
+            for _pixel in np.arange(0, nbr_pixels-5):
+                _o_range.calculate_left_right_mean(pixel=_pixel)
+                _o_range.calculate_delta_mean_square()
+                delta_array.append(_o_range.delta_square)
+
+            peak_value = delta_array.index(max(delta_array[0: nbr_pixels -5]))
+            print("peak value: {}".format(peak_value))
+
+        self.peak[label][file_index] = np.int(peak_value)
 
     def plot_peaks(self):
         xaxis = np.arange(len(self.data_dict['file_name']))
@@ -656,37 +651,58 @@ class RegistrationProfileUi(QMainWindow):
         else:
             label = 'vertical'
 
+        index_selected = self._get_selected_row()
         if not force_recalculation:
-            peak = self.peak['label']
-            if peak == []:
+            profile = self.roi[label]['profiles']
+            if profile == {}:
                 force_recalculation = True
             else:
-                self.display_current_peak(is_horizontal=is_horizontal)
+                peak = self.peak[label]
+                if peak == []:
+                    force_recalculation = True
+                elif peak[index_selected] == 0:
+                    force_recalculation = True
+                else:
+                    self.display_current_peak(is_horizontal=is_horizontal)
 
         if force_recalculation:
-            self.recalculate_current_peak(is_horizontal=is_horizontal)
-        else:
-            self.display_current_peak(is_horizontal=is_horizontal)
+            self.calculate_profile(file_index=index_selected, is_horizontal=is_horizontal)
+            self.recalculate_current_peak(file_index=index_selected, is_horizontal=is_horizontal)
 
-    def recalculate_current_peak(self, is_horizontal=True):
-        pass
+        self.display_current_peak(is_horizontal=is_horizontal)
+
+    def recalculate_current_peak(self, file_index=-1, is_horizontal=True):
+        self.calculate_peak(file_index=file_index,
+                             is_horizontal=is_horizontal)
 
     def display_current_peak(self, is_horizontal=True):
         index_selected = self._get_selected_row()
         if is_horizontal:
             profile_2d_ui = roi_ui = self.ui.hori_profile
             label = 'horizontal'
-            infinite_line = self.hori_infinite_line
+            infinite_line_ui = self.hori_infinite_line_ui
+            offset = self.roi[label]['x0']
         else:
             profile_2d_ui = roi_ui = self.ui.verti_profile
             label = 'vertical'
-            infinite_line = self.verti_infinite_line
-        peak = self.peak[label][index_selected]
+            infinite_line_ui = self.verti_infinite_line_ui
+            offset = self.roi[label]['y0']
+        peak = self.peak[label][index_selected] + offset
 
-        if not (infinite_line is None):
-            profile_2d_ui.removeItem(infinite_line)
-            ## FIXME
+        if not (infinite_line_ui is None):
+            profile_2d_ui.removeItem(infinite_line_ui)
 
+
+        infinite_line_ui = pg.InfiniteLine(angle=90,
+                                           movable=False,
+                                           pos=peak)
+        profile_2d_ui.addItem(infinite_line_ui,
+                              ignoreBounds=True)
+
+        if is_horizontal:
+            self.hori_infinite_line_ui = infinite_line_ui
+        else:
+            self.verti_infinite_line_ui = infinite_line_ui
 
     def calculate_and_display_hori_and_verti_peaks(self, force_recalculation=True):
         self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=True)
@@ -714,7 +730,7 @@ class RegistrationProfileUi(QMainWindow):
         self.roi['vertical']['x0'] = x0
         self.roi['vertical']['y0'] = y0
         self.roi['vertical']['width'] = width
-        self.roi['vertical']['height'] = height
+        self.roi['vertical']['length'] = height
 
         self.update_selected_file_profile_plots(is_horizontal=False)
         self.calculate_and_display_current_peak(is_horizontal=False)
@@ -734,8 +750,8 @@ class RegistrationProfileUi(QMainWindow):
 
         self.roi['horizontal']['x0'] = x0
         self.roi['horizontal']['y0'] = y0
-        self.roi['horizontal']['width'] = width
-        self.roi['horizontal']['height'] = height
+        self.roi['horizontal']['length'] = width
+        self.roi['horizontal']['width'] = height
 
         self.update_selected_file_profile_plots(is_horizontal=True)
         self.calculate_and_display_current_peak(is_horizontal=True)
@@ -827,3 +843,24 @@ class RegistrationProfileUi(QMainWindow):
         if self.parent:
             self.parent.registration_profile_ui = None
         self.close()
+
+
+class MeanRangeCalculation(object):
+    '''
+    Mean value of all the counts between left_pixel and right pixel
+    '''
+
+    def __init__(self, data=None):
+        self.data = data
+        self.nbr_pixel = len(self.data)
+
+    def calculate_left_right_mean(self, pixel=-1):
+        _data = self.data
+        _nbr_pixel = self.nbr_pixel
+
+        self.left_mean = np.nanmean(_data[0:pixel + 1])
+        self.right_mean = np.nanmean(_data[pixel + 1:_nbr_pixel])
+
+    def calculate_delta_mean_square(self):
+        self.delta_square = np.square(self.left_mean - self.right_mean)
+
