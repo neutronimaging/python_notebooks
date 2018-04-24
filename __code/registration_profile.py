@@ -685,7 +685,7 @@ class RegistrationProfileUi(QMainWindow):
 
         if not (infinite_line is None):
             profile_2d_ui.removeItem(infinite_line)
-
+            ## FIXME
 
 
     def calculate_and_display_hori_and_verti_peaks(self, force_recalculation=True):
