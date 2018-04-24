@@ -919,7 +919,7 @@ class RegistrationUi(QMainWindow):
                            enabled=False)
 
     def profiler_registration_button_clicked(self):
-        o_registration_profile = RegistrationProfileLauncher(object)
+        o_registration_profile = RegistrationProfileLauncher(parent=self)
 
     def start_auto_registration(self):
         o_auto_register = RegistrationAuto(parent=self,
