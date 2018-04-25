@@ -290,67 +290,11 @@
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QPushButton" name="full_reset_button">
              <property name="text">
               <string>Full Reset</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QPushButton" name="cancel_button">
-             <property name="text">
-              <string>Cancel</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QPushButton" name="help_button">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>HELP</string>
              </property>
             </widget>
            </item>
@@ -366,6 +310,13 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Update Main UI with Registered Images</string>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="registered_all_images_button">
@@ -405,13 +356,23 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuMenu">
+   <property name="defaultUp">
+    <bool>false</bool>
+   </property>
+   <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>Menu</string>
+     <string>Options</string>
     </property>
-    <addaction name="actionSettings_2"/>
+    <addaction name="actionSettings_3"/>
    </widget>
-   <addaction name="menuMenu"/>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionTutorial"/>
+   </widget>
+   <addaction name="menuOptions"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExport_Profile">
@@ -474,25 +435,19 @@
     <string>Settings ...</string>
    </property>
   </action>
+  <action name="actionSettings_3">
+   <property name="text">
+    <string>Settings ...</string>
+   </property>
+  </action>
+  <action name="actionTutorial">
+   <property name="text">
+    <string>Tutorial ...</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>help_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>help_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>375</x>
-     <y>1114</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>419</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>file_slider</sender>
    <signal>sliderMoved(int)</signal>
@@ -574,22 +529,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>cancel_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>cancel_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>80</x>
-     <y>1099</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>166</x>
-     <y>1120</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>export_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
@@ -638,7 +577,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionSettings_2</sender>
+   <sender>actionSettings_3</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>settings_clicked()</slot>
@@ -685,6 +624,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTutorial</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>help_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>503</x>
+     <y>574</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>previous_image_button_clicked()</slot>
@@ -696,5 +651,6 @@
   <slot>registered_all_images_button_clicked()</slot>
   <slot>full_reset()</slot>
   <slot>export_button_clicked()</slot>
+  <slot>help_button_clicked()</slot>
  </slots>
 </ui>
