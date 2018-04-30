@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
         self.spinBox.setObjectName("spinBox")
         self.horizontalLayout.addWidget(self.spinBox)
         self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit.setMinimumSize(QtCore.QSize(300, 50))
+        self.plainTextEdit.setMinimumSize(QtCore.QSize(300, 60))
         self.plainTextEdit.setMaximumSize(QtCore.QSize(16777215, 50))
         self.plainTextEdit.setReadOnly(True)
         self.plainTextEdit.setObjectName("plainTextEdit")

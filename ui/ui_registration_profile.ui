@@ -314,7 +314,7 @@
            <item>
             <widget class="QPushButton" name="pushButton">
              <property name="text">
-              <string>Update Main UI with Registered Images</string>
+              <string>Registered Images and Return to Main UI</string>
              </property>
             </widget>
            </item>
@@ -327,14 +327,14 @@
               </size>
              </property>
              <property name="text">
-              <string>Register All Images</string>
+              <string>Register Images</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="export_button">
              <property name="text">
-              <string>Register All Images and Export ...</string>
+              <string>Register Images and Export ...</string>
              </property>
             </widget>
            </item>
@@ -456,7 +456,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>876</x>
-     <y>425</y>
+     <y>457</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -472,7 +472,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>876</x>
-     <y>425</y>
+     <y>457</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -488,7 +488,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>993</x>
-     <y>428</y>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -504,7 +504,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>124</x>
-     <y>428</y>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -551,8 +551,8 @@
    <slot>calculate_markers_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>484</x>
-     <y>513</y>
+     <x>496</x>
+     <y>545</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -615,8 +615,8 @@
    <slot>full_reset()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>110</x>
-     <y>1058</y>
+     <x>118</x>
+     <y>1115</y>
     </hint>
     <hint type="destinationlabel">
      <x>322</x>
@@ -640,6 +640,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>registered_all_images_and_return_to_main_ui_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>377</x>
+     <y>1094</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>218</x>
+     <y>1126</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>previous_image_button_clicked()</slot>
@@ -652,5 +668,6 @@
   <slot>full_reset()</slot>
   <slot>export_button_clicked()</slot>
   <slot>help_button_clicked()</slot>
+  <slot>registered_all_images_and_return_to_main_ui_button_clicked()</slot>
  </slots>
 </ui>

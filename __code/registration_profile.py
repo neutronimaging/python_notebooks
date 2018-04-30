@@ -699,7 +699,6 @@ class RegistrationProfileUi(QMainWindow):
         if not (infinite_line_ui is None):
             profile_2d_ui.removeItem(infinite_line_ui)
 
-
         infinite_line_ui = pg.InfiniteLine(angle=90,
                                            movable=False,
                                            pos=peak)
@@ -714,6 +713,16 @@ class RegistrationProfileUi(QMainWindow):
     def calculate_and_display_hori_and_verti_peaks(self, force_recalculation=True):
         self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=True)
         self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=False)
+
+    def copy_register_parameters_to_main_table(self):
+        nbr_row = self.ui.tableWidget.rowCount()
+        source_col_to_copy = [3, 4]
+        for _row in np.arange(nbr_row):
+            for _col in source_col_to_copy:
+                source = self.ui.tableWidget.item(_row, _col).text()
+                target_col = _col - 2
+                self.parent.ui.tableWidget.item(_row, target_col).setText(source)
+
 
     ## Event Handler
 
@@ -801,6 +810,12 @@ class RegistrationProfileUi(QMainWindow):
     def registered_all_images_button_clicked(self):
         self.register_images()
         self._display_selected_row()
+
+    def registered_all_images_and_return_to_main_ui_button_clicked(self):
+        self.register_images()
+        self.copy_register_parameters_to_main_table()
+        self.parent.all_table_cell_modified()
+        self.closeEvent(None)
 
     def cancel_button_clicked(self):
         if self.parent:

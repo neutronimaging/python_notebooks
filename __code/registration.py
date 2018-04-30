@@ -820,15 +820,24 @@ class RegistrationUi(QMainWindow):
         for _ui in list_ui:
             _ui.setEnabled(enabled)
 
+    def all_table_cell_modified(self):
+        nbr_row = self.ui.tableWidget.rowCount()
+        for _row in np.arange(nbr_row):
+            self.modified_images(list_row=[_row])
+            self.profile_line_moved()
+
     # Event handler
 
     def opacity_changed(self, opacity_value):
         self.display_image()
 
-    def table_row_clicked(self):
+    def table_row_clicked(self, row=-1):
         self.ui.file_slider.blockSignals(True)
-        row = self.ui.tableWidget.currentRow()
-        self.ui.file_slider.setValue(row)
+        if row == -1:
+            row = self.ui.tableWidget.currentRow()
+        else:
+            self.ui.file_slider.setValue(row)
+
         self.display_image()
         self.check_selection_slider_status()
         self.profile_line_moved()
@@ -838,7 +847,7 @@ class RegistrationUi(QMainWindow):
         self.display_markers(all=True)
         self.ui.file_slider.blockSignals(False)
 
-    def table_cell_modified(self, row, column):
+    def table_cell_modified(self, row=-1, column=-1):
         list_row_selected = self.get_list_row_selected()
         self.modified_images(list_row=list_row_selected)
         self.display_image()
@@ -1280,7 +1289,8 @@ class ExportRegistration(object):
 
             o_norm = Normalization()
             o_norm.load(data=_data_registered)
-            o_norm.data['sample']['metadata'] = [data_dict_raw['metadata'][_row]]
+            # o_norm.data['sample']['metadata'] = [data_dict_raw['metadata'][_row]]
+            o_norm.data['sample']['metadata'] = []
             o_norm.data['sample']['file_name'][0] = _filename
             # pprint.pprint(o_norm.data['sample'])
             # self.parent.testing_o_norm = o_norm

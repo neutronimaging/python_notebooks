@@ -218,6 +218,7 @@ class Ui_MainWindow(object):
         self.registered_all_images_button.clicked.connect(MainWindow.registered_all_images_button_clicked)
         self.full_reset_button.clicked.connect(MainWindow.full_reset)
         self.actionTutorial.triggered.connect(MainWindow.help_button_clicked)
+        self.pushButton.clicked.connect(MainWindow.registered_all_images_and_return_to_main_ui_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -242,9 +243,9 @@ class Ui_MainWindow(object):
         item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Y offset"))
         self.full_reset_button.setText(_translate("MainWindow", "Full Reset"))
-        self.pushButton.setText(_translate("MainWindow", "Update Main UI with Registered Images"))
-        self.registered_all_images_button.setText(_translate("MainWindow", "Register All Images"))
-        self.export_button.setText(_translate("MainWindow", "Register All Images and Export ..."))
+        self.pushButton.setText(_translate("MainWindow", "Registered Images and Return to Main UI"))
+        self.registered_all_images_button.setText(_translate("MainWindow", "Register Images"))
+        self.export_button.setText(_translate("MainWindow", "Register Images and Export ..."))
         self.menuOptions.setTitle(_translate("MainWindow", "Options"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
