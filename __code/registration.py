@@ -1290,10 +1290,10 @@ class ExportRegistration(object):
             o_norm = Normalization()
             o_norm.load(data=_data_registered)
             # o_norm.data['sample']['metadata'] = [data_dict_raw['metadata'][_row]]
-            o_norm.data['sample']['metadata'] = []
             o_norm.data['sample']['file_name'][0] = _filename
             # pprint.pprint(o_norm.data['sample'])
             # self.parent.testing_o_norm = o_norm
+
             o_norm.export(folder=self.export_folder, data_type='sample')
 
             self.parent.eventProgress.setValue(_row+1)
