@@ -844,7 +844,7 @@ class RegistrationProfileUi(QMainWindow):
 
     def vertical_slider_width_changed(self):
         self.replot_profile_lines(is_horizontal=False)
-        self.update_profiles_plot(is_horizontal=False)
+        self.update_single_profile(is_horizontal=False)
         self.calculate_and_display_current_peak(is_horizontal=False)
 
     def vertical_slider_length_changed(self):
