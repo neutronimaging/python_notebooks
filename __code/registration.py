@@ -1310,7 +1310,6 @@ class ExportRegistration(object):
 
         return _data
 
-
 class RegistrationMarkersLauncher(object):
 
     parent = None

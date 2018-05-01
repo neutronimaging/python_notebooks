@@ -728,6 +728,8 @@ class RegistrationProfileUi(QMainWindow):
 
     def full_reset(self):
         self.data_dict = copy.deepcopy(self.raw_data_dict)
+        self.init_parameters()
+        self.update_table()
         self._display_selected_row()
 
     def vertical_roi_moved(self):
