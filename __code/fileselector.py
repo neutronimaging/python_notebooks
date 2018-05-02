@@ -4,6 +4,10 @@ import os
 import time
 from IPython.core.display import HTML
 from IPython.display import display
+import ipywe.fileselector
+
+from NeuNorm.normalization import Normalization
+from ipywidgets import widgets
 
 
 class MyFileSelectorPanel:
@@ -382,3 +386,33 @@ def del_ftime(file_label):
         if file_label_new != "." and file_label_new != "..":
             file_label_new = file_label_new.split("|")[0].rstrip()
     return (file_label_new)
+
+
+class FileSelection(object):
+
+    def __init__(self, working_dir='./'):
+        self.working_dir = working_dir
+
+    def select_file_help(self, value):
+        import webbrowser
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile")
+
+    def load_files(self, files):
+        o_norm = Normalization()
+        o_norm.load(file=files, notebook=True)
+        self.data_dict = o_norm.data
+
+    def select_data(self):
+        help_ui = widgets.Button(description="HELP",
+                                 button_style='info')
+        help_ui.on_click(self.select_file_help)
+        display(help_ui)
+
+        self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                             start_dir=self.working_dir,
+                                                             next=self.load_files,
+                                                             multiple=True)
+
+        self.files_ui.show()
+
+
