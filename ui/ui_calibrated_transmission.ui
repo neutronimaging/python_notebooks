@@ -89,6 +89,12 @@
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
           <widget class="QTabWidget" name="tabWidget">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>150</height>
+            </size>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -107,7 +113,14 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QLineEdit" name="lineEdit_11"/>
+                <widget class="QLineEdit" name="lineEdit_11">
+                 <property name="baseSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
                </item>
                <item row="0" column="2">
                 <widget class="QLabel" name="label_12">

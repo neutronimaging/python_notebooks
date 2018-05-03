@@ -61,7 +61,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
 
         # initialization
-        # self.init_pyqtgrpah()
+        self.init_pyqtgrpah()
         # self.init_widgets()
         # self.init_table()
         # self.init_parameters()
@@ -75,46 +75,32 @@ class CalibratedTransmissionUi(QMainWindow):
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
-    def init_parameters(self):
-        nbr_files = len(self.data_dict['file_name'])
-        self.nbr_files = nbr_files
-        _color = Color()
-        self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
-
-        o_marker = MarkerDefaultSettings(image_reference=self.reference_image)
-        self.o_MarkerDefaultSettings = o_marker
+    # def init_parameters(self):
+    #     nbr_files = len(self.data_dict['file_name'])
+    #     self.nbr_files = nbr_files
+    #     _color = Color()
+    #     self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
+    #
+    #     o_marker = MarkerDefaultSettings(image_reference=self.reference_image)
+    #     self.o_MarkerDefaultSettings = o_marker
 
     def init_pyqtgrpah(self):
 
-        area = DockArea()
-        area.setVisible(True)
-        d1 = Dock("Registered Image", size=(400, 600))
-        d2 = Dock("Profile", size=(400, 200))
-
-        area.addDock(d1, 'top')
-        area.addDock(d2, 'bottom')
-
-        # registered image
+        # image
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.image_view.ui.menuBtn.hide()
         self.ui.image_view.ui.roiBtn.hide()
-        # profile selection tool
-        self.ui.profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
-        self.ui.image_view.addItem(self.ui.profile_line)
-        d1.addWidget(self.ui.image_view)
-        self.ui.profile_line.sigRegionChanged.connect(self.profile_line_moved)
-
-        # profile
-        self.ui.profile = pg.PlotWidget(title='Profile')
-        self.ui.profile.plot()
-        self.legend = self.ui.profile.addLegend()
-        d2.addWidget(self.ui.profile)
-
-        # set up layout
         vertical_layout = QtGui.QVBoxLayout()
-        vertical_layout.addWidget(area)
-
+        vertical_layout.addWidget(self.ui.image_view)
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
+
+        # measurement
+        self.ui.measurement_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.measurement_view.ui.menuBtn.hide()
+        self.ui.measurement_view.ui.roiBtn.hide()
+        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2.addWidget(self.ui.measurement_view)
+        self.ui.measurement_widget.setLayout(vertical_layout2)
 
     def init_widgets(self):
         """size and label of any widgets"""
