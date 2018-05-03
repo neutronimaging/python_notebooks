@@ -36,11 +36,7 @@ except AttributeError:
 from NeuNorm.normalization import Normalization
 
 
-from __code.ui_registration  import Ui_MainWindow as UiMainWindow
-from __code.ui_registration_tool import Ui_MainWindow as UiMainWindowTool
-from __code.ui_registration_auto_confirmation import Ui_Dialog as UiDialog
-from __code.ui_registration_markers import Ui_Dialog as UiDialogMarkers
-from __code.registration_profile import RegistrationProfileUi
+from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
 
 
 class CalibratedTransmissionUi(QMainWindow):
