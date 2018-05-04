@@ -177,7 +177,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
-                <widget class="QPushButton" name="pushButton_4">
+                <widget class="QPushButton" name="remove_row">
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
@@ -214,7 +214,7 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_3">
+                <widget class="QPushButton" name="add_row">
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
@@ -434,7 +434,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="export_button">
         <property name="text">
          <string>Export ...</string>
         </property>
@@ -568,7 +568,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_4</sender>
+   <sender>remove_row</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>remove_row_button_clicked()</slot>
@@ -584,7 +584,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_3</sender>
+   <sender>add_row</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>add_row_button_clicked()</slot>
@@ -600,7 +600,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>export_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>export_button_clicked()</slot>
@@ -615,6 +615,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>currentCellChanged(int,int,int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cell_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>760</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>425</x>
+     <y>771</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -624,5 +640,6 @@
   <slot>remove_row_button_clicked()</slot>
   <slot>add_row_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
+  <slot>cell_changed()</slot>
  </slots>
 </ui>
