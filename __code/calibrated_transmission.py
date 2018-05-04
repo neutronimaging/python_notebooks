@@ -50,7 +50,7 @@ class CalibratedTransmissionUi(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle("Calibration Transmission")
+        self.setWindowTitle("Calibrated Transmission")
 
         self.data_dict = data_dict # Normalization data dictionary  {'filename': [],
                                                                      #'data': [[...],[...]]],
