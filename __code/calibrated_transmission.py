@@ -41,6 +41,8 @@ from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
 
 class CalibratedTransmissionUi(QMainWindow):
 
+    # image view
+    histogram_level = []
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -106,46 +108,43 @@ class CalibratedTransmissionUi(QMainWindow):
         """size and label of any widgets"""
         self.ui.splitter.setSizes([250, 100])
 
-        # # update slidewidget of files
-        # nbr_files = len(self.data_dict['file_name'])
-        # self.ui.file_slider.setMinimum(0)
-        # self.ui.file_slider.setMaximum(nbr_files-1)
-        #
-        # # selected image
-        # reference_image = self.data_dict['file_name'][0]
-        # self.ui.reference_image_label.setText(reference_image)
-        #
-        # # selection slider
-        # self.ui.selection_groupBox.setVisible(False)
-        # self.ui.next_image_button.setEnabled(True)
-        #
-        # # selected vs reference slider
-        # self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
+        # file slider
+        self.ui.file_slider.setMaximum(len(self.data_dict['sample']['data'])-1)
 
-    def init_table(self):
-        """populate the table with list of file names and default xoffset, yoffset and rotation"""
-        list_file_names = self.data_dict['file_name']
-        table_registration = {}
+    # main methods
+    def display_image(self):
+        """display the image selected by the file slider"""
 
-        _row_index = 0
-        for _file_index, _file in enumerate(list_file_names):
+        _image = self.get_image_selected()
 
-            _row_infos = {}
+        _view = self.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
 
-            # col 0 - file name
-            _row_infos['filename'] = _file
-            _row_infos['xoffset'] = 0
-            _row_infos['yoffset'] = 0
-            _row_infos['rotation'] = 0
+        first_update = False
+        if self.histogram_level == []:
+            first_update = True
+        _histo_widget = self.ui.image_view.getHistogramWidget()
+        self.histogram_level = _histo_widget.getLevels()
 
-            table_registration[_row_index] = _row_infos
-            _row_index += 1
+        _image = np.transpose(_image)
+        self.ui.image_view.setImage(_image)
+        self.live_image = _image
+        _view_box.setState(_state)
 
-        self.table_registration = table_registration
-        self.populate_table()
+        if not first_update:
+            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
-        #select first row
-        self.select_row_in_table(0)
+    # getter
+    def get_image_selected(self):
+        slider_index = self.ui.file_slider.value()
+        print(slider_index)
+        _image = self.data_dict['data'][slider_index]
+        return _image
+
+
+
+
 
     def display_markers(self, all=False):
         if self.registration_markers_ui is None:
@@ -455,81 +454,6 @@ class CalibratedTransmissionUi(QMainWindow):
             item.setBackground(self.color_reference_background)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    def get_image_selected(self):
-        """to get the image iselected, we will use the table selection as the new version
-        allows several rows"""
-        # index_selected = self.ui.file_slider.value()
-
-        table_selection = self.ui.tableWidget.selectedRanges()
-        if table_selection == []:
-            return []
-
-        table_selection = table_selection[0]
-        top_row = table_selection.topRow()   # offset because first image is reference image
-        bottom_row = table_selection.bottomRow() + 1
-
-        _image = np.mean(self.data_dict['data'][top_row:bottom_row], axis=0)
-        return _image
-
-    def display_image(self):
-
-        # if more than one row selected !
-        if self.ui.selection_groupBox.isVisible():
-            # if all selected
-            if self.ui.selection_all.isChecked():
-                _image = self.get_image_selected()
-            else:  # display selected images according to slider position
-
-                # retrieve slider infos
-                slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
-
-                from_index = np.int(slider_index)
-                to_index = np.int(slider_index + 1)
-
-                if from_index == slider_index:
-                    _image = self.data_dict['data'][from_index]
-                else:
-                    _from_image = self.data_dict['data'][from_index]
-
-                    _to_image = self.data_dict['data'][to_index]
-
-                    _from_coefficient = np.abs(to_index - slider_index)
-                    _to_coefficient = np.abs(slider_index - from_index)
-                    _image = _from_image * _from_coefficient + _to_image * _to_coefficient
-
-        else: # only 1 row selected
-            _image = self.get_image_selected()
-
-        if _image == []: # display only reference image
-            self.display_only_reference_image()
-            return
-
-        self.ui.selection_reference_opacity_groupBox.setVisible(True)
-
-        _view = self.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        first_update = False
-        if self.histogram_level == []:
-            first_update = True
-        _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget.getLevels()
-
-        _opacity_coefficient = self.ui.opacity_slider.value()  # betwween 0 and 100
-        _opacity_image = _opacity_coefficient / 100.
-        _image = np.transpose(_image) * _opacity_image
-
-        _opacity_selected = 1 - _opacity_image
-        _reference_image = np.transpose(self.reference_image) * _opacity_selected
-
-        _final_image = _reference_image + _image
-        self.ui.image_view.setImage(_final_image)
-        self.live_image = _final_image
-        _view_box.setState(_state)
-
-        if not first_update:
-            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
     def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
         """calculate the matrix that defines the vertical and horizontal lines
@@ -749,6 +673,21 @@ class CalibratedTransmissionUi(QMainWindow):
 
     # Event handler
 
+    def slider_file_changed(self, index_selected):
+        self.display_image()
+        self.check_status_next_prev_image_button()
+        self.ui.tableWidget.blockSignals(False)
+
+
+
+
+
+
+
+
+
+
+
     def opacity_changed(self, opacity_value):
         self.display_image()
 
@@ -768,19 +707,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.display_markers(all=True)
         self.ui.file_slider.blockSignals(False)
 
-    def table_cell_modified(self, row=-1, column=-1):
-        list_row_selected = self.get_list_row_selected()
-        self.modified_images(list_row=list_row_selected)
-        self.display_image()
-        self.profile_line_moved()
 
-    def slider_file_changed(self, index_selected):
-        self.ui.tableWidget.blockSignals(True)
-        self.select_row_in_table(row=index_selected)
-        self.display_image()
-        self.profile_line_moved()
-        self.check_status_next_prev_image_button()
-        self.ui.tableWidget.blockSignals(False)
 
     def help_button_clicked(self):
         import webbrowser
