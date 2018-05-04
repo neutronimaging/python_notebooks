@@ -41,8 +41,10 @@ from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
 
 class CalibratedTransmissionUi(QMainWindow):
 
-    # image view
     histogram_level = []
+    col_width = 50
+    table_column_width = [col_width, col_width, col_width, col_width, 100]
+
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -68,6 +70,9 @@ class CalibratedTransmissionUi(QMainWindow):
         # self.init_table()
         # self.init_parameters()
         # self.init_statusbar()
+
+        # display first image
+        self.slider_file_changed(-1)
 
     # initialization
     def init_statusbar(self):
@@ -109,7 +114,12 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.splitter.setSizes([250, 100])
 
         # file slider
-        self.ui.file_slider.setMaximum(len(self.data_dict['sample']['data'])-1)
+        self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
+
+        # update size of table columns
+        nbr_columns = self.ui.tableWidget.columnCount()
+        for _col in range(nbr_columns):
+            self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
 
     # main methods
     def display_image(self):

@@ -185,7 +185,7 @@ class RegistrationUi(QMainWindow):
         for _col in range(nbr_columns):
             self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
 
-        # update slidewidget of files
+        # update slide widget of files
         nbr_files = len(self.data_dict['file_name'])
         self.ui.file_slider.setMinimum(0)
         self.ui.file_slider.setMaximum(nbr_files-1)
