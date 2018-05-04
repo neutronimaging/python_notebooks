@@ -111,7 +111,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def init_widgets(self):
         """size and label of any widgets"""
-        self.ui.splitter.setSizes([250, 100])
+        self.ui.splitter.setSizes([250, 130])
 
         # file slider
         self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)

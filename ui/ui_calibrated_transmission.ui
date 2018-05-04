@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>893</width>
-    <height>821</height>
+    <width>1030</width>
+    <height>827</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -119,8 +119,14 @@
                  <attribute name="horizontalHeaderVisible">
                   <bool>true</bool>
                  </attribute>
+                 <attribute name="horizontalHeaderStretchLastSection">
+                  <bool>true</bool>
+                 </attribute>
                  <attribute name="verticalHeaderVisible">
                   <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderStretchLastSection">
+                  <bool>false</bool>
                  </attribute>
                  <column>
                   <property name="text">
@@ -163,30 +169,6 @@
                     </size>
                    </property>
                   </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_3">
-                   <property name="minimumSize">
-                    <size>
-                     <width>50</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>50</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>17</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>+</string>
-                   </property>
-                  </widget>
                  </item>
                 </layout>
                </item>
@@ -232,9 +214,26 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_5">
+                <widget class="QPushButton" name="pushButton_3">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>17</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
-                  <string>Export ...</string>
+                  <string>+</string>
                  </property>
                 </widget>
                </item>
@@ -450,7 +449,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>893</width>
+     <width>1030</width>
      <height>22</height>
     </rect>
    </property>
@@ -511,8 +510,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>876</x>
-     <y>594</y>
+     <x>312</x>
+     <y>649</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -527,8 +526,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>876</x>
-     <y>594</y>
+     <x>312</x>
+     <y>649</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -543,8 +542,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>94</x>
-     <y>597</y>
+     <x>107</x>
+     <y>652</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -559,8 +558,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>993</x>
-     <y>597</y>
+     <x>429</x>
+     <y>652</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -568,26 +567,62 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>remove_row_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>300</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>770</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>add_row_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>964</x>
+     <y>296</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>839</x>
+     <y>788</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>994</x>
+     <y>780</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>950</x>
+     <y>804</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
   <slot>slider_file_changed()</slot>
-  <slot>table_row_clicked()</slot>
-  <slot>item_activated()</slot>
-  <slot>opacity_changed()</slot>
   <slot>previous_image_button_clicked()</slot>
   <slot>next_image_button_clicked()</slot>
-  <slot>selection_all_clicked()</slot>
-  <slot>selection_slider_changed()</slot>
-  <slot>selection_slider_moved()</slot>
-  <slot>manual_registration_button_clicked()</slot>
+  <slot>remove_row_button_clicked()</slot>
+  <slot>add_row_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
-  <slot>table_cell_modified()</slot>
-  <slot>auto_registration_button_clicked()</slot>
-  <slot>grid_display_checkBox_clicked()</slot>
-  <slot>grid_size_slider_moved()</slot>
-  <slot>grid_size_slider_pressed()</slot>
-  <slot>markers_registration_button_clicked()</slot>
-  <slot>profiler_registration_button_clicked()</slot>
  </slots>
 </ui>
