@@ -56,13 +56,13 @@ class Ui_MainWindow(object):
         self.next_image_button.setObjectName("next_image_button")
         self.horizontalLayout_3.addWidget(self.next_image_button)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
-        self.widget = QtWidgets.QWidget(self.splitter)
-        self.widget.setObjectName("widget")
-        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.widget)
+        self.layoutWidget1 = QtWidgets.QWidget(self.splitter)
+        self.layoutWidget1.setObjectName("layoutWidget1")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.tabWidget = QtWidgets.QTabWidget(self.widget)
-        self.tabWidget.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.tabWidget = QtWidgets.QTabWidget(self.layoutWidget1)
+        self.tabWidget.setMaximumSize(QtCore.QSize(300, 150))
         self.tabWidget.setObjectName("tabWidget")
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -246,7 +246,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Registration Tool"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Calbrated Transmission"))
         self.previous_image_button.setText(_translate("MainWindow", "Prev. Image"))
         self.next_image_button.setText(_translate("MainWindow", "Next Image"))
         self.label_11.setText(_translate("MainWindow", "X0"))

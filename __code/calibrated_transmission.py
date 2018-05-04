@@ -62,7 +62,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
         # initialization
         self.init_pyqtgrpah()
-        # self.init_widgets()
+        self.init_widgets()
         # self.init_table()
         # self.init_parameters()
         # self.init_statusbar()
@@ -104,28 +104,23 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def init_widgets(self):
         """size and label of any widgets"""
-        self.ui.splitter_2.setSizes([800, 100])
+        self.ui.splitter.setSizes([250, 100])
 
-        # update size of table columns
-        nbr_columns = self.ui.tableWidget.columnCount()
-        for _col in range(nbr_columns):
-            self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
-
-        # update slidewidget of files
-        nbr_files = len(self.data_dict['file_name'])
-        self.ui.file_slider.setMinimum(0)
-        self.ui.file_slider.setMaximum(nbr_files-1)
-
-        # selected image
-        reference_image = self.data_dict['file_name'][0]
-        self.ui.reference_image_label.setText(reference_image)
-
-        # selection slider
-        self.ui.selection_groupBox.setVisible(False)
-        self.ui.next_image_button.setEnabled(True)
-
-        # selected vs reference slider
-        self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
+        # # update slidewidget of files
+        # nbr_files = len(self.data_dict['file_name'])
+        # self.ui.file_slider.setMinimum(0)
+        # self.ui.file_slider.setMaximum(nbr_files-1)
+        #
+        # # selected image
+        # reference_image = self.data_dict['file_name'][0]
+        # self.ui.reference_image_label.setText(reference_image)
+        #
+        # # selection slider
+        # self.ui.selection_groupBox.setVisible(False)
+        # self.ui.next_image_button.setEnabled(True)
+        #
+        # # selected vs reference slider
+        # self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
 
     def init_table(self):
         """populate the table with list of file names and default xoffset, yoffset and rotation"""
