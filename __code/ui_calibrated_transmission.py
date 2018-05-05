@@ -246,6 +246,9 @@ class Ui_MainWindow(object):
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
+        self.add_row.clicked.connect(MainWindow.add_row_button_clicked)
+        self.remove_row.clicked.connect(MainWindow.remove_row_button_clicked)
+        self.tableWidget.currentCellChanged['int','int','int','int'].connect(MainWindow.cell_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

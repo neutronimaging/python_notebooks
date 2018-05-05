@@ -510,8 +510,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>649</y>
+     <x>310</x>
+     <y>682</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -526,8 +526,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>649</y>
+     <x>310</x>
+     <y>682</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -542,8 +542,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>652</y>
+     <x>120</x>
+     <y>685</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -558,8 +558,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>429</x>
-     <y>652</y>
+     <x>427</x>
+     <y>685</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -580,6 +580,54 @@
     <hint type="destinationlabel">
      <x>950</x>
      <y>804</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>add_row</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>add_row_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>971</x>
+     <y>654</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>737</x>
+     <y>782</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>remove_row</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>remove_row_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>480</x>
+     <y>652</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>495</x>
+     <y>765</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>currentCellChanged(int,int,int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cell_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>651</x>
+     <y>494</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>441</x>
+     <y>767</y>
     </hint>
    </hints>
   </connection>

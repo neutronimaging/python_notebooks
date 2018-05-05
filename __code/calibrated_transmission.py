@@ -42,9 +42,10 @@ from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
 class CalibratedTransmissionUi(QMainWindow):
 
     histogram_level = []
-    col_width = 50
+    col_width = 65
     table_column_width = [col_width, col_width, col_width, col_width, 100]
-
+    default_measurement_roi = {'x0': 0, 'y0': 0,
+                               'width': np.NaN, 'height': np.NaN}
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -68,7 +69,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.init_pyqtgrpah()
         self.init_widgets()
         # self.init_table()
-        # self.init_parameters()
+        self.init_parameters()
         # self.init_statusbar()
 
         # display first image
@@ -121,6 +122,13 @@ class CalibratedTransmissionUi(QMainWindow):
         for _col in range(nbr_columns):
             self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
 
+    def init_parameters(self):
+
+        # init the position of the measurement ROI
+        [height, width] = np.shape(self.data_dict['data'][0])
+        self.default_measurement_roi['width'] = np.int(width/10)
+        self.default_measurement_roi['height'] = np.int(height/10)
+
     # main methods
     def display_image(self):
         """display the image selected by the file slider"""
@@ -145,11 +153,33 @@ class CalibratedTransmissionUi(QMainWindow):
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
+    def insert_row(self, row=-1):
+        if row == -1:
+            row = 0
 
+        default_values = self.default_measurement_roi
 
+        self.ui.tableWidget.insertRow(row)
+        self.set_item(row=row, col=0, value=default_values['x0'])
+        self.set_item(row=row, col=1, value=default_values['y0'])
+        self.set_item(row=row, col=2, value=default_values['width'])
+        self.set_item(row=row, col=3, value=default_values['height'])
 
+    def update_mean_counts(self, row=-1, all=False):
+        if all == True:
+            nbr_row = self.ui.tableWidget.rowCount()
+            for _row in np.arange(nbr_row):
+                self.update_mean_counts(row=_row)
+        else:
+            # FIXME
+            pass
 
-
+    # setter
+    def set_item(self, row=0, col=0, value=''):
+        item = QtGui.QTableWidgetItem(str(value))
+        self.ui.tableWidget.setItem(row, col, item)
+        if col == 4:
+            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     # getter
     def get_image_selected(self):
@@ -157,8 +187,13 @@ class CalibratedTransmissionUi(QMainWindow):
         _image = self.data_dict['data'][slider_index]
         return _image
 
-
-
+    def get_selected_row(self):
+        selection = self.ui.tableWidget.selectedRanges()
+        if selection:
+            top_row = selection[0].topRow()
+            return top_row
+        else:
+            return -1
 
     # event handler
     def slider_file_changed(self, index_selected):
@@ -167,7 +202,9 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.tableWidget.blockSignals(False)
 
     def add_row_button_clicked(self):
-        pass
+        selected_row = self.get_selected_row()
+        self.insert_row(row=selected_row)
+        self.update_mean_counts(row=selected_row)
 
     def remove_row_button_clicked(self):
         pass
@@ -209,139 +246,13 @@ class CalibratedTransmissionUi(QMainWindow):
 
 
 
-    def display_markers(self, all=False):
-        if self.registration_markers_ui is None:
-            return
-
-        if all is False:
-            _current_tab = self.registration_markers_ui.ui.tabWidget.currentIndex()
-            _tab_title = self.registration_markers_ui.ui.tabWidget.tabText(_current_tab)
-            self.display_markers_of_tab(marker_name=_tab_title)
-        else:
-            for _index, _marker_name in enumerate(self.markers_table.keys()):
-                self.display_markers_of_tab(marker_name=_marker_name)
-
-    def get_list_short_file_selected(self):
-        list_row_selected = self.get_list_row_selected()
-        full_list_files = np.array(self.data_dict['file_name'])
-        list_file_selected = full_list_files[list_row_selected]
-        list_short_file_selected = [os.path.basename(_file) for _file in
-                                    list_file_selected]
-        return list_short_file_selected
-
-    def display_markers_of_tab(self, marker_name=''):
-        self.close_markers_of_tab(marker_name=marker_name)
-        # get short name of file selected
-        list_short_file_selected = self.get_list_short_file_selected()
-        nbr_file_selected = len(list_short_file_selected)
-        if nbr_file_selected > 1:
-            list_row_selected = self.get_list_row_selected()
-        _color_marker = self.markers_table[marker_name]['color']['name']
-
-        pen = self.markers_table[marker_name]['color']['qpen']
-        for _index, _file in enumerate(list_short_file_selected):
-            _marker_data = self.markers_table[marker_name]['data'][_file]
-
-            x = _marker_data['x']
-            y = _marker_data['y']
-            width = MarkerDefaultSettings.width
-            height = MarkerDefaultSettings.height
-
-            _marker_ui = pg.RectROI([x,y], [width, height], pen=pen)
-            self.ui.image_view.addItem(_marker_ui)
-            _marker_ui.removeHandle(0)
-            _marker_ui.sigRegionChanged.connect(self.marker_has_been_moved)
-
-            if nbr_file_selected > 1: # more than 1 file selected, we need to add the index of the file
-                text_ui = self.add_marker_label(file_index= list_row_selected[_index],
-                                                marker_index = marker_name,
-                                                x=x,
-                                                y=y,
-                                                color=_color_marker)
-                self.markers_table[marker_name]['data'][_file]['label_ui'] = text_ui
-
-            _marker_data['marker_ui'] = _marker_ui
-
-    def marker_has_been_moved(self):
-        list_short_file_selected = self.get_list_short_file_selected()
-        nbr_file_selected = len(list_short_file_selected)
-        if nbr_file_selected > 1:
-            list_row_selected = self.get_list_row_selected()
-
-        for _index_marker, _marker_name in enumerate(self.markers_table.keys()):
-            _color_marker = self.markers_table[_marker_name]['color']['name']
-            for _index_file, _file in enumerate(list_short_file_selected):
-                _marker_data = self.markers_table[_marker_name]['data'][_file]
-                marker_ui = _marker_data['marker_ui']
-
-                region = marker_ui.getArraySlice(self.live_image,
-                                                 self.ui.image_view.imageItem)
-
-                x0 = region[0][0].start
-                y0 = region[0][1].start
-
-                self.markers_table[_marker_name]['data'][_file]['x'] = x0
-                self.markers_table[_marker_name]['data'][_file]['y'] = y0
-
-                self.registration_markers_ui.update_markers_table_entry(marker_name=_marker_name,
-                                                                        file=_file)
-
-                if nbr_file_selected > 1:
-                    _label_ui = _marker_data['label_ui']
-                    self.ui.image_view.removeItem(_label_ui)
-                    _label_ui = self.add_marker_label(file_index = list_row_selected[_index_file],
-                                                      marker_index = _index_marker,
-                                                      x=x0,
-                                                      y=y0,
-                                                      color=_color_marker)
-                    self.ui.image_view.addItem(_label_ui)
-                    self.markers_table[_marker_name]['data'][_file]['label_ui'] = _label_ui
-
-    def add_marker_label(self, file_index=0, marker_index=1, x=0, y=0, color='white'):
-        html_color = MarkerDefaultSettings.color_html[color]
-        html_text = '<div style="text-align: center">Marker#:'
-        html_text += '<span style="color:#' + str(html_color) + ';">' + str(int(marker_index)+1)
-        html_text += '</span> - File#:'
-        html_text += '<span style="color:#' + str(html_color) + ';">' + str(file_index)
-        html_text += '</span>'
-        text_ui = pg.TextItem(html=html_text, angle=45, border='w')
-        self.ui.image_view.addItem(text_ui)
-        text_ui.setPos(x + MarkerDefaultSettings.width, y)
-        return text_ui
-
-    def close_markers_of_tab(self, marker_name=''):
-        """remove box and label (if they are there) of each marker"""
-        _data = self.markers_table[marker_name]['data']
-        for _file in _data:
-            _marker_ui = _data[_file]['marker_ui']
-            if _marker_ui:
-                self.ui.image_view.removeItem(_marker_ui)
-
-            _label_ui = _data[_file]['label_ui']
-            if _label_ui:
-                self.ui.image_view.removeItem(_label_ui)
 
 
 
 
-    def populate_table(self):
-        """populate the table using the table_registration dictionary"""
-        self.ui.tableWidget.blockSignals(True)
-        table_registration = self.table_registration
-        for _row in table_registration.keys():
-            _row_infos = table_registration[_row]
-            self.__insert_table_row(infos=_row_infos, row=_row)
-        self.ui.tableWidget.blockSignals(False)
 
-    def refresh_table(self):
-        """refresh table contain by removing first everything before repopulating it"""
-        self.__clear_table()
-        self.populate_table()
 
-    def __clear_table(self):
-        nbr_row = self.ui.tableWidget.rowCount()
-        for _row in np.arange(nbr_row):
-            self.ui.tableWidget.removeRow(0)
+
 
     def __insert_table_row(self, infos={}, row=-1):
         self.ui.tableWidget.insertRow(row)
