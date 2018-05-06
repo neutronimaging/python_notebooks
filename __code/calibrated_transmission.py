@@ -216,6 +216,11 @@ class CalibratedTransmissionUi(QMainWindow):
             return -1
 
     # event handler
+    def use_calibration_checked(self):
+        cali_button_checked = self.ui.use_calibration_checkbox.isChecked()
+        self.ui.region1.setEnabled(cali_button_checked)
+        self.ui.region2.setEnabled(cali_button_checked)
+
     def slider_file_changed(self, index_selected):
         self.display_image()
         self.check_status_next_prev_image_button()
