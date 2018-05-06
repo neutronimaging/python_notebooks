@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1025</width>
-    <height>824</height>
+    <width>1157</width>
+    <height>825</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -25,81 +25,92 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_7">
     <item>
-     <widget class="QSplitter" name="splitter_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <widget class="QSplitter" name="splitter">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <widget class="QWidget" name="layoutWidget">
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QWidget" name="pyqtgraph_widget" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Measurement</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QSplitter" name="splitter">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="QWidget" name="layoutWidget">
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QWidget" name="pyqtgraph_widget" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QPushButton" name="previous_image_button">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>Prev. Image</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="file_slider">
+                 <property name="layoutDirection">
+                  <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="tickPosition">
+                  <enum>QSlider::TicksAbove</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="next_image_button">
+                 <property name="text">
+                  <string>Next Image</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QToolBox" name="toolBox">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="page">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>639</width>
+               <height>516</height>
+              </rect>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <item>
-            <widget class="QPushButton" name="previous_image_button">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Prev. Image</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSlider" name="file_slider">
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::TicksAbove</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="next_image_button">
-             <property name="text">
-              <string>Next Image</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <layout class="QVBoxLayout" name="verticalLayout_6">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QGroupBox" name="groupBox_3">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>300</height>
-              </size>
-             </property>
-             <property name="title">
+             <attribute name="label">
               <string>Calibration</string>
-             </property>
+             </attribute>
              <layout class="QVBoxLayout" name="verticalLayout">
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -149,10 +160,23 @@
                    <string>Region 1</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_22">
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_24">
                      <property name="text">
-                      <string>X0</string>
+                      <string>width</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="lineEdit_21"/>
+                   </item>
+                   <item row="4" column="1">
+                    <widget class="QLineEdit" name="lineEdit_24"/>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_23">
+                     <property name="text">
+                      <string>y0</string>
                      </property>
                     </widget>
                    </item>
@@ -166,30 +190,17 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_23">
-                     <property name="text">
-                      <string>y0</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_21"/>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_24">
-                     <property name="text">
-                      <string>width</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="lineEdit_22"/>
-                   </item>
                    <item row="3" column="0">
                     <widget class="QLabel" name="label_25">
                      <property name="text">
                       <string>height</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_22">
+                     <property name="text">
+                      <string>X0</string>
                      </property>
                     </widget>
                    </item>
@@ -203,8 +214,8 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="4" column="1">
-                    <widget class="QLineEdit" name="lineEdit_24"/>
+                   <item row="2" column="1">
+                    <widget class="QLineEdit" name="lineEdit_22"/>
                    </item>
                   </layout>
                  </widget>
@@ -303,68 +314,83 @@
                 </item>
                </layout>
               </item>
+              <item>
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_4">
-             <property name="title">
-              <string>Measurement</string>
+            <widget class="QWidget" name="page_2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>639</width>
+               <height>516</height>
+              </rect>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
+             <attribute name="label">
+              <string>Measurement</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <item>
-                 <widget class="QTableWidget" name="tableWidget">
-                  <property name="alternatingRowColors">
-                   <bool>true</bool>
-                  </property>
-                  <property name="selectionMode">
-                   <enum>QAbstractItemView::SingleSelection</enum>
-                  </property>
-                  <property name="selectionBehavior">
-                   <enum>QAbstractItemView::SelectRows</enum>
-                  </property>
-                  <attribute name="horizontalHeaderVisible">
-                   <bool>true</bool>
-                  </attribute>
-                  <attribute name="horizontalHeaderStretchLastSection">
-                   <bool>true</bool>
-                  </attribute>
-                  <attribute name="verticalHeaderVisible">
-                   <bool>false</bool>
-                  </attribute>
-                  <attribute name="verticalHeaderStretchLastSection">
-                   <bool>false</bool>
-                  </attribute>
-                  <column>
-                   <property name="text">
-                    <string>X0</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Y0</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Width</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Height</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string>Mean Counts</string>
-                   </property>
-                  </column>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QTableWidget" name="tableWidget">
+                <property name="alternatingRowColors">
+                 <bool>true</bool>
+                </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::SingleSelection</enum>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+                <attribute name="horizontalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="horizontalHeaderStretchLastSection">
+                 <bool>true</bool>
+                </attribute>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="verticalHeaderStretchLastSection">
+                 <bool>false</bool>
+                </attribute>
+                <column>
+                 <property name="text">
+                  <string>X0</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Y0</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Width</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Height</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Mean Counts</string>
+                 </property>
+                </column>
+               </widget>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -433,13 +459,39 @@
               </item>
              </layout>
             </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="measurement_widget" native="true"/>
+         </widget>
+        </item>
+       </layout>
       </widget>
-      <widget class="QWidget" name="measurement_widget" native="true"/>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Summary</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <widget class="QTableWidget" name="tableWidget_2">
+          <column>
+           <property name="text">
+            <string>Files Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Time Stamp</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Time Offset</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>
@@ -467,7 +519,7 @@
       <item>
        <widget class="QPushButton" name="export_button">
         <property name="text">
-         <string>Export ...</string>
+         <string>Export All Profiles ...</string>
         </property>
        </widget>
       </item>
@@ -480,7 +532,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1025</width>
+     <width>1157</width>
      <height>22</height>
     </rect>
    </property>
@@ -611,70 +663,6 @@
     <hint type="destinationlabel">
      <x>950</x>
      <y>804</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>add_row</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>add_row_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>971</x>
-     <y>654</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>737</x>
-     <y>782</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>remove_row</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>remove_row_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>480</x>
-     <y>652</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>495</x>
-     <y>765</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tableWidget</sender>
-   <signal>currentCellChanged(int,int,int,int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>cell_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>651</x>
-     <y>494</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>441</x>
-     <y>767</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>use_calibration_checkbox</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>use_calibration_checked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>496</x>
-     <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>430</x>
-     <y>29</y>
     </hint>
    </hints>
   </connection>
