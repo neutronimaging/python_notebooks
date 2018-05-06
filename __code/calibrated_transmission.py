@@ -153,6 +153,11 @@ class CalibratedTransmissionUi(QMainWindow):
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
+    def remove_row(self, row=-1):
+        if row == -1:
+            return
+        self.ui.tableWidget.removeRow(row)
+
     def insert_row(self, row=-1):
         if row == -1:
             row = 0
@@ -164,6 +169,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.set_item(row=row, col=1, value=default_values['y0'])
         self.set_item(row=row, col=2, value=default_values['width'])
         self.set_item(row=row, col=3, value=default_values['height'])
+        self.set_item(row=row, col=4, value='')
 
     def update_mean_counts(self, row=-1, all=False):
         if all == True:
@@ -176,9 +182,11 @@ class CalibratedTransmissionUi(QMainWindow):
 
     # setter
     def set_item(self, row=0, col=0, value=''):
+        print("col is {}".format(col))
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if col == 4:
+            print("here")
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     # getter
@@ -207,7 +215,8 @@ class CalibratedTransmissionUi(QMainWindow):
         self.update_mean_counts(row=selected_row)
 
     def remove_row_button_clicked(self):
-        pass
+        selected_row = self.get_selected_row()
+        self.remove_row(row=selected_row)
 
     def cell_changed(self, a, b, c, d):
         pass
@@ -266,12 +275,6 @@ class CalibratedTransmissionUi(QMainWindow):
         self.set_item(row, 2, infos['yoffset'], is_reference_image=is_reference_image)
         self.set_item(row, 3, infos['rotation'], is_reference_image=is_reference_image)
 
-    def set_item(self, row=0, col=0, value='', is_reference_image=False):
-        item = QtGui.QTableWidgetItem(str(value))
-        self.ui.tableWidget.setItem(row, col, item)
-        if is_reference_image:
-            item.setBackground(self.color_reference_background)
-            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
 
 
