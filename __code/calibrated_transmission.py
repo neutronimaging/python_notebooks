@@ -47,6 +47,8 @@ class CalibratedTransmissionUi(QMainWindow):
     default_measurement_roi = {'x0': 0, 'y0': 0,
                                'width': np.NaN, 'height': np.NaN}
 
+    roi_ui_measurement = list()
+
     def __init__(self, parent=None, data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -180,6 +182,16 @@ class CalibratedTransmissionUi(QMainWindow):
             # FIXME
             pass
 
+    def insert_measurement_roi_ui(self, row=-1):
+        new_roi = None
+        self.roi_ui_measurement.insert(row, new_roi)
+
+    def remove_measurement_roi_ui(self, row=-1):
+        if row == -1:
+            return
+        old_roi = self.roi_ui_measurement[row]
+        self.roi_ui_measurement.remove(old_roi)
+
     # setter
     def set_item(self, row=0, col=0, value=''):
         print("col is {}".format(col))
@@ -212,11 +224,13 @@ class CalibratedTransmissionUi(QMainWindow):
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.insert_row(row=selected_row)
+        self.insert_measurement_roi_ui(row=selected_row)
         self.update_mean_counts(row=selected_row)
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
+        self.remove_measurement_roi_ui(row=selected_row)
 
     def cell_changed(self, a, b, c, d):
         pass
