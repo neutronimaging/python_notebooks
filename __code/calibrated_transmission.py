@@ -44,6 +44,7 @@ class CalibratedTransmissionUi(QMainWindow):
     histogram_level = []
     col_width = 65
     table_column_width = [col_width, col_width, col_width, col_width, 100]
+    summary_table_width = [200, 50, 50]
     default_measurement_roi = {'x0': 0, 'y0': 0,
                                'width': np.NaN, 'height': np.NaN}
 
@@ -70,7 +71,7 @@ class CalibratedTransmissionUi(QMainWindow):
         # initialization
         self.init_pyqtgrpah()
         self.init_widgets()
-        # self.init_table()
+        self.init_table()
         self.init_parameters()
         # self.init_statusbar()
 
@@ -84,6 +85,14 @@ class CalibratedTransmissionUi(QMainWindow):
         self.eventProgress.setMaximumSize(300, 20)
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
+
+    def init_table(self):
+        list_files_full_name = self.data_dict['file_name']
+        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+
+        for _row, _file in enumerate(list_files_short_name):
+            self.ui.summary_table.insertRow(_row)
+            self.set_item_summary_table(row=_row, col=0, value=_file)
 
     # def init_parameters(self):
     #     nbr_files = len(self.data_dict['file_name'])
@@ -123,6 +132,11 @@ class CalibratedTransmissionUi(QMainWindow):
         nbr_columns = self.ui.tableWidget.columnCount()
         for _col in range(nbr_columns):
             self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
+
+        # update size of summary table
+        nbr_columns = self.ui.summary_table.columnCount()
+        for _col in range(nbr_columns):
+            self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
 
     def init_parameters(self):
 
@@ -167,11 +181,11 @@ class CalibratedTransmissionUi(QMainWindow):
         default_values = self.default_measurement_roi
 
         self.ui.tableWidget.insertRow(row)
-        self.set_item(row=row, col=0, value=default_values['x0'])
-        self.set_item(row=row, col=1, value=default_values['y0'])
-        self.set_item(row=row, col=2, value=default_values['width'])
-        self.set_item(row=row, col=3, value=default_values['height'])
-        self.set_item(row=row, col=4, value='')
+        self.set_item_main_table(row=row, col=0, value=default_values['x0'])
+        self.set_item_main_table(row=row, col=1, value=default_values['y0'])
+        self.set_item_main_table(row=row, col=2, value=default_values['width'])
+        self.set_item_main_table(row=row, col=3, value=default_values['height'])
+        self.set_item_main_table(row=row, col=4, value='')
 
     def update_mean_counts(self, row=-1, all=False):
         if all == True:
@@ -193,13 +207,16 @@ class CalibratedTransmissionUi(QMainWindow):
         self.roi_ui_measurement.remove(old_roi)
 
     # setter
-    def set_item(self, row=0, col=0, value=''):
-        print("col is {}".format(col))
+    def set_item_main_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if col == 4:
-            print("here")
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+
+    def set_item_summary_table(self, row=0, col=0, value=''):
+        item = QtGui.QTableWidgetItem(str(value))
+        self.ui.summary_table.setItem(row, col, item)
+        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     # getter
     def get_image_selected(self):
