@@ -225,7 +225,15 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.summary_table.insertColumn(roi_index)
         item = QtWidgets.QTableWidgetItem()
         self.ui.summary_table.setHorizontalHeaderItem(roi_index, item)
+        self.renamed_summary_table_region_header()
 
+    def remove_column_in_summary_table(self, roi_index=-1):
+        col_offset = 3
+        if roi_index == -1:
+            roi_index = 0
+
+        roi_index += col_offset
+        self.ui.summary_table.removeColumn(roi_index)
         self.renamed_summary_table_region_header()
 
     def renamed_summary_table_region_header(self):
@@ -324,6 +332,7 @@ class CalibratedTransmissionUi(QMainWindow):
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
+        self.remove_column_in_summary_table(roi_index=selected_row)
         self.remove_measurement_roi_ui(row=selected_row)
 
     def cell_changed(self, a, b, c, d):
