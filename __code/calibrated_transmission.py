@@ -217,12 +217,28 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.tableWidget.setRangeSelected(new_selection, True)
 
     def insert_column_in_summary_table(self, roi_index=-1):
-        col_offset = 4
+        col_offset = 3
         if roi_index == -1:
             roi_index = 0
 
         roi_index += col_offset
-        print("roi_index is {}".format(roi_index))
+        self.ui.summary_table.insertColumn(roi_index)
+        item = QtWidgets.QTableWidgetItem()
+        self.ui.summary_table.setHorizontalHeaderItem(roi_index, item)
+
+        self.renamed_summary_table_region_header()
+
+    def renamed_summary_table_region_header(self):
+        # rename all the headers
+        nbr_col = self.ui.summary_table.columnCount()
+        if nbr_col <= 3:
+            return
+
+        _index = 1
+        for _col in np.arange(3, nbr_col):
+            item = self.ui.summary_table.horizontalHeaderItem(_col)
+            item.setText("Region {}".format(_index))
+            _index += 1
 
     def update_mean_counts(self, row=-1, all=False):
         if all == True:
