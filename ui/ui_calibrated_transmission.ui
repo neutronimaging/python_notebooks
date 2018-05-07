@@ -476,6 +476,12 @@
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
           <column>
            <property name="text">
             <string>Files Name</string>
@@ -488,7 +494,7 @@
           </column>
           <column>
            <property name="text">
-            <string>Time Offset</string>
+            <string>Relative Time (s)</string>
            </property>
           </column>
          </widget>

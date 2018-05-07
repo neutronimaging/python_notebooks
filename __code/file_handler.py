@@ -266,7 +266,7 @@ def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
     # calculating the number of seconds between the two epochs at
     # https://www.epochconverter.com/
     EPOCH_OFFSET = 631152000
-    EPOCH_OFFSET = 0
+    # EPOCH_OFFSET = 0
     unix_epoch_timestamp = EPOCH_OFFSET + epics_timestamp
 
     return unix_epoch_timestamp

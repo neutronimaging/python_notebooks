@@ -10,6 +10,7 @@ from skimage import transform
 from scipy.ndimage.interpolation import shift
 from skimage.feature import register_translation
 import copy
+from __code.file_handler import retrieve_time_stamp
 
 import pprint
 
@@ -41,10 +42,13 @@ from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
 
 class CalibratedTransmissionUi(QMainWindow):
 
+    data_dict = {}
+    timestamp_dict = {}
+
     histogram_level = []
     col_width = 65
     table_column_width = [col_width, col_width, col_width, col_width, 100]
-    summary_table_width = [200, 50, 50]
+    summary_table_width = [300, 150, 100]
     default_measurement_roi = {'x0': 0, 'y0': 0,
                                'width': np.NaN, 'height': np.NaN}
 
@@ -60,7 +64,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Calibrated Transmission")
 
-        self.data_dict = data_dict # Normalization data dictionary  {'filename': [],
+        self.data_dict = data_dict # Normalization data dictionary  {'file_name': [],
                                                                      #'data': [[...],[...]]],
                                                                      #'metadata': [],
                                                                      #'shape': {}}
@@ -69,9 +73,10 @@ class CalibratedTransmissionUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
 
         # initialization
+        self.init_timestamp_dict()
+        self.init_table()
         self.init_pyqtgrpah()
         self.init_widgets()
-        self.init_table()
         self.init_parameters()
         # self.init_statusbar()
 
@@ -79,6 +84,10 @@ class CalibratedTransmissionUi(QMainWindow):
         self.slider_file_changed(-1)
 
     # initialization
+    def init_timestamp_dict(self):
+        list_files = self.data_dict['file_name']
+        self.timestamp_dict = retrieve_time_stamp(list_files)
+
     def init_statusbar(self):
         self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(300, 20)
@@ -90,9 +99,15 @@ class CalibratedTransmissionUi(QMainWindow):
         list_files_full_name = self.data_dict['file_name']
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
+        list_time_stamp = self.timestamp_dict['list_time_stamp']
+        list_time_stamp_user_format = self.timestamp_dict['list_time_stamp_user_format']
+        time_0 = list_time_stamp[0]
         for _row, _file in enumerate(list_files_short_name):
             self.ui.summary_table.insertRow(_row)
             self.set_item_summary_table(row=_row, col=0, value=_file)
+            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
+            _offset = list_time_stamp[_row] - time_0
+            self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
 
     # def init_parameters(self):
     #     nbr_files = len(self.data_dict['file_name'])
