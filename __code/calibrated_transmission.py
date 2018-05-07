@@ -52,7 +52,7 @@ class CalibratedTransmissionUi(QMainWindow):
     default_measurement_roi = {'x0': 0, 'y0': 0,
                                'width': np.NaN, 'height': np.NaN}
 
-    roi_ui_measurement = list()
+    roi_ui_measurement = list() # keep record of all the pyqtgraph.ROI ui
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -119,7 +119,6 @@ class CalibratedTransmissionUi(QMainWindow):
     #     self.o_MarkerDefaultSettings = o_marker
 
     def init_pyqtgrpah(self):
-
         # image
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.image_view.ui.menuBtn.hide()
@@ -154,7 +153,6 @@ class CalibratedTransmissionUi(QMainWindow):
             self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
 
     def init_parameters(self):
-
         # init the position of the measurement ROI
         [height, width] = np.shape(self.data_dict['data'][0])
         self.default_measurement_roi['width'] = np.int(width/10)
@@ -189,6 +187,15 @@ class CalibratedTransmissionUi(QMainWindow):
             return
         self.ui.tableWidget.removeRow(row)
 
+        nbr_row = self.ui.tableWidget.rowCount()
+        if row == nbr_row:
+            row -= 1
+
+        if nbr_row > 0:
+            nbr_col = self.ui.tableWidget.columnCount()
+            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+            self.ui.tableWidget.setRangeSelected(new_selection, True)
+
     def insert_row(self, row=-1):
         if row == -1:
             row = 0
@@ -209,6 +216,14 @@ class CalibratedTransmissionUi(QMainWindow):
         new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
 
+    def insert_column_in_summary_table(self, roi_index=-1):
+        col_offset = 4
+        if roi_index == -1:
+            roi_index = 0
+
+        roi_index += col_offset
+        print("roi_index is {}".format(roi_index))
+
     def update_mean_counts(self, row=-1, all=False):
         if all == True:
             nbr_row = self.ui.tableWidget.rowCount()
@@ -223,6 +238,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.roi_ui_measurement.insert(row, new_roi)
 
     def remove_measurement_roi_ui(self, row=-1):
+        """roi_ui_measurement is where the ROI ui (pyqtgraph) are saved"""
         if row == -1:
             return
         old_roi = self.roi_ui_measurement[row]
@@ -285,6 +301,7 @@ class CalibratedTransmissionUi(QMainWindow):
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.insert_row(row=selected_row)
+        self.insert_column_in_summary_table(roi_index=selected_row)
         self.insert_measurement_roi_ui(row=selected_row)
         self.update_mean_counts(row=selected_row)
 
