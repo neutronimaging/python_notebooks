@@ -109,7 +109,7 @@
               </rect>
              </property>
              <attribute name="label">
-              <string>Calibration</string>
+              <string>Calibration Regions</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_11">
               <item>
@@ -533,7 +533,7 @@
               </rect>
              </property>
              <attribute name="label">
-              <string>Measurement</string>
+              <string>Measurement Regions</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
