@@ -200,7 +200,14 @@ class CalibratedTransmissionUi(QMainWindow):
         self.set_item_main_table(row=row, col=1, value=default_values['y0'])
         self.set_item_main_table(row=row, col=2, value=default_values['width'])
         self.set_item_main_table(row=row, col=3, value=default_values['height'])
-        self.set_item_main_table(row=row, col=4, value='')
+
+        # select new entry
+        nbr_row = self.ui.tableWidget.rowCount()
+        nbr_col = self.ui.tableWidget.columnCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+        self.ui.tableWidget.setRangeSelected(full_range, False)
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+        self.ui.tableWidget.setRangeSelected(new_selection, True)
 
     def update_mean_counts(self, row=-1, all=False):
         if all == True:
@@ -247,6 +254,23 @@ class CalibratedTransmissionUi(QMainWindow):
         else:
             return -1
 
+    def check_status_next_prev_image_button(self):
+        """this will enable or not the prev or next button next to the slider file image"""
+        current_slider_value = self.ui.file_slider.value()
+        min_slider_value = self.ui.file_slider.minimum()
+        max_slider_value = self.ui.file_slider.maximum()
+
+        _prev = True
+        _next = True
+
+        if current_slider_value == min_slider_value:
+            _prev = False
+        elif current_slider_value == max_slider_value:
+            _next = False
+
+        self.ui.previous_image_button.setEnabled(_prev)
+        self.ui.next_image_button.setEnabled(_next)
+
     # event handler
     def use_calibration_checked(self):
         cali_button_checked = self.ui.use_calibration_checkbox.isChecked()
@@ -285,247 +309,146 @@ class CalibratedTransmissionUi(QMainWindow):
         import webbrowser
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/registration/")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def __insert_table_row(self, infos={}, row=-1):
-        self.ui.tableWidget.insertRow(row)
-
-        is_reference_image = False
-        if row == self.reference_image_index:
-            is_reference_image = True
-
-        self.set_item(row, 0, infos['filename'], is_reference_image=is_reference_image)
-        self.set_item(row, 1, infos['xoffset'], is_reference_image=is_reference_image)
-        self.set_item(row, 2, infos['yoffset'], is_reference_image=is_reference_image)
-        self.set_item(row, 3, infos['rotation'], is_reference_image=is_reference_image)
-
-
-
-
-
-    def select_row_in_table(self, row=0):
-        nbr_col = self.ui.tableWidget.columnCount()
-        nbr_row = self.ui.tableWidget.rowCount()
-
-        # clear previous selection
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
-        self.ui.tableWidget.setRangeSelected(full_range, False)
-
-        # select file of interest
-        selection_range = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
-        self.ui.tableWidget.setRangeSelected(selection_range, True)
-
-        self.ui.tableWidget.showRow(row)
-
-    def check_status_next_prev_image_button(self):
-        """this will enable or not the prev or next button next to the slider file image"""
-        current_slider_value = self.ui.file_slider.value()
-        min_slider_value = self.ui.file_slider.minimum()
-        max_slider_value = self.ui.file_slider.maximum()
-
-        _prev = True
-        _next = True
-
-        if current_slider_value == min_slider_value:
-            _prev = False
-        elif current_slider_value == max_slider_value:
-            _next = False
-
-        self.ui.previous_image_button.setEnabled(_prev)
-        self.ui.next_image_button.setEnabled(_next)
-
-    def change_slider(self, offset=+1):
-        self.ui.file_slider.blockSignals(True)
-        current_slider_value = self.ui.file_slider.value()
-        new_row_selected = current_slider_value + offset
-        self.select_row_in_table(row=new_row_selected)
-        self.ui.file_slider.setValue(new_row_selected)
-        self.check_status_next_prev_image_button()
-        self.display_image()
-        self.profile_line_moved()
-        self.ui.file_slider.blockSignals(False)
-
-    def check_selection_slider_status(self):
-        """
-        if there is more than one row selected, we need to display the left slider but also
-        we need to disable the next, prev buttons and file index slider
-        """
-        selection = self.ui.tableWidget.selectedRanges()
-        if selection:
-
-            list_file_index_widgets = [self.ui.previous_image_button,
-                                       self.ui.file_slider,
-                                       self.ui.next_image_button]
-
-            top_row = selection[0].topRow()
-            bottom_row = selection[0].bottomRow()
-            if np.abs(bottom_row - top_row) >= 1: # show selection images widgets
-                self.ui.selection_groupBox.setVisible(True)
-                self.ui.top_row_label.setText("Row {}".format(top_row+1))
-                self.ui.bottom_row_label.setText("Row {}".format(bottom_row+1))
-                self.ui.opacity_selection_slider.setMinimum(top_row*100)
-                self.ui.opacity_selection_slider.setMaximum(bottom_row*100)
-                self.ui.opacity_selection_slider.setSliderPosition(top_row*100)
-                _file_index_status = False
-            else:
-                self.ui.selection_groupBox.setVisible(False)
-                _file_index_status = True
-
-            for _widget in list_file_index_widgets:
-                _widget.setVisible(_file_index_status)
-
-    # Utilities
-
-    def get_list_row_selected(self):
-        table_selection = self.ui.tableWidget.selectedRanges()
-
-        # that means we selected the first row
-        if table_selection == []:
-            return [0]
-
-        table_selection = table_selection[0]
-        top_row = table_selection.topRow()
-        bottom_row = table_selection.bottomRow() + 1
-
-        return np.arange(top_row, bottom_row)
-
-    def check_registration_tool_widgets(self):
-        """if the registration tool is active, and the reference image is the only row selected,
-        disable the widgets"""
-        if self.registration_tool_ui:
-            self.registration_tool_ui.update_status_widgets()
-
-    def set_widget_status(self, list_ui=[], enabled=True):
-        for _ui in list_ui:
-            _ui.setEnabled(enabled)
-
-    def all_table_cell_modified(self):
-        nbr_row = self.ui.tableWidget.rowCount()
-        for _row in np.arange(nbr_row):
-            self.modified_images(list_row=[_row])
-            self.profile_line_moved()
-
-    # Event handler
-
-
-
-    def table_row_clicked(self, row=-1):
-        self.ui.file_slider.blockSignals(True)
-        if row == -1:
-            row = self.ui.tableWidget.currentRow()
-        else:
-            self.ui.file_slider.setValue(row)
-
-        self.display_image()
-        self.check_selection_slider_status()
-        self.profile_line_moved()
-        self.check_selection_slider_status()
-        self.check_status_next_prev_image_button()
-        self.check_registration_tool_widgets()
-        self.display_markers(all=True)
-        self.ui.file_slider.blockSignals(False)
-
-
-
-
-    def ok_button_clicked(self):
-        self.close()
-
-    def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption = "Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
-        if _export_folder:
-            o_export = ExportRegistration(parent=self, export_folder=_export_folder)
-            o_export.run()
-            QtGui.QApplication.processEvents()
-
     def closeEvent(self, event=None):
-        if self.registration_tool_ui:
-            self.registration_tool_ui.close()
-        if self.registration_markers_ui:
-            self.registration_markers_ui.close()
-        if self.registration_profile_ui:
-            self.registration_profile_ui.close()
+        pass
 
 
-    def selection_all_clicked(self):
-        _is_checked = self.ui.selection_all.isChecked()
 
-        list_widgets = [self.ui.top_row_label,
-                        self.ui.bottom_row_label,
-                        self.ui.opacity_selection_slider]
-        for _widget in list_widgets:
-            _widget.setEnabled(not _is_checked)
-        self.display_image()
-        self.profile_line_moved()
 
-    def selection_slider_changed(self):
-        # self.update_selection_images()
-        self.display_image()
-        self.profile_line_moved()
-
-    def selection_slider_moved(self):
-        # self.update_selection_images()
-        self.display_image()
-        self.profile_line_moved()
-
-    def manual_registration_button_clicked(self):
-        """launch the manual registration tool"""
-        o_registration_tool = RegistrationManualLauncher(parent=self)
-        self.set_widget_status(list_ui=[self.ui.auto_registration_button],
-                           enabled=False)
-
-    def auto_registration_button_clicked(self):
-        o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)
-
-    def markers_registration_button_clicked(self):
-        o_markers_registration = RegistrationMarkersLauncher(parent=self)
-        self.set_widget_status(list_ui=[self.ui.auto_registration_button],
-                           enabled=False)
-
-    def profiler_registration_button_clicked(self):
-        o_registration_profile = RegistrationProfileLauncher(parent=self)
-
-    def start_auto_registration(self):
-        o_auto_register = RegistrationAuto(parent=self,
-                                           reference_image=self.reference_image,
-                                           floating_images=self.data_dict['data'])
-        o_auto_register.auto_align()
-
-    def grid_display_checkBox_clicked(self):
-        self.display_live_image()
-
-    def grid_size_slider_moved(self, position):
-        self.display_live_image()
-
-    def grid_size_slider_pressed(self):
-        self.display_live_image()
+    #
+    #
+    # def select_row_in_table(self, row=0):
+    #     nbr_col = self.ui.tableWidget.columnCount()
+    #     nbr_row = self.ui.tableWidget.rowCount()
+    #
+    #     # clear previous selection
+    #     full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+    #     self.ui.tableWidget.setRangeSelected(full_range, False)
+    #
+    #     # select file of interest
+    #     selection_range = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+    #     self.ui.tableWidget.setRangeSelected(selection_range, True)
+    #
+    #     self.ui.tableWidget.showRow(row)
+    #
+    #
+    # def change_slider(self, offset=+1):
+    #     self.ui.file_slider.blockSignals(True)
+    #     current_slider_value = self.ui.file_slider.value()
+    #     new_row_selected = current_slider_value + offset
+    #     self.select_row_in_table(row=new_row_selected)
+    #     self.ui.file_slider.setValue(new_row_selected)
+    #     self.check_status_next_prev_image_button()
+    #     self.display_image()
+    #     self.profile_line_moved()
+    #     self.ui.file_slider.blockSignals(False)
+    #
+    # def check_selection_slider_status(self):
+    #     """
+    #     if there is more than one row selected, we need to display the left slider but also
+    #     we need to disable the next, prev buttons and file index slider
+    #     """
+    #     selection = self.ui.tableWidget.selectedRanges()
+    #     if selection:
+    #
+    #         list_file_index_widgets = [self.ui.previous_image_button,
+    #                                    self.ui.file_slider,
+    #                                    self.ui.next_image_button]
+    #
+    #         top_row = selection[0].topRow()
+    #         bottom_row = selection[0].bottomRow()
+    #         if np.abs(bottom_row - top_row) >= 1: # show selection images widgets
+    #             self.ui.selection_groupBox.setVisible(True)
+    #             self.ui.top_row_label.setText("Row {}".format(top_row+1))
+    #             self.ui.bottom_row_label.setText("Row {}".format(bottom_row+1))
+    #             self.ui.opacity_selection_slider.setMinimum(top_row*100)
+    #             self.ui.opacity_selection_slider.setMaximum(bottom_row*100)
+    #             self.ui.opacity_selection_slider.setSliderPosition(top_row*100)
+    #             _file_index_status = False
+    #         else:
+    #             self.ui.selection_groupBox.setVisible(False)
+    #             _file_index_status = True
+    #
+    #         for _widget in list_file_index_widgets:
+    #             _widget.setVisible(_file_index_status)
+    #
+    # # Utilities
+    #
+    # def get_list_row_selected(self):
+    #     table_selection = self.ui.tableWidget.selectedRanges()
+    #
+    #     # that means we selected the first row
+    #     if table_selection == []:
+    #         return [0]
+    #
+    #     table_selection = table_selection[0]
+    #     top_row = table_selection.topRow()
+    #     bottom_row = table_selection.bottomRow() + 1
+    #
+    #     return np.arange(top_row, bottom_row)
+    #
+    # def check_registration_tool_widgets(self):
+    #     """if the registration tool is active, and the reference image is the only row selected,
+    #     disable the widgets"""
+    #     if self.registration_tool_ui:
+    #         self.registration_tool_ui.update_status_widgets()
+    #
+    # def set_widget_status(self, list_ui=[], enabled=True):
+    #     for _ui in list_ui:
+    #         _ui.setEnabled(enabled)
+    #
+    # def all_table_cell_modified(self):
+    #     nbr_row = self.ui.tableWidget.rowCount()
+    #     for _row in np.arange(nbr_row):
+    #         self.modified_images(list_row=[_row])
+    #         self.profile_line_moved()
+    #
+    # # Event handler
+    #
+    #
+    #
+    # def table_row_clicked(self, row=-1):
+    #     self.ui.file_slider.blockSignals(True)
+    #     if row == -1:
+    #         row = self.ui.tableWidget.currentRow()
+    #     else:
+    #         self.ui.file_slider.setValue(row)
+    #
+    #     self.display_image()
+    #     self.check_selection_slider_status()
+    #     self.profile_line_moved()
+    #     self.check_selection_slider_status()
+    #     self.check_status_next_prev_image_button()
+    #     self.check_registration_tool_widgets()
+    #     self.display_markers(all=True)
+    #     self.ui.file_slider.blockSignals(False)
+    #
+    #
+    #
+    #
+    # def ok_button_clicked(self):
+    #     self.close()
+    #
+    # def export_button_clicked(self):
+    #     _export_folder = QFileDialog.getExistingDirectory(self,
+    #                                                       directory=self.working_dir,
+    #                                                       caption = "Select Output Folder",
+    #                                                       options=QFileDialog.ShowDirsOnly)
+    #     if _export_folder:
+    #         o_export = ExportRegistration(parent=self, export_folder=_export_folder)
+    #         o_export.run()
+    #         QtGui.QApplication.processEvents()
+    #
+    #
+    #
+    # def selection_all_clicked(self):
+    #     _is_checked = self.ui.selection_all.isChecked()
+    #
+    #     list_widgets = [self.ui.top_row_label,
+    #                     self.ui.bottom_row_label,
+    #                     self.ui.opacity_selection_slider]
+    #     for _widget in list_widgets:
+    #         _widget.setEnabled(not _is_checked)
+    #     self.display_image()
+    #     self.profile_line_moved()
+    #

@@ -27,7 +27,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -104,8 +104,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>639</width>
-               <height>538</height>
+               <width>501</width>
+               <height>533</height>
               </rect>
              </property>
              <attribute name="label">
@@ -334,8 +334,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>639</width>
-               <height>538</height>
+               <width>501</width>
+               <height>533</height>
               </rect>
              </property>
              <attribute name="label">
@@ -344,27 +344,6 @@
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
                <widget class="QTableWidget" name="tableWidget">
-                <property name="alternatingRowColors">
-                 <bool>true</bool>
-                </property>
-                <property name="selectionMode">
-                 <enum>QAbstractItemView::SingleSelection</enum>
-                </property>
-                <property name="selectionBehavior">
-                 <enum>QAbstractItemView::SelectRows</enum>
-                </property>
-                <attribute name="horizontalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-                <attribute name="horizontalHeaderStretchLastSection">
-                 <bool>true</bool>
-                </attribute>
-                <attribute name="verticalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-                <attribute name="verticalHeaderStretchLastSection">
-                 <bool>false</bool>
-                </attribute>
                 <column>
                  <property name="text">
                   <string>X0</string>
@@ -383,11 +362,6 @@
                 <column>
                  <property name="text">
                   <string>Height</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Mean Counts</string>
                  </property>
                 </column>
                </widget>
