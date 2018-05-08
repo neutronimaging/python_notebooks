@@ -645,7 +645,7 @@
                      <item>
                       <widget class="QGroupBox" name="groupBox">
                        <property name="title">
-                        <string>File Index for this Calibration</string>
+                        <string>File to Use for this Calibration</string>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout">
                         <item>
@@ -1402,7 +1402,7 @@
                      <item>
                       <widget class="QGroupBox" name="groupBox_2">
                        <property name="title">
-                        <string>File Index for this Calibration</string>
+                        <string>File to Use for this Calibration</string>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_9">
                         <item>

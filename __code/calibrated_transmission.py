@@ -66,10 +66,6 @@ class CalibratedTransmissionUi(QMainWindow):
                             },
                       }
 
-    calibration_widgets = {'1': {},
-                           '2': {},
-                          }
-
     roi_ui_measurement = list() # keep record of all the pyqtgraph.ROI ui
     roi_ui_calibrated = []
 
@@ -94,8 +90,8 @@ class CalibratedTransmissionUi(QMainWindow):
         # initialization
         self.init_timestamp_dict()
         self.init_table()
-        self.init_widgets()
         self.init_parameters()
+        self.init_widgets()
         self.init_pyqtgrpah()
         # self.init_statusbar()
 
@@ -158,7 +154,7 @@ class CalibratedTransmissionUi(QMainWindow):
             cal = pg.RectROI([roi_dict['x0'], roi_dict['y0']],
                              roi_dict['height'],
                              roi_dict['width'],
-                             pen='r')
+                             pen=roi_dict['color'])
             cal.addScaleHandle([1, 1], [0, 0])
             cal.addScaleHandle([0, 0], [1, 1])
             cal.sigRegionChanged.connect(self.calibration_roi_moved)
@@ -203,6 +199,11 @@ class CalibratedTransmissionUi(QMainWindow):
                                           },
                                     }
 
+        # will keep record of the x0, y0, width, height, value and color of the calibration rois
+        self.calibration_roi = {'1': {},
+                                '2': {},
+                                }
+
         # init calibrated roi
         self.populate_calibration_widgets(calibration_index=1)
         self.populate_calibration_widgets(calibration_index=2)
@@ -223,6 +224,9 @@ class CalibratedTransmissionUi(QMainWindow):
 
         self.calibrated_roi['2']['x0'] = width - self.calibrated_roi['2']['width']
         self.calibrated_roi['2']['y0'] = height - self.calibrated_roi['2']['height']
+
+        self.calibrated_roi['1']['color'] = 'b' # blue
+        self.calibrated_roi['2']['color'] = 'r' # red
 
     # main methods
     def display_image(self):
