@@ -421,7 +421,23 @@ class CalibratedTransmissionUi(QMainWindow):
         ui.setText(str(current_file_index))
         self.slider_file_changed(-1)
 
+    def display_this_file(self, index=1):
+        if index == 1:
+            ui = self.ui.calibration1_index
+        else:
+            ui = self.ui.calibration2_index
+
+        file_index = np.int(str(ui.text()))
+        self.ui.file_slider.setValue(file_index)
+        self.slider_file_changed(-1)
+
     # event handler
+    def display_this_cal1_file(self):
+        self.display_this_file(index=1)
+
+    def display_this_cal2_file(self):
+        self.display_this_file(index=2)
+
     def use_current_calibration1_file(self):
         self.use_current_calibration_file(index=1)
 

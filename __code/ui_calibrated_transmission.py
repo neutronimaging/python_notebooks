@@ -712,6 +712,8 @@ class Ui_MainWindow(object):
         self.add_row.clicked.connect(MainWindow.add_row_button_clicked)
         self.calibration1_use_current_file_button.clicked.connect(MainWindow.use_current_calibration1_file)
         self.calibration2_use_current_file_button.clicked.connect(MainWindow.use_current_calibration2_file)
+        self.calibration1_display_this_file_button.clicked.connect(MainWindow.display_this_cal1_file)
+        self.calibration2_display_this_file_button.clicked.connect(MainWindow.display_this_cal2_file)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
