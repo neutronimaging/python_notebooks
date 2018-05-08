@@ -94,9 +94,9 @@ class CalibratedTransmissionUi(QMainWindow):
         # initialization
         self.init_timestamp_dict()
         self.init_table()
-        self.init_pyqtgrpah()
         self.init_widgets()
         self.init_parameters()
+        self.init_pyqtgrpah()
         # self.init_statusbar()
 
         # display first image
@@ -153,6 +153,24 @@ class CalibratedTransmissionUi(QMainWindow):
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.ui.measurement_view)
         self.ui.measurement_widget.setLayout(vertical_layout2)
+
+        def define_roi(roi_dict):
+            cal = pg.RectROI([roi_dict['x0'], roi_dict['y0']],
+                             roi_dict['height'],
+                             roi_dict['width'],
+                             pen='r')
+            cal.addScaleHandle([1, 1], [0, 0])
+            cal.addScaleHandle([0, 0], [1, 1])
+            cal.sigRegionChanged.connect(self.calibration_roi_moved)
+            self.ui.image_view.addItem(cal)
+            return cal
+
+        # calibration
+        calibration_roi = self.calibrated_roi
+        roi1 = define_roi(calibration_roi['1'])
+        self.roi_ui_calibrated.append(roi1)
+        roi2 = define_roi(calibration_roi['2'])
+        self.roi_ui_calibrated.append(roi2)
 
     def init_widgets(self):
         """size and label of any widgets"""
@@ -229,6 +247,30 @@ class CalibratedTransmissionUi(QMainWindow):
 
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
+
+        # calibrated and measurement ROIs
+        self.display_roi()
+
+    def display_roi(self):
+        """display the calibrated and measurement rois"""
+
+        # first we remove the calibrated rois
+        for _roi_id in self.roi_ui_calibrated:
+            self.ui.image_view.removeItem(_roi_id)
+
+        if self.ui.use_calibration_checkbox.isChecked():
+            # yes, we have calibrated rois
+            slider_index = self.ui.file_slider.value()
+
+            # calibration1
+            cal1_file_index = np.int(self.ui.calibration1_index.text())
+            if slider_index == cal1_file_index:
+                self.ui.image_view.addItem(self.roi_ui_calibrated[0])
+
+            # calibration2
+            cal2_file_index = np.int(self.ui.calibration2_index.text())
+            if slider_index == cal2_file_index:
+                self.ui.image_view.addItem(self.roi_ui_calibrated[1])
 
     def remove_row(self, row=-1):
         if row == -1:
@@ -374,15 +416,18 @@ class CalibratedTransmissionUi(QMainWindow):
     def measurement_roi_moved(self):
         print("roi moved")
 
+    def calibration_roi_moved(self):
+        pass
+
     def use_calibration_checked(self):
         cali_button_checked = self.ui.use_calibration_checkbox.isChecked()
         self.ui.region1.setEnabled(cali_button_checked)
         self.ui.region2.setEnabled(cali_button_checked)
+        self.slider_file_changed(-1)
 
     def slider_file_changed(self, index_selected):
         self.display_image()
         self.check_status_next_prev_image_button()
-        self.display_roi()
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
