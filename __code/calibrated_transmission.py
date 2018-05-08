@@ -457,7 +457,26 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def update_all_measurement_rois_from_view(self):
         # reached when the ROIs are moved in the ui
-        pass
+
+        def get_roi_parameters(roi_ui):
+            region = roi_ui.getArraySlice(self.live_image,
+                                          self.ui.image_view.imageItem)
+            x0 = region[0][0].start
+            x1 = region[0][0].stop
+            y0 = region[0][1].start
+            y1 = region[0][1].stop
+            width = np.abs(x1 - x0) - 1
+            height = np.abs(y1 - y0) - 1
+
+            return (x0, y0, width, height)
+
+        list_roi  = self.roi_ui_measurement
+        for _row, _roi in enumerate(list_roi):
+            [x0, y0, width, height] = get_roi_parameters(_roi)
+            self.ui.tableWidget.item(_row, 0).setText(str(x0))
+            self.ui.tableWidget.item(_row, 1).setText(str(y0))
+            self.ui.tableWidget.item(_row, 2).setText(str(width))
+            self.ui.tableWidget.item(_row, 3).setText(str(height))
 
     def update_measurement_rois_from_table(self, row=0):
         roi_ui = self.roi_ui_measurement[row]
