@@ -69,6 +69,8 @@ class CalibratedTransmissionUi(QMainWindow):
     roi_ui_measurement = list() # keep record of all the pyqtgraph.ROI ui
     roi_ui_calibrated = []
 
+    live_image = []
+
     def __init__(self, parent=None, data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -150,22 +152,22 @@ class CalibratedTransmissionUi(QMainWindow):
         vertical_layout2.addWidget(self.ui.measurement_view)
         self.ui.measurement_widget.setLayout(vertical_layout2)
 
-        def define_roi(roi_dict):
+        def define_roi(roi_dict, callback_function):
             cal = pg.RectROI([roi_dict['x0'], roi_dict['y0']],
                              roi_dict['height'],
                              roi_dict['width'],
                              pen=roi_dict['color'])
             cal.addScaleHandle([1, 1], [0, 0])
             cal.addScaleHandle([0, 0], [1, 1])
-            cal.sigRegionChanged.connect(self.calibration_roi_moved)
+            cal.sigRegionChanged.connect(callback_function)
             self.ui.image_view.addItem(cal)
             return cal
 
         # calibration
         calibration_roi = self.calibrated_roi
-        roi1 = define_roi(calibration_roi['1'])
+        roi1 = define_roi(calibration_roi['1'], self.calibration1_roi_moved)
         self.roi_ui_calibrated.append(roi1)
-        roi2 = define_roi(calibration_roi['2'])
+        roi2 = define_roi(calibration_roi['2'], self.calibration2_roi_moved)
         self.roi_ui_calibrated.append(roi2)
 
     def init_widgets(self):
@@ -351,10 +353,6 @@ class CalibratedTransmissionUi(QMainWindow):
             # FIXME
             pass
 
-    def display_calibrated_roi_ui(self):
-        pass
-
-
     def insert_measurement_roi_ui(self, row=-1):
         default_roi = self.default_measurement_roi
         new_roi = pg.RectROI([default_roi['x0'], default_roi['y0']],
@@ -435,6 +433,30 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.file_slider.setValue(file_index)
         self.slider_file_changed(-1)
 
+    def update_calibration_widgets(self, index=1):
+        roi_ui = self.roi_ui_calibrated[index-1]
+        region = roi_ui.getArraySlice(self.live_image,
+                                      self.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        width = np.abs(x1 - x0)-1
+        height = np.abs(y1 - y0)-1
+
+        roi_widgets = self.calibration_widgets[str(index)]
+        roi_widgets['x0'].setText(str(x0))
+        roi_widgets['y0'].setText(str(y0))
+        roi_widgets['width'].setText(str(width))
+        roi_widgets['height'].setText(str(height))
+
+        self.calibration_roi[str(index)]['x0'] = x0
+        self.calibration_roi[str(index)]['y0'] = y0
+        self.calibration_roi[str(index)]['width'] = width
+        self.calibration_roi[str(index)]['height'] = height
+
     # event handler
     def display_this_cal1_file(self):
         self.display_this_file(index=1)
@@ -451,8 +473,11 @@ class CalibratedTransmissionUi(QMainWindow):
     def measurement_roi_moved(self):
         print("roi moved")
 
-    def calibration_roi_moved(self):
-        pass
+    def calibration1_roi_moved(self):
+        self.update_calibration_widgets(index=1)
+
+    def calibration2_roi_moved(self):
+        self.update_calibration_widgets(index=2)
 
     def use_calibration_checked(self):
         cali_button_checked = self.ui.use_calibration_checkbox.isChecked()
