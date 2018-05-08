@@ -223,6 +223,8 @@ class CalibratedTransmissionUi(QMainWindow):
         [height, width] = np.shape(self.data_dict['data'][0])
         self.default_measurement_roi['width'] = np.int(width/10)
         self.default_measurement_roi['height'] = np.int(height/10)
+        self.default_measurement_roi['x0'] = np.int(width/2)
+        self.default_measurement_roi['y0'] = np.int(height/2)
 
         self.calibrated_roi['2']['x0'] = width - self.calibrated_roi['2']['width']
         self.calibrated_roi['2']['y0'] = height - self.calibrated_roi['2']['height']
@@ -357,7 +359,7 @@ class CalibratedTransmissionUi(QMainWindow):
         default_roi = self.default_measurement_roi
         new_roi = pg.RectROI([default_roi['x0'], default_roi['y0']],
                              [default_roi['height'], default_roi['width']],
-                             pen='r')
+                             pen='g')
         new_roi.addScaleHandle([1, 1], [0, 0])
         new_roi.addScaleHandle([0, 0], [1, 1])
         self.ui.image_view.addItem(new_roi)
@@ -370,6 +372,7 @@ class CalibratedTransmissionUi(QMainWindow):
             return
         old_roi = self.roi_ui_measurement[row]
         self.roi_ui_measurement.remove(old_roi)
+        self.ui.image_view.removeItem(old_roi)
 
     # setter
     def set_item_main_table(self, row=0, col=0, value=''):
