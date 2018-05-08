@@ -100,6 +100,8 @@ class CalibratedTransmissionUi(QMainWindow):
         # display first image
         self.slider_file_changed(-1)
 
+        self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
+
     # initialization
     def init_timestamp_dict(self):
         list_files = self.data_dict['file_name']
@@ -298,6 +300,7 @@ class CalibratedTransmissionUi(QMainWindow):
         if row == -1:
             row = 0
 
+        self.ui.tableWidget.blockSignals(True)
         default_values = self.default_measurement_roi
 
         self.ui.tableWidget.insertRow(row)
@@ -313,6 +316,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.tableWidget.setRangeSelected(full_range, False)
         new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
+        self.ui.tableWidget.blockSignals(False)
 
     def insert_column_in_summary_table(self, roi_index=-1):
         col_offset = 3
@@ -373,32 +377,6 @@ class CalibratedTransmissionUi(QMainWindow):
         old_roi = self.roi_ui_measurement[row]
         self.roi_ui_measurement.remove(old_roi)
         self.ui.image_view.removeItem(old_roi)
-
-    # setter
-    def set_item_main_table(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
-        self.ui.tableWidget.setItem(row, col, item)
-        if col == 4:
-            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
-    def set_item_summary_table(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
-        self.ui.summary_table.setItem(row, col, item)
-        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
-    # getter
-    def get_image_selected(self):
-        slider_index = self.ui.file_slider.value()
-        _image = self.data_dict['data'][slider_index]
-        return _image
-
-    def get_selected_row(self):
-        selection = self.ui.tableWidget.selectedRanges()
-        if selection:
-            top_row = selection[0].topRow()
-            return top_row
-        else:
-            return -1
 
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
@@ -477,6 +455,49 @@ class CalibratedTransmissionUi(QMainWindow):
         calibration_roi['height'] = height
         calibration_roi['width'] = width
 
+    def update_all_measurement_rois_from_view(self):
+        # reached when the ROIs are moved in the ui
+        pass
+
+    def update_measurement_rois_from_table(self, row=0):
+        roi_ui = self.roi_ui_measurement[row]
+        [x0, y0, width, height] = self.get_item_row(row=row)
+        roi_ui.setPos((x0, y0))
+        roi_ui.setSize((width, height))
+
+    # setter
+    def set_item_main_table(self, row=0, col=0, value=''):
+        item = QtGui.QTableWidgetItem(str(value))
+        self.ui.tableWidget.setItem(row, col, item)
+        if col == 4:
+            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+
+    def set_item_summary_table(self, row=0, col=0, value=''):
+        item = QtGui.QTableWidgetItem(str(value))
+        self.ui.summary_table.setItem(row, col, item)
+        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+
+    # getter
+    def get_image_selected(self):
+        slider_index = self.ui.file_slider.value()
+        _image = self.data_dict['data'][slider_index]
+        return _image
+
+    def get_selected_row(self):
+        selection = self.ui.tableWidget.selectedRanges()
+        if selection:
+            top_row = selection[0].topRow()
+            return top_row
+        else:
+            return -1
+
+    def get_item_row(self, row=0):
+        x0 = np.int(str(self.ui.tableWidget.item(row, 0).text()))
+        y0 = np.int(str(self.ui.tableWidget.item(row, 1).text()))
+        width = np.int(str(self.ui.tableWidget.item(row, 2).text()))
+        height = np.int(str(self.ui.tableWidget.item(row, 3).text()))
+        return (x0, y0, width, height)
+
     # event handler
     def calibration1_widgets_changed(self):
         self.calibration_widgets_changed(index=1)
@@ -497,7 +518,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.use_current_calibration_file(index=2)
 
     def measurement_roi_moved(self):
-        print("roi moved")
+        self.update_all_measurement_rois_from_view()
 
     def calibration1_roi_moved(self):
         self.update_calibration_widgets(index=1)
@@ -530,8 +551,8 @@ class CalibratedTransmissionUi(QMainWindow):
         self.remove_column_in_summary_table(roi_index=selected_row)
         self.remove_measurement_roi_ui(row=selected_row)
 
-    def cell_changed(self, a, b, c, d):
-        pass
+    def cell_changed(self, row, col ):
+        self.update_measurement_rois_from_table(row=row)
 
     def export_button_clicked(self):
         pass
