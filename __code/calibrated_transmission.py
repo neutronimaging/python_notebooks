@@ -462,6 +462,8 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def slider_file_changed(self, index_selected):
         self.display_image()
+        slider_value = self.ui.file_slider.value()
+        self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
 
     def add_row_button_clicked(self):
