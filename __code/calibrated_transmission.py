@@ -412,7 +412,22 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.previous_image_button.setEnabled(_prev)
         self.ui.next_image_button.setEnabled(_next)
 
+    def use_current_calibration_file(self, index=1):
+        current_file_index = self.ui.file_slider.value()
+        if index == 1:
+            ui = self.ui.calibration1_index
+        else:
+            ui = self.ui.calibration2_index
+        ui.setText(str(current_file_index))
+        self.slider_file_changed(-1)
+
     # event handler
+    def use_current_calibration1_file(self):
+        self.use_current_calibration_file(index=1)
+
+    def use_current_calibration2_file(self):
+        self.use_current_calibration_file(index=2)
+
     def measurement_roi_moved(self):
         print("roi moved")
 

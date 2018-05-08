@@ -710,6 +710,8 @@ class Ui_MainWindow(object):
         self.use_calibration_checkbox.clicked.connect(MainWindow.use_calibration_checked)
         self.remove_row.clicked.connect(MainWindow.remove_row_button_clicked)
         self.add_row.clicked.connect(MainWindow.add_row_button_clicked)
+        self.calibration1_use_current_file_button.clicked.connect(MainWindow.use_current_calibration1_file)
+        self.calibration2_use_current_file_button.clicked.connect(MainWindow.use_current_calibration2_file)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

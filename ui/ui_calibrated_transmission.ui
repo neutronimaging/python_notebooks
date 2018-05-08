@@ -1962,8 +1962,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>682</y>
+     <x>446</x>
+     <y>767</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -1978,8 +1978,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>682</y>
+     <x>446</x>
+     <y>767</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1994,8 +1994,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>120</x>
-     <y>685</y>
+     <x>136</x>
+     <y>770</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -2010,8 +2010,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>427</x>
-     <y>685</y>
+     <x>713</x>
+     <y>770</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -2026,8 +2026,8 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>994</x>
-     <y>780</y>
+     <x>1334</x>
+     <y>916</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
@@ -2042,8 +2042,8 @@
    <slot>use_calibration_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>551</x>
-     <y>121</y>
+     <x>847</x>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
      <x>578</x>
@@ -2058,8 +2058,8 @@
    <slot>remove_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>519</x>
-     <y>633</y>
+     <x>783</x>
+     <y>761</y>
     </hint>
     <hint type="destinationlabel">
      <x>578</x>
@@ -2074,12 +2074,44 @@
    <slot>add_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1084</x>
-     <y>633</y>
+     <x>1299</x>
+     <y>761</y>
     </hint>
     <hint type="destinationlabel">
      <x>578</x>
      <y>412</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration1_use_current_file_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>use_current_calibration1_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>998</x>
+     <y>384</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1336</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration2_use_current_file_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>use_current_calibration2_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1094</x>
+     <y>648</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1340</x>
+     <y>652</y>
     </hint>
    </hints>
   </connection>
@@ -2094,5 +2126,7 @@
   <slot>export_button_clicked()</slot>
   <slot>cell_changed()</slot>
   <slot>use_calibration_checked()</slot>
+  <slot>use_current_calibration1_file()</slot>
+  <slot>use_current_calibration2_file()</slot>
  </slots>
 </ui>
