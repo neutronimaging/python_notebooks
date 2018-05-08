@@ -468,6 +468,12 @@ class CalibratedTransmissionUi(QMainWindow):
         roi_ui.setPos((x0, y0))
         roi_ui.setSize((width, height))
 
+        calibration_roi = self.calibration_roi[str(index)]
+        calibration_roi['x0'] = x0
+        calibration_roi['y0'] = y0
+        calibration_roi['height'] = height
+        calibration_roi['width'] = width
+
     # event handler
     def calibration1_widgets_changed(self):
         self.calibration_widgets_changed(index=1)
