@@ -2172,6 +2172,134 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>calibration1_x0</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration1_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>927</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1341</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration1_width</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration1_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1037</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1346</x>
+     <y>179</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration1_y0</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration1_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>937</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1341</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration1_height</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration1_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1027</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1339</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration2_x0</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration2_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>939</x>
+     <y>474</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1337</x>
+     <y>481</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration2_width</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration2_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1030</x>
+     <y>470</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1340</x>
+     <y>458</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration2_y0</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration2_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>924</x>
+     <y>505</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1343</x>
+     <y>527</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calibration2_height</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calibration2_widgets_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1048</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1339</x>
+     <y>511</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -2187,5 +2315,7 @@
   <slot>use_current_calibration2_file()</slot>
   <slot>display_this_cal1_file()</slot>
   <slot>display_this_cal2_file()</slot>
+  <slot>calibration1_widgets_changed()</slot>
+  <slot>calibration2_widgets_changed()</slot>
  </slots>
 </ui>

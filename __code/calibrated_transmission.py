@@ -457,7 +457,24 @@ class CalibratedTransmissionUi(QMainWindow):
         self.calibration_roi[str(index)]['width'] = width
         self.calibration_roi[str(index)]['height'] = height
 
+    def calibration_widgets_changed(self, index=1):
+        roi_ui = self.roi_ui_calibrated[index-1]
+        widgets_ui = self.calibration_widgets[str(index)]
+        x0 = np.int(widgets_ui['x0'].text())
+        y0 = np.int(widgets_ui['y0'].text())
+        width = np.int(widgets_ui['width'].text())
+        height = np.int(widgets_ui['height'].text())
+
+        roi_ui.setPos((x0, y0))
+        roi_ui.setSize((width, height))
+
     # event handler
+    def calibration1_widgets_changed(self):
+        self.calibration_widgets_changed(index=1)
+
+    def calibration2_widgets_changed(self):
+        self.calibration_widgets_changed(index=2)
+
     def display_this_cal1_file(self):
         self.display_this_file(index=1)
 

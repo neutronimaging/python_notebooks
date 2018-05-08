@@ -720,6 +720,14 @@ class Ui_MainWindow(object):
         self.calibration2_use_current_file_button.clicked.connect(MainWindow.use_current_calibration2_file)
         self.calibration1_display_this_file_button.clicked.connect(MainWindow.display_this_cal1_file)
         self.calibration2_display_this_file_button.clicked.connect(MainWindow.display_this_cal2_file)
+        self.calibration1_x0.returnPressed.connect(MainWindow.calibration1_widgets_changed)
+        self.calibration1_width.returnPressed.connect(MainWindow.calibration1_widgets_changed)
+        self.calibration1_y0.returnPressed.connect(MainWindow.calibration1_widgets_changed)
+        self.calibration1_height.returnPressed.connect(MainWindow.calibration1_widgets_changed)
+        self.calibration2_x0.returnPressed.connect(MainWindow.calibration2_widgets_changed)
+        self.calibration2_width.returnPressed.connect(MainWindow.calibration2_widgets_changed)
+        self.calibration2_y0.returnPressed.connect(MainWindow.calibration2_widgets_changed)
+        self.calibration2_height.returnPressed.connect(MainWindow.calibration2_widgets_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
