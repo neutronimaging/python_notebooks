@@ -122,7 +122,7 @@
            </widget>
            <widget class="QToolBox" name="toolBox">
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="page">
              <property name="geometry">
@@ -137,33 +137,6 @@
               <string>Calibration Regions</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_11">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_12">
-                <item>
-                 <widget class="QCheckBox" name="use_calibration_checkbox">
-                  <property name="text">
-                   <string>Use Calibration</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_8">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_11">
                 <item>
@@ -238,9 +211,36 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_5">
                      <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_12">
+                       <item>
+                        <widget class="QCheckBox" name="use_calibration1_checkbox">
+                         <property name="text">
+                          <string>Use Calibration</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_8">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
                       <layout class="QGridLayout" name="gridLayout">
                        <item row="0" column="0">
-                        <widget class="QLabel" name="label_34">
+                        <widget class="QLabel" name="calibration1_x0_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -330,7 +330,7 @@
                         </widget>
                        </item>
                        <item row="0" column="2">
-                        <widget class="QLabel" name="label_36">
+                        <widget class="QLabel" name="calibration1_width_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -414,7 +414,7 @@
                         </widget>
                        </item>
                        <item row="0" column="4">
-                        <widget class="QLabel" name="label_39">
+                        <widget class="QLabel" name="calibration1_value_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -498,7 +498,7 @@
                         </widget>
                        </item>
                        <item row="1" column="0">
-                        <widget class="QLabel" name="label_35">
+                        <widget class="QLabel" name="calibration1_y0_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -582,7 +582,7 @@
                         </widget>
                        </item>
                        <item row="1" column="2">
-                        <widget class="QLabel" name="label_37">
+                        <widget class="QLabel" name="calibration1_height_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -668,7 +668,7 @@
                       </layout>
                      </item>
                      <item>
-                      <widget class="QGroupBox" name="groupBox">
+                      <widget class="QGroupBox" name="calibration1_groupbox">
                        <property name="title">
                         <string>File to Use for this Calibration</string>
                        </property>
@@ -1130,9 +1130,36 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_6">
                      <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_13">
+                       <item>
+                        <widget class="QCheckBox" name="use_calibration2_checkbox">
+                         <property name="text">
+                          <string>Use Calibration</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_9">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
                       <layout class="QGridLayout" name="gridLayout_2">
                        <item row="0" column="0">
-                        <widget class="QLabel" name="label_40">
+                        <widget class="QLabel" name="calibration2_x0_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -1195,7 +1222,7 @@
                         </widget>
                        </item>
                        <item row="0" column="2">
-                        <widget class="QLabel" name="label_41">
+                        <widget class="QLabel" name="calibration2_width_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -1252,7 +1279,7 @@
                         </widget>
                        </item>
                        <item row="0" column="4">
-                        <widget class="QLabel" name="label_42">
+                        <widget class="QLabel" name="calibration2_value_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -1309,7 +1336,7 @@
                         </widget>
                        </item>
                        <item row="1" column="0">
-                        <widget class="QLabel" name="label_43">
+                        <widget class="QLabel" name="calibration2_y0_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -1366,7 +1393,7 @@
                         </widget>
                        </item>
                        <item row="1" column="2">
-                        <widget class="QLabel" name="label_44">
+                        <widget class="QLabel" name="calibration2_height_label">
                          <property name="palette">
                           <palette>
                            <active>
@@ -1425,7 +1452,7 @@
                       </layout>
                      </item>
                      <item>
-                      <widget class="QGroupBox" name="groupBox_2">
+                      <widget class="QGroupBox" name="calibration2_groupbox">
                        <property name="title">
                         <string>File to Use for this Calibration</string>
                        </property>
@@ -2061,10 +2088,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>use_calibration_checkbox</sender>
+   <sender>use_calibration1_checkbox</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>use_calibration_checked()</slot>
+   <slot>use_calibration1_checked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>847</x>
@@ -2300,6 +2327,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>use_calibration2_checkbox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>use_calibration2_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>932</x>
+     <y>456</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>673</x>
+     <y>474</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -2310,12 +2353,13 @@
   <slot>add_row_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
   <slot>cell_changed()</slot>
-  <slot>use_calibration_checked()</slot>
+  <slot>use_calibration1_checked()</slot>
   <slot>use_current_calibration1_file()</slot>
   <slot>use_current_calibration2_file()</slot>
   <slot>display_this_cal1_file()</slot>
   <slot>display_this_cal2_file()</slot>
   <slot>calibration1_widgets_changed()</slot>
   <slot>calibration2_widgets_changed()</slot>
+  <slot>use_calibration2_checked()</slot>
  </slots>
 </ui>

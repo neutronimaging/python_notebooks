@@ -52,6 +52,8 @@ class CalibratedTransmissionUi(QMainWindow):
     default_measurement_roi = {'x0': 0, 'y0': 0,
                                'width': np.NaN, 'height': np.NaN}
 
+    calibration_widgets = {}
+    calibration_widgets_label = {}
     calibrated_roi = {'1': {'x0': 0,
                             'y0': 0,
                             'width': 200,
@@ -203,6 +205,22 @@ class CalibratedTransmissionUi(QMainWindow):
                                           },
                                     }
 
+        self.calibration_widgets_label = {'1': {'x0_label': self.ui.calibration1_x0_label,
+                                                'y0_label': self.ui.calibration1_y0_label,
+                                                'width_label': self.ui.calibration1_width_label,
+                                                'height_label': self.ui.calibration1_height_label,
+                                                'value_label': self.ui.calibration1_value_label,
+                                                'group': self.ui.calibration1_groupbox,
+                                                },
+                                         '2': {'x0_label': self.ui.calibration2_x0_label,
+                                               'y0_label': self.ui.calibration2_y0_label,
+                                               'width_label': self.ui.calibration2_width_label,
+                                               'height_label': self.ui.calibration2_height_label,
+                                               'value_label': self.ui.calibration2_value_label,
+                                               'group': self.ui.calibration2_groupbox,
+                                              },
+                                          }
+
         # will keep record of the x0, y0, width, height, value and color of the calibration rois
         self.calibration_roi = {'1': {},
                                 '2': {},
@@ -268,7 +286,7 @@ class CalibratedTransmissionUi(QMainWindow):
         for _roi_id in self.roi_ui_calibrated:
             self.ui.image_view.removeItem(_roi_id)
 
-        if self.ui.use_calibration_checkbox.isChecked():
+        if self.ui.use_calibration1_checkbox.isChecked():
             # yes, we have calibrated rois
             slider_index = self.ui.file_slider.value()
 
@@ -277,10 +295,23 @@ class CalibratedTransmissionUi(QMainWindow):
             if slider_index == cal1_file_index:
                 self.ui.image_view.addItem(self.roi_ui_calibrated[0])
 
+        if self.ui.use_calibration2_checkbox.isChecked():
+            # yes, we have calibrated rois
+            slider_index = self.ui.file_slider.value()
+
             # calibration2
             cal2_file_index = np.int(self.ui.calibration2_index.text())
             if slider_index == cal2_file_index:
                 self.ui.image_view.addItem(self.roi_ui_calibrated[1])
+
+    def display_measurement_profiles(self):
+        """will calculate the mean counts of the calibrated samples (if selected)
+        and display the measurement mean of all the rois defined
+        """
+        print("display measurement")
+
+
+
 
     def remove_row(self, row=-1):
         if row == -1:
@@ -526,12 +557,29 @@ class CalibratedTransmissionUi(QMainWindow):
         self.display_image()
         self.ui.file_slider.blockSignals(False)
 
+    def calibration_widgets_handler(self, status, index=1):
+        list_ui = self.calibration_widgets[str(index)]
+        for _ui in list_ui.keys():
+            list_ui[_ui].setEnabled(status)
+
+        list_ui = self.calibration_widgets_label[str(index)]
+        for _ui in list_ui.keys():
+            list_ui[_ui].setEnabled(status)
+
+    def calibration1_widgets_handler(self, status):
+        self.calibration_widgets_handler(status, index=1)
+
+    def calibration2_widgets_handler(self, status):
+        self.calibration_widgets_handler(status, index=2)
+
     # event handler
     def calibration1_widgets_changed(self):
         self.calibration_widgets_changed(index=1)
+        self.display_measurement_profiles()
 
     def calibration2_widgets_changed(self):
         self.calibration_widgets_changed(index=2)
+        self.display_measurement_profiles()
 
     def display_this_cal1_file(self):
         self.display_this_file(index=1)
@@ -541,30 +589,42 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def use_current_calibration1_file(self):
         self.use_current_calibration_file(index=1)
+        self.display_measurement_profiles()
 
     def use_current_calibration2_file(self):
         self.use_current_calibration_file(index=2)
+        self.display_measurement_profiles()
 
     def measurement_roi_moved(self):
         self.update_all_measurement_rois_from_view()
+        self.display_measurement_profiles()
 
     def calibration1_roi_moved(self):
         self.update_calibration_widgets(index=1)
+        self.display_measurement_profiles()
 
     def calibration2_roi_moved(self):
         self.update_calibration_widgets(index=2)
+        self.display_measurement_profiles()
 
-    def use_calibration_checked(self):
-        cali_button_checked = self.ui.use_calibration_checkbox.isChecked()
-        self.ui.region1.setEnabled(cali_button_checked)
-        self.ui.region2.setEnabled(cali_button_checked)
+    def use_calibration1_checked(self):
+        cali_button_checked = self.ui.use_calibration1_checkbox.isChecked()
+        self.calibration1_widgets_handler(cali_button_checked)
         self.slider_file_changed(-1)
+        self.display_measurement_profiles()
+
+    def use_calibration2_checked(self):
+        cali_button_checked = self.ui.use_calibration2_checkbox.isChecked()
+        self.calibration2_widgets_handler(cali_button_checked)
+        self.slider_file_changed(-1)
+        self.display_measurement_profiles()
 
     def slider_file_changed(self, index_selected):
         self.display_image()
         slider_value = self.ui.file_slider.value()
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
+        self.display_measurement_profiles()
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
@@ -572,24 +632,29 @@ class CalibratedTransmissionUi(QMainWindow):
         self.insert_column_in_summary_table(roi_index=selected_row)
         self.insert_measurement_roi_ui(row=selected_row)
         self.update_mean_counts(row=selected_row)
+        self.display_measurement_profiles()
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
         self.remove_column_in_summary_table(roi_index=selected_row)
         self.remove_measurement_roi_ui(row=selected_row)
+        self.display_measurement_profiles()
 
     def cell_changed(self, row, col ):
         self.update_measurement_rois_from_table(row=row)
+        self.display_measurement_profiles()
 
     def export_button_clicked(self):
         pass
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
+        self.display_measurement_profiles()
 
     def next_image_button_clicked(self):
         self.change_slider(offset = +1)
+        self.display_measurement_profiles()
 
     def help_button_clicked(self):
         import webbrowser
