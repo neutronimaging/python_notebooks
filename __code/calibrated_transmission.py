@@ -517,6 +517,15 @@ class CalibratedTransmissionUi(QMainWindow):
         height = np.int(str(self.ui.tableWidget.item(row, 3).text()))
         return (x0, y0, width, height)
 
+    def change_slider(self, offset=+1):
+        self.ui.file_slider.blockSignals(True)
+        current_slider_value = self.ui.file_slider.value()
+        new_row_selected = current_slider_value + offset
+        self.ui.file_slider.setValue(new_row_selected)
+        self.check_status_next_prev_image_button()
+        self.display_image()
+        self.ui.file_slider.blockSignals(False)
+
     # event handler
     def calibration1_widgets_changed(self):
         self.calibration_widgets_changed(index=1)
