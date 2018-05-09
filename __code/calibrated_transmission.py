@@ -1,23 +1,10 @@
-import ipywe.fileselector
-
 from IPython.core.display import HTML
 from IPython.core.display import display
-from ipywidgets import widgets
 
 import numpy as np
 import os
-from skimage import transform
-from scipy.ndimage.interpolation import shift
-from skimage.feature import register_translation
 import copy
-from __code.file_handler import retrieve_time_stamp
-
-import pprint
-
 import pyqtgraph as pg
-from pyqtgraph.dockarea import *
-
-from __code.color import  Color
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -34,9 +21,8 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
-from NeuNorm.normalization import Normalization
-
-
+from __code.color import  Color
+from __code.file_handler import retrieve_time_stamp, make_ascii_file
 from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
 
 
@@ -811,6 +797,22 @@ class ExportCalibration(object):
 
     def run(self):
         nbr_files = self.parent.ui.summary_table.rowCount()
-        nbr_measurement_region = self.parent.ui.tableWidget.columnCount()
+        nbr_col= self.parent.ui.summary_table.columnCount()
 
         metadata = self.get_metadata()
+        data = []
+        for _row in np.arange(nbr_files):
+            _row = []
+            for _col in np.arange(nbr_col):
+                _row.append(str(self.parent.ui.summary_table.item(_row, _col).text()))
+            data.append(",".join(_row))
+
+        export_file_name = os.path.basename(os.path.self.parent.working_dir)
+        full_export_file_name = os.path.join(self.export_folder, export_file_name + "_calibrated_transmission.txt")
+
+        make_ascii_file(metadata=metadata,
+                        data=data,
+                        output_file_name=full_export_file_name,
+                        dim='1d')
+
+
