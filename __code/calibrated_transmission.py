@@ -384,17 +384,6 @@ class CalibratedTransmissionUi(QMainWindow):
 
         self.measurement_dict = measurement_dict
 
-
-
-
-
-
-
-
-
-
-
-
     def display_measurement_profiles(self, refresh_calculation=True):
         """will calculate the mean counts of the calibrated samples (if selected)
         and display the measurement mean of all the rois defined
@@ -416,7 +405,7 @@ class CalibratedTransmissionUi(QMainWindow):
         for _index, _key in enumerate(self.measurement_dict.keys()):
             _data = self.measurement_dict[_key]
             self.ui.measurement_view.plot(_data,
-                                          name="Region {}".format(_index),
+                                          name="Region {}".format(1+_index),
                                           pen=_color_list[_index])
 
     def remove_row(self, row=-1):
