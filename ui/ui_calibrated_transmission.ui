@@ -27,7 +27,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1835,7 +1835,7 @@
       <item>
        <widget class="QPushButton" name="export_button">
         <property name="text">
-         <string>Export All Profiles ...</string>
+         <string>Export Calibrated Transmission ...</string>
         </property>
        </widget>
       </item>

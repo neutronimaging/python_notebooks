@@ -78,7 +78,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
     live_image = []
 
-    def __init__(self, parent=None, data_dict=None):
+    def __init__(self, parent=None, working_dir='', data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
@@ -88,6 +88,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Calibrated Transmission")
 
+        self.working_dir = working_dir
         self.data_dict = data_dict # Normalization data dictionary  {'file_name': [],
                                                                      #'data': [[...],[...]]],
                                                                      #'metadata': [],
@@ -743,7 +744,15 @@ class CalibratedTransmissionUi(QMainWindow):
         self.display_measurement_profiles()
 
     def export_button_clicked(self):
-        pass
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
+                                                          caption = "Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            o_export = ExportCalibration(parent = self,
+                                         export_folder = _export_folder)
+            o_export.run()
+            QtGui.QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
@@ -761,142 +770,47 @@ class CalibratedTransmissionUi(QMainWindow):
         pass
 
 
+class ExportCalibration(object):
 
+    def __init__(self, parent=None, export_folder=''):
+        self.parent = parent
+        self.export_folder = export_folder
 
-    #
-    #
-    # def select_row_in_table(self, row=0):
-    #     nbr_col = self.ui.tableWidget.columnCount()
-    #     nbr_row = self.ui.tableWidget.rowCount()
-    #
-    #     # clear previous selection
-    #     full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
-    #     self.ui.tableWidget.setRangeSelected(full_range, False)
-    #
-    #     # select file of interest
-    #     selection_range = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
-    #     self.ui.tableWidget.setRangeSelected(selection_range, True)
-    #
-    #     self.ui.tableWidget.showRow(row)
-    #
-    #
-    # def change_slider(self, offset=+1):
-    #     self.ui.file_slider.blockSignals(True)
-    #     current_slider_value = self.ui.file_slider.value()
-    #     new_row_selected = current_slider_value + offset
-    #     self.select_row_in_table(row=new_row_selected)
-    #     self.ui.file_slider.setValue(new_row_selected)
-    #     self.check_status_next_prev_image_button()
-    #     self.display_image()
-    #     self.profile_line_moved()
-    #     self.ui.file_slider.blockSignals(False)
-    #
-    # def check_selection_slider_status(self):
-    #     """
-    #     if there is more than one row selected, we need to display the left slider but also
-    #     we need to disable the next, prev buttons and file index slider
-    #     """
-    #     selection = self.ui.tableWidget.selectedRanges()
-    #     if selection:
-    #
-    #         list_file_index_widgets = [self.ui.previous_image_button,
-    #                                    self.ui.file_slider,
-    #                                    self.ui.next_image_button]
-    #
-    #         top_row = selection[0].topRow()
-    #         bottom_row = selection[0].bottomRow()
-    #         if np.abs(bottom_row - top_row) >= 1: # show selection images widgets
-    #             self.ui.selection_groupBox.setVisible(True)
-    #             self.ui.top_row_label.setText("Row {}".format(top_row+1))
-    #             self.ui.bottom_row_label.setText("Row {}".format(bottom_row+1))
-    #             self.ui.opacity_selection_slider.setMinimum(top_row*100)
-    #             self.ui.opacity_selection_slider.setMaximum(bottom_row*100)
-    #             self.ui.opacity_selection_slider.setSliderPosition(top_row*100)
-    #             _file_index_status = False
-    #         else:
-    #             self.ui.selection_groupBox.setVisible(False)
-    #             _file_index_status = True
-    #
-    #         for _widget in list_file_index_widgets:
-    #             _widget.setVisible(_file_index_status)
-    #
-    # # Utilities
-    #
-    # def get_list_row_selected(self):
-    #     table_selection = self.ui.tableWidget.selectedRanges()
-    #
-    #     # that means we selected the first row
-    #     if table_selection == []:
-    #         return [0]
-    #
-    #     table_selection = table_selection[0]
-    #     top_row = table_selection.topRow()
-    #     bottom_row = table_selection.bottomRow() + 1
-    #
-    #     return np.arange(top_row, bottom_row)
-    #
-    # def check_registration_tool_widgets(self):
-    #     """if the registration tool is active, and the reference image is the only row selected,
-    #     disable the widgets"""
-    #     if self.registration_tool_ui:
-    #         self.registration_tool_ui.update_status_widgets()
-    #
-    # def set_widget_status(self, list_ui=[], enabled=True):
-    #     for _ui in list_ui:
-    #         _ui.setEnabled(enabled)
-    #
-    # def all_table_cell_modified(self):
-    #     nbr_row = self.ui.tableWidget.rowCount()
-    #     for _row in np.arange(nbr_row):
-    #         self.modified_images(list_row=[_row])
-    #         self.profile_line_moved()
-    #
-    # # Event handler
-    #
-    #
-    #
-    # def table_row_clicked(self, row=-1):
-    #     self.ui.file_slider.blockSignals(True)
-    #     if row == -1:
-    #         row = self.ui.tableWidget.currentRow()
-    #     else:
-    #         self.ui.file_slider.setValue(row)
-    #
-    #     self.display_image()
-    #     self.check_selection_slider_status()
-    #     self.profile_line_moved()
-    #     self.check_selection_slider_status()
-    #     self.check_status_next_prev_image_button()
-    #     self.check_registration_tool_widgets()
-    #     self.display_markers(all=True)
-    #     self.ui.file_slider.blockSignals(False)
-    #
-    #
-    #
-    #
-    # def ok_button_clicked(self):
-    #     self.close()
-    #
-    # def export_button_clicked(self):
-    #     _export_folder = QFileDialog.getExistingDirectory(self,
-    #                                                       directory=self.working_dir,
-    #                                                       caption = "Select Output Folder",
-    #                                                       options=QFileDialog.ShowDirsOnly)
-    #     if _export_folder:
-    #         o_export = ExportRegistration(parent=self, export_folder=_export_folder)
-    #         o_export.run()
-    #         QtGui.QApplication.processEvents()
-    #
-    #
-    #
-    # def selection_all_clicked(self):
-    #     _is_checked = self.ui.selection_all.isChecked()
-    #
-    #     list_widgets = [self.ui.top_row_label,
-    #                     self.ui.bottom_row_label,
-    #                     self.ui.opacity_selection_slider]
-    #     for _widget in list_widgets:
-    #         _widget.setEnabled(not _is_checked)
-    #     self.display_image()
-    #     self.profile_line_moved()
-    #
+    def get_metadata(self):
+        metadata = []
+        metadata.append("#Working dir: {}".format(self.parent.working_dir))
+        if self.parent.ui.use_calibration1_checkbox.isChecked():
+            metadata.append("#Calibration Region 1:")
+            metadata.append("#   x0: {}".format(str(self.parent.ui.calibration1_x0.text())))
+            metadata.append("#   y0: {}".format(str(self.parent.ui.calibration1_y0.text())))
+            metadata.append("#   width: {}".format(str(self.parent.ui.calibration1_width.text())))
+            metadata.append("#   height: {}".format(str(self.parent.ui.calibration1_height.text())))
+            metadata.append("#   file index: {}".format(str(self.parent.ui.calibration1_index.text())))
+            metadata.append("#   value requested: {}".format(str(self.parent.ui.calibration1_value.text())))
+        if self.parent.ui.use_calibration2_checkbox.isChecked():
+            metadata.append("#Calibration Region 2:")
+            metadata.append("#   x0: {}".format(str(self.parent.ui.calibration2_x0.text())))
+            metadata.append("#   y0: {}".format(str(self.parent.ui.calibration2_y0.text())))
+            metadata.append("#   width: {}".format(str(self.parent.ui.calibration2_width.text())))
+            metadata.append("#   height: {}".format(str(self.parent.ui.calibration2_height.text())))
+            metadata.append("#   file index: {}".format(str(self.parent.ui.calibration2_index.text())))
+            metadata.append("#   value requested: {}".format(str(self.parent.ui.calibration2_value.text())))
+        nbr_measurement_region = self.parent.ui.tableWidget.columnCount()
+        _legend = "#File_name, Time_stamp, Relative_time(s)"
+        if nbr_measurement_region > 0:
+            metadata.append("#Measurement Regions:")
+            for _index_region in np.arange(nbr_measurement_region):
+                [x0, y0, width, height] = self.parent.get_item_row(row=_index_region)
+                metadata.append("#  region {}: [x0, y0, width, height]=[{}, {}, {}, {}]".format(_index_region,
+                                                                                                x0, y0,
+                                                                                                width, height))
+                _legend += ", Mean_counts_of_region {}".format(_index_region)
+        metadata.append("#")
+        metadata.append(_legend)
+        return metadata
+
+    def run(self):
+        nbr_files = self.parent.ui.summary_table.rowCount()
+        nbr_measurement_region = self.parent.ui.tableWidget.columnCount()
+
+        metadata = self.get_metadata()
