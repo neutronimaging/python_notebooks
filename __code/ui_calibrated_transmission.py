@@ -688,7 +688,7 @@ class Ui_MainWindow(object):
         self.actionProfiles.setObjectName("actionProfiles")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.toolBox.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(1)
         self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
@@ -767,7 +767,7 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Relative Time (s)"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Summary"))
         self.pushButton.setText(_translate("MainWindow", "Help"))
-        self.export_button.setText(_translate("MainWindow", "Export All Profiles ..."))
+        self.export_button.setText(_translate("MainWindow", "Export Calibrated Transmission ..."))
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
         self.actionWater_Intake.setText(_translate("MainWindow", "Water Intake ..."))
         self.actionImportedFilesMetadata.setText(_translate("MainWindow", "Imported Files and Metadata ..."))

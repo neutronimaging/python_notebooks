@@ -781,7 +781,7 @@ class ExportCalibration(object):
             metadata.append("#   height: {}".format(str(self.parent.ui.calibration2_height.text())))
             metadata.append("#   file index: {}".format(str(self.parent.ui.calibration2_index.text())))
             metadata.append("#   value requested: {}".format(str(self.parent.ui.calibration2_value.text())))
-        nbr_measurement_region = self.parent.ui.tableWidget.columnCount()
+        nbr_measurement_region = self.parent.ui.tableWidget.rowCount()
         _legend = "#File_name, Time_stamp, Relative_time(s)"
         if nbr_measurement_region > 0:
             metadata.append("#Measurement Regions:")
