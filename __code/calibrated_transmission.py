@@ -52,19 +52,28 @@ class CalibratedTransmissionUi(QMainWindow):
     default_measurement_roi = {'x0': 0, 'y0': 0,
                                'width': np.NaN, 'height': np.NaN}
 
+    # where the mean counts and calibrated value will be displayed
+    calibration = {'1': {'mean_counts': np.NaN,
+                         'value': np.NaN,
+                         },
+                   '2': {'mean_counts': np.NaN,
+                         'value': np.NaN,
+                         },
+                   }
+
     calibration_widgets = {}
     calibration_widgets_label = {}
     calibrated_roi = {'1': {'x0': 0,
                             'y0': 0,
                             'width': 200,
                             'height': 200,
-                            'value': np.NaN,
+                            'value': 1,  #np.NaN
                             },
                       '2': {'x0': np.NaN,
                             'y0': np.NaN,
                             'width': 200,
                             'height': 200,
-                            'value': np.NaN,
+                            'value': 10, #np.NaN
                             },
                       }
 
@@ -304,11 +313,67 @@ class CalibratedTransmissionUi(QMainWindow):
             if slider_index == cal2_file_index:
                 self.ui.image_view.addItem(self.roi_ui_calibrated[1])
 
-    def display_measurement_profiles(self):
+    def record_calibration(self, index=1):
+        x0 = np.int(str(self.calibration_widgets[str(index)]['x0'].text()))
+        y0 = np.int(str(self.calibration_widgets[str(index)]['y0'].text()))
+        width = np.int(str(self.calibration_widgets[str(index)]['width'].text()))
+        height = np.int(str(self.calibration_widgets[str(index)]['height'].text()))
+        if np.isnan(np.float(str(self.calibration_widgets[str(index)]['value'].text()))):
+            return
+
+        value = np.float(str(self.calibration_widgets[str(index)]['value'].text()))
+
+        if index == 1:
+            file_index = np.int(str(self.ui.calibration1_index.text()))
+        else:
+            file_index = np.int(str(self.ui.calibration2_index.text()))
+
+        _file_data = self.data_dict['data'][file_index]
+        _region_data = _file_data[y0:y0+height, x0:x0+width]
+        _mean = np.nanmean(_region_data)
+
+        self.calibration[str(index)]['mean_counts'] = _mean
+        self.calibration[str(index)]['value'] = value
+
+    def calculate_measurement_profiles(self):
+        """calculate for each measurement roi the mean counts using the calibrated regions. The
+        value will be displayed in the summary table"""
+
+        if self.ui.use_calibration1_checkbox.isChecked():
+            # we have a calibration1
+            self.record_calibration(index=1)
+
+        if self.ui.use_calibration2_checkbox.isChecked():
+            # we have a calibration2
+            self.record_calibration(index=1)
+
+        nbr_row = self.ui.tableWidget.rowCount()
+        for _measurement_row in np.arange(nbr_row):
+            (x0, y0, width, height) = self.get_item_row(row=_measurement_row)
+            for _data_index, _data in enumerate(self.data_dict['data']):
+                data_counts = np.nanmean(_data[y0:y0+height, x0:x0+width])
+                item = QtGui.QTableWidgetItem("{:.2f}".format(data_counts))
+                self.ui.summary_table.setItem(_data_index, _measurement_row+3, item)
+
+
+
+
+
+
+
+
+
+    def display_measurement_profiles(self, refresh_calculation=True):
         """will calculate the mean counts of the calibrated samples (if selected)
         and display the measurement mean of all the rois defined
         """
-        print("display measurement")
+        if refresh_calculation:
+            self.calculate_measurement_profiles()
+
+
+
+
+
 
 
 
