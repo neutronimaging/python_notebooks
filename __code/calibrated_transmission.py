@@ -385,7 +385,7 @@ class CalibratedTransmissionUi(QMainWindow):
             _data = self.measurement_dict[_key]
             self.ui.measurement_view.plot(_data,
                                           name="Region {}".format(_index),
-                                          _key, pen=_color_list[_index])
+                                          pen=_color_list[_index])
 
 
     def remove_row(self, row=-1):
