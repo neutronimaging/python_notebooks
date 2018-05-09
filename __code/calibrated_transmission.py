@@ -53,13 +53,7 @@ class CalibratedTransmissionUi(QMainWindow):
                                'width': np.NaN, 'height': np.NaN}
 
     # where the mean counts and calibrated value will be displayed
-    calibration = {'1': {'mean_counts': np.NaN,
-                         'value': np.NaN,
-                         },
-                   '2': {'mean_counts': np.NaN,
-                         'value': np.NaN,
-                         },
-                   }
+    calibration = {}      # '1' : {'mean_counts' : _mean, 'value': _value}
 
     measurement_dict = {}   # '1': [ measurement data calibrated ]
 
@@ -333,6 +327,7 @@ class CalibratedTransmissionUi(QMainWindow):
         _region_data = _file_data[y0:y0+height, x0:x0+width]
         _mean = np.nanmean(_region_data)
 
+        self.calibration[str(index)] = {}
         self.calibration[str(index)]['mean_counts'] = _mean
         self.calibration[str(index)]['value'] = value
 
@@ -340,13 +335,34 @@ class CalibratedTransmissionUi(QMainWindow):
         """calculate for each measurement roi the mean counts using the calibrated regions. The
         value will be displayed in the summary table"""
 
-        if self.ui.use_calibration1_checkbox.isChecked():
-            # we have a calibration1
-            self.record_calibration(index=1)
+        def ratio_calibration(cali_1=True, cali_2=True, input_value=np.NaN):
+            if cali_1 and cali_2:
+                cal1_mean = self.calibration['1']['mean_counts']
+                cal1_value = self.calibration['1']['value']
+                cal2_mean = self.calibration['2']['mean_counts']
+                cal2_value = self.calibration['2']['value']
+                return ((cal2_value - cal1_value)/(cal2_mean - cal1_mean)*(input_value - cal1_mean) + cal1_value)
 
-        if self.ui.use_calibration2_checkbox.isChecked():
-            # we have a calibration2
+            elif cali_1:
+                index = '1'
+
+            elif cali_2:
+                index = '2'
+
+            else:
+                return input_value
+
+            cali_mean = self.calibration[index]['mean_counts']
+            cali_value = self.calibration[index]['value']
+            return (input_value/cali_mean) * cali_value
+
+        self.calibration = {} # reset
+        cali_1 = self.ui.use_calibration1_checkbox.isChecked()
+        cali_2 = self.ui.use_calibration2_checkbox.isChecked()
+        if cali_1:
             self.record_calibration(index=1)
+        if cali_2:
+            self.record_calibration(index=2)
 
         nbr_row = self.ui.tableWidget.rowCount()
         measurement_dict = {}
@@ -355,13 +371,29 @@ class CalibratedTransmissionUi(QMainWindow):
             _measurement_data = []
             for _data_index, _data in enumerate(self.data_dict['data']):
                 data_counts = np.nanmean(_data[y0:y0+height, x0:x0+width])
-                item = QtGui.QTableWidgetItem("{:.2f}".format(data_counts))
-                _measurement_data.append(data_counts)
+
+                real_data_counts = ratio_calibration(cali_1 = cali_1,
+                                                     cali_2 = cali_2,
+                                                     input_value = data_counts)
+
+                item = QtGui.QTableWidgetItem("{:.2f}".format(real_data_counts))
+                _measurement_data.append(real_data_counts)
                 self.ui.summary_table.setItem(_data_index, _measurement_row+3, item)
 
             measurement_dict[str(_measurement_row+1)] = _measurement_data
 
         self.measurement_dict = measurement_dict
+
+
+
+
+
+
+
+
+
+
+
 
     def display_measurement_profiles(self, refresh_calculation=True):
         """will calculate the mean counts of the calibrated samples (if selected)
@@ -386,7 +418,6 @@ class CalibratedTransmissionUi(QMainWindow):
             self.ui.measurement_view.plot(_data,
                                           name="Region {}".format(_index),
                                           pen=_color_list[_index])
-
 
     def remove_row(self, row=-1):
         if row == -1:
@@ -587,8 +618,10 @@ class CalibratedTransmissionUi(QMainWindow):
     def update_measurement_rois_from_table(self, row=0):
         roi_ui = self.roi_ui_measurement[row]
         [x0, y0, width, height] = self.get_item_row(row=row)
+        roi_ui.blockSignals(True)
         roi_ui.setPos((x0, y0))
         roi_ui.setSize((width, height))
+        roi_ui.blockSignals(False)
 
     # setter
     def set_item_main_table(self, row=0, col=0, value=''):
