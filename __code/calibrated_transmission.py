@@ -61,6 +61,8 @@ class CalibratedTransmissionUi(QMainWindow):
                          },
                    }
 
+    measurement_dict = {}   # '1': [ measurement data calibrated ]
+
     calibration_widgets = {}
     calibration_widgets_label = {}
     calibrated_roi = {'1': {'x0': 0,
@@ -158,9 +160,8 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
         # measurement
-        self.ui.measurement_view = pg.ImageView(view=pg.PlotItem())
-        self.ui.measurement_view.ui.menuBtn.hide()
-        self.ui.measurement_view.ui.roiBtn.hide()
+        self.ui.measurement_view = pg.plot()
+        self.legend = self.ui.measurement_view.addLegend()
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.ui.measurement_view)
         self.ui.measurement_widget.setLayout(vertical_layout2)
@@ -348,34 +349,43 @@ class CalibratedTransmissionUi(QMainWindow):
             self.record_calibration(index=1)
 
         nbr_row = self.ui.tableWidget.rowCount()
+        measurement_dict = {}
         for _measurement_row in np.arange(nbr_row):
             (x0, y0, width, height) = self.get_item_row(row=_measurement_row)
+            _measurement_data = []
             for _data_index, _data in enumerate(self.data_dict['data']):
                 data_counts = np.nanmean(_data[y0:y0+height, x0:x0+width])
                 item = QtGui.QTableWidgetItem("{:.2f}".format(data_counts))
+                _measurement_data.append(data_counts)
                 self.ui.summary_table.setItem(_data_index, _measurement_row+3, item)
 
+            measurement_dict[str(_measurement_row+1)] = _measurement_data
 
-
-
-
-
-
-
+        self.measurement_dict = measurement_dict
 
     def display_measurement_profiles(self, refresh_calculation=True):
         """will calculate the mean counts of the calibrated samples (if selected)
         and display the measurement mean of all the rois defined
         """
+        self.ui.measurement_view.clear()
+        try:
+            self.ui.measurement_view.scene().removeItem(self.legend)
+        except Exception as e:
+            print(e)
+
+        self.legend = self.ui.measurement_view.addLegend()
+
         if refresh_calculation:
             self.calculate_measurement_profiles()
 
+        _color = Color()
+        _color_list = _color.get_list_rgb(nbr_color=self.ui.tableWidget.rowCount())
 
-
-
-
-
-
+        for _index, _key in enumerate(self.measurement_dict.keys()):
+            _data = self.measurement_dict[_key]
+            self.ui.measurement_view.plot(_data,
+                                          name="Region {}".format(_index),
+                                          _key, pen=_color_list[_index])
 
 
     def remove_row(self, row=-1):
