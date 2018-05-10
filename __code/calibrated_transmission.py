@@ -102,13 +102,9 @@ class CalibratedTransmissionUi(QMainWindow):
         self.timestamp_dict = retrieve_time_stamp(list_files)
 
     def init_statusbar(self):
-        self.ui.info_label = QtGui.QLabel("dfdfdfdfdf")
-        self.ui.statusbar.addPermanentWidget(self.ui.info_label)
-        # self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        # self.eventProgress.setMinimumSize(300, 20)
-        # self.eventProgress.setMaximumSize(300, 20)
-        # self.eventProgress.setVisible(False)
-        # self.ui.statusbar.addPermanentWidget(self.eventProgress)
+        pass
+        # self.ui.info_label = QtGui.QLabel("")
+        # self.ui.statusbar.addPermanentWidget(self.ui.info_label)
 
     def init_table(self):
         list_files_full_name = self.data_dict['file_name']
@@ -819,3 +815,5 @@ class ExportCalibration(object):
 
         QtGui.QApplication.processEvents()
 
+        # display name of file exported for 10s
+        self.parent.ui.statusbar.showMessage("File Created: {}".format(full_export_file_name), 10000)
