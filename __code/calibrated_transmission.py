@@ -392,6 +392,8 @@ class CalibratedTransmissionUi(QMainWindow):
             self.ui.measurement_view.plot(_data,
                                           name="Region {}".format(1+_index),
                                           pen=_color_list[_index])
+            self.ui.measurement_view.setLabel('bottom', 'File Index')
+            self.ui.measurement_view.setLabel('left', 'Mean Counts Calibrated')
 
     def remove_row(self, row=-1):
         if row == -1:
