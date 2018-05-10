@@ -748,7 +748,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/registration/")
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/calibrated_transmission/")
 
     def closeEvent(self, event=None):
         pass

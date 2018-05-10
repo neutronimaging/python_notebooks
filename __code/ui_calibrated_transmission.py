@@ -712,6 +712,7 @@ class Ui_MainWindow(object):
         self.calibration2_y0.returnPressed.connect(MainWindow.calibration2_widgets_changed)
         self.calibration2_height.returnPressed.connect(MainWindow.calibration2_widgets_changed)
         self.use_calibration2_checkbox.clicked.connect(MainWindow.use_calibration2_checked)
+        self.pushButton.clicked.connect(MainWindow.help_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

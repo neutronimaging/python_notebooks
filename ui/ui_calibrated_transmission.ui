@@ -1989,8 +1989,8 @@
    <slot>use_calibration1_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>847</x>
-     <y>130</y>
+     <x>870</x>
+     <y>162</y>
     </hint>
     <hint type="destinationlabel">
      <x>578</x>
@@ -2037,8 +2037,8 @@
    <slot>use_current_calibration1_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>998</x>
-     <y>384</y>
+     <x>879</x>
+     <y>353</y>
     </hint>
     <hint type="destinationlabel">
      <x>1336</x>
@@ -2053,8 +2053,8 @@
    <slot>use_current_calibration2_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1094</x>
-     <y>648</y>
+     <x>975</x>
+     <y>364</y>
     </hint>
     <hint type="destinationlabel">
      <x>1340</x>
@@ -2069,8 +2069,8 @@
    <slot>display_this_cal1_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1116</x>
-     <y>311</y>
+     <x>1154</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>1343</x>
@@ -2085,8 +2085,8 @@
    <slot>display_this_cal2_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1095</x>
-     <y>569</y>
+     <x>1133</x>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
      <x>1337</x>
@@ -2101,8 +2101,8 @@
    <slot>calibration1_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>927</x>
-     <y>223</y>
+     <x>899</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>1341</x>
@@ -2117,8 +2117,8 @@
    <slot>calibration1_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1037</x>
-     <y>223</y>
+     <x>1081</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>1346</x>
@@ -2133,8 +2133,8 @@
    <slot>calibration1_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>937</x>
-     <y>251</y>
+     <x>909</x>
+     <y>220</y>
     </hint>
     <hint type="destinationlabel">
      <x>1341</x>
@@ -2149,8 +2149,8 @@
    <slot>calibration1_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1027</x>
-     <y>250</y>
+     <x>1071</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>1339</x>
@@ -2165,8 +2165,8 @@
    <slot>calibration2_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>939</x>
-     <y>474</y>
+     <x>911</x>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
      <x>1337</x>
@@ -2181,8 +2181,8 @@
    <slot>calibration2_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1030</x>
-     <y>470</y>
+     <x>1074</x>
+     <y>186</y>
     </hint>
     <hint type="destinationlabel">
      <x>1340</x>
@@ -2197,8 +2197,8 @@
    <slot>calibration2_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>924</x>
-     <y>505</y>
+     <x>896</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
      <x>1343</x>
@@ -2213,8 +2213,8 @@
    <slot>calibration2_widgets_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1048</x>
-     <y>501</y>
+     <x>1092</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>1339</x>
@@ -2229,12 +2229,28 @@
    <slot>use_calibration2_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>932</x>
-     <y>456</y>
+     <x>813</x>
+     <y>153</y>
     </hint>
     <hint type="destinationlabel">
      <x>673</x>
      <y>474</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>help_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>52</x>
+     <y>903</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
+     <y>901</y>
     </hint>
    </hints>
   </connection>
