@@ -688,9 +688,9 @@ class Ui_MainWindow(object):
         self.actionProfiles.setObjectName("actionProfiles")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.toolBox.setCurrentIndex(0)
-        self.tabWidget_2.setCurrentIndex(1)
+        self.tabWidget_2.setCurrentIndex(0)
         self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
         self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)

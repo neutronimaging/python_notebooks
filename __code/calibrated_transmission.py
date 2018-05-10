@@ -89,7 +89,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.init_parameters()
         self.init_widgets()
         self.init_pyqtgrpah()
-        # self.init_statusbar()
+        self.init_statusbar()
 
         # display first image
         self.slider_file_changed(-1)
@@ -102,11 +102,13 @@ class CalibratedTransmissionUi(QMainWindow):
         self.timestamp_dict = retrieve_time_stamp(list_files)
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        self.eventProgress.setMinimumSize(300, 20)
-        self.eventProgress.setMaximumSize(300, 20)
-        self.eventProgress.setVisible(False)
-        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+        self.ui.info_label = QtGui.QLabel("dfdfdfdfdf")
+        self.ui.statusbar.addPermanentWidget(self.ui.info_label)
+        # self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        # self.eventProgress.setMinimumSize(300, 20)
+        # self.eventProgress.setMaximumSize(300, 20)
+        # self.eventProgress.setVisible(False)
+        # self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
     def init_table(self):
         list_files_full_name = self.data_dict['file_name']
@@ -141,7 +143,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
         # measurement
-        self.ui.measurement_view = pg.plot()
+        self.ui.measurement_view = pg.PlotWidget()
         self.legend = self.ui.measurement_view.addLegend()
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.ui.measurement_view)
@@ -790,7 +792,7 @@ class ExportCalibration(object):
                 metadata.append("#  region {}: [x0, y0, width, height]=[{}, {}, {}, {}]".format(_index_region,
                                                                                                 x0, y0,
                                                                                                 width, height))
-                _legend += ", Mean_counts_of_region {}".format(_index_region)
+                _legend += ", Mean_counts_of_region {}".format(_index_region+1)
         metadata.append("#")
         metadata.append(_legend)
         return metadata
@@ -802,12 +804,12 @@ class ExportCalibration(object):
         metadata = self.get_metadata()
         data = []
         for _row in np.arange(nbr_files):
-            _row = []
+            _row_str = []
             for _col in np.arange(nbr_col):
-                _row.append(str(self.parent.ui.summary_table.item(_row, _col).text()))
-            data.append(",".join(_row))
+                _row_str.append(str(self.parent.ui.summary_table.item(_row, _col).text()))
+            data.append(",".join(_row_str))
 
-        export_file_name = os.path.basename(os.path.self.parent.working_dir)
+        export_file_name = os.path.basename(self.parent.working_dir)
         full_export_file_name = os.path.join(self.export_folder, export_file_name + "_calibrated_transmission.txt")
 
         make_ascii_file(metadata=metadata,
@@ -815,4 +817,5 @@ class ExportCalibration(object):
                         output_file_name=full_export_file_name,
                         dim='1d')
 
+        QtGui.QApplication.processEvents()
 
