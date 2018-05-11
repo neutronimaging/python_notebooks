@@ -112,23 +112,72 @@
                   </property>
                  </widget>
                 </item>
+                <item>
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>Transparency</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="transparency_slider">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
                </layout>
               </widget>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
-                <widget class="QPushButton" name="right_rotation_button">
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>300</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
+                <layout class="QVBoxLayout" name="verticalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="right_rotation_button_fast">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>200</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>200</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="right_rotation_button_slow">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>100</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>100</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
                <item>
                 <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -208,17 +257,46 @@
                 </layout>
                </item>
                <item>
-                <widget class="QPushButton" name="left_rotation_button">
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>300</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
+                <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <item>
+                  <widget class="QPushButton" name="left_rotation_button_fast">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>200</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>200</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="left_rotation_button_slow">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>100</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>100</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
@@ -263,11 +341,6 @@
                  <property name="alternatingRowColors">
                   <bool>true</bool>
                  </property>
-                 <row>
-                  <property name="text">
-                   <string>New Row</string>
-                  </property>
-                 </row>
                  <column>
                   <property name="text">
                    <string>Enabled</string>
@@ -309,11 +382,6 @@
                  <attribute name="verticalHeaderVisible">
                   <bool>false</bool>
                  </attribute>
-                 <row>
-                  <property name="text">
-                   <string>New Row</string>
-                  </property>
-                 </row>
                  <column>
                   <property name="text">
                    <string>Width</string>
@@ -604,8 +672,8 @@
    <slot>remove_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>793</x>
-     <y>579</y>
+     <x>822</x>
+     <y>595</y>
     </hint>
     <hint type="destinationlabel">
      <x>751</x>
@@ -652,7 +720,7 @@
    <slot>grid_size_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>461</x>
+     <x>412</x>
      <y>103</y>
     </hint>
     <hint type="destinationlabel">
@@ -678,34 +746,98 @@
    </hints>
   </connection>
   <connection>
-   <sender>right_rotation_button</sender>
-   <signal>clicked()</signal>
+   <sender>transparency_slider</sender>
+   <signal>sliderPressed()</signal>
    <receiver>MainWindow</receiver>
-   <slot>right_rotation_button_clicked()</slot>
+   <slot>transparency_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>59</x>
-     <y>299</y>
+     <x>577</x>
+     <y>106</y>
     </hint>
     <hint type="destinationlabel">
-     <x>4</x>
-     <y>261</y>
+     <x>731</x>
+     <y>24</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>left_rotation_button</sender>
-   <signal>clicked()</signal>
+   <sender>transparency_slider</sender>
+   <signal>sliderMoved(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>left_rotation_button_clicked()</slot>
+   <slot>transparency_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>741</x>
-     <y>363</y>
+     <x>692</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
-     <x>834</x>
-     <y>26</y>
+     <x>1062</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_rotation_button_fast</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_rotation_fast_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>52</x>
+     <y>268</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_rotation_button_slow</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_rotation_slow_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>515</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>510</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_rotation_button_fast</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_rotation_fast_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>761</x>
+     <y>322</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_rotation_button_slow</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_rotation_slow_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>749</x>
+     <y>507</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>439</y>
     </hint>
    </hints>
   </connection>
@@ -721,7 +853,11 @@
   <slot>display_grid_clicked()</slot>
   <slot>grid_size_slider_clicked()</slot>
   <slot>grid_size_slider_moved()</slot>
-  <slot>right_rotation_button_clicked()</slot>
-  <slot>left_rotation_button_clicked()</slot>
+  <slot>transparency_slider_clicked()</slot>
+  <slot>transparency_slider_moved()</slot>
+  <slot>right_rotation_fast_clicked()</slot>
+  <slot>right_rotation_slow_clicked()</slot>
+  <slot>left_rotation_fast_clicked()</slot>
+  <slot>left_rotation_slow_clicked()</slot>
  </slots>
 </ui>

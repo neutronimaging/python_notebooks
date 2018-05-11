@@ -5,6 +5,7 @@ import numpy as np
 import os
 import copy
 import pyqtgraph as pg
+from skimage import transform
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -29,8 +30,10 @@ from __code.ui_profile import Ui_MainWindow as UiMainWindow
 class ProfileUi(QMainWindow):
 
     data_dict = {}
+    data_dict_raw = {}
     timestamp_dict = {}
 
+    rotation_angle = 0
     histogram_level = []
 
     # size of tables
@@ -39,7 +42,10 @@ class ProfileUi(QMainWindow):
     summary_table_width = [300, 150, 100]
 
     live_image = []
-
+    grid_view = {'pos': None,
+                 'adj': None,
+                 'item': None,
+                 'color': (0, 0, 255, 255, 1)}
 
 
 
@@ -217,10 +223,10 @@ class ProfileUi(QMainWindow):
         self.calibrated_roi['2']['color'] = 'r' # red
 
     # main methods
-    def display_image(self):
+    def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
 
-        _image = self.get_image_selected()
+        _image = self.get_image_selected(recalculate_image=recalculate_image)
 
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
@@ -240,8 +246,97 @@ class ProfileUi(QMainWindow):
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
+        # remove previous grid if any
+        if self.grid_view['item']:
+            self.ui.image_view.removeItem(self.grid_view['item'])
+
+        # if we want a grid
+        if self.ui.grid_display_checkBox.isChecked():
+
+            grid_size = self.ui.grid_size_slider.value()
+            [height, width] = np.shape(self.live_image)
+
+            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
+                                                      height=height,
+                                                      width=width)
+            pos = pos_adj_dict['pos']
+            adj = pos_adj_dict['adj']
+
+            line_color = self.grid_view['color']
+            _transparency_value = 255 - (np.float(str(self.ui.transparency_slider.value()))/100) * 255
+            _list_line_color = list(line_color)
+            _list_line_color[3] = _transparency_value
+            line_color = tuple(_list_line_color)
+            lines = np.array([line_color for n in np.arange(len(pos))],
+                             dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                    ('blue', np.ubyte), ('alpha', np.ubyte),
+                                    ('width', float)])
+
+            grid = pg.GraphItem()
+            self.ui.image_view.addItem(grid)
+            grid.setData(pos=pos,
+                         adj=adj,
+                         pen=lines,
+                         symbol=None,
+                         pxMode=False)
+            self.grid_view['item'] = grid
+
+
         # calibrated and measurement ROIs
         # self.display_roi()
+
+    def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
+        """calculate the matrix that defines the vertical and horizontal lines
+        that allow pyqtgraph to display the grid"""
+
+        pos_adj_dict = {}
+
+        # pos - each matrix defines one side of the line
+        pos = []
+        adj = []
+
+        # vertical lines
+        x = 0
+        index = 0
+        while (x <= width):
+            one_edge = [x, 0]
+            other_edge = [x, height]
+            pos.append(one_edge)
+            pos.append(other_edge)
+            adj.append([index, index + 1])
+            x += grid_size
+            index += 2
+
+        # vertical lines
+        y = 0
+        while (y <= height):
+            one_edge = [0, y]
+            other_edge = [width, y]
+            pos.append(one_edge)
+            pos.append(other_edge)
+            adj.append([index, index + 1])
+            y += grid_size
+            index += 2
+
+        pos_adj_dict['pos'] = np.array(pos)
+        pos_adj_dict['adj'] = np.array(adj)
+
+        return pos_adj_dict
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def display_roi(self):
         """display the calibrated and measurement rois"""
@@ -587,8 +682,13 @@ class ProfileUi(QMainWindow):
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     # getter
-    def get_image_selected(self):
+    def get_image_selected(self, recalculate_image=False):
         slider_index = self.ui.file_slider.value()
+        if recalculate_image:
+            angle = self.rotation_angle
+            # rotate all images
+            self.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.data_dict_raw['data']]
+
         _image = self.data_dict['data'][slider_index]
         return _image
 
@@ -628,20 +728,37 @@ class ProfileUi(QMainWindow):
         # self.display_measurement_profiles()
 
     ## Event Handler
-    def right_rotation_button_clicked(self):
-        print("click right rotation")
-
-    def left_rotation_button_clicked(self):
-        print("click left rotation")
-
-    def grid_size_slider_clicked(self):
-        print("slider clicked")
-
-    def grid_size_slider_moved(self, value):
-        print("grid size slider moved")
 
     def display_grid_clicked(self):
-        print("display grid checked")
+        self.display_image()
+
+    def grid_size_slider_clicked(self):
+        self.display_image()
+
+    def grid_size_slider_moved(self, value):
+        self.display_image()
+
+    def transparency_slider_clicked(self):
+        self.display_image()
+
+    def transparency_slider_moved(self, value):
+        self.display_image()
+
+    def right_rotation_slow_clicked(self):
+        self.rotation_angle -= 0.1
+        self.display_image(recalculate_image=True)
+
+    def left_rotation_slow_clicked(self):
+        self.rotation_angle += 0.1
+        self.display_image(recalculate_image=True)
+
+    def right_rotation_fast_clicked(self):
+        self.rotation_angle -= 1
+        self.display_image(recalculate_image=True)
+
+    def left_rotation_fast_clicked(self):
+        self.rotation_angle += 1
+        self.display_image(recalculate_image=True)
 
     def add_row_button_clicked(self):
         print("add row button")

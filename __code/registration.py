@@ -73,6 +73,8 @@ class RegistrationUi(QMainWindow):
     new_reference_image = True
     list_rgb_profile_color = []
 
+
+
     # external registration ui
     registration_tool_ui = None
     registration_auto_confirmation_ui = None
