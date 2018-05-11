@@ -72,7 +72,7 @@ class ProfileUi(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle("Calibrated Transmission")
+        self.setWindowTitle("Profile")
 
         self.working_dir = working_dir
         self.data_dict = data_dict # Normalization data dictionary  {'file_name': [],
@@ -84,17 +84,17 @@ class ProfileUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
 
         # initialization
-        self.init_timestamp_dict()
-        self.init_table()
-        self.init_parameters()
-        self.init_widgets()
-        self.init_pyqtgrpah()
-        self.init_statusbar()
-
-        # display first image
-        self.slider_file_changed(-1)
-
-        self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
+        # self.init_timestamp_dict()
+        # self.init_table()
+        # self.init_parameters()
+        # self.init_widgets()
+        # self.init_pyqtgrpah()
+        # self.init_statusbar()
+        #
+        # # display first image
+        # self.slider_file_changed(-1)
+        #
+        # self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
 
     # initialization
     def init_timestamp_dict(self):
@@ -750,7 +750,7 @@ class ProfileUi(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/calibrated_transmission/")
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/profile/")
 
     def closeEvent(self, event=None):
         pass
