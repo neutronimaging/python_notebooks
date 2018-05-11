@@ -32,9 +32,21 @@ class ProfileUi(QMainWindow):
     timestamp_dict = {}
 
     histogram_level = []
+
+    # size of tables
+    _width = 50
+    guide_table_width = [80, _width, _width, _width, _width]
+    summary_table_width = [300, 150, 100]
+
+
+
+
+
+
+
+
     col_width = 65
     table_column_width = [col_width, col_width, col_width, col_width, 100]
-    summary_table_width = [300, 150, 100]
     default_measurement_roi = {'x0': 0, 'y0': 0,
                                'width': np.NaN, 'height': np.NaN}
 
@@ -87,7 +99,7 @@ class ProfileUi(QMainWindow):
         # self.init_timestamp_dict()
         # self.init_table()
         # self.init_parameters()
-        # self.init_widgets()
+        self.init_widgets()
         # self.init_pyqtgrpah()
         # self.init_statusbar()
         #
@@ -165,6 +177,16 @@ class ProfileUi(QMainWindow):
 
     def init_widgets(self):
         """size and label of any widgets"""
+
+        _file_path = os.path.dirname(__file__)
+        left_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_left.png'))
+        self.ui.left_rotation_button.setStyleSheet("background-image: url('" + left_rotation_file + "'); "
+                                                                                                    "background-repeat: no-repeat")
+
+        right_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_right.png'))
+        self.ui.right_rotation_button.setStyleSheet("background-image: url('" + right_rotation_file + "'); "
+                                                                                                    "background-repeat: no-repeat")
+
         self.ui.splitter.setSizes([250, 130])
 
         # file slider
@@ -173,51 +195,12 @@ class ProfileUi(QMainWindow):
         # update size of table columns
         nbr_columns = self.ui.tableWidget.columnCount()
         for _col in range(nbr_columns):
-            self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
+            self.ui.tableWidget.setColumnWidth(_col, self.guide_table_width[_col])
 
         # update size of summary table
         nbr_columns = self.ui.summary_table.columnCount()
         for _col in range(nbr_columns):
             self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
-
-        self.calibration_widgets = {'1': {'x0': self.ui.calibration1_x0,
-                                          'y0': self.ui.calibration1_y0,
-                                          'width': self.ui.calibration1_width,
-                                          'height': self.ui.calibration1_height,
-                                          'value': self.ui.calibration1_value,
-                                          },
-                                    '2': {'x0': self.ui.calibration2_x0,
-                                          'y0': self.ui.calibration2_y0,
-                                          'width': self.ui.calibration2_width,
-                                          'height': self.ui.calibration2_height,
-                                          'value': self.ui.calibration2_value,
-                                          },
-                                    }
-
-        self.calibration_widgets_label = {'1': {'x0_label': self.ui.calibration1_x0_label,
-                                                'y0_label': self.ui.calibration1_y0_label,
-                                                'width_label': self.ui.calibration1_width_label,
-                                                'height_label': self.ui.calibration1_height_label,
-                                                'value_label': self.ui.calibration1_value_label,
-                                                'group': self.ui.calibration1_groupbox,
-                                                },
-                                         '2': {'x0_label': self.ui.calibration2_x0_label,
-                                               'y0_label': self.ui.calibration2_y0_label,
-                                               'width_label': self.ui.calibration2_width_label,
-                                               'height_label': self.ui.calibration2_height_label,
-                                               'value_label': self.ui.calibration2_value_label,
-                                               'group': self.ui.calibration2_groupbox,
-                                              },
-                                          }
-
-        # will keep record of the x0, y0, width, height, value and color of the calibration rois
-        self.calibration_roi = {'1': {},
-                                '2': {},
-                                }
-
-        # init calibrated roi
-        self.populate_calibration_widgets(calibration_index=1)
-        self.populate_calibration_widgets(calibration_index=2)
 
 
     def populate_calibration_widgets(self, calibration_index=1):
