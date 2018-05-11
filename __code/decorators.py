@@ -2,10 +2,10 @@ import os
 
 try:
     from PyQt4.QtGui import QApplication
-    from PyQt4 import QtCore
+    from PyQt4 import QtCore, QtGui
 except ImportError:
     from PyQt5.QtWidgets import QApplication, QMainWindow
-    from PyQt5 import QtCore
+    from PyQt5 import QtCore, QtGui
 
 
 def format_directory(function):
@@ -33,9 +33,13 @@ def wait_cursor(function):
     Add a wait cursor during the running of the function
     """
 
-    def wrapper(*args, **kwargs):
+    def wrapper(self, *args, **kwargs):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        function(*args, **kwargs)
+        QtGui.QGuiApplication.processEvents()
+        # function(*args, **kwargs)
+        function(self)
         QApplication.restoreOverrideCursor()
+        QtGui.QGuiApplication.processEvents()
 
     return wrapper
+

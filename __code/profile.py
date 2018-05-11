@@ -25,6 +25,7 @@ except AttributeError:
 from __code.color import  Color
 from __code.file_handler import retrieve_time_stamp, make_ascii_file
 from __code.ui_profile import Ui_MainWindow as UiMainWindow
+from __code.decorators import wait_cursor
 
 
 class ProfileUi(QMainWindow):
@@ -128,12 +129,20 @@ class ProfileUi(QMainWindow):
         """size and label of any widgets"""
 
         _file_path = os.path.dirname(__file__)
-        left_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_left.png'))
-        self.ui.left_rotation_button.setStyleSheet("background-image: url('" + left_rotation_file + "'); "
+        left_rotation_fast_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_left_fast.png'))
+        self.ui.left_rotation_button_fast.setStyleSheet("background-image: url('" + left_rotation_fast_file + "'); "
                                                                                                     "background-repeat: no-repeat")
 
-        right_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_right.png'))
-        self.ui.right_rotation_button.setStyleSheet("background-image: url('" + right_rotation_file + "'); "
+        right_rotation_fast_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_right_fast.png'))
+        self.ui.right_rotation_button_fast.setStyleSheet("background-image: url('" + right_rotation_fast_file + "'); "
+                                                                                                    "background-repeat: no-repeat")
+
+        left_rotation_slow_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_left_slow.png'))
+        self.ui.left_rotation_button_slow.setStyleSheet("background-image: url('" + left_rotation_slow_file + "'); "
+                                                                                                    "background-repeat: no-repeat")
+
+        right_rotation_slow_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_right_slow.png'))
+        self.ui.right_rotation_button_slow.setStyleSheet("background-image: url('" + right_rotation_slow_file + "'); "
                                                                                                     "background-repeat: no-repeat")
 
         self.ui.splitter_2.setSizes([250, 50])
@@ -744,18 +753,22 @@ class ProfileUi(QMainWindow):
     def transparency_slider_moved(self, value):
         self.display_image()
 
+    @wait_cursor
     def right_rotation_slow_clicked(self):
         self.rotation_angle -= 0.1
         self.display_image(recalculate_image=True)
 
+    @wait_cursor
     def left_rotation_slow_clicked(self):
         self.rotation_angle += 0.1
         self.display_image(recalculate_image=True)
 
+    @wait_cursor
     def right_rotation_fast_clicked(self):
         self.rotation_angle -= 1
         self.display_image(recalculate_image=True)
 
+    @wait_cursor
     def left_rotation_fast_clicked(self):
         self.rotation_angle += 1
         self.display_image(recalculate_image=True)
