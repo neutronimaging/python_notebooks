@@ -104,7 +104,7 @@ class ProfileUi(QMainWindow):
         # self.init_statusbar()
         #
         # # display first image
-        # self.slider_file_changed(-1)
+        self.slider_file_changed(-1)
         #
         # self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
 
@@ -241,7 +241,7 @@ class ProfileUi(QMainWindow):
             _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
         # calibrated and measurement ROIs
-        self.display_roi()
+        # self.display_roi()
 
     def display_roi(self):
         """display the calibrated and measurement rois"""
@@ -625,7 +625,7 @@ class ProfileUi(QMainWindow):
         slider_value = self.ui.file_slider.value()
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
-        self.display_measurement_profiles()
+        # self.display_measurement_profiles()
 
     ## Event Handler
     def right_rotation_button_clicked(self):
