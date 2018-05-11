@@ -38,43 +38,43 @@ class ProfileUi(QMainWindow):
     guide_table_width = [80, _width, _width, _width, _width]
     summary_table_width = [300, 150, 100]
 
-
-
-
-
-
-
-
-    col_width = 65
-    table_column_width = [col_width, col_width, col_width, col_width, 100]
-    default_measurement_roi = {'x0': 0, 'y0': 0,
-                               'width': np.NaN, 'height': np.NaN}
-
-    # where the mean counts and calibrated value will be displayed
-    calibration = {}      # '1' : {'mean_counts' : _mean, 'value': _value}
-
-    measurement_dict = {}   # '1': [ measurement data calibrated ]
-
-    calibration_widgets = {}
-    calibration_widgets_label = {}
-    calibrated_roi = {'1': {'x0': 0,
-                            'y0': 0,
-                            'width': 200,
-                            'height': 200,
-                            'value': 1,  #np.NaN
-                            },
-                      '2': {'x0': np.NaN,
-                            'y0': np.NaN,
-                            'width': 200,
-                            'height': 200,
-                            'value': 10, #np.NaN
-                            },
-                      }
-
-    roi_ui_measurement = list() # keep record of all the pyqtgraph.ROI ui
-    roi_ui_calibrated = []
-
     live_image = []
+
+
+
+
+
+
+    #
+    # col_width = 65
+    # table_column_width = [col_width, col_width, col_width, col_width, 100]
+    # default_measurement_roi = {'x0': 0, 'y0': 0,
+    #                            'width': np.NaN, 'height': np.NaN}
+    #
+    # # where the mean counts and calibrated value will be displayed
+    # calibration = {}      # '1' : {'mean_counts' : _mean, 'value': _value}
+    #
+    # measurement_dict = {}   # '1': [ measurement data calibrated ]
+    #
+    # calibration_widgets = {}
+    # calibration_widgets_label = {}
+    # calibrated_roi = {'1': {'x0': 0,
+    #                         'y0': 0,
+    #                         'width': 200,
+    #                         'height': 200,
+    #                         'value': 1,  #np.NaN
+    #                         },
+    #                   '2': {'x0': np.NaN,
+    #                         'y0': np.NaN,
+    #                         'width': 200,
+    #                         'height': 200,
+    #                         'value': 10, #np.NaN
+    #                         },
+    #                   }
+    #
+    # roi_ui_measurement = list() # keep record of all the pyqtgraph.ROI ui
+    # roi_ui_calibrated = []
+
 
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
@@ -96,11 +96,11 @@ class ProfileUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
 
         # initialization
-        # self.init_timestamp_dict()
+        self.init_timestamp_dict()
         # self.init_table()
         # self.init_parameters()
         self.init_widgets()
-        # self.init_pyqtgrpah()
+        self.init_pyqtgraph()
         # self.init_statusbar()
         #
         # # display first image
@@ -117,6 +117,57 @@ class ProfileUi(QMainWindow):
         pass
         # self.ui.info_label = QtGui.QLabel("")
         # self.ui.statusbar.addPermanentWidget(self.ui.info_label)
+
+    def init_widgets(self):
+        """size and label of any widgets"""
+
+        _file_path = os.path.dirname(__file__)
+        left_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_left.png'))
+        self.ui.left_rotation_button.setStyleSheet("background-image: url('" + left_rotation_file + "'); "
+                                                                                                    "background-repeat: no-repeat")
+
+        right_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_right.png'))
+        self.ui.right_rotation_button.setStyleSheet("background-image: url('" + right_rotation_file + "'); "
+                                                                                                    "background-repeat: no-repeat")
+
+        self.ui.splitter_2.setSizes([250, 50])
+        self.ui.splitter.setSizes([250, 50])
+
+        # file slider
+        self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
+
+        # update size of table columns
+        nbr_columns = self.ui.tableWidget.columnCount()
+        for _col in range(nbr_columns):
+            self.ui.tableWidget.setColumnWidth(_col, self.guide_table_width[_col])
+
+        # update size of summary table
+        nbr_columns = self.ui.summary_table.columnCount()
+        for _col in range(nbr_columns):
+            self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
+
+    def init_pyqtgraph(self):
+        # image
+        self.ui.image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.image_view.ui.menuBtn.hide()
+        self.ui.image_view.ui.roiBtn.hide()
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(self.ui.image_view)
+        self.ui.pyqtgraph_widget.setLayout(vertical_layout)
+
+        # profile
+        self.ui.profile_view = pg.PlotWidget()
+        self.legend = self.ui.profile_view.addLegend()
+        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2.addWidget(self.ui.profile_view)
+        self.ui.profile_widget.setLayout(vertical_layout2)
+
+
+
+
+
+
+
 
     def init_table(self):
         list_files_full_name = self.data_dict['file_name']
@@ -141,66 +192,7 @@ class ProfileUi(QMainWindow):
     #     o_marker = MarkerDefaultSettings(image_reference=self.reference_image)
     #     self.o_MarkerDefaultSettings = o_marker
 
-    def init_pyqtgrpah(self):
-        # image
-        self.ui.image_view = pg.ImageView(view=pg.PlotItem())
-        self.ui.image_view.ui.menuBtn.hide()
-        self.ui.image_view.ui.roiBtn.hide()
-        vertical_layout = QtGui.QVBoxLayout()
-        vertical_layout.addWidget(self.ui.image_view)
-        self.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
-        # measurement
-        self.ui.measurement_view = pg.PlotWidget()
-        self.legend = self.ui.measurement_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
-        vertical_layout2.addWidget(self.ui.measurement_view)
-        self.ui.measurement_widget.setLayout(vertical_layout2)
-
-        def define_roi(roi_dict, callback_function):
-            cal = pg.RectROI([roi_dict['x0'], roi_dict['y0']],
-                             roi_dict['height'],
-                             roi_dict['width'],
-                             pen=roi_dict['color'])
-            cal.addScaleHandle([1, 1], [0, 0])
-            cal.addScaleHandle([0, 0], [1, 1])
-            cal.sigRegionChanged.connect(callback_function)
-            self.ui.image_view.addItem(cal)
-            return cal
-
-        # calibration
-        calibration_roi = self.calibrated_roi
-        roi1 = define_roi(calibration_roi['1'], self.calibration1_roi_moved)
-        self.roi_ui_calibrated.append(roi1)
-        roi2 = define_roi(calibration_roi['2'], self.calibration2_roi_moved)
-        self.roi_ui_calibrated.append(roi2)
-
-    def init_widgets(self):
-        """size and label of any widgets"""
-
-        _file_path = os.path.dirname(__file__)
-        left_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_left.png'))
-        self.ui.left_rotation_button.setStyleSheet("background-image: url('" + left_rotation_file + "'); "
-                                                                                                    "background-repeat: no-repeat")
-
-        right_rotation_file = os.path.abspath(os.path.join(_file_path, 'static/profile/button_rotation_right.png'))
-        self.ui.right_rotation_button.setStyleSheet("background-image: url('" + right_rotation_file + "'); "
-                                                                                                    "background-repeat: no-repeat")
-
-        self.ui.splitter.setSizes([250, 130])
-
-        # file slider
-        self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
-
-        # update size of table columns
-        nbr_columns = self.ui.tableWidget.columnCount()
-        for _col in range(nbr_columns):
-            self.ui.tableWidget.setColumnWidth(_col, self.guide_table_width[_col])
-
-        # update size of summary table
-        nbr_columns = self.ui.summary_table.columnCount()
-        for _col in range(nbr_columns):
-            self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
 
 
     def populate_calibration_widgets(self, calibration_index=1):
@@ -624,66 +616,8 @@ class ProfileUi(QMainWindow):
         self.display_image()
         self.ui.file_slider.blockSignals(False)
 
-    def calibration_widgets_handler(self, status, index=1):
-        list_ui = self.calibration_widgets[str(index)]
-        for _ui in list_ui.keys():
-            list_ui[_ui].setEnabled(status)
-
-        list_ui = self.calibration_widgets_label[str(index)]
-        for _ui in list_ui.keys():
-            list_ui[_ui].setEnabled(status)
-
-    def calibration1_widgets_handler(self, status):
-        self.calibration_widgets_handler(status, index=1)
-
-    def calibration2_widgets_handler(self, status):
-        self.calibration_widgets_handler(status, index=2)
-
-    # event handler
-    def calibration1_widgets_changed(self):
-        self.calibration_widgets_changed(index=1)
-        self.display_measurement_profiles()
-
-    def calibration2_widgets_changed(self):
-        self.calibration_widgets_changed(index=2)
-        self.display_measurement_profiles()
-
-    def display_this_cal1_file(self):
-        self.display_this_file(index=1)
-
-    def display_this_cal2_file(self):
-        self.display_this_file(index=2)
-
-    def use_current_calibration1_file(self):
-        self.use_current_calibration_file(index=1)
-        self.display_measurement_profiles()
-
-    def use_current_calibration2_file(self):
-        self.use_current_calibration_file(index=2)
-        self.display_measurement_profiles()
-
     def measurement_roi_moved(self):
         self.update_all_measurement_rois_from_view()
-        self.display_measurement_profiles()
-
-    def calibration1_roi_moved(self):
-        self.update_calibration_widgets(index=1)
-        self.display_measurement_profiles()
-
-    def calibration2_roi_moved(self):
-        self.update_calibration_widgets(index=2)
-        self.display_measurement_profiles()
-
-    def use_calibration1_checked(self):
-        cali_button_checked = self.ui.use_calibration1_checkbox.isChecked()
-        self.calibration1_widgets_handler(cali_button_checked)
-        self.slider_file_changed(-1)
-        self.display_measurement_profiles()
-
-    def use_calibration2_checked(self):
-        cali_button_checked = self.ui.use_calibration2_checkbox.isChecked()
-        self.calibration2_widgets_handler(cali_button_checked)
-        self.slider_file_changed(-1)
         self.display_measurement_profiles()
 
     def slider_file_changed(self, index_selected):
@@ -693,43 +627,62 @@ class ProfileUi(QMainWindow):
         self.check_status_next_prev_image_button()
         self.display_measurement_profiles()
 
+    ## Event Handler
+    def right_rotation_button_clicked(self):
+        print("click right rotation")
+
+    def left_rotation_button_clicked(self):
+        print("click left rotation")
+
+    def grid_size_slider_clicked(self):
+        print("slider clicked")
+
+    def grid_size_slider_moved(self, value):
+        print("grid size slider moved")
+
+    def display_grid_clicked(self):
+        print("display grid checked")
+
     def add_row_button_clicked(self):
-        selected_row = self.get_selected_row()
-        self.insert_row(row=selected_row)
-        self.insert_column_in_summary_table(roi_index=selected_row)
-        self.insert_measurement_roi_ui(row=selected_row)
-        self.update_mean_counts(row=selected_row)
-        self.display_measurement_profiles()
+        print("add row button")
+        # selected_row = self.get_selected_row()
+        # self.insert_row(row=selected_row)
+        # self.insert_column_in_summary_table(roi_index=selected_row)
+        # self.insert_measurement_roi_ui(row=selected_row)
+        # self.update_mean_counts(row=selected_row)
+        # self.display_measurement_profiles()
 
     def remove_row_button_clicked(self):
-        selected_row = self.get_selected_row()
-        self.remove_row(row=selected_row)
-        self.remove_column_in_summary_table(roi_index=selected_row)
-        self.remove_measurement_roi_ui(row=selected_row)
-        self.display_measurement_profiles()
+        print("remove row")
+        # selected_row = self.get_selected_row()
+        # self.remove_row(row=selected_row)
+        # self.remove_column_in_summary_table(roi_index=selected_row)
+        # self.remove_measurement_roi_ui(row=selected_row)
+        # self.display_measurement_profiles()
 
-    def cell_changed(self, row, col ):
-        self.update_measurement_rois_from_table(row=row)
-        self.display_measurement_profiles()
+    # def cell_changed(self, row, col ):
+    #     self.update_measurement_rois_from_table(row=row)
+    #     self.display_measurement_profiles()
 
     def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption = "Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
-        if _export_folder:
-            o_export = ExportCalibration(parent = self,
-                                         export_folder = _export_folder)
-            o_export.run()
-            QtGui.QGuiApplication.processEvents()
+        print("export button clicked")
+        # _export_folder = QFileDialog.getExistingDirectory(self,
+        #                                                   directory=self.working_dir,
+        #                                                   caption = "Select Output Folder",
+        #                                                   options=QFileDialog.ShowDirsOnly)
+        # if _export_folder:
+        #     o_export = ExportCalibration(parent = self,
+        #                                  export_folder = _export_folder)
+        #     o_export.run()
+        #     QtGui.QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
-        self.display_measurement_profiles()
+        # self.display_measurement_profiles()
 
     def next_image_button_clicked(self):
         self.change_slider(offset = +1)
-        self.display_measurement_profiles()
+        # self.display_measurement_profiles()
 
     def help_button_clicked(self):
         import webbrowser

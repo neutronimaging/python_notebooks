@@ -367,7 +367,7 @@
             </layout>
            </widget>
           </widget>
-          <widget class="QWidget" name="measurement_widget" native="true"/>
+          <widget class="QWidget" name="profile_widget" native="true"/>
          </widget>
         </item>
        </layout>
@@ -508,8 +508,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>446</x>
-     <y>767</y>
+     <x>505</x>
+     <y>585</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -524,8 +524,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>446</x>
-     <y>767</y>
+     <x>505</x>
+     <y>585</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -540,8 +540,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>136</x>
-     <y>770</y>
+     <x>195</x>
+     <y>588</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -556,8 +556,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>713</x>
-     <y>770</y>
+     <x>703</x>
+     <y>588</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -572,8 +572,8 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1334</x>
-     <y>916</y>
+     <x>1352</x>
+     <y>778</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
@@ -589,11 +589,123 @@
    <hints>
     <hint type="sourcelabel">
      <x>52</x>
-     <y>903</y>
+     <y>765</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
-     <y>901</y>
+     <y>810</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>remove_row_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>793</x>
+     <y>579</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>751</x>
+     <y>749</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>add_row_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1293</x>
+     <y>572</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1152</x>
+     <y>762</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>grid_display_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>display_grid_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>86</x>
+     <y>104</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>149</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>grid_size_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_size_slider_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>103</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>483</x>
+     <y>23</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>grid_size_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_size_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>367</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>397</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_rotation_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_rotation_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>59</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>261</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_rotation_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_rotation_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>741</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>834</x>
+     <y>26</y>
     </hint>
    </hints>
   </connection>
@@ -606,14 +718,10 @@
   <slot>remove_row_button_clicked()</slot>
   <slot>add_row_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
-  <slot>cell_changed()</slot>
-  <slot>use_calibration1_checked()</slot>
-  <slot>use_current_calibration1_file()</slot>
-  <slot>use_current_calibration2_file()</slot>
-  <slot>display_this_cal1_file()</slot>
-  <slot>display_this_cal2_file()</slot>
-  <slot>calibration1_widgets_changed()</slot>
-  <slot>calibration2_widgets_changed()</slot>
-  <slot>use_calibration2_checked()</slot>
+  <slot>display_grid_clicked()</slot>
+  <slot>grid_size_slider_clicked()</slot>
+  <slot>grid_size_slider_moved()</slot>
+  <slot>right_rotation_button_clicked()</slot>
+  <slot>left_rotation_button_clicked()</slot>
  </slots>
 </ui>
