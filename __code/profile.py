@@ -48,6 +48,7 @@ class ProfileUi(QMainWindow):
                  'item': None,
                  'color': (0, 0, 255, 255, 1)}
 
+    display_ui = []
 
 
 
@@ -168,6 +169,13 @@ class ProfileUi(QMainWindow):
         nbr_columns = self.ui.summary_table.columnCount()
         for _col in range(nbr_columns):
             self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
+
+        self.display_ui = [self.ui.display_size_label,
+                           self.ui.grid_size_slider,
+                           self.ui.display_transparency_label,
+                           self.ui.transparency_slider]
+
+
 
     def init_pyqtgraph(self):
         # image
@@ -741,6 +749,9 @@ class ProfileUi(QMainWindow):
     ## Event Handler
 
     def display_grid_clicked(self):
+        status = self.ui.grid_display_checkBox.checked()
+        for _widget in self.display_ui:
+            _widget.setEnabled(status)
         self.display_image()
 
     def grid_size_slider_clicked(self):
