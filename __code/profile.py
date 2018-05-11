@@ -104,7 +104,7 @@ class ProfileUi(QMainWindow):
 
         # initialization
         self.init_timestamp_dict()
-        # self.init_table()
+        self.init_table()
         # self.init_parameters()
         self.init_widgets()
         self.init_pyqtgraph()
@@ -177,14 +177,8 @@ class ProfileUi(QMainWindow):
         vertical_layout2.addWidget(self.ui.profile_view)
         self.ui.profile_widget.setLayout(vertical_layout2)
 
-
-
-
-
-
-
-
     def init_table(self):
+        # init the summary table
         list_files_full_name = self.data_dict['file_name']
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
