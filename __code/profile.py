@@ -749,7 +749,7 @@ class ProfileUi(QMainWindow):
     ## Event Handler
 
     def display_grid_clicked(self):
-        status = self.ui.grid_display_checkBox.checked()
+        status = self.ui.grid_display_checkBox.isChecked()
         for _widget in self.display_ui:
             _widget.setEnabled(status)
         self.display_image()
