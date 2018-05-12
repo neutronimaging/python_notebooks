@@ -40,6 +40,7 @@ class ProfileUi(QMainWindow):
     # size of tables
     _width = 65
     guide_table_width = [80, _width, _width, _width, _width]
+    guide_table_height = 50
     summary_table_width = [300, 150, 100]
 
     live_image = []
@@ -52,9 +53,8 @@ class ProfileUi(QMainWindow):
 
     default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
                                   'width': 200, 'height': 200}
+    default_profile_width_values = np.arange(1,50,2)
 
-
-    #
     # col_width = 65
     # table_column_width = [col_width, col_width, col_width, col_width, 100]
     # default_measurement_roi = {'x0': 0, 'y0': 0,
@@ -215,6 +215,8 @@ class ProfileUi(QMainWindow):
         self.default_guide_table_values['x0'] = np.int(width/2)
         self.default_guide_table_values['y0'] = np.int(height/2)
 
+        self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
+
     # main methods
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -323,6 +325,8 @@ class ProfileUi(QMainWindow):
         default_values = self.default_guide_table_values
 
         self.ui.tableWidget.insertRow(row)
+        self.ui.tableWidget.setRowHeight(row, self.guide_table_height)
+
         self.set_item_main_table(row=row, col=0, value=default_values['isChecked'])
         self.set_item_main_table(row=row, col=1, value=default_values['x0'])
         self.set_item_main_table(row=row, col=2, value=default_values['y0'])
@@ -338,7 +342,34 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.ui.tableWidget.blockSignals(False)
 
+        self.ui.tableWidget_2.blockSignals(True)
+        self.ui.tableWidget_2.insertRow(row)
+        self.ui.tableWidget_2g.setRowHeight(row, self.guide_table_height)
+        self.set_item_profile_table(row=row)
+
+        # select new entry
+        nbr_col = self.ui.tableWidget_2.columnCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(full_range, False)
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
+        self.ui.tableWidget_2.blockSignals(False)
+
     # setter
+    def set_item_profile_table(self, row=0):
+        spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        widget = QtGui.QComboBox()
+        widget.addItems(self.default_profile_width_values)
+        widget.blockSignals(True)
+        spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        hori_layout = QtGui.QHBoxLayout()
+        hori_layout.addItem(spacerItem_left)
+        hori_layout.addWidget(widget)
+        hori_layout.addItem(spacerItem_right)
+        cell_widget = QtGui.QWidget()
+        cell_widget.setLayout(hori_layout)
+        self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
+
     def set_item_main_table(self, row=0, col=0, value=''):
         if col == 0:
             spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
