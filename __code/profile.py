@@ -274,7 +274,6 @@ class ProfileUi(QMainWindow):
                          pxMode=False)
             self.grid_view['item'] = grid
 
-
         # calibrated and measurement ROIs
         # self.display_roi()
 
@@ -344,6 +343,8 @@ class ProfileUi(QMainWindow):
         if col == 0:
             spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             widget = QtGui.QCheckBox()
+            widget.blockSignals(True)
+            widget.stateChanged.connect(self.guide_state_changed)
             spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             hori_layout = QtGui.QHBoxLayout()
             hori_layout.addItem(spacerItem_left)
@@ -356,7 +357,7 @@ class ProfileUi(QMainWindow):
             else:
                 widget.setCheckState(QtCore.Qt.Unchecked)
             self.ui.tableWidget.setCellWidget(row, col, cell_widget)
-            pass
+            widget.blockSignals(False)
         else:
             item = QtGui.QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
@@ -666,6 +667,10 @@ class ProfileUi(QMainWindow):
         # self.display_measurement_profiles()
 
     ## Event Handler
+    def guide_state_changed(self, state):
+        # state=0 is unchecked
+        # state=2 is checked
+        print(state)
 
     def display_grid_clicked(self):
         status = self.ui.grid_display_checkBox.isChecked()
