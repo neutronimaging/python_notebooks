@@ -344,7 +344,7 @@ class ProfileUi(QMainWindow):
 
         self.ui.tableWidget_2.blockSignals(True)
         self.ui.tableWidget_2.insertRow(row)
-        self.ui.tableWidget_2g.setRowHeight(row, self.guide_table_height)
+        self.ui.tableWidget_2.setRowHeight(row, self.guide_table_height)
         self.set_item_profile_table(row=row)
 
         # select new entry
@@ -698,6 +698,9 @@ class ProfileUi(QMainWindow):
         # self.display_measurement_profiles()
 
     ## Event Handler
+    def table_widget_selection_changed(self):
+        print("herere")
+
     def guide_state_changed(self, state):
         # state=0 is unchecked
         # state=2 is checked

@@ -859,6 +859,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_widget_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>997</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>682</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -877,5 +893,6 @@
   <slot>right_rotation_slow_clicked()</slot>
   <slot>left_rotation_fast_clicked()</slot>
   <slot>left_rotation_slow_clicked()</slot>
+  <slot>table_widget_selection_changed()</slot>
  </slots>
 </ui>
