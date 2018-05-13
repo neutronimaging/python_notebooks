@@ -404,8 +404,12 @@ class ProfileUi(QMainWindow):
         _image = self.data_dict['data'][slider_index]
         return _image
 
-    def get_selected_row(self):
-        selection = self.ui.tableWidget.selectedRanges()
+    def get_selected_row(self, source='tableWidget'):
+        if source == 'tableWidget':
+            ui = self.ui.tableWidget
+        else:
+            ui = self.ui.tablewidget_2
+        selection = ui.selectedRanges()
         if selection:
             top_row = selection[0].topRow()
             return top_row
@@ -699,7 +703,27 @@ class ProfileUi(QMainWindow):
 
     ## Event Handler
     def table_widget_selection_changed(self):
-        print("herere")
+        self.ui.tableWidget_2.blockSignals(True)
+        nbr_col = self.ui.tableWidget_2.columnCount()
+        nbr_row = self.ui.tableWidget_2.rowCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(full_range, False)
+        row = self.get_selected_row()
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
+        self.ui.tableWidget_2.blockSignals(False)
+
+    def table_widget_2_selection_changed(self):
+        self.ui.tableWidget.blockSignals(True)
+        nbr_col = self.ui.tableWidget.columnCount()
+        nbr_row = self.ui.tableWidget.rowCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        self.ui.tableWidget.setRangeSelected(full_range, False)
+        row = self.get_selected_row_table(source='tableWidget_2')
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        self.ui.tableWidget.setRangeSelected(new_selection, True)
+        self.ui.tableWidget.blockSignals(False)
+
 
     def guide_state_changed(self, state):
         # state=0 is unchecked
