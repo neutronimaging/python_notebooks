@@ -218,6 +218,19 @@ class ProfileUi(QMainWindow):
         self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
 
     # main methods
+    def display_guides(self, row=-1):
+        if row == -1:
+            # we want to display all of them
+            nbr_row = self.ui.tableWidget.rowCount()
+            for _row in np.arange(nbr_row):
+                self.display_guides(row=_row)
+        else:
+            # check if we want to display this guide or not
+            _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
+            if _widget.isChecked():
+                # yes we want to display it
+                print("yes for row {}".format(row))
+
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
 
@@ -773,13 +786,11 @@ class ProfileUi(QMainWindow):
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.insert_row(row=selected_row)
+        self.display_guides()
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
-        # self.remove_column_in_summary_table(roi_index=selected_row)
-        # self.remove_measurement_roi_ui(row=selected_row)
-        # self.display_measurement_profiles()
 
     # def cell_changed(self, row, col ):
     #     self.update_measurement_rois_from_table(row=row)
