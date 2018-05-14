@@ -54,7 +54,10 @@ class ProfileUi(QMainWindow):
     # guide and profile pg ROIs
     list_guide_pyqt_roi = list()
     list_profile_pyqt_roi = list()
-    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 200, 'color':'b'}
+    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 200,
+                         'color_activated':'r',
+                         'color_deactivated': 'b'}
+    previous_active_row = -1 # use to deactivated the guide and profile roi
 
     default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
                                   'width': 200, 'height': 200}
@@ -363,7 +366,7 @@ class ProfileUi(QMainWindow):
         _guide = pg.RectROI([self.default_guide_roi['x0'], self.default_guide_roi['y0']],
                             self.default_guide_roi['height'],
                             self.default_guide_roi['width'],
-                            pen=self.default_guide_roi['color'])
+                            pen=self.default_guide_roi['color_activated'])
         _guide.addScaleHandle([1, 1], [0, 0])
         _guide.addScaleHandle([0, 0], [1, 1])
         _guide.sigRegionChanged.connect(self.guide_changed)
@@ -533,6 +536,36 @@ class ProfileUi(QMainWindow):
         self.calibration[str(index)] = {}
         self.calibration[str(index)]['mean_counts'] = _mean
         self.calibration[str(index)]['value'] = value
+
+    def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
+        if row == -1:
+            return
+        _guide_ui = self.list_guide_pyqt_roi[row]
+        _guide_ui.setPen(self.default_guide_roi['color_' + status])
+
+    def highlight_guide_profile_pyqt_rois(self, row=-1):
+        """When user click a row in the table, the correspoinding ROI will be activated and ots
+        color will change. The old activated guide and profile will then be deactivated and color will
+        change as well according to the color definition found in the self.default_guide_roi dictionary"""
+        previous_active_row = self.previous_active_row
+        if previous_active_row == -1:
+            return
+
+        self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
+        self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
+
+        # _guide_ui = self.list_guide_pyqt_roi[previous_active_row]
+        # _guide_ui.setPen(self.default_guide_roi['color_deactivated'])
+        #
+        # new_guide_ui = self.list_guide_pyqt_roi[row]
+        # new_guide_ui.setPen(self.default_guide_roi['color_activated'])
+
+
+
+
+
+
+
 
 
 
@@ -741,11 +774,6 @@ class ProfileUi(QMainWindow):
         # self.display_measurement_profiles()
 
 
-
-
-
-
-
     ## Event Handler
     def guide_changed(self, source):
         print(self.list_guide_pyqt_roi.index(source))
@@ -759,7 +787,9 @@ class ProfileUi(QMainWindow):
         row = self.get_selected_row()
         new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget_2.setRangeSelected(new_selection, True)
+        self.highlight_guide_profile_pyqt_rois(row=row)
         self.ui.tableWidget_2.blockSignals(False)
+        self.previous_active_row = row
 
     def table_widget_2_selection_changed(self):
         self.ui.tableWidget.blockSignals(True)
@@ -770,7 +800,9 @@ class ProfileUi(QMainWindow):
         row = self.get_selected_row(source='tableWidget_2')
         new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
+        self.highlight_guide_profile_pyqt_rois(row=row)
         self.ui.tableWidget.blockSignals(False)
+        self.previous_active_row = row
 
     def guide_state_changed(self, state):
         # state=0 is unchecked
@@ -817,9 +849,11 @@ class ProfileUi(QMainWindow):
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
+        self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
         self.insert_row(row=selected_row)
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.display_guides()
+        self.previous_active_row = selected_row
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
