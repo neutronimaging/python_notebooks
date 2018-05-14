@@ -54,6 +54,7 @@ class ProfileUi(QMainWindow):
     # guide and profile pg ROIs
     list_guide_pyqt_roi = list()
     list_profile_pyqt_roi = list()
+    list_table_widget_checkbox = list()
     default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 200,
                          'color_activated':'r',
                          'color_deactivated': 'b'}
@@ -234,10 +235,13 @@ class ProfileUi(QMainWindow):
                 self.display_guides(row=_row)
         else:
             # check if we want to display this guide or not
+            _guide = self.list_guide_pyqt_roi[row]
             _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
             if _widget.isChecked():
                 # yes we want to display it
-                print("yes for row {}".format(row))
+                self.ui.image_view.addItem(_guide)
+            else:
+                self.ui.image_view.removeItem(_guide)
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -343,8 +347,10 @@ class ProfileUi(QMainWindow):
             return
         self.ui.tableWidget.removeRow(row)
         self.ui.tableWidget_2.removeRow(row)
+        self.ui.image_view.removeItem(self.list_guide_pyqt_roi[row])
         self.list_guide_pyqt_roi.remove(self.list_guide_pyqt_roi[row])
         self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
+        # self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
 
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
@@ -431,6 +437,7 @@ class ProfileUi(QMainWindow):
             spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             widget = QtGui.QCheckBox()
             widget.blockSignals(True)
+            self.list_table_widget_checkbox.insert(row, widget)
             widget.stateChanged.connect(self.guide_state_changed)
             spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             hori_layout = QtGui.QHBoxLayout()
@@ -449,7 +456,9 @@ class ProfileUi(QMainWindow):
             item = QtGui.QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
 
-    # getter
+
+
+
     def get_image_selected(self, recalculate_image=False):
         slider_index = self.ui.file_slider.value()
         if recalculate_image:
@@ -471,6 +480,29 @@ class ProfileUi(QMainWindow):
             return top_row
         else:
             return -1
+
+    def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
+        if row == -1:
+            return
+        _guide_ui = self.list_guide_pyqt_roi[row]
+        _guide_ui.setPen(self.default_guide_roi['color_' + status])
+
+    def highlight_guide_profile_pyqt_rois(self, row=-1):
+        """When user click a row in the table, the correspoinding ROI will be activated and ots
+        color will change. The old activated guide and profile will then be deactivated and color will
+        change as well according to the color definition found in the self.default_guide_roi dictionary"""
+        previous_active_row = self.previous_active_row
+        if previous_active_row == -1:
+            return
+
+        self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
+        self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
+
+        # _guide_ui = self.list_guide_pyqt_roi[previous_active_row]
+        # _guide_ui.setPen(self.default_guide_roi['color_deactivated'])
+        #
+        # new_guide_ui = self.list_guide_pyqt_roi[row]
+        # new_guide_ui.setPen(self.default_guide_roi['color_activated'])
 
 
 
@@ -536,29 +568,6 @@ class ProfileUi(QMainWindow):
         self.calibration[str(index)] = {}
         self.calibration[str(index)]['mean_counts'] = _mean
         self.calibration[str(index)]['value'] = value
-
-    def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
-        if row == -1:
-            return
-        _guide_ui = self.list_guide_pyqt_roi[row]
-        _guide_ui.setPen(self.default_guide_roi['color_' + status])
-
-    def highlight_guide_profile_pyqt_rois(self, row=-1):
-        """When user click a row in the table, the correspoinding ROI will be activated and ots
-        color will change. The old activated guide and profile will then be deactivated and color will
-        change as well according to the color definition found in the self.default_guide_roi dictionary"""
-        previous_active_row = self.previous_active_row
-        if previous_active_row == -1:
-            return
-
-        self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
-        self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
-
-        # _guide_ui = self.list_guide_pyqt_roi[previous_active_row]
-        # _guide_ui.setPen(self.default_guide_roi['color_deactivated'])
-        #
-        # new_guide_ui = self.list_guide_pyqt_roi[row]
-        # new_guide_ui.setPen(self.default_guide_roi['color_activated'])
 
 
 
@@ -776,7 +785,8 @@ class ProfileUi(QMainWindow):
 
     ## Event Handler
     def guide_changed(self, source):
-        print(self.list_guide_pyqt_roi.index(source))
+        pass
+        # print(self.list_guide_pyqt_roi.index(source))
 
     def table_widget_selection_changed(self):
         self.ui.tableWidget_2.blockSignals(True)
@@ -805,9 +815,14 @@ class ProfileUi(QMainWindow):
         self.previous_active_row = row
 
     def guide_state_changed(self, state):
-        # state=0 is unchecked
-        # state=2 is checked
-        print(state)
+        nbr_row = self.ui.tableWidget.rowCount()
+
+
+
+
+
+
+
 
     def display_grid_clicked(self):
         status = self.ui.grid_display_checkBox.isChecked()
@@ -890,67 +905,3 @@ class ProfileUi(QMainWindow):
     def closeEvent(self, event=None):
         pass
 
-
-class ExportCalibration(object):
-
-    def __init__(self, parent=None, export_folder=''):
-        self.parent = parent
-        self.export_folder = export_folder
-
-    def get_metadata(self):
-        metadata = []
-        metadata.append("#Working dir: {}".format(self.parent.working_dir))
-        if self.parent.ui.use_calibration1_checkbox.isChecked():
-            metadata.append("#Calibration Region 1:")
-            metadata.append("#   x0: {}".format(str(self.parent.ui.calibration1_x0.text())))
-            metadata.append("#   y0: {}".format(str(self.parent.ui.calibration1_y0.text())))
-            metadata.append("#   width: {}".format(str(self.parent.ui.calibration1_width.text())))
-            metadata.append("#   height: {}".format(str(self.parent.ui.calibration1_height.text())))
-            metadata.append("#   file index: {}".format(str(self.parent.ui.calibration1_index.text())))
-            metadata.append("#   value requested: {}".format(str(self.parent.ui.calibration1_value.text())))
-        if self.parent.ui.use_calibration2_checkbox.isChecked():
-            metadata.append("#Calibration Region 2:")
-            metadata.append("#   x0: {}".format(str(self.parent.ui.calibration2_x0.text())))
-            metadata.append("#   y0: {}".format(str(self.parent.ui.calibration2_y0.text())))
-            metadata.append("#   width: {}".format(str(self.parent.ui.calibration2_width.text())))
-            metadata.append("#   height: {}".format(str(self.parent.ui.calibration2_height.text())))
-            metadata.append("#   file index: {}".format(str(self.parent.ui.calibration2_index.text())))
-            metadata.append("#   value requested: {}".format(str(self.parent.ui.calibration2_value.text())))
-        nbr_measurement_region = self.parent.ui.tableWidget.rowCount()
-        _legend = "#File_name, Time_stamp, Relative_time(s)"
-        if nbr_measurement_region > 0:
-            metadata.append("#Measurement Regions:")
-            for _index_region in np.arange(nbr_measurement_region):
-                [x0, y0, width, height] = self.parent.get_item_row(row=_index_region)
-                metadata.append("#  region {}: [x0, y0, width, height]=[{}, {}, {}, {}]".format(_index_region,
-                                                                                                x0, y0,
-                                                                                                width, height))
-                _legend += ", Mean_counts_of_region {}".format(_index_region+1)
-        metadata.append("#")
-        metadata.append(_legend)
-        return metadata
-
-    def run(self):
-        nbr_files = self.parent.ui.summary_table.rowCount()
-        nbr_col= self.parent.ui.summary_table.columnCount()
-
-        metadata = self.get_metadata()
-        data = []
-        for _row in np.arange(nbr_files):
-            _row_str = []
-            for _col in np.arange(nbr_col):
-                _row_str.append(str(self.parent.ui.summary_table.item(_row, _col).text()))
-            data.append(",".join(_row_str))
-
-        export_file_name = os.path.basename(self.parent.working_dir)
-        full_export_file_name = os.path.join(self.export_folder, export_file_name + "_calibrated_transmission.txt")
-
-        make_ascii_file(metadata=metadata,
-                        data=data,
-                        output_file_name=full_export_file_name,
-                        dim='1d')
-
-        QtGui.QApplication.processEvents()
-
-        # display name of file exported for 10s
-        self.parent.ui.statusbar.showMessage("File Created: {}".format(full_export_file_name), 10000)
