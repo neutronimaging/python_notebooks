@@ -317,6 +317,23 @@ class ProfileUi(QMainWindow):
 
         return pos_adj_dict
 
+    def remove_row(self, row=-1):
+        if row == -1:
+            return
+        self.ui.tableWidget.removeRow(row)
+        self.ui.tableWidget_2.removeRow(row)
+
+        nbr_row = self.ui.tableWidget.rowCount()
+        if row == nbr_row:
+            row -= 1
+
+        if nbr_row > 0:
+            nbr_col = self.ui.tableWidget.columnCount()
+            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+            self.ui.tableWidget.setRangeSelected(new_selection, True)
+            new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
+            self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
+
     def insert_row(self, row=-1):
         if row == -1:
             row = 0
@@ -482,20 +499,6 @@ class ProfileUi(QMainWindow):
         self.calibration[str(index)]['value'] = value
 
 
-
-    def remove_row(self, row=-1):
-        if row == -1:
-            return
-        self.ui.tableWidget.removeRow(row)
-
-        nbr_row = self.ui.tableWidget.rowCount()
-        if row == nbr_row:
-            row -= 1
-
-        if nbr_row > 0:
-            nbr_col = self.ui.tableWidget.columnCount()
-            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-            self.ui.tableWidget.setRangeSelected(new_selection, True)
 
 
 
@@ -724,7 +727,6 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.ui.tableWidget.blockSignals(False)
 
-
     def guide_state_changed(self, state):
         # state=0 is unchecked
         # state=2 is checked
@@ -772,16 +774,9 @@ class ProfileUi(QMainWindow):
         selected_row = self.get_selected_row()
         self.insert_row(row=selected_row)
 
-        #  self.insert_row(row=selected_row)
-        # self.insert_column_in_summary_table(roi_index=selected_row)
-        # self.insert_measurement_roi_ui(row=selected_row)
-        # self.update_mean_counts(row=selected_row)
-        # self.display_measurement_profiles()
-
     def remove_row_button_clicked(self):
-        print("remove row")
-        # selected_row = self.get_selected_row()
-        # self.remove_row(row=selected_row)
+        selected_row = self.get_selected_row()
+        self.remove_row(row=selected_row)
         # self.remove_column_in_summary_table(roi_index=selected_row)
         # self.remove_measurement_roi_ui(row=selected_row)
         # self.display_measurement_profiles()
