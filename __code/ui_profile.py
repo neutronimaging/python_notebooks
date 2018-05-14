@@ -298,6 +298,7 @@ class Ui_MainWindow(object):
         self.left_rotation_button_fast.clicked.connect(MainWindow.left_rotation_fast_clicked)
         self.left_rotation_button_slow.clicked.connect(MainWindow.left_rotation_slow_clicked)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
+        self.tableWidget_2.itemSelectionChanged.connect(MainWindow.table_widget_2_selection_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

@@ -408,7 +408,7 @@ class ProfileUi(QMainWindow):
         if source == 'tableWidget':
             ui = self.ui.tableWidget
         else:
-            ui = self.ui.tablewidget_2
+            ui = self.ui.tableWidget_2
         selection = ui.selectedRanges()
         if selection:
             top_row = selection[0].topRow()
@@ -719,7 +719,7 @@ class ProfileUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
         full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
-        row = self.get_selected_row_table(source='tableWidget_2')
+        row = self.get_selected_row(source='tableWidget_2')
         new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.ui.tableWidget.blockSignals(False)
