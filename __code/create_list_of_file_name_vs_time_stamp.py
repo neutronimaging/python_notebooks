@@ -57,10 +57,10 @@ class CreateListFileName(object):
         list_time_stamp_user_format = []
         for _index, _file in enumerate(list_files):
             _time_stamp = MetadataHandler.get_time_stamp(file_name=_file, ext=ext)
-            _time_stamp = self._convert_epics_timestamp_to_rfc3339_timestamp(_time_stamp)
+            # _time_stamp = self._convert_epics_timestamp_to_rfc3339_timestamp(_time_stamp)
             list_time_stamp.append(_time_stamp)
 
-            _user_format = self.convert_to_human_readable_format(_time_stamp)
+            _user_format = MetadataHandler.convert_to_human_readable_format(_time_stamp)
             list_time_stamp_user_format.append(_user_format)
             progress_bar.value = _index+1
 
@@ -130,44 +130,6 @@ class CreateListFileName(object):
                                                                      start_dir=self.working_dir,
                                                                      type='directory')
         self.output_folder_ui.show()
-
-    def convert_to_human_readable_format(self, timestamp):
-        """Convert the unix time stamp into a human readable time format
-
-        Format return will look like  "2018-01-29 10:30:25"
-        """
-        return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
-
-    def _convert_epics_timestamp_to_rfc3339_timestamp(self, epics_timestamp):
-        # TIFF files from CG1D have EPICS timestamps.  From the Controls
-        # Wiki:
-        #
-        # > EPICS timestamp. The timestamp is made when the image is read
-        # > out from the camera. Format is seconds.nanoseconds since Jan 1st
-        # > 00:00 1990.
-
-        # Convert seconds since "EPICS epoch" to seconds since the "UNIX
-        # epoch" so that Python can understand it.  I got the offset by
-        # calculating the number of seconds between the two epochs at
-        # https://www.epochconverter.com/
-        EPOCH_OFFSET = 631152000
-        unix_epoch_timestamp = EPOCH_OFFSET + epics_timestamp
-
-        return unix_epoch_timestamp
-
-        # # Use pytz magic to get GMT-localized version of a Python datetime
-        # # object.
-        # gmt_datetime = pytz.timezone('GMT').localize(
-        #     datetime.datetime.fromtimestamp(unix_epoch_timestamp)
-        # )
-        #
-        # # Use pytz again to cast to ORNL's timezone.  By this point we have
-        # # accounted fully for the new timezone, as well as daylight saving
-        # # time.
-        # ornl_datetime = gmt_datetime.astimezone(pytz.timezone('America/New_York'))
-        #
-        # # Output as a formatted string.
-        # return str(ornl_datetime.isoformat())
 
     def sort_files_using_time_stamp(self):
         """Using the time stamp information, all the files will be sorted in ascending order of time stamp"""
