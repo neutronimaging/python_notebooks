@@ -51,6 +51,11 @@ class ProfileUi(QMainWindow):
 
     display_ui = []
 
+    # guide and profile pg ROIs
+    list_guide_pyqt_roi = list()
+    list_profile_pyqt_roi = list()
+    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 200, 'color':'b'}
+
     default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
                                   'width': 200, 'height': 200}
     default_profile_width_values = np.arange(1,50,2)
@@ -335,6 +340,8 @@ class ProfileUi(QMainWindow):
             return
         self.ui.tableWidget.removeRow(row)
         self.ui.tableWidget_2.removeRow(row)
+        self.list_guide_pyqt_roi.remove(self.list_guide_pyqt_roi[row])
+        self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
 
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
@@ -346,6 +353,22 @@ class ProfileUi(QMainWindow):
             self.ui.tableWidget.setRangeSelected(new_selection, True)
             new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
+
+    def add_guide_and_profile_pyqt_roi(self, row=-1):
+        """add the pyqtgraph roi guide and profiles"""
+        if row == -1:
+            row = 0
+
+        # guide
+        _guide = pg.RectROI([self.default_guide_roi['x0'], self.default_guide_roi['y0']],
+                            self.default_guide_roi['height'],
+                            self.default_guide_roi['width'],
+                            pen=self.default_guide_roi['color'])
+        _guide.addScaleHandle([1, 1], [0, 0])
+        _guide.addScaleHandle([0, 0], [1, 1])
+        _guide.sigRegionChanged.connect(self.guide_changed)
+        self.ui.image_view.addItem(_guide)
+        self.list_guide_pyqt_roi.insert(row, _guide)
 
     def insert_row(self, row=-1):
         if row == -1:
@@ -717,7 +740,16 @@ class ProfileUi(QMainWindow):
         self.check_status_next_prev_image_button()
         # self.display_measurement_profiles()
 
+
+
+
+
+
+
     ## Event Handler
+    def guide_changed(self, source):
+        print(self.list_guide_pyqt_roi.index(source))
+
     def table_widget_selection_changed(self):
         self.ui.tableWidget_2.blockSignals(True)
         nbr_col = self.ui.tableWidget_2.columnCount()
@@ -786,6 +818,7 @@ class ProfileUi(QMainWindow):
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.insert_row(row=selected_row)
+        self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.display_guides()
 
     def remove_row_button_clicked(self):
