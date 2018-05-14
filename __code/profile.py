@@ -38,8 +38,9 @@ class ProfileUi(QMainWindow):
     histogram_level = []
 
     # size of tables
-    _width = 50
+    _width = 65
     guide_table_width = [80, _width, _width, _width, _width]
+    guide_table_height = 50
     summary_table_width = [300, 150, 100]
 
     live_image = []
@@ -50,10 +51,10 @@ class ProfileUi(QMainWindow):
 
     display_ui = []
 
+    default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
+                                  'width': 200, 'height': 200}
+    default_profile_width_values = np.arange(1,50,2)
 
-
-
-    #
     # col_width = 65
     # table_column_width = [col_width, col_width, col_width, col_width, 100]
     # default_measurement_roi = {'x0': 0, 'y0': 0,
@@ -106,7 +107,7 @@ class ProfileUi(QMainWindow):
         # initialization
         self.init_timestamp_dict()
         self.init_table()
-        # self.init_parameters()
+        self.init_parameters()
         self.init_widgets()
         self.init_pyqtgraph()
         # self.init_statusbar()
@@ -175,8 +176,6 @@ class ProfileUi(QMainWindow):
                            self.ui.display_transparency_label,
                            self.ui.transparency_slider]
 
-
-
     def init_pyqtgraph(self):
         # image
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
@@ -208,40 +207,30 @@ class ProfileUi(QMainWindow):
             _offset = list_time_stamp[_row] - time_0
             self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
 
-    # def init_parameters(self):
-    #     nbr_files = len(self.data_dict['file_name'])
-    #     self.nbr_files = nbr_files
-    #     _color = Color()
-    #     self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
-    #
-    #     o_marker = MarkerDefaultSettings(image_reference=self.reference_image)
-    #     self.o_MarkerDefaultSettings = o_marker
-
-
-
-
-    def populate_calibration_widgets(self, calibration_index=1):
-        calibration_ui = self.calibration_widgets[str(calibration_index)]
-        calibration_roi = self.calibrated_roi[str(calibration_index)]
-
-        for _keys in calibration_ui.keys():
-            calibration_ui[_keys].setText(str(calibration_roi[_keys]))
-
     def init_parameters(self):
         # init the position of the measurement ROI
         [height, width] = np.shape(self.data_dict['data'][0])
-        self.default_measurement_roi['width'] = np.int(width/10)
-        self.default_measurement_roi['height'] = np.int(height/10)
-        self.default_measurement_roi['x0'] = np.int(width/2)
-        self.default_measurement_roi['y0'] = np.int(height/2)
+        self.default_guide_table_values['width'] = np.int(width/10)
+        self.default_guide_table_values['height'] = np.int(height/10)
+        self.default_guide_table_values['x0'] = np.int(width/2)
+        self.default_guide_table_values['y0'] = np.int(height/2)
 
-        self.calibrated_roi['2']['x0'] = width - self.calibrated_roi['2']['width']
-        self.calibrated_roi['2']['y0'] = height - self.calibrated_roi['2']['height']
-
-        self.calibrated_roi['1']['color'] = 'b' # blue
-        self.calibrated_roi['2']['color'] = 'r' # red
+        self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
 
     # main methods
+    def display_guides(self, row=-1):
+        if row == -1:
+            # we want to display all of them
+            nbr_row = self.ui.tableWidget.rowCount()
+            for _row in np.arange(nbr_row):
+                self.display_guides(row=_row)
+        else:
+            # check if we want to display this guide or not
+            _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
+            if _widget.isChecked():
+                # yes we want to display it
+                print("yes for row {}".format(row))
+
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
 
@@ -300,7 +289,6 @@ class ProfileUi(QMainWindow):
                          pxMode=False)
             self.grid_view['item'] = grid
 
-
         # calibrated and measurement ROIs
         # self.display_roi()
 
@@ -341,6 +329,124 @@ class ProfileUi(QMainWindow):
         pos_adj_dict['adj'] = np.array(adj)
 
         return pos_adj_dict
+
+    def remove_row(self, row=-1):
+        if row == -1:
+            return
+        self.ui.tableWidget.removeRow(row)
+        self.ui.tableWidget_2.removeRow(row)
+
+        nbr_row = self.ui.tableWidget.rowCount()
+        if row == nbr_row:
+            row -= 1
+
+        if nbr_row > 0:
+            nbr_col = self.ui.tableWidget.columnCount()
+            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+            self.ui.tableWidget.setRangeSelected(new_selection, True)
+            new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
+            self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
+
+    def insert_row(self, row=-1):
+        if row == -1:
+            row = 0
+
+        self.ui.tableWidget.blockSignals(True)
+        default_values = self.default_guide_table_values
+
+        self.ui.tableWidget.insertRow(row)
+        self.ui.tableWidget.setRowHeight(row, self.guide_table_height)
+
+        self.set_item_main_table(row=row, col=0, value=default_values['isChecked'])
+        self.set_item_main_table(row=row, col=1, value=default_values['x0'])
+        self.set_item_main_table(row=row, col=2, value=default_values['y0'])
+        self.set_item_main_table(row=row, col=3, value=default_values['width'])
+        self.set_item_main_table(row=row, col=4, value=default_values['height'])
+
+        # select new entry
+        nbr_row = self.ui.tableWidget.rowCount()
+        nbr_col = self.ui.tableWidget.columnCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        self.ui.tableWidget.setRangeSelected(full_range, False)
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        self.ui.tableWidget.setRangeSelected(new_selection, True)
+        self.ui.tableWidget.blockSignals(False)
+
+        self.ui.tableWidget_2.blockSignals(True)
+        self.ui.tableWidget_2.insertRow(row)
+        self.ui.tableWidget_2.setRowHeight(row, self.guide_table_height)
+        self.set_item_profile_table(row=row)
+
+        # select new entry
+        nbr_col = self.ui.tableWidget_2.columnCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(full_range, False)
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
+        self.ui.tableWidget_2.blockSignals(False)
+
+    # setter
+    def set_item_profile_table(self, row=0):
+        spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        widget = QtGui.QComboBox()
+        widget.addItems(self.default_profile_width_values)
+        widget.blockSignals(True)
+        spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        hori_layout = QtGui.QHBoxLayout()
+        hori_layout.addItem(spacerItem_left)
+        hori_layout.addWidget(widget)
+        hori_layout.addItem(spacerItem_right)
+        cell_widget = QtGui.QWidget()
+        cell_widget.setLayout(hori_layout)
+        self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
+
+    def set_item_main_table(self, row=0, col=0, value=''):
+        if col == 0:
+            spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            widget = QtGui.QCheckBox()
+            widget.blockSignals(True)
+            widget.stateChanged.connect(self.guide_state_changed)
+            spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            hori_layout = QtGui.QHBoxLayout()
+            hori_layout.addItem(spacerItem_left)
+            hori_layout.addWidget(widget)
+            hori_layout.addItem(spacerItem_right)
+            cell_widget = QtGui.QWidget()
+            cell_widget.setLayout(hori_layout)
+            if value is True:
+                widget.setCheckState(QtCore.Qt.Checked)
+            else:
+                widget.setCheckState(QtCore.Qt.Unchecked)
+            self.ui.tableWidget.setCellWidget(row, col, cell_widget)
+            widget.blockSignals(False)
+        else:
+            item = QtGui.QTableWidgetItem(str(value))
+            self.ui.tableWidget.setItem(row, col, item)
+
+    # getter
+    def get_image_selected(self, recalculate_image=False):
+        slider_index = self.ui.file_slider.value()
+        if recalculate_image:
+            angle = self.rotation_angle
+            # rotate all images
+            self.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.data_dict_raw['data']]
+
+        _image = self.data_dict['data'][slider_index]
+        return _image
+
+    def get_selected_row(self, source='tableWidget'):
+        if source == 'tableWidget':
+            ui = self.ui.tableWidget
+        else:
+            ui = self.ui.tableWidget_2
+        selection = ui.selectedRanges()
+        if selection:
+            top_row = selection[0].topRow()
+            return top_row
+        else:
+            return -1
+
+
 
 
 
@@ -405,120 +511,9 @@ class ProfileUi(QMainWindow):
         self.calibration[str(index)]['mean_counts'] = _mean
         self.calibration[str(index)]['value'] = value
 
-    def calculate_measurement_profiles(self):
-        """calculate for each measurement roi the mean counts using the calibrated regions. The
-        value will be displayed in the summary table"""
 
-        def ratio_calibration(cali_1=True, cali_2=True, input_value=np.NaN):
-            if cali_1 and cali_2:
-                cal1_mean = self.calibration['1']['mean_counts']
-                cal1_value = self.calibration['1']['value']
-                cal2_mean = self.calibration['2']['mean_counts']
-                cal2_value = self.calibration['2']['value']
-                return ((cal2_value - cal1_value)/(cal2_mean - cal1_mean)*(input_value - cal1_mean) + cal1_value)
 
-            elif cali_1:
-                index = '1'
 
-            elif cali_2:
-                index = '2'
-
-            else:
-                return input_value
-
-            cali_mean = self.calibration[index]['mean_counts']
-            cali_value = self.calibration[index]['value']
-            return (input_value/cali_mean) * cali_value
-
-        self.calibration = {} # reset
-        cali_1 = self.ui.use_calibration1_checkbox.isChecked()
-        cali_2 = self.ui.use_calibration2_checkbox.isChecked()
-        if cali_1:
-            self.record_calibration(index=1)
-        if cali_2:
-            self.record_calibration(index=2)
-
-        nbr_row = self.ui.tableWidget.rowCount()
-        measurement_dict = {}
-        for _measurement_row in np.arange(nbr_row):
-            (x0, y0, width, height) = self.get_item_row(row=_measurement_row)
-            _measurement_data = []
-            for _data_index, _data in enumerate(self.data_dict['data']):
-                data_counts = np.nanmean(_data[y0:y0+height, x0:x0+width])
-
-                real_data_counts = ratio_calibration(cali_1 = cali_1,
-                                                     cali_2 = cali_2,
-                                                     input_value = data_counts)
-
-                item = QtGui.QTableWidgetItem("{:.2f}".format(real_data_counts))
-                _measurement_data.append(real_data_counts)
-                self.ui.summary_table.setItem(_data_index, _measurement_row+3, item)
-
-            measurement_dict[str(_measurement_row+1)] = _measurement_data
-
-        self.measurement_dict = measurement_dict
-
-    def display_measurement_profiles(self, refresh_calculation=True):
-        """will calculate the mean counts of the calibrated samples (if selected)
-        and display the measurement mean of all the rois defined
-        """
-        self.ui.measurement_view.clear()
-        try:
-            self.ui.measurement_view.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
-
-        self.legend = self.ui.measurement_view.addLegend()
-
-        if refresh_calculation:
-            self.calculate_measurement_profiles()
-
-        _color = Color()
-        _color_list = _color.get_list_rgb(nbr_color=self.ui.tableWidget.rowCount())
-
-        for _index, _key in enumerate(self.measurement_dict.keys()):
-            _data = self.measurement_dict[_key]
-            self.ui.measurement_view.plot(_data,
-                                          name="Region {}".format(1+_index),
-                                          pen=_color_list[_index])
-            self.ui.measurement_view.setLabel('bottom', 'File Index')
-            self.ui.measurement_view.setLabel('left', 'Mean Counts Calibrated')
-
-    def remove_row(self, row=-1):
-        if row == -1:
-            return
-        self.ui.tableWidget.removeRow(row)
-
-        nbr_row = self.ui.tableWidget.rowCount()
-        if row == nbr_row:
-            row -= 1
-
-        if nbr_row > 0:
-            nbr_col = self.ui.tableWidget.columnCount()
-            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-            self.ui.tableWidget.setRangeSelected(new_selection, True)
-
-    def insert_row(self, row=-1):
-        if row == -1:
-            row = 0
-
-        self.ui.tableWidget.blockSignals(True)
-        default_values = self.default_measurement_roi
-
-        self.ui.tableWidget.insertRow(row)
-        self.set_item_main_table(row=row, col=0, value=default_values['x0'])
-        self.set_item_main_table(row=row, col=1, value=default_values['y0'])
-        self.set_item_main_table(row=row, col=2, value=default_values['width'])
-        self.set_item_main_table(row=row, col=3, value=default_values['height'])
-
-        # select new entry
-        nbr_row = self.ui.tableWidget.rowCount()
-        nbr_col = self.ui.tableWidget.columnCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
-        self.ui.tableWidget.setRangeSelected(full_range, False)
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
-        self.ui.tableWidget.setRangeSelected(new_selection, True)
-        self.ui.tableWidget.blockSignals(False)
 
     def insert_column_in_summary_table(self, roi_index=-1):
         col_offset = 3
@@ -688,36 +683,12 @@ class ProfileUi(QMainWindow):
         roi_ui.setSize((width, height))
         roi_ui.blockSignals(False)
 
-    # setter
-    def set_item_main_table(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
-        self.ui.tableWidget.setItem(row, col, item)
-        if col == 4:
-            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def set_item_summary_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.summary_table.setItem(row, col, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    # getter
-    def get_image_selected(self, recalculate_image=False):
-        slider_index = self.ui.file_slider.value()
-        if recalculate_image:
-            angle = self.rotation_angle
-            # rotate all images
-            self.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.data_dict_raw['data']]
-
-        _image = self.data_dict['data'][slider_index]
-        return _image
-
-    def get_selected_row(self):
-        selection = self.ui.tableWidget.selectedRanges()
-        if selection:
-            top_row = selection[0].topRow()
-            return top_row
-        else:
-            return -1
 
     def get_item_row(self, row=0):
         x0 = np.int(str(self.ui.tableWidget.item(row, 0).text()))
@@ -747,6 +718,32 @@ class ProfileUi(QMainWindow):
         # self.display_measurement_profiles()
 
     ## Event Handler
+    def table_widget_selection_changed(self):
+        self.ui.tableWidget_2.blockSignals(True)
+        nbr_col = self.ui.tableWidget_2.columnCount()
+        nbr_row = self.ui.tableWidget_2.rowCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(full_range, False)
+        row = self.get_selected_row()
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
+        self.ui.tableWidget_2.blockSignals(False)
+
+    def table_widget_2_selection_changed(self):
+        self.ui.tableWidget.blockSignals(True)
+        nbr_col = self.ui.tableWidget.columnCount()
+        nbr_row = self.ui.tableWidget.rowCount()
+        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        self.ui.tableWidget.setRangeSelected(full_range, False)
+        row = self.get_selected_row(source='tableWidget_2')
+        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        self.ui.tableWidget.setRangeSelected(new_selection, True)
+        self.ui.tableWidget.blockSignals(False)
+
+    def guide_state_changed(self, state):
+        # state=0 is unchecked
+        # state=2 is checked
+        print(state)
 
     def display_grid_clicked(self):
         status = self.ui.grid_display_checkBox.isChecked()
@@ -787,21 +784,13 @@ class ProfileUi(QMainWindow):
         self.display_image(recalculate_image=True)
 
     def add_row_button_clicked(self):
-        print("add row button")
-        # selected_row = self.get_selected_row()
-        # self.insert_row(row=selected_row)
-        # self.insert_column_in_summary_table(roi_index=selected_row)
-        # self.insert_measurement_roi_ui(row=selected_row)
-        # self.update_mean_counts(row=selected_row)
-        # self.display_measurement_profiles()
+        selected_row = self.get_selected_row()
+        self.insert_row(row=selected_row)
+        self.display_guides()
 
     def remove_row_button_clicked(self):
-        print("remove row")
-        # selected_row = self.get_selected_row()
-        # self.remove_row(row=selected_row)
-        # self.remove_column_in_summary_table(roi_index=selected_row)
-        # self.remove_measurement_roi_ui(row=selected_row)
-        # self.display_measurement_profiles()
+        selected_row = self.get_selected_row()
+        self.remove_row(row=selected_row)
 
     # def cell_changed(self, row, col ):
     #     self.update_measurement_rois_from_table(row=row)

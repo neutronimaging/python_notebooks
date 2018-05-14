@@ -11,7 +11,7 @@ class MetadataHandler(object):
             try:
                 o_image = Image.open(file_name)
                 o_dict = dict(o_image.tag_v2)
-                time_stamp = o_dict[65000][0]
+                time_stamp = o_dict[65000]
                 #time_stamp_s = str(o_dict[65002][0])
                 #time_stamp_ns = str(o_dict[65003][0])
                 #time_stamp_string = "{}.{}".format(time_stamp_s, time_stamp_ns)
