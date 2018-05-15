@@ -56,12 +56,13 @@ class ProfileUi(QMainWindow):
     list_profile_pyqt_roi = list()
     list_table_widget_checkbox = list()
     default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 200,
+                         'isChecked': True,
                          'color_activated':'r',
                          'color_deactivated': 'b'}
     previous_active_row = -1 # use to deactivated the guide and profile roi
 
-    default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
-                                  'width': 200, 'height': 200}
+    # default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
+    #                               'width': 200, 'height': 200}
     default_profile_width_values = np.arange(1,50,2)
 
 
@@ -226,10 +227,10 @@ class ProfileUi(QMainWindow):
     def init_parameters(self):
         # init the position of the measurement ROI
         [height, width] = np.shape(self.data_dict['data'][0])
-        self.default_guide_table_values['width'] = np.int(width/10)
-        self.default_guide_table_values['height'] = np.int(height/10)
-        self.default_guide_table_values['x0'] = np.int(width/2)
-        self.default_guide_table_values['y0'] = np.int(height/2)
+        self.default_guide_roi['width'] = np.int(width/10)
+        self.default_guide_roi['height'] = np.int(height/10)
+        self.default_guide_roi['x0'] = np.int(width/2)
+        self.default_guide_roi['y0'] = np.int(height/2)
 
         self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
 
@@ -371,6 +372,14 @@ class ProfileUi(QMainWindow):
             new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
 
+    def update_guide_roi_using_guide_table(self, row=-1):
+        [x0, y0, width, height] = self.get_item_row(row=row)
+        roi_ui = self.list_guide_pyqt_roi[row]
+        roi_ui.blockSignals(True)
+        roi_ui.setPos((x0, y0))
+        roi_ui.setSize((width, height))
+        roi_ui.blockSignals(False)
+
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
             region = _roi.getArraySlice(self.live_image,
@@ -410,7 +419,7 @@ class ProfileUi(QMainWindow):
             row = 0
 
         self.ui.tableWidget.blockSignals(True)
-        default_values = self.default_guide_table_values
+        default_values = self.default_guide_roi
 
         self.ui.tableWidget.insertRow(row)
         self.ui.tableWidget.setRowHeight(row, self.guide_table_height)
@@ -482,8 +491,12 @@ class ProfileUi(QMainWindow):
             item = QtGui.QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
 
-
-
+    def get_item_row(self, row=0):
+        x0 = np.int(str(self.ui.tableWidget.item(row, 1).text()))
+        y0 = np.int(str(self.ui.tableWidget.item(row, 2).text()))
+        width = np.int(str(self.ui.tableWidget.item(row, 3).text()))
+        height = np.int(str(self.ui.tableWidget.item(row, 4).text()))
+        return (x0, y0, width, height)
 
     def get_image_selected(self, recalculate_image=False):
         slider_index = self.ui.file_slider.value()
@@ -691,12 +704,6 @@ class ProfileUi(QMainWindow):
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
 
-    def get_item_row(self, row=0):
-        x0 = np.int(str(self.ui.tableWidget.item(row, 0).text()))
-        y0 = np.int(str(self.ui.tableWidget.item(row, 1).text()))
-        width = np.int(str(self.ui.tableWidget.item(row, 2).text()))
-        height = np.int(str(self.ui.tableWidget.item(row, 3).text()))
-        return (x0, y0, width, height)
 
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
@@ -750,6 +757,9 @@ class ProfileUi(QMainWindow):
         self.highlight_guide_profile_pyqt_rois(row=row)
         self.ui.tableWidget.blockSignals(False)
         self.previous_active_row = row
+
+    def table_widget_cell_changed(self, row, column):
+        self.update_guide_roi_using_guide_table(row=row)
 
     def guide_state_changed(self, state):
         self.remove_all_guides()
