@@ -436,6 +436,48 @@
                 </spacer>
                </item>
                <item>
+                <widget class="QGroupBox" name="groupBox_2">
+                 <property name="title">
+                  <string>Profile Direction</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                  <item>
+                   <widget class="QRadioButton" name="profile_direction_x_axis">
+                    <property name="text">
+                     <string>x-axis</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_2">
+                    <property name="text">
+                     <string>y-axis</string>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
                 <widget class="QPushButton" name="pushButton_5">
                  <property name="font">
                   <font>
@@ -690,7 +732,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>824</x>
-     <y>654</y>
+     <y>650</y>
     </hint>
     <hint type="destinationlabel">
      <x>751</x>
@@ -706,7 +748,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1328</x>
-     <y>654</y>
+     <y>650</y>
     </hint>
     <hint type="destinationlabel">
      <x>1152</x>
@@ -922,6 +964,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>profile_direction_x_axis</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>profile_along_axis_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1025</x>
+     <y>627</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>992</x>
+     <y>779</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>groupBox_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>profile_along_axis_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1086</x>
+     <y>637</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1094</x>
+     <y>785</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -944,5 +1018,6 @@
   <slot>table_widget_2_selection_changed()</slot>
   <slot>table_widget_cell_changed()</slot>
   <slot>grid_size_slider_released()</slot>
+  <slot>profile_along_axis_changed()</slot>
  </slots>
 </ui>

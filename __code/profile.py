@@ -49,13 +49,15 @@ class ProfileUi(QMainWindow):
                  'item': None,
                  'color': (0, 0, 255, 255, 1)}
 
+    profile_color = (0, 255, 0, 255, 1)
+
     display_ui = []
 
     # guide and profile pg ROIs
     list_guide_pyqt_roi = list()
     list_profile_pyqt_roi = list()
     list_table_widget_checkbox = list()
-    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 200,
+    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 800,
                          'isChecked': True,
                          'color_activated':'r',
                          'color_deactivated': 'b'}
@@ -228,10 +230,9 @@ class ProfileUi(QMainWindow):
         # init the position of the measurement ROI
         [height, width] = np.shape(self.data_dict['data'][0])
         self.default_guide_roi['width'] = np.int(width/10)
-        self.default_guide_roi['height'] = np.int(height/10)
+        self.default_guide_roi['height'] = np.int(height/5)
         self.default_guide_roi['x0'] = np.int(width/2)
         self.default_guide_roi['y0'] = np.int(height/2)
-
         self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
 
     # main methods
@@ -249,11 +250,24 @@ class ProfileUi(QMainWindow):
             if _widget.isChecked():
                 self.ui.image_view.addItem(_guide)
 
+    def remove_all_profiles(self):
+        for _roi in self.list_profile_pyqt_roi:
+            self.ui.image_view.removeItem(_roi)
+
+    def display_profiles(self):
+        nbr_row = self.ui.table_widget.rowCount()
+        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+        for _row in np.arange(nbr_row):
+            [x0, y0, width, height] = self.get_item_row(row=_row)
+            _profile_width = self.get_profile_width(row=_row)
+            print("_profile_width: {}".format(_profile_width))
+
+
+
+
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
-
         _image = self.get_image_selected(recalculate_image=recalculate_image)
-
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
         _state = _view_box.getState()
@@ -380,6 +394,9 @@ class ProfileUi(QMainWindow):
         roi_ui.setSize((width, height))
         roi_ui.blockSignals(False)
 
+    def update_profile_roi_using_guide_table(self, row=-1):
+        pass
+
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
             region = _roi.getArraySlice(self.live_image,
@@ -413,6 +430,46 @@ class ProfileUi(QMainWindow):
         guide_roi.sigRegionChanged.connect(self.guide_changed)
         self.ui.image_view.addItem(guide_roi)
         self.list_guide_pyqt_roi.insert(row, guide_roi)
+
+        # profile
+        [x0, y0, width, height] = self.get_item_row(row=row)
+        _profile_width = self.get_profile_width(row=row)
+        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+        if is_x_profile_direction:
+            profile_height = np.int((height-y0)/2.)
+            delta_profile = (_profile_width-1)/2.
+            y_top = profile_height - delta_profile
+            y_bottom = profile_height + delta_profile
+            x_left = x0
+            x_right = x0 + width
+
+            pos = []
+            pos.append([x_left, y_top])
+            pos.append([x_right, y_top])
+            pos.append([x_left, y_bottom])
+            pos.append([x_right, y_bottom])
+            pos = np.array(pos)
+
+            adj = []
+            adj.append([0, 1])
+            adj.append([2, 3])
+            adj = np.array(adj)
+
+        line_color = self.profile_color
+        _list_line_color = list(line_color)
+        line_color = tuple(_list_line_color)
+        lines = np.array([line_color for n in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+
+        grid = pg.GraphItem()
+        self.ui.image_view.addItem(grid)
+        grid.setData(pos=pos,
+                     adj=adj,
+                     pen=lines,
+                     symbol=None,
+                     pxMode=False)
 
     def insert_row(self, row=-1):
         if row == -1:
@@ -490,6 +547,10 @@ class ProfileUi(QMainWindow):
         else:
             item = QtGui.QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
+
+    def get_profile_width(self, row=0):
+        _widget = self.ui.tableWidget_2.cellWidget(row, 0).children()[1]
+        return np.int(str(_widget.currentText()))
 
     def get_item_row(self, row=0):
         x0 = np.int(str(self.ui.tableWidget.item(row, 1).text()))
@@ -764,12 +825,8 @@ class ProfileUi(QMainWindow):
     def guide_state_changed(self, state):
         self.remove_all_guides()
         self.display_guides()
-
-
-
-
-
-
+        self.remove_all_profiles()
+        self.display_profiles()
 
     def display_grid_clicked(self):
         status = self.ui.grid_display_checkBox.isChecked()
@@ -817,16 +874,14 @@ class ProfileUi(QMainWindow):
         self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
         self.insert_row(row=selected_row)
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
-        # self.display_guides()
         self.previous_active_row = selected_row
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
 
-    # def cell_changed(self, row, col ):
-    #     self.update_measurement_rois_from_table(row=row)
-    #     self.display_measurement_profiles()
+    def profile_along_axis_changed(self):
+        self.display_profiles()
 
     def export_button_clicked(self):
         print("export button clicked")
