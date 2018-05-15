@@ -196,14 +196,7 @@
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_2">
                    <item>
-                    <widget class="QWidget" name="pyqtgraph_widget" native="true">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
+                    <widget class="QWidget" name="pyqtgraph_widget" native="true"/>
                    </item>
                   </layout>
                  </item>
@@ -393,6 +386,12 @@
                    <width>100</width>
                    <height>16777215</height>
                   </size>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
                  </property>
                  <attribute name="horizontalHeaderVisible">
                   <bool>true</bool>
@@ -690,8 +689,8 @@
    <slot>remove_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>822</x>
-     <y>595</y>
+     <x>824</x>
+     <y>654</y>
     </hint>
     <hint type="destinationlabel">
      <x>751</x>
@@ -706,8 +705,8 @@
    <slot>add_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1293</x>
-     <y>572</y>
+     <x>1328</x>
+     <y>654</y>
     </hint>
     <hint type="destinationlabel">
      <x>1152</x>
@@ -722,8 +721,8 @@
    <slot>display_grid_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>86</x>
-     <y>104</y>
+     <x>115</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>149</x>
@@ -738,8 +737,8 @@
    <slot>grid_size_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>412</x>
-     <y>103</y>
+     <x>414</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>483</x>
@@ -754,8 +753,8 @@
    <slot>grid_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>367</x>
-     <y>98</y>
+     <x>414</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>397</x>
@@ -770,8 +769,8 @@
    <slot>transparency_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>577</x>
-     <y>106</y>
+     <x>755</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>731</x>
@@ -786,8 +785,8 @@
    <slot>transparency_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>692</x>
-     <y>104</y>
+     <x>755</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>1062</x>
@@ -802,8 +801,8 @@
    <slot>right_rotation_fast_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>52</x>
-     <y>268</y>
+     <x>69</x>
+     <y>551</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -818,8 +817,8 @@
    <slot>right_rotation_slow_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>60</x>
-     <y>515</y>
+     <x>77</x>
+     <y>653</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -834,8 +833,8 @@
    <slot>left_rotation_fast_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>761</x>
-     <y>322</y>
+     <x>765</x>
+     <y>551</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -850,8 +849,8 @@
    <slot>left_rotation_slow_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>749</x>
-     <y>507</y>
+     <x>765</x>
+     <y>653</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -866,12 +865,12 @@
    <slot>table_widget_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>997</x>
-     <y>345</y>
+     <x>978</x>
+     <y>294</y>
     </hint>
     <hint type="destinationlabel">
-     <x>682</x>
-     <y>405</y>
+     <x>958</x>
+     <y>-3</y>
     </hint>
    </hints>
   </connection>
@@ -882,12 +881,12 @@
    <slot>table_widget_2_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1277</x>
-     <y>345</y>
+     <x>1294</x>
+     <y>318</y>
     </hint>
     <hint type="destinationlabel">
-     <x>682</x>
-     <y>405</y>
+     <x>1277</x>
+     <y>-12</y>
     </hint>
    </hints>
   </connection>

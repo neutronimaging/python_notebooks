@@ -481,6 +481,7 @@ class CalibratedTransmissionUi(QMainWindow):
         new_roi.addScaleHandle([0, 0], [1, 1])
         self.ui.image_view.addItem(new_roi)
         new_roi.sigRegionChanged.connect(self.measurement_roi_moved)
+
         self.roi_ui_measurement.insert(row, new_roi)
 
     def remove_measurement_roi_ui(self, row=-1):

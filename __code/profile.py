@@ -64,6 +64,11 @@ class ProfileUi(QMainWindow):
                                   'width': 200, 'height': 200}
     default_profile_width_values = np.arange(1,50,2)
 
+
+    #remove-me
+    test_roi = None
+
+
     # col_width = 65
     # table_column_width = [col_width, col_width, col_width, col_width, 100]
     # default_measurement_roi = {'x0': 0, 'y0': 0,
@@ -119,10 +124,12 @@ class ProfileUi(QMainWindow):
         self.init_parameters()
         self.init_widgets()
         self.init_pyqtgraph()
+
         # self.init_statusbar()
         #
         # # display first image
         self.slider_file_changed(-1)
+
         #
         # self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
 
@@ -301,6 +308,7 @@ class ProfileUi(QMainWindow):
                          pxMode=False)
             self.grid_view['item'] = grid
 
+
         # calibrated and measurement ROIs
         # self.display_roi()
 
@@ -343,14 +351,15 @@ class ProfileUi(QMainWindow):
         return pos_adj_dict
 
     def remove_row(self, row=-1):
+
         if row == -1:
             return
         self.ui.tableWidget.removeRow(row)
         self.ui.tableWidget_2.removeRow(row)
         self.ui.image_view.removeItem(self.list_guide_pyqt_roi[row])
         self.list_guide_pyqt_roi.remove(self.list_guide_pyqt_roi[row])
-        self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
-        # self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
+        # self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
+        self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
 
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
@@ -363,21 +372,22 @@ class ProfileUi(QMainWindow):
             new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
 
+
     def add_guide_and_profile_pyqt_roi(self, row=-1):
         """add the pyqtgraph roi guide and profiles"""
         if row == -1:
             row = 0
 
         # guide
-        _guide = pg.RectROI([self.default_guide_roi['x0'], self.default_guide_roi['y0']],
+        guide_roi = pg.RectROI([self.default_guide_roi['x0'], self.default_guide_roi['y0']],
                             self.default_guide_roi['height'],
                             self.default_guide_roi['width'],
                             pen=self.default_guide_roi['color_activated'])
-        _guide.addScaleHandle([1, 1], [0, 0])
-        _guide.addScaleHandle([0, 0], [1, 1])
-        _guide.sigRegionChanged.connect(self.guide_changed)
-        self.ui.image_view.addItem(_guide)
-        self.list_guide_pyqt_roi.insert(row, _guide)
+        guide_roi.addScaleHandle([1, 1], [0, 0])
+        guide_roi.addScaleHandle([0, 0], [1, 1])
+        guide_roi.sigRegionChanged.connect(self.guide_changed)
+        self.ui.image_view.addItem(guide_roi)
+        self.list_guide_pyqt_roi.insert(row, guide_roi)
 
     def insert_row(self, row=-1):
         if row == -1:
@@ -577,68 +587,68 @@ class ProfileUi(QMainWindow):
 
 
 
+    #
+    #
+    #
+    # def insert_column_in_summary_table(self, roi_index=-1):
+    #     col_offset = 3
+    #     if roi_index == -1:
+    #         roi_index = 0
+    #
+    #     roi_index += col_offset
+    #     self.ui.summary_table.insertColumn(roi_index)
+    #     item = QtWidgets.QTableWidgetItem()
+    #     self.ui.summary_table.setHorizontalHeaderItem(roi_index, item)
+    #     self.renamed_summary_table_region_header()
+    #
+    # def remove_column_in_summary_table(self, roi_index=-1):
+    #     col_offset = 3
+    #     if roi_index == -1:
+    #         roi_index = 0
+    #
+    #     roi_index += col_offset
+    #     self.ui.summary_table.removeColumn(roi_index)
+    #     self.renamed_summary_table_region_header()
+    #
+    # def renamed_summary_table_region_header(self):
+    #     # rename all the headers
+    #     nbr_col = self.ui.summary_table.columnCount()
+    #     if nbr_col <= 3:
+    #         return
+    #
+    #     _index = 1
+    #     for _col in np.arange(3, nbr_col):
+    #         item = self.ui.summary_table.horizontalHeaderItem(_col)
+    #         item.setText("Region {}".format(_index))
+    #         _index += 1
 
-
-
-    def insert_column_in_summary_table(self, roi_index=-1):
-        col_offset = 3
-        if roi_index == -1:
-            roi_index = 0
-
-        roi_index += col_offset
-        self.ui.summary_table.insertColumn(roi_index)
-        item = QtWidgets.QTableWidgetItem()
-        self.ui.summary_table.setHorizontalHeaderItem(roi_index, item)
-        self.renamed_summary_table_region_header()
-
-    def remove_column_in_summary_table(self, roi_index=-1):
-        col_offset = 3
-        if roi_index == -1:
-            roi_index = 0
-
-        roi_index += col_offset
-        self.ui.summary_table.removeColumn(roi_index)
-        self.renamed_summary_table_region_header()
-
-    def renamed_summary_table_region_header(self):
-        # rename all the headers
-        nbr_col = self.ui.summary_table.columnCount()
-        if nbr_col <= 3:
-            return
-
-        _index = 1
-        for _col in np.arange(3, nbr_col):
-            item = self.ui.summary_table.horizontalHeaderItem(_col)
-            item.setText("Region {}".format(_index))
-            _index += 1
-
-    def update_mean_counts(self, row=-1, all=False):
-        if all == True:
-            nbr_row = self.ui.tableWidget.rowCount()
-            for _row in np.arange(nbr_row):
-                self.update_mean_counts(row=_row)
-        else:
-            # FIXME
-            pass
-
-    def insert_measurement_roi_ui(self, row=-1):
-        default_roi = self.default_measurement_roi
-        new_roi = pg.RectROI([default_roi['x0'], default_roi['y0']],
-                             [default_roi['height'], default_roi['width']],
-                             pen='g')
-        new_roi.addScaleHandle([1, 1], [0, 0])
-        new_roi.addScaleHandle([0, 0], [1, 1])
-        self.ui.image_view.addItem(new_roi)
-        new_roi.sigRegionChanged.connect(self.measurement_roi_moved)
-        self.roi_ui_measurement.insert(row, new_roi)
-
-    def remove_measurement_roi_ui(self, row=-1):
-        """roi_ui_measurement is where the ROI ui (pyqtgraph) are saved"""
-        if row == -1:
-            return
-        old_roi = self.roi_ui_measurement[row]
-        self.roi_ui_measurement.remove(old_roi)
-        self.ui.image_view.removeItem(old_roi)
+    # def update_mean_counts(self, row=-1, all=False):
+    #     if all == True:
+    #         nbr_row = self.ui.tableWidget.rowCount()
+    #         for _row in np.arange(nbr_row):
+    #             self.update_mean_counts(row=_row)
+    #     else:
+    #         # FIXME
+    #         pass
+    #
+    # def insert_measurement_roi_ui(self, row=-1):
+    #     default_roi = self.default_measurement_roi
+    #     new_roi = pg.RectROI([default_roi['x0'], default_roi['y0']],
+    #                          [default_roi['height'], default_roi['width']],
+    #                          pen='g')
+    #     new_roi.addScaleHandle([1, 1], [0, 0])
+    #     new_roi.addScaleHandle([0, 0], [1, 1])
+    #     self.ui.image_view.addItem(new_roi)
+    #     new_roi.sigRegionChanged.connect(self.measurement_roi_moved)
+    #     self.roi_ui_measurement.insert(row, new_roi)
+    #
+    # def remove_measurement_roi_ui(self, row=-1):
+    #     """roi_ui_measurement is where the ROI ui (pyqtgraph) are saved"""
+    #     if row == -1:
+    #         return
+    #     old_roi = self.roi_ui_measurement[row]
+    #     self.roi_ui_measurement.remove(old_roi)
+    #     self.ui.image_view.removeItem(old_roi)
 
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
@@ -657,96 +667,6 @@ class ProfileUi(QMainWindow):
         self.ui.previous_image_button.setEnabled(_prev)
         self.ui.next_image_button.setEnabled(_next)
 
-    def use_current_calibration_file(self, index=1):
-        current_file_index = self.ui.file_slider.value()
-        if index == 1:
-            ui = self.ui.calibration1_index
-        else:
-            ui = self.ui.calibration2_index
-        ui.setText(str(current_file_index))
-        self.slider_file_changed(-1)
-
-    def display_this_file(self, index=1):
-        if index == 1:
-            ui = self.ui.calibration1_index
-        else:
-            ui = self.ui.calibration2_index
-
-        file_index = np.int(str(ui.text()))
-        self.ui.file_slider.setValue(file_index)
-        self.slider_file_changed(-1)
-
-    def update_calibration_widgets(self, index=1):
-        roi_ui = self.roi_ui_calibrated[index-1]
-        region = roi_ui.getArraySlice(self.live_image,
-                                      self.ui.image_view.imageItem)
-
-        x0 = region[0][0].start
-        x1 = region[0][0].stop
-        y0 = region[0][1].start
-        y1 = region[0][1].stop
-
-        width = np.abs(x1 - x0)-1
-        height = np.abs(y1 - y0)-1
-
-        roi_widgets = self.calibration_widgets[str(index)]
-        roi_widgets['x0'].setText(str(x0))
-        roi_widgets['y0'].setText(str(y0))
-        roi_widgets['width'].setText(str(width))
-        roi_widgets['height'].setText(str(height))
-
-        self.calibration_roi[str(index)]['x0'] = x0
-        self.calibration_roi[str(index)]['y0'] = y0
-        self.calibration_roi[str(index)]['width'] = width
-        self.calibration_roi[str(index)]['height'] = height
-
-    def calibration_widgets_changed(self, index=1):
-        roi_ui = self.roi_ui_calibrated[index-1]
-        widgets_ui = self.calibration_widgets[str(index)]
-        x0 = np.int(widgets_ui['x0'].text())
-        y0 = np.int(widgets_ui['y0'].text())
-        width = np.int(widgets_ui['width'].text())
-        height = np.int(widgets_ui['height'].text())
-
-        roi_ui.setPos((x0, y0))
-        roi_ui.setSize((width, height))
-
-        calibration_roi = self.calibration_roi[str(index)]
-        calibration_roi['x0'] = x0
-        calibration_roi['y0'] = y0
-        calibration_roi['height'] = height
-        calibration_roi['width'] = width
-
-    def update_all_measurement_rois_from_view(self):
-        # reached when the ROIs are moved in the ui
-
-        def get_roi_parameters(roi_ui):
-            region = roi_ui.getArraySlice(self.live_image,
-                                          self.ui.image_view.imageItem)
-            x0 = region[0][0].start
-            x1 = region[0][0].stop
-            y0 = region[0][1].start
-            y1 = region[0][1].stop
-            width = np.abs(x1 - x0) - 1
-            height = np.abs(y1 - y0) - 1
-
-            return (x0, y0, width, height)
-
-        list_roi  = self.roi_ui_measurement
-        for _row, _roi in enumerate(list_roi):
-            [x0, y0, width, height] = get_roi_parameters(_roi)
-            self.ui.tableWidget.item(_row, 0).setText(str(x0))
-            self.ui.tableWidget.item(_row, 1).setText(str(y0))
-            self.ui.tableWidget.item(_row, 2).setText(str(width))
-            self.ui.tableWidget.item(_row, 3).setText(str(height))
-
-    def update_measurement_rois_from_table(self, row=0):
-        roi_ui = self.roi_ui_measurement[row]
-        [x0, y0, width, height] = self.get_item_row(row=row)
-        roi_ui.blockSignals(True)
-        roi_ui.setPos((x0, y0))
-        roi_ui.setSize((width, height))
-        roi_ui.blockSignals(False)
 
 
     def set_item_summary_table(self, row=0, col=0, value=''):
@@ -864,11 +784,11 @@ class ProfileUi(QMainWindow):
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
-        self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
+        # self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
         self.insert_row(row=selected_row)
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
-        self.display_guides()
-        self.previous_active_row = selected_row
+        # self.display_guides()
+        # self.previous_active_row = selected_row
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
