@@ -906,6 +906,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>grid_size_slider</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_size_slider_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>226</x>
+     <y>208</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>-3</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -927,5 +943,6 @@
   <slot>table_widget_selection_changed()</slot>
   <slot>table_widget_2_selection_changed()</slot>
   <slot>table_widget_cell_changed()</slot>
+  <slot>grid_size_slider_released()</slot>
  </slots>
 </ui>

@@ -780,6 +780,9 @@ class ProfileUi(QMainWindow):
     def grid_size_slider_clicked(self):
         self.display_image()
 
+    def grid_size_slider_released(self):
+        self.display_image()
+
     def grid_size_slider_moved(self, value):
         self.display_image()
 

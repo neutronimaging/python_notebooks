@@ -297,6 +297,7 @@ class Ui_MainWindow(object):
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
         self.tableWidget_2.itemSelectionChanged.connect(MainWindow.table_widget_2_selection_changed)
         self.tableWidget.cellChanged['int','int'].connect(MainWindow.table_widget_cell_changed)
+        self.grid_size_slider.sliderReleased.connect(MainWindow.grid_size_slider_released)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
