@@ -234,21 +234,19 @@ class ProfileUi(QMainWindow):
         self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
 
     # main methods
-    def display_guides(self, row=-1):
-        if row == -1:
-            # we want to display all of them
-            nbr_row = self.ui.tableWidget.rowCount()
-            for _row in np.arange(nbr_row):
-                self.display_guides(row=_row)
-        else:
-            # check if we want to display this guide or not
+    def remove_all_guides(self):
+        # remove all teh guids
+        for _roi in self.list_guide_pyqt_roi:
+            self.ui.image_view.removeItem(_roi)
+
+    def display_guides(self):
+        # check if we want to display this guide or not
+        nbr_row = self.ui.tableWidget.rowCount()
+        for row in np.arange(nbr_row):
             _guide = self.list_guide_pyqt_roi[row]
             _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
             if _widget.isChecked():
-                # yes we want to display it
                 self.ui.image_view.addItem(_guide)
-            else:
-                self.ui.image_view.removeItem(_guide)
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -367,7 +365,6 @@ class ProfileUi(QMainWindow):
             row -= 1
 
         if nbr_row > 0:
-            print("here)")
             nbr_col = self.ui.tableWidget.columnCount()
             new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
             self.ui.tableWidget.setRangeSelected(new_selection, True)
@@ -737,8 +734,8 @@ class ProfileUi(QMainWindow):
         self.previous_active_row = row
 
     def guide_state_changed(self, state):
-        nbr_row = self.ui.tableWidget.rowCount()
-
+        self.remove_all_guides()
+        self.display_guides()
 
 
 
