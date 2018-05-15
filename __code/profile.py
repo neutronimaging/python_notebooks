@@ -371,6 +371,23 @@ class ProfileUi(QMainWindow):
             new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
 
+    def update_guide_table_using_guide_rois(self):
+        for _row, _roi in enumerate(self.list_guide_pyqt_roi):
+            region = _roi.getArraySlice(self.live_image,
+                                        self.ui.image_view.imageItem)
+
+            x0 = region[0][0].start
+            x1 = region[0][0].stop
+            y0 = region[0][1].start
+            y1 = region[0][1].stop
+
+            width = np.abs(x1 - x0)-1
+            height = np.abs(y1 - y0)-1
+
+            self.set_item_main_table(row=_row, col=1, value=str(x0))
+            self.set_item_main_table(row=_row, col=2, value=str(y0))
+            self.set_item_main_table(row=_row, col=3, value=str(width))
+            self.set_item_main_table(row=_row, col=4, value=str(height))
 
     def add_guide_and_profile_pyqt_roi(self, row=-1):
         """add the pyqtgraph roi guide and profiles"""
@@ -703,8 +720,9 @@ class ProfileUi(QMainWindow):
 
 
     ## Event Handler
-    def guide_changed(self, source):
-        pass
+    def guide_changed(self):
+        self.update_guide_table_using_guide_rois()
+
         # print(self.list_guide_pyqt_roi.index(source))
 
     def table_widget_selection_changed(self):
