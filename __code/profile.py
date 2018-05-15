@@ -354,18 +354,20 @@ class ProfileUi(QMainWindow):
 
         if row == -1:
             return
+
         self.ui.tableWidget.removeRow(row)
         self.ui.tableWidget_2.removeRow(row)
         self.ui.image_view.removeItem(self.list_guide_pyqt_roi[row])
         self.list_guide_pyqt_roi.remove(self.list_guide_pyqt_roi[row])
         # self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
-        self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
+        #self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
 
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
             row -= 1
 
         if nbr_row > 0:
+            print("here)")
             nbr_col = self.ui.tableWidget.columnCount()
             new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
             self.ui.tableWidget.setRangeSelected(new_selection, True)
@@ -784,11 +786,11 @@ class ProfileUi(QMainWindow):
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
-        # self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
+        self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
         self.insert_row(row=selected_row)
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         # self.display_guides()
-        # self.previous_active_row = selected_row
+        self.previous_active_row = selected_row
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
