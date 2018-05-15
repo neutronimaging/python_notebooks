@@ -436,8 +436,10 @@ class ProfileUi(QMainWindow):
         _profile_width = self.get_profile_width(row=row)
         is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
         if is_x_profile_direction:
-            profile_height = np.int((height-y0)/2.)
+
+            profile_height = np.abs(np.int((height-y0)/2.))
             delta_profile = (_profile_width-1)/2.
+
             y_top = profile_height - delta_profile
             y_bottom = profile_height + delta_profile
             x_left = x0
@@ -446,14 +448,16 @@ class ProfileUi(QMainWindow):
             pos = []
             pos.append([x_left, y_top])
             pos.append([x_right, y_top])
-            pos.append([x_left, y_bottom])
-            pos.append([x_right, y_bottom])
-            pos = np.array(pos)
-
             adj = []
             adj.append([0, 1])
-            adj.append([2, 3])
+
+            if y_top != y_bottom: # height == 1
+                pos.append([x_left, y_bottom])
+                pos.append([x_right, y_bottom])
+                adj.append([2, 3])
+
             adj = np.array(adj)
+            pos = np.array(pos)
 
         line_color = self.profile_color
         _list_line_color = list(line_color)
