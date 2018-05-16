@@ -418,10 +418,6 @@ class ProfileUi(QMainWindow):
         if row == -1:
             row = 0
 
-
-        print("height of add guide is : {}".format(self.default_guide_roi['height']))
-        print("width of add guide is : {}".format(self.default_guide_roi['width']))
-
         # guide
         guide_roi = pg.RectROI([self.default_guide_roi['x0'], self.default_guide_roi['y0']],
                                 [self.default_guide_roi['width'], self.default_guide_roi['height']],
@@ -436,23 +432,16 @@ class ProfileUi(QMainWindow):
         [x0, y0, width, height] = self.get_item_row(row=row)
         _profile_width = self.get_profile_width(row=row)
         is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+        delta_profile = (_profile_width - 1) / 2.
         if is_x_profile_direction:
 
             profile_center = y0 + np.abs(np.int((height)/2.))
-            delta_profile = (_profile_width-1)/2.
 
             y_top = profile_center - delta_profile
             y_bottom = profile_center + delta_profile
 
-            # y_top = y0 + profile_height - delta_profile
-            # y_bottom = y0 + profile_height + delta_profile
             x_left = x0
             x_right = x0 + width
-
-            print("x_left: {}".format(x_left))
-            print("x_right: {}".format(x_right))
-            print("y_top: {}".format(y_top))
-            print("y_bottom: {}".format(y_bottom))
 
             pos = []
             pos.append([x_left, y_top])
@@ -467,6 +456,33 @@ class ProfileUi(QMainWindow):
 
             adj = np.array(adj)
             pos = np.array(pos)
+
+        else: # y-profile direction
+
+            profile_center = x0 + np.abs(np.int((width) / 2.))
+
+            x_left = profile_center - delta_profile
+            x_right = profile_center + delta_profile
+
+            y_top = y0
+            y_bottom = y0 + height
+
+            pos = []
+            pos.append([x_left, y_top])
+            pos.append([x_right, y_top])
+            adj = []
+            adj.append([0, 1])
+
+            if y_top != y_bottom:  # height == 1
+                pos.append([x_left, y_bottom])
+                pos.append([x_right, y_bottom])
+                adj.append([2, 3])
+
+            adj = np.array(adj)
+            pos = np.array(pos)
+
+
+
 
         line_color = self.profile_color
         _list_line_color = list(line_color)
