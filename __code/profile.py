@@ -175,7 +175,7 @@ class ProfileUi(QMainWindow):
                                                         "background-repeat: no-repeat")
 
         self.ui.splitter_2.setSizes([250, 50])
-        self.ui.splitter.setSizes([250, 50])
+        self.ui.splitter.setSizes([500, 50])
 
         # file slider
         self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
