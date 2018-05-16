@@ -634,6 +634,7 @@ class ProfileUi(QMainWindow):
         widget = QtGui.QComboBox()
         widget.addItems(self.default_profile_width_values)
         widget.blockSignals(True)
+        widget.currentIndexChanged.connect(self.profile_width_changed)
         spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         hori_layout = QtGui.QHBoxLayout()
         hori_layout.addItem(spacerItem_left)
@@ -642,6 +643,7 @@ class ProfileUi(QMainWindow):
         cell_widget = QtGui.QWidget()
         cell_widget.setLayout(hori_layout)
         self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
+        widget.blockSignals(False)
 
     def set_item_main_table(self, row=0, col=0, value=''):
         if col == 0:
@@ -941,12 +943,17 @@ class ProfileUi(QMainWindow):
 
     def table_widget_cell_changed(self, row, column):
         self.update_guide_roi_using_guide_table(row=row)
+        self.update_profile_rois(row=row)
 
     def guide_state_changed(self, state):
         self.remove_all_guides()
         self.display_guides()
-        self.remove_all_profiles()
+        #self.remove_all_profiles()
         self.display_profiles()
+
+    def profile_width_changed(self, new_value):
+        print("new value is {}".format(new_value))
+        self.update_profile_rois()
 
     def display_grid_clicked(self):
         status = self.ui.grid_display_checkBox.isChecked()
