@@ -263,8 +263,6 @@ class ProfileUi(QMainWindow):
             print("_profile_width: {}".format(_profile_width))
 
 
-
-
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
         _image = self.get_image_selected(recalculate_image=recalculate_image)
@@ -420,10 +418,13 @@ class ProfileUi(QMainWindow):
         if row == -1:
             row = 0
 
+
+        print("height of add guide is : {}".format(self.default_guide_roi['height']))
+        print("width of add guide is : {}".format(self.default_guide_roi['width']))
+
         # guide
         guide_roi = pg.RectROI([self.default_guide_roi['x0'], self.default_guide_roi['y0']],
-                            self.default_guide_roi['height'],
-                            self.default_guide_roi['width'],
+                                [self.default_guide_roi['width'], self.default_guide_roi['height']],
                             pen=self.default_guide_roi['color_activated'])
         guide_roi.addScaleHandle([1, 1], [0, 0])
         guide_roi.addScaleHandle([0, 0], [1, 1])
@@ -437,13 +438,21 @@ class ProfileUi(QMainWindow):
         is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
         if is_x_profile_direction:
 
-            profile_height = np.abs(np.int((height-y0)/2.))
+            profile_center = y0 + np.abs(np.int((height)/2.))
             delta_profile = (_profile_width-1)/2.
 
-            y_top = profile_height - delta_profile
-            y_bottom = profile_height + delta_profile
+            y_top = profile_center - delta_profile
+            y_bottom = profile_center + delta_profile
+
+            # y_top = y0 + profile_height - delta_profile
+            # y_bottom = y0 + profile_height + delta_profile
             x_left = x0
             x_right = x0 + width
+
+            print("x_left: {}".format(x_left))
+            print("x_right: {}".format(x_right))
+            print("y_top: {}".format(y_top))
+            print("y_bottom: {}".format(y_bottom))
 
             pos = []
             pos.append([x_left, y_top])
