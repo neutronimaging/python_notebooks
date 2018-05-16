@@ -91,6 +91,7 @@ class Panel:
         self.next_button = next_button
         self.state = state
         self.working_dir = working_dir
+        self.ipts_dir = working_dir
         self.top_object = top_object
         self.gamma_threshold = gamma_coefficient
 
@@ -452,10 +453,10 @@ class NormalizationHandler(object):
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
             #                 'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
 
-    def select_export_folder(self):
+    def select_export_folder(self, ipts_folder='./'):
 
         def display_file_selector_from_shared(ev):
-            start_dir = os.path.join(self.working_dir, 'shared')
+            start_dir = os.path.join(ipts_folder, 'shared')
             self.output_folder_ui.remove()
             self.display_file_selector(start_dir=start_dir)
 
