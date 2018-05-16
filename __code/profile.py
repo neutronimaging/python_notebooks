@@ -71,37 +71,6 @@ class ProfileUi(QMainWindow):
     #remove-me
     test_roi = None
 
-
-    # col_width = 65
-    # table_column_width = [col_width, col_width, col_width, col_width, 100]
-    # default_measurement_roi = {'x0': 0, 'y0': 0,
-    #                            'width': np.NaN, 'height': np.NaN}
-    #
-    # # where the mean counts and calibrated value will be displayed
-    # calibration = {}      # '1' : {'mean_counts' : _mean, 'value': _value}
-    #
-    # measurement_dict = {}   # '1': [ measurement data calibrated ]
-    #
-    # calibration_widgets = {}
-    # calibration_widgets_label = {}
-    # calibrated_roi = {'1': {'x0': 0,
-    #                         'y0': 0,
-    #                         'width': 200,
-    #                         'height': 200,
-    #                         'value': 1,  #np.NaN
-    #                         },
-    #                   '2': {'x0': np.NaN,
-    #                         'y0': np.NaN,
-    #                         'width': 200,
-    #                         'height': 200,
-    #                         'value': 10, #np.NaN
-    #                         },
-    #                   }
-    #
-    # roi_ui_measurement = list() # keep record of all the pyqtgraph.ROI ui
-    # roi_ui_calibrated = []
-
-
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -266,63 +235,64 @@ class ProfileUi(QMainWindow):
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
-        _image = self.get_image_selected(recalculate_image=recalculate_image)
-        _view = self.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
+        o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
 
-        first_update = False
-        if self.histogram_level == []:
-            first_update = True
-        _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget.getLevels()
-
-        _image = np.transpose(_image)
-        self.ui.image_view.setImage(_image)
-        self.live_image = _image
-        _view_box.setState(_state)
-
-        if not first_update:
-            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
-
-        # remove previous grid if any
-        if self.grid_view['item']:
-            self.ui.image_view.removeItem(self.grid_view['item'])
-
-        # if we want a grid
-        if self.ui.grid_display_checkBox.isChecked():
-
-            grid_size = self.ui.grid_size_slider.value()
-            [height, width] = np.shape(self.live_image)
-
-            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
-                                                      height=height,
-                                                      width=width)
-            pos = pos_adj_dict['pos']
-            adj = pos_adj_dict['adj']
-
-            line_color = self.grid_view['color']
-            _transparency_value = 255 - (np.float(str(self.ui.transparency_slider.value()))/100) * 255
-            _list_line_color = list(line_color)
-            _list_line_color[3] = _transparency_value
-            line_color = tuple(_list_line_color)
-            lines = np.array([line_color for n in np.arange(len(pos))],
-                             dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                    ('blue', np.ubyte), ('alpha', np.ubyte),
-                                    ('width', float)])
-
-            grid = pg.GraphItem()
-            self.ui.image_view.addItem(grid)
-            grid.setData(pos=pos,
-                         adj=adj,
-                         pen=lines,
-                         symbol=None,
-                         pxMode=False)
-            self.grid_view['item'] = grid
-
-
-        # calibrated and measurement ROIs
-        # self.display_roi()
+        # _image = self.get_image_selected(recalculate_image=recalculate_image)
+        # _view = self.ui.image_view.getView()
+        # _view_box = _view.getViewBox()
+        # _state = _view_box.getState()
+        #
+        # first_update = False
+        # if self.histogram_level == []:
+        #     first_update = True
+        # _histo_widget = self.ui.image_view.getHistogramWidget()
+        # self.histogram_level = _histo_widget.getLevels()
+        #
+        # _image = np.transpose(_image)
+        # self.ui.image_view.setImage(_image)
+        # self.live_image = _image
+        # _view_box.setState(_state)
+        #
+        # if not first_update:
+        #     _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
+        #
+        # # remove previous grid if any
+        # if self.grid_view['item']:
+        #     self.ui.image_view.removeItem(self.grid_view['item'])
+        #
+        # # if we want a grid
+        # if self.ui.grid_display_checkBox.isChecked():
+        #
+        #     grid_size = self.ui.grid_size_slider.value()
+        #     [height, width] = np.shape(self.live_image)
+        #
+        #     pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
+        #                                               height=height,
+        #                                               width=width)
+        #     pos = pos_adj_dict['pos']
+        #     adj = pos_adj_dict['adj']
+        #
+        #     line_color = self.grid_view['color']
+        #     _transparency_value = 255 - (np.float(str(self.ui.transparency_slider.value()))/100) * 255
+        #     _list_line_color = list(line_color)
+        #     _list_line_color[3] = _transparency_value
+        #     line_color = tuple(_list_line_color)
+        #     lines = np.array([line_color for n in np.arange(len(pos))],
+        #                      dtype=[('red', np.ubyte), ('green', np.ubyte),
+        #                             ('blue', np.ubyte), ('alpha', np.ubyte),
+        #                             ('width', float)])
+        #
+        #     grid = pg.GraphItem()
+        #     self.ui.image_view.addItem(grid)
+        #     grid.setData(pos=pos,
+        #                  adj=adj,
+        #                  pen=lines,
+        #                  symbol=None,
+        #                  pxMode=False)
+        #     self.grid_view['item'] = grid
+        #
+        # # calibrated and measurement ROIs
+        # # self.display_roi()
 
     def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
         """calculate the matrix that defines the vertical and horizontal lines
@@ -539,15 +509,15 @@ class ProfileUi(QMainWindow):
         height = np.int(str(self.ui.tableWidget.item(row, 4).text()))
         return (x0, y0, width, height)
 
-    def get_image_selected(self, recalculate_image=False):
-        slider_index = self.ui.file_slider.value()
-        if recalculate_image:
-            angle = self.rotation_angle
-            # rotate all images
-            self.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.data_dict_raw['data']]
-
-        _image = self.data_dict['data'][slider_index]
-        return _image
+    # def get_image_selected(self, recalculate_image=False):
+    #     slider_index = self.ui.file_slider.value()
+    #     if recalculate_image:
+    #         angle = self.rotation_angle
+    #         # rotate all images
+    #         self.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.data_dict_raw['data']]
+    #
+    #     _image = self.data_dict['data'][slider_index]
+    #     return _image
 
     def get_selected_row(self, source='tableWidget'):
         if source == 'tableWidget':
@@ -649,77 +619,6 @@ class ProfileUi(QMainWindow):
         self.calibration[str(index)]['mean_counts'] = _mean
         self.calibration[str(index)]['value'] = value
 
-
-
-
-
-
-
-
-
-    #
-    #
-    #
-    # def insert_column_in_summary_table(self, roi_index=-1):
-    #     col_offset = 3
-    #     if roi_index == -1:
-    #         roi_index = 0
-    #
-    #     roi_index += col_offset
-    #     self.ui.summary_table.insertColumn(roi_index)
-    #     item = QtWidgets.QTableWidgetItem()
-    #     self.ui.summary_table.setHorizontalHeaderItem(roi_index, item)
-    #     self.renamed_summary_table_region_header()
-    #
-    # def remove_column_in_summary_table(self, roi_index=-1):
-    #     col_offset = 3
-    #     if roi_index == -1:
-    #         roi_index = 0
-    #
-    #     roi_index += col_offset
-    #     self.ui.summary_table.removeColumn(roi_index)
-    #     self.renamed_summary_table_region_header()
-    #
-    # def renamed_summary_table_region_header(self):
-    #     # rename all the headers
-    #     nbr_col = self.ui.summary_table.columnCount()
-    #     if nbr_col <= 3:
-    #         return
-    #
-    #     _index = 1
-    #     for _col in np.arange(3, nbr_col):
-    #         item = self.ui.summary_table.horizontalHeaderItem(_col)
-    #         item.setText("Region {}".format(_index))
-    #         _index += 1
-
-    # def update_mean_counts(self, row=-1, all=False):
-    #     if all == True:
-    #         nbr_row = self.ui.tableWidget.rowCount()
-    #         for _row in np.arange(nbr_row):
-    #             self.update_mean_counts(row=_row)
-    #     else:
-    #         # FIXME
-    #         pass
-    #
-    # def insert_measurement_roi_ui(self, row=-1):
-    #     default_roi = self.default_measurement_roi
-    #     new_roi = pg.RectROI([default_roi['x0'], default_roi['y0']],
-    #                          [default_roi['height'], default_roi['width']],
-    #                          pen='g')
-    #     new_roi.addScaleHandle([1, 1], [0, 0])
-    #     new_roi.addScaleHandle([0, 0], [1, 1])
-    #     self.ui.image_view.addItem(new_roi)
-    #     new_roi.sigRegionChanged.connect(self.measurement_roi_moved)
-    #     self.roi_ui_measurement.insert(row, new_roi)
-    #
-    # def remove_measurement_roi_ui(self, row=-1):
-    #     """roi_ui_measurement is where the ROI ui (pyqtgraph) are saved"""
-    #     if row == -1:
-    #         return
-    #     old_roi = self.roi_ui_measurement[row]
-    #     self.roi_ui_measurement.remove(old_roi)
-    #     self.ui.image_view.removeItem(old_roi)
-
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
         current_slider_value = self.ui.file_slider.value()
@@ -737,14 +636,10 @@ class ProfileUi(QMainWindow):
         self.ui.previous_image_button.setEnabled(_prev)
         self.ui.next_image_button.setEnabled(_next)
 
-
-
     def set_item_summary_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.summary_table.setItem(row, col, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
-
 
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
@@ -766,13 +661,10 @@ class ProfileUi(QMainWindow):
         self.check_status_next_prev_image_button()
         # self.display_measurement_profiles()
 
-
     ## Event Handler
     def guide_changed(self):
         self.update_guide_table_using_guide_rois()
         self.update_profile_rois()
-
-        # print(self.list_guide_pyqt_roi.index(source))
 
     def table_widget_selection_changed(self):
         self.ui.tableWidget_2.blockSignals(True)
@@ -807,11 +699,9 @@ class ProfileUi(QMainWindow):
     def guide_state_changed(self, state):
         self.remove_all_guides()
         self.display_guides()
-        #self.remove_all_profiles()
         self.display_profiles()
 
     def profile_width_changed(self, new_value):
-        print("new value is {}".format(new_value))
         self.update_profile_rois()
 
     def display_grid_clicked(self):
@@ -1001,3 +891,77 @@ class GuideAndProfileRoisHandler(object):
 
         self.__profile = profile
 
+class DisplayImages(object):
+
+    def __init__(self, parent=None, recalculate_image=False):
+        self.parent = parent
+        self.recalculate_image = recalculate_image
+
+        self.display_images()
+        self.display_grid()
+
+    def get_image_selected(self, recalculate_image=False):
+        slider_index = self.parent.ui.file_slider.value()
+        if recalculate_image:
+            angle = self.parent.rotation_angle
+            # rotate all images
+            self.parent.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.parent.data_dict_raw['data']]
+
+        _image = self.parent.data_dict['data'][slider_index]
+        return _image
+
+    def display_images(self):
+        _image = self.get_image_selected(recalculate_image=self.recalculate_image)
+        _view = self.parent.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.parent.histogram_level == []:
+            first_update = True
+        _histo_widget = self.parent.ui.image_view.getHistogramWidget()
+        self.parent.histogram_level = _histo_widget.getLevels()
+
+        _image = np.transpose(_image)
+        self.parent.ui.image_view.setImage(_image)
+        self.parent.live_image = _image
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+
+    def display_grid(self):
+        # remove previous grid if any
+        if self.parent.grid_view['item']:
+            self.parent.ui.image_view.removeItem(self.parent.grid_view['item'])
+
+        # if we want a grid
+        if self.parent.ui.grid_display_checkBox.isChecked():
+
+            grid_size = self.parent.ui.grid_size_slider.value()
+            [height, width] = np.shape(self.parent.live_image)
+
+            pos_adj_dict = self.parent.calculate_matrix_grid(grid_size=grid_size,
+                                                      height=height,
+                                                      width=width)
+            pos = pos_adj_dict['pos']
+            adj = pos_adj_dict['adj']
+
+            line_color = self.parent.grid_view['color']
+            _transparency_value = 255 - (np.float(str(self.parent.ui.transparency_slider.value()))/100) * 255
+            _list_line_color = list(line_color)
+            _list_line_color[3] = _transparency_value
+            line_color = tuple(_list_line_color)
+            lines = np.array([line_color for n in np.arange(len(pos))],
+                             dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                    ('blue', np.ubyte), ('alpha', np.ubyte),
+                                    ('width', float)])
+
+            grid = pg.GraphItem()
+            self.parent.ui.image_view.addItem(grid)
+            grid.setData(pos=pos,
+                         adj=adj,
+                         pen=lines,
+                         symbol=None,
+                         pxMode=False)
+            self.parent.grid_view['item'] = grid
