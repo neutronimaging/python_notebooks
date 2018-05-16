@@ -96,119 +96,10 @@ class ProfileUi(QMainWindow):
         o_initialization.table()
         o_initialization.parameters()
         o_initialization.widgets()
+        o_initialization.pyqtgraph()
 
-        # self.init_timestamp_dict()
-        # self.init_table()
-        # self.init_parameters()
-        # self.init_widgets()
-        self.init_pyqtgraph()
-
-        # self.init_statusbar()
-        #
-        # # display first image
+        # display first images
         self.slider_file_changed(-1)
-
-        #
-        # self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
-
-    # # initialization
-    # def init_timestamp_dict(self):
-    #     list_files = self.data_dict['file_name']
-    #     self.timestamp_dict = retrieve_time_stamp(list_files)
-
-    def init_statusbar(self):
-        pass
-        # self.ui.info_label = QtGui.QLabel("")
-        # self.ui.statusbar.addPermanentWidget(self.ui.info_label)
-
-    def init_widgets(self):
-        """size and label of any widgets"""
-
-        # _file_path = os.path.dirname(__file__)
-        # left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-        #                                                        'static/profile/button_rotation_left_fast.png'))
-        # self.ui.left_rotation_button_fast.setStyleSheet("background-image: "
-        #                                                 "url('" + left_rotation_fast_file + "'); " + \
-        #                                                 "background-repeat: no-repeat")
-        #
-        # right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-        #                                                         'static/profile/button_rotation_right_fast.png'))
-        # self.ui.right_rotation_button_fast.setStyleSheet("background-image: "
-        #                                                  "url('" + right_rotation_fast_file + "'); " + \
-        #                                                 "background-repeat: no-repeat")
-        #
-        # left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-        #                                                        'static/profile/button_rotation_left_slow.png'))
-        # self.ui.left_rotation_button_slow.setStyleSheet("background-image: "
-        #                                                 "url('" + left_rotation_slow_file + "'); " + \
-        #                                                     "background-repeat: no-repeat")
-        #
-        # right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-        #                                                         'static/profile/button_rotation_right_slow.png'))
-        # self.ui.right_rotation_button_slow.setStyleSheet("background-image: "
-        #                                                  "url('" + right_rotation_slow_file + "'); " + \
-        #                                                 "background-repeat: no-repeat")
-        #
-        # self.ui.splitter_2.setSizes([250, 50])
-        # self.ui.splitter.setSizes([500, 50])
-        #
-        # # file slider
-        # self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
-        #
-        # # update size of table columns
-        # nbr_columns = self.ui.tableWidget.columnCount()
-        # for _col in range(nbr_columns):
-        #     self.ui.tableWidget.setColumnWidth(_col, self.guide_table_width[_col])
-        #
-        # # update size of summary table
-        # nbr_columns = self.ui.summary_table.columnCount()
-        # for _col in range(nbr_columns):
-        #     self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
-        #
-        # self.display_ui = [self.ui.display_size_label,
-        #                    self.ui.grid_size_slider,
-        #                    self.ui.display_transparency_label,
-        #                    self.ui.transparency_slider]
-
-    def init_pyqtgraph(self):
-        # image
-        self.ui.image_view = pg.ImageView(view=pg.PlotItem())
-        self.ui.image_view.ui.menuBtn.hide()
-        self.ui.image_view.ui.roiBtn.hide()
-        vertical_layout = QtGui.QVBoxLayout()
-        vertical_layout.addWidget(self.ui.image_view)
-        self.ui.pyqtgraph_widget.setLayout(vertical_layout)
-
-        # profile
-        self.ui.profile_view = pg.PlotWidget()
-        self.legend = self.ui.profile_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
-        vertical_layout2.addWidget(self.ui.profile_view)
-        self.ui.profile_widget.setLayout(vertical_layout2)
-
-    # def init_table(self):
-    #     # init the summary table
-    #     list_files_full_name = self.data_dict['file_name']
-    #     list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
-    #
-    #     list_time_stamp = self.timestamp_dict['list_time_stamp']
-    #     list_time_stamp_user_format = self.timestamp_dict['list_time_stamp_user_format']
-    #     time_0 = list_time_stamp[0]
-    #     for _row, _file in enumerate(list_files_short_name):
-    #         self.ui.summary_table.insertRow(_row)
-    #         self.set_item_summary_table(row=_row, col=0, value=_file)
-    #         self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
-    #         _offset = list_time_stamp[_row] - time_0
-    #         self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
-
-    # def init_parameters(self):
-    #     # init the position of the measurement ROI
-    #     [height, width] = np.shape(self.data_dict['data'][0])
-    #     self.default_guide_roi['width'] = np.int(width/10)
-    #     self.default_guide_roi['height'] = np.int(height/5)
-    #     self.default_guide_roi['x0'] = np.int(width/2)
-    #     self.default_guide_roi['y0'] = np.int(height/2)
-    #     self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
 
     # main methods
     def remove_all_guides(self):
@@ -243,44 +134,6 @@ class ProfileUi(QMainWindow):
         """display the image selected by the file slider"""
         o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
 
-    def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
-        """calculate the matrix that defines the vertical and horizontal lines
-        that allow pyqtgraph to display the grid"""
-
-        pos_adj_dict = {}
-
-        # pos - each matrix defines one side of the line
-        pos = []
-        adj = []
-
-        # vertical lines
-        x = 0
-        index = 0
-        while (x <= width):
-            one_edge = [x, 0]
-            other_edge = [x, height]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            x += grid_size
-            index += 2
-
-        # vertical lines
-        y = 0
-        while (y <= height):
-            one_edge = [0, y]
-            other_edge = [width, y]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            y += grid_size
-            index += 2
-
-        pos_adj_dict['pos'] = np.array(pos)
-        pos_adj_dict['adj'] = np.array(adj)
-
-        return pos_adj_dict
-
     def remove_row(self, row=-1):
 
         if row == -1:
@@ -312,9 +165,6 @@ class ProfileUi(QMainWindow):
         roi_ui.setPos((x0, y0))
         roi_ui.setSize((width, height))
         roi_ui.blockSignals(False)
-
-    def update_profile_roi_using_guide_table(self, row=-1):
-        pass
 
     def update_profile_rois(self, row=-1):
         if row == -1: # update all of them
@@ -458,16 +308,6 @@ class ProfileUi(QMainWindow):
         height = np.int(str(self.ui.tableWidget.item(row, 4).text()))
         return (x0, y0, width, height)
 
-    # def get_image_selected(self, recalculate_image=False):
-    #     slider_index = self.ui.file_slider.value()
-    #     if recalculate_image:
-    #         angle = self.rotation_angle
-    #         # rotate all images
-    #         self.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.data_dict_raw['data']]
-    #
-    #     _image = self.data_dict['data'][slider_index]
-    #     return _image
-
     def get_selected_row(self, source='tableWidget'):
         if source == 'tableWidget':
             ui = self.ui.tableWidget
@@ -497,77 +337,6 @@ class ProfileUi(QMainWindow):
         self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
         self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
 
-        # _guide_ui = self.list_guide_pyqt_roi[previous_active_row]
-        # _guide_ui.setPen(self.default_guide_roi['color_deactivated'])
-        #
-        # new_guide_ui = self.list_guide_pyqt_roi[row]
-        # new_guide_ui.setPen(self.default_guide_roi['color_activated'])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def display_roi(self):
-        """display the calibrated and measurement rois"""
-
-        # first we remove the calibrated rois
-        for _roi_id in self.roi_ui_calibrated:
-            self.ui.image_view.removeItem(_roi_id)
-
-        if self.ui.use_calibration1_checkbox.isChecked():
-            # yes, we have calibrated rois
-            slider_index = self.ui.file_slider.value()
-
-            # calibration1
-            cal1_file_index = np.int(self.ui.calibration1_index.text())
-            if slider_index == cal1_file_index:
-                self.ui.image_view.addItem(self.roi_ui_calibrated[0])
-
-        if self.ui.use_calibration2_checkbox.isChecked():
-            # yes, we have calibrated rois
-            slider_index = self.ui.file_slider.value()
-
-            # calibration2
-            cal2_file_index = np.int(self.ui.calibration2_index.text())
-            if slider_index == cal2_file_index:
-                self.ui.image_view.addItem(self.roi_ui_calibrated[1])
-
-    def record_calibration(self, index=1):
-        x0 = np.int(str(self.calibration_widgets[str(index)]['x0'].text()))
-        y0 = np.int(str(self.calibration_widgets[str(index)]['y0'].text()))
-        width = np.int(str(self.calibration_widgets[str(index)]['width'].text()))
-        height = np.int(str(self.calibration_widgets[str(index)]['height'].text()))
-        if np.isnan(np.float(str(self.calibration_widgets[str(index)]['value'].text()))):
-            return
-
-        value = np.float(str(self.calibration_widgets[str(index)]['value'].text()))
-
-        if index == 1:
-            file_index = np.int(str(self.ui.calibration1_index.text()))
-        else:
-            file_index = np.int(str(self.ui.calibration2_index.text()))
-
-        _file_data = self.data_dict['data'][file_index]
-        _region_data = _file_data[y0:y0+height, x0:x0+width]
-        _mean = np.nanmean(_region_data)
-
-        self.calibration[str(index)] = {}
-        self.calibration[str(index)]['mean_counts'] = _mean
-        self.calibration[str(index)]['value'] = value
-
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
         current_slider_value = self.ui.file_slider.value()
@@ -585,11 +354,6 @@ class ProfileUi(QMainWindow):
         self.ui.previous_image_button.setEnabled(_prev)
         self.ui.next_image_button.setEnabled(_next)
 
-    # def set_item_summary_table(self, row=0, col=0, value=''):
-    #     item = QtGui.QTableWidgetItem(str(value))
-    #     self.ui.summary_table.setItem(row, col, item)
-    #     item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
         current_slider_value = self.ui.file_slider.value()
@@ -598,10 +362,6 @@ class ProfileUi(QMainWindow):
         self.check_status_next_prev_image_button()
         self.display_image()
         self.ui.file_slider.blockSignals(False)
-
-    def measurement_roi_moved(self):
-        self.update_all_measurement_rois_from_view()
-        self.display_measurement_profiles()
 
     def slider_file_changed(self, index_selected):
         self.display_image()
@@ -736,6 +496,7 @@ class ProfileUi(QMainWindow):
     def closeEvent(self, event=None):
         pass
 
+
     
 class GuideAndProfileRoisHandler(object):
 
@@ -840,6 +601,7 @@ class GuideAndProfileRoisHandler(object):
 
         self.__profile = profile
 
+
 class Initializer(object):
 
     def __init__(self, parent=None):
@@ -920,11 +682,29 @@ class Initializer(object):
                            self.parent.ui.display_transparency_label,
                            self.parent.ui.transparency_slider]
 
+    def pyqtgraph(self):
+        # image
+        self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
+        self.parent.ui.image_view.ui.menuBtn.hide()
+        self.parent.ui.image_view.ui.roiBtn.hide()
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(self.parent.ui.image_view)
+        self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
+
+        # profile
+        self.parent.ui.profile_view = pg.PlotWidget()
+        self.parent.legend = self.parent.ui.profile_view.addLegend()
+        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2.addWidget(self.parent.ui.profile_view)
+        self.parent.ui.profile_widget.setLayout(vertical_layout2)
+
+
+
+
     def set_item_summary_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
         self.parent.ui.summary_table.setItem(row, col, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
 
 
 class DisplayImages(object):
@@ -966,6 +746,44 @@ class DisplayImages(object):
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
 
+    def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
+        """calculate the matrix that defines the vertical and horizontal lines
+        that allow pyqtgraph to display the grid"""
+
+        pos_adj_dict = {}
+
+        # pos - each matrix defines one side of the line
+        pos = []
+        adj = []
+
+        # vertical lines
+        x = 0
+        index = 0
+        while (x <= width):
+            one_edge = [x, 0]
+            other_edge = [x, height]
+            pos.append(one_edge)
+            pos.append(other_edge)
+            adj.append([index, index + 1])
+            x += grid_size
+            index += 2
+
+        # vertical lines
+        y = 0
+        while (y <= height):
+            one_edge = [0, y]
+            other_edge = [width, y]
+            pos.append(one_edge)
+            pos.append(other_edge)
+            adj.append([index, index + 1])
+            y += grid_size
+            index += 2
+
+        pos_adj_dict['pos'] = np.array(pos)
+        pos_adj_dict['adj'] = np.array(adj)
+
+        return pos_adj_dict
+
     def display_grid(self):
         # remove previous grid if any
         if self.parent.grid_view['item']:
@@ -977,7 +795,7 @@ class DisplayImages(object):
             grid_size = self.parent.ui.grid_size_slider.value()
             [height, width] = np.shape(self.parent.live_image)
 
-            pos_adj_dict = self.parent.calculate_matrix_grid(grid_size=grid_size,
+            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
                                                       height=height,
                                                       width=width)
             pos = pos_adj_dict['pos']
@@ -1001,4 +819,6 @@ class DisplayImages(object):
                          symbol=None,
                          pxMode=False)
             self.parent.grid_view['item'] = grid
+
+
 
