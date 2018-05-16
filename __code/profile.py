@@ -91,8 +91,12 @@ class ProfileUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
 
         # initialization
-        self.init_timestamp_dict()
-        self.init_table()
+        o_initialization = Initializer(parent=self)
+        o_initialization.timestamp_dict()
+        o_initialization.table()
+
+        # self.init_timestamp_dict()
+        # self.init_table()
         self.init_parameters()
         self.init_widgets()
         self.init_pyqtgraph()
@@ -105,10 +109,10 @@ class ProfileUi(QMainWindow):
         #
         # self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
 
-    # initialization
-    def init_timestamp_dict(self):
-        list_files = self.data_dict['file_name']
-        self.timestamp_dict = retrieve_time_stamp(list_files)
+    # # initialization
+    # def init_timestamp_dict(self):
+    #     list_files = self.data_dict['file_name']
+    #     self.timestamp_dict = retrieve_time_stamp(list_files)
 
     def init_statusbar(self):
         pass
@@ -180,20 +184,20 @@ class ProfileUi(QMainWindow):
         vertical_layout2.addWidget(self.ui.profile_view)
         self.ui.profile_widget.setLayout(vertical_layout2)
 
-    def init_table(self):
-        # init the summary table
-        list_files_full_name = self.data_dict['file_name']
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
-
-        list_time_stamp = self.timestamp_dict['list_time_stamp']
-        list_time_stamp_user_format = self.timestamp_dict['list_time_stamp_user_format']
-        time_0 = list_time_stamp[0]
-        for _row, _file in enumerate(list_files_short_name):
-            self.ui.summary_table.insertRow(_row)
-            self.set_item_summary_table(row=_row, col=0, value=_file)
-            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
-            _offset = list_time_stamp[_row] - time_0
-            self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
+    # def init_table(self):
+    #     # init the summary table
+    #     list_files_full_name = self.data_dict['file_name']
+    #     list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+    #
+    #     list_time_stamp = self.timestamp_dict['list_time_stamp']
+    #     list_time_stamp_user_format = self.timestamp_dict['list_time_stamp_user_format']
+    #     time_0 = list_time_stamp[0]
+    #     for _row, _file in enumerate(list_files_short_name):
+    #         self.ui.summary_table.insertRow(_row)
+    #         self.set_item_summary_table(row=_row, col=0, value=_file)
+    #         self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
+    #         _offset = list_time_stamp[_row] - time_0
+    #         self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
 
     def init_parameters(self):
         # init the position of the measurement ROI
@@ -236,63 +240,6 @@ class ProfileUi(QMainWindow):
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
         o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
-
-        # _image = self.get_image_selected(recalculate_image=recalculate_image)
-        # _view = self.ui.image_view.getView()
-        # _view_box = _view.getViewBox()
-        # _state = _view_box.getState()
-        #
-        # first_update = False
-        # if self.histogram_level == []:
-        #     first_update = True
-        # _histo_widget = self.ui.image_view.getHistogramWidget()
-        # self.histogram_level = _histo_widget.getLevels()
-        #
-        # _image = np.transpose(_image)
-        # self.ui.image_view.setImage(_image)
-        # self.live_image = _image
-        # _view_box.setState(_state)
-        #
-        # if not first_update:
-        #     _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
-        #
-        # # remove previous grid if any
-        # if self.grid_view['item']:
-        #     self.ui.image_view.removeItem(self.grid_view['item'])
-        #
-        # # if we want a grid
-        # if self.ui.grid_display_checkBox.isChecked():
-        #
-        #     grid_size = self.ui.grid_size_slider.value()
-        #     [height, width] = np.shape(self.live_image)
-        #
-        #     pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
-        #                                               height=height,
-        #                                               width=width)
-        #     pos = pos_adj_dict['pos']
-        #     adj = pos_adj_dict['adj']
-        #
-        #     line_color = self.grid_view['color']
-        #     _transparency_value = 255 - (np.float(str(self.ui.transparency_slider.value()))/100) * 255
-        #     _list_line_color = list(line_color)
-        #     _list_line_color[3] = _transparency_value
-        #     line_color = tuple(_list_line_color)
-        #     lines = np.array([line_color for n in np.arange(len(pos))],
-        #                      dtype=[('red', np.ubyte), ('green', np.ubyte),
-        #                             ('blue', np.ubyte), ('alpha', np.ubyte),
-        #                             ('width', float)])
-        #
-        #     grid = pg.GraphItem()
-        #     self.ui.image_view.addItem(grid)
-        #     grid.setData(pos=pos,
-        #                  adj=adj,
-        #                  pen=lines,
-        #                  symbol=None,
-        #                  pxMode=False)
-        #     self.grid_view['item'] = grid
-        #
-        # # calibrated and measurement ROIs
-        # # self.display_roi()
 
     def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
         """calculate the matrix that defines the vertical and horizontal lines
@@ -636,10 +583,10 @@ class ProfileUi(QMainWindow):
         self.ui.previous_image_button.setEnabled(_prev)
         self.ui.next_image_button.setEnabled(_next)
 
-    def set_item_summary_table(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
-        self.ui.summary_table.setItem(row, col, item)
-        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+    # def set_item_summary_table(self, row=0, col=0, value=''):
+    #     item = QtGui.QTableWidgetItem(str(value))
+    #     self.ui.summary_table.setItem(row, col, item)
+    #     item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
@@ -891,6 +838,37 @@ class GuideAndProfileRoisHandler(object):
 
         self.__profile = profile
 
+class Initializer(object):
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+    def timestamp_dict(self):
+        list_files = self.parent.data_dict['file_name']
+        self.parent.timestamp_dict = retrieve_time_stamp(list_files)
+
+    def table(self):
+        # init the summary table
+        list_files_full_name = self.parent.data_dict['file_name']
+        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+
+        list_time_stamp = self.parent.timestamp_dict['list_time_stamp']
+        list_time_stamp_user_format = self.parent.timestamp_dict['list_time_stamp_user_format']
+        time_0 = list_time_stamp[0]
+        for _row, _file in enumerate(list_files_short_name):
+            self.parent.ui.summary_table.insertRow(_row)
+            self.set_item_summary_table(row=_row, col=0, value=_file)
+            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
+            _offset = list_time_stamp[_row] - time_0
+            self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
+
+    def set_item_summary_table(self, row=0, col=0, value=''):
+        item = QtGui.QTableWidgetItem(str(value))
+        self.parent.ui.summary_table.setItem(row, col, item)
+        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+
+
+
 class DisplayImages(object):
 
     def __init__(self, parent=None, recalculate_image=False):
@@ -965,3 +943,4 @@ class DisplayImages(object):
                          symbol=None,
                          pxMode=False)
             self.parent.grid_view['item'] = grid
+
