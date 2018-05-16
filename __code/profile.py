@@ -95,11 +95,12 @@ class ProfileUi(QMainWindow):
         o_initialization.timestamp_dict()
         o_initialization.table()
         o_initialization.parameters()
+        o_initialization.widgets()
 
         # self.init_timestamp_dict()
         # self.init_table()
         # self.init_parameters()
-        self.init_widgets()
+        # self.init_widgets()
         self.init_pyqtgraph()
 
         # self.init_statusbar()
@@ -123,51 +124,51 @@ class ProfileUi(QMainWindow):
     def init_widgets(self):
         """size and label of any widgets"""
 
-        _file_path = os.path.dirname(__file__)
-        left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_fast.png'))
-        self.ui.left_rotation_button_fast.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_fast_file + "'); " + \
-                                                        "background-repeat: no-repeat")
-
-        right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_fast.png'))
-        self.ui.right_rotation_button_fast.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_fast_file + "'); " + \
-                                                        "background-repeat: no-repeat")
-
-        left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_slow.png'))
-        self.ui.left_rotation_button_slow.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_slow_file + "'); " + \
-                                                            "background-repeat: no-repeat")
-
-        right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_slow.png'))
-        self.ui.right_rotation_button_slow.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_slow_file + "'); " + \
-                                                        "background-repeat: no-repeat")
-
-        self.ui.splitter_2.setSizes([250, 50])
-        self.ui.splitter.setSizes([500, 50])
-
-        # file slider
-        self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
-
-        # update size of table columns
-        nbr_columns = self.ui.tableWidget.columnCount()
-        for _col in range(nbr_columns):
-            self.ui.tableWidget.setColumnWidth(_col, self.guide_table_width[_col])
-
-        # update size of summary table
-        nbr_columns = self.ui.summary_table.columnCount()
-        for _col in range(nbr_columns):
-            self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
-
-        self.display_ui = [self.ui.display_size_label,
-                           self.ui.grid_size_slider,
-                           self.ui.display_transparency_label,
-                           self.ui.transparency_slider]
+        # _file_path = os.path.dirname(__file__)
+        # left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
+        #                                                        'static/profile/button_rotation_left_fast.png'))
+        # self.ui.left_rotation_button_fast.setStyleSheet("background-image: "
+        #                                                 "url('" + left_rotation_fast_file + "'); " + \
+        #                                                 "background-repeat: no-repeat")
+        #
+        # right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
+        #                                                         'static/profile/button_rotation_right_fast.png'))
+        # self.ui.right_rotation_button_fast.setStyleSheet("background-image: "
+        #                                                  "url('" + right_rotation_fast_file + "'); " + \
+        #                                                 "background-repeat: no-repeat")
+        #
+        # left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
+        #                                                        'static/profile/button_rotation_left_slow.png'))
+        # self.ui.left_rotation_button_slow.setStyleSheet("background-image: "
+        #                                                 "url('" + left_rotation_slow_file + "'); " + \
+        #                                                     "background-repeat: no-repeat")
+        #
+        # right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
+        #                                                         'static/profile/button_rotation_right_slow.png'))
+        # self.ui.right_rotation_button_slow.setStyleSheet("background-image: "
+        #                                                  "url('" + right_rotation_slow_file + "'); " + \
+        #                                                 "background-repeat: no-repeat")
+        #
+        # self.ui.splitter_2.setSizes([250, 50])
+        # self.ui.splitter.setSizes([500, 50])
+        #
+        # # file slider
+        # self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
+        #
+        # # update size of table columns
+        # nbr_columns = self.ui.tableWidget.columnCount()
+        # for _col in range(nbr_columns):
+        #     self.ui.tableWidget.setColumnWidth(_col, self.guide_table_width[_col])
+        #
+        # # update size of summary table
+        # nbr_columns = self.ui.summary_table.columnCount()
+        # for _col in range(nbr_columns):
+        #     self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
+        #
+        # self.display_ui = [self.ui.display_size_label,
+        #                    self.ui.grid_size_slider,
+        #                    self.ui.display_transparency_label,
+        #                    self.ui.transparency_slider]
 
     def init_pyqtgraph(self):
         # image
@@ -872,8 +873,52 @@ class Initializer(object):
         self.parent.default_guide_roi['y0'] = np.int(height/2)
         self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
 
+    def widgets(self):
+        _file_path = os.path.dirname(__file__)
+        left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
+                                                               'static/profile/button_rotation_left_fast.png'))
+        self.parent.ui.left_rotation_button_fast.setStyleSheet("background-image: "
+                                                        "url('" + left_rotation_fast_file + "'); " + \
+                                                        "background-repeat: no-repeat")
 
+        right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
+                                                                'static/profile/button_rotation_right_fast.png'))
+        self.parent.ui.right_rotation_button_fast.setStyleSheet("background-image: "
+                                                         "url('" + right_rotation_fast_file + "'); " + \
+                                                         "background-repeat: no-repeat")
 
+        left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
+                                                               'static/profile/button_rotation_left_slow.png'))
+        self.parent.ui.left_rotation_button_slow.setStyleSheet("background-image: "
+                                                        "url('" + left_rotation_slow_file + "'); " + \
+                                                        "background-repeat: no-repeat")
+
+        right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
+                                                                'static/profile/button_rotation_right_slow.png'))
+        self.parent.ui.right_rotation_button_slow.setStyleSheet("background-image: "
+                                                         "url('" + right_rotation_slow_file + "'); " + \
+                                                         "background-repeat: no-repeat")
+
+        self.parent.ui.splitter_2.setSizes([250, 50])
+        self.parent.ui.splitter.setSizes([500, 50])
+
+        # file slider
+        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
+
+        # update size of table columns
+        nbr_columns = self.parent.ui.tableWidget.columnCount()
+        for _col in range(nbr_columns):
+            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
+
+        # update size of summary table
+        nbr_columns = self.parent.ui.summary_table.columnCount()
+        for _col in range(nbr_columns):
+            self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
+
+        self.parent.display_ui = [self.parent.ui.display_size_label,
+                           self.parent.ui.grid_size_slider,
+                           self.parent.ui.display_transparency_label,
+                           self.parent.ui.transparency_slider]
 
     def set_item_summary_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
