@@ -411,24 +411,33 @@ class ProfileUi(QMainWindow):
         else:
             self.update_profile_pyqt_roi(row=row)
 
+    def is_row_enabled(self, row=-1):
+        """check if the first column (enabled widget) is checked"""
+        if row == -1:
+            return None
+        _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
+        if _widget.isChecked():
+            return True
+        return false
 
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
-            region = _roi.getArraySlice(self.live_image,
-                                        self.ui.image_view.imageItem)
+            if self.is_row_enabled(row=_row):
+                region = _roi.getArraySlice(self.live_image,
+                                            self.ui.image_view.imageItem)
 
-            x0 = region[0][0].start
-            x1 = region[0][0].stop
-            y0 = region[0][1].start
-            y1 = region[0][1].stop
+                x0 = region[0][0].start
+                x1 = region[0][0].stop
+                y0 = region[0][1].start
+                y1 = region[0][1].stop
 
-            width = np.abs(x1 - x0)-1
-            height = np.abs(y1 - y0)-1
+                width = np.abs(x1 - x0)-1
+                height = np.abs(y1 - y0)-1
 
-            self.set_item_main_table(row=_row, col=1, value=str(x0))
-            self.set_item_main_table(row=_row, col=2, value=str(y0))
-            self.set_item_main_table(row=_row, col=3, value=str(width))
-            self.set_item_main_table(row=_row, col=4, value=str(height))
+                self.set_item_main_table(row=_row, col=1, value=str(x0))
+                self.set_item_main_table(row=_row, col=2, value=str(y0))
+                self.set_item_main_table(row=_row, col=3, value=str(width))
+                self.set_item_main_table(row=_row, col=4, value=str(height))
 
     def add_guide_and_profile_pyqt_roi(self, row=-1):
         """add the pyqtgraph roi guide and profiles"""
