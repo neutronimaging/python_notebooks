@@ -371,8 +371,9 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget_2.removeRow(row)
         self.ui.image_view.removeItem(self.list_guide_pyqt_roi[row])
         self.list_guide_pyqt_roi.remove(self.list_guide_pyqt_roi[row])
-        # self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
-        #self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
+        self.ui.image_view.removeItem(self.list_profile_pyqt_roi[row])
+        self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
+        # self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
 
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
