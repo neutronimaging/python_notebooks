@@ -94,10 +94,11 @@ class ProfileUi(QMainWindow):
         o_initialization = Initializer(parent=self)
         o_initialization.timestamp_dict()
         o_initialization.table()
+        o_initialization.parameters()
 
         # self.init_timestamp_dict()
         # self.init_table()
-        self.init_parameters()
+        # self.init_parameters()
         self.init_widgets()
         self.init_pyqtgraph()
 
@@ -199,14 +200,14 @@ class ProfileUi(QMainWindow):
     #         _offset = list_time_stamp[_row] - time_0
     #         self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
 
-    def init_parameters(self):
-        # init the position of the measurement ROI
-        [height, width] = np.shape(self.data_dict['data'][0])
-        self.default_guide_roi['width'] = np.int(width/10)
-        self.default_guide_roi['height'] = np.int(height/5)
-        self.default_guide_roi['x0'] = np.int(width/2)
-        self.default_guide_roi['y0'] = np.int(height/2)
-        self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
+    # def init_parameters(self):
+    #     # init the position of the measurement ROI
+    #     [height, width] = np.shape(self.data_dict['data'][0])
+    #     self.default_guide_roi['width'] = np.int(width/10)
+    #     self.default_guide_roi['height'] = np.int(height/5)
+    #     self.default_guide_roi['x0'] = np.int(width/2)
+    #     self.default_guide_roi['y0'] = np.int(height/2)
+    #     self.default_profile_width_values = [str(_value) for _value in self.default_profile_width_values]
 
     # main methods
     def remove_all_guides(self):
@@ -861,6 +862,18 @@ class Initializer(object):
             self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
             _offset = list_time_stamp[_row] - time_0
             self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
+    
+    def parameters(self):        
+        # init the position of the measurement ROI
+        [height, width] = np.shape(self.parent.data_dict['data'][0])
+        self.parent.default_guide_roi['width'] = np.int(width/10)
+        self.parent.default_guide_roi['height'] = np.int(height/5)
+        self.parent.default_guide_roi['x0'] = np.int(width/2)
+        self.parent.default_guide_roi['y0'] = np.int(height/2)
+        self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
+
+
+
 
     def set_item_summary_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
