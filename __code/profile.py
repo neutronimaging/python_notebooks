@@ -255,12 +255,13 @@ class ProfileUi(QMainWindow):
             self.ui.image_view.removeItem(_roi)
 
     def display_profiles(self):
-        nbr_row = self.ui.table_widget.rowCount()
-        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
-        for _row in np.arange(nbr_row):
-            [x0, y0, width, height] = self.get_item_row(row=_row)
-            _profile_width = self.get_profile_width(row=_row)
-            print("_profile_width: {}".format(_profile_width))
+        return          #FIXME
+        # nbr_row = self.ui.table_widget.rowCount()
+        # is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+        # for _row in np.arange(nbr_row):
+        #     [x0, y0, width, height] = self.get_item_row(row=_row)
+        #     _profile_width = self.get_profile_width(row=_row)
+        #     print("_profile_width: {}".format(_profile_width))
 
 
     def display_image(self, recalculate_image=False):
@@ -395,6 +396,22 @@ class ProfileUi(QMainWindow):
     def update_profile_roi_using_guide_table(self, row=-1):
         pass
 
+    def update_profile_rois(self, row=-1):
+        if row == -1: # update all of them
+
+            # # remove all profile rois
+            # self.list_profile_pyqt_roi = list()
+            # for _profile_roi in self.list_profile_pyqt_roi:
+            #     self.ui.image_view.removeItem(_profile_roi)
+
+            nbr_row = self.ui.tableWidget.rowCount()
+            for _row in np.arange(nbr_row):
+                self.update_profile_rois(row=_row)
+
+        else:
+            self.update_profile_pyqt_roi(row=row)
+
+
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
             region = _roi.getArraySlice(self.live_image,
@@ -469,6 +486,55 @@ class ProfileUi(QMainWindow):
 
             pos = []
             pos.append([x_left, y_top])
+            pos.append([x_left, y_bottom])
+            adj = []
+            adj.append([0, 1])
+
+            if y_top != y_bottom:  # height == 1
+                pos.append([x_right, y_top])
+                pos.append([x_right, y_bottom])
+                adj.append([2, 3])
+
+            adj = np.array(adj)
+            pos = np.array(pos)
+
+        line_color = self.profile_color
+        _list_line_color = list(line_color)
+        line_color = tuple(_list_line_color)
+        lines = np.array([line_color for n in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+
+        profile = pg.GraphItem()
+        self.ui.image_view.addItem(profile)
+        profile.setData(pos=pos,
+                     adj=adj,
+                     pen=lines,
+                     symbol=None,
+                     pxMode=False)
+
+        self.list_profile_pyqt_roi.insert(row, profile)
+
+    def update_profile_pyqt_roi(self, row=-1):
+
+        # profile
+        [x0, y0, width, height] = self.get_item_row(row=row)
+        _profile_width = self.get_profile_width(row=row)
+        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+        delta_profile = (_profile_width - 1) / 2.
+        if is_x_profile_direction:
+
+            profile_center = y0 + np.abs(np.int((height) / 2.))
+
+            y_top = profile_center - delta_profile
+            y_bottom = profile_center + delta_profile
+
+            x_left = x0
+            x_right = x0 + width
+
+            pos = []
+            pos.append([x_left, y_top])
             pos.append([x_right, y_top])
             adj = []
             adj.append([0, 1])
@@ -481,8 +547,29 @@ class ProfileUi(QMainWindow):
             adj = np.array(adj)
             pos = np.array(pos)
 
+        else:  # y-profile direction
 
+            profile_center = x0 + np.abs(np.int((width) / 2.))
 
+            x_left = profile_center - delta_profile
+            x_right = profile_center + delta_profile
+
+            y_top = y0
+            y_bottom = y0 + height
+
+            pos = []
+            pos.append([x_left, y_top])
+            pos.append([x_left, y_bottom])
+            adj = []
+            adj.append([0, 1])
+
+            if y_top != y_bottom:  # height == 1
+                pos.append([x_right, y_top])
+                pos.append([x_right, y_bottom])
+                adj.append([2, 3])
+
+            adj = np.array(adj)
+            pos = np.array(pos)
 
         line_color = self.profile_color
         _list_line_color = list(line_color)
@@ -492,13 +579,16 @@ class ProfileUi(QMainWindow):
                                 ('blue', np.ubyte), ('alpha', np.ubyte),
                                 ('width', float)])
 
-        grid = pg.GraphItem()
-        self.ui.image_view.addItem(grid)
-        grid.setData(pos=pos,
-                     adj=adj,
-                     pen=lines,
-                     symbol=None,
-                     pxMode=False)
+        profile = pg.GraphItem()
+        self.ui.image_view.addItem(profile)
+        profile.setData(pos=pos,
+                        adj=adj,
+                        pen=lines,
+                        symbol=None,
+                        pxMode=False)
+
+        self.ui.image_view.removeItem(self.list_profile_pyqt_roi[row])
+        self.list_profile_pyqt_roi[row] = profile
 
     def insert_row(self, row=-1):
         if row == -1:
@@ -819,6 +909,7 @@ class ProfileUi(QMainWindow):
     ## Event Handler
     def guide_changed(self):
         self.update_guide_table_using_guide_rois()
+        self.update_profile_rois()
 
         # print(self.list_guide_pyqt_roi.index(source))
 
@@ -910,6 +1001,7 @@ class ProfileUi(QMainWindow):
         self.remove_row(row=selected_row)
 
     def profile_along_axis_changed(self):
+        self.update_profile_rois()
         self.display_profiles()
 
     def export_button_clicked(self):

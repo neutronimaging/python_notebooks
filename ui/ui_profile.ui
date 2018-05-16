@@ -447,17 +447,17 @@
                      <string>x-axis</string>
                     </property>
                     <property name="checked">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QRadioButton" name="radioButton_2">
+                   <widget class="QRadioButton" name="profile_direction_y_axis">
                     <property name="text">
                      <string>y-axis</string>
                     </property>
                     <property name="checked">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -981,18 +981,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>groupBox_2</sender>
+   <sender>profile_direction_y_axis</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>profile_along_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1086</x>
-     <y>637</y>
+     <x>1083</x>
+     <y>626</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1094</x>
-     <y>785</y>
+     <x>682</x>
+     <y>405</y>
     </hint>
    </hints>
   </connection>
