@@ -340,13 +340,8 @@ class ProfileUi(QMainWindow):
             x_axis = np.arange(y_top, y_bottom)
 
         _data = image[x_left: x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
-        print(np.shape(_data))
         profile = np.mean(_data, axis=mean_axis)
-        print(np.shape(profile))
-        print("")
-
         return [x_axis, profile]
-
 
     def get_profile_width(self, row=0):
         _widget = self.ui.tableWidget_2.cellWidget(row, 0).children()[1]
