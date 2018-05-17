@@ -418,6 +418,11 @@ class ProfileUi(QMainWindow):
         self.display_profiles()
 
     ## Event Handler
+    def tab_changed(self, tab_index):
+        pass
+        # if tab_index == 1: # update table
+        #     self.update_summary_table()
+
     def guide_changed(self):
         self.update_guide_table_using_guide_rois()
         self.update_profile_rois()

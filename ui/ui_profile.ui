@@ -683,8 +683,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>703</x>
-     <y>588</y>
+     <x>688</x>
+     <y>595</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -731,7 +731,7 @@
    <slot>remove_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>824</x>
+     <x>808</x>
      <y>650</y>
     </hint>
     <hint type="destinationlabel">
@@ -779,7 +779,7 @@
    <slot>grid_size_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>414</x>
+     <x>406</x>
      <y>218</y>
     </hint>
     <hint type="destinationlabel">
@@ -795,7 +795,7 @@
    <slot>grid_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>414</x>
+     <x>406</x>
      <y>218</y>
     </hint>
     <hint type="destinationlabel">
@@ -811,7 +811,7 @@
    <slot>transparency_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>755</x>
+     <x>739</x>
      <y>218</y>
     </hint>
     <hint type="destinationlabel">
@@ -827,7 +827,7 @@
    <slot>transparency_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>755</x>
+     <x>739</x>
      <y>218</y>
     </hint>
     <hint type="destinationlabel">
@@ -875,7 +875,7 @@
    <slot>left_rotation_fast_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>765</x>
+     <x>749</x>
      <y>551</y>
     </hint>
     <hint type="destinationlabel">
@@ -891,7 +891,7 @@
    <slot>left_rotation_slow_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>765</x>
+     <x>749</x>
      <y>653</y>
     </hint>
     <hint type="destinationlabel">
@@ -996,6 +996,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>tab_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>749</x>
+     <y>39</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>781</x>
+     <y>772</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -1019,5 +1035,6 @@
   <slot>table_widget_cell_changed()</slot>
   <slot>grid_size_slider_released()</slot>
   <slot>profile_along_axis_changed()</slot>
+  <slot>tab_changed()</slot>
  </slots>
 </ui>

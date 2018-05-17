@@ -315,6 +315,7 @@ class Ui_MainWindow(object):
         self.grid_size_slider.sliderReleased.connect(MainWindow.grid_size_slider_released)
         self.profile_direction_x_axis.clicked.connect(MainWindow.profile_along_axis_changed)
         self.profile_direction_y_axis.clicked.connect(MainWindow.profile_along_axis_changed)
+        self.tabWidget.currentChanged['int'].connect(MainWindow.tab_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
