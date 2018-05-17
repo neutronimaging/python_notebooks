@@ -156,6 +156,7 @@ class ProfileUi(QMainWindow):
         if row == -1:
             return
 
+        # maint tab
         self.ui.tableWidget.removeRow(row)
         self.ui.tableWidget_2.removeRow(row)
         self.ui.image_view.removeItem(self.list_guide_pyqt_roi[row])
@@ -163,6 +164,10 @@ class ProfileUi(QMainWindow):
         self.ui.image_view.removeItem(self.list_profile_pyqt_roi[row])
         self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
         # self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
+
+        # all plots tab
+        self.ui.all_plots_profiles_table.removeRow(row)
+        self.rename_all_plots_profiles_table()
 
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
@@ -174,6 +179,7 @@ class ProfileUi(QMainWindow):
             self.ui.tableWidget.setRangeSelected(new_selection, True)
             new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
+
 
     def update_guide_roi_using_guide_table(self, row=-1):
         [x0, y0, width, height] = self.get_item_row(row=row)
@@ -415,8 +421,11 @@ class ProfileUi(QMainWindow):
         if previous_active_row == -1:
             return
 
-        self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
-        self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
+        try:
+            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
+            self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
+        except:
+            pass
 
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
