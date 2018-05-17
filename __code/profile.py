@@ -278,7 +278,11 @@ class ProfileUi(QMainWindow):
         self.ui.all_plots_profiles_table.insertRow(row)
         self.set_item_all_plots_profile_table(row=row)
         self.ui.all_plots_profiles_table.blockSignals(False)
-        # rename all profiles
+        self.rename_all_plots_profiles_table()
+
+    def rename_all_plots_profiles_table(self):
+        """rename all the profile name"""
+        nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
             self.ui.all_plots_profiles_table.item(_row, 0).setText("Profile # {}".format(_row+1))
 
