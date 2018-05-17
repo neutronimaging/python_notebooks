@@ -757,7 +757,10 @@ class Initializer(object):
             self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
             _offset = list_time_stamp[_row] - time_0
             self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
-    
+
+            self.parent.ui.all_plots_file_name_table.insertRow(_row)
+            self.set_item_all_plot_table(row=_row, value=os.path.basename(_file))
+
     def parameters(self):        
         # init the position of the measurement ROI
         [height, width] = np.shape(self.parent.data_dict['data'][0])
@@ -795,6 +798,8 @@ class Initializer(object):
 
         self.parent.ui.splitter_2.setSizes([250, 50])
         self.parent.ui.splitter.setSizes([500, 50])
+        self.parent.ui.all_plots_hori_splitter.setSizes([250, 100])
+        self.parent.ui.all_plots_verti_splitter.setSizes([300, 100])
 
         # file slider
         self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
@@ -830,6 +835,11 @@ class Initializer(object):
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.parent.ui.profile_view)
         self.parent.ui.profile_widget.setLayout(vertical_layout2)
+
+    def set_item_all_plot_table(self, row=0, value=''):
+        item = QtGui.QTableWidgetItem(str(value))
+        self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
+        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def set_item_summary_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
