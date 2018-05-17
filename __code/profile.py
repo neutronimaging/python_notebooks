@@ -273,7 +273,21 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget_2.setRangeSelected(new_selection, True)
         self.ui.tableWidget_2.blockSignals(False)
 
+        # all plots tab
+        self.ui.all_plots_profiles_table.blockSignals(True)
+        self.ui.all_plots_profiles_table.insertRow(row)
+        self.set_item_all_plots_profile_table(row=row)
+        self.ui.all_plots_profiles_table.blockSignals(False)
+        # rename all profiles
+        for _row in np.arange(nbr_row):
+            self.ui.all_plots_profiles_table.item(_row, 0).setText("Profile # {}".format(_row+1))
+
     # setter
+    def set_item_all_plots_profile_table(self, row=0):
+        item = QtGui.QTableWidgetItem("Profile # {}".format(row))
+        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+        self.ui.all_plots_profiles_table.setItem(row, 0, item)
+
     def set_item_profile_table(self, row=0):
         spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         widget = QtGui.QComboBox()
@@ -759,7 +773,7 @@ class Initializer(object):
             self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
 
             self.parent.ui.all_plots_file_name_table.insertRow(_row)
-            self.set_item_all_plot_table(row=_row, value=os.path.basename(_file))
+            self.set_item_all_plot_file_name_table(row=_row, value=os.path.basename(_file))
 
     def parameters(self):        
         # init the position of the measurement ROI
@@ -836,7 +850,7 @@ class Initializer(object):
         vertical_layout2.addWidget(self.parent.ui.profile_view)
         self.parent.ui.profile_widget.setLayout(vertical_layout2)
 
-    def set_item_all_plot_table(self, row=0, value=''):
+    def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
         self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)

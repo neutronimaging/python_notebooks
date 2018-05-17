@@ -191,7 +191,7 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(0, item)
-        self.tableWidget_2.horizontalHeader().setVisible(False)
+        self.tableWidget_2.horizontalHeader().setVisible(True)
         self.tableWidget_2.verticalHeader().setVisible(False)
         self.gridLayout.addWidget(self.tableWidget_2, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
@@ -328,7 +328,7 @@ class Ui_MainWindow(object):
         self.actionProfiles.setObjectName("actionProfiles")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
         self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
