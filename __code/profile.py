@@ -139,7 +139,7 @@ class ProfileUi(QMainWindow):
 
         for _row in np.arange(nbr_row):
             [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-            _label = 'Profile #{}'.format(_row)
+            _label = ' Profile #{}'.format(_row+1)
             _color = list_rgb_profile_color[_row]
             self.ui.profile_view.plot(x_axis, profile,
                                         name=_label,
@@ -749,7 +749,6 @@ class Initializer(object):
         # profile
         self.parent.ui.profile_view = pg.PlotWidget()
         self.parent.ui.profile_view.plot()
-        self.parent.ui.legend = self.parent.ui.profile_view.addLegend()
         self.parent.legend = self.parent.ui.profile_view.addLegend()
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.parent.ui.profile_view)
