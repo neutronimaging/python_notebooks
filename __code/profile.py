@@ -121,14 +121,29 @@ class ProfileUi(QMainWindow):
             self.ui.image_view.removeItem(_roi)
 
     def display_profiles(self):
-        return          #FIXME
-        # nbr_row = self.ui.table_widget.rowCount()
-        # is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
-        # for _row in np.arange(nbr_row):
-        #     [x0, y0, width, height] = self.get_item_row(row=_row)
-        #     _profile_width = self.get_profile_width(row=_row)
-        #     print("_profile_width: {}".format(_profile_width))
+        nbr_row = self.ui.tableWidget.rowCount()
+        if nbr_row == 0:
+            return
 
+        image = self.live_image
+        color = Color()
+        list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
+
+        self.ui.profile_view.clear()
+        try:
+            self.ui.profile_view.scene().removeItem(self.legend)
+        except Exception as e:
+            print(e)
+
+        self.legend = self.ui.profile_view.addLegend()
+
+        for _row in np.arange(nbr_row):
+            [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
+            _label = 'Profile #{}'.format(_row)
+            _color = list_rgb_profile_color[_row]
+            self.ui.profile_view.plot(x_axis, profile,
+                                        name=_label,
+                                        pen=_color)
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -297,6 +312,42 @@ class ProfileUi(QMainWindow):
             item = QtGui.QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
 
+    def get_profile(self, image=[], profile_roi_row=-1):
+        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+        [x0, y0, width, height] = self.get_item_row(row=profile_roi_row)
+        delta_profile = self.get_profile_width(row=profile_roi_row)
+
+        if is_x_profile_direction:
+            x_left = x0
+            x_right = x0 + width
+
+            profile_center = y0 + np.abs(np.int((height)/2.))
+            y_top = profile_center - delta_profile
+            y_bottom = profile_center + delta_profile
+
+            mean_axis = 1
+            x_axis = np.arange(x_left, x_right)
+
+        else:
+            profile_center = x0 + np.abs(np.int((width) / 2.))
+            x_left = profile_center - delta_profile
+            x_right = profile_center + delta_profile
+
+            y_top = y0
+            y_bottom = y0 + height
+
+            mean_axis = 0
+            x_axis = np.arange(y_top, y_bottom)
+
+        _data = image[x_left: x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
+        print(np.shape(_data))
+        profile = np.mean(_data, axis=mean_axis)
+        print(np.shape(profile))
+        print("")
+
+        return [x_axis, profile]
+
+
     def get_profile_width(self, row=0):
         _widget = self.ui.tableWidget_2.cellWidget(row, 0).children()[1]
         return np.int(str(_widget.currentText()))
@@ -362,13 +413,14 @@ class ProfileUi(QMainWindow):
         self.check_status_next_prev_image_button()
         self.display_image()
         self.ui.file_slider.blockSignals(False)
+        self.display_profiles()
 
     def slider_file_changed(self, index_selected):
         self.display_image()
         slider_value = self.ui.file_slider.value()
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
-        # self.display_measurement_profiles()
+        self.display_profiles()
 
     ## Event Handler
     def guide_changed(self):
@@ -404,6 +456,7 @@ class ProfileUi(QMainWindow):
     def table_widget_cell_changed(self, row, column):
         self.update_guide_roi_using_guide_table(row=row)
         self.update_profile_rois(row=row)
+        self.display_profiles()
 
     def guide_state_changed(self, state):
         self.remove_all_guides()
@@ -412,6 +465,7 @@ class ProfileUi(QMainWindow):
 
     def profile_width_changed(self, new_value):
         self.update_profile_rois()
+        self.display_profiles()
 
     def display_grid_clicked(self):
         status = self.ui.grid_display_checkBox.isChecked()
@@ -438,21 +492,25 @@ class ProfileUi(QMainWindow):
     def right_rotation_slow_clicked(self):
         self.rotation_angle -= 0.1
         self.display_image(recalculate_image=True)
+        self.display_profiles()
 
     @wait_cursor
     def left_rotation_slow_clicked(self):
         self.rotation_angle += 0.1
         self.display_image(recalculate_image=True)
+        self.display_profiles()
 
     @wait_cursor
     def right_rotation_fast_clicked(self):
         self.rotation_angle -= 1
         self.display_image(recalculate_image=True)
+        self.display_profiles()
 
     @wait_cursor
     def left_rotation_fast_clicked(self):
         self.rotation_angle += 1
         self.display_image(recalculate_image=True)
+        self.display_profiles()
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
@@ -460,10 +518,12 @@ class ProfileUi(QMainWindow):
         self.insert_row(row=selected_row)
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.previous_active_row = selected_row
+        self.display_profiles()
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
+        self.display_profiles()
 
     def profile_along_axis_changed(self):
         self.update_profile_rois()
@@ -693,13 +753,12 @@ class Initializer(object):
 
         # profile
         self.parent.ui.profile_view = pg.PlotWidget()
+        self.parent.ui.profile_view.plot()
+        self.parent.ui.legend = self.parent.ui.profile_view.addLegend()
         self.parent.legend = self.parent.ui.profile_view.addLegend()
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.parent.ui.profile_view)
         self.parent.ui.profile_widget.setLayout(vertical_layout2)
-
-
-
 
     def set_item_summary_table(self, row=0, col=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
