@@ -489,8 +489,6 @@ class NormalizationHandler(object):
         self.display_file_selector()
 
     def display_file_selector(self, start_dir=''):
-
-        print(start_dir)
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
                                                                      start_dir=start_dir,
                                                                      multiple=False,
