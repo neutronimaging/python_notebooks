@@ -147,6 +147,10 @@ class ProfileUi(QMainWindow):
                                         name=_label,
                                         pen=_color)
 
+    def update_all_plots(self):
+        list_index_file_selected = self.get_all_plots_files_index_selected()
+        print(list_index_file_selected)
+
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
         o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
@@ -407,6 +411,16 @@ class ProfileUi(QMainWindow):
         else:
             return -1
 
+    def get_all_plots_files_index_selected(self):
+        selection = self.ui.all_plots_file_name_table.selectdRanges()
+        list_row_selected = []
+        for _selection in selection:
+            top_row = _selection.topRow()
+            bottom_row = _selection.bottomRow()
+            for _row in np.arange(top_row, bottom_row+1):
+                list_row_selected.append(_row)
+        return list_row_selected
+
     def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
         if row == -1:
             return
@@ -463,9 +477,8 @@ class ProfileUi(QMainWindow):
 
     ## Event Handler
     def tab_changed(self, tab_index):
-        pass
-        # if tab_index == 1: # update table
-        #     self.update_summary_table()
+        if tab_index == 1: # display all plots
+            self.update_all_plots()
 
     def guide_changed(self):
         self.update_guide_table_using_guide_rois()
@@ -862,6 +875,14 @@ class Initializer(object):
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.parent.ui.profile_view)
         self.parent.ui.profile_widget.setLayout(vertical_layout2)
+
+        # all plots
+        self.parent.ui.all_plots_view = pg.PlotWidget()
+        self.parent.ui.all_plots_view.plot()
+        self.parent.all_plots_legend = self.parent.ui.all_plots_view.addLegend()
+        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2.addWidget(self.parent.ui.all_plots_view)
+        self.parent.ui.all_plots_widget.setLayout(vertical_layout2)
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
