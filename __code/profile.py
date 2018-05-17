@@ -4,6 +4,7 @@ from IPython.core.display import display
 import numpy as np
 import os
 import copy
+import collections
 import pyqtgraph as pg
 from skimage import transform
 
@@ -26,6 +27,7 @@ from __code.color import  Color
 from __code.file_handler import retrieve_time_stamp, make_ascii_file
 from __code.ui_profile import Ui_MainWindow as UiMainWindow
 from __code.decorators import wait_cursor
+from __code.file_handler import make_ascii_file
 
 
 class ProfileUi(QMainWindow):
@@ -203,7 +205,7 @@ class ProfileUi(QMainWindow):
         _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
         if _widget.isChecked():
             return True
-        return false
+        return False
 
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
@@ -312,10 +314,10 @@ class ProfileUi(QMainWindow):
             item = QtGui.QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
 
-    def get_profile(self, image=[], profile_roi_row=-1):
+    def get_profile_dimensions(self, row=-1):
         is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
-        [x0, y0, width, height] = self.get_item_row(row=profile_roi_row)
-        delta_profile = self.get_profile_width(row=profile_roi_row)
+        [x0, y0, width, height] = self.get_item_row(row=row)
+        delta_profile = self.get_profile_width(row=row)
 
         if is_x_profile_direction:
             x_left = x0
@@ -325,9 +327,6 @@ class ProfileUi(QMainWindow):
             y_top = profile_center - delta_profile
             y_bottom = profile_center + delta_profile
 
-            mean_axis = 1
-            x_axis = np.arange(x_left, x_right)
-
         else:
             profile_center = x0 + np.abs(np.int((width) / 2.))
             x_left = profile_center - delta_profile
@@ -336,6 +335,24 @@ class ProfileUi(QMainWindow):
             y_top = y0
             y_bottom = y0 + height
 
+        Profile = collections.namedtuple('Profile', ['x_left', 'x_right', 'y_top', 'y_bottom', 'profile_center'])
+        result = Profile(x_left, x_right, y_top, y_bottom, profile_center)
+        return result
+
+    def get_profile(self, image=[], profile_roi_row=-1):
+        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+
+        profile_dimension = self.get_profile_dimensions(row=profile_roi_row)
+        x_left = profile_dimension.x_left
+        x_right = profile_dimension.x_right
+        y_top = profile_dimension.y_top
+        y_bottom = profile_dimension.y_bottom
+
+        if is_x_profile_direction:
+            mean_axis = 1
+            x_axis = np.arange(x_left, x_right)
+
+        else:
             mean_axis = 0
             x_axis = np.arange(y_top, y_bottom)
 
@@ -530,16 +547,15 @@ class ProfileUi(QMainWindow):
         self.display_profiles()
 
     def export_button_clicked(self):
-        print("export button clicked")
-        # _export_folder = QFileDialog.getExistingDirectory(self,
-        #                                                   directory=self.working_dir,
-        #                                                   caption = "Select Output Folder",
-        #                                                   options=QFileDialog.ShowDirsOnly)
-        # if _export_folder:
-        #     o_export = ExportCalibration(parent = self,
-        #                                  export_folder = _export_folder)
-        #     o_export.run()
-        #     QtGui.QGuiApplication.processEvents()
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            o_export = ExportProfiles(parent=self,
+                                      export_folder=_export_folder)
+            o_export.run()
+            QtGui.QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
@@ -557,7 +573,72 @@ class ProfileUi(QMainWindow):
         pass
 
 
-    
+class ExportProfiles(object):
+
+    def __init__(self, parent=None, export_folder=''):
+        self.parent = parent
+        self.export_folder = export_folder
+
+    def _create_output_file_name(self, profile_index=0):
+        base_name = os.path.basename(self.parent.working_dir)
+        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index+1))
+        return output_file_name
+
+    def _create_metadata(self, profile_index=0):
+        metadata = ["# Counts vs pixel position"]
+        metadata.append("#average counts of width of profile is used!")
+        profile_dimension = self.parent.get_profile_dimensions(row=profile_index)
+        is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
+        x_left = profile_dimension.x_left
+        x_right = profile_dimension.x_right
+        y_top = profile_dimension.y_top
+        y_bottom = profile_dimension.y_bottom
+        metadata.append("#Profile dimension:")
+        metadata.append("# * [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(x_left, y_top, x_right, y_bottom))
+        if is_x_profile_direction:
+            metadata.append("# * integrated over y_axis")
+            table_axis = ['#x_axis']
+        else:
+            metadata.append("# * integrated over x_axis")
+            table_axis = ['#y_axis']
+        nbr_files = len(self.parent.data_dict['file_name'])
+        metadata.append("#List of files ({} files)".format(nbr_files))
+        for _index, _file in enumerate(self.parent.data_dict['file_name']):
+            metadata.append("# * {} -> col{}".format(_file, _index+1))
+            table_axis.append("# col.{}".format(_index+1))
+        metadata.append("#")
+        metadata.append("#" + ",".join(table_axis))
+        return metadata
+
+    def _create_data(self, profile_index=0):
+        all_profiles = []
+        x_axis = []
+        for _data in self.parent.data_dict['data']:
+            [x_axis, profile] = self.parent.get_profile(image=np.transpose(_data),
+                                                        profile_roi_row=profile_index)
+            all_profiles.append(list(profile))
+
+        data = []
+        for _index, _row in enumerate(np.transpose(all_profiles)):
+            str_row = [str(_value) for _value in _row]
+            data.append("{}, ".format(x_axis[_index]) + ", ".join(str_row))
+
+        return data
+
+    def run(self):
+        _nbr_profiles = self.parent.ui.tableWidget.rowCount()
+        for _profile_index in np.arange(_nbr_profiles):
+            _output_file_name = self._create_output_file_name(profile_index=_profile_index)
+            metadata = self._create_metadata(profile_index=_profile_index)
+            data = self._create_data(profile_index=_profile_index)
+            make_ascii_file(metadata=metadata,
+                            data=data,
+                            output_file_name=_output_file_name,
+                            dim='1d')
+
+            display(HTML("Exported Profile file {}".format(_output_file_name)))
+
+
 class GuideAndProfileRoisHandler(object):
 
     __profile = None
@@ -591,19 +672,18 @@ class GuideAndProfileRoisHandler(object):
 
     def _define_profile(self):
         # profile
-        [x0, y0, width, height] = self.parent.get_item_row(row=self.row)
+        # [x0, y0, width, height] = self.parent.get_item_row(row=self.row)
         _profile_width = self.parent.get_profile_width(row=self.row)
         is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
-        delta_profile = (_profile_width - 1) / 2.
+        # delta_profile = (_profile_width - 1) / 2.
+
+        profile_dimension = self.parent.get_profile_dimensions(row=self.row)
+        x_left = profile_dimension.x_left
+        x_right = profile_dimension.x_right
+        y_top = profile_dimension.y_top
+        y_bottom = profile_dimension.y_bottom
+
         if is_x_profile_direction:
-
-            profile_center = y0 + np.abs(np.int((height)/2.))
-
-            y_top = profile_center - delta_profile
-            y_bottom = profile_center + delta_profile
-
-            x_left = x0
-            x_right = x0 + width
 
             pos = []
             pos.append([x_left, y_top])
@@ -620,14 +700,6 @@ class GuideAndProfileRoisHandler(object):
             pos = np.array(pos)
 
         else: # y-profile direction
-
-            profile_center = x0 + np.abs(np.int((width) / 2.))
-
-            x_left = profile_center - delta_profile
-            x_right = profile_center + delta_profile
-
-            y_top = y0
-            y_bottom = y0 + height
 
             pos = []
             pos.append([x_left, y_top])
