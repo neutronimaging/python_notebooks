@@ -149,7 +149,26 @@ class ProfileUi(QMainWindow):
 
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
-        print(list_index_file_selected)
+        nbr_profile = self.ui.all_plots_profiles_table.rowCount()
+        color = Color()
+        list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_profile * len(list_index_file_selected))
+
+        self.ui.all_plots_view.clear()
+        try:
+            self.ui.all_plots_view.scene().removeItem(self.legend)
+        except Exception as e:
+            print(e)
+
+        self.all_plots_legend = self.ui.all_plots_view.addLegend()
+
+        for _index_file in list_index_file_selected:
+            _data = self.data_dict['data'][_index_file]
+            for _index_profile in np.arange(nbr_profile):
+                legend = "File #{} - Profile #{}".format(_index_file, _index_profile)
+                _color = list_rgb_profile_color[_index_profile + _index_file * nbr_profile]
+                [x_axis, y_axis] = self.get_profile(image=_data, profile_roi_row=_index_profile)
+                self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
+
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -412,7 +431,7 @@ class ProfileUi(QMainWindow):
             return -1
 
     def get_all_plots_files_index_selected(self):
-        selection = self.ui.all_plots_file_name_table.selectdRanges()
+        selection = self.ui.all_plots_file_name_table.selectedRanges()
         list_row_selected = []
         for _selection in selection:
             top_row = _selection.topRow()

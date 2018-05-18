@@ -191,7 +191,7 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(0, item)
-        self.tableWidget_2.horizontalHeader().setVisible(True)
+        self.tableWidget_2.horizontalHeader().setVisible(False)
         self.tableWidget_2.verticalHeader().setVisible(False)
         self.gridLayout.addWidget(self.tableWidget_2, 1, 1, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.layoutWidget1)
@@ -379,7 +379,7 @@ class Ui_MainWindow(object):
         self.actionProfiles.setObjectName("actionProfiles")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
         self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
@@ -404,6 +404,8 @@ class Ui_MainWindow(object):
         self.profile_direction_x_axis.clicked.connect(MainWindow.profile_along_axis_changed)
         self.profile_direction_y_axis.clicked.connect(MainWindow.profile_along_axis_changed)
         self.tabWidget.currentChanged['int'].connect(MainWindow.tab_changed)
+        self.all_plots_file_name_table.itemSelectionChanged.connect(MainWindow.update_all_plots)
+        self.all_plots_profiles_table.itemSelectionChanged.connect(MainWindow.update_all_plots)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
