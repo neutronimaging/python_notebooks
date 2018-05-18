@@ -151,22 +151,24 @@ class ProfileUi(QMainWindow):
         list_index_file_selected = self.get_all_plots_files_index_selected()
         nbr_profile = self.ui.all_plots_profiles_table.rowCount()
         color = Color()
-        list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_profile * len(list_index_file_selected))
-
+        list_rgb_profile_color = color.get_list_rgb(nbr_color=(nbr_profile * len(list_index_file_selected)))
         self.ui.all_plots_view.clear()
+        if nbr_profile == 0:
+            return
+
         try:
-            self.ui.all_plots_view.scene().removeItem(self.legend)
+            self.ui.all_plots_view.scene().removeItem(self.all_plots_legend)
         except Exception as e:
             print(e)
 
         self.all_plots_legend = self.ui.all_plots_view.addLegend()
 
-        for _index_file in list_index_file_selected:
+        for _color_index_file, _index_file in enumerate(list_index_file_selected):
             _data = self.data_dict['data'][_index_file]
             for _index_profile in np.arange(nbr_profile):
                 legend = "File #{} - Profile #{}".format(_index_file, _index_profile)
-                _color = list_rgb_profile_color[_index_profile + _index_file * nbr_profile]
-                [x_axis, y_axis] = self.get_profile(image=_data, profile_roi_row=_index_profile)
+                _color = list_rgb_profile_color[_color_index_file + _index_profile * len(list_index_file_selected)]
+                [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
                 self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
 
 
