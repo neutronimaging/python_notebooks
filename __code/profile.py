@@ -149,9 +149,11 @@ class ProfileUi(QMainWindow):
 
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
-        nbr_profile = self.ui.all_plots_profiles_table.rowCount()
+        list_index_profile_selected = self.get_all_plots_profiles_selected()
+        nbr_profile = len(list_index_profile_selected)
+        nbr_file_selected = len(list_index_file_selected)
         color = Color()
-        list_rgb_profile_color = color.get_list_rgb(nbr_color=(nbr_profile * len(list_index_file_selected)))
+        list_rgb_profile_color = color.get_list_rgb(nbr_color=(nbr_profile * nbr_file_selected))
         self.ui.all_plots_view.clear()
         if nbr_profile == 0:
             return
@@ -165,7 +167,7 @@ class ProfileUi(QMainWindow):
 
         for _color_index_file, _index_file in enumerate(list_index_file_selected):
             _data = self.data_dict['data'][_index_file]
-            for _index_profile in np.arange(nbr_profile):
+            for _index_profile in list_index_profile_selected:
                 legend = "File #{} - Profile #{}".format(_index_file, _index_profile)
                 _color = list_rgb_profile_color[_color_index_file + _index_profile * len(list_index_file_selected)]
                 [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
@@ -432,8 +434,7 @@ class ProfileUi(QMainWindow):
         else:
             return -1
 
-    def get_all_plots_files_index_selected(self):
-        selection = self.ui.all_plots_file_name_table.selectedRanges()
+    def __create_list_from_selection(self, selection):
         list_row_selected = []
         for _selection in selection:
             top_row = _selection.topRow()
@@ -441,6 +442,14 @@ class ProfileUi(QMainWindow):
             for _row in np.arange(top_row, bottom_row+1):
                 list_row_selected.append(_row)
         return list_row_selected
+
+    def get_all_plots_profiles_selected(self):
+        selection = self.ui.all_plots_profiles_table.selectedRanges()
+        return self.__create_list_from_selection(selection)
+
+    def get_all_plots_files_index_selected(self):
+        selection = self.ui.all_plots_file_name_table.selectedRanges()
+        return self.__create_list_from_selection(selection)
 
     def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
         if row == -1:

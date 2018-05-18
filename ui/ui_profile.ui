@@ -27,7 +27,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -854,8 +854,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>505</x>
-     <y>585</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -870,8 +870,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>505</x>
-     <y>585</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -886,8 +886,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>195</x>
-     <y>588</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -902,8 +902,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>688</x>
-     <y>595</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -950,8 +950,8 @@
    <slot>remove_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>808</x>
-     <y>650</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>751</x>
@@ -966,8 +966,8 @@
    <slot>add_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1328</x>
-     <y>650</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>1152</x>
@@ -982,8 +982,8 @@
    <slot>display_grid_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>115</x>
-     <y>217</y>
+     <x>104</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>149</x>
@@ -998,8 +998,8 @@
    <slot>grid_size_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>406</x>
-     <y>218</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>483</x>
@@ -1014,8 +1014,8 @@
    <slot>grid_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>406</x>
-     <y>218</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>397</x>
@@ -1030,8 +1030,8 @@
    <slot>transparency_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>739</x>
-     <y>218</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>731</x>
@@ -1046,8 +1046,8 @@
    <slot>transparency_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>739</x>
-     <y>218</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>1062</x>
@@ -1062,8 +1062,8 @@
    <slot>right_rotation_fast_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>69</x>
-     <y>551</y>
+     <x>84</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -1078,8 +1078,8 @@
    <slot>right_rotation_slow_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>77</x>
-     <y>653</y>
+     <x>84</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -1094,8 +1094,8 @@
    <slot>left_rotation_fast_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>749</x>
-     <y>551</y>
+     <x>84</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -1110,8 +1110,8 @@
    <slot>left_rotation_slow_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>749</x>
-     <y>653</y>
+     <x>84</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1126,8 +1126,8 @@
    <slot>table_widget_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>978</x>
-     <y>294</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>958</x>
@@ -1142,8 +1142,8 @@
    <slot>table_widget_2_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1294</x>
-     <y>318</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>1277</x>
@@ -1158,8 +1158,8 @@
    <slot>table_widget_cell_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1067</x>
-     <y>223</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>1113</x>
@@ -1174,8 +1174,8 @@
    <slot>grid_size_slider_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>208</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>276</x>
@@ -1190,8 +1190,8 @@
    <slot>profile_along_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1025</x>
-     <y>627</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>992</x>
@@ -1206,8 +1206,8 @@
    <slot>profile_along_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1083</x>
-     <y>626</y>
+     <x>134</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>682</x>
