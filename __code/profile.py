@@ -167,12 +167,11 @@ class ProfileUi(QMainWindow):
 
         for _color_index_file, _index_file in enumerate(list_index_file_selected):
             _data = self.data_dict['data'][_index_file]
-            for _index_profile in list_index_profile_selected:
+            for _color_index_profile, _index_profile in enumerate(list_index_profile_selected):
                 legend = "File #{} - Profile #{}".format(_index_file, _index_profile)
-                _color = list_rgb_profile_color[_color_index_file + _index_profile * len(list_index_file_selected)]
+                _color = list_rgb_profile_color[_color_index_file + _color_index_profile * nbr_file_selected]
                 [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
                 self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
-
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
