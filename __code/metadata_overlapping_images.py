@@ -69,7 +69,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
     #                               'width': 200, 'height': 200}
     default_profile_width_values = np.arange(1,50,2)
 
-
     #remove-me
     test_roi = None
 
@@ -89,19 +88,89 @@ class MetadataOverlappingImagesUi(QMainWindow):
                                                                      #'metadata': [],
                                                                      #'shape': {}}
 
-        # # untouched array of images (used to move and rotate images)
-        # self.data_dict_raw = copy.deepcopy(data_dict)
-        #
-        # # initialization
-        # o_initialization = Initializer(parent=self)
+        # untouched array of images (used to move and rotate images)
+        self.data_dict_raw = copy.deepcopy(data_dict)
+
+        # initialization
+        o_initialization = Initializer(parent=self)
         # o_initialization.timestamp_dict()
         # o_initialization.table()
         # o_initialization.parameters()
         # o_initialization.widgets()
         # o_initialization.pyqtgraph()
-        #
-        # # display first images
-        # self.slider_file_changed(-1)
+
+        # display first images
+        #self.slider_file_changed(-1)
+
+    # ========================================================================================
+    # MAIN UI EVENTs
+
+    def previous_image_button_clicked(self):
+        self.change_slider(offset = -1)
+        # self.display_measurement_profiles()
+
+    def next_image_button_clicked(self):
+        self.change_slider(offset = +1)
+        # self.display_measurement_profiles()
+
+    def help_button_clicked(self):
+        import webbrowser
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/metadata_overlapping_images/")
+
+    def closeEvent(self, event=None):
+        pass
+
+    def slider_file_changed(self, index_selected):
+        self.display_image()
+        slider_value = self.ui.file_slider.value()
+        self.ui.image_slider_value.setText(str(slider_value))
+        self.check_status_next_prev_image_button()
+        # self.display_profiles()
+
+    # ========================================================================================
+
+    def display_image(self, recalculate_image=False):
+        """display the image selected by the file slider"""
+        o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
+
+    def check_status_next_prev_image_button(self):
+        """this will enable or not the prev or next button next to the slider file image"""
+        current_slider_value = self.ui.file_slider.value()
+        min_slider_value = self.ui.file_slider.minimum()
+        max_slider_value = self.ui.file_slider.maximum()
+
+        _prev = True
+        _next = True
+
+        if current_slider_value == min_slider_value:
+            _prev = False
+        elif current_slider_value == max_slider_value:
+            _next = False
+
+        self.ui.previous_image_button.setEnabled(_prev)
+        self.ui.next_image_button.setEnabled(_next)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # main methods
     def remove_all_guides(self):
@@ -173,9 +242,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
                 [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
                 self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
 
-    def display_image(self, recalculate_image=False):
-        """display the image selected by the file slider"""
-        o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
 
     def remove_row(self, row=-1):
 
@@ -470,22 +536,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
         except:
             pass
 
-    def check_status_next_prev_image_button(self):
-        """this will enable or not the prev or next button next to the slider file image"""
-        current_slider_value = self.ui.file_slider.value()
-        min_slider_value = self.ui.file_slider.minimum()
-        max_slider_value = self.ui.file_slider.maximum()
-
-        _prev = True
-        _next = True
-
-        if current_slider_value == min_slider_value:
-            _prev = False
-        elif current_slider_value == max_slider_value:
-            _next = False
-
-        self.ui.previous_image_button.setEnabled(_prev)
-        self.ui.next_image_button.setEnabled(_next)
 
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
@@ -497,12 +547,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.file_slider.blockSignals(False)
         self.display_profiles()
 
-    def slider_file_changed(self, index_selected):
-        self.display_image()
-        slider_value = self.ui.file_slider.value()
-        self.ui.image_slider_value.setText(str(slider_value))
-        self.check_status_next_prev_image_button()
-        self.display_profiles()
 
     ## Event Handler
     def tab_changed(self, tab_index):
@@ -626,20 +670,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
             o_export.run()
             QtGui.QGuiApplication.processEvents()
 
-    def previous_image_button_clicked(self):
-        self.change_slider(offset = -1)
-        # self.display_measurement_profiles()
-
-    def next_image_button_clicked(self):
-        self.change_slider(offset = +1)
-        # self.display_measurement_profiles()
-
-    def help_button_clicked(self):
-        import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/profile/")
-
-    def closeEvent(self, event=None):
-        pass
 
 
 class ExportProfiles(object):
@@ -840,30 +870,6 @@ class Initializer(object):
         self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
 
     def widgets(self):
-        _file_path = os.path.dirname(__file__)
-        left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_fast.png'))
-        self.parent.ui.left_rotation_button_fast.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_fast_file + "'); " + \
-                                                        "background-repeat: no-repeat")
-
-        right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_fast.png'))
-        self.parent.ui.right_rotation_button_fast.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_fast_file + "'); " + \
-                                                         "background-repeat: no-repeat")
-
-        left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_slow.png'))
-        self.parent.ui.left_rotation_button_slow.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_slow_file + "'); " + \
-                                                        "background-repeat: no-repeat")
-
-        right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_slow.png'))
-        self.parent.ui.right_rotation_button_slow.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_slow_file + "'); " + \
-                                                         "background-repeat: no-repeat")
 
         self.parent.ui.splitter_2.setSizes([250, 50])
         self.parent.ui.splitter.setSizes([500, 50])
