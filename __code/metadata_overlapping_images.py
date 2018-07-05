@@ -96,7 +96,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         # o_initialization.timestamp_dict()
         # o_initialization.table()
         # o_initialization.parameters()
-        # o_initialization.widgets()
+        o_initialization.widgets()
         # o_initialization.pyqtgraph()
 
         # display first images
@@ -871,28 +871,27 @@ class Initializer(object):
 
     def widgets(self):
 
-        self.parent.ui.splitter_2.setSizes([250, 50])
-        self.parent.ui.splitter.setSizes([500, 50])
-        self.parent.ui.all_plots_hori_splitter.setSizes([250, 100])
-        self.parent.ui.all_plots_verti_splitter.setSizes([300, 100])
-
-        # file slider
-        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
-
-        # update size of table columns
-        nbr_columns = self.parent.ui.tableWidget.columnCount()
-        for _col in range(nbr_columns):
-            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
-
-        # update size of summary table
-        nbr_columns = self.parent.ui.summary_table.columnCount()
-        for _col in range(nbr_columns):
-            self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
-
-        self.parent.display_ui = [self.parent.ui.display_size_label,
-                           self.parent.ui.grid_size_slider,
-                           self.parent.ui.display_transparency_label,
-                           self.parent.ui.transparency_slider]
+        self.parent.ui.splitter.setSizes([800, 50])
+        # self.parent.ui.all_plots_hori_splitter.setSizes([250, 100])
+        # self.parent.ui.all_plots_verti_splitter.setSizes([300, 100])
+        #
+        # # file slider
+        # self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
+        #
+        # # update size of table columns
+        # nbr_columns = self.parent.ui.tableWidget.columnCount()
+        # for _col in range(nbr_columns):
+        #     self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
+        #
+        # # update size of summary table
+        # nbr_columns = self.parent.ui.summary_table.columnCount()
+        # for _col in range(nbr_columns):
+        #     self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
+        #
+        # self.parent.display_ui = [self.parent.ui.display_size_label,
+        #                    self.parent.ui.grid_size_slider,
+        #                    self.parent.ui.display_transparency_label,
+        #                    self.parent.ui.transparency_slider]
 
     def pyqtgraph(self):
         # image
