@@ -124,7 +124,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox">
+           <widget class="QGroupBox" name="scale_groupbox">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -335,7 +335,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_2">
+           <widget class="QGroupBox" name="metadata_groupbox">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -578,12 +578,12 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1352</x>
-     <y>778</y>
+     <x>1134</x>
+     <y>663</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
-     <y>804</y>
+     <y>740</y>
     </hint>
    </hints>
   </connection>
@@ -594,12 +594,44 @@
    <slot>help_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>52</x>
-     <y>765</y>
+     <x>64</x>
+     <y>663</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
-     <y>810</y>
+     <y>740</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_checkbox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>499</x>
+     <y>42</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1137</x>
+     <y>82</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_checkbox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>579</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1140</x>
+     <y>253</y>
     </hint>
    </hints>
   </connection>
@@ -628,5 +660,7 @@
   <slot>profile_along_axis_changed()</slot>
   <slot>tab_changed()</slot>
   <slot>update_all_plots()</slot>
+  <slot>scale_checkbox_clicked()</slot>
+  <slot>metadata_checkbox_clicked()</slot>
  </slots>
 </ui>

@@ -127,6 +127,12 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.check_status_next_prev_image_button()
         # self.display_profiles()
 
+    def scale_checkbox_clicked(self, status):
+        self.ui.scale_groupbox.setEnabled(status)
+
+    def metadata_checkbox_clicked(self, status):
+        self.ui.metadata_groupbox.setEnabled(status)
+
     # ========================================================================================
 
     def display_image(self, recalculate_image=False):
@@ -872,12 +878,10 @@ class Initializer(object):
     def widgets(self):
 
         self.parent.ui.splitter.setSizes([800, 50])
-        # self.parent.ui.all_plots_hori_splitter.setSizes([250, 100])
-        # self.parent.ui.all_plots_verti_splitter.setSizes([300, 100])
-        #
-        # # file slider
-        # self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
-        #
+
+        # file slider
+        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
+
         # # update size of table columns
         # nbr_columns = self.parent.ui.tableWidget.columnCount()
         # for _col in range(nbr_columns):
