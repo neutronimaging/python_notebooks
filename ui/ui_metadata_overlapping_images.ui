@@ -667,6 +667,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>file_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slider_file_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>215</x>
+     <y>559</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>214</x>
+     <y>651</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>

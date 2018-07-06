@@ -235,6 +235,7 @@ class Ui_MainWindow(object):
         self.checkBox_2.clicked['bool'].connect(MainWindow.metadata_checkbox_clicked)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
+        self.file_slider.sliderPressed.connect(MainWindow.slider_file_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
