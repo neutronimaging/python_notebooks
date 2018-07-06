@@ -246,7 +246,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox"/>
+                <widget class="QComboBox" name="scale_units_combobox"/>
                </item>
                <item>
                 <spacer name="horizontalSpacer_5">

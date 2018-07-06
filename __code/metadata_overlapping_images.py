@@ -52,6 +52,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_table_widget_checkbox = list()
 
     list_metadata = []
+    list_scale_units = ["mm", u"\u00B5m", "nm"]
 
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
@@ -765,15 +766,9 @@ class Initializer(object):
             self.parent.ui.select_metadata_checkbox.setVisible(False)
             self.parent.ui.select_metadata_combobox.setVisible(False)
 
-        # # update size of summary table
-        # nbr_columns = self.parent.ui.summary_table.columnCount()
-        # for _col in range(nbr_columns):
-        #     self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
-        #
-        # self.parent.display_ui = [self.parent.ui.display_size_label,
-        #                    self.parent.ui.grid_size_slider,
-        #                    self.parent.ui.display_transparency_label,
-        #                    self.parent.ui.transparency_slider]
+        # list of scale available
+        self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units)
+
 
     def pyqtgraph(self):
         # image
