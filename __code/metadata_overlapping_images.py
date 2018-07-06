@@ -97,10 +97,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
         # o_initialization.table()
         # o_initialization.parameters()
         o_initialization.widgets()
-        # o_initialization.pyqtgraph()
+        o_initialization.pyqtgraph()
 
         # display first images
-        #self.slider_file_changed(-1)
+        self.slider_file_changed(-1)
 
     # ========================================================================================
     # MAIN UI EVENTs
@@ -125,7 +125,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
         slider_value = self.ui.file_slider.value()
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
-        # self.display_profiles()
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
@@ -906,22 +905,6 @@ class Initializer(object):
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
-        # profile
-        self.parent.ui.profile_view = pg.PlotWidget()
-        self.parent.ui.profile_view.plot()
-        self.parent.legend = self.parent.ui.profile_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
-        vertical_layout2.addWidget(self.parent.ui.profile_view)
-        self.parent.ui.profile_widget.setLayout(vertical_layout2)
-
-        # all plots
-        self.parent.ui.all_plots_view = pg.PlotWidget()
-        self.parent.ui.all_plots_view.plot()
-        self.parent.all_plots_legend = self.parent.ui.all_plots_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
-        vertical_layout2.addWidget(self.parent.ui.all_plots_view)
-        self.parent.ui.all_plots_widget.setLayout(vertical_layout2)
-
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
         self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
@@ -940,7 +923,7 @@ class DisplayImages(object):
         self.recalculate_image = recalculate_image
 
         self.display_images()
-        self.display_grid()
+        # self.display_grid()
 
     def get_image_selected(self, recalculate_image=False):
         slider_index = self.parent.ui.file_slider.value()
