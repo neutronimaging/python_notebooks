@@ -7,6 +7,7 @@ import copy
 import collections
 import pyqtgraph as pg
 from skimage import transform
+from PIL import Image
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -40,37 +41,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
     histogram_level = []
 
     # size of tables
-    _width = 65
-    guide_table_width = [80, _width, _width, _width, _width]
-    guide_table_height = 50
-    summary_table_width = [300, 150, 100]
+    guide_table_width = [300, 50]
 
     live_image = []
-    grid_view = {'pos': None,
-                 'adj': None,
-                 'item': None,
-                 'color': (0, 0, 255, 255, 1)}
-
-    profile_color = (0, 255, 0, 255, 1)
-
     display_ui = []
 
     # guide and profile pg ROIs
     list_guide_pyqt_roi = list()
     list_profile_pyqt_roi = list()
     list_table_widget_checkbox = list()
-    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 800,
-                         'isChecked': True,
-                         'color_activated':'r',
-                         'color_deactivated': 'b'}
-    previous_active_row = -1 # use to deactivated the guide and profile roi
 
-    # default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
-    #                               'width': 200, 'height': 200}
-    default_profile_width_values = np.arange(1,50,2)
-
-    #remove-me
-    test_roi = None
+    list_metadata = []
 
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
@@ -94,8 +75,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         # initialization
         o_initialization = Initializer(parent=self)
         # o_initialization.timestamp_dict()
-        # o_initialization.table()
-        # o_initialization.parameters()
+        o_initialization.table()
         o_initialization.widgets()
         o_initialization.pyqtgraph()
 
@@ -133,6 +113,19 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
 
+    def select_metadata_checkbox_clicked(self, status):
+        self.ui.select_metadata_combobox.setEnabled(status)
+
+    def metadata_list_changed(self, index):
+        key_selected = self.list_metadata[index]
+
+        for row, _file in enumerate(self.data_dict['file_name']):
+            o_image = Image.open(_file)
+            o_dict = dict(o_image.tag_v2)
+            value = o_dict[float(key_selected)]
+            self.ui.tableWidget.item(row, 1).setText("{}".format(value))
+
+
     # ========================================================================================
 
     def display_image(self, recalculate_image=False):
@@ -165,6 +158,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.check_status_next_prev_image_button()
         self.display_image()
         self.ui.file_slider.blockSignals(False)
+
 
 
 
@@ -744,27 +738,10 @@ class Initializer(object):
         list_files_full_name = self.parent.data_dict['file_name']
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
-        list_time_stamp = self.parent.timestamp_dict['list_time_stamp']
-        list_time_stamp_user_format = self.parent.timestamp_dict['list_time_stamp_user_format']
-        time_0 = list_time_stamp[0]
         for _row, _file in enumerate(list_files_short_name):
-            self.parent.ui.summary_table.insertRow(_row)
-            self.set_item_summary_table(row=_row, col=0, value=_file)
-            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
-            _offset = list_time_stamp[_row] - time_0
-            self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
-
-            self.parent.ui.all_plots_file_name_table.insertRow(_row)
-            self.set_item_all_plot_file_name_table(row=_row, value=os.path.basename(_file))
-
-    def parameters(self):        
-        # init the position of the measurement ROI
-        [height, width] = np.shape(self.parent.data_dict['data'][0])
-        self.parent.default_guide_roi['width'] = np.int(width/10)
-        self.parent.default_guide_roi['height'] = np.int(height/5)
-        self.parent.default_guide_roi['x0'] = np.int(width/2)
-        self.parent.default_guide_roi['y0'] = np.int(height/2)
-        self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
+            self.parent.ui.tableWidget.insertRow(_row)
+            self.set_item_table(row=_row, col=0, value=_file)
+            self.set_item_table(row=_row, col=1, value="N/A", editable=True)
 
     def widgets(self):
 
@@ -773,11 +750,19 @@ class Initializer(object):
         # file slider
         self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
 
-        # # update size of table columns
-        # nbr_columns = self.parent.ui.tableWidget.columnCount()
-        # for _col in range(nbr_columns):
-        #     self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
-        #
+        # update size of table columns
+        nbr_columns = self.parent.ui.tableWidget.columnCount()
+        for _col in range(nbr_columns):
+            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
+
+        # populate list of metadata if file is a tiff
+        list_metadata = self.get_list_metadata()
+        if list_metadata:
+            self.parent.ui.select_metadata_combobox.addItems(list_metadata)
+        else: #hide widgets
+            self.parent.ui.select_metadata_checkbox.setVisible(False)
+            self.parent.ui.select_metadata_combobox.setVisible(False)
+
         # # update size of summary table
         # nbr_columns = self.parent.ui.summary_table.columnCount()
         # for _col in range(nbr_columns):
@@ -802,11 +787,27 @@ class Initializer(object):
         self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    def set_item_summary_table(self, row=0, col=0, value=''):
+    def set_item_table(self, row=0, col=0, value='', editable=False):
         item = QtGui.QTableWidgetItem(str(value))
-        self.parent.ui.summary_table.setItem(row, col, item)
-        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+        self.parent.ui.tableWidget.setItem(row, col, item)
+        if not editable:
+            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
+    def get_list_metadata(self):
+        first_file = self.parent.data_dict['file_name'][0]
+        [_, ext] = os.path.splitext(os.path.basename(first_file))
+        if ext in [".tif", ".tiff"]:
+            o_image0 = Image.open(first_file)
+            info = collections.OrderedDict(sorted(o_image0.tag_v2.items()))
+            list_metadata = []
+            list_key = []
+            for tag, value in info.items():
+                list_metadata.append("{} -> {}".format(tag, value))
+                list_key.append(tag)
+            self.parent.list_metadata = list_key
+            return list_metadata
+        else:
+            return []
 
 class DisplayImages(object):
 

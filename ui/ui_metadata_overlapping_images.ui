@@ -111,7 +111,7 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="scale_checkbox">
             <property name="maximumSize">
              <size>
               <width>400</width>
@@ -322,7 +322,7 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QCheckBox" name="checkBox_2">
+           <widget class="QCheckBox" name="metadata_checkbox">
             <property name="maximumSize">
              <size>
               <width>400</width>
@@ -330,7 +330,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Metadata   (Select in Metadata TAB)</string>
+             <string>Metadata</string>
             </property>
            </widget>
           </item>
@@ -358,26 +358,29 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
-                <widget class="QLabel" name="label">
+                <widget class="QCheckBox" name="select_metadata_checkbox">
                  <property name="minimumSize">
                   <size>
-                   <width>170</width>
+                   <width>130</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>170</width>
+                   <width>130</width>
                    <height>16777215</height>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Select Metadata To Display</string>
+                  <string>Select metadata</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox">
+                <widget class="QComboBox" name="select_metadata_combobox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>300</width>
@@ -386,23 +389,55 @@
                  </property>
                 </widget>
                </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
                <item>
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
+                <widget class="QLabel" name="label">
+                 <property name="enabled">
+                  <bool>false</bool>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
+                 <property name="text">
+                  <string>Metadata name</string>
                  </property>
-                </spacer>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="manual_metadata_name">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
              <item>
-              <widget class="QTableWidget" name="tableWidget"/>
+              <widget class="QTableWidget" name="tableWidget">
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
+               <attribute name="horizontalHeaderStretchLastSection">
+                <bool>true</bool>
+               </attribute>
+               <column>
+                <property name="text">
+                 <string>File Name</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Value</string>
+                </property>
+               </column>
+              </widget>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -604,7 +639,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>scale_checkbox</sender>
    <signal>clicked(bool)</signal>
    <receiver>MainWindow</receiver>
    <slot>scale_checkbox_clicked()</slot>
@@ -620,7 +655,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_2</sender>
+   <sender>metadata_checkbox</sender>
    <signal>clicked(bool)</signal>
    <receiver>MainWindow</receiver>
    <slot>metadata_checkbox_clicked()</slot>
@@ -643,7 +678,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>84</x>
-     <y>553</y>
+     <y>587</y>
     </hint>
     <hint type="destinationlabel">
      <x>112</x>
@@ -659,7 +694,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>378</x>
-     <y>561</y>
+     <y>595</y>
     </hint>
     <hint type="destinationlabel">
      <x>387</x>
@@ -675,7 +710,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>215</x>
-     <y>559</y>
+     <y>593</y>
     </hint>
     <hint type="destinationlabel">
      <x>214</x>
@@ -691,11 +726,43 @@
    <hints>
     <hint type="sourcelabel">
      <x>257</x>
-     <y>563</y>
+     <y>597</y>
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
      <y>641</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>select_metadata_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>select_metadata_checkbox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>548</x>
+     <y>264</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>668</x>
+     <y>675</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>select_metadata_combobox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_list_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>673</x>
+     <y>264</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>709</x>
+     <y>632</y>
     </hint>
    </hints>
   </connection>
@@ -709,5 +776,7 @@
   <slot>scale_checkbox_clicked()</slot>
   <slot>metadata_checkbox_clicked()</slot>
   <slot>slider_file_clicked()</slot>
+  <slot>select_metadata_checkbox_clicked()</slot>
+  <slot>metadata_list_changed()</slot>
  </slots>
 </ui>
