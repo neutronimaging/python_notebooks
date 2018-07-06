@@ -183,6 +183,20 @@
                  </property>
                 </spacer>
                </item>
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Thickness:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="spinBox">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
              <item>
