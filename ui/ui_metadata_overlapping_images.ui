@@ -683,31 +683,29 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>file_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slider_file_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>257</x>
+     <y>563</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>259</x>
+     <y>641</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
   <slot>slider_file_changed()</slot>
   <slot>previous_image_button_clicked()</slot>
   <slot>next_image_button_clicked()</slot>
-  <slot>remove_row_button_clicked()</slot>
-  <slot>add_row_button_clicked()</slot>
   <slot>export_button_clicked()</slot>
-  <slot>display_grid_clicked()</slot>
-  <slot>grid_size_slider_clicked()</slot>
-  <slot>grid_size_slider_moved()</slot>
-  <slot>transparency_slider_clicked()</slot>
-  <slot>transparency_slider_moved()</slot>
-  <slot>right_rotation_fast_clicked()</slot>
-  <slot>right_rotation_slow_clicked()</slot>
-  <slot>left_rotation_fast_clicked()</slot>
-  <slot>left_rotation_slow_clicked()</slot>
-  <slot>table_widget_selection_changed()</slot>
-  <slot>table_widget_2_selection_changed()</slot>
-  <slot>table_widget_cell_changed()</slot>
-  <slot>grid_size_slider_released()</slot>
-  <slot>profile_along_axis_changed()</slot>
-  <slot>tab_changed()</slot>
-  <slot>update_all_plots()</slot>
   <slot>scale_checkbox_clicked()</slot>
   <slot>metadata_checkbox_clicked()</slot>
   <slot>slider_file_clicked()</slot>

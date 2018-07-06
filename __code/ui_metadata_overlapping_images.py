@@ -236,6 +236,7 @@ class Ui_MainWindow(object):
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.file_slider.sliderPressed.connect(MainWindow.slider_file_clicked)
+        self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

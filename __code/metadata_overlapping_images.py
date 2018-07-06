@@ -100,7 +100,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         o_initialization.pyqtgraph()
 
         # display first images
-        self.slider_file_changed(-1)
+        self.slider_file_changed(0)
 
     # ========================================================================================
     # MAIN UI EVENTs
@@ -118,15 +118,14 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def closeEvent(self, event=None):
         pass
 
-    def slider_file_changed(self, _):
+    def slider_file_changed(self, slider_value):
         self.display_image()
-        slider_value = self.ui.file_slider.value()
-        print("slider_value: {}".format(slider_value))
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
 
     def slider_file_clicked(self):
-        self.slider_file_changed(None)
+        current_slider_value = self.ui.file_slider.value()
+        self.slider_file_changed(current_slider_value)
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
@@ -160,10 +159,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
         current_slider_value = self.ui.file_slider.value()
-        print("in change slider")
-        print("  current_slider_value: {}".format(current_slider_value))
         new_row_selected = current_slider_value + offset
-        print("  new row_selected: {}".format(new_row_selected))
         self.ui.image_slider_value.setText(str(new_row_selected))
         self.ui.file_slider.setValue(new_row_selected)
         self.check_status_next_prev_image_button()
