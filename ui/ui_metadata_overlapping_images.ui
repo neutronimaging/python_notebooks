@@ -635,6 +635,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>previous_image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous_image_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>553</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>603</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>next_image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>next_image_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>378</x>
+     <y>561</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>387</x>
+     <y>594</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -662,5 +694,6 @@
   <slot>update_all_plots()</slot>
   <slot>scale_checkbox_clicked()</slot>
   <slot>metadata_checkbox_clicked()</slot>
+  <slot>slider_file_clicked()</slot>
  </slots>
 </ui>

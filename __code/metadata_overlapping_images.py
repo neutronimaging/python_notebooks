@@ -107,11 +107,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
-        # self.display_measurement_profiles()
 
     def next_image_button_clicked(self):
         self.change_slider(offset = +1)
-        # self.display_measurement_profiles()
 
     def help_button_clicked(self):
         import webbrowser
@@ -120,11 +118,15 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def closeEvent(self, event=None):
         pass
 
-    def slider_file_changed(self, index_selected):
+    def slider_file_changed(self, _):
         self.display_image()
         slider_value = self.ui.file_slider.value()
+        print("slider_value: {}".format(slider_value))
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
+
+    def slider_file_clicked(self):
+        self.slider_file_changed(None)
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
@@ -136,7 +138,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
-        o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
+        DisplayImages(parent=self, recalculate_image=recalculate_image)
 
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
@@ -155,6 +157,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.previous_image_button.setEnabled(_prev)
         self.ui.next_image_button.setEnabled(_next)
 
+    def change_slider(self, offset=+1):
+        self.ui.file_slider.blockSignals(True)
+        current_slider_value = self.ui.file_slider.value()
+        print("in change slider")
+        print("  current_slider_value: {}".format(current_slider_value))
+        new_row_selected = current_slider_value + offset
+        print("  new row_selected: {}".format(new_row_selected))
+        self.ui.image_slider_value.setText(str(new_row_selected))
+        self.ui.file_slider.setValue(new_row_selected)
+        self.check_status_next_prev_image_button()
+        self.display_image()
+        self.ui.file_slider.blockSignals(False)
 
 
 
@@ -542,127 +556,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
             pass
 
 
-    def change_slider(self, offset=+1):
-        self.ui.file_slider.blockSignals(True)
-        current_slider_value = self.ui.file_slider.value()
-        new_row_selected = current_slider_value + offset
-        self.ui.file_slider.setValue(new_row_selected)
-        self.check_status_next_prev_image_button()
-        self.display_image()
-        self.ui.file_slider.blockSignals(False)
-        self.display_profiles()
 
 
-    ## Event Handler
-    def tab_changed(self, tab_index):
-        if tab_index == 1: # display all plots
-            self.update_all_plots()
 
-    def guide_changed(self):
-        self.update_guide_table_using_guide_rois()
-        self.update_profile_rois()
-
-    def table_widget_selection_changed(self):
-        self.ui.tableWidget_2.blockSignals(True)
-        nbr_col = self.ui.tableWidget_2.columnCount()
-        nbr_row = self.ui.tableWidget_2.rowCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(full_range, False)
-        row = self.get_selected_row()
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
-        self.highlight_guide_profile_pyqt_rois(row=row)
-        self.ui.tableWidget_2.blockSignals(False)
-        self.previous_active_row = row
-
-    def table_widget_2_selection_changed(self):
-        self.ui.tableWidget.blockSignals(True)
-        nbr_col = self.ui.tableWidget.columnCount()
-        nbr_row = self.ui.tableWidget.rowCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
-        self.ui.tableWidget.setRangeSelected(full_range, False)
-        row = self.get_selected_row(source='tableWidget_2')
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-        self.ui.tableWidget.setRangeSelected(new_selection, True)
-        self.highlight_guide_profile_pyqt_rois(row=row)
-        self.ui.tableWidget.blockSignals(False)
-        self.previous_active_row = row
-
-    def table_widget_cell_changed(self, row, column):
-        self.update_guide_roi_using_guide_table(row=row)
-        self.update_profile_rois(row=row)
-        self.display_profiles()
-
-    def guide_state_changed(self, state):
-        self.remove_all_guides()
-        self.display_guides()
-        self.display_profiles()
-
-    def profile_width_changed(self, new_value):
-        self.update_profile_rois()
-        self.display_profiles()
-
-    def display_grid_clicked(self):
-        status = self.ui.grid_display_checkBox.isChecked()
-        for _widget in self.display_ui:
-            _widget.setEnabled(status)
-        self.display_image()
-
-    def grid_size_slider_clicked(self):
-        self.display_image()
-
-    def grid_size_slider_released(self):
-        self.display_image()
-
-    def grid_size_slider_moved(self, value):
-        self.display_image()
-
-    def transparency_slider_clicked(self):
-        self.display_image()
-
-    def transparency_slider_moved(self, value):
-        self.display_image()
-
-    @wait_cursor
-    def right_rotation_slow_clicked(self):
-        self.rotation_angle -= 0.1
-        self.display_image(recalculate_image=True)
-        self.display_profiles()
-
-    @wait_cursor
-    def left_rotation_slow_clicked(self):
-        self.rotation_angle += 0.1
-        self.display_image(recalculate_image=True)
-        self.display_profiles()
-
-    @wait_cursor
-    def right_rotation_fast_clicked(self):
-        self.rotation_angle -= 1
-        self.display_image(recalculate_image=True)
-        self.display_profiles()
-
-    @wait_cursor
-    def left_rotation_fast_clicked(self):
-        self.rotation_angle += 1
-        self.display_image(recalculate_image=True)
-        self.display_profiles()
-
-    def add_row_button_clicked(self):
-        selected_row = self.get_selected_row()
-        self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
-        self.insert_row(row=selected_row)
-        self.add_guide_and_profile_pyqt_roi(row=selected_row)
-        self.previous_active_row = selected_row
-        self.display_profiles()
-
-    def remove_row_button_clicked(self):
-        selected_row = self.get_selected_row()
-        self.remove_row(row=selected_row)
-        self.display_profiles()
-
-    def profile_along_axis_changed(self):
-        self.update_profile_rois()
-        self.display_profiles()
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
