@@ -128,7 +128,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
-        self.ui.scale_position_groupbox.setEnabled(status)
+        self.ui.scale_position_label.setEnabled(status)
+        self.ui.scale_position_widget.setEnabled(status)
         if status: #display scale line
             self.display_scale_pyqt_ui()
         else: # remove scale line
@@ -137,7 +138,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
-        self.ui.metadata_position_groupbox.setEnabled(status)
+        self.ui.metadata_position_label.setEnabled(status)
+        self.ui.metadata_position_widget.setEnabled(status)
         self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
 
@@ -811,6 +813,16 @@ class Initializer(object):
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
+
+        self.parent.ui.scale_position_view = pg.GraphicsView()
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(self.parent.ui.scale_position_view)
+        self.parent.ui.scale_position_widget.setLayout(layout)
+
+        self.parent.ui.metadata_position_view = pg.GraphicsView()
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(self.parent.ui.metadata_position_view)
+        self.parent.ui.metadata_position_widget.setLayout(layout)
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
