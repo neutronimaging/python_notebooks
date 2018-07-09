@@ -262,7 +262,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="comboBox_2">
+                  <widget class="QComboBox" name="scale_color_combobox">
                    <item>
                     <property name="text">
                      <string>White</string>
@@ -943,6 +943,86 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>scale_thickness</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_thickness_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>992</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1020</x>
+     <y>31</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_color_combobox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_color_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>650</x>
+     <y>214</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>811</x>
+     <y>22</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_size_spinbox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_size_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>680</x>
+     <y>152</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1019</x>
+     <y>-9</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_2</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_real_size_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>874</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>963</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_units_combobox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_units_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>983</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1267</x>
+     <y>29</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -956,5 +1036,10 @@
   <slot>select_metadata_checkbox_clicked()</slot>
   <slot>metadata_list_changed()</slot>
   <slot>scale_orientation_clicked()</slot>
+  <slot>scale_thickness_value_changed()</slot>
+  <slot>scale_color_changed()</slot>
+  <slot>scale_size_changed()</slot>
+  <slot>scale_real_size_changed()</slot>
+  <slot>scale_units_changed()</slot>
  </slots>
 </ui>

@@ -75,6 +75,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_metadata = []
     list_scale_units = ["mm", u"\u00B5m", "nm"]
 
+    scale_color = {'white': (255, 255, 255, 255, None),
+                   'red': (255, 0, 0, 255, None),
+                   'green': (0, 255, 0, 255, None),
+                   'blue': (0, 0, 255, 255, None),
+                   'black': (0, 0, 0, 255, None)}
+
+
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -162,10 +169,43 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def scale_orientation_clicked(self):
         o_init = Initializer(parent=self)
         o_init.set_scale_spinbox_max_value()
+        self.update_scale_pyqt_ui()
+
+    def scale_thickness_value_changed(self, value):
+        self.update_scale_pyqt_ui()
+
+    def scale_color_changed(self, value):
+        self.update_scale_pyqt_ui()
+
+    def scale_size_changed(self, value):
+        self.update_scale_pyqt_ui()
+
+    def scale_real_size_changed(self):
+        """update the label of the scale"""
+        pass
+
+    def scale_units_changed(self):
+        """update the units of the label"""
+        pass
 
     # ========================================================================================
 
+    def update_scale_pyqt_ui(self):
+        if self.scale_pyqt_ui:
+            self.ui.image_view.removeItem(self.scale_pyqt_ui)
+        self.display_scale_pyqt_ui()
+
+    def get_scale_color(self):
+        color_selected = self.ui.scale_color_combobox.currentText().lower()
+        return self.scale_color[color_selected]
+
     def display_scale_pyqt_ui(self):
+        try:
+            if self.ui.image_view:
+                pass
+        except:
+            return
+
         thickness = self.ui.scale_thickness.value()
         size = self.ui.scale_size_spinbox.value()
 
@@ -176,10 +216,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
         y0 = 100
 
         one_edge = [x0, y0]
-        if self.ui.scale_groupbox.isChecked():
-            other_edge = [y0, x0 + size]
+        if self.ui.scale_horizontal_orientation.isChecked():
+            other_edge = [x0+size, y0]
         else:
-            other_edge = [y0+size, x0]
+            other_edge = [x0, y0 + size]
 
         pos.append(one_edge)
         pos.append(other_edge)
@@ -188,7 +228,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         pos = np.array(pos)
         adj = np.array(adj)
 
-        line_color = (255, 255, 255, 255, thickness)
+        line_color = np.array(self.get_scale_color())
+        line_color[4] = thickness
         list_line_color = list(line_color)
         line_color =tuple(list_line_color)
         lines = np.array([line_color for n in np.arange(len(pos))],
