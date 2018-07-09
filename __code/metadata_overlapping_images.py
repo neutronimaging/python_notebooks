@@ -31,11 +31,21 @@ from __code.decorators import wait_cursor
 from __code.file_handler import make_ascii_file
 
 
+class DefaultScaleRoi:
+
+    x0 = 50
+    y0 = 50
+    height = 1
+    width = 200
+    color = [255, 255, 255]  # white
+
+
 class MetadataOverlappingImagesUi(QMainWindow):
 
     data_dict = {}
     data_dict_raw = {}
     timestamp_dict = {}
+    default_scale_roi = None
 
     rotation_angle = 0
     histogram_level = []
@@ -75,6 +85,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         # initialization
         o_initialization = Initializer(parent=self)
+        o_initialization.parameters()
         # o_initialization.timestamp_dict()
         o_initialization.table()
         o_initialization.widgets()
@@ -110,6 +121,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
+        if status: #display scale line
+            pass
+        else: # remove scale line
+            pass
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
@@ -736,6 +751,9 @@ class Initializer(object):
         list_files = self.parent.data_dict['file_name']
         self.parent.timestamp_dict = retrieve_time_stamp(list_files)
 
+    def parameters(self):
+        self.parent.default_scale_roi = DefaultScaleRoi()
+
     def table(self):
         # init the summary table
         list_files_full_name = self.parent.data_dict['file_name']
@@ -778,6 +796,13 @@ class Initializer(object):
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
+
+        default_scale_roi = self.parent.default_scale_roi
+        scale_roi = pg.RectROI([default_scale_roi.x0, default_scale_roi.y0],
+                               default_scale_roi.height,
+                               default_scale_roi.width,
+                               pen=default_scale_roi.color)
+        
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
