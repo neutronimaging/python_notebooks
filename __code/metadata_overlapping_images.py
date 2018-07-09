@@ -31,17 +31,21 @@ from __code.decorators import wait_cursor
 from __code.file_handler import make_ascii_file
 
 
-class DefaultScaleRoi:
+class ScaleSettings:
 
     x0 = 50
     y0 = 50
-
-    x1 = x0 + 100
-    y1 = y0
-
     thickness = 10
 
     color = [255, 255, 255]  # white
+
+
+class MetadataSettings:
+
+    x0 = 200
+    y0 = 200
+
+    color = [255, 255, 255] # white
 
 
 class MetadataOverlappingImagesUi(QMainWindow):
@@ -155,14 +159,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
             value = o_dict[float(key_selected)]
             self.ui.tableWidget.item(row, 1).setText("{}".format(value))
 
+    def scale_orientation_clicked(self):
+        o_init = Initializer(parent=self)
+        o_init.set_scale_spinbox_max_value()
+
     # ========================================================================================
 
     def display_scale_pyqt_ui(self):
-        scale = pg.LineSegmentROI([DefaultScaleRoi.x0, DefaultScaleRoi.y0],
-                                    [DefaultScaleRoi.x1, DefaultScaleRoi.y1],
-                                   pen='r')
-        self.ui.image_view.addItem(scale)
-        self.scale_pyqt_ui = scale
+        thickness = self.ui.scale_thickness.value()
+        size = self.ui.scale_size_spinbox.value()
+
+
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -770,7 +777,8 @@ class Initializer(object):
         self.parent.timestamp_dict = retrieve_time_stamp(list_files)
 
     def parameters(self):
-        self.parent.default_scale_roi = DefaultScaleRoi()
+        self.parent.scale_settings = ScaleSettings()
+        self.parent.metadata_settings  = MetadataSettings()
 
     def table(self):
         # init the summary table
@@ -782,8 +790,17 @@ class Initializer(object):
             self.set_item_table(row=_row, col=0, value=_file)
             self.set_item_table(row=_row, col=1, value="N/A", editable=True)
 
+    def set_scale_spinbox_max_value(self):
+        [height, width] = np.shape(self.parent.data_dict['data'][0])
+        if self.parent.ui.scale_horizontal_orientation.isChecked():
+            max_value = width
+        else:
+            max_value = height
+        self.parent.ui.scale_size_spinbox.setMaximum(max_value)
+
     def widgets(self):
 
+        # splitter
         self.parent.ui.splitter.setSizes([800, 50])
 
         # file slider
@@ -804,6 +821,15 @@ class Initializer(object):
 
         # list of scale available
         self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units)
+
+        # pixel size range
+        [height, width] = np.shape(self.parent.data_dict['data'][0])
+        self.set_scale_spinbox_max_value()
+        if self.parent.ui.scale_horizontal_orientation.isChecked():
+            max_value = width
+        else:
+            max_value = height
+        self.parent.ui.scale_size_spinbox.setValue(np.int(max_value/4))
 
     def pyqtgraph(self):
         # image

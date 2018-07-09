@@ -156,14 +156,17 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QRadioButton" name="radioButton">
+                  <widget class="QRadioButton" name="scale_horizontal_orientation">
                    <property name="text">
                     <string>horizontal</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QRadioButton" name="radioButton_2">
+                  <widget class="QRadioButton" name="scale_vertical_orientation">
                    <property name="text">
                     <string>vertical</string>
                    </property>
@@ -206,18 +209,15 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="lineEdit">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
+                  <widget class="QSpinBox" name="scale_size_spinbox">
+                   <property name="minimum">
+                    <number>1</number>
                    </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
+                   <property name="maximum">
+                    <number>10000</number>
+                   </property>
+                   <property name="value">
+                    <number>100</number>
                    </property>
                   </widget>
                  </item>
@@ -241,6 +241,9 @@
                      <width>100</width>
                      <height>16777215</height>
                     </size>
+                   </property>
+                   <property name="text">
+                    <string>1</string>
                    </property>
                   </widget>
                  </item>
@@ -308,7 +311,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QSpinBox" name="spinBox">
+                  <widget class="QSpinBox" name="scale_thickness">
                    <property name="minimum">
                     <number>1</number>
                    </property>
@@ -755,12 +758,12 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1134</x>
-     <y>663</y>
+     <x>1400</x>
+     <y>636</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
-     <y>740</y>
+     <y>668</y>
     </hint>
    </hints>
   </connection>
@@ -771,12 +774,12 @@
    <slot>help_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>64</x>
-     <y>663</y>
+     <x>76</x>
+     <y>636</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
-     <y>740</y>
+     <y>668</y>
     </hint>
    </hints>
   </connection>
@@ -787,8 +790,8 @@
    <slot>scale_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>499</x>
-     <y>42</y>
+     <x>939</x>
+     <y>52</y>
     </hint>
     <hint type="destinationlabel">
      <x>1137</x>
@@ -803,8 +806,8 @@
    <slot>metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>579</x>
-     <y>207</y>
+     <x>937</x>
+     <y>283</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -835,8 +838,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>378</x>
-     <y>595</y>
+     <x>529</x>
+     <y>591</y>
     </hint>
     <hint type="destinationlabel">
      <x>387</x>
@@ -851,8 +854,8 @@
    <slot>slider_file_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>215</x>
-     <y>593</y>
+     <x>348</x>
+     <y>588</y>
     </hint>
     <hint type="destinationlabel">
      <x>214</x>
@@ -867,8 +870,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>597</y>
+     <x>370</x>
+     <y>588</y>
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
@@ -883,12 +886,12 @@
    <slot>select_metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>548</x>
-     <y>264</y>
+     <x>685</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
      <x>668</x>
-     <y>675</y>
+     <y>668</y>
     </hint>
    </hints>
   </connection>
@@ -899,12 +902,44 @@
    <slot>metadata_list_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>673</x>
-     <y>264</y>
+     <x>1025</x>
+     <y>332</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
      <y>632</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_horizontal_orientation</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_orientation_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>686</x>
+     <y>99</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>582</x>
+     <y>24</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_vertical_orientation</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_orientation_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>767</x>
+     <y>95</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>726</x>
+     <y>25</y>
     </hint>
    </hints>
   </connection>
@@ -920,5 +955,6 @@
   <slot>slider_file_clicked()</slot>
   <slot>select_metadata_checkbox_clicked()</slot>
   <slot>metadata_list_changed()</slot>
+  <slot>scale_orientation_clicked()</slot>
  </slots>
 </ui>
