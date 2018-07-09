@@ -37,6 +37,9 @@ class ScaleSettings:
     y0 = 50
     thickness = 10
 
+    cursor_width = 10
+    cursor_height = 10
+
     color = [255, 255, 255]  # white
 
 
@@ -187,6 +190,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def scale_units_changed(self):
         """update the units of the label"""
         pass
+
+    def scale_cursor_position_changed(self):
+        cursor = self.scale_cursor_ui
+        region = cursor.getArraySlice(np.ones((100, 100)), self.ui.scale_position_item)
+        print(region)
 
     # ========================================================================================
 
@@ -915,10 +923,41 @@ class Initializer(object):
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
-        self.parent.ui.scale_position_view = pg.GraphicsView()
+
+        #### FIXME
+
+#        self.parent.ui.scale_position_view = pg.GraphicsLayoutWidget()
+        tmp = pg.GraphicsLayoutWidget()
+        # vb = self.parent.ui.scale_position_view.addViewBox(row=1, col=1)
+        vb = tmp.addViewBox(row=1, col=1)
+        img = pg.ImageItem()
+        vb.addItem(img)
+        vb.setAspectLocked(True)
+
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(self.parent.ui.scale_position_view)
+#        layout.addWidget(self.parent.ui.scale_position_view)
+        layout.addWidget(tmp)
         self.parent.ui.scale_position_widget.setLayout(layout)
+
+        scale_position = pg.RectROI([ScaleSettings.x0, ScaleSettings.y0],
+                                    [ScaleSettings.cursor_width, ScaleSettings.cursor_height],
+                                    pen='w')
+        scale_position.sigRegionChanged.connect(self.parent.scale_cursor_position_changed)
+        # self.parent.ui.scale_position_view.addItem(scale_position)
+        vb.addItem(scale_position)
+
+        list_handles = scale_position.getHandles()
+        for _handle in list_handles:
+            scale_position.removeHandle(_handle)
+        self.parent.scale_cursor_ui = scale_position
+
+
+
+
+
+
+
+
 
         self.parent.ui.metadata_position_view = pg.GraphicsView()
         layout = QtGui.QVBoxLayout()
