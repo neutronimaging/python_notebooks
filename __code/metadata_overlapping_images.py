@@ -169,7 +169,41 @@ class MetadataOverlappingImagesUi(QMainWindow):
         thickness = self.ui.scale_thickness.value()
         size = self.ui.scale_size_spinbox.value()
 
+        pos = []
+        adj = []
 
+        x0 = 100
+        y0 = 100
+
+        one_edge = [x0, y0]
+        if self.ui.scale_groupbox.isChecked():
+            other_edge = [y0, x0 + size]
+        else:
+            other_edge = [y0+size, x0]
+
+        pos.append(one_edge)
+        pos.append(other_edge)
+        adj.append([0, 1])
+
+        pos = np.array(pos)
+        adj = np.array(adj)
+
+        line_color = (255, 255, 255, 255, thickness)
+        list_line_color = list(line_color)
+        line_color =tuple(list_line_color)
+        lines = np.array([line_color for n in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+
+        scale = pg.GraphItem()
+        self.ui.image_view.addItem(scale)
+        scale.setData(pos=pos,
+                      adj=adj,
+                      pen=lines,
+                      symbol=None,
+                      pxMod=False)
+        self.scale_pyqt_ui = scale
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
