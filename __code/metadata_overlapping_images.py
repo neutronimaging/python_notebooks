@@ -128,6 +128,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
+        self.ui.scale_position_groupbox.setEnabled(status)
         if status: #display scale line
             self.display_scale_pyqt_ui()
         else: # remove scale line
@@ -136,6 +137,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
+        self.ui.metadata_position_groupbox.setEnabled(status)
         self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
 
