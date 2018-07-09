@@ -35,8 +35,12 @@ class DefaultScaleRoi:
 
     x0 = 50
     y0 = 50
-    height = 1
-    width = 200
+
+    x1 = x0 + 100
+    y1 = y0
+
+    thickness = 10
+
     color = [255, 255, 255]  # white
 
 
@@ -49,6 +53,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     rotation_angle = 0
     histogram_level = []
+
+    # scale pyqtgraph
+    scale_pyqt_ui = None
 
     # size of tables
     guide_table_width = [300, 50]
@@ -122,9 +129,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
         if status: #display scale line
-            pass
+            self.display_scale_pyqt_ui()
         else: # remove scale line
-            pass
+            if self.scale_pyqt_ui:
+                self.ui.image_view.removeItem(self.scale_pyqt_ui)
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
@@ -143,8 +151,14 @@ class MetadataOverlappingImagesUi(QMainWindow):
             value = o_dict[float(key_selected)]
             self.ui.tableWidget.item(row, 1).setText("{}".format(value))
 
-
     # ========================================================================================
+
+    def display_scale_pyqt_ui(self):
+        scale = pg.LineSegmentROI([DefaultScaleRoi.x0, DefaultScaleRoi.y0],
+                                    [DefaultScaleRoi.x1, DefaultScaleRoi.y1],
+                                   pen='r')
+        self.ui.image_view.addItem(scale)
+        self.scale_pyqt_ui = scale
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -787,7 +801,6 @@ class Initializer(object):
         # list of scale available
         self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units)
 
-
     def pyqtgraph(self):
         # image
         self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
@@ -796,13 +809,6 @@ class Initializer(object):
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
-
-        default_scale_roi = self.parent.default_scale_roi
-        scale_roi = pg.RectROI([default_scale_roi.x0, default_scale_roi.y0],
-                               default_scale_roi.height,
-                               default_scale_roi.width,
-                               pen=default_scale_roi.color)
-        
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
