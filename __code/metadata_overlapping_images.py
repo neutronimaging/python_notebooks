@@ -192,10 +192,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
         pass
 
     def scale_position_moved(self, new_value):
-        pass
+        self.update_scale_pyqt_ui()
 
     def scale_position_clicked(self):
-        pass
+        self.update_scale_pyqt_ui()
 
     def metadata_position_moved(self, new_value):
         pass
@@ -227,8 +227,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         pos = []
         adj = []
 
-        x0 = 100
-        y0 = 100
+        x0 = self.ui.scale_position_x.value()
+        y0 = self.ui.scale_position_x.maximum() - self.ui.scale_position_y.value()
 
         one_edge = [x0, y0]
         if self.ui.scale_horizontal_orientation.isChecked():
@@ -920,6 +920,12 @@ class Initializer(object):
         else:
             max_value = height
         self.parent.ui.scale_size_spinbox.setValue(np.int(max_value/4))
+
+        # metadata and scale slider positions
+        self.parent.ui.scale_position_x.setMaximum(width)
+        self.parent.ui.metadata_position_x.setMaximum(width)
+        self.parent.ui.scale_position_y.setMaximum(height)
+        self.parent.ui.metadata_position_y.setMaximum(height)
 
     def pyqtgraph(self):
         # image
