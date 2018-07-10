@@ -63,6 +63,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     # scale pyqtgraph
     scale_pyqt_ui = None
+    metadata_pyqt_ui = None
 
     # size of tables
     guide_table_width = [300, 50]
@@ -156,6 +157,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.metadata_position_frame.setEnabled(status)
         self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
+        if status: # display metadata
+            self.display_metadata_pyqt_ui()
+        else:
+            if self.metadata_pyqt_ui:
+                self.ui.image_view.removeItem(self.metadata_pyqt_ui)
 
     def select_metadata_checkbox_clicked(self, status):
         self.ui.select_metadata_combobox.setEnabled(status)
@@ -198,12 +204,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
         pass
 
     def metadata_position_moved(self, new_value):
-        pass
+        self.update_metadata_pyqt_ui()
 
     def metadata_position_clicked(self):
-        pass
+        self.update_metadata_pyqt_ui()
 
     # ========================================================================================
+
+    def update_metadata_pyqt_ui(self):
+        if self.metadata_pyqt_ui:
+            self.ui.image_view.removeItem(self.metadata_pyqt_ui)
+        self.display_metadata_pyqt_ui()
 
     def update_scale_pyqt_ui(self):
         if self.scale_pyqt_ui:
@@ -213,6 +224,24 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def get_scale_color(self):
         color_selected = self.ui.scale_color_combobox.currentText().lower()
         return self.scale_color[color_selected]
+
+    def display_metadata_pyqt_ui(self):
+        try:
+            if self.ui.image_view:
+                pass
+        except:
+            return
+
+        x0 = self.ui.metadata_position_x.value()
+        y0 = self.ui.metadata_position_y.value()
+        metadata_text = self.get_metadata_text()
+
+
+
+    def get_metadata_text(self):
+        """return the text and value of the metadata to display"""
+        return "Testing: NaN"
+
 
     def display_scale_pyqt_ui(self):
         try:
