@@ -85,6 +85,12 @@ class MetadataOverlappingImagesUi(QMainWindow):
                    'blue': (0, 0, 255, 255, None),
                    'black': (0, 0, 0, 255, None)}
 
+    html_color = {'white': "#FFF",
+                  'red': "#F00",
+                  'green': "#0F0",
+                  'blue': "#00F",
+                  'black': "#000"}
+
 
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
@@ -209,6 +215,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_position_clicked(self):
         self.update_metadata_pyqt_ui()
 
+    def metadata_color_changed(self, value):
+        self.update_metadata_pyqt_ui()
+
     # ========================================================================================
 
     def update_metadata_pyqt_ui(self):
@@ -233,15 +242,22 @@ class MetadataOverlappingImagesUi(QMainWindow):
             return
 
         x0 = self.ui.metadata_position_x.value()
-        y0 = self.ui.metadata_position_y.value()
+        y0 = self.ui.metadata_position_y.maximum() - self.ui.metadata_position_y.value()
         metadata_text = self.get_metadata_text()
+        color = self.get_metadata_color()
 
-
+        text = pg.TextItem(html='<div style="text-align=center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
+        self.ui.image_view.addItem(text)
+        text.setPos(x0, y0)
+        self.metadata_pyqt_ui = text
 
     def get_metadata_text(self):
         """return the text and value of the metadata to display"""
         return "Testing: NaN"
 
+    def get_metadata_color(self):
+        metadata_color_value = self.ui.metadata_color_combobox.currentText().lower()
+        return self.html_color[metadata_color_value]
 
     def display_scale_pyqt_ui(self):
         try:
@@ -257,7 +273,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         adj = []
 
         x0 = self.ui.scale_position_x.value()
-        y0 = self.ui.scale_position_x.maximum() - self.ui.scale_position_y.value()
+        y0 = self.ui.scale_position_y.maximum() - self.ui.scale_position_y.value()
 
         one_edge = [x0, y0]
         if self.ui.scale_horizontal_orientation.isChecked():
@@ -952,9 +968,11 @@ class Initializer(object):
 
         # metadata and scale slider positions
         self.parent.ui.scale_position_x.setMaximum(width)
+        self.parent.ui.metadata_position_x.setMinimum(0)
         self.parent.ui.metadata_position_x.setMaximum(width)
         self.parent.ui.scale_position_y.setMaximum(height)
         self.parent.ui.metadata_position_y.setMaximum(height)
+        self.parent.ui.metadata_position_y.setValue(height)
 
     def pyqtgraph(self):
         # image

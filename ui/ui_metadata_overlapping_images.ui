@@ -606,7 +606,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_3">
+                <widget class="QComboBox" name="metadata_color_combobox">
                  <item>
                   <property name="text">
                    <string>White</string>
@@ -1315,6 +1315,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>metadata_color_combobox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_color_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>638</x>
+     <y>566</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>758</x>
+     <y>641</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -1337,5 +1353,6 @@
   <slot>scale_position_clicked()</slot>
   <slot>metadata_position_moved()</slot>
   <slot>metadata_position_clicked()</slot>
+  <slot>metadata_color_changed()</slot>
  </slots>
 </ui>
