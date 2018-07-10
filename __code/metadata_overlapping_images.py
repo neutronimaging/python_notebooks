@@ -63,6 +63,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     # scale pyqtgraph
     scale_pyqt_ui = None
+    scale_legend_pyqt_ui = None
     metadata_pyqt_ui = None
 
     # size of tables
@@ -79,7 +80,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_metadata = []
     list_scale_units = ["mm", u"\u00B5m", "nm"]
 
-    scale_color = {'white': (255, 255, 255, 255, None),
+    rgb_color = {'white': (255, 255, 255, 255, None),
                    'red': (255, 0, 0, 255, None),
                    'green': (0, 255, 0, 255, None),
                    'blue': (0, 0, 255, 255, None),
@@ -228,11 +229,20 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def update_scale_pyqt_ui(self):
         if self.scale_pyqt_ui:
             self.ui.image_view.removeItem(self.scale_pyqt_ui)
+        if self.scale_legend_pyqt_ui:
+            self.ui.image_view.removeItem(self.scale_legend_pyqt_ui)
         self.display_scale_pyqt_ui()
 
-    def get_scale_color(self):
-        color_selected = self.ui.scale_color_combobox.currentText().lower()
-        return self.scale_color[color_selected]
+    def get_color(self, color_type='html', source='metadata'):
+        if source == 'metadata':
+            color_selected = self.ui.metadata_color_combobox.currentText().lower()
+        else:
+            color_selected = self.ui.scale_color_combobox.currentText().lower()
+
+        if color_type == 'html':
+            return self.html_color[color_selected]
+        else:
+            return self.rgb_color[color_selected]
 
     def display_metadata_pyqt_ui(self):
         try:
@@ -244,7 +254,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         x0 = self.ui.metadata_position_x.value()
         y0 = self.ui.metadata_position_y.maximum() - self.ui.metadata_position_y.value()
         metadata_text = self.get_metadata_text()
-        color = self.get_metadata_color()
+        color = self.get_color(source='metadata', color_type='html')
 
         text = pg.TextItem(html='<div style="text-align=center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
         self.ui.image_view.addItem(text)
@@ -255,9 +265,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
         """return the text and value of the metadata to display"""
         return "Testing: NaN"
 
-    def get_metadata_color(self):
-        metadata_color_value = self.ui.metadata_color_combobox.currentText().lower()
-        return self.html_color[metadata_color_value]
+
+    def get_scale_legend(self):
+        return "10 microns"
 
     def display_scale_pyqt_ui(self):
         try:
@@ -266,6 +276,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         except:
             return
 
+        # scale
         thickness = self.ui.scale_thickness.value()
         size = self.ui.scale_size_spinbox.value()
 
@@ -288,7 +299,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         pos = np.array(pos)
         adj = np.array(adj)
 
-        line_color = np.array(self.get_scale_color())
+        line_color = np.array(self.get_color(color_type='rgb', source='scale'))
         line_color[4] = thickness
         list_line_color = list(line_color)
         line_color =tuple(list_line_color)
@@ -305,6 +316,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
                       symbol=None,
                       pxMod=False)
         self.scale_pyqt_ui = scale
+
+        # legend
+        legend = self.get_scale_legend()
+
+
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
