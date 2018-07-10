@@ -143,7 +143,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
         self.ui.scale_position_label.setEnabled(status)
-        self.ui.scale_position_widget.setEnabled(status)
+        self.ui.scale_position_frame.setEnabled(status)
         if status: #display scale line
             self.display_scale_pyqt_ui()
         else: # remove scale line
@@ -153,7 +153,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
         self.ui.metadata_position_label.setEnabled(status)
-        self.ui.metadata_position_widget.setEnabled(status)
+        self.ui.metadata_position_frame.setEnabled(status)
         self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
 
@@ -922,47 +922,6 @@ class Initializer(object):
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
-
-
-        #### FIXME
-
-#        self.parent.ui.scale_position_view = pg.GraphicsLayoutWidget()
-        tmp = pg.GraphicsLayoutWidget()
-        # vb = self.parent.ui.scale_position_view.addViewBox(row=1, col=1)
-        vb = tmp.addViewBox(row=1, col=1)
-        img = pg.ImageItem()
-        vb.addItem(img)
-        vb.setAspectLocked(True)
-
-        layout = QtGui.QVBoxLayout()
-#        layout.addWidget(self.parent.ui.scale_position_view)
-        layout.addWidget(tmp)
-        self.parent.ui.scale_position_widget.setLayout(layout)
-
-        scale_position = pg.RectROI([ScaleSettings.x0, ScaleSettings.y0],
-                                    [ScaleSettings.cursor_width, ScaleSettings.cursor_height],
-                                    pen='w')
-        scale_position.sigRegionChanged.connect(self.parent.scale_cursor_position_changed)
-        # self.parent.ui.scale_position_view.addItem(scale_position)
-        vb.addItem(scale_position)
-
-        list_handles = scale_position.getHandles()
-        for _handle in list_handles:
-            scale_position.removeHandle(_handle)
-        self.parent.scale_cursor_ui = scale_position
-
-
-
-
-
-
-
-
-
-        self.parent.ui.metadata_position_view = pg.GraphicsView()
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(self.parent.ui.metadata_position_view)
-        self.parent.ui.metadata_position_widget.setLayout(layout)
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
