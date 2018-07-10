@@ -79,6 +79,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     list_metadata = []
     list_scale_units = ["mm", u"\u00B5m", "nm"]
+    list_scale_units = {'string': ["mm", u"\u00B5m", "nm"],
+                        'html': ["mm", "<span>&#181;m</span>", "nm"]}
 
     rgb_color = {'white': (255, 255, 255, 255, None),
                    'red': (255, 0, 0, 255, None),
@@ -198,11 +200,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def scale_real_size_changed(self):
         """update the label of the scale"""
-        pass
+        self.update_scale_pyqt_ui()
 
     def scale_units_changed(self):
-        """update the units of the label"""
-        pass
+        self.update_scale_pyqt_ui()
 
     def scale_position_moved(self, new_value):
         self.update_scale_pyqt_ui()
@@ -266,7 +267,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
         return "Testing: NaN"
 
     def get_scale_legend(self):
-        return "10 microns"
+        real_scale_value = str(self.ui.scale_real_size.text())
+        units_index_selected = self.ui.scale_units_combobox.currentIndex()
+        html_units = self.list_scale_units['html'][units_index_selected]
+        return "{} {}".format(real_scale_value, html_units)
 
     def display_scale_pyqt_ui(self):
         try:
@@ -331,8 +335,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         text.setPos(legend_x0, legend_y0)
         self.scale_legend_pyqt_ui = text
-
-
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -983,7 +985,8 @@ class Initializer(object):
             self.parent.ui.select_metadata_combobox.setVisible(False)
 
         # list of scale available
-        self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units)
+
+        self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units['string'])
 
         # pixel size range
         [height, width] = np.shape(self.parent.data_dict['data'][0])

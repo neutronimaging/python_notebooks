@@ -229,7 +229,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_2">
+                  <widget class="QLineEdit" name="scale_real_size">
                    <property name="minimumSize">
                     <size>
                      <width>100</width>
@@ -1156,7 +1156,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>lineEdit_2</sender>
+   <sender>scale_real_size</sender>
    <signal>returnPressed()</signal>
    <receiver>MainWindow</receiver>
    <slot>scale_real_size_changed()</slot>
