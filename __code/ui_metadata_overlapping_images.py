@@ -357,6 +357,14 @@ class Ui_MainWindow(object):
         self.scale_size_spinbox.valueChanged['int'].connect(MainWindow.scale_size_changed)
         self.lineEdit_2.returnPressed.connect(MainWindow.scale_real_size_changed)
         self.scale_units_combobox.currentIndexChanged['int'].connect(MainWindow.scale_units_changed)
+        self.scale_position_x.sliderMoved['int'].connect(MainWindow.scale_position_moved)
+        self.scale_position_x.sliderPressed.connect(MainWindow.scale_position_clicked)
+        self.metadata_position_x.sliderMoved['int'].connect(MainWindow.metadata_position_moved)
+        self.metadata_position_x.sliderPressed.connect(MainWindow.metadata_position_clicked)
+        self.metadata_position_y.sliderMoved['int'].connect(MainWindow.metadata_position_moved)
+        self.metadata_position_y.sliderPressed.connect(MainWindow.metadata_position_clicked)
+        self.scale_position_y.sliderMoved['int'].connect(MainWindow.scale_position_moved)
+        self.scale_position_y.sliderPressed.connect(MainWindow.scale_position_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

@@ -191,10 +191,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
         """update the units of the label"""
         pass
 
-    def scale_cursor_position_changed(self):
-        cursor = self.scale_cursor_ui
-        region = cursor.getArraySlice(np.ones((100, 100)), self.ui.scale_position_item)
-        print(region)
+    def scale_position_moved(self, new_value):
+        pass
+
+    def scale_position_clicked(self):
+        pass
+
+    def metadata_position_moved(self, new_value):
+        pass
+
+    def metadata_position_clicked(self):
+        pass
 
     # ========================================================================================
 

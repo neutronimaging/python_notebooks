@@ -1115,7 +1115,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>992</x>
-     <y>215</y>
+     <y>229</y>
     </hint>
     <hint type="destinationlabel">
      <x>1020</x>
@@ -1131,7 +1131,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>650</x>
-     <y>214</y>
+     <y>228</y>
     </hint>
     <hint type="destinationlabel">
      <x>811</x>
@@ -1147,7 +1147,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>680</x>
-     <y>152</y>
+     <y>161</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
@@ -1163,7 +1163,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>874</x>
-     <y>154</y>
+     <y>162</y>
     </hint>
     <hint type="destinationlabel">
      <x>963</x>
@@ -1179,11 +1179,139 @@
    <hints>
     <hint type="sourcelabel">
      <x>983</x>
-     <y>151</y>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>1267</x>
      <y>29</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_position_x</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_position_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1144</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1401</x>
+     <y>213</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_position_x</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_position_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1121</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1408</x>
+     <y>271</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadata_position_x</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_position_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1114</x>
+     <y>472</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1166</x>
+     <y>615</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadata_position_x</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_position_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1100</x>
+     <y>471</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1096</x>
+     <y>624</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadata_position_y</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_position_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1130</x>
+     <y>498</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1129</x>
+     <y>633</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadata_position_y</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_position_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1121</x>
+     <y>510</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1206</x>
+     <y>634</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_position_y</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_position_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1127</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1409</x>
+     <y>327</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale_position_y</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>scale_position_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1137</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1409</x>
+     <y>156</y>
     </hint>
    </hints>
   </connection>
@@ -1205,5 +1333,9 @@
   <slot>scale_size_changed()</slot>
   <slot>scale_real_size_changed()</slot>
   <slot>scale_units_changed()</slot>
+  <slot>scale_position_moved()</slot>
+  <slot>scale_position_clicked()</slot>
+  <slot>metadata_position_moved()</slot>
+  <slot>metadata_position_clicked()</slot>
  </slots>
 </ui>
