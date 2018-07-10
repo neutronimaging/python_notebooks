@@ -265,7 +265,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
         """return the text and value of the metadata to display"""
         return "Testing: NaN"
 
-
     def get_scale_legend(self):
         return "10 microns"
 
@@ -289,8 +288,14 @@ class MetadataOverlappingImagesUi(QMainWindow):
         one_edge = [x0, y0]
         if self.ui.scale_horizontal_orientation.isChecked():
             other_edge = [x0+size, y0]
+            angle = 0
+            legend_x0 = x0
+            legend_y0 = y0
         else:
             other_edge = [x0, y0 + size]
+            angle = 90
+            legend_x0 = x0
+            legend_y0 = y0 + np.int(size)
 
         pos.append(one_edge)
         pos.append(other_edge)
@@ -319,6 +324,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         # legend
         legend = self.get_scale_legend()
+        color = self.get_color(source='scale', color_type='html')
+        text = pg.TextItem(html='<div style="text-align=center"><span style="color: ' + color + ';">' + legend + '</span></div>',
+                           angle=angle)
+        self.ui.image_view.addItem(text)
+
+        text.setPos(legend_x0, legend_y0)
+        self.scale_legend_pyqt_ui = text
 
 
 
