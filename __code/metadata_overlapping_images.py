@@ -26,10 +26,8 @@ except AttributeError:
         return s
 
 from __code.color import  Color
-from __code.file_handler import retrieve_time_stamp, make_ascii_file
+from __code.file_handler import retrieve_time_stamp
 from __code.ui_metadata_overlapping_images import Ui_MainWindow as UiMainWindow
-from __code.decorators import wait_cursor
-from __code.file_handler import make_ascii_file
 
 
 class ScaleSettings:
@@ -245,7 +243,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
             self.ui.image_view.removeItem(self.scale_pyqt_ui)
         if self.scale_legend_pyqt_ui:
             self.ui.image_view.removeItem(self.scale_legend_pyqt_ui)
-        self.display_scale_pyqt_ui()
+        self.display_scale_pyqt_ui(view=self.ui.image_view)
 
     def get_color(self, color_type='html', source='metadata'):
         if source == 'metadata':
@@ -285,12 +283,16 @@ class MetadataOverlappingImagesUi(QMainWindow):
         html_units = self.list_scale_units['html'][units_index_selected]
         return "{} {}".format(real_scale_value, html_units)
 
-    def display_scale_pyqt_ui(self):
-        try:
-            if self.ui.image_view:
-                pass
-        except:
-            return
+    def display_scale_pyqt_ui(self, view=None, save_it=True):
+
+        if view is None:
+            view = self.ui.image_view
+
+            try:
+                if view:
+                    pass
+            except:
+                return
 
         # scale
         thickness = self.ui.scale_thickness.value()
@@ -331,23 +333,26 @@ class MetadataOverlappingImagesUi(QMainWindow):
                                 ('width', float)])
 
         scale = pg.GraphItem()
-        self.ui.image_view.addItem(scale)
+        view.addItem(scale)
         scale.setData(pos=pos,
                       adj=adj,
                       pen=lines,
                       symbol=None,
                       pxMod=False)
-        self.scale_pyqt_ui = scale
+        if save_it:
+            self.scale_pyqt_ui = scale
 
         # legend
         legend = self.get_scale_legend()
         color = self.get_color(source='scale', color_type='html')
-        text = pg.TextItem(html='<div style="text-align=center"><span style="color: ' + color + ';">' + legend + '</span></div>',
+        text = pg.TextItem(html='<div style="text-align=center"><span style="color: ' + color + ';">' + \
+                                legend + '</span></div>',
                            angle=angle)
-        self.ui.image_view.addItem(text)
+        view.addItem(text)
 
         text.setPos(legend_x0, legend_y0)
-        self.scale_legend_pyqt_ui = text
+        if save_it:
+            self.scale_legend_pyqt_ui = text
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""
@@ -399,372 +404,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
 
 
-
-
-
-    # main methods
-    def remove_all_guides(self):
-        # remove all teh guids
-        for _roi in self.list_guide_pyqt_roi:
-            self.ui.image_view.removeItem(_roi)
-
-    def display_guides(self):
-        # check if we want to display this guide or not
-        nbr_row = self.ui.tableWidget.rowCount()
-        for row in np.arange(nbr_row):
-            _guide = self.list_guide_pyqt_roi[row]
-            _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
-            if _widget.isChecked():
-                self.ui.image_view.addItem(_guide)
-
-    def remove_all_profiles(self):
-        for _roi in self.list_profile_pyqt_roi:
-            self.ui.image_view.removeItem(_roi)
-
-    def display_profiles(self):
-        nbr_row = self.ui.tableWidget.rowCount()
-        if nbr_row == 0:
-            return
-
-        image = self.live_image
-        color = Color()
-        list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
-
-        self.ui.profile_view.clear()
-        try:
-            self.ui.profile_view.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
-
-        self.legend = self.ui.profile_view.addLegend()
-
-        for _row in np.arange(nbr_row):
-            [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-            _label = ' Profile #{}'.format(_row+1)
-            _color = list_rgb_profile_color[_row]
-            self.ui.profile_view.plot(x_axis, profile,
-                                        name=_label,
-                                        pen=_color)
-
-    def update_all_plots(self):
-        list_index_file_selected = self.get_all_plots_files_index_selected()
-        list_index_profile_selected = self.get_all_plots_profiles_selected()
-        nbr_profile = len(list_index_profile_selected)
-        nbr_file_selected = len(list_index_file_selected)
-        color = Color()
-        list_rgb_profile_color = color.get_list_rgb(nbr_color=(nbr_profile * nbr_file_selected))
-        self.ui.all_plots_view.clear()
-        if nbr_profile == 0:
-            return
-
-        try:
-            self.ui.all_plots_view.scene().removeItem(self.all_plots_legend)
-        except Exception as e:
-            print(e)
-
-        self.all_plots_legend = self.ui.all_plots_view.addLegend()
-
-        for _color_index_file, _index_file in enumerate(list_index_file_selected):
-            _data = self.data_dict['data'][_index_file]
-            for _color_index_profile, _index_profile in enumerate(list_index_profile_selected):
-                legend = "File #{} - Profile #{}".format(_index_file, _index_profile)
-                _color = list_rgb_profile_color[_color_index_file + _color_index_profile * nbr_file_selected]
-                [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
-                self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
-
-
-    def remove_row(self, row=-1):
-
-        if row == -1:
-            return
-
-        # maint tab
-        self.ui.tableWidget.removeRow(row)
-        self.ui.tableWidget_2.removeRow(row)
-        self.ui.image_view.removeItem(self.list_guide_pyqt_roi[row])
-        self.list_guide_pyqt_roi.remove(self.list_guide_pyqt_roi[row])
-        self.ui.image_view.removeItem(self.list_profile_pyqt_roi[row])
-        self.list_profile_pyqt_roi.remove(self.list_profile_pyqt_roi[row])
-        # self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
-
-        # all plots tab
-        self.ui.all_plots_profiles_table.removeRow(row)
-        self.rename_all_plots_profiles_table()
-
-        nbr_row = self.ui.tableWidget.rowCount()
-        if row == nbr_row:
-            row -= 1
-
-        if nbr_row > 0:
-            nbr_col = self.ui.tableWidget.columnCount()
-            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-            self.ui.tableWidget.setRangeSelected(new_selection, True)
-            new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
-            self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
-
-
-    def update_guide_roi_using_guide_table(self, row=-1):
-        [x0, y0, width, height] = self.get_item_row(row=row)
-        roi_ui = self.list_guide_pyqt_roi[row]
-        roi_ui.blockSignals(True)
-        roi_ui.setPos((x0, y0))
-        roi_ui.setSize((width, height))
-        roi_ui.blockSignals(False)
-
-    def update_profile_rois(self, row=-1):
-        if row == -1: # update all of them
-
-            # # remove all profile rois
-            # self.list_profile_pyqt_roi = list()
-            # for _profile_roi in self.list_profile_pyqt_roi:
-            #     self.ui.image_view.removeItem(_profile_roi)
-
-            nbr_row = self.ui.tableWidget.rowCount()
-            for _row in np.arange(nbr_row):
-                self.update_profile_rois(row=_row)
-
-        else:
-            self.update_profile_pyqt_roi(row=row)
-
-    def is_row_enabled(self, row=-1):
-        """check if the first column (enabled widget) is checked"""
-        if row == -1:
-            return None
-        _widget = self.ui.tableWidget.cellWidget(row, 0).children()[1]
-        if _widget.isChecked():
-            return True
-        return False
-
-    def update_guide_table_using_guide_rois(self):
-        for _row, _roi in enumerate(self.list_guide_pyqt_roi):
-            if self.is_row_enabled(row=_row):
-                region = _roi.getArraySlice(self.live_image,
-                                            self.ui.image_view.imageItem)
-
-                x0 = region[0][0].start
-                x1 = region[0][0].stop
-                y0 = region[0][1].start
-                y1 = region[0][1].stop
-
-                width = np.abs(x1 - x0)-1
-                height = np.abs(y1 - y0)-1
-
-                self.set_item_main_table(row=_row, col=1, value=str(x0))
-                self.set_item_main_table(row=_row, col=2, value=str(y0))
-                self.set_item_main_table(row=_row, col=3, value=str(width))
-                self.set_item_main_table(row=_row, col=4, value=str(height))
-
-    def add_guide_and_profile_pyqt_roi(self, row=-1):
-        """add the pyqtgraph roi guide and profiles"""
-        o_profile = GuideAndProfileRoisHandler(parent=self, row=row)
-        o_profile.add()
-
-    def update_profile_pyqt_roi(self, row=-1):
-        o_profile = GuideAndProfileRoisHandler(parent=self, row=row)
-        o_profile.update()
-
-    def insert_row(self, row=-1):
-        if row == -1:
-            row = 0
-
-        self.ui.tableWidget.blockSignals(True)
-        default_values = self.default_guide_roi
-
-        self.ui.tableWidget.insertRow(row)
-        self.ui.tableWidget.setRowHeight(row, self.guide_table_height)
-
-        self.set_item_main_table(row=row, col=0, value=default_values['isChecked'])
-        self.set_item_main_table(row=row, col=1, value=default_values['x0'])
-        self.set_item_main_table(row=row, col=2, value=default_values['y0'])
-        self.set_item_main_table(row=row, col=3, value=default_values['width'])
-        self.set_item_main_table(row=row, col=4, value=default_values['height'])
-
-        # select new entry
-        nbr_row = self.ui.tableWidget.rowCount()
-        nbr_col = self.ui.tableWidget.columnCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
-        self.ui.tableWidget.setRangeSelected(full_range, False)
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-        self.ui.tableWidget.setRangeSelected(new_selection, True)
-        self.ui.tableWidget.blockSignals(False)
-
-        self.ui.tableWidget_2.blockSignals(True)
-        self.ui.tableWidget_2.insertRow(row)
-        self.ui.tableWidget_2.setRowHeight(row, self.guide_table_height)
-        self.set_item_profile_table(row=row)
-
-        # select new entry
-        nbr_col = self.ui.tableWidget_2.columnCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(full_range, False)
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
-        self.ui.tableWidget_2.blockSignals(False)
-
-        # all plots tab
-        self.ui.all_plots_profiles_table.blockSignals(True)
-        self.ui.all_plots_profiles_table.insertRow(row)
-        self.set_item_all_plots_profile_table(row=row)
-        self.ui.all_plots_profiles_table.blockSignals(False)
-        self.rename_all_plots_profiles_table()
-
-    def rename_all_plots_profiles_table(self):
-        """rename all the profile name"""
-        nbr_row = self.ui.tableWidget.rowCount()
-        for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText("Profile # {}".format(_row+1))
-
-    # setter
-    def set_item_all_plots_profile_table(self, row=0):
-        item = QtGui.QTableWidgetItem("Profile # {}".format(row))
-        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-        self.ui.all_plots_profiles_table.setItem(row, 0, item)
-
-    def set_item_profile_table(self, row=0):
-        spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        widget = QtGui.QComboBox()
-        widget.addItems(self.default_profile_width_values)
-        widget.blockSignals(True)
-        widget.currentIndexChanged.connect(self.profile_width_changed)
-        spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        hori_layout = QtGui.QHBoxLayout()
-        hori_layout.addItem(spacerItem_left)
-        hori_layout.addWidget(widget)
-        hori_layout.addItem(spacerItem_right)
-        cell_widget = QtGui.QWidget()
-        cell_widget.setLayout(hori_layout)
-        self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
-        widget.blockSignals(False)
-
-    def set_item_main_table(self, row=0, col=0, value=''):
-        if col == 0:
-            spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            widget = QtGui.QCheckBox()
-            widget.blockSignals(True)
-            self.list_table_widget_checkbox.insert(row, widget)
-            widget.stateChanged.connect(self.guide_state_changed)
-            spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            hori_layout = QtGui.QHBoxLayout()
-            hori_layout.addItem(spacerItem_left)
-            hori_layout.addWidget(widget)
-            hori_layout.addItem(spacerItem_right)
-            cell_widget = QtGui.QWidget()
-            cell_widget.setLayout(hori_layout)
-            if value is True:
-                widget.setCheckState(QtCore.Qt.Checked)
-            else:
-                widget.setCheckState(QtCore.Qt.Unchecked)
-            self.ui.tableWidget.setCellWidget(row, col, cell_widget)
-            widget.blockSignals(False)
-        else:
-            item = QtGui.QTableWidgetItem(str(value))
-            self.ui.tableWidget.setItem(row, col, item)
-
-    def get_profile_dimensions(self, row=-1):
-        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
-        [x0, y0, width, height] = self.get_item_row(row=row)
-        delta_profile = self.get_profile_width(row=row)
-
-        if is_x_profile_direction:
-            x_left = x0
-            x_right = x0 + width
-
-            profile_center = y0 + np.abs(np.int((height)/2.))
-            y_top = profile_center - delta_profile
-            y_bottom = profile_center + delta_profile
-
-        else:
-            profile_center = x0 + np.abs(np.int((width) / 2.))
-            x_left = profile_center - delta_profile
-            x_right = profile_center + delta_profile
-
-            y_top = y0
-            y_bottom = y0 + height
-
-        Profile = collections.namedtuple('Profile', ['x_left', 'x_right', 'y_top', 'y_bottom', 'profile_center'])
-        result = Profile(x_left, x_right, y_top, y_bottom, profile_center)
-        return result
-
-    def get_profile(self, image=[], profile_roi_row=-1):
-        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
-
-        profile_dimension = self.get_profile_dimensions(row=profile_roi_row)
-        x_left = profile_dimension.x_left
-        x_right = profile_dimension.x_right
-        y_top = profile_dimension.y_top
-        y_bottom = profile_dimension.y_bottom
-
-        if is_x_profile_direction:
-            mean_axis = 1
-            x_axis = np.arange(x_left, x_right)
-
-        else:
-            mean_axis = 0
-            x_axis = np.arange(y_top, y_bottom)
-
-        _data = image[x_left: x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
-        profile = np.mean(_data, axis=mean_axis)
-        return [x_axis, profile]
-
-    def get_profile_width(self, row=0):
-        _widget = self.ui.tableWidget_2.cellWidget(row, 0).children()[1]
-        return np.int(str(_widget.currentText()))
-
-    def get_item_row(self, row=0):
-        x0 = np.int(str(self.ui.tableWidget.item(row, 1).text()))
-        y0 = np.int(str(self.ui.tableWidget.item(row, 2).text()))
-        width = np.int(str(self.ui.tableWidget.item(row, 3).text()))
-        height = np.int(str(self.ui.tableWidget.item(row, 4).text()))
-        return (x0, y0, width, height)
-
-    def get_selected_row(self, source='tableWidget'):
-        if source == 'tableWidget':
-            ui = self.ui.tableWidget
-        else:
-            ui = self.ui.tableWidget_2
-        selection = ui.selectedRanges()
-        if selection:
-            top_row = selection[0].topRow()
-            return top_row
-        else:
-            return -1
-
-    def __create_list_from_selection(self, selection):
-        list_row_selected = []
-        for _selection in selection:
-            top_row = _selection.topRow()
-            bottom_row = _selection.bottomRow()
-            for _row in np.arange(top_row, bottom_row+1):
-                list_row_selected.append(_row)
-        return list_row_selected
-
-    def get_all_plots_profiles_selected(self):
-        selection = self.ui.all_plots_profiles_table.selectedRanges()
-        return self.__create_list_from_selection(selection)
-
-    def get_all_plots_files_index_selected(self):
-        selection = self.ui.all_plots_file_name_table.selectedRanges()
-        return self.__create_list_from_selection(selection)
-
-    def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
-        if row == -1:
-            return
-        _guide_ui = self.list_guide_pyqt_roi[row]
-        _guide_ui.setPen(self.default_guide_roi['color_' + status])
-
-    def highlight_guide_profile_pyqt_rois(self, row=-1):
-        """When user click a row in the table, the correspoinding ROI will be activated and ots
-        color will change. The old activated guide and profile will then be deactivated and color will
-        change as well according to the color definition found in the self.default_guide_roi dictionary"""
-        previous_active_row = self.previous_active_row
-        if previous_active_row == -1:
-            return
-
-        try:
-            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
-            self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
-        except:
-            pass
 
 
 
