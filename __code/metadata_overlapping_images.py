@@ -236,6 +236,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def update_metadata_pyqt_ui(self):
         if self.metadata_pyqt_ui:
             self.ui.image_view.removeItem(self.metadata_pyqt_ui)
+        try:
+            if self.ui.image_view:
+                pass
+        except:
+            return
         self.display_metadata_pyqt_ui()
 
     def update_scale_pyqt_ui(self):
@@ -261,12 +266,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
         else:
             return self.rgb_color[color_selected]
 
-    def display_metadata_pyqt_ui(self):
+    def display_metadata_pyqt_ui(self, view=None, save_it=True):
+
+        if view is None:
+            view = self.ui.image_view
+
         try:
-            if self.ui.image_view:
+            if view:
                 pass
         except:
             return
+
 
         x0 = self.ui.metadata_position_x.value()
         y0 = self.ui.metadata_position_y.maximum() - self.ui.metadata_position_y.value()
@@ -274,7 +284,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         color = self.get_color(source='metadata', color_type='html')
 
         text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
-        self.ui.image_view.addItem(text)
+        view.addItem(text)
         text.setPos(x0, y0)
         self.metadata_pyqt_ui = text
 
@@ -454,61 +464,7 @@ class ExportImages(object):
             if self.parent.ui.scale_checkbox.isChecked():
 
                 self.parent.display_scale_pyqt_ui(view=imagewindow, save_it=False)
-
-                # # scale
-                # thickness = self.parent.ui.scale_thickness.value()
-                # size = self.parent.ui.scale_size_spinbox.value()
-                #
-                # pos = []
-                # adj = []
-                #
-                # x0 = self.parent.ui.scale_position_x.value()
-                # y0 = self.parent.ui.scale_position_y.maximum() - self.parent.ui.scale_position_y.value()
-                #
-                # one_edge = [x0, y0]
-                # if self.parent.ui.scale_horizontal_orientation.isChecked():
-                #     other_edge = [x0 + size, y0]
-                #     angle = 0
-                #     legend_x0 = x0
-                #     legend_y0 = y0
-                # else:
-                #     other_edge = [x0, y0 + size]
-                #     angle = 90
-                #     legend_x0 = x0
-                #     legend_y0 = y0 + np.int(size)
-                #
-                # pos.append(one_edge)
-                # pos.append(other_edge)
-                # adj.append([0, 1])
-                #
-                # pos = np.array(pos)
-                # adj = np.array(adj)
-                #
-                # line_color = np.array(self.parent.get_color(color_type='rgb', source='scale'))
-                # line_color[4] = thickness
-                # list_line_color = list(line_color)
-                # line_color = tuple(list_line_color)
-                # lines = np.array([line_color for n in np.arange(len(pos))],
-                #                  dtype=[('red', np.ubyte), ('green', np.ubyte),
-                #                         ('blue', np.ubyte), ('alpha', np.ubyte),
-                #                         ('width', float)])
-                #
-                # scale = pg.GraphItem()
-                # imagewindow.addItem(scale)
-                # scale.setData(pos=pos,
-                #               adj=adj,
-                #               pen=lines,
-                #               symbol=None,
-                #               pxMod=False)
-                #
-                # # legend
-                # legend = self.parent.get_scale_legend()
-                # color = self.parent.get_color(source='scale', color_type='html')
-                # text = pg.TextItem(
-                #     html='<div style="text-align=center"><span style="color: ' + color + ';">' + legend + '</span></div>',
-                #     angle=angle)
-                # imagewindow.addItem(text)
-                # text.setPos(legend_x0, legend_y0)
+                self.parent.display_metadata_pyqt_ui(view=imagewindow, save_it=False)
 
             exporter = pg.exporters.ImageExporter(imagewindow.view)
 
