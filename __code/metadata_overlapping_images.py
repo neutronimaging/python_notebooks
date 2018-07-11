@@ -297,7 +297,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
         metadata_units = str(self.ui.manual_metadata_units.text())
         slider_index = self.ui.file_slider.value()
         metadata_value = str(self.ui.tableWidget.item(slider_index, 1).text())
-        return "{}: {} {}".format(metadata_name, metadata_value, metadata_units)
+        if metadata_name.strip() == '':
+            return "{} {}".format(metadata_value, metadata_units)
+        else:
+            return "{}: {} {}".format(metadata_name, metadata_value, metadata_units)
 
     def get_scale_legend(self):
         real_scale_value = str(self.ui.scale_real_size.text())

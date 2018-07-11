@@ -374,6 +374,7 @@ class Ui_MainWindow(object):
         self.scale_position_y.sliderPressed.connect(MainWindow.scale_position_clicked)
         self.metadata_color_combobox.currentIndexChanged['int'].connect(MainWindow.metadata_color_changed)
         self.manual_metadata_name.returnPressed.connect(MainWindow.metadata_name_return_pressed)
+        self.manual_metadata_units.returnPressed.connect(MainWindow.metadata_name_return_pressed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
