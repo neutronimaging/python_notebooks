@@ -6,6 +6,7 @@ import os
 import copy
 import collections
 import pyqtgraph as pg
+import pyqtgraph.exporters
 from skimage import transform
 from PIL import Image
 
@@ -792,9 +793,23 @@ class ExportImages(object):
 
     def run(self):
 
+        imagewindow = pg.image()
+
         for _index, _file in enumerate(self.parent.data_dict['file_name']):
             output_file_name = self._create_output_file_name(file=_file)
-            print(output_file_name)
+            data = self.parent.data_dict['data'][_index]
+
+            img = pg.ImageItem(data)
+            imagewindow.clear()
+            imagewindow.addItem(img)
+
+            exporter = pg.exporters.ImageExporter(imagewindow.view)
+
+            exporter.params.param('width').setValue(2024, blockSignal=exporter.widthChanged)
+            exporter.params.param('height').setValue(2014, blockSignal=exporter.heightChanged)
+
+            exporter.export(output_file_name)
+
 
         display(HTML("Exported Images in Folder {}".format(self.export_folder)))
 
