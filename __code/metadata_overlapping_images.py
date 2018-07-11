@@ -118,7 +118,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         # initialization
         o_initialization = Initializer(parent=self)
         o_initialization.parameters()
-        # o_initialization.timestamp_dict()
+        o_initialization.statusbar()
         o_initialization.table()
         o_initialization.widgets()
         o_initialization.pyqtgraph()
@@ -794,13 +794,18 @@ class ExportImages(object):
     def run(self):
 
         imagewindow = pg.image()
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+
+        self.parent.eventProgress.setMinimum(1)
+        self.parent.eventProgress.setMaximum(len(self.parent.data_dict['file_name']))
+        self.parent.eventProgress.setValue(1)
+        self.parent.eventProgress.setVisible(True)
 
         for _index, _file in enumerate(self.parent.data_dict['file_name']):
             output_file_name = self._create_output_file_name(file=_file)
             data = self.parent.data_dict['data'][_index]
 
             img = pg.ImageItem(data)
-            imagewindow.clear()
             imagewindow.addItem(img)
             if self.parent.ui.scale_checkbox.isChecked():
 
@@ -865,12 +870,16 @@ class ExportImages(object):
             exporter.params.param('height').setValue(2014, blockSignal=exporter.heightChanged)
 
             exporter.export(output_file_name)
+            imagewindow.clear()
+            self.parent.eventProgress.setValue(_index+2)
+            QtGui.QGuiApplication.processEvents()
 
         imagewindow.close()
         QtGui.QGuiApplication.processEvents()
 
         display(HTML("Exported Images in Folder {}".format(self.export_folder)))
-
+        self.parent.eventProgress.setVisible(False)
+        QApplication.restoreOverrideCursor()
 
 
 class Initializer(object):
@@ -885,6 +894,13 @@ class Initializer(object):
     def parameters(self):
         self.parent.scale_settings = ScaleSettings()
         self.parent.metadata_settings  = MetadataSettings()
+
+    def statusbar(self):
+        self.parent.eventProgress = QtGui.QProgressBar(self.parent.ui.statusbar)
+        self.parent.eventProgress.setMinimumSize(300, 20)
+        self.parent.eventProgress.setMaximumSize(300, 20)
+        self.parent.eventProgress.setVisible(False)
+        self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def table(self):
         # init the summary table
