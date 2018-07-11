@@ -5,6 +5,7 @@ import numpy as np
 import os
 import copy
 import collections
+import pandas as pd
 import pyqtgraph as pg
 import pyqtgraph.exporters
 from skimage import transform
@@ -25,7 +26,7 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
-from __code.color import  Color
+
 from __code.file_handler import retrieve_time_stamp
 from __code.ui_metadata_overlapping_images import Ui_MainWindow as UiMainWindow
 
@@ -184,6 +185,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
             value = o_dict[float(key_selected)]
             self.ui.tableWidget.item(row, 1).setText("{}".format(value))
 
+        self.update_metadata_pyqt_ui()
+
     def scale_orientation_clicked(self):
         o_init = Initializer(parent=self)
         o_init.set_scale_spinbox_max_value()
@@ -233,6 +236,20 @@ class MetadataOverlappingImagesUi(QMainWindow):
             o_export = ExportImages(parent=self,
                                     export_folder=_export_folder)
             o_export.run()
+
+    def import_table_pressed(self):
+        _table_file = QFileDialog.getOpenFileName(self,
+                                                  directory=self.working_dir,
+                                                  caption="Select Input File")
+        QtGui.QGuiApplication.processEvents()
+
+        if type(_table_file) is tuple:
+            _table_file = _table_file[0]
+
+        if _table_file:
+            o_import = TableLoader(parent=self,
+                                   filename=str(_table_file))
+            o_import.run()
 
     # ========================================================================================
 
@@ -624,6 +641,22 @@ class DisplayImages(object):
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
 
+class TableLoader:
 
+    table = {}
 
+    def __init__(self, parent=None, filename=''):
+        self.parent = parent
+        self.filename = filename
 
+    def run(self):
+        table = pd.read_csv(self.filename,
+                            sep=',',
+                            comment='#',
+                            names=["filename", "metadata"])
+        table_dict = {}
+        for _row in table.values:
+            _key, _value = _row
+            table_dict[_key] = _row
+
+        self.table = table_dict

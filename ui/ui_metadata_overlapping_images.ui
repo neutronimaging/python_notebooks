@@ -106,7 +106,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -660,6 +660,13 @@
                  </property>
                 </spacer>
                </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_2">
+                 <property name="text">
+                  <string>Import Table ...</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>
@@ -967,7 +974,7 @@
    <slot>scale_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>939</x>
+     <x>906</x>
      <y>52</y>
     </hint>
     <hint type="destinationlabel">
@@ -983,8 +990,8 @@
    <slot>metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>937</x>
-     <y>283</y>
+     <x>904</x>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -1015,7 +1022,7 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>529</x>
+     <x>496</x>
      <y>591</y>
     </hint>
     <hint type="destinationlabel">
@@ -1031,7 +1038,7 @@
    <slot>slider_file_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>348</x>
+     <x>337</x>
      <y>588</y>
     </hint>
     <hint type="destinationlabel">
@@ -1047,7 +1054,7 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>370</x>
+     <x>337</x>
      <y>588</y>
     </hint>
     <hint type="destinationlabel">
@@ -1063,8 +1070,8 @@
    <slot>select_metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>685</x>
-     <y>327</y>
+     <x>652</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
      <x>668</x>
@@ -1079,8 +1086,8 @@
    <slot>metadata_list_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1025</x>
-     <y>332</y>
+     <x>992</x>
+     <y>346</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -1095,8 +1102,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>686</x>
-     <y>99</y>
+     <x>681</x>
+     <y>110</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -1111,8 +1118,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>767</x>
-     <y>95</y>
+     <x>758</x>
+     <y>110</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -1159,8 +1166,8 @@
    <slot>scale_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>680</x>
-     <y>161</y>
+     <x>669</x>
+     <y>175</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
@@ -1271,8 +1278,8 @@
    <slot>metadata_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1130</x>
-     <y>498</y>
+     <x>1104</x>
+     <y>518</y>
     </hint>
     <hint type="destinationlabel">
      <x>1129</x>
@@ -1287,8 +1294,8 @@
    <slot>metadata_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1121</x>
-     <y>510</y>
+     <x>1104</x>
+     <y>518</y>
     </hint>
     <hint type="destinationlabel">
      <x>1206</x>
@@ -1303,8 +1310,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1127</x>
-     <y>221</y>
+     <x>1106</x>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1319,8 +1326,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1137</x>
-     <y>207</y>
+     <x>1106</x>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1351,8 +1358,8 @@
    <slot>metadata_name_return_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>787</x>
-     <y>370</y>
+     <x>761</x>
+     <y>378</y>
     </hint>
     <hint type="destinationlabel">
      <x>796</x>
@@ -1373,6 +1380,22 @@
     <hint type="destinationlabel">
      <x>913</x>
      <y>622</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>import_table_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>951</x>
+     <y>564</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1008</x>
+     <y>644</y>
     </hint>
    </hints>
   </connection>
@@ -1400,5 +1423,6 @@
   <slot>metadata_position_clicked()</slot>
   <slot>metadata_color_changed()</slot>
   <slot>metadata_name_return_pressed()</slot>
+  <slot>import_table_pressed()</slot>
  </slots>
 </ui>
