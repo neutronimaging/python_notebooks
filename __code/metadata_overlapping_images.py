@@ -243,6 +243,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
             self.ui.image_view.removeItem(self.scale_pyqt_ui)
         if self.scale_legend_pyqt_ui:
             self.ui.image_view.removeItem(self.scale_legend_pyqt_ui)
+        try:
+            if self.ui.image_view:
+                pass
+        except:
+            return
         self.display_scale_pyqt_ui(view=self.ui.image_view)
 
     def get_color(self, color_type='html', source='metadata'):
@@ -448,60 +453,62 @@ class ExportImages(object):
             imagewindow.addItem(img)
             if self.parent.ui.scale_checkbox.isChecked():
 
-                # scale
-                thickness = self.parent.ui.scale_thickness.value()
-                size = self.parent.ui.scale_size_spinbox.value()
+                self.parent.display_scale_pyqt_ui(view=imagewindow, save_it=False)
 
-                pos = []
-                adj = []
-
-                x0 = self.parent.ui.scale_position_x.value()
-                y0 = self.parent.ui.scale_position_y.maximum() - self.parent.ui.scale_position_y.value()
-
-                one_edge = [x0, y0]
-                if self.parent.ui.scale_horizontal_orientation.isChecked():
-                    other_edge = [x0 + size, y0]
-                    angle = 0
-                    legend_x0 = x0
-                    legend_y0 = y0
-                else:
-                    other_edge = [x0, y0 + size]
-                    angle = 90
-                    legend_x0 = x0
-                    legend_y0 = y0 + np.int(size)
-
-                pos.append(one_edge)
-                pos.append(other_edge)
-                adj.append([0, 1])
-
-                pos = np.array(pos)
-                adj = np.array(adj)
-
-                line_color = np.array(self.parent.get_color(color_type='rgb', source='scale'))
-                line_color[4] = thickness
-                list_line_color = list(line_color)
-                line_color = tuple(list_line_color)
-                lines = np.array([line_color for n in np.arange(len(pos))],
-                                 dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                        ('blue', np.ubyte), ('alpha', np.ubyte),
-                                        ('width', float)])
-
-                scale = pg.GraphItem()
-                imagewindow.addItem(scale)
-                scale.setData(pos=pos,
-                              adj=adj,
-                              pen=lines,
-                              symbol=None,
-                              pxMod=False)
-
-                # legend
-                legend = self.parent.get_scale_legend()
-                color = self.parent.get_color(source='scale', color_type='html')
-                text = pg.TextItem(
-                    html='<div style="text-align=center"><span style="color: ' + color + ';">' + legend + '</span></div>',
-                    angle=angle)
-                imagewindow.addItem(text)
-                text.setPos(legend_x0, legend_y0)
+                # # scale
+                # thickness = self.parent.ui.scale_thickness.value()
+                # size = self.parent.ui.scale_size_spinbox.value()
+                #
+                # pos = []
+                # adj = []
+                #
+                # x0 = self.parent.ui.scale_position_x.value()
+                # y0 = self.parent.ui.scale_position_y.maximum() - self.parent.ui.scale_position_y.value()
+                #
+                # one_edge = [x0, y0]
+                # if self.parent.ui.scale_horizontal_orientation.isChecked():
+                #     other_edge = [x0 + size, y0]
+                #     angle = 0
+                #     legend_x0 = x0
+                #     legend_y0 = y0
+                # else:
+                #     other_edge = [x0, y0 + size]
+                #     angle = 90
+                #     legend_x0 = x0
+                #     legend_y0 = y0 + np.int(size)
+                #
+                # pos.append(one_edge)
+                # pos.append(other_edge)
+                # adj.append([0, 1])
+                #
+                # pos = np.array(pos)
+                # adj = np.array(adj)
+                #
+                # line_color = np.array(self.parent.get_color(color_type='rgb', source='scale'))
+                # line_color[4] = thickness
+                # list_line_color = list(line_color)
+                # line_color = tuple(list_line_color)
+                # lines = np.array([line_color for n in np.arange(len(pos))],
+                #                  dtype=[('red', np.ubyte), ('green', np.ubyte),
+                #                         ('blue', np.ubyte), ('alpha', np.ubyte),
+                #                         ('width', float)])
+                #
+                # scale = pg.GraphItem()
+                # imagewindow.addItem(scale)
+                # scale.setData(pos=pos,
+                #               adj=adj,
+                #               pen=lines,
+                #               symbol=None,
+                #               pxMod=False)
+                #
+                # # legend
+                # legend = self.parent.get_scale_legend()
+                # color = self.parent.get_color(source='scale', color_type='html')
+                # text = pg.TextItem(
+                #     html='<div style="text-align=center"><span style="color: ' + color + ';">' + legend + '</span></div>',
+                #     angle=angle)
+                # imagewindow.addItem(text)
+                # text.setPos(legend_x0, legend_y0)
 
             exporter = pg.exporters.ImageExporter(imagewindow.view)
 
@@ -676,79 +683,6 @@ class DisplayImages(object):
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
 
-    def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
-        """calculate the matrix that defines the vertical and horizontal lines
-        that allow pyqtgraph to display the grid"""
-
-        pos_adj_dict = {}
-
-        # pos - each matrix defines one side of the line
-        pos = []
-        adj = []
-
-        # vertical lines
-        x = 0
-        index = 0
-        while (x <= width):
-            one_edge = [x, 0]
-            other_edge = [x, height]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            x += grid_size
-            index += 2
-
-        # vertical lines
-        y = 0
-        while (y <= height):
-            one_edge = [0, y]
-            other_edge = [width, y]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            y += grid_size
-            index += 2
-
-        pos_adj_dict['pos'] = np.array(pos)
-        pos_adj_dict['adj'] = np.array(adj)
-
-        return pos_adj_dict
-
-    def display_grid(self):
-        # remove previous grid if any
-        if self.parent.grid_view['item']:
-            self.parent.ui.image_view.removeItem(self.parent.grid_view['item'])
-
-        # if we want a grid
-        if self.parent.ui.grid_display_checkBox.isChecked():
-
-            grid_size = self.parent.ui.grid_size_slider.value()
-            [height, width] = np.shape(self.parent.live_image)
-
-            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
-                                                      height=height,
-                                                      width=width)
-            pos = pos_adj_dict['pos']
-            adj = pos_adj_dict['adj']
-
-            line_color = self.parent.grid_view['color']
-            _transparency_value = 255 - (np.float(str(self.parent.ui.transparency_slider.value()))/100) * 255
-            _list_line_color = list(line_color)
-            _list_line_color[3] = _transparency_value
-            line_color = tuple(_list_line_color)
-            lines = np.array([line_color for n in np.arange(len(pos))],
-                             dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                    ('blue', np.ubyte), ('alpha', np.ubyte),
-                                    ('width', float)])
-
-            grid = pg.GraphItem()
-            self.parent.ui.image_view.addItem(grid)
-            grid.setData(pos=pos,
-                         adj=adj,
-                         pen=lines,
-                         symbol=None,
-                         pxMode=False)
-            self.parent.grid_view['item'] = grid
 
 
 
