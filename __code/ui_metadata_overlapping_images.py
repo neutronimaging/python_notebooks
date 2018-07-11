@@ -141,6 +141,7 @@ class Ui_MainWindow(object):
         self.scale_thickness = QtWidgets.QSpinBox(self.scale_groupbox)
         self.scale_thickness.setMinimum(1)
         self.scale_thickness.setMaximum(50)
+        self.scale_thickness.setProperty("value", 4)
         self.scale_thickness.setObjectName("scale_thickness")
         self.horizontalLayout_5.addWidget(self.scale_thickness)
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
