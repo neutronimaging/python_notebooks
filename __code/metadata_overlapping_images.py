@@ -130,9 +130,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
+        self.update_metadata_pyqt_ui()
 
     def next_image_button_clicked(self):
         self.change_slider(offset = +1)
+        self.update_metadata_pyqt_ui()
 
     def help_button_clicked(self):
         import webbrowser
@@ -145,20 +147,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.display_image()
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
+        self.update_metadata_pyqt_ui()
 
     def slider_file_clicked(self):
         current_slider_value = self.ui.file_slider.value()
         self.slider_file_changed(current_slider_value)
+        self.update_metadata_pyqt_ui()
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
         self.ui.scale_position_label.setEnabled(status)
         self.ui.scale_position_frame.setEnabled(status)
-        if status: #display scale line
-            self.display_scale_pyqt_ui()
-        else: # remove scale line
-            if self.scale_pyqt_ui:
-                self.ui.image_view.removeItem(self.scale_pyqt_ui)
+        self.display_scale_pyqt_ui()
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
@@ -166,11 +166,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.metadata_position_frame.setEnabled(status)
         self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
-        if status: # display metadata
-            self.display_metadata_pyqt_ui()
-        else:
-            if self.metadata_pyqt_ui:
-                self.ui.image_view.removeItem(self.metadata_pyqt_ui)
+        self.display_metadata_pyqt_ui()
 
     def select_metadata_checkbox_clicked(self, status):
         self.ui.select_metadata_combobox.setEnabled(status)
@@ -251,7 +247,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
                                    filename=str(_table_file))
             o_import.load_table()
             o_import.populate()
-
+            self.update_metadata_pyqt_ui()
 
     # ========================================================================================
 
@@ -299,6 +295,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
         except:
             return
 
+        if self.metadata_pyqt_ui:
+            view.removeItem(self.metadata_pyqt_ui)
+
+        if not self.ui.metadata_checkbox.isChecked():
+            return
 
         x0 = self.ui.metadata_position_x.value()
         y0 = self.ui.metadata_position_y.maximum() - self.ui.metadata_position_y.value()
@@ -308,7 +309,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
         view.addItem(text)
         text.setPos(x0, y0)
-        self.metadata_pyqt_ui = text
+        if save_it:
+            self.metadata_pyqt_ui = text
 
     def get_metadata_text(self):
         """return the text and value of the metadata to display"""
@@ -337,6 +339,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
                     pass
             except:
                 return
+
+        if self.scale_pyqt_ui:
+            view.removeItem(self.scale_pyqt_ui)
+            view.removeItem(self.scale_legend_pyqt_ui)
+
+        if not self.ui.scale_checkbox.isChecked():
+            return
 
         # scale
         thickness = self.ui.scale_thickness.value()
