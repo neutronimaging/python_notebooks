@@ -173,6 +173,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def select_metadata_checkbox_clicked(self, status):
         self.ui.select_metadata_combobox.setEnabled(status)
+        self.update_metadata_pyqt_ui()
 
     def metadata_list_changed(self, index):
         key_selected = self.list_metadata[index]
@@ -219,6 +220,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_color_changed(self, value):
         self.update_metadata_pyqt_ui()
 
+    def metadata_name_return_pressed(self):
+        self.update_metadata_pyqt_ui()
+
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=self.working_dir,
@@ -229,7 +233,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
             o_export = ExportImages(parent=self,
                                     export_folder=_export_folder)
             o_export.run()
-
 
     # ========================================================================================
 
@@ -290,7 +293,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def get_metadata_text(self):
         """return the text and value of the metadata to display"""
-        return "Testing: NaN"
+        metadata_name = str(self.ui.manual_metadata_name.text())
+        metadata_units = str(self.ui.manual_metadata_units.text())
+        slider_index = self.ui.file_slider.value()
+        metadata_value = str(self.ui.tableWidget.item(slider_index, 1).text())
+        return "{}: {} {}".format(metadata_name, metadata_value, metadata_units)
 
     def get_scale_legend(self):
         real_scale_value = str(self.ui.scale_real_size.text())

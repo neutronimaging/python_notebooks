@@ -559,7 +559,7 @@
                   <bool>false</bool>
                  </property>
                  <property name="text">
-                  <string>Metadata name</string>
+                  <string>Legend</string>
                  </property>
                 </widget>
                </item>
@@ -576,6 +576,16 @@
                   <bool>false</bool>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>[Value]</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="manual_metadata_units"/>
                </item>
               </layout>
              </item>
@@ -1334,6 +1344,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>manual_metadata_name</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_name_return_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>787</x>
+     <y>370</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>796</x>
+     <y>610</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>manual_metadata_units</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_name_return_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>911</x>
+     <y>375</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>913</x>
+     <y>622</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -1357,5 +1399,6 @@
   <slot>metadata_position_moved()</slot>
   <slot>metadata_position_clicked()</slot>
   <slot>metadata_color_changed()</slot>
+  <slot>metadata_name_return_pressed()</slot>
  </slots>
 </ui>
