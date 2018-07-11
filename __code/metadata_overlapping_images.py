@@ -401,32 +401,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.file_slider.blockSignals(False)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class ExportImages(object):
 
     ext = '.png'
@@ -599,6 +573,7 @@ class Initializer(object):
             return list_metadata
         else:
             return []
+
 
 class DisplayImages(object):
 
