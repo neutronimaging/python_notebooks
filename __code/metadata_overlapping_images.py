@@ -228,7 +228,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
+                                                          directory=os.path.dirname(self.working_dir),
                                                           caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
         QtGui.QGuiApplication.processEvents()
@@ -239,7 +239,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def import_table_pressed(self):
         _table_file = QFileDialog.getOpenFileName(self,
-                                                  directory=self.working_dir,
+                                                  directory=os.path.dirname(self.working_dir),
                                                   caption="Select Input File")
         QtGui.QGuiApplication.processEvents()
 
@@ -249,7 +249,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
         if _table_file:
             o_import = TableLoader(parent=self,
                                    filename=str(_table_file))
-            o_import.run()
+            o_import.load_table()
+            o_import.populate()
+
 
     # ========================================================================================
 
@@ -649,7 +651,7 @@ class TableLoader:
         self.parent = parent
         self.filename = filename
 
-    def run(self):
+    def load_table(self):
         table = pd.read_csv(self.filename,
                             sep=',',
                             comment='#',
@@ -657,6 +659,17 @@ class TableLoader:
         table_dict = {}
         for _row in table.values:
             _key, _value = _row
-            table_dict[_key] = _row
+            table_dict[_key] = _value
 
         self.table = table_dict
+
+    def populate(self):
+        """This will look at the filename value in the first column of tableWidget and if they match if any
+        of the key of the dictionary, it will populate the value column"""
+
+        # populate with new entries
+        nbr_row = self.parent.ui.tableWidget.rowCount()
+        for _row in np.arange(nbr_row):
+            table_key = self.parent.ui.tableWidget.item(_row, 0).text()
+            value = self.table.get(table_key, "")
+            self.parent.ui.tableWidget.item(_row, 1).setText(str(value))
