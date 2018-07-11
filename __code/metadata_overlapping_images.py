@@ -220,6 +220,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_color_changed(self, value):
         self.update_metadata_pyqt_ui()
 
+    def export_button_clicked(self):
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            o_export = ExportImages(parent=self,
+                                    export_folder=_export_folder)
+            o_export.run()
+            QtGui.QGuiApplication.processEvents()
+
+
     # ========================================================================================
 
     def update_metadata_pyqt_ui(self):
@@ -257,7 +269,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         metadata_text = self.get_metadata_text()
         color = self.get_color(source='metadata', color_type='html')
 
-        text = pg.TextItem(html='<div style="text-align=center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
+        text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
         self.ui.image_view.addItem(text)
         text.setPos(x0, y0)
         self.metadata_pyqt_ui = text
@@ -758,178 +770,33 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
 
 
-    def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
-        if _export_folder:
-            o_export = ExportProfiles(parent=self,
-                                      export_folder=_export_folder)
-            o_export.run()
-            QtGui.QGuiApplication.processEvents()
 
 
+class ExportImages(object):
 
-class ExportProfiles(object):
+    ext = '.png'
 
     def __init__(self, parent=None, export_folder=''):
         self.parent = parent
         self.export_folder = export_folder
 
-    def _create_output_file_name(self, profile_index=0):
-        base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index+1))
-        return output_file_name
+    def _create_output_file_name(self, file=''):
+        if file == '':
+            return ''
 
-    def _create_metadata(self, profile_index=0):
-        metadata = ["# Counts vs pixel position"]
-        metadata.append("#average counts of width of profile is used!")
-        profile_dimension = self.parent.get_profile_dimensions(row=profile_index)
-        is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
-        x_left = profile_dimension.x_left
-        x_right = profile_dimension.x_right
-        y_top = profile_dimension.y_top
-        y_bottom = profile_dimension.y_bottom
-        metadata.append("#Profile dimension:")
-        metadata.append("# * [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(x_left, y_top, x_right, y_bottom))
-        if is_x_profile_direction:
-            metadata.append("# * integrated over y_axis")
-            table_axis = ['#x_axis']
-        else:
-            metadata.append("# * integrated over x_axis")
-            table_axis = ['#y_axis']
-        nbr_files = len(self.parent.data_dict['file_name'])
-        metadata.append("#List of files ({} files)".format(nbr_files))
-        for _index, _file in enumerate(self.parent.data_dict['file_name']):
-            metadata.append("# * {} -> col{}".format(_file, _index+1))
-            table_axis.append("# col.{}".format(_index+1))
-        metadata.append("#")
-        metadata.append("#" + ",".join(table_axis))
-        return metadata
+        basename_ext = os.path.basename(file)
+        [basename, ext] = os.path.splitext(basename_ext)
 
-    def _create_data(self, profile_index=0):
-        all_profiles = []
-        x_axis = []
-        for _data in self.parent.data_dict['data']:
-            [x_axis, profile] = self.parent.get_profile(image=np.transpose(_data),
-                                                        profile_roi_row=profile_index)
-            all_profiles.append(list(profile))
-
-        data = []
-        for _index, _row in enumerate(np.transpose(all_profiles)):
-            str_row = [str(_value) for _value in _row]
-            data.append("{}, ".format(x_axis[_index]) + ", ".join(str_row))
-
-        return data
+        full_file_name = os.path.join(self.export_folder, basename + self.ext)
+        return full_file_name
 
     def run(self):
-        _nbr_profiles = self.parent.ui.tableWidget.rowCount()
-        for _profile_index in np.arange(_nbr_profiles):
-            _output_file_name = self._create_output_file_name(profile_index=_profile_index)
-            metadata = self._create_metadata(profile_index=_profile_index)
-            data = self._create_data(profile_index=_profile_index)
-            make_ascii_file(metadata=metadata,
-                            data=data,
-                            output_file_name=_output_file_name,
-                            dim='1d')
 
-            display(HTML("Exported Profile file {}".format(_output_file_name)))
+        for _index, _file in enumerate(self.parent.data_dict['file_name']):
+            output_file_name = self._create_output_file_name(file=_file)
+            print(output_file_name)
 
-
-class GuideAndProfileRoisHandler(object):
-
-    __profile = None
-
-    def __init__(self, parent=None, row=-1):
-        self.parent = parent
-        self.row = row
-        if self.row == -1:
-            self.row = 0
-
-    def add(self):
-        self._define_guide()
-        self._define_profile()
-        self.parent.list_profile_pyqt_roi.insert(self.row, self.__profile)
-
-    def update(self):
-        self._define_profile()
-        self.parent.ui.image_view.removeItem(self.parent.list_profile_pyqt_roi[self.row])
-        self.parent.list_profile_pyqt_roi[self.row] = self.__profile
-
-    def _define_guide(self):
-        """define the guide"""
-        guide_roi = pg.RectROI([self.parent.default_guide_roi['x0'], self.parent.default_guide_roi['y0']],
-                                [self.parent.default_guide_roi['width'], self.parent.default_guide_roi['height']],
-                            pen=self.parent.default_guide_roi['color_activated'])
-        guide_roi.addScaleHandle([1, 1], [0, 0])
-        guide_roi.addScaleHandle([0, 0], [1, 1])
-        guide_roi.sigRegionChanged.connect(self.parent.guide_changed)
-        self.parent.ui.image_view.addItem(guide_roi)
-        self.parent.list_guide_pyqt_roi.insert(self.row, guide_roi)
-
-    def _define_profile(self):
-        # profile
-        # [x0, y0, width, height] = self.parent.get_item_row(row=self.row)
-        _profile_width = self.parent.get_profile_width(row=self.row)
-        is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
-        # delta_profile = (_profile_width - 1) / 2.
-
-        profile_dimension = self.parent.get_profile_dimensions(row=self.row)
-        x_left = profile_dimension.x_left
-        x_right = profile_dimension.x_right
-        y_top = profile_dimension.y_top
-        y_bottom = profile_dimension.y_bottom
-
-        if is_x_profile_direction:
-
-            pos = []
-            pos.append([x_left, y_top])
-            pos.append([x_right, y_top])
-            adj = []
-            adj.append([0, 1])
-
-            if y_top != y_bottom: # height == 1
-                pos.append([x_left, y_bottom])
-                pos.append([x_right, y_bottom])
-                adj.append([2, 3])
-
-            adj = np.array(adj)
-            pos = np.array(pos)
-
-        else: # y-profile direction
-
-            pos = []
-            pos.append([x_left, y_top])
-            pos.append([x_left, y_bottom])
-            adj = []
-            adj.append([0, 1])
-
-            if y_top != y_bottom:  # height == 1
-                pos.append([x_right, y_top])
-                pos.append([x_right, y_bottom])
-                adj.append([2, 3])
-
-            adj = np.array(adj)
-            pos = np.array(pos)
-
-        line_color = self.parent.profile_color
-        _list_line_color = list(line_color)
-        line_color = tuple(_list_line_color)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
-
-        profile = pg.GraphItem()
-        self.parent.ui.image_view.addItem(profile)
-        profile.setData(pos=pos,
-                     adj=adj,
-                     pen=lines,
-                     symbol=None,
-                     pxMode=False)
-
-        self.__profile = profile
+        display(HTML("Exported Images in Folder {}".format(self.export_folder)))
 
 
 class Initializer(object):
