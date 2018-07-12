@@ -459,9 +459,7 @@ class ExportImages(object):
 
     def run(self):
 
-        imagewindow = pg.image()
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-
         self.parent.eventProgress.setMinimum(1)
         self.parent.eventProgress.setMaximum(len(self.parent.data_dict['file_name']))
         self.parent.eventProgress.setValue(1)
@@ -469,26 +467,18 @@ class ExportImages(object):
 
         for _index, _file in enumerate(self.parent.data_dict['file_name']):
             output_file_name = self._create_output_file_name(file=_file)
-            data = self.parent.data_dict['data'][_index]
+            self.parent.ui.file_slider.setValue(_index)
 
-            img = pg.ImageItem(data)
-            imagewindow.addItem(img)
-            if self.parent.ui.scale_checkbox.isChecked():
-
-                self.parent.display_scale_pyqt_ui(view=imagewindow, save_it=False)
-                self.parent.display_metadata_pyqt_ui(view=imagewindow, save_it=False)
-
-            exporter = pg.exporters.ImageExporter(imagewindow.view)
+            exporter = pg.exporters.ImageExporter(self.parent.ui.image_view.view)
 
             exporter.params.param('width').setValue(2024, blockSignal=exporter.widthChanged)
             exporter.params.param('height').setValue(2014, blockSignal=exporter.heightChanged)
 
             exporter.export(output_file_name)
-            imagewindow.clear()
+
             self.parent.eventProgress.setValue(_index+2)
             QtGui.QGuiApplication.processEvents()
 
-        imagewindow.close()
         QtGui.QGuiApplication.processEvents()
 
         display(HTML("Exported Images in Folder {}".format(self.export_folder)))
