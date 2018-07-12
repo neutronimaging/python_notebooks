@@ -329,14 +329,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
         else: # we want a graph of the metadata
 
             data = np.array([1,2,5,7,9,10,9, 9, 8, 7,3,2,1,])
-            graph = pg.PlotItem()
+            _view_box = pg.ViewBox(enableMouse=False)
+            graph = pg.PlotItem(viewBox=_view_box)
             graph.plot(data)
             view.addItem(graph)
             graph.setPos(x0, y0)
             if save_it:
                 self.metadata_pyqt_ui = graph
-
-
 
 
     def get_metadata_text(self):

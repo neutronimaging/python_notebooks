@@ -402,6 +402,8 @@ class Ui_MainWindow(object):
         self.manual_metadata_units.returnPressed.connect(MainWindow.metadata_name_return_pressed)
         self.metadata_text_option.clicked.connect(MainWindow.metadata_text_or_graph_clicked)
         self.metadata_graph_option.clicked.connect(MainWindow.metadata_text_or_graph_clicked)
+        self.metadata_graph_size_slider.sliderPressed.connect(MainWindow.metadata_graph_size_pressed)
+        self.metadata_graph_size_slider.sliderMoved['int'].connect(MainWindow.metadata_graph_size_moved)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
