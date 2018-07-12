@@ -222,6 +222,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_name_return_pressed(self):
         self.update_metadata_pyqt_ui()
 
+    def metadata_text_or_graph_clicked(self):
+        status = self.ui.metadata_graph_option.isChecked()
+        self.ui.metadata_graph_size_label.setVisible(status)
+        self.ui.metadata_graph_size_slider.setVisible(status)
+        self.update_metadata_pyqt_ui()
+
+    def metadata_graph_size_pressed(self):
+        self.update_metadata_pyqt_ui()
+
+    def metadata_graph_size_moved(self, slider_value):
+        self.update_metadata_pyqt_ui()
+
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=os.path.dirname(self.working_dir),
@@ -306,11 +318,26 @@ class MetadataOverlappingImagesUi(QMainWindow):
         metadata_text = self.get_metadata_text()
         color = self.get_color(source='metadata', color_type='html')
 
-        text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
-        view.addItem(text)
-        text.setPos(x0, y0)
-        if save_it:
-            self.metadata_pyqt_ui = text
+        if self.ui.metadata_text_option.isChecked():
+
+            text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
+            view.addItem(text)
+            text.setPos(x0, y0)
+            if save_it:
+                self.metadata_pyqt_ui = text
+
+        else: # we want a graph of the metadata
+
+            data = np.array([1,2,5,7,9,10,9, 9, 8, 7,3,2,1,])
+            graph = pg.PlotItem()
+            graph.plot(data)
+            view.addItem(graph)
+            graph.setPos(x0, y0)
+            if save_it:
+                self.metadata_pyqt_ui = graph
+
+
+
 
     def get_metadata_text(self):
         """return the text and value of the metadata to display"""
@@ -545,8 +572,11 @@ class Initializer(object):
             self.parent.ui.select_metadata_checkbox.setVisible(False)
             self.parent.ui.select_metadata_combobox.setVisible(False)
 
-        # list of scale available
+        # hide the graph metadata size widgets
+        self.parent.ui.metadata_graph_size_label.setVisible(False)
+        self.parent.ui.metadata_graph_size_slider.setVisible(False)
 
+        # list of scale available
         self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units['string'])
 
         # pixel size range

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1413</width>
-    <height>669</height>
+    <width>1419</width>
+    <height>849</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -106,7 +106,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -516,6 +516,40 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_12">
+               <item>
+                <widget class="QRadioButton" name="metadata_text_option">
+                 <property name="text">
+                  <string>Text</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="metadata_graph_option">
+                 <property name="text">
+                  <string>Graph</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
                 <widget class="QCheckBox" name="select_metadata_checkbox">
@@ -661,9 +695,28 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_2">
+                <widget class="QLabel" name="metadata_graph_size_label">
                  <property name="text">
-                  <string>Import Table ...</string>
+                  <string>Size:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="metadata_graph_size_slider">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>3</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
                 </widget>
                </item>
@@ -875,13 +928,19 @@
      </layout>
     </item>
    </layout>
+   <zorder>splitter</zorder>
+   <zorder>scale_position_groupbox</zorder>
+   <zorder>metadata_position_groupbox</zorder>
+   <zorder>verticalSpacer</zorder>
+   <zorder>splitter</zorder>
+   <zorder>metadata_position_frame_2</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1413</width>
+     <width>1419</width>
      <height>22</height>
     </rect>
    </property>
@@ -942,8 +1001,8 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1400</x>
-     <y>636</y>
+     <x>1406</x>
+     <y>787</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
@@ -959,7 +1018,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>76</x>
-     <y>636</y>
+     <y>787</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
@@ -974,7 +1033,7 @@
    <slot>scale_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>906</x>
+     <x>909</x>
      <y>52</y>
     </hint>
     <hint type="destinationlabel">
@@ -990,8 +1049,8 @@
    <slot>metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>904</x>
-     <y>297</y>
+     <x>907</x>
+     <y>326</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -1007,7 +1066,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>84</x>
-     <y>587</y>
+     <y>709</y>
     </hint>
     <hint type="destinationlabel">
      <x>112</x>
@@ -1022,8 +1081,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>496</x>
-     <y>591</y>
+     <x>499</x>
+     <y>713</y>
     </hint>
     <hint type="destinationlabel">
      <x>387</x>
@@ -1038,8 +1097,8 @@
    <slot>slider_file_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>337</x>
-     <y>588</y>
+     <x>340</x>
+     <y>710</y>
     </hint>
     <hint type="destinationlabel">
      <x>214</x>
@@ -1054,8 +1113,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>337</x>
-     <y>588</y>
+     <x>340</x>
+     <y>710</y>
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
@@ -1070,8 +1129,8 @@
    <slot>select_metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>652</x>
-     <y>341</y>
+     <x>655</x>
+     <y>406</y>
     </hint>
     <hint type="destinationlabel">
      <x>668</x>
@@ -1086,8 +1145,8 @@
    <slot>metadata_list_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>992</x>
-     <y>346</y>
+     <x>995</x>
+     <y>411</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -1102,8 +1161,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>681</x>
-     <y>110</y>
+     <x>656</x>
+     <y>106</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -1118,8 +1177,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>758</x>
-     <y>110</y>
+     <x>737</x>
+     <y>102</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -1134,8 +1193,8 @@
    <slot>scale_thickness_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>992</x>
-     <y>229</y>
+     <x>962</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>1020</x>
@@ -1150,8 +1209,8 @@
    <slot>scale_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>650</x>
-     <y>228</y>
+     <x>620</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>811</x>
@@ -1166,12 +1225,12 @@
    <slot>scale_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>669</x>
-     <y>175</y>
+     <x>650</x>
+     <y>182</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
-     <y>-9</y>
+     <y>0</y>
     </hint>
    </hints>
   </connection>
@@ -1182,8 +1241,8 @@
    <slot>scale_real_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>874</x>
-     <y>162</y>
+     <x>844</x>
+     <y>184</y>
     </hint>
     <hint type="destinationlabel">
      <x>963</x>
@@ -1198,8 +1257,8 @@
    <slot>scale_units_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>983</x>
-     <y>160</y>
+     <x>953</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
      <x>1267</x>
@@ -1214,8 +1273,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1144</x>
-     <y>176</y>
+     <x>1114</x>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
      <x>1401</x>
@@ -1230,8 +1289,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1121</x>
-     <y>182</y>
+     <x>1091</x>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>1408</x>
@@ -1246,8 +1305,8 @@
    <slot>metadata_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1114</x>
-     <y>472</y>
+     <x>1084</x>
+     <y>554</y>
     </hint>
     <hint type="destinationlabel">
      <x>1166</x>
@@ -1262,8 +1321,8 @@
    <slot>metadata_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1100</x>
-     <y>471</y>
+     <x>1070</x>
+     <y>553</y>
     </hint>
     <hint type="destinationlabel">
      <x>1096</x>
@@ -1278,8 +1337,8 @@
    <slot>metadata_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1104</x>
-     <y>518</y>
+     <x>1100</x>
+     <y>580</y>
     </hint>
     <hint type="destinationlabel">
      <x>1129</x>
@@ -1294,8 +1353,8 @@
    <slot>metadata_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1104</x>
-     <y>518</y>
+     <x>1091</x>
+     <y>592</y>
     </hint>
     <hint type="destinationlabel">
      <x>1206</x>
@@ -1310,8 +1369,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1106</x>
-     <y>226</y>
+     <x>1097</x>
+     <y>243</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1326,8 +1385,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1106</x>
-     <y>226</y>
+     <x>1107</x>
+     <y>229</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1342,8 +1401,8 @@
    <slot>metadata_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>638</x>
-     <y>566</y>
+     <x>608</x>
+     <y>688</y>
     </hint>
     <hint type="destinationlabel">
      <x>758</x>
@@ -1358,8 +1417,8 @@
    <slot>metadata_name_return_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>761</x>
-     <y>378</y>
+     <x>757</x>
+     <y>449</y>
     </hint>
     <hint type="destinationlabel">
      <x>796</x>
@@ -1374,8 +1433,8 @@
    <slot>metadata_name_return_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>911</x>
-     <y>375</y>
+     <x>881</x>
+     <y>454</y>
     </hint>
     <hint type="destinationlabel">
      <x>913</x>
@@ -1384,18 +1443,66 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>metadata_text_option</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>import_table_pressed()</slot>
+   <slot>metadata_text_or_graph_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>951</x>
-     <y>564</y>
+     <x>564</x>
+     <y>383</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1008</x>
-     <y>644</y>
+     <x>546</x>
+     <y>782</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadata_graph_option</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_text_or_graph_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>598</x>
+     <y>381</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>652</x>
+     <y>760</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadata_graph_size_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_graph_size_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>926</x>
+     <y>691</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>940</x>
+     <y>773</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadata_graph_size_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_graph_size_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>908</x>
+     <y>694</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>905</x>
+     <y>775</y>
     </hint>
    </hints>
   </connection>
@@ -1423,6 +1530,8 @@
   <slot>metadata_position_clicked()</slot>
   <slot>metadata_color_changed()</slot>
   <slot>metadata_name_return_pressed()</slot>
-  <slot>import_table_pressed()</slot>
+  <slot>metadata_text_or_graph_clicked()</slot>
+  <slot>metadata_graph_size_pressed()</slot>
+  <slot>metadata_graph_size_moved()</slot>
  </slots>
 </ui>
