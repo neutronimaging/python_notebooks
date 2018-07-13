@@ -375,6 +375,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
             current_index = self.ui.file_slider.value()
             _pen = pg.mkPen((255, 0, 0), width=4)
             graph.plot(x=[current_index], y=[data[current_index]], pen=_pen, symboBrush=(255, 0,0), symbolPen='w')
+            _inf_line = pg.InfiniteLine(current_index, pen=_pen)
+            graph.addItem(_inf_line)
 
             view.addItem(graph)
             graph.setPos(x0, y0)
