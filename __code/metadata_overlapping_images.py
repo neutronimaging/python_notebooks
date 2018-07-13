@@ -121,6 +121,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         o_initialization.table()
         o_initialization.widgets()
         o_initialization.pyqtgraph()
+        o_initialization.event()
 
         # display first images
         self.slider_file_changed(0)
@@ -234,6 +235,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_graph_size_moved(self, slider_value):
         self.update_metadata_pyqt_ui()
 
+    def table_cell_changed(self, row, column):
+        self.update_metadata_pyqt_ui()
+
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=os.path.dirname(self.working_dir),
@@ -344,7 +348,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
         data = []
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            pass
+            _row_str = str(self.ui.tableWidget.item(_row, 1).text())
+            try:
+                _row_value = np.float(_row_str)
+            except:
+                self.ui.statusbar.showMessage("Error Displaying Metadata Graph!", 10000)
+                self.ui.statusbar.setStyleSheet("color: red")
+                return []
+
+            data.append(_row_value)
+
+        return data
 
     def get_metadata_text(self):
         """return the text and value of the metadata to display"""
@@ -545,10 +559,12 @@ class Initializer(object):
         list_files_full_name = self.parent.data_dict['file_name']
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
+        self.parent.ui.tableWidget.blockSignals(True)
         for _row, _file in enumerate(list_files_short_name):
             self.parent.ui.tableWidget.insertRow(_row)
             self.set_item_table(row=_row, col=0, value=_file)
             self.set_item_table(row=_row, col=1, value="N/A", editable=True)
+        self.parent.ui.tableWidget.blockSignals(False)
 
     def set_scale_spinbox_max_value(self):
         [height, width] = np.shape(self.parent.data_dict['data'][0])
@@ -602,6 +618,10 @@ class Initializer(object):
         self.parent.ui.scale_position_y.setMaximum(height)
         self.parent.ui.metadata_position_y.setMaximum(height)
         self.parent.ui.metadata_position_y.setValue(height)
+
+    def event(self):
+        # table event
+        self.parent.ui.tableWidget.cellChanged.connect(self.parent.table_cell_changed)
 
     def pyqtgraph(self):
         # image

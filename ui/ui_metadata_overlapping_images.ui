@@ -722,6 +722,30 @@
                </item>
               </layout>
              </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_14">
+               <item>
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_2">
+                 <property name="text">
+                  <string>Import Table ...</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
             </layout>
            </widget>
           </item>
@@ -1066,7 +1090,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>84</x>
-     <y>709</y>
+     <y>751</y>
     </hint>
     <hint type="destinationlabel">
      <x>112</x>
@@ -1082,7 +1106,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>499</x>
-     <y>713</y>
+     <y>755</y>
     </hint>
     <hint type="destinationlabel">
      <x>387</x>
@@ -1098,7 +1122,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>340</x>
-     <y>710</y>
+     <y>752</y>
     </hint>
     <hint type="destinationlabel">
      <x>214</x>
@@ -1114,7 +1138,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>340</x>
-     <y>710</y>
+     <y>752</y>
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
@@ -1306,7 +1330,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1084</x>
-     <y>554</y>
+     <y>575</y>
     </hint>
     <hint type="destinationlabel">
      <x>1166</x>
@@ -1322,7 +1346,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1070</x>
-     <y>553</y>
+     <y>574</y>
     </hint>
     <hint type="destinationlabel">
      <x>1096</x>
@@ -1506,6 +1530,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>import_table_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>961</x>
+     <y>729</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>972</x>
+     <y>798</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -1533,5 +1573,7 @@
   <slot>metadata_text_or_graph_clicked()</slot>
   <slot>metadata_graph_size_pressed()</slot>
   <slot>metadata_graph_size_moved()</slot>
+  <slot>import_table_pressed()</slot>
+  <slot>table_cell_changed()</slot>
  </slots>
 </ui>
