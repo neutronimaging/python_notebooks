@@ -82,11 +82,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_scale_units = {'string': ["mm", u"\u00B5m", "nm"],
                         'html': ["mm", "<span>&#181;m</span>", "nm"]}
 
-    rgb_color = {'white': (255, 255, 255, 255, None),
+    rgba_color = {'white': (255, 255, 255, 255, None),
                    'red': (255, 0, 0, 255, None),
                    'green': (0, 255, 0, 255, None),
                    'blue': (0, 0, 255, 255, None),
                    'black': (0, 0, 0, 255, None)}
+
+    rgb_color = {'white': (255, 255, 255),
+                   'red': (255, 0, 0),
+                   'green': (0, 255, 0),
+                   'blue': (0, 0, 255),
+                   'black': (0, 0, 0)}
+
 
     html_color = {'white': "#FFF",
                   'red': "#F00",
@@ -297,6 +304,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         if color_type == 'html':
             return self.html_color[color_selected]
+        elif color_type == 'rgba':
+            return self.rgba_color[color_selected]
         else:
             return self.rgb_color[color_selected]
 
@@ -334,11 +343,34 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
             data = self.get_metadata_column()
             _view_box = pg.ViewBox(enableMouse=False)
+            # _view_box.setBackgroundColor((100, 100, 100, 100))
             graph = pg.PlotItem(viewBox=_view_box)
+
+            font_size = 8
+
+            units = self.ui.manual_metadata_units.text()
+            if units:
+                y_axis_label = '<html><font color="{}" size="{}">{} ({})</font></html>'.format(color,
+                                                                                               font_size,
+                                                                                               self.ui.manual_metadata_name.text(),
+                                                                                               units)
+            else:
+                y_axis_label = '<html><font color="{}" size="{}">{}</font></html>'.format(color,
+                                                                                          font_size,
+                                                                                          self.ui.manual_metadata_name.text())
+
+
+            x_axis_label = '<p><font color="{}" size="{}">File Index</font></p>'.format(color,
+                                                                                              font_size)
+
+            graph.setLabel('left', text=y_axis_label)
+            graph.setLabel('bottom', text=x_axis_label)
+
             _size = self.ui.metadata_graph_size_slider.value()
             graph.setFixedWidth(_size)
             graph.setFixedHeight(_size)
-            graph.plot(data)
+            color_pen = self.get_color(source='metadata', color_type='rgb_color')
+            graph.plot(data, pen=color_pen)
             view.addItem(graph)
             graph.setPos(x0, y0)
             if save_it:
