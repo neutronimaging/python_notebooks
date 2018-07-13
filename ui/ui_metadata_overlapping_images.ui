@@ -704,16 +704,16 @@
                <item>
                 <widget class="QSlider" name="metadata_graph_size_slider">
                  <property name="minimum">
-                  <number>1</number>
+                  <number>50</number>
                  </property>
                  <property name="maximum">
-                  <number>10</number>
+                  <number>1000</number>
                  </property>
                  <property name="singleStep">
                   <number>1</number>
                  </property>
                  <property name="value">
-                  <number>3</number>
+                  <number>200</number>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
