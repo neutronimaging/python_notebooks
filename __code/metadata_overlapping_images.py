@@ -331,6 +331,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
             data = np.array([1,2,5,7,9,10,9, 9, 8, 7,3,2,1,])
             _view_box = pg.ViewBox(enableMouse=False)
             graph = pg.PlotItem(viewBox=_view_box)
+            graph.setFixedWidth(400)
+            graph.setFixedHeight(400)
             graph.plot(data)
             view.addItem(graph)
             graph.setPos(x0, y0)
