@@ -347,7 +347,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
             graph = pg.PlotItem(viewBox=_view_box)
 
             font_size = 8
-
             units = self.ui.manual_metadata_units.text()
             if units:
                 y_axis_label = '<html><font color="{}" size="{}">{} ({})</font></html>'.format(color,
@@ -371,8 +370,15 @@ class MetadataOverlappingImagesUi(QMainWindow):
             graph.setFixedHeight(_size)
             color_pen = self.get_color(source='metadata', color_type='rgb_color')
             graph.plot(data, pen=color_pen)
+
+            # highlight current file
+            current_index = self.ui.file_slider.value()
+            _pen = pg.mkPen((255, 0, 0), width=4)
+            graph.plot(x=[current_index], y=[data[current_index]], pen=_pen, symboBrush=(255, 0,0), symbolPen='w')
+
             view.addItem(graph)
             graph.setPos(x0, y0)
+
             if save_it:
                 self.metadata_pyqt_ui = graph
 
