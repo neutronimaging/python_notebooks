@@ -328,7 +328,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         else: # we want a graph of the metadata
 
-            data = np.array([1,2,5,7,9,10,9, 9, 8, 7,3,2,1,])
+            data = self.get_metadata_column()
             _view_box = pg.ViewBox(enableMouse=False)
             graph = pg.PlotItem(viewBox=_view_box)
             _size = self.ui.metadata_graph_size_slider.value()
@@ -340,6 +340,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
             if save_it:
                 self.metadata_pyqt_ui = graph
 
+    def get_metadata_column(self):
+        data = []
+        nbr_row = self.ui.tableWidget.rowCount()
+        for _row in np.arange(nbr_row):
+            pass
 
     def get_metadata_text(self):
         """return the text and value of the metadata to display"""
