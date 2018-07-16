@@ -464,7 +464,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         pos = np.array(pos)
         adj = np.array(adj)
 
-        line_color = np.array(self.get_color(color_type='rgb', source='scale'))
+        line_color = np.array(self.get_color(color_type='rgba', source='scale'))
         line_color[4] = thickness
         list_line_color = list(line_color)
         line_color =tuple(list_line_color)
