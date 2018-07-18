@@ -5,7 +5,6 @@ from IPython.display import display
 import ipywe.fileselector
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 
 import numpy as np
 import os
@@ -159,19 +158,23 @@ class SelectRadialParameters(QMainWindow):
     angle_180 = None
     angle_270 = None
 
-    def __init__(self, parent=None, o_profile=None):
+    # def __init__(self, parent=None, o_profile=None):
+    def __init__(self, parent=None, working_dir='', data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Select the center of the circle and the angular sector in the UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
-        o_profile.load_images()
+        # o_profile.load_images()
+        self.list_images = data_dict['file_name']
+        self.working_data = data_dict['data']
+        self.rotated_working_data = data_dict['data']
+        [self.height, self.width] = np.shape(self.working_data[0])
 
-        self.rotated_working_data = o_profile.working_data
-        self.working_data = o_profile.working_data
-        self.list_images = o_profile.list_images
-        self.height = o_profile.images_dimension['height']
-        self.width = o_profile.images_dimension['width']
-
+        # self.rotated_working_data = o_profile.working_data
+        # self.working_data = o_profile.working_data
+        # self.list_images = o_profile.list_images
+        # self.height = o_profile.images_dimension['height']
+        # self.width = o_profile.images_dimension['width']
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
@@ -229,7 +232,7 @@ class SelectRadialParameters(QMainWindow):
     def init_widgets(self):
         self.ui.circle_y.setText(str(np.int(self.width / 2)))
         self.ui.circle_x.setText(str(np.int(self.height / 2)))
-        self.ui.lineEdit.setText(str(self.grid_size))
+        # self.ui.lineEdit.setText(str(self.grid_size))
 
         self.ui.guide_red_slider.setValue(self.guide_color_slider['red'])
         self.ui.guide_green_slider.setValue(self.guide_color_slider['green'])
@@ -240,6 +243,12 @@ class SelectRadialParameters(QMainWindow):
         self.ui.sector_to_value.setText(str(self.sector_range['to']))
 
         self.sector_radio_button_changed()
+
+    def grid_slider_moved(self, value):
+        self.grid_size_changed()
+
+    def grid_slider_pressed(self):
+        self.grid_size_changed()
 
     def update_angle_label_position(self):
 
@@ -316,7 +325,8 @@ class SelectRadialParameters(QMainWindow):
 
     def display_grid(self):
         [width, height] = self.get_image_dimension(self.working_data)
-        bin_size = float(str(self.ui.lineEdit.text()))
+        # bin_size = float(str(self.ui.lineEdit.text()))
+        bin_size = self.ui.grid_size_slider.value()
         x0 = 0
         y0 = 0
 

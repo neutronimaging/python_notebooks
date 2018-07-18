@@ -47,6 +47,16 @@
            <string>Circle Center</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="circle_y">
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label">
              <property name="maximumSize">
@@ -74,33 +84,6 @@
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>y</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="circle_y">
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Grid Size</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="lineEdit">
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>16777215</height>
-              </size>
              </property>
             </widget>
            </item>
@@ -216,13 +199,6 @@
            <string>Guide Color</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Red</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="1">
             <widget class="QSlider" name="guide_red_slider">
              <property name="maximum">
@@ -237,6 +213,23 @@
             <widget class="QLabel" name="label_6">
              <property name="text">
               <string>Green</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Transparency</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSlider" name="guide_blue_slider">
+             <property name="maximum">
+              <number>255</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -257,8 +250,15 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QSlider" name="guide_blue_slider">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Red</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSlider" name="guide_alpha_slider">
              <property name="maximum">
               <number>255</number>
              </property>
@@ -267,17 +267,23 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_8">
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_9">
              <property name="text">
-              <string>Transparency</string>
+              <string>Grid Size</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QSlider" name="guide_alpha_slider">
+           <item row="4" column="1">
+            <widget class="QSlider" name="grid_size_slider">
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
-              <number>255</number>
+              <number>50</number>
+             </property>
+             <property name="value">
+              <number>20</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -498,8 +504,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_radio_button_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>507</x>
-     <y>252</y>
+     <x>640</x>
+     <y>248</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
@@ -514,8 +520,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>565</x>
-     <y>279</y>
+     <x>579</x>
+     <y>276</y>
     </hint>
     <hint type="destinationlabel">
      <x>770</x>
@@ -536,22 +542,6 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>556</x>
      <y>364</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>grid_size_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>602</x>
-     <y>140</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>703</x>
-     <y>148</y>
     </hint>
    </hints>
   </connection>
@@ -578,8 +568,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>599</x>
-     <y>400</y>
+     <x>644</x>
+     <y>398</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -594,8 +584,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>599</x>
-     <y>434</y>
+     <x>644</x>
+     <y>425</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -610,12 +600,44 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>599</x>
-     <y>468</y>
+     <x>644</x>
+     <y>452</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
      <y>320</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>grid_size_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>612</x>
+     <y>476</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>823</x>
+     <y>442</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>grid_size_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>grid_slider_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>593</x>
+     <y>471</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>692</x>
+     <y>592</y>
     </hint>
    </hints>
   </connection>
@@ -628,5 +650,7 @@ p, li { white-space: pre-wrap; }
   <slot>sector_changed()</slot>
   <slot>guide_color_changed()</slot>
   <slot>grid_size_changed()</slot>
+  <slot>grid_slider_moved()</slot>
+  <slot>grid_slider_pressed()</slot>
  </slots>
 </ui>
