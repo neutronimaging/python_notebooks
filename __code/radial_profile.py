@@ -244,6 +244,9 @@ class SelectRadialParameters(QMainWindow):
         self.ui.sector_from_value.setText(str(self.sector_range['from']))
         self.ui.sector_to_value.setText(str(self.sector_range['to']))
 
+        self.ui.sector_from_units.setText(u"\u00B0")
+        self.ui.sector_to_units.setText(u"\u00B0")
+
         self.sector_radio_button_changed()
 
     def grid_slider_moved(self, value):
@@ -303,6 +306,8 @@ class SelectRadialParameters(QMainWindow):
         self.ui.sector_to_label.setEnabled(_status_sector)
         self.ui.sector_to_value.setEnabled(_status_sector)
         self.ui.sector_to_units.setEnabled(_status_sector)
+        self.ui.from_angle_slider.setEnabled(_status_sector)
+        self.ui.to_angle_slider.setEnabled(_status_sector)
         self.sector_changed()
 
     def init_statusbar(self):
@@ -311,6 +316,20 @@ class SelectRadialParameters(QMainWindow):
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
+
+    def sector_from_angle_moved(self, value):
+        self.ui.sector_from_value.setText(str(value))
+        self.sector_changed()
+
+    def sector_to_angle_moved(self, value):
+        self.ui.sector_to_value.setText(str(value))
+        self.sector_changed()
+
+    def sector_from_angle_clicked(self):
+        self.sector_changed()
+
+    def sector_to_angle_clicked(self):
+        self.sector_changed()
 
     def get_image_dimension(self, array_image):
         if len(np.shape(array_image)) > 2:
@@ -546,10 +565,10 @@ class SelectRadialParameters(QMainWindow):
                 self.ui.image_view.removeItem(self.sector_g)
             return
 
-        x0 = float(str(self.ui.circle_x.text()))
-        y0 = float(str(self.ui.circle_y.text()))
-        from_angle = float(str(self.ui.sector_from_value.text()))
-        to_angle = float(str(self.ui.sector_to_value.text()))
+        x0 = float(self.ui.circle_x.text())
+        y0 = float(self.ui.circle_y.text())
+        from_angle = np.float(str(self.ui.sector_from_value.text()))
+        to_angle = np.float(str(self.ui.sector_to_value.text()))
 
         self.calculate_corners_angles()
         self.update_angle_label_position()
@@ -597,8 +616,8 @@ class SelectRadialParameters(QMainWindow):
             _from_angle = 0
             _to_angle = 360
         else:
-            _from_angle = np.float(str(self.ui.sector_from_value.text()))
-            _to_angle = np.float(str(self.ui.sector_to_value.text()))
+            _from_angle = np.float(self.ui.sector_from_angle.value())
+            _to_angle = np.float(self.ui.sector_to_angle.value())
         _angle_range['from'] = _from_angle
         _angle_range['to'] = _to_angle
         self.angle_range = _angle_range

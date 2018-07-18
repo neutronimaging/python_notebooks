@@ -39,7 +39,7 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>200</width>
+            <width>250</width>
             <height>16777215</height>
            </size>
           </property>
@@ -118,7 +118,7 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>200</width>
+            <width>250</width>
             <height>16777215</height>
            </size>
           </property>
@@ -152,27 +152,25 @@
            </item>
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="0" column="0">
-              <widget class="QLabel" name="sector_from_label">
-               <property name="text">
-                <string>from</string>
+             <item row="0" column="2">
+              <widget class="QLabel" name="sector_from_value">
+               <property name="minimumSize">
+                <size>
+                 <width>30</width>
+                 <height>0</height>
+                </size>
                </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="sector_from_value">
                <property name="maximumSize">
                 <size>
-                 <width>50</width>
+                 <width>30</width>
                  <height>16777215</height>
                 </size>
                </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="sector_from_units">
                <property name="text">
-                <string>degrees</string>
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -183,20 +181,72 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="sector_to_value">
-               <property name="maximumSize">
-                <size>
-                 <width>50</width>
-                 <height>16777215</height>
-                </size>
+             <item row="0" column="0">
+              <widget class="QLabel" name="sector_from_label">
+               <property name="text">
+                <string>from</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QScrollBar" name="from_angle_slider">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximum">
+                <number>360</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item row="1" column="2">
+              <widget class="QLabel" name="sector_to_value">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QScrollBar" name="to_angle_slider">
+               <property name="maximum">
+                <number>360</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="sector_from_units">
+               <property name="minimumSize">
+                <size>
+                 <width>10</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>10</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
               <widget class="QLabel" name="sector_to_units">
                <property name="text">
-                <string>degrees</string>
+                <string/>
                </property>
               </widget>
              </item>
@@ -209,7 +259,7 @@
          <widget class="QGroupBox" name="groupBox_4">
           <property name="maximumSize">
            <size>
-            <width>200</width>
+            <width>250</width>
             <height>16777215</height>
            </size>
           </property>
@@ -475,7 +525,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>531</x>
-     <y>169</y>
+     <y>151</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -491,43 +541,11 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>640</x>
-     <y>217</y>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
      <y>243</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sector_from_value</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>sector_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>579</x>
-     <y>245</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>770</x>
-     <y>328</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sector_to_value</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>sector_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>550</x>
-     <y>276</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>556</x>
-     <y>364</y>
     </hint>
    </hints>
   </connection>
@@ -539,7 +557,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>599</x>
-     <y>335</y>
+     <y>307</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -555,7 +573,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>644</x>
-     <y>373</y>
+     <y>345</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -571,7 +589,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>644</x>
-     <y>406</y>
+     <y>379</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -587,7 +605,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>644</x>
-     <y>440</y>
+     <y>413</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -603,7 +621,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>612</x>
-     <y>476</y>
+     <y>450</y>
     </hint>
     <hint type="destinationlabel">
      <x>823</x>
@@ -619,11 +637,107 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>593</x>
-     <y>471</y>
+     <y>445</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
      <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>from_angle_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_from_angle_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>552</x>
+     <y>219</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>807</x>
+     <y>67</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>to_angle_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_to_angle_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>247</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>809</x>
+     <y>115</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>from_angle_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_from_angle_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>534</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>749</x>
+     <y>86</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>to_angle_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_to_angle_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>520</x>
+     <y>248</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>748</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>from_angle_slider</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_from_angle_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>581</x>
+     <y>212</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>794</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>to_angle_slider</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_to_angle_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>572</x>
+     <y>241</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>769</x>
+     <y>356</y>
     </hint>
    </hints>
   </connection>
@@ -638,5 +752,9 @@ p, li { white-space: pre-wrap; }
   <slot>grid_size_changed()</slot>
   <slot>grid_slider_moved()</slot>
   <slot>grid_slider_pressed()</slot>
+  <slot>sector_from_angle_moved()</slot>
+  <slot>sector_to_angle_moved()</slot>
+  <slot>sector_from_angle_clicked()</slot>
+  <slot>sector_to_angle_clicked()</slot>
  </slots>
 </ui>
