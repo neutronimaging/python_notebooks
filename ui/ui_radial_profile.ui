@@ -47,16 +47,6 @@
            <string>Circle Center</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="circle_y">
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label">
              <property name="maximumSize">
@@ -70,20 +60,48 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="circle_x">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="circle_y">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>50</width>
                <height>16777215</height>
               </size>
              </property>
+             <property name="text">
+              <string/>
+             </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_2">
+           <item row="0" column="1">
+            <widget class="QLabel" name="circle_x">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
-              <string>y</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -280,10 +298,10 @@
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>50</number>
+              <number>100</number>
              </property>
              <property name="value">
-              <number>20</number>
+              <number>50</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -450,38 +468,6 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>circle_x</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>circle_center_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>605</x>
-     <y>81</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>655</x>
-     <y>87</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>circle_y</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>circle_center_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>613</x>
-     <y>106</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>715</x>
-     <y>115</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>sector_full_circle</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
@@ -489,7 +475,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>531</x>
-     <y>200</y>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -505,7 +491,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>640</x>
-     <y>248</y>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
@@ -521,7 +507,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>579</x>
-     <y>276</y>
+     <y>245</y>
     </hint>
     <hint type="destinationlabel">
      <x>770</x>
@@ -537,7 +523,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>550</x>
-     <y>307</y>
+     <y>276</y>
     </hint>
     <hint type="destinationlabel">
      <x>556</x>
@@ -553,7 +539,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>599</x>
-     <y>366</y>
+     <y>335</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -569,7 +555,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>644</x>
-     <y>398</y>
+     <y>373</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -585,7 +571,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>644</x>
-     <y>425</y>
+     <y>406</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -601,7 +587,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>644</x>
-     <y>452</y>
+     <y>440</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>

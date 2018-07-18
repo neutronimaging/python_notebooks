@@ -158,6 +158,8 @@ class SelectRadialParameters(QMainWindow):
     angle_180 = None
     angle_270 = None
 
+    histogram_level = []
+
     # def __init__(self, parent=None, o_profile=None):
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
@@ -182,7 +184,7 @@ class SelectRadialParameters(QMainWindow):
         self.init_statusbar()
         self.setWindowTitle("Define center and sector of profile")
 
-        self.ui.image_view = pg.ImageView()
+        self.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
 
@@ -607,12 +609,30 @@ class SelectRadialParameters(QMainWindow):
         self.close()
 
     def file_index_changed(self):
-        #        self.sector_changed()
         file_index = self.ui.slider.value()
         live_image = self.get_selected_image(file_index)
-        self.ui.image_view.setImage(live_image)
+
+        _view = self.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.histogram_level == []:
+            first_update = True
+        _histo_widget = self.ui.image_view.getHistogramWidget()
+        self.histogram_level = _histo_widget.getLevels()
+
+        _image = np.transpose(live_image)
+        self.ui.image_view.setImage(_image)
+        self.live_image = _image
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
+
 
     def display_image(self, image):
+        image = np.transpose(image)
         self.ui.image_view.setImage(image)
 
     def closeEvent(self, eventhere=None):
