@@ -39,9 +39,11 @@ class RadialProfile():
     list_images = []
     profile_data = []
 
-    def __init__(self, parent_ui=None, data=[]):
+    def __init__(self, parent_ui=None, data=[], list_files=[]):
         self.working_data = data
         self.parent_ui = parent_ui
+
+        self.short_list_files = [os.path.basename(_file) for _file in list_files]
 
         color = Color()
         self.list_rgb_profile_color = color.get_list_rgb(nbr_color=len(self.working_data))
@@ -89,13 +91,15 @@ class RadialProfile():
         try:
             self.parent_ui.ui.profile_plot.scene().removeItem(self.parent_ui.legend)
         except Exception as e:
-            print(e)
+            pass
         self.parent_ui.legend = self.parent_ui.ui.profile_plot.addLegend()
         QtGui.QGuiApplication.processEvents()
 
         for _index in np.arange(nbr_files):
             o_calculation =  CalculateRadialProfile(data=self.working_data[_index], center=center, angle_range=angle_range)
             o_calculation.calculate()
+
+            _short_file_name = self.short_list_files[_index]
 
             _profile = o_calculation.radial_profile
             _array_profile.append(_profile)
@@ -104,7 +108,7 @@ class RadialProfile():
 
             # display
             _color = self.list_rgb_profile_color[_index]
-            self.plot(_profile, "File #{}".format(_index), _color)
+            self.plot(_profile, _short_file_name, _color)
 
             QtGui.QGuiApplication.processEvents()
 
@@ -116,11 +120,6 @@ class RadialProfile():
 
     def plot(self, data, label, color):
         self.parent_ui.ui.profile_plot.plot(data, name=label, pen=color)
-
-        # plt.figure()
-        # for _index, _profile in enumerate(self.profile_data):
-        #     plt.plot(_profile, label='profile #{}'.format(_index))
-        #     plt.legend(loc=2)
 
     def select_export_folder(self):
         self.export_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
@@ -476,7 +475,8 @@ class SelectRadialParameters(QMainWindow):
 
     def calculate_profiles_clicked(self):
         o_profile = RadialProfile(parent_ui=self,
-                                  data=self.working_data)
+                                  data=self.working_data,
+                                  list_files=self.list_images)
         o_profile.calculate(center=self.center,
                             angle_range=self.angle_range)
 
