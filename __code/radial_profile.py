@@ -189,6 +189,14 @@ class SelectRadialParameters(QMainWindow):
         self.init_statusbar()
         self.setWindowTitle("Define center and sector of profile")
 
+        self.init_pyqtgraph()
+        self.init_widgets()
+        self.display_grid()
+        self.file_index_changed()
+        self.init_crosshair()
+
+    def init_pyqtgraph(self):
+
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
@@ -218,10 +226,11 @@ class SelectRadialParameters(QMainWindow):
 
         self.ui.widget.setLayout(vertical_layout)
 
-        self.init_widgets()
-        self.display_grid()
-        self.file_index_changed()
-        self.init_crosshair()
+        # profile
+        self.ui.profile_plot = pg.PlotWidget()
+        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout.addWidget(self.ui.profile_plot)
+        self.ui.widget_profile.setLayout(vertical_layout)
 
     def init_crosshair(self):
         x0 = float(str(self.ui.circle_x.text()))
