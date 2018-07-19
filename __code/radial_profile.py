@@ -48,28 +48,6 @@ class RadialProfile():
         color = Color()
         self.list_rgb_profile_color = color.get_list_rgb(nbr_color=len(self.working_data))
 
-    # def load_images(self):
-    #     list_images = self.list_images_ui.selected
-    #
-    #     if list_images:
-    #
-    #         w = widgets.IntProgress()
-    #         w.max = len(list_images)
-    #         display(w)
-    #
-    #         working_data = []
-    #         for _index, _file in enumerate(list_images):
-    #             _data = np.array(file_handler.load_data(_file))
-    #             _data[_data == np.inf] = np.NaN  # removing inf values
-    #             _data[np.isnan(_data)] = 0
-    #             working_data.append(_data)
-    #             w.value = _index + 1
-    #
-    #         [self.nbr_files, self.images_dimension['height'], self.images_dimension['width']] = np.shape(working_data)
-    #         self.working_data = np.squeeze(working_data)
-    #         self.working_dir = os.path.dirname(list_images[0])
-    #         self.list_images = list_images
-
     def calculate(self, center={}, angle_range={}):
 
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -120,12 +98,6 @@ class RadialProfile():
 
     def plot(self, data, label, color):
         self.parent_ui.ui.profile_plot.plot(data, name=label, pen=color)
-
-    def select_export_folder(self):
-        self.export_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
-                                                         type = 'directory',
-                                                         start_dir=self.working_dir)
-        self.export_ui.show()
 
     def export(self):
         output_folder = self.export_ui.selected
@@ -202,6 +174,7 @@ class SelectRadialParameters(QMainWindow):
         # o_profile.load_images()
         self.list_images = data_dict['file_name']
         self.working_data = data_dict['data']
+        self.working_dir = working_dir
         # self.rotated_working_data = data_dict['data']
         [self.height, self.width] = np.shape(self.working_data[0])
 
@@ -481,11 +454,26 @@ class SelectRadialParameters(QMainWindow):
                             angle_range=self.angle_range)
 
         self.profile_data = o_profile.profile_data
+        self.check_export_button_status()
 
     def export_profiles_clicked(self):
-        pass
+        self.export_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
+                                                              type='directory',
+                                                              start_dir=self.working_dir,
+                                                              next=self._export_profiles)
+        self.export_ui.show()
+
+    def _export_profiles(self, result):
+        print(result)
 
     # Main functions  -----------------------
+
+    def check_export_button_status(self):
+        if self.profile_data == []:
+            status = False
+        else:
+            status = True
+        self.ui.export_profiles_button.setEnabled(status)
 
     def check_from_to_angle(self, do_not_touch='from'):
         from_angle = self.ui.from_angle_slider.value()
