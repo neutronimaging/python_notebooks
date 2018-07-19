@@ -27,7 +27,7 @@ from __code.file_folder_browser import FileFolderBrowser
 from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
 
-class RadialProfile(FileFolderBrowser):
+class RadialProfile():
 
     nbr_files = 0
     images_dimension = {'height': 0,
@@ -38,43 +38,45 @@ class RadialProfile(FileFolderBrowser):
     list_images = []
     profile_data = []
 
-    def __init__(self, working_dir=''):
-        super(RadialProfile, self).__init__(working_dir=working_dir)
+    def __init__(self, data=[]):
+        self.working_data = data
 
-    def load_images(self):
-        list_images = self.list_images_ui.selected
-
-        if list_images:
-
-            w = widgets.IntProgress()
-            w.max = len(list_images)
-            display(w)
-
-            working_data = []
-            for _index, _file in enumerate(list_images):
-                _data = np.array(file_handler.load_data(_file))
-                _data[_data == np.inf] = np.NaN  # removing inf values
-                _data[np.isnan(_data)] = 0
-                working_data.append(_data)
-                w.value = _index + 1
-
-            [self.nbr_files, self.images_dimension['height'], self.images_dimension['width']] = np.shape(working_data)
-            self.working_data = np.squeeze(working_data)
-            self.working_dir = os.path.dirname(list_images[0])
-            self.list_images = list_images
+    # def load_images(self):
+    #     list_images = self.list_images_ui.selected
+    #
+    #     if list_images:
+    #
+    #         w = widgets.IntProgress()
+    #         w.max = len(list_images)
+    #         display(w)
+    #
+    #         working_data = []
+    #         for _index, _file in enumerate(list_images):
+    #             _data = np.array(file_handler.load_data(_file))
+    #             _data[_data == np.inf] = np.NaN  # removing inf values
+    #             _data[np.isnan(_data)] = 0
+    #             working_data.append(_data)
+    #             w.value = _index + 1
+    #
+    #         [self.nbr_files, self.images_dimension['height'], self.images_dimension['width']] = np.shape(working_data)
+    #         self.working_data = np.squeeze(working_data)
+    #         self.working_dir = os.path.dirname(list_images[0])
+    #         self.list_images = list_images
 
     def calculate(self, center={}, angle_range={}):
 
         self.center = center
         self.angle_range = angle_range
 
+        nbr_files = len(self.working_data)
+
         w = widgets.IntProgress()
-        w.max = self.nbr_files
+        w.max = nbr_files
         display(w)
 
         _array_profile = []
 
-        for _index in np.arange(self.nbr_files):
+        for _index in np.arange(nbr_files):
             o_calculation =  CalculateRadialProfile(data=self.working_data[_index], center=center, angle_range=angle_range)
             o_calculation.calculate()
 
@@ -82,7 +84,10 @@ class RadialProfile(FileFolderBrowser):
             _array_profile.append(_profile)
 
             w.value = _index + 1
+            # print(_index+1)
+            # QtGui.QGuiApplication.processEvents()
 
+        w.close()
         self.profile_data = _array_profile
 
     def plot(self):
@@ -169,7 +174,7 @@ class SelectRadialParameters(QMainWindow):
         # o_profile.load_images()
         self.list_images = data_dict['file_name']
         self.working_data = data_dict['data']
-        self.rotated_working_data = data_dict['data']
+        # self.rotated_working_data = data_dict['data']
         [self.height, self.width] = np.shape(self.working_data[0])
 
         # self.rotated_working_data = o_profile.working_data
@@ -591,6 +596,12 @@ class SelectRadialParameters(QMainWindow):
         self.ui.image_view.addItem(self.sector_g)
         self.sector_g.setData(pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False)
 
+    def guide_color_clicked(self):
+        self.guide_color_changed(-1)
+
+    def guide_color_released(self):
+        self.guide_color_changed(-1)
+
     def guide_color_changed(self, index):
         red = self.ui.guide_red_slider.value()
         green = self.ui.guide_green_slider.value()
@@ -616,8 +627,8 @@ class SelectRadialParameters(QMainWindow):
             _from_angle = 0
             _to_angle = 360
         else:
-            _from_angle = np.float(self.ui.sector_from_angle.value())
-            _to_angle = np.float(self.ui.sector_to_angle.value())
+            _from_angle = np.float(self.ui.from_angle_slider.value())
+            _to_angle = np.float(self.ui.to_angle_slider.value())
         _angle_range['from'] = _from_angle
         _angle_range['to'] = _to_angle
         self.angle_range = _angle_range
