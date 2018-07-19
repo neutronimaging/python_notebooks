@@ -21,6 +21,7 @@ except ImportError:
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from __code import file_handler
+from __code.color import  Color
 from __code.ui_radial_profile import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
 
@@ -41,6 +42,9 @@ class RadialProfile():
     def __init__(self, parent_ui=None, data=[]):
         self.working_data = data
         self.parent_ui = parent_ui
+
+        color = Color()
+        self.list_rgb_profile_color = color.get_list_rgb(nbr_color=len(self.working_data))
 
     # def load_images(self):
     #     list_images = self.list_images_ui.selected
@@ -77,12 +81,12 @@ class RadialProfile():
         self.parent_ui.eventProgress.setMaximum(nbr_files)
         self.parent_ui.eventProgress.setValue(1)
         self.parent_ui.eventProgress.setVisible(True)
-
-        # w = widgets.IntProgress()
-        # w.max = nbr_files
-        # display(w)
+        QtGui.QGuiApplication.processEvents()
 
         _array_profile = []
+
+        self.parent_ui.ui.profile_plot.clear()
+        self.parent_ui.ui.profile_plot.addLegend()
 
         for _index in np.arange(nbr_files):
             o_calculation =  CalculateRadialProfile(data=self.working_data[_index], center=center, angle_range=angle_range)
@@ -91,22 +95,27 @@ class RadialProfile():
             _profile = o_calculation.radial_profile
             _array_profile.append(_profile)
 
-            # w.value = _index + 1
             self.parent_ui.eventProgress.setValue(_index+1)
+
+            # display
+            _color = self.list_rgb_profile_color[_index]
+            self.plot(_profile, "File #{}".format(_index), _color)
+
             QtGui.QGuiApplication.processEvents()
 
         QtGui.QGuiApplication.processEvents()
         self.parent_ui.eventProgress.setVisible(False)
-        # w.close()
         self.profile_data = _array_profile
 
         QApplication.restoreOverrideCursor()
 
-    def plot(self):
-        plt.figure()
-        for _index, _profile in enumerate(self.profile_data):
-            plt.plot(_profile, label='profile #{}'.format(_index))
-            plt.legend(loc=2)
+    def plot(self, data, label, color):
+        self.parent_ui.ui.profile_plot.plot(data, name=label, pen=color)
+
+        # plt.figure()
+        # for _index, _profile in enumerate(self.profile_data):
+        #     plt.plot(_profile, label='profile #{}'.format(_index))
+        #     plt.legend(loc=2)
 
     def select_export_folder(self):
         self.export_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
