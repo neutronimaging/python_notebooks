@@ -38,8 +38,9 @@ class RadialProfile():
     list_images = []
     profile_data = []
 
-    def __init__(self, data=[]):
+    def __init__(self, parent_ui=None, data=[]):
         self.working_data = data
+        self.parent_ui = parent_ui
 
     # def load_images(self):
     #     list_images = self.list_images_ui.selected
@@ -65,14 +66,21 @@ class RadialProfile():
 
     def calculate(self, center={}, angle_range={}):
 
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+
         self.center = center
         self.angle_range = angle_range
 
         nbr_files = len(self.working_data)
 
-        w = widgets.IntProgress()
-        w.max = nbr_files
-        display(w)
+        self.parent_ui.eventProgress.setMinimum(1)
+        self.parent_ui.eventProgress.setMaximum(nbr_files)
+        self.parent_ui.eventProgress.setValue(1)
+        self.parent_ui.eventProgress.setVisible(True)
+
+        # w = widgets.IntProgress()
+        # w.max = nbr_files
+        # display(w)
 
         _array_profile = []
 
@@ -83,12 +91,16 @@ class RadialProfile():
             _profile = o_calculation.radial_profile
             _array_profile.append(_profile)
 
-            w.value = _index + 1
-            # print(_index+1)
-            # QtGui.QGuiApplication.processEvents()
+            # w.value = _index + 1
+            self.parent_ui.eventProgress.setValue(_index+1)
+            QtGui.QGuiApplication.processEvents()
 
-        w.close()
+        QtGui.QGuiApplication.processEvents()
+        self.parent_ui.eventProgress.setVisible(False)
+        # w.close()
         self.profile_data = _array_profile
+
+        QApplication.restoreOverrideCursor()
 
     def plot(self):
         plt.figure()
@@ -165,6 +177,8 @@ class SelectRadialParameters(QMainWindow):
 
     histogram_level = []
 
+    profile_data = []
+
     # def __init__(self, parent=None, o_profile=None):
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
@@ -194,6 +208,8 @@ class SelectRadialParameters(QMainWindow):
         self.display_grid()
         self.file_index_changed()
         self.init_crosshair()
+
+        self.apply_clicked()
 
     # initialization -------------------
 
@@ -274,7 +290,6 @@ class SelectRadialParameters(QMainWindow):
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
-
 
     # Event Handler ----------------------
 
@@ -359,8 +374,6 @@ class SelectRadialParameters(QMainWindow):
         self.check_from_to_angle(do_not_touch='to')
         self.sector_changed()
 
-
-
     def get_image_dimension(self, array_image):
         if len(np.shape(array_image)) > 2:
             return np.shape(array_image[0])
@@ -440,10 +453,22 @@ class SelectRadialParameters(QMainWindow):
 
     def sector_changed(self):
         self.circle_center_changed()
+        self.apply_clicked()
 
     def grid_size_changed(self):
         self.ui.image_view.removeItem(self.line_view_binning)
         self.display_grid()
+
+    def calculate_profiles_clicked(self):
+        o_profile = RadialProfile(parent_ui=self,
+                                  data=self.working_data)
+        o_profile.calculate(center=self.center,
+                            angle_range=self.angle_range)
+
+        self.profile_data = o_profile.profile_data
+
+    def export_profiles_clicked(self):
+        pass
 
     # Main functions  -----------------------
 
@@ -672,8 +697,6 @@ class SelectRadialParameters(QMainWindow):
         _angle_range['from'] = _from_angle
         _angle_range['to'] = _to_angle
         self.angle_range = _angle_range
-
-        self.close()
 
     def cancel_clicked(self):
         self.close()

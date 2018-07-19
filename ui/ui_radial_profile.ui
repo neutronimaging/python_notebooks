@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -971,6 +971,38 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>calculate_profiles_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calculate_profiles_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>689</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>790</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>apply_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_profiles_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1163</x>
+     <y>738</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1014</x>
+     <y>744</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -988,5 +1020,7 @@ p, li { white-space: pre-wrap; }
   <slot>sector_to_angle_clicked()</slot>
   <slot>guide_color_clicked()</slot>
   <slot>guide_color_released()</slot>
+  <slot>calculate_profiles_clicked()</slot>
+  <slot>export_profiles_clicked()</slot>
  </slots>
 </ui>
