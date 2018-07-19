@@ -547,7 +547,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>59</x>
-     <y>700</y>
+     <y>754</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -562,8 +562,8 @@ p, li { white-space: pre-wrap; }
    <slot>apply_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1031</x>
-     <y>700</y>
+     <x>1228</x>
+     <y>754</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -578,8 +578,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_radio_button_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>603</x>
-     <y>151</y>
+     <x>702</x>
+     <y>183</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -594,8 +594,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_radio_button_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>640</x>
-     <y>199</y>
+     <x>739</x>
+     <y>231</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
@@ -610,8 +610,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>671</x>
-     <y>307</y>
+     <x>770</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -626,8 +626,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>644</x>
-     <y>345</y>
+     <x>743</x>
+     <y>377</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -642,8 +642,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>644</x>
-     <y>379</y>
+     <x>743</x>
+     <y>411</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -658,8 +658,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>644</x>
-     <y>413</y>
+     <x>743</x>
+     <y>445</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -674,8 +674,8 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>684</x>
-     <y>450</y>
+     <x>783</x>
+     <y>482</y>
     </hint>
     <hint type="destinationlabel">
      <x>823</x>
@@ -690,8 +690,8 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>665</x>
-     <y>445</y>
+     <x>764</x>
+     <y>477</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
@@ -706,8 +706,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>624</x>
-     <y>219</y>
+     <x>723</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>807</x>
@@ -722,8 +722,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>604</x>
-     <y>247</y>
+     <x>703</x>
+     <y>279</y>
     </hint>
     <hint type="destinationlabel">
      <x>809</x>
@@ -738,8 +738,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>606</x>
-     <y>215</y>
+     <x>705</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>749</x>
@@ -754,8 +754,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>592</x>
-     <y>248</y>
+     <x>691</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>748</x>
@@ -770,8 +770,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>581</x>
-     <y>212</y>
+     <x>680</x>
+     <y>244</y>
     </hint>
     <hint type="destinationlabel">
      <x>794</x>
@@ -786,8 +786,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>644</x>
-     <y>241</y>
+     <x>743</x>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>769</x>
@@ -802,8 +802,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>641</x>
-     <y>308</y>
+     <x>740</x>
+     <y>340</y>
     </hint>
     <hint type="destinationlabel">
      <x>762</x>
@@ -818,8 +818,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>665</x>
-     <y>311</y>
+     <x>764</x>
+     <y>343</y>
     </hint>
     <hint type="destinationlabel">
      <x>734</x>
@@ -834,8 +834,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>679</x>
-     <y>341</y>
+     <x>778</x>
+     <y>373</y>
     </hint>
     <hint type="destinationlabel">
      <x>750</x>
@@ -850,8 +850,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>664</x>
-     <y>342</y>
+     <x>763</x>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
      <x>724</x>
@@ -866,8 +866,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>660</x>
-     <y>377</y>
+     <x>759</x>
+     <y>409</y>
     </hint>
     <hint type="destinationlabel">
      <x>763</x>
@@ -882,8 +882,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>636</x>
-     <y>374</y>
+     <x>735</x>
+     <y>406</y>
     </hint>
     <hint type="destinationlabel">
      <x>743</x>
@@ -898,8 +898,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>665</x>
-     <y>409</y>
+     <x>764</x>
+     <y>441</y>
     </hint>
     <hint type="destinationlabel">
      <x>775</x>
@@ -914,8 +914,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>684</x>
-     <y>410</y>
+     <x>783</x>
+     <y>442</y>
     </hint>
     <hint type="destinationlabel">
      <x>753</x>
@@ -930,12 +930,44 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>676</x>
-     <y>451</y>
+     <x>775</x>
+     <y>483</y>
     </hint>
     <hint type="destinationlabel">
      <x>689</x>
      <y>475</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>from_angle_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_from_angle_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>777</x>
+     <y>245</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1234</x>
+     <y>309</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>to_angle_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sector_to_angle_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>783</x>
+     <y>271</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1232</x>
+     <y>279</y>
     </hint>
    </hints>
   </connection>

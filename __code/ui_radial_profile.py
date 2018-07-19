@@ -279,6 +279,7 @@ class Ui_MainWindow(object):
         self.guide_alpha_slider.sliderPressed.connect(MainWindow.guide_color_clicked)
         self.guide_alpha_slider.sliderReleased.connect(MainWindow.guide_color_released)
         self.grid_size_slider.sliderReleased.connect(MainWindow.grid_slider_pressed)
+        self.from_angle_slider.valueChanged['int'].connect(MainWindow.sector_from_angle_moved)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

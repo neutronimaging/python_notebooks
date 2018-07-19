@@ -195,6 +195,8 @@ class SelectRadialParameters(QMainWindow):
         self.file_index_changed()
         self.init_crosshair()
 
+    # initialization -------------------
+
     def init_pyqtgraph(self):
 
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
@@ -261,7 +263,20 @@ class SelectRadialParameters(QMainWindow):
         self.ui.sector_from_units.setText(u"\u00B0")
         self.ui.sector_to_units.setText(u"\u00B0")
 
+        self.ui.from_angle_slider.setValue(self.sector_range['from'])
+        self.ui.to_angle_slider.setValue(self.sector_range['to'])
+
         self.sector_radio_button_changed()
+
+    def init_statusbar(self):
+        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress.setMinimumSize(20, 14)
+        self.eventProgress.setMaximumSize(540, 100)
+        self.eventProgress.setVisible(False)
+        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+
+
+    # Event Handler ----------------------
 
     def grid_slider_moved(self, value):
         self.grid_size_changed()
@@ -324,26 +339,27 @@ class SelectRadialParameters(QMainWindow):
         self.ui.to_angle_slider.setEnabled(_status_sector)
         self.sector_changed()
 
-    def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        self.eventProgress.setMinimumSize(20, 14)
-        self.eventProgress.setMaximumSize(540, 100)
-        self.eventProgress.setVisible(False)
-        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+    # from and to angles sliders
 
     def sector_from_angle_moved(self, value):
         self.ui.sector_from_value.setText(str(value))
+        self.check_from_to_angle(do_not_touch='from')
         self.sector_changed()
 
     def sector_to_angle_moved(self, value):
         self.ui.sector_to_value.setText(str(value))
+        self.check_from_to_angle(do_not_touch='to')
         self.sector_changed()
 
     def sector_from_angle_clicked(self):
+        self.check_from_to_angle(do_not_touch='from')
         self.sector_changed()
 
     def sector_to_angle_clicked(self):
+        self.check_from_to_angle(do_not_touch='to')
         self.sector_changed()
+
+
 
     def get_image_dimension(self, array_image):
         if len(np.shape(array_image)) > 2:
@@ -428,6 +444,21 @@ class SelectRadialParameters(QMainWindow):
     def grid_size_changed(self):
         self.ui.image_view.removeItem(self.line_view_binning)
         self.display_grid()
+
+    # Main functions  -----------------------
+
+    def check_from_to_angle(self, do_not_touch='from'):
+        from_angle = self.ui.from_angle_slider.value()
+        to_angle = self.ui.to_angle_slider.value()
+
+        if do_not_touch == 'from':
+            if to_angle < from_angle:
+                self.ui.to_angle_slider.setValue(from_angle)
+                self.ui.sector_to_value.setText(str(from_angle))
+        else:
+            if from_angle > to_angle:
+                self.ui.from_angle_slider.setValue(to_angle)
+                self.ui.sector_from_value.setText(str(to_angle))
 
     def calculate_corners_angles(self):
         '''top vertical being angle 0'''
