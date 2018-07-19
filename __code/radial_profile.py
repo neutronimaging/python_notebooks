@@ -86,7 +86,12 @@ class RadialProfile():
         _array_profile = []
 
         self.parent_ui.ui.profile_plot.clear()
-        self.parent_ui.ui.profile_plot.addLegend()
+        try:
+            self.parent_ui.ui.profile_plot.scene().removeItem(self.parent_ui.legend)
+        except Exception as e:
+            print(e)
+        self.parent_ui.legend = self.parent_ui.ui.profile_plot.addLegend()
+        QtGui.QGuiApplication.processEvents()
 
         for _index in np.arange(nbr_files):
             o_calculation =  CalculateRadialProfile(data=self.working_data[_index], center=center, angle_range=angle_range)
@@ -187,6 +192,7 @@ class SelectRadialParameters(QMainWindow):
     histogram_level = []
 
     profile_data = []
+    legend = None
 
     # def __init__(self, parent=None, o_profile=None):
     def __init__(self, parent=None, working_dir='', data_dict=None):
