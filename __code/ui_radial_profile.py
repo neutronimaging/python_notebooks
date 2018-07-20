@@ -192,10 +192,11 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
         self.groupBox.setSizePolicy(sizePolicy)
-        self.groupBox.setMinimumSize(QtCore.QSize(0, 85))
+        self.groupBox.setMinimumSize(QtCore.QSize(0, 105))
         self.groupBox.setMaximumSize(QtCore.QSize(16777215, 85))
         self.groupBox.setObjectName("groupBox")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.groupBox)
+        self.verticalLayout.setContentsMargins(-1, 0, -1, -1)
         self.verticalLayout.setObjectName("verticalLayout")
         self.textBrowser = QtWidgets.QTextBrowser(self.groupBox)
         self.textBrowser.setEnabled(False)
@@ -204,7 +205,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
         self.textBrowser.setSizePolicy(sizePolicy)
-        self.textBrowser.setMinimumSize(QtCore.QSize(0, 40))
+        self.textBrowser.setMinimumSize(QtCore.QSize(0, 60))
         self.textBrowser.setMaximumSize(QtCore.QSize(16777215, 40))
         self.textBrowser.setObjectName("textBrowser")
         self.verticalLayout.addWidget(self.textBrowser)
@@ -239,9 +240,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.cancel_button)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
-        self.apply_button = QtWidgets.QPushButton(self.centralwidget)
-        self.apply_button.setObjectName("apply_button")
-        self.horizontalLayout.addWidget(self.apply_button)
         self.verticalLayout_5.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -253,9 +251,8 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.cancel_button.clicked.connect(MainWindow.cancel_clicked)
-        self.apply_button.clicked.connect(MainWindow.apply_clicked)
         self.sector_full_circle.clicked.connect(MainWindow.sector_radio_button_changed)
         self.sector_sector.clicked.connect(MainWindow.sector_radio_button_changed)
         self.guide_red_slider.sliderMoved['int'].connect(MainWindow.guide_color_changed)
@@ -282,7 +279,7 @@ class Ui_MainWindow(object):
         self.from_angle_slider.valueChanged['int'].connect(MainWindow.sector_from_angle_moved)
         self.to_angle_slider.valueChanged['int'].connect(MainWindow.sector_to_angle_moved)
         self.calculate_profiles_button.clicked.connect(MainWindow.calculate_profiles_clicked)
-        self.apply_button.clicked.connect(MainWindow.export_profiles_clicked)
+        self.export_profiles_button.clicked.connect(MainWindow.export_profiles_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -309,11 +306,12 @@ class Ui_MainWindow(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'.SF NS Text\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">center of circle</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">radial sector</span></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">radial sector</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Jump to <span style=\" font-weight:600;\">Profile</span> tab and <span style=\" font-weight:600;\">Run Calculation</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* <span style=\" font-weight:600;\">Export</span> profiles</p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Initialization"))
         self.calculate_profiles_button.setText(_translate("MainWindow", "Calculate Profiles"))
         self.export_profiles_button.setText(_translate("MainWindow", "Export ..."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Profile"))
-        self.cancel_button.setText(_translate("MainWindow", "Cancel"))
-        self.apply_button.setText(_translate("MainWindow", "OK"))
+        self.cancel_button.setText(_translate("MainWindow", "Close"))
 

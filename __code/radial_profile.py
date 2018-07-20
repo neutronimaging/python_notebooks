@@ -99,8 +99,7 @@ class RadialProfile():
     def plot(self, data, label, color):
         self.parent_ui.ui.profile_plot.plot(data, name=label, pen=color)
 
-    def export(self):
-        output_folder = self.export_ui.selected
+    def export(self, output_folder=''):
         if output_folder:
 
             for _index, _file in enumerate(self.list_images):
@@ -454,17 +453,23 @@ class SelectRadialParameters(QMainWindow):
                             angle_range=self.angle_range)
 
         self.profile_data = o_profile.profile_data
+        self.o_profile = o_profile
         self.check_export_button_status()
 
     def export_profiles_clicked(self):
-        self.export_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
-                                                              type='directory',
-                                                              start_dir=self.working_dir,
-                                                              next=self._export_profiles)
-        self.export_ui.show()
-
-    def _export_profiles(self, result):
-        print(result)
+        # self.export_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
+        #                                                       type='directory',
+        #                                                       start_dir=self.working_dir,
+        #                                                       next=self._export_profiles)
+        # self.export_ui.show()
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=os.path.dirname(self.working_dir),
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        QtGui.QGuiApplication.processEvents()
+        if _export_folder:
+            o_profile = self.o_profile
+            o_profile.export(output_folder=_export_folder)
 
     # Main functions  -----------------------
 

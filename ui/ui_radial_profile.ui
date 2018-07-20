@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -405,7 +405,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>85</height>
+            <height>105</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -418,6 +418,9 @@
            <string>Instructions</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QTextBrowser" name="textBrowser">
              <property name="enabled">
@@ -432,7 +435,7 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>40</height>
+               <height>60</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -447,7 +450,9 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* Define &lt;span style=&quot; font-weight:600;&quot;&gt;center of circle&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* Define &lt;span style=&quot; font-weight:600;&quot;&gt;radial sector&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* Define &lt;span style=&quot; font-weight:600;&quot;&gt;radial sector&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* Jump to &lt;span style=&quot; font-weight:600;&quot;&gt;Profile&lt;/span&gt; tab and &lt;span style=&quot; font-weight:600;&quot;&gt;Run Calculation&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* &lt;span style=&quot; font-weight:600;&quot;&gt;Export&lt;/span&gt; profiles&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -484,7 +489,7 @@ p, li { white-space: pre-wrap; }
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>Export ...</string>
+           <string>Export Profiles ...</string>
           </property>
          </widget>
         </item>
@@ -497,7 +502,7 @@ p, li { white-space: pre-wrap; }
       <item>
        <widget class="QPushButton" name="cancel_button">
         <property name="text">
-         <string>Cancel</string>
+         <string>Close</string>
         </property>
        </widget>
       </item>
@@ -513,13 +518,6 @@ p, li { white-space: pre-wrap; }
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="apply_button">
-        <property name="text">
-         <string>OK</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </item>
@@ -552,22 +550,6 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>179</x>
      <y>478</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>apply_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>apply_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1228</x>
-     <y>754</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>552</x>
-     <y>492</y>
     </hint>
    </hints>
   </connection>
@@ -988,18 +970,18 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>apply_button</sender>
+   <sender>export_profiles_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>export_profiles_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1163</x>
-     <y>738</y>
+     <x>662</x>
+     <y>680</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1014</x>
-     <y>744</y>
+     <x>688</x>
+     <y>749</y>
     </hint>
    </hints>
   </connection>
