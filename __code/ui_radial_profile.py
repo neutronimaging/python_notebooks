@@ -311,7 +311,7 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* <span style=\" font-weight:600;\">Export</span> profiles</p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Initialization"))
         self.calculate_profiles_button.setText(_translate("MainWindow", "Calculate Profiles"))
-        self.export_profiles_button.setText(_translate("MainWindow", "Export ..."))
+        self.export_profiles_button.setText(_translate("MainWindow", "Export Profiles ..."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Profile"))
         self.cancel_button.setText(_translate("MainWindow", "Close"))
 

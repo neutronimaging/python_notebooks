@@ -42,6 +42,7 @@ class RadialProfile():
     def __init__(self, parent_ui=None, data=[], list_files=[]):
         self.working_data = data
         self.parent_ui = parent_ui
+        self.list_images = list_files
 
         self.short_list_files = [os.path.basename(_file) for _file in list_files]
 
@@ -101,7 +102,6 @@ class RadialProfile():
 
     def export(self, output_folder=''):
         if output_folder:
-
             for _index, _file in enumerate(self.list_images):
 
                 [input_image_base_name, ext] = os.path.splitext(os.path.basename(_file))
@@ -122,7 +122,10 @@ class RadialProfile():
 
                 file_handler.make_ascii_file(metadata=text, data=data, output_file_name=output_file_name)
 
-                display(HTML('<span style="font-size: 20px; color:blue">File created: ' + output_file_name + '</span>'))
+                # display(HTML('<span style="font-size: 20px; color:blue">File created: ' + output_file_name + '</span>'))
+
+        self.parent_ui.ui.statusbar.showMessage("Profiles Exported in {}!".format(output_folder), 10000)
+        self.parent_ui.ui.statusbar.setStyleSheet("color: green")
 
 
 class SelectRadialParameters(QMainWindow):
@@ -463,7 +466,7 @@ class SelectRadialParameters(QMainWindow):
         #                                                       next=self._export_profiles)
         # self.export_ui.show()
         _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=os.path.dirname(self.working_dir),
+                                                          directory=self.working_dir,
                                                           caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
         QtGui.QGuiApplication.processEvents()
