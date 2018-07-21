@@ -213,12 +213,16 @@ class Interface(QMainWindow):
         area = DockArea()
         area.setVisible(True)
         d1 = Dock("Raw", size=(200, 200))
+        d1h = Dock("Raw Histogram", size=(200, 200))
         d2 = Dock("Gamma Filtered", size=(200, 200))
-        # d3 = Dock("Raw - Gamma", size=(200, 200))
+        d2h = Dock("Gamma Filtered Histogram", size=(200, 200))
 
         area.addDock(d1, 'left')
+        area.addDock(d1h, 'left')
+        area.moveDock(d1, 'above', d1h)
         area.addDock(d2, 'right', d1)
-        # area.addDock(d3, 'right')
+        area.addDock(d2h, 'left')
+        area.moveDock(d2, 'above', d2h)
 
         self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
         self.ui.raw_image_view.ui.roiBtn.hide()
