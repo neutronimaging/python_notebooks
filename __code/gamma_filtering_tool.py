@@ -221,9 +221,10 @@ class Interface(QMainWindow):
         area.addDock(d1h, 'left')
         area.moveDock(d1, 'above', d1h)
         area.addDock(d2, 'right', d1)
-        area.addDock(d2h, 'left')
+        area.addDock(d2h, 'right')
         area.moveDock(d2, 'above', d2h)
 
+        # raw image
         self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
@@ -237,6 +238,11 @@ class Interface(QMainWindow):
                                     slot=self.mouse_moved_in_raw_image)
         d1.addWidget(self.ui.raw_image_view)
 
+        # raw histogram plot
+        self.ui.raw_histogram_plot = pg.PlotWidget()
+        d1h.addWidget(self.ui.raw_histogram_plot)
+
+        # filtered image
         self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name='filtered_image')
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
@@ -248,6 +254,10 @@ class Interface(QMainWindow):
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_filtered_image)
         d2.addWidget(self.ui.filtered_image_view)
+
+        # filtered histogram plot
+        self.ui.filtered_histogram_plot = pg.PlotWidget()
+        d2h.addWidget(self.ui.raw_histogram_plot)
 
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(area)
@@ -310,6 +320,9 @@ class Interface(QMainWindow):
         if not first_update:
             _histo_widget.setLevels(self.raw_histogram_level[0],
                                     self.raw_histogram_level[1])
+
+        # histogram
+
 
     def reset_states(self):
         _state = self.state_of_raw
