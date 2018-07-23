@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1241</width>
-    <height>793</height>
+    <width>1237</width>
+    <height>875</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -280,7 +280,7 @@
                </size>
               </property>
               <property name="title">
-               <string>Guide Color</string>
+               <string>Grid Settings </string>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
                <item row="0" column="1">
@@ -411,7 +411,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>85</height>
+            <height>105</height>
            </size>
           </property>
           <property name="title">
@@ -435,7 +435,7 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>60</height>
+               <height>70</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -500,9 +500,9 @@ p, li { white-space: pre-wrap; }
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="cancel_button">
+       <widget class="QPushButton" name="help_button">
         <property name="text">
-         <string>Close</string>
+         <string>Help</string>
         </property>
        </widget>
       </item>
@@ -519,6 +519,13 @@ p, li { white-space: pre-wrap; }
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="cancel_button">
+        <property name="text">
+         <string>Done</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -528,7 +535,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1241</width>
+     <width>1237</width>
      <height>22</height>
     </rect>
    </property>
@@ -544,8 +551,8 @@ p, li { white-space: pre-wrap; }
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>59</x>
-     <y>754</y>
+     <x>1198</x>
+     <y>836</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -752,8 +759,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>680</x>
-     <y>244</y>
+     <x>678</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>794</x>
@@ -928,8 +935,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>777</x>
-     <y>245</y>
+     <x>775</x>
+     <y>252</y>
     </hint>
     <hint type="destinationlabel">
      <x>1234</x>
@@ -944,8 +951,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>783</x>
-     <y>271</y>
+     <x>781</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
      <x>1232</x>
@@ -977,11 +984,27 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>662</x>
-     <y>680</y>
+     <y>762</y>
     </hint>
     <hint type="destinationlabel">
      <x>688</x>
      <y>749</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>help_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>help_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>58</x>
+     <y>823</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>100</x>
+     <y>849</y>
     </hint>
    </hints>
   </connection>
@@ -1004,5 +1027,6 @@ p, li { white-space: pre-wrap; }
   <slot>guide_color_released()</slot>
   <slot>calculate_profiles_clicked()</slot>
   <slot>export_profiles_clicked()</slot>
+  <slot>help_button_clicked()</slot>
  </slots>
 </ui>

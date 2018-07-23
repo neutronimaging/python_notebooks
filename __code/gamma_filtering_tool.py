@@ -42,6 +42,8 @@ class Interface(QMainWindow):
     filtered_histogram_level = []
     diff_filtered_histogram_level = []
 
+    nbr_histo_bins = 2000
+
     live_raw_image = []
     live_filtered_image = []
     live_diff_image = []
@@ -233,6 +235,8 @@ class Interface(QMainWindow):
         self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
         self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
         self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
+        self.raw_vLine.setPos([1000, 1000])
+        self.raw_hLine.setPos([1000, 1000])
         self.raw_proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_raw_image)
@@ -250,6 +254,8 @@ class Interface(QMainWindow):
         self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
         self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
         self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
+        self.filtered_vLine.setPos([1000, 1000])
+        self.filtered_hLine.setPos([1000, 1000])
         self.filtered_proxy = pg.SignalProxy(self.ui.filtered_image_view.view.scene().sigMouseMoved,
                                     rateLimit=60,
                                     slot=self.mouse_moved_in_filtered_image)
@@ -257,7 +263,7 @@ class Interface(QMainWindow):
 
         # filtered histogram plot
         self.ui.filtered_histogram_plot = pg.PlotWidget()
-        d2h.addWidget(self.ui.raw_histogram_plot)
+        d2h.addWidget(self.ui.filtered_histogram_plot)
 
         vertical_layout = QtGui.QVBoxLayout()
         vertical_layout.addWidget(area)
@@ -321,8 +327,15 @@ class Interface(QMainWindow):
             _histo_widget.setLevels(self.raw_histogram_level[0],
                                     self.raw_histogram_level[1])
 
-        # histogram
+        # force to see everything
+        # _view_box.setRange(None, None, [0, 1024], [0, 1024])
 
+        # histogram
+        self.ui.raw_histogram_plot.clear()
+        min = 0
+        max = np.max(_image)
+        y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
+        self.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
     def reset_states(self):
         _state = self.state_of_raw
@@ -362,6 +375,13 @@ class Interface(QMainWindow):
         if not first_update:
             _histo_widget.setLevels(self.filtered_histogram_level[0],
                                     self.filtered_histogram_level[1])
+
+        # histogram
+        self.ui.filtered_histogram_plot.clear()
+        min = 0
+        max = np.max(_image)
+        y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
+        self.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
     def apply_clicked(self):
         self.close()

@@ -282,6 +282,10 @@ class SelectRadialParameters(QMainWindow):
 
     # Event Handler ----------------------
 
+    def help_button_clicked(self):
+        import webbrowser
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/radial_profile/")
+
     def grid_slider_moved(self, value):
         self.grid_size_changed()
 
