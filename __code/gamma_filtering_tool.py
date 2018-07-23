@@ -327,9 +327,6 @@ class Interface(QMainWindow):
             _histo_widget.setLevels(self.raw_histogram_level[0],
                                     self.raw_histogram_level[1])
 
-        # force to see everything
-        # _view_box.setRange(None, None, [0, 1024], [0, 1024])
-
         # histogram
         self.ui.raw_histogram_plot.clear()
         min = 0
