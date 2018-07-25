@@ -40,16 +40,26 @@ class Interface(QMainWindow):
         self.addItems(self.ui.treeWidget.invisibleRootItem())
         self.ui.treeWidget.itemChanged.connect(self.tree_item_changed)
 
+    def get_item_name(self, item):
+
+        print("item is : {}".format(item))
+
+        for _key in self.tree_dict_state.keys():
+            print("self.tree_dict_state[_key]['ui']: {}".format(self.tree_dict_state[_key]['ui']))
+            if item == self.tree_dict_state[_key]['ui']:
+                return _key
+        return None
+
     def tree_item_changed(self, item, _):
-        print(item.checkState(0))
+        print("name of item is: {}".format(self.get_item_name(item)))
 
     def addItems(self, parent):
         column = 0
         sample = self.addParent(parent, column, "Sample", 'sample', [1,2,3])
-        sample_runs = self.addChild(sample, column, "Runs", "sample_runs", [1])
+        self.addChild(sample, column, "Runs", "sample_runs", [1])
         sample_background = self.addParent(sample, column, "Background", "sample_background", [2,3])
-        sample_background_runs = self.addChild(sample_background, column, "Runs", "sample_background_runs", [2])
-        sample_background_background_runs = self.addChild(sample_background, column, "Background Runs", "sample_background_background_runs", [3])
+        self.addChild(sample_background, column, "Runs", "sample_background_runs", [2])
+        self.addChild(sample_background, column, "Background Runs", "sample_background_background_runs", [3])
 
         # vanadium = self.addParent(parent, column, "Vanadium", "vanadium", [4,5,6])
         # vanadium_runs = self.addChild(vanadium, column, "Runs", "run")
@@ -62,7 +72,7 @@ class Interface(QMainWindow):
         item.setCheckState(column, QtCore.Qt.Checked)
         item.setExpanded(True)
 
-        self.tree_dict_state[name] = self.item_dict
+        self.tree_dict_state[name] = self.item_dict.copy()
         self.tree_dict_state[name]['ui'] = item
         self.tree_dict_state[name]['table_columns'] = table_columns
 
@@ -73,7 +83,7 @@ class Interface(QMainWindow):
         item.setData(column, QtCore.Qt.UserRole, '')
         item.setCheckState(column, QtCore.Qt.Checked)
 
-        self.tree_dict_state[name] = self.item_dict
+        self.tree_dict_state[name] = self.item_dict.copy()
         self.tree_dict_state[name]['ui'] = item
         self.tree_dict_state[name]['table_columns'] = table_columns
 
