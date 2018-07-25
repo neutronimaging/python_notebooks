@@ -31,6 +31,12 @@ class Interface(QMainWindow):
     def init_tree(self):
         # fill the self.ui.treeWidget
         self.addItems(self.ui.treeWidget.invisibleRootItem())
+        self.ui.treeWidget.itemChanged.connect(self.tree_item_changed)
+
+    def tree_item_changed(self, item, _):
+        print("item is {}".format(item))
+
+
 
     def addItems(self, parent):
         column = 0
@@ -43,8 +49,7 @@ class Interface(QMainWindow):
         self.addChild(sample_background, column, "Background Runs", "background runs")
 
         self.addChild(vanadium, column, "Runs", "run")
-        self.addChild(vanadium, column, "Background", "backgorund")
-
+        self.addChild(vanadium, column, "Background", "background")
 
     def addParent(self, parent, column, title, data):
         item = QTreeWidgetItem(parent, [title])
