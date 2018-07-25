@@ -38,7 +38,9 @@ class Interface(QMainWindow):
         vanadium = self.addParent(parent, column, "Vanadium", "Vanadium text")
 
         self.addChild(sample, column, "Runs", "run")
-        self.addChild(sample, column, "Background", "backgorund")
+        sample_background = self.addParent(sample, column, "Background", "background")
+        self.addChild(sample_background, column, "Runs", "runs")
+        self.addChild(sample_background, column, "Background Runs", "background runs")
 
         self.addChild(vanadium, column, "Runs", "run")
         self.addChild(vanadium, column, "Background", "backgorund")
@@ -48,6 +50,7 @@ class Interface(QMainWindow):
         item = QTreeWidgetItem(parent, [title])
         item.setData(column, QtCore.Qt.UserRole, data)
         item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+        item.setCheckState(column, QtCore.Qt.Unchecked)
         item.setExpanded(True)
         return item
 
