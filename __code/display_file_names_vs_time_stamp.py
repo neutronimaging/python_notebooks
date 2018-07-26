@@ -98,12 +98,37 @@ class DisplayFileNamesVsTimeStamp(object):
 
     def print_result(self):
 
-        tab_nest = widgets.Tab()
+        relative_text_area = ["file name -> (current image acquistion time - previous image acquisition time) \n"]
+        for _index, _file in enumerate(self.list_files):
+            _short_file = os.path.basename(_file)
+            _relative_time = self.relative_time_offset[_index]
+            _text = "{} -> {}".format(_short_file, _relative_time)
+            relative_text_area.append(_text)
+        relative_text_area = "\n".join(relative_text_area)
 
-        accordion = widgets.Accordion(children=[widgets.Text()])
+        absolute_text_area = ["file name -> (current image acquistion time - first image acquisition time) \n"]
+        for _index, _file in enumerate(self.list_files):
+            _short_file = os.path.basename(_file)
+            _absolute_time = self.absolute_time_offset[_index]
+            _text = "{} -> {}".format(_short_file, _absolute_time)
+            absolute_text_area.append(_text)
+        absolute_text_area = "\n".join(absolute_text_area)
 
-        tab_nest.children = [accordion, accordion]
+        children = [widgets.Textarea("", layout=widgets.Layout(width="100%",
+                                                               height="300px")),
+                    widgets.Textarea("", layout=widgets.Layout(width="100%",
+                                                               height="300px"))]
+        tab = widgets.Tab()
+        tab.children = children
+        tab.set_title(0, "Relative (s)")
+        tab.set_title(1, "Absolute (s)")
 
+        relative_text = children[0]
+        relative_text.value = relative_text_area
+        absolute_text = children[1]
+        absolute_text.value = absolute_text_area
+
+        display(tab)
 
 
 
