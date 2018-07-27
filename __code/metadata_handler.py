@@ -13,10 +13,9 @@ class MetadataHandler(object):
                 o_image = Image.open(file_name)
                 o_dict = dict(o_image.tag_v2)
                 try:
-                    time_stamp_s = str(o_dict[65002])
-                    time_stamp_ns = str(o_dict[65003])
-                    time_stamp_string = "{}.{}".format(time_stamp_s, time_stamp_ns)
-                    time_stamp = float(time_stamp_string)
+                    time_stamp_s = o_dict[65002]
+                    time_stamp_ns = o_dict[65003]
+                    time_stamp = time_stamp_s + time_stamp_ns * 1e-9
                 except:
                     time_stamp = o_dict[65000]
 

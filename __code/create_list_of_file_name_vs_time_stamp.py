@@ -68,6 +68,11 @@ class CreateListFileName(object):
         self.list_time_stamp_user_format = list_time_stamp_user_format
 
 
+
+
+
+
+
     def load(self):
         o_norm = Normalization()
         o_norm.load(file=self.list_files, notebook=True)
