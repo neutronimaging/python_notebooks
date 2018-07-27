@@ -22,6 +22,7 @@ class Interface(QMainWindow):
                  'table_columns': []}
 
     tree_dict_state = {}
+    tree_column = 0
 
     def __init__(self, parent=None):
 
@@ -54,22 +55,31 @@ class Interface(QMainWindow):
         print("name of item is: {}".format(self.get_item_name(item)))
 
     def addItems(self, parent):
-        column = 0
-        sample = self.addParent(parent, column, "Sample", 'sample', [1,2,3])
-        self.addChild(sample, column, "Runs", "sample_runs", [1])
-        sample_background = self.addParent(sample, column, "Background", "sample_background", [2,3])
-        self.addChild(sample_background, column, "Runs", "sample_background_runs", [2])
-        self.addChild(sample_background, column, "Background Runs", "sample_background_background_runs", [3])
+
+        title = self.addChild(parent, "Title", "title", [0])
+
+        sample = self.addParent(parent, "Sample", 'sample', [1,2,3])
+        self.addChild(sample, "Runs", "sample_runs", [1])
+        sample_background = self.addParent(sample, "Background", "sample_background", [2,3])
+        self.addChild(sample_background, "Runs", "sample_background_runs", [2])
+        self.addChild(sample_background, "Background Runs", "sample_background_background_runs", [3])
+
+        self.addChild(sample, "Packing Fraction", "sample_packging_fraction", [4])
+        sample_geometry = self.addParent(sample, "Geometry", "sample_geometry", [5,6,7])
+        self.addChild(sample_geometry, "Shape", "sample_geometry_shape", [5])
+        self.addChild(sample_geometry, "Radius", "sample_geometry_radius", [6])
+        self.addChild(sample_geometry, "Height", "sample_geometry_height", [7])
+
 
         # vanadium = self.addParent(parent, column, "Vanadium", "vanadium", [4,5,6])
         # vanadium_runs = self.addChild(vanadium, column, "Runs", "run")
         # vanadium_background = self.addChild(vanadium, column, "Background", "background")
 
-    def addParent(self, parent, column, title, name, table_columns=[]):
+    def addParent(self, parent, title, name, table_columns=[]):
         item = QTreeWidgetItem(parent, [title])
-        item.setData(column, QtCore.Qt.UserRole, '')
+        item.setData(self.tree_column, QtCore.Qt.UserRole, '')
         item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
-        item.setCheckState(column, QtCore.Qt.Checked)
+        item.setCheckState(self.tree_column, QtCore.Qt.Checked)
         item.setExpanded(True)
 
         self.tree_dict_state[name] = self.item_dict.copy()
@@ -78,10 +88,10 @@ class Interface(QMainWindow):
 
         return item
 
-    def addChild(self, parent, column, title, name, table_columns=[]):
+    def addChild(self, parent, title, name, table_columns=[]):
         item = QTreeWidgetItem(parent, [title])
-        item.setData(column, QtCore.Qt.UserRole, '')
-        item.setCheckState(column, QtCore.Qt.Checked)
+        item.setData(self.tree_column, QtCore.Qt.UserRole, '')
+        item.setCheckState(self.tree_column, QtCore.Qt.Checked)
 
         self.tree_dict_state[name] = self.item_dict.copy()
         self.tree_dict_state[name]['ui'] = item
