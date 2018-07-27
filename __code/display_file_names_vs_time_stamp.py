@@ -98,6 +98,14 @@ class DisplayFileNamesVsTimeStamp(object):
 
     def print_result(self):
 
+        timestamp_text_area = ["File name -> Time stamp (s)\n"]
+        for _index, _file in enumerate(self.list_files):
+            _short_file = os.path.basename(_file)
+            _time = self.list_time_stamp[_index]
+            _text = "{} -> {}".format(_short_file, _time)
+            timestamp_text_area.append(_text)
+        timestamp_text_area = "\n".join(timestamp_text_area)
+
         relative_text_area = ["file name -> (current image acquistion time - previous image acquisition time) \n"]
         for _index, _file in enumerate(self.list_files):
             _short_file = os.path.basename(_file)
@@ -117,15 +125,21 @@ class DisplayFileNamesVsTimeStamp(object):
         children = [widgets.Textarea("", layout=widgets.Layout(width="100%",
                                                                height="300px")),
                     widgets.Textarea("", layout=widgets.Layout(width="100%",
+                                                               height="300px")),
+                    widgets.Textarea("", layout=widgets.Layout(width="100%",
                                                                height="300px"))]
         tab = widgets.Tab()
         tab.children = children
-        tab.set_title(0, "Relative (s)")
-        tab.set_title(1, "Absolute (s)")
+        tab.set_title(0, "Time Stamp(s)")
+        tab.set_title(1, "Relative (s)")
+        tab.set_title(2, "Absolute (s)")
 
-        relative_text = children[0]
+        timestamp_text = children[0]
+        timestamp_text.value = timestamp_text_area
+
+        relative_text = children[1]
         relative_text.value = relative_text_area
-        absolute_text = children[1]
+        absolute_text = children[2]
         absolute_text.value = absolute_text_area
 
         display(tab)
