@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1432</width>
-    <height>738</height>
+    <width>955</width>
+    <height>746</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,98 +16,140 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QTableWidget" name="tableWidget_2">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>20</height>
-         </size>
-        </property>
-        <column>
-         <property name="text">
-          <string>Title</string>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>0</number>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Sample</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Vanadium</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Geometry</string>
-         </property>
-        </column>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTableWidget" name="tableWidget">
-        <column>
-         <property name="text">
-          <string> </string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Runs</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Background Runs</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Background Background Runs</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Material</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Runs</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Background Runs</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Background Background Runs</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Material</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string> </string>
-         </property>
-        </column>
-       </widget>
-      </item>
-     </layout>
+         <item>
+          <widget class="QTableWidget" name="h1_table">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <column>
+            <property name="text">
+             <string>Title</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Sample</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTableWidget" name="h2_table">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <column>
+            <property name="text">
+             <string/>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Runs</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Background</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Packing Fraction</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Geometry</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTableWidget" name="h3_table">
+           <property name="baseSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <column>
+            <property name="text">
+             <string/>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string> </string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Runs</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Background Runs</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string> </string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Shape</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Radius</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Height</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -160,7 +202,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1432</width>
+     <width>955</width>
      <height>22</height>
     </rect>
    </property>

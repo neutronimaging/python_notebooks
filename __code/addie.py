@@ -1,5 +1,6 @@
 from IPython.core.display import HTML
 from IPython.display import display
+import numpy as np
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -24,6 +25,11 @@ class Interface(QMainWindow):
     tree_dict_state = {}
     tree_column = 0
 
+    dft_width = 90
+    h3_width = [dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width]
+    h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7]]
+    h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
+
     def __init__(self, parent=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -35,6 +41,25 @@ class Interface(QMainWindow):
         self.setWindowTitle("Template Addie")
 
         self.init_tree()
+        self.init_widgets()
+        self.init_tables()
+
+    def init_table_col_width(self, table_width=[], table_ui=None):
+        for _col in np.arange(table_ui.columnCount()):
+            table_ui.setColumnWidth(_col, table_width[_col])
+
+    def init_tables(self):
+        # h1 table
+        self.init_table_col_width(table_width=self.h1_width, table_ui=self.ui.h1_table)
+
+        # h2 table
+        self.init_table_col_width(table_width=self.h2_width, table_ui=self.ui.h2_table)
+
+        # h3 table
+        self.init_table_col_width(table_width=self.h3_width, table_ui=self.ui.h3_table)
+
+    def init_widgets(self):
+        pass
 
     def init_tree(self):
         # fill the self.ui.treeWidget
