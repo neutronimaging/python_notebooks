@@ -25,14 +25,21 @@ class Interface(QMainWindow):
     tree_dict_state = {}
     tree_column = 0
 
+    h1_header_item = ["Title", "Sample", "Vanadium"]
+    h2_header_item = ["", "Backgrounda", "Material", "Packing Fraction", "Geometry",
+                      "Backgrounda", "Material", "Packing Fraction", "Geometry"]
+    h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height",
+                      "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
+
     dft_width = 90
-    h3_width = [dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width]
-    h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7]]
+    h3_width = np.ones(len(h3_header_item)) * dft_width
+        # [dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width,
+        #         dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width]
+    h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7],
+                h3_width[1], h3_width[2] + h3_width[3], h3_width[4], h3_width[5] + h3_width[6] + h3_width[7]]
     h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
 
-    h1_header_item = ["Title", "Sample", "Vanadium"]
-    h2_header_item = ["", "Background", "Material", "Packing Fraction", "Geometry"]
-    h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
+
 
     def __init__(self, parent=None):
 
@@ -52,13 +59,22 @@ class Interface(QMainWindow):
         for _col in np.arange(table_ui.columnCount()):
             table_ui.setColumnWidth(_col, table_width[_col])
 
+    def init_table_header(self, table_ui=None, list_items=None):
+        table_ui.setColumnCount(len(list_items))
+        for _index, _text in enumerate(list_items):
+            item = QTableWidgetItem(_text)
+            table_ui.setHorizontalHeaderItem(_index, item)
+
     def init_tables(self):
 
         # h1 header
-        self.ui.h1_table.setColumnCount(len(self.h1_header_item))
-        for _index, _text in enumerate(self.h1_header_item):
-            item = QTableWidgetItem(_text)
-            self.ui.h1_table.setHorizontalHeaderItem(_index, item)
+        self.init_table_header(table_ui=self.ui.h1_table, list_items=self.h1_header_item)
+
+        # h2 header
+        self.init_table_header(table_ui=self.ui.h2_table, list_items=self.h2_header_item)
+
+        # h3 header
+        self.init_table_header(table_ui=self.ui.h3_table, list_items=self.h3_header_item)
 
         # h1 table
         self.init_table_col_width(table_width=self.h1_width, table_ui=self.ui.h1_table)
