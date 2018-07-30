@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>955</width>
-    <height>746</height>
+    <width>1352</width>
+    <height>807</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,16 +43,6 @@
              <height>20</height>
             </size>
            </property>
-           <column>
-            <property name="text">
-             <string>Title</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Sample</string>
-            </property>
-           </column>
           </widget>
          </item>
          <item>
@@ -111,7 +101,7 @@
            </column>
            <column>
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </column>
            <column>
@@ -126,7 +116,7 @@
            </column>
            <column>
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </column>
            <column>
@@ -202,7 +192,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>955</width>
+     <width>1352</width>
      <height>22</height>
     </rect>
    </property>

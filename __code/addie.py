@@ -5,9 +5,9 @@ import numpy as np
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
+    from PyQt4.QtGui import QMainWindow, QTableWidgetItem
 except ImportError:
-    from PyQt5.QtWidgets import QFileDialog, QTreeWidgetItem
+    from PyQt5.QtWidgets import QFileDialog, QTreeWidgetItem, QTableWidgetItem
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
@@ -28,7 +28,11 @@ class Interface(QMainWindow):
     dft_width = 90
     h3_width = [dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width]
     h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7]]
-    h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
+    h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
+
+    h1_header_item = ["Title", "Sample", "Vanadium"]
+    h2_header_item = ["", "Background", "Material", "Packing Fraction", "Geometry"]
+    h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
 
     def __init__(self, parent=None):
 
@@ -49,6 +53,13 @@ class Interface(QMainWindow):
             table_ui.setColumnWidth(_col, table_width[_col])
 
     def init_tables(self):
+
+        # h1 header
+        self.ui.h1_table.setColumnCount(len(self.h1_header_item))
+        for _index, _text in enumerate(self.h1_header_item):
+            item = QTableWidgetItem(_text)
+            self.ui.h1_table.setHorizontalHeaderItem(_index, item)
+
         # h1 table
         self.init_table_col_width(table_width=self.h1_width, table_ui=self.ui.h1_table)
 
@@ -57,6 +68,7 @@ class Interface(QMainWindow):
 
         # h3 table
         self.init_table_col_width(table_width=self.h3_width, table_ui=self.ui.h3_table)
+
 
     def init_widgets(self):
         pass
