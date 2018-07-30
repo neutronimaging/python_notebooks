@@ -20,7 +20,7 @@ class Interface(QMainWindow):
     item_dict = {'ui': None,
                  'name': '',
                  'state': True,
-                 'table_columns': []}
+                 'table_row_column': []}
 
     tree_dict_state = {}
     tree_column = 0
@@ -38,8 +38,6 @@ class Interface(QMainWindow):
     h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7],
                 h3_width[1], h3_width[2] + h3_width[3], h3_width[4], h3_width[5] + h3_width[6] + h3_width[7]]
     h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
-
-
 
     def __init__(self, parent=None):
 
@@ -95,11 +93,8 @@ class Interface(QMainWindow):
         self.ui.treeWidget.itemChanged.connect(self.tree_item_changed)
 
     def get_item_name(self, item):
-
-        print("item is : {}".format(item))
-
         for _key in self.tree_dict_state.keys():
-            print("self.tree_dict_state[_key]['ui']: {}".format(self.tree_dict_state[_key]['ui']))
+            # print("self.tree_dict_state[_key]['ui']: {}".format(self.tree_dict_state[_key]['ui']))
             if item == self.tree_dict_state[_key]['ui']:
                 return _key
         return None
@@ -107,9 +102,10 @@ class Interface(QMainWindow):
     def tree_item_changed(self, item, _):
         print("name of item is: {}".format(self.get_item_name(item)))
 
+
     def addItems(self, parent):
 
-        title = self.addChild(parent, "Title", "title", [0])
+        title = self.addChild(parent, "Title", "title", [0,0])
 
         sample = self.addParent(parent, "Sample", 'sample', [1,2,3])
         self.addChild(sample, "Runs", "sample_runs", [1])
@@ -123,12 +119,20 @@ class Interface(QMainWindow):
         self.addChild(sample_geometry, "Radius", "sample_geometry_radius", [6])
         self.addChild(sample_geometry, "Height", "sample_geometry_height", [7])
 
+        vanadium = self.addParent(parent, "vanadium", 'vanadium', [1,2,3])
+        self.addChild(vanadium, "Runs", "vanadium_runs", [1])
+        vanadium_background = self.addParent(vanadium, "Background", "vanadium_background", [2,3])
+        self.addChild(vanadium_background, "Runs", "vanadium_background_runs", [2])
+        self.addChild(vanadium_background, "Background Runs", "vanadium_background_background_runs", [3])
 
-        # vanadium = self.addParent(parent, column, "Vanadium", "vanadium", [4,5,6])
-        # vanadium_runs = self.addChild(vanadium, column, "Runs", "run")
-        # vanadium_background = self.addChild(vanadium, column, "Background", "background")
+        self.addChild(vanadium, "Packing Fraction", "vanadium_packging_fraction", [4])
+        vanadium_geometry = self.addParent(vanadium, "Geometry", "vanadium_geometry", [5,6,7])
+        self.addChild(vanadium_geometry, "Shape", "vanadium_geometry_shape", [5])
+        self.addChild(vanadium_geometry, "Radius", "vanadium_geometry_radius", [6])
+        self.addChild(vanadium_geometry, "Height", "vanadium_geometry_height", [7])
 
-    def addParent(self, parent, title, name, table_columns=[]):
+
+    def addParent(self, parent, title, name, table_row_column=[]):
         item = QTreeWidgetItem(parent, [title])
         item.setData(self.tree_column, QtCore.Qt.UserRole, '')
         item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
@@ -137,18 +141,18 @@ class Interface(QMainWindow):
 
         self.tree_dict_state[name] = self.item_dict.copy()
         self.tree_dict_state[name]['ui'] = item
-        self.tree_dict_state[name]['table_columns'] = table_columns
+        self.tree_dict_state[name]['table_row_column'] = table_row_column
 
         return item
 
-    def addChild(self, parent, title, name, table_columns=[]):
+    def addChild(self, parent, title, name, table_row_column=[]):
         item = QTreeWidgetItem(parent, [title])
         item.setData(self.tree_column, QtCore.Qt.UserRole, '')
         item.setCheckState(self.tree_column, QtCore.Qt.Checked)
 
         self.tree_dict_state[name] = self.item_dict.copy()
         self.tree_dict_state[name]['ui'] = item
-        self.tree_dict_state[name]['table_columns'] = table_columns
+        self.tree_dict_state[name]['table_row_column'] = table_row_column
 
         return item
 
