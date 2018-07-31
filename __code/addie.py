@@ -1,6 +1,7 @@
 from IPython.core.display import HTML
 from IPython.display import display
 import numpy as np
+from collections import OrderedDict
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -14,7 +15,6 @@ except ImportError:
 from __code.ui_addie  import Ui_MainWindow as UiMainWindow
 
 
-
 class Interface(QMainWindow):
 
     item_dict = {'ui': None,
@@ -25,9 +25,30 @@ class Interface(QMainWindow):
     tree_dict_state = {}
     tree_column = 0
 
+    leaf = {'ui': None,
+            'name': ''}
+    tree_dict = {'title': {'ui': None,
+                           'name': "Title",
+                           'children': None},
+                 'sample': {'ui': None,
+                            'name': "Sample",
+                            'children': {'sample_runs': {'ui': None,
+                                                         'name': "Runs",
+                                                         'children': None},
+                                         'sample_background': {'ui': None,
+                                                               'name': 'Background',
+                                                               'children'},
+                                         'sample_packing_fraction': {},
+                                         'geometry': {},
+                                        },
+                            },
+                 }
+
+
+
     h1_header_item = ["Title", "Sample", "Vanadium"]
-    h2_header_item = ["", "Backgrounda", "Material", "Packing Fraction", "Geometry",
-                      "Backgrounda", "Material", "Packing Fraction", "Geometry"]
+    h2_header_item = ["", "Backgrounds", "Material", "Packing Fraction", "Geometry",
+                      "Backgrounds", "Material", "Packing Fraction", "Geometry"]
     h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height",
                       "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
 
