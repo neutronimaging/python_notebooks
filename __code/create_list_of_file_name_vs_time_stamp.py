@@ -66,12 +66,7 @@ class CreateListFileName(object):
 
         self.list_time_stamp = list_time_stamp
         self.list_time_stamp_user_format = list_time_stamp_user_format
-
-
-
-
-
-
+        box.close()
 
     def load(self):
         o_norm = Normalization()
@@ -130,12 +125,6 @@ class CreateListFileName(object):
                                                            value='red',
                                                            description='Text Color'))
 
-    def select_export_folder(self):
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select output Folder ...',
-                                                                     start_dir=self.working_dir,
-                                                                     type='directory')
-        self.output_folder_ui.show()
-
     def sort_files_using_time_stamp(self):
         """Using the time stamp information, all the files will be sorted in ascending order of time stamp"""
 
@@ -151,16 +140,16 @@ class CreateListFileName(object):
         self.list_time_stamp = time_stamp[sort_index]
         self.list_time_stamp_user_format = time_stamp_user_format[sort_index]
 
-    def export(self):
+    def export(self, output_folder):
         self.retrieve_time_stamp()
         self.sort_files_using_time_stamp()
 
-        # culculate time offset relative to first image (earlier file)
+        # calculate time offset relative to first image (earlier file)
         time_stamp_0 = self.list_time_stamp[0]
         self.list_time_offset = [t - time_stamp_0 for t in self.list_time_stamp]
 
         try:
-            output_folder = self.output_folder_ui.selected
+            os.path.exists(output_folder)
         except:
             display(HTML('<span>Make sure you selected an export folder!</span>'))
             return
@@ -170,7 +159,6 @@ class CreateListFileName(object):
                                                    '_timestamp_infos.txt'))
         if os.path.exists(output_file):
             os.remove(output_file)
-
 
         metadata = '#filename, timestamp(s), timestamp_user_format, timeoffset(s)\n'
         text = metadata
@@ -189,3 +177,47 @@ class CreateListFileName(object):
             f.write(text)
 
         display(HTML('<span>File Created: ' + os.path.basename(output_file) + '</span>'))
+
+    def select_export_folder(self, ipts_folder='./'):
+
+        def display_file_selector_from_shared(ev):
+            start_dir = os.path.join(ipts_folder, 'shared')
+            self.output_folder_ui.remove()
+            self.display_file_selector(start_dir=start_dir)
+
+        def display_file_selector_from_home(ev):
+            import getpass
+            _user = getpass.getuser()
+            start_dir = os.path.join('/SNS/users', _user)
+            self.output_folder_ui.remove()
+            self.display_file_selector(start_dir=start_dir)
+
+        ipts = os.path.basename(self.working_dir)
+
+        button_layout = widgets.Layout(width='30%',
+                                       border='1px solid gray')
+
+        hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
+                                            button_style='success',
+                                            layout=button_layout),
+                             widgets.Button(description="Jump to My Home Folder",
+                                            button_style='success',
+                                            layout=button_layout)])
+        go_to_shared_button_ui = hbox.children[0]
+        go_to_home_button_ui = hbox.children[1]
+
+        go_to_shared_button_ui.on_click(display_file_selector_from_shared)
+        go_to_home_button_ui.on_click(display_file_selector_from_home)
+
+        display(hbox)
+
+        self.display_file_selector()
+
+    def display_file_selector(self, start_dir=''):
+        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
+                                                                     start_dir=start_dir,
+                                                                     multiple=False,
+                                                                     next=self.export,
+                                                                     type='directory')
+        self.output_folder_ui.show()
+

@@ -298,7 +298,7 @@ class Ui_MainWindow(object):
         self.sector_sector.setText(_translate("MainWindow", "Sector"))
         self.sector_to_label.setText(_translate("MainWindow", "to"))
         self.sector_from_label.setText(_translate("MainWindow", "from"))
-        self.groupBox_4.setTitle(_translate("MainWindow", "Guide Color"))
+        self.groupBox_4.setTitle(_translate("MainWindow", "Grid Settings "))
         self.label_6.setText(_translate("MainWindow", "Green"))
         self.label_8.setText(_translate("MainWindow", "Transparency"))
         self.label_7.setText(_translate("MainWindow", "Blue"))
