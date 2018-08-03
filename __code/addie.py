@@ -27,22 +27,29 @@ class Interface(QMainWindow):
 
     leaf = {'ui': None,
             'name': ''}
-    tree_dict = {'title': {'ui': None,
-                           'name': "Title",
-                           'children': None},
-                 'sample': {'ui': None,
-                            'name': "Sample",
-                            'children': {'sample_runs': {'ui': None,
-                                                         'name': "Runs",
-                                                         'children': None},
-                                         'sample_background': {'ui': None,
-                                                               'name': 'Background',
-                                                               'children'},
-                                         'sample_packing_fraction': {},
-                                         'geometry': {},
-                                        },
-                            },
-                 }
+
+    tree_dict = OrderedDict()
+    tree_dict['title'] = {'ui': None,
+                          'name': "Title",
+                           'children': None}
+    sample_children_1 = OrderedDict()
+    sample_children_1['sample_runs'] = {'ui': None,
+                                        'name': "Runs",
+                                        'children': None}
+    sample_children_1['sample_background'] = {'ui': None,
+                                              'name': "Runs",
+                                              'children': None}
+    sample_children_1['sample_packing_fraction'] = {'ui': None,
+                                              'name': "Runs",
+                                              'children': None}
+    sample_children_1['geometry'] = {'ui': None,
+                                              'name': "Runs",
+                                              'children': None}
+    tree_dict['sample'] = {'ui': None,
+                           'name': "Sample",
+                           'children': sample_children_1}
+
+
 
 
 
