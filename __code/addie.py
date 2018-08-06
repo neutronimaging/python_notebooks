@@ -32,32 +32,123 @@ class Interface(QMainWindow):
     tree_dict['title'] = {'ui': None,
                           'name': "Title",
                            'children': None}
+
     sample_children_1 = OrderedDict()
     sample_children_1['sample_runs'] = {'ui': None,
                                         'name': "Runs",
                                         'children': None}
+
+    sample_children_2 = OrderedDict()
+    sample_children_2['sample_background_runs'] = {'ui': None,
+                                                   'name': "Runs",
+                                                   'children': None}
+    sample_children_2['sample_background_background'] = {'ui': None,
+                                                        'name': "Background",
+                                                        'children': None}
     sample_children_1['sample_background'] = {'ui': None,
-                                              'name': "Runs",
-                                              'children': None}
+                                              'name': "Background",
+                                              'children': sample_children_2}
+
+    sample_children_1['sample_material'] = {'ui': None,
+                                            'name': "Material",
+                                            'children': None}
+
     sample_children_1['sample_packing_fraction'] = {'ui': None,
-                                              'name': "Runs",
-                                              'children': None}
-    sample_children_1['geometry'] = {'ui': None,
-                                              'name': "Runs",
-                                              'children': None}
+                                                    'name': "Packing Fraction",
+                                                    'children': None}
+
+    sample_children_2 = OrderedDict()
+    sample_children_2['sample_geometry_shape'] = {'ui': None,
+                                                  'name': "Shape",
+                                                  'children': None}
+    sample_children_2['sample_geometry_radius'] = {'ui': None,
+                                                   'name': "Radius",
+                                                   'children': None}
+    sample_children_2['sample_geometry_Height'] = {'ui': None,
+                                                   'name': "Height",
+                                                   'children': None}
+    sample_children_1['sample_geometry'] = {'ui': None,
+                                            'name': "Geometry",
+                                            'children': sample_children_2}
+
+    sample_children_1['sample_absolute_correction'] = {'ui': None,
+                                                       'name': "Abs. Correction",
+                                                       'children': None}
+
+    sample_children_1['sample_multi_scattering_correction'] = {'ui': None,
+                                                               'name': "Mult. Scattering Correction",
+                                                               'children': None}
+    sample_children_1['sample_inelastic_correction'] = {'ui': None,
+                                                        'name': "Inelastic Correction",
+                                                        'children': None}
+
     tree_dict['sample'] = {'ui': None,
                            'name': "Sample",
                            'children': sample_children_1}
 
+    vanadium_children_1 = OrderedDict()
+    vanadium_children_1['vanadium_runs'] = {'ui': None,
+                                        'name': "Runs",
+                                        'children': None}
+
+    vanadium_children_2 = OrderedDict()
+    vanadium_children_2['vanadium_background_runs'] = {'ui': None,
+                                                   'name': "Runs",
+                                                   'children': None}
+    vanadium_children_2['vanadium_background_background'] = {'ui': None,
+                                                         'name': "Background",
+                                                         'children': None}
+    vanadium_children_1['vanadium_background'] = {'ui': None,
+                                              'name': "Background",
+                                              'children': vanadium_children_2}
+
+    vanadium_children_1['vanadium_material'] = {'ui': None,
+                                            'name': "Material",
+                                            'children': None}
+
+    vanadium_children_1['vanadium_packing_fraction'] = {'ui': None,
+                                                    'name': "Packing Fraction",
+                                                    'children': None}
+
+    vanadium_children_2 = OrderedDict()
+    vanadium_children_2['vanadium_geometry_shape'] = {'ui': None,
+                                                  'name': "Shape",
+                                                  'children': None}
+    vanadium_children_2['vanadium_geometry_radius'] = {'ui': None,
+                                                   'name': "Radius",
+                                                   'children': None}
+    vanadium_children_2['vanadium_geometry_Height'] = {'ui': None,
+                                                   'name': "Height",
+                                                   'children': None}
+    vanadium_children_1['vanadium_geometry'] = {'ui': None,
+                                            'name': "Geometry",
+                                            'children': vanadium_children_2}
+
+    vanadium_children_1['vanadium_absolute_correction'] = {'ui': None,
+                                                       'name': "Abs. Correction",
+                                                       'children': None}
+
+    vanadium_children_1['vanadium_multi_scattering_correction'] = {'ui': None,
+                                                               'name': "Mult. Scattering Correction",
+                                                               'children': None}
+    vanadium_children_1['vanadium_inelastic_correction'] = {'ui': None,
+                                                        'name': "Inelastic Correction",
+                                                        'children': None}
+
+    tree_dict['vanadium'] = {'ui': None,
+                             'name': "Vanadium",
+                             'children': vanadium_children_1}
 
 
 
 
-    h1_header_item = ["Title", "Sample", "Vanadium"]
-    h2_header_item = ["", "Backgrounds", "Material", "Packing Fraction", "Geometry",
-                      "Backgrounds", "Material", "Packing Fraction", "Geometry"]
-    h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height",
-                      "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
+
+    #
+    # h1_header_item = ["Title", "Sample", "Vanadium"]
+    # h2_header_item = ["", "Backgrounds", "Material", "Packing Fraction", "Geometry",
+    #                   "Backgrounds", "Material", "Packing Fraction", "Geometry"]
+    # h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height",
+    #                   "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
 
     dft_width = 90
     h3_width = np.ones(len(h3_header_item)) * dft_width
