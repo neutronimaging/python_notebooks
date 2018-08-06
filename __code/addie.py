@@ -168,9 +168,19 @@ class Interface(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Template Addie")
 
-        self.init_tree()
-        self.init_widgets()
-        self.init_tables()
+        self.init_table_header()
+
+
+        # self.init_tree()
+        # self.init_widgets()
+        # self.init_tables()
+
+    def init_table_header(self):
+        td = self.tree_dict
+
+        # work in progress
+
+
 
     def init_table_col_width(self, table_width=[], table_ui=None):
         for _col in np.arange(table_ui.columnCount()):
