@@ -139,7 +139,10 @@ class Interface(QMainWindow):
                              'name': "Vanadium",
                              'children': vanadium_children_1}
 
-
+    table_headers = {'h1': [],
+                     'h2': [],
+                     'h3': [],
+                     }
 
 
 
@@ -168,14 +171,13 @@ class Interface(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Template Addie")
 
-        self.init_table_header()
-
+        self.init_headers()
 
         # self.init_tree()
         # self.init_widgets()
-        # self.init_tables()
+        self.init_tables()
 
-    def init_table_header(self):
+    def init_headers(self):
         td = self.tree_dict
 
         table_headers = {'h1': [], 'h2': [], 'h3': []}
@@ -191,42 +193,42 @@ class Interface(QMainWindow):
                         table_headers['h3'].append('')
             else:
                 table_headers['h2'].append('')
+                table_headers['h3'].append('')
 
-        print(table_headers)
-
-        # work in progress
-
-
+        self.table_headers = table_headers
+        print(self.table_headers)
 
     def init_table_col_width(self, table_width=[], table_ui=None):
         for _col in np.arange(table_ui.columnCount()):
             table_ui.setColumnWidth(_col, table_width[_col])
 
-    # def init_table_header(self, table_ui=None, list_items=None):
-    #     table_ui.setColumnCount(len(list_items))
-    #     for _index, _text in enumerate(list_items):
-    #         item = QTableWidgetItem(_text)
-    #         table_ui.setHorizontalHeaderItem(_index, item)
+    def init_table_header(self, table_ui=None, list_items=None):
+        table_ui.setColumnCount(len(list_items))
+        for _index, _text in enumerate(list_items):
+            item = QTableWidgetItem(_text)
+            table_ui.setHorizontalHeaderItem(_index, item)
 
     def init_tables(self):
 
         # h1 header
-        self.init_table_header(table_ui=self.ui.h1_table, list_items=self.h1_header_item)
+        self.init_table_header(table_ui=self.ui.h1_table, list_items=self.table_headers['h1'])
 
         # h2 header
-        self.init_table_header(table_ui=self.ui.h2_table, list_items=self.h2_header_item)
+        self.init_table_header(table_ui=self.ui.h2_table, list_items=self.table_headers['h2'])
 
         # h3 header
-        self.init_table_header(table_ui=self.ui.h3_table, list_items=self.h3_header_item)
+        self.init_table_header(table_ui=self.ui.h3_table, list_items=self.table_headers['h3'])
 
-        # h1 table
-        self.init_table_col_width(table_width=self.h1_width, table_ui=self.ui.h1_table)
 
-        # h2 table
-        self.init_table_col_width(table_width=self.h2_width, table_ui=self.ui.h2_table)
 
-        # h3 table
-        self.init_table_col_width(table_width=self.h3_width, table_ui=self.ui.h3_table)
+        # # h1 table
+        # self.init_table_col_width(table_width=self.h1_width, table_ui=self.ui.h1_table)
+        #
+        # # h2 table
+        # self.init_table_col_width(table_width=self.h2_width, table_ui=self.ui.h2_table)
+        #
+        # # h3 table
+        # self.init_table_col_width(table_width=self.h3_width, table_ui=self.ui.h3_table)
 
 
     def init_widgets(self):
