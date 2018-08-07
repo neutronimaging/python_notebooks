@@ -144,22 +144,12 @@ class Interface(QMainWindow):
                      'h3': [],
                      }
 
+    default_width = 90
 
+    table_width = {'h1': [],
+                   'h2': [],
+                   'h3': []}
 
-    #
-    # h1_header_item = ["Title", "Sample", "Vanadium"]
-    # h2_header_item = ["", "Backgrounds", "Material", "Packing Fraction", "Geometry",
-    #                   "Backgrounds", "Material", "Packing Fraction", "Geometry"]
-    # h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height",
-    #                   "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
-
-    # dft_width = 90
-    # h3_width = np.ones(len(h3_header_item)) * dft_width
-    #     # [dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width,
-    #     #         dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width]
-    # h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7],
-    #             h3_width[1], h3_width[2] + h3_width[3], h3_width[4], h3_width[5] + h3_width[6] + h3_width[7]]
-    # h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
 
     def __init__(self, parent=None):
 
@@ -170,8 +160,6 @@ class Interface(QMainWindow):
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("Template Addie")
-
-        self.init_headers()
 
         # self.init_tree()
         # self.init_widgets()
@@ -196,7 +184,6 @@ class Interface(QMainWindow):
                 table_headers['h3'].append('')
 
         self.table_headers = table_headers
-        print(self.table_headers)
 
     def init_table_col_width(self, table_width=[], table_ui=None):
         for _col in np.arange(table_ui.columnCount()):
@@ -208,7 +195,56 @@ class Interface(QMainWindow):
             item = QTableWidgetItem(_text)
             table_ui.setHorizontalHeaderItem(_index, item)
 
+    def init_table_dimensions(self):
+        td = self.tree_dict
+
+        table_width = {'h1': [], 'h2': [], 'h3': []}
+
+        # check all the h1 headers
+        for _key_h1 in td.keys():
+
+            # if h1 header has children
+            if td[_key_h1]['children']:
+
+                nbr_h3_children = 0
+
+                # loop through all children of h1 header
+                for _key_h2 in td[_key_h1]['children'].keys():
+
+                    local_nbr_h3_children = 1
+
+                    # if any children, count how many
+                    if td[_key_h1]['children'][_key_h2]['children']:
+
+                        local_nbr_h3_children = len(td[_key_h1]['children'][_key_h2]['children'])
+                        for _i in np.arange(nbr_h3_children):
+                            table_width['h3'].append(self.default_width)
+
+                        # table_width['h2'].append(local_nbr_h3_children * self.default_width)
+
+                        nbr_h3_children += local_nbr_h3_children
+
+                    # no children
+                    else:
+                        table_width['h3'].append(self.default_width)
+
+                    table_width['h2'].append(local_nbr_h3_children * self.default_width)
+
+                table_width['h1'].append(nbr_h3_children * self.default_width)
+
+            # h1 has not children
+            else:
+                table_width['h1'].append(self.default_width)
+                table_width['h2'].append(self.default_width)
+                table_width['h3'].append(self.default_width)
+
+        self.table_width = table_width
+        print(self.table_width)
+
+
     def init_tables(self):
+
+        self.init_headers()
 
         # h1 header
         self.init_table_header(table_ui=self.ui.h1_table, list_items=self.table_headers['h1'])
@@ -219,7 +255,7 @@ class Interface(QMainWindow):
         # h3 header
         self.init_table_header(table_ui=self.ui.h3_table, list_items=self.table_headers['h3'])
 
-
+        self.init_table_dimensions()
 
         # # h1 table
         # self.init_table_col_width(table_width=self.h1_width, table_ui=self.ui.h1_table)
