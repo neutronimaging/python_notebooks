@@ -207,6 +207,7 @@ class Interface(QMainWindow):
             if td[_key_h1]['children']:
 
                 nbr_h3_children = 0
+                h2_width = self.default_width
 
                 # loop through all children of h1 header
                 for _key_h2 in td[_key_h1]['children'].keys():
@@ -217,6 +218,8 @@ class Interface(QMainWindow):
                     if td[_key_h1]['children'][_key_h2]['children']:
 
                         local_nbr_h3_children = len(td[_key_h1]['children'][_key_h2]['children'])
+                        h2_width += local_nbr_h3_children * self.default_width
+
                         for _i in np.arange(nbr_h3_children):
                             table_width['h3'].append(self.default_width)
 
@@ -228,7 +231,7 @@ class Interface(QMainWindow):
                     else:
                         table_width['h3'].append(self.default_width)
 
-                    table_width['h2'].append(local_nbr_h3_children * self.default_width)
+                    table_width['h2'].append(h2_width)
 
                 table_width['h1'].append(nbr_h3_children * self.default_width)
 
@@ -241,30 +244,19 @@ class Interface(QMainWindow):
         self.table_width = table_width
         print(self.table_width)
 
-
     def init_tables(self):
 
+        # set h1, h2 and h3 headers
         self.init_headers()
-
-        # h1 header
         self.init_table_header(table_ui=self.ui.h1_table, list_items=self.table_headers['h1'])
-
-        # h2 header
         self.init_table_header(table_ui=self.ui.h2_table, list_items=self.table_headers['h2'])
-
-        # h3 header
         self.init_table_header(table_ui=self.ui.h3_table, list_items=self.table_headers['h3'])
 
+        # set h1, h2 and h3 width
         self.init_table_dimensions()
-
-        # # h1 table
-        # self.init_table_col_width(table_width=self.h1_width, table_ui=self.ui.h1_table)
-        #
-        # # h2 table
-        # self.init_table_col_width(table_width=self.h2_width, table_ui=self.ui.h2_table)
-        #
-        # # h3 table
-        # self.init_table_col_width(table_width=self.h3_width, table_ui=self.ui.h3_table)
+        self.init_table_col_width(table_width=self.table_width['h1'], table_ui=self.ui.h1_table)
+        self.init_table_col_width(table_width=self.table_width['h2'], table_ui=self.ui.h2_table)
+        self.init_table_col_width(table_width=self.table_width['h3'], table_ui=self.ui.h3_table)
 
 
     def init_widgets(self):
