@@ -150,13 +150,13 @@ class Interface(QMainWindow):
     # h3_header_item = ["", "Runs", "Background Runs", "", "", "Shape", "Radius", "Height",
     #                   "Runs", "Background Runs", "", "", "Shape", "Radius", "Height"]
 
-    dft_width = 90
-    h3_width = np.ones(len(h3_header_item)) * dft_width
-        # [dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width,
-        #         dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width]
-    h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7],
-                h3_width[1], h3_width[2] + h3_width[3], h3_width[4], h3_width[5] + h3_width[6] + h3_width[7]]
-    h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
+    # dft_width = 90
+    # h3_width = np.ones(len(h3_header_item)) * dft_width
+    #     # [dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width,
+    #     #         dft_width, dft_width, dft_width, dft_width, dft_width, dft_width, dft_width]
+    # h2_width = [h3_width[0], h3_width[1], h3_width[2]+h3_width[3], h3_width[4], h3_width[5]+h3_width[6]+h3_width[7],
+    #             h3_width[1], h3_width[2] + h3_width[3], h3_width[4], h3_width[5] + h3_width[6] + h3_width[7]]
+    # h1_width = [h2_width[0], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4], h2_width[1]+h2_width[2]+h2_width[3]+h2_width[4]]
 
     def __init__(self, parent=None):
 
@@ -178,6 +178,22 @@ class Interface(QMainWindow):
     def init_table_header(self):
         td = self.tree_dict
 
+        table_headers = {'h1': [], 'h2': [], 'h3': []}
+        for _key_h1 in td.keys():
+            table_headers['h1'].append(td[_key_h1]['name'])
+            if td[_key_h1]['children']:
+                for _key_h2 in td[_key_h1]['children'].keys():
+                    table_headers['h2'].append(td[_key_h1]['children'][_key_h2]['name'])
+                    if td[_key_h1]['children'][_key_h2]['children']:
+                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+                            table_headers['h3'].append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['name'])
+                    else:
+                        table_headers['h3'].append('')
+            else:
+                table_headers['h2'].append('')
+
+        print(table_headers)
+
         # work in progress
 
 
@@ -186,11 +202,11 @@ class Interface(QMainWindow):
         for _col in np.arange(table_ui.columnCount()):
             table_ui.setColumnWidth(_col, table_width[_col])
 
-    def init_table_header(self, table_ui=None, list_items=None):
-        table_ui.setColumnCount(len(list_items))
-        for _index, _text in enumerate(list_items):
-            item = QTableWidgetItem(_text)
-            table_ui.setHorizontalHeaderItem(_index, item)
+    # def init_table_header(self, table_ui=None, list_items=None):
+    #     table_ui.setColumnCount(len(list_items))
+    #     for _index, _text in enumerate(list_items):
+    #         item = QTableWidgetItem(_text)
+    #         table_ui.setHorizontalHeaderItem(_index, item)
 
     def init_tables(self):
 
