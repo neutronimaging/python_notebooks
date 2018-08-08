@@ -206,6 +206,8 @@ class Interface(QMainWindow):
             # if h1 header has children
             if td[_key_h1]['children']:
 
+                absolute_nbr_h3 = 0
+
                 nbr_h3_children = 0
                 h2_width = self.default_width
 
@@ -219,6 +221,7 @@ class Interface(QMainWindow):
 
                         local_nbr_h3_children = len(td[_key_h1]['children'][_key_h2]['children'])
                         h2_width += local_nbr_h3_children * self.default_width
+                        absolute_nbr_h3 += local_nbr_h3_children
 
                         for _i in np.arange(nbr_h3_children):
                             table_width['h3'].append(self.default_width)
@@ -229,11 +232,14 @@ class Interface(QMainWindow):
 
                     # no children
                     else:
+
+                        absolute_nbr_h3 += 1
+
                         table_width['h3'].append(self.default_width)
 
                     table_width['h2'].append(h2_width)
 
-                table_width['h1'].append(nbr_h3_children * self.default_width)
+                table_width['h1'].append(absolute_nbr_h3 * self.default_width)
 
             # h1 has not children
             else:
