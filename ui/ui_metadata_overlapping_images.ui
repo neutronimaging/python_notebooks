@@ -663,32 +663,6 @@
                  </property>
                 </spacer>
                </item>
-               <item>
-                <widget class="QLabel" name="metadata_graph_size_label">
-                 <property name="text">
-                  <string>Size:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSlider" name="metadata_graph_size_slider">
-                 <property name="minimum">
-                  <number>50</number>
-                 </property>
-                 <property name="maximum">
-                  <number>1000</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>1</number>
-                 </property>
-                 <property name="value">
-                  <number>200</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </item>
              <item>
@@ -1035,6 +1009,102 @@
                  </widget>
                 </widget>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Color:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="graph_color_combobox">
+                   <item>
+                    <property name="text">
+                     <string>White</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Red</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Blue</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Green</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Black</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_7">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_12">
+                 <item>
+                  <widget class="QLabel" name="metadata_graph_size_label_2">
+                   <property name="text">
+                    <string>Size:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSlider" name="metadata_graph_size_slider">
+                   <property name="minimum">
+                    <number>50</number>
+                   </property>
+                   <property name="maximum">
+                    <number>1000</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>1</number>
+                   </property>
+                   <property name="value">
+                    <number>200</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </item>
@@ -1207,7 +1277,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>894</x>
-     <y>272</y>
+     <y>263</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -1287,7 +1357,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>642</x>
-     <y>316</y>
+     <y>307</y>
     </hint>
     <hint type="destinationlabel">
      <x>668</x>
@@ -1303,7 +1373,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>982</x>
-     <y>321</y>
+     <y>312</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -1319,7 +1389,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>671</x>
-     <y>105</y>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -1351,7 +1421,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>983</x>
-     <y>218</y>
+     <y>211</y>
     </hint>
     <hint type="destinationlabel">
      <x>1020</x>
@@ -1367,7 +1437,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>645</x>
-     <y>220</y>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
      <x>811</x>
@@ -1383,7 +1453,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>659</x>
-     <y>163</y>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
@@ -1399,7 +1469,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>873</x>
-     <y>161</y>
+     <y>157</y>
     </hint>
     <hint type="destinationlabel">
      <x>963</x>
@@ -1415,7 +1485,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>984</x>
-     <y>165</y>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>1267</x>
@@ -1431,7 +1501,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1136</x>
-     <y>175</y>
+     <y>171</y>
     </hint>
     <hint type="destinationlabel">
      <x>1401</x>
@@ -1447,7 +1517,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1136</x>
-     <y>175</y>
+     <y>171</y>
     </hint>
     <hint type="destinationlabel">
      <x>1408</x>
@@ -1463,7 +1533,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1135</x>
-     <y>425</y>
+     <y>399</y>
     </hint>
     <hint type="destinationlabel">
      <x>1166</x>
@@ -1479,7 +1549,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1135</x>
-     <y>425</y>
+     <y>399</y>
     </hint>
     <hint type="destinationlabel">
      <x>1096</x>
@@ -1495,7 +1565,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1095</x>
-     <y>463</y>
+     <y>437</y>
     </hint>
     <hint type="destinationlabel">
      <x>1129</x>
@@ -1511,7 +1581,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1095</x>
-     <y>463</y>
+     <y>437</y>
     </hint>
     <hint type="destinationlabel">
      <x>1206</x>
@@ -1527,7 +1597,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1096</x>
-     <y>213</y>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1543,7 +1613,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1096</x>
-     <y>213</y>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1575,7 +1645,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>738</x>
-     <y>353</y>
+     <y>344</y>
     </hint>
     <hint type="destinationlabel">
      <x>796</x>
@@ -1591,7 +1661,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>981</x>
-     <y>353</y>
+     <y>344</y>
     </hint>
     <hint type="destinationlabel">
      <x>913</x>
@@ -1606,8 +1676,8 @@
    <slot>metadata_graph_size_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>926</x>
-     <y>691</y>
+     <x>1156</x>
+     <y>719</y>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
@@ -1622,8 +1692,8 @@
    <slot>metadata_graph_size_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>908</x>
-     <y>694</y>
+     <x>1138</x>
+     <y>722</y>
     </hint>
     <hint type="destinationlabel">
      <x>905</x>
@@ -1671,7 +1741,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1099</x>
-     <y>703</y>
+     <y>661</y>
     </hint>
     <hint type="destinationlabel">
      <x>1169</x>
@@ -1687,7 +1757,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1077</x>
-     <y>669</y>
+     <y>627</y>
     </hint>
     <hint type="destinationlabel">
      <x>1081</x>
@@ -1703,7 +1773,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1126</x>
-     <y>667</y>
+     <y>625</y>
     </hint>
     <hint type="destinationlabel">
      <x>1153</x>
@@ -1719,7 +1789,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1108</x>
-     <y>703</y>
+     <y>661</y>
     </hint>
     <hint type="destinationlabel">
      <x>1119</x>
@@ -1735,11 +1805,59 @@
    <hints>
     <hint type="sourcelabel">
      <x>1067</x>
-     <y>516</y>
+     <y>474</y>
     </hint>
     <hint type="destinationlabel">
      <x>899</x>
      <y>825</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_color_combobox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_color_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1114</x>
+     <y>694</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>998</x>
+     <y>817</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_position_x</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_position_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1100</x>
+     <y>622</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>709</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_position_y</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_position_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1100</x>
+     <y>631</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>709</x>
+     <y>424</y>
     </hint>
    </hints>
   </connection>
@@ -1776,5 +1894,6 @@
   <slot>graph_position_moved()</slot>
   <slot>graph_position_clicked()</slot>
   <slot>enable_graph_button_clicked()</slot>
+  <slot>graph_color_changed()</slot>
  </slots>
 </ui>

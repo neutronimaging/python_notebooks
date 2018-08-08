@@ -65,6 +65,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     scale_pyqt_ui = None
     scale_legend_pyqt_ui = None
     metadata_pyqt_ui = None
+    graph_pyqt_ui = None
 
     # size of tables
     guide_table_width = [300, 50]
@@ -249,14 +250,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.update_metadata_pyqt_ui()
 
     def graph_position_moved(self, value):
-        pass
+        self.update_metadata_pyqt_ui()
 
     def graph_position_clicked(self):
-        pass
+        self.update_metadata_pyqt_ui()
+
+    def graph_color_changed(self, value):
+        self.update_metadata_pyqt_ui()
 
     def enable_graph_button_clicked(self, new_state):
-        print(self.ui.enable_graph_checkbox.isChecked())
         self.ui.graph_groupBox.setEnabled(self.ui.enable_graph_checkbox.isChecked())
+        self.update_metadata_pyqt_ui()
 
     def metadata_text_or_graph_clicked(self):
         status = self.ui.metadata_graph_option.isChecked()
@@ -305,6 +309,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def update_metadata_pyqt_ui(self):
         if self.metadata_pyqt_ui:
             self.ui.image_view.removeItem(self.metadata_pyqt_ui)
+        if self.graph_pyqt_ui:
+            self.ui.image_view.removeItem(self.graph_pyqt_ui)
+
         try:
             if self.ui.image_view:
                 pass
@@ -327,6 +334,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def get_color(self, color_type='html', source='metadata'):
         if source == 'metadata':
             color_selected = self.ui.metadata_color_combobox.currentText().lower()
+        elif source == 'graph':
+            color_selected = self.ui.graph_color_combobox.currentText().lower()
         else:
             color_selected = self.ui.scale_color_combobox.currentText().lower()
 
@@ -350,6 +359,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         if self.metadata_pyqt_ui:
             view.removeItem(self.metadata_pyqt_ui)
+
+        if self.graph_pyqt_ui:
+            view.removeItem(self.graph_pyqt_ui)
 
         if not self.ui.metadata_checkbox.isChecked():
             return
@@ -394,7 +406,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
             _size = self.ui.metadata_graph_size_slider.value()
             graph.setFixedWidth(_size)
             graph.setFixedHeight(_size)
-            color_pen = self.get_color(source='metadata', color_type='rgb_color')
+            color_pen = self.get_color(source='graph', color_type='rgb_color')
             graph.plot(data, pen=color_pen)
 
             # highlight current file
@@ -404,11 +416,14 @@ class MetadataOverlappingImagesUi(QMainWindow):
             _inf_line = pg.InfiniteLine(current_index, pen=_pen)
             graph.addItem(_inf_line)
 
+            x0 = self.ui.graph_position_x.value()
+            y0 = self.ui.graph_position_y.maximum() - self.ui.graph_position_y.value()
+
             view.addItem(graph)
             graph.setPos(x0, y0)
 
             if save_it:
-                self.metadata_pyqt_ui = graph
+                self.graph_pyqt_ui = graph
 
     def get_metadata_column(self):
         data = []
@@ -665,10 +680,6 @@ class Initializer(object):
             self.parent.ui.select_metadata_checkbox.setVisible(False)
             self.parent.ui.select_metadata_combobox.setVisible(False)
 
-        # hide the graph metadata size widgets
-        self.parent.ui.metadata_graph_size_label.setVisible(False)
-        self.parent.ui.metadata_graph_size_slider.setVisible(False)
-
         # list of scale available
         self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units['string'])
 
@@ -683,11 +694,18 @@ class Initializer(object):
 
         # metadata and scale slider positions
         self.parent.ui.scale_position_x.setMaximum(width)
+        self.parent.ui.scale_position_y.setMaximum(height)
+
         self.parent.ui.metadata_position_x.setMinimum(0)
         self.parent.ui.metadata_position_x.setMaximum(width)
-        self.parent.ui.scale_position_y.setMaximum(height)
         self.parent.ui.metadata_position_y.setMaximum(height)
         self.parent.ui.metadata_position_y.setValue(height)
+
+        self.parent.ui.graph_position_x.setMinimum(0)
+        self.parent.ui.graph_position_x.setMaximum(width)
+        self.parent.ui.graph_position_x.setValue(np.int(width/2))
+        self.parent.ui.graph_position_y.setMaximum(height)
+        self.parent.ui.graph_position_y.setValue(height)
 
         # disable the graph sliders groupBox
         self.parent.ui.graph_groupBox.setEnabled(False)
