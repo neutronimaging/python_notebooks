@@ -142,11 +142,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         if self.get_metadata_column_selected() != 1:
             return
 
-        o_metadata_table = MetadataTableHandler(parent=None)
+        o_metadata_table = MetadataTableHandler(parent=self)
         o_metadata_table.right_click(position)
-
-    def format_metadata_column(self):
-        print("here")
 
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
@@ -835,5 +832,8 @@ class MetadataTableHandler(object):
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == _format:
-            self.parent.format_metadata_column()
+            self.format_metadata_column()
 
+
+    def format_metadata_column(self):
+        pass
