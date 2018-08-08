@@ -136,6 +136,17 @@ class MetadataOverlappingImagesUi(QMainWindow):
     # ========================================================================================
     # MAIN UI EVENTs
 
+    def metadata_table_right_click(self, position):
+        # right click menu only for column 1
+        if self.get_metadata_column_selected() != 1:
+            return
+
+        o_metadata_table = MetadataTableHandler(parent=None)
+        o_metadata_table.right_click(position)
+
+    def format_metadata_column(self):
+        print("here")
+
     def previous_image_button_clicked(self):
         self.change_slider(offset = -1)
         self.update_metadata_pyqt_ui()
@@ -399,6 +410,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
             data.append(_row_value)
 
         return data
+
+    def get_metadata_column_selected(self):
+        selection = self.ui.tableWidget.selectedRanges()[0]
+        return selection.leftColumn()
 
     def get_metadata_text(self):
         """return the text and value of the metadata to display"""
@@ -769,3 +784,20 @@ class TableLoader:
             table_key = self.parent.ui.tableWidget.item(_row, 0).text()
             value = self.table.get(table_key, "")
             self.parent.ui.tableWidget.item(_row, 1).setText(str(value))
+
+
+class MetadataTableHandler(object):
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+    def right_click(self, position=None):
+        menu = QtGui.QMenu(self.parent)
+
+        _format = menu.addAction("Format String...")
+
+        action = menu.exec_(QtGui.QCursor.pos())
+
+        if action == _format:
+            self.parent.format_metadata_column()
+

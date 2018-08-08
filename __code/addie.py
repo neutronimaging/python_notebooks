@@ -208,6 +208,12 @@ class Interface(QMainWindow):
 
                 absolute_nbr_h3 = 0
 
+
+
+
+
+
+
                 nbr_h3_children = 0
                 h2_width = self.default_width
 
