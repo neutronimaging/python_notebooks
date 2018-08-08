@@ -206,6 +206,13 @@ class Interface(QMainWindow):
             # if h1 header has children
             if td[_key_h1]['children']:
 
+
+
+
+
+
+
+
                 nbr_h3_children = 0
                 h2_width = self.default_width
 
