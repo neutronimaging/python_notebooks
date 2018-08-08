@@ -185,6 +185,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.metadata_position_frame.setEnabled(status)
         self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
+        self.ui.enable_graph_checkbox.setEnabled(status)
+
+        if status:
+            self.ui.graph_groupBox.setEnabled(self.ui.enable_graph_checkbox.isChecked())
+        else:
+            self.ui.graph_groupBox.setEnabled(False)
+
         self.display_metadata_pyqt_ui()
 
     def select_metadata_checkbox_clicked(self, status):
@@ -240,6 +247,16 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def metadata_name_return_pressed(self):
         self.update_metadata_pyqt_ui()
+
+    def graph_position_moved(self, value):
+        pass
+
+    def graph_position_clicked(self):
+        pass
+
+    def enable_graph_button_clicked(self, new_state):
+        print(self.ui.enable_graph_checkbox.isChecked())
+        self.ui.graph_groupBox.setEnabled(self.ui.enable_graph_checkbox.isChecked())
 
     def metadata_text_or_graph_clicked(self):
         status = self.ui.metadata_graph_option.isChecked()
@@ -342,15 +359,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
         metadata_text = self.get_metadata_text()
         color = self.get_color(source='metadata', color_type='html')
 
-        if self.ui.metadata_text_option.isChecked():
+        text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
+        view.addItem(text)
+        text.setPos(x0, y0)
+        if save_it:
+            self.metadata_pyqt_ui = text
 
-            text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
-            view.addItem(text)
-            text.setPos(x0, y0)
-            if save_it:
-                self.metadata_pyqt_ui = text
-
-        else: # we want a graph of the metadata
+        if self.ui.enable_graph_checkbox.isChecked():
 
             data = self.get_metadata_column()
             _view_box = pg.ViewBox(enableMouse=False)
@@ -673,6 +688,9 @@ class Initializer(object):
         self.parent.ui.scale_position_y.setMaximum(height)
         self.parent.ui.metadata_position_y.setMaximum(height)
         self.parent.ui.metadata_position_y.setValue(height)
+
+        # disable the graph sliders groupBox
+        self.parent.ui.graph_groupBox.setEnabled(False)
 
     def event(self):
         # table event
