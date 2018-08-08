@@ -106,7 +106,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -625,6 +625,9 @@
              </item>
              <item>
               <widget class="QTableWidget" name="tableWidget">
+               <property name="contextMenuPolicy">
+                <enum>Qt::CustomContextMenu</enum>
+               </property>
                <property name="alternatingRowColors">
                 <bool>true</bool>
                </property>
@@ -952,12 +955,6 @@
      </layout>
     </item>
    </layout>
-   <zorder>splitter</zorder>
-   <zorder>scale_position_groupbox</zorder>
-   <zorder>metadata_position_groupbox</zorder>
-   <zorder>verticalSpacer</zorder>
-   <zorder>splitter</zorder>
-   <zorder>metadata_position_frame_2</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -1546,6 +1543,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_table_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>604</x>
+     <y>536</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>-3</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -1575,5 +1588,6 @@
   <slot>metadata_graph_size_moved()</slot>
   <slot>import_table_pressed()</slot>
   <slot>table_cell_changed()</slot>
+  <slot>metadata_table_right_click()</slot>
  </slots>
 </ui>
