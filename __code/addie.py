@@ -244,7 +244,6 @@ class Interface(QMainWindow):
                 table_width['h3'].append(self.default_width)
 
         self.table_width = table_width
-        print(self.table_width)
 
     def init_tables(self):
 

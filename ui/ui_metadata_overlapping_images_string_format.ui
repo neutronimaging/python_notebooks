@@ -25,7 +25,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="first_part_lineEdit"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
@@ -35,7 +35,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit_2"/>
+       <widget class="QLineEdit" name="second_part_lineEdit"/>
       </item>
      </layout>
     </item>
@@ -128,5 +128,41 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>first_part_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>string_format_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>238</x>
+     <y>43</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>343</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>second_part_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>string_format_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>272</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>597</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>string_format_changed()</slot>
+ </slots>
 </ui>
