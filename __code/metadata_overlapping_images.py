@@ -26,9 +26,10 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
-
 from __code.file_handler import retrieve_time_stamp
 from __code.ui_metadata_overlapping_images import Ui_MainWindow as UiMainWindow
+from __code.ui_metadata_overlapping_images_string_format import Ui_MainWindow as UiMainWindowFormat
+
 
 
 class ScaleSettings:
@@ -102,6 +103,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
                   'blue': "#00F",
                   'black': "#000"}
 
+    # ui of pop up window that allows to define metadata column value (format it)
+    metadata_string_format_ui = None
 
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
@@ -158,7 +161,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/metadata_overlapping_images/")
 
     def closeEvent(self, event=None):
-        pass
+        if self.metadata_string_format_ui:
+            self.metadata_string_format_ui.close()
 
     def slider_file_changed(self, slider_value):
         self.display_image()
@@ -834,6 +838,30 @@ class MetadataTableHandler(object):
         if action == _format:
             self.format_metadata_column()
 
-
     def format_metadata_column(self):
-        pass
+        o_meta = MetadataStringFormatLauncher(parent=self.parent)
+
+
+class MetadataStringFormatLauncher(object):
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+        if self.parent.metadata_string_format_ui == None:
+            metadata_string_format_ui = MetadataStringFormaHandler(parent=parent)
+            metadata_string_format_ui.show()
+            self.parent.metadata_string_format_ui = metadata_string_format_ui
+        else:
+            self.parent.metadata_string_format_ui.setFocus()
+            self.parent.metadata_string_format_ui.activateWindow()
+
+class MetadataStringFormaHandler(QMainWindow):
+
+    def __init__(self, parent=None):
+
+        self.parent = parent
+        QMainWindow.__init__(self, parent=parent)
+        self.ui = UiMainWindowFormat()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Format String")
+
