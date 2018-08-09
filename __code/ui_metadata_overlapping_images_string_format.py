@@ -71,6 +71,9 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.first_part_lineEdit.textChanged['QString'].connect(MainWindow.string_format_changed)
         self.second_part_lineEdit.textChanged['QString'].connect(MainWindow.string_format_changed)
+        self.pushButton_3.clicked.connect(MainWindow.launch_help)
+        self.pushButton_2.clicked.connect(MainWindow.cancel)
+        self.pushButton.clicked.connect(MainWindow.ok)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

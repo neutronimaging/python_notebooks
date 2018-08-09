@@ -161,8 +161,59 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>launch_help()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>583</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>529</x>
+     <y>595</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cancel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>59</x>
+     <y>592</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>142</x>
+     <y>597</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ok()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>741</x>
+     <y>594</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>674</x>
+     <y>596</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>string_format_changed()</slot>
+  <slot>launch_help()</slot>
+  <slot>cancel()</slot>
+  <slot>ok()</slot>
  </slots>
 </ui>
