@@ -908,8 +908,6 @@ class MetadataStringFormaHandler(QMainWindow):
         for _c in _first_part:
             _clean_first_part += "\{}".format(_c)
 
-        print(_clean_first_part)
-
         _second_part = self.ui.second_part_lineEdit.text()
         _clean_second_part = ""
         for _c in _second_part:
