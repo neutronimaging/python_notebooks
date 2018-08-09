@@ -842,7 +842,7 @@ class MetadataTableHandler(object):
     def right_click(self, position=None):
         menu = QtGui.QMenu(self.parent)
 
-        _format = menu.addAction("Format String...")
+        _format = menu.addAction("Clean String ...")
 
         action = menu.exec_(QtGui.QCursor.pos())
 
@@ -876,7 +876,7 @@ class MetadataStringFormaHandler(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindowFormat()
         self.ui.setupUi(self)
-        self.setWindowTitle("Format String")
+        self.setWindowTitle("Clean String")
 
         self.init_table()
         self.init_table_size()
