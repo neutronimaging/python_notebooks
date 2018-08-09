@@ -888,7 +888,7 @@ class MetadataStringFormaHandler(QMainWindow):
 
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            _row_str = str(self.ui.tableWidget.item(_row, 1).text())
+            _row_str = str(self.parent.ui.tableWidget.item(_row, 1).text())
             m = re.match(regular_expr, _row_str)
             if m and m.group(1):
                 _new_str = m.group(1)
