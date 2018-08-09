@@ -206,49 +206,39 @@ class Interface(QMainWindow):
             # if h1 header has children
             if td[_key_h1]['children']:
 
-                absolute_nbr_h3 = 0
+                absolute_nbr_h3_for_this_h1 = 0
 
-
-
-
-
-
-
-                nbr_h3_children = 0
-                h2_width = self.default_width
-
-                # loop through all children of h1 header
+                # loop through list of h2 header for this h1 header
                 for _key_h2 in td[_key_h1]['children'].keys():
 
-                    local_nbr_h3_children = 1
-
-                    # if any children, count how many
+                    # if h2 has children, just count how many children
                     if td[_key_h1]['children'][_key_h2]['children']:
+                        nbr_h3 = len(td[_key_h1]['children'][_key_h2]['children'])
 
-                        local_nbr_h3_children = len(td[_key_h1]['children'][_key_h2]['children'])
-                        h2_width += local_nbr_h3_children * self.default_width
-                        absolute_nbr_h3 += local_nbr_h3_children
-
-                        for _i in np.arange(nbr_h3_children):
+                        for _i in np.arange(nbr_h3):
                             table_width['h3'].append(self.default_width)
 
-                        # table_width['h2'].append(local_nbr_h3_children * self.default_width)
+                        ## h2 header will be as wide as the number of h3 children
+                        table_width['h2'].append(nbr_h3 * self.default_width)
 
-                        nbr_h3_children += local_nbr_h3_children
+                        ## h1 header will be += the number of h3 children
+                        absolute_nbr_h3_for_this_h1 += nbr_h3
 
-                    # no children
+                    # if h2 has no children
                     else:
 
-                        absolute_nbr_h3 += 1
-
+                        ## h2 header is 1 wide
+                        table_width['h2'].append(self.default_width)
                         table_width['h3'].append(self.default_width)
 
-                    table_width['h2'].append(h2_width)
+                        ## h2 header will be += 1
+                        absolute_nbr_h3_for_this_h1 += 1
 
-                table_width['h1'].append(absolute_nbr_h3 * self.default_width)
+                table_width['h1'].append(absolute_nbr_h3_for_this_h1 * self.default_width)
 
-            # h1 has not children
+            # if h1 has no children
             else:
+                # h1, h2 and h3 are 1 wide
                 table_width['h1'].append(self.default_width)
                 table_width['h2'].append(self.default_width)
                 table_width['h3'].append(self.default_width)
