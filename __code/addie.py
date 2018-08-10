@@ -161,9 +161,9 @@ class Interface(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Template Addie")
 
-        # self.init_tree()
         # self.init_widgets()
         self.init_tables()
+        self.init_tree()
 
     def init_headers(self):
         td = self.tree_dict
@@ -280,7 +280,6 @@ class Interface(QMainWindow):
 
 
     def addItems(self, parent):
-
         title = self.addChild(parent, "Title", "title", [0,0])
 
         sample = self.addParent(parent, "Sample", 'sample', [1,2,3])
