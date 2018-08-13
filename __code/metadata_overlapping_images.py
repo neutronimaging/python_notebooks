@@ -865,3 +865,8 @@ class MetadataStringFormaHandler(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Format String")
 
+        self.init_table()
+
+    def init_table(self):
+        
+
