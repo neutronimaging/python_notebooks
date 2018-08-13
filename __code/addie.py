@@ -161,9 +161,9 @@ class Interface(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Template Addie")
 
-        # self.init_tree()
         # self.init_widgets()
         self.init_tables()
+        self.init_tree()
 
     def init_headers(self):
         td = self.tree_dict
@@ -244,7 +244,6 @@ class Interface(QMainWindow):
                 table_width['h3'].append(self.default_width)
 
         self.table_width = table_width
-        print(self.table_width)
 
     def init_tables(self):
 
@@ -266,71 +265,91 @@ class Interface(QMainWindow):
 
     def init_tree(self):
         # fill the self.ui.treeWidget
+        # self.addItems(self.ui.treeWidget.invisibleRootItem())
         self.addItems(self.ui.treeWidget.invisibleRootItem())
         self.ui.treeWidget.itemChanged.connect(self.tree_item_changed)
 
     def get_item_name(self, item):
-        for _key in self.tree_dict_state.keys():
-            # print("self.tree_dict_state[_key]['ui']: {}".format(self.tree_dict_state[_key]['ui']))
-            if item == self.tree_dict_state[_key]['ui']:
-                return _key
+        td = self.tree_dict
+
+        for _key_h1 in td.keys():
+
+            if item == td[_key_h1]['ui']:
+                return _key_h1
+
+            if td[_key_h1]['children']:
+
+                for _key_h2 in td[_key_h1]['children'].keys():
+
+                    if item == td[_key_h1]['children'][_key_h2]['ui']:
+                        return _key_h2
+
+                    if td[_key_h1]['children'][_key_h2]['children']:
+
+                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+
+                            if item == td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui']:
+                                return _key_h3
+
         return None
 
     def tree_item_changed(self, item, _):
         print("name of item is: {}".format(self.get_item_name(item)))
 
-
     def addItems(self, parent):
+        td = self.tree_dict
+        absolute_parent = parent
+        local_parent = None
+        for _key_h1 in td.keys():
 
-        title = self.addChild(parent, "Title", "title", [0,0])
+            # if there are children, we need to use addParent
+            if td[_key_h1]['children']:
 
-        sample = self.addParent(parent, "Sample", 'sample', [1,2,3])
-        self.addChild(sample, "Runs", "sample_runs", [1])
-        sample_background = self.addParent(sample, "Background", "sample_background", [2,3])
-        self.addChild(sample_background, "Runs", "sample_background_runs", [2])
-        self.addChild(sample_background, "Background Runs", "sample_background_background_runs", [3])
+                _h1_parent = self.addParent(absolute_parent,
+                                       td[_key_h1]['name'],
+                                       _key_h1)
+                td[_key_h1]['ui'] = _h1_parent
 
-        self.addChild(sample, "Packing Fraction", "sample_packging_fraction", [4])
-        sample_geometry = self.addParent(sample, "Geometry", "sample_geometry", [5,6,7])
-        self.addChild(sample_geometry, "Shape", "sample_geometry_shape", [5])
-        self.addChild(sample_geometry, "Radius", "sample_geometry_radius", [6])
-        self.addChild(sample_geometry, "Height", "sample_geometry_height", [7])
+                for _key_h2 in td[_key_h1]['children'].keys():
 
-        vanadium = self.addParent(parent, "vanadium", 'vanadium', [1,2,3])
-        self.addChild(vanadium, "Runs", "vanadium_runs", [1])
-        vanadium_background = self.addParent(vanadium, "Background", "vanadium_background", [2,3])
-        self.addChild(vanadium_background, "Runs", "vanadium_background_runs", [2])
-        self.addChild(vanadium_background, "Background Runs", "vanadium_background_background_runs", [3])
+                    # if there are children, we need to use addParent
+                    if td[_key_h1]['children'][_key_h2]['children']:
 
-        self.addChild(vanadium, "Packing Fraction", "vanadium_packging_fraction", [4])
-        vanadium_geometry = self.addParent(vanadium, "Geometry", "vanadium_geometry", [5,6,7])
-        self.addChild(vanadium_geometry, "Shape", "vanadium_geometry_shape", [5])
-        self.addChild(vanadium_geometry, "Radius", "vanadium_geometry_radius", [6])
-        self.addChild(vanadium_geometry, "Height", "vanadium_geometry_height", [7])
+                        _h2_parent = self.addParent(_h1_parent,
+                                                    td[_key_h1]['children'][_key_h2]['name'],
+                                                    _key_h2)
+                        td[_key_h1]['children'][_key_h2]['ui'] = _h2_parent
 
+                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children']:
+                            _h3_child = self.addChild(_h2_parent,
+                                                      td[_key_h1]['children'][_key_h2]['children'][_key_h3]['name'],
+                                                      _key_h3)
+                            td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'] = _h3_child
 
-    def addParent(self, parent, title, name, table_row_column=[]):
+                    else: # key_h2 has no children, it's a leaf
+                        _h3_child = self.addChild(_h1_parent,
+                                                  td[_key_h1]['children'][_key_h2]['name'],
+                                                  _key_h2)
+                        td[_key_h1]['children'][_key_h2]['ui'] = _h3_child
+
+            else: #_key_h1 has no children, using addChild
+                _child = self.addChild(absolute_parent,
+                                       td[_key_h1]['name'],
+                                       _key_h1)
+                td[_key_h1]['ui'] = _child
+
+    def addParent(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
         item.setData(self.tree_column, QtCore.Qt.UserRole, '')
         item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
         item.setCheckState(self.tree_column, QtCore.Qt.Checked)
         item.setExpanded(True)
-
-        self.tree_dict_state[name] = self.item_dict.copy()
-        self.tree_dict_state[name]['ui'] = item
-        self.tree_dict_state[name]['table_row_column'] = table_row_column
-
         return item
 
-    def addChild(self, parent, title, name, table_row_column=[]):
+    def addChild(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
         item.setData(self.tree_column, QtCore.Qt.UserRole, '')
         item.setCheckState(self.tree_column, QtCore.Qt.Checked)
-
-        self.tree_dict_state[name] = self.item_dict.copy()
-        self.tree_dict_state[name]['ui'] = item
-        self.tree_dict_state[name]['table_row_column'] = table_row_column
-
         return item
 
     def init_widgets(self):
