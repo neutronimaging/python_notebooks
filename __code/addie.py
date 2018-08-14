@@ -318,14 +318,39 @@ class Interface(QMainWindow):
         h3_global_counter = 0
 
         td = self.tree_dict
-        for h1_gloabl_counter, _key_h1 in enumerate(td.keys()):
+        for h1_global_counter, _key_h1 in enumerate(td.keys()):
 
             if item_name == _key_h1:
                 # get all h2 and h3 of this h1
 
-                # FIXME
+                if td[_key_h1]['children']:
 
-                break
+                    for _key_h2 in td[_key_h1]['children']:
+
+                        if td[_key_h1]['children'][_key_h2]['children']:
+
+                            for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+                                h3_columns.append(h3_global_counter)
+                                h3_global_counter += 1
+
+                        else:
+
+                            h2_columns.append(h2_global_counter)
+                            h3_columns.append(h3_global_counter)
+
+                            h2_global_counter += 1
+                            h3_global_counter += 1
+
+
+                    return {'h1': [h1_gloabl_counter],
+                            'h2': h2_columns,
+                            'h3': h3_columns}
+
+                else:
+
+                    return {'h1': [h1_gloabl_counter],
+                            'h2': [h2_global_counter],
+                            'h3': [h3_global_counter]}
 
             else:
                 # start looking into the h2 layer if it has children
@@ -373,20 +398,19 @@ class Interface(QMainWindow):
 
                                         h3_global_counter += 1
 
+                                h2_global_counter += 1
+
                             else:
                                 # no children, we just keep going to the next h2 (and h3)
 
                                 h2_global_counter += 1
                                 h3_global_counter += 1
-                                continue
 
                 else:
                     # no children and item_name has not been found yet, so
                     # just keep going and move on to the next h1
                     h2_global_counter += 1
                     h3_global_counter += 1
-
-                    continue
 
         return {'h1': h1_columns, 'h2': h2_columns, 'h3': h3_columns}
 
