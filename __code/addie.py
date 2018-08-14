@@ -309,59 +309,79 @@ class Interface(QMainWindow):
                               'h2': [],
                               'h3': []}
 
-        h1_column = 0
+        h1_columns = []
         h2_columns = []
         h3_columns = []
 
+        h1_global_counter = 0
         h2_global_counter = 0
         h3_global_counter = 0
 
         td = self.tree_dict
-        for h1_counter, _key_h1 in enumerate(td.keys()):
+        for h1_gloabl_counter, _key_h1 in enumerate(td.keys()):
 
             if item_name == _key_h1:
-                h1_column.append(h1_counter)
+                # get all h2 and h3 of this h1
 
-            # entering all h2 children, if any
-            if td[_key_h1]['children']:
+                # FIXME
 
-                for h2_local_counter, _key_h2 in enumerate(td[_key_h1]['children']):
+                break
 
-                    # if h1 has been clicked,
-                    if h1_column:
-                        h2_columns.append(h2_global_counter)
+            else:
+                # start looking into the h2 layer if it has children
 
-                    if item_name == _key_h2:
-                        h2_columns.append(h2_global_counter)
+                if td[_key_h1]['children']:
 
-                    # entering all h3 children of this h2 if any
-                    if td[_key_h1]['children'][_key_h2]['children']:
+                    for _key_h2 in td[_key_h1]['children'].keys():
+
+                        if item_name == _key_h2:
+                            # get all h3 for this h2 and we are done
+
+                            # FIXME
+
+                            return {'h1': h1_columns,
+                                    'h2': h2_columns,
+                                    'h3': h3_columns}
+
+                        else:
+                            # we did not find the item name yet
+
+                            # start looking into all the h2 children (if any)
+                            if td[_key_h1]['children'][_key_h2]['children']:
+
+                                # loop through all the h3 and look for item_name. If found
+                                # we are done
+                                for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+
+                                    if item_name == _key_h3:
+                                        # we found the item name at the h3 layer,
+                                        # no leaf below, so we are done
+
+                                        return {'h1': h1_columns,
+                                                'h2': h2_columns,
+                                                'h3': [h3_global_counter]}
+
+                                    else:
+
+                                        h3_global_counter += 1
+
+                            else:
+                                # no children, we just keep going to the next h2 (and h3)
+
+                                h2_global_counter += 1
+                                h3_global_counter += 1
+                                continue
 
 
-
-
-
-
-                    # moving to next h2 column index
+                else:
+                    # no children and item_name has not been found yet, so
+                    # just keep going and move on to the next h1
                     h2_global_counter += 1
+                    h3_global_counter += 1
 
+                    continue
 
-
-
-
-
-
-
-
-
-
-
-
-
-        h_columns_affected = {'h1': h1_columns,
-                              'h2': h2_columns,
-                              'h3': h3_columns}
-        return h_columns_affected
+        return {'h1': h1_columns, 'h2': h2_columns, 'h3': h3_columns}
 
     def addItems(self, parent):
         td = self.tree_dict
