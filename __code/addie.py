@@ -337,10 +337,18 @@ class Interface(QMainWindow):
                         if item_name == _key_h2:
                             # get all h3 for this h2 and we are done
 
-                            # FIXME
+                            if td[_key_h1]['children'][_key_h2]['children']:
+                                # if key_h2 has children
 
-                            return {'h1': h1_columns,
-                                    'h2': h2_columns,
+                                for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+                                    h3_columns.append(h3_global_counter)
+                                    h3_global_counter += 1
+
+                            else:
+                                h3_columns = [h3_global_counter]
+
+                            return {'h1': [],
+                                    'h2': [h2_global_counter],
                                     'h3': h3_columns}
 
                         else:
@@ -357,8 +365,8 @@ class Interface(QMainWindow):
                                         # we found the item name at the h3 layer,
                                         # no leaf below, so we are done
 
-                                        return {'h1': h1_columns,
-                                                'h2': h2_columns,
+                                        return {'h1': [],
+                                                'h2': [],
                                                 'h3': [h3_global_counter]}
 
                                     else:
@@ -371,7 +379,6 @@ class Interface(QMainWindow):
                                 h2_global_counter += 1
                                 h3_global_counter += 1
                                 continue
-
 
                 else:
                     # no children and item_name has not been found yet, so
