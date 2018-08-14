@@ -294,7 +294,74 @@ class Interface(QMainWindow):
         return None
 
     def tree_item_changed(self, item, _):
+        """this will change the way the big table will look like by hidding or showing columns"""
         print("name of item is: {}".format(self.get_item_name(item)))
+        h_columns_affected = self.get_h_columns_from_item_name(item_name=self.get_item_name(item))
+
+        import pprint
+        pprint.pprint(h_columns_affected)
+
+    def get_h_columns_from_item_name(self, item_name=None):
+        if item_name == None:
+            return
+
+        h_columns_affected = {'h1': [],
+                              'h2': [],
+                              'h3': []}
+
+        h1_column = 0
+        h2_columns = []
+        h3_columns = []
+
+        h2_global_counter = 0
+        h3_global_counter = 0
+
+        td = self.tree_dict
+        for h1_counter, _key_h1 in enumerate(td.keys()):
+
+            if item_name == _key_h1:
+                h1_column.append(h1_counter)
+
+            # entering all h2 children, if any
+            if td[_key_h1]['children']:
+
+                for h2_local_counter, _key_h2 in enumerate(td[_key_h1]['children']):
+
+                    # if h1 has been clicked,
+                    if h1_column:
+                        h2_columns.append(h2_global_counter)
+
+                    if item_name == _key_h2:
+                        h2_columns.append(h2_global_counter)
+
+                    # entering all h3 children of this h2 if any
+                    if td[_key_h1]['children'][_key_h2]['children']:
+
+
+
+
+
+
+                    # moving to next h2 column index
+                    h2_global_counter += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        h_columns_affected = {'h1': h1_columns,
+                              'h2': h2_columns,
+                              'h3': h3_columns}
+        return h_columns_affected
 
     def addItems(self, parent):
         td = self.tree_dict
