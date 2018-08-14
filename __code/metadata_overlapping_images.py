@@ -32,7 +32,7 @@ from __code.ui_metadata_overlapping_images import Ui_MainWindow as UiMainWindow
 from __code.ui_metadata_overlapping_images_string_format import Ui_MainWindow as UiMainWindowFormat
 
 HELP_PAGE = "https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/metadata_overlapping_images/"
-
+LIST_FUNNY_CHARACTERS = "~!@#$%^&*()_+<>?,./'{}|[]\\"
 
 class ScaleSettings:
 
@@ -906,12 +906,18 @@ class MetadataStringFormaHandler(QMainWindow):
         _first_part = self.ui.first_part_lineEdit.text()
         _clean_first_part = ""
         for _c in _first_part:
-            _clean_first_part += "\{}".format(_c)
+            if _c in LIST_FUNNY_CHARACTERS:
+                _clean_first_part += "\{}".format(_c)
+            else:
+                _clean_first_part += "{}".format(_c)
 
         _second_part = self.ui.second_part_lineEdit.text()
         _clean_second_part = ""
         for _c in _second_part:
-            _clean_second_part += "\{}".format(_c)
+            if _c in LIST_FUNNY_CHARACTERS:
+                _clean_second_part += "\{}".format(_c)
+            else:
+                _clean_second_part += "{}".format(_c)
 
         regular_expr = r"{}(.*){}".format(_clean_first_part, _clean_second_part)
 
