@@ -301,11 +301,41 @@ class Interface(QMainWindow):
         # import pprint
         # pprint.pprint(h_columns_affected)
 
-        self.change_state_children(list_ui=h_columns_affected['list_tree_ui'],
+        self.change_state_tree(list_ui=h_columns_affected['list_tree_ui'],
                                    list_parent_ui=h_columns_affected['list_parent_ui'],
                                    state=item.checkState(0))
 
-    def change_state_children(self, list_ui=[], list_parent_ui=[], state=0):
+        self.change_state_table(columns_affected=h_columns_affected, state=item.checkState(0))
+
+    def make_all_columns_visible(self):
+        """Make all columns of all table visible"""
+        self.make_table_columns_visible(table_ui=self.ui.h1_table)
+        self.make_table_columns_visible(table_ui=self.ui.h2_table)
+        self.make_table_columns_visible(table_ui=self.ui.h3_table)
+
+    def make_table_columns_visible(self, table_ui=None):
+        """Make all columns of the given table ui visible"""
+        nbr_col_h1 = table_ui.columnCount()
+        for _col in np.arange(nbr_col_h1):
+            table_ui.setColumnHidden(_col, False)
+
+    def change_state_table(self, columns_affected=[], state=0):
+        self.make_all_columns_visible()
+
+        is_column_hidden = True
+        if state == QtCore.Qt.Checked:
+            is_column_hidden = False
+
+        def set_column_hidden(columns_affected=[], table_ui=None):
+            if columns_affected:
+                for _col in columns_affected:
+                    table_ui.setColumnHidden(_col, is_column_hidden)
+
+        set_column_hidden(columns_affected=columns_affected['h1'], table_ui=self.ui.h1_table)
+        set_column_hidden(columns_affected=columns_affected['h2'], table_ui=self.ui.h2_table)
+        set_column_hidden(columns_affected=columns_affected['h3'], table_ui=self.ui.h3_table)
+
+    def change_state_tree(self, list_ui=[], list_parent_ui=[], state=0):
         """
         Will transfer the state of the parent to the children
 
@@ -328,14 +358,14 @@ class Interface(QMainWindow):
         self.ui.treeWidget.blockSignals(False)
 
     def get_h_columns_from_item_name(self, item_name=None):
+        # h_columns_affected = {'h1': [],
+        #                       'h2': [],
+        #                       'h3': [],
+        #                       'list_tree_ui': [],
+        #                       'list_parent_ui': []}
+
         if item_name == None:
             return
-
-        h_columns_affected = {'h1': [],
-                              'h2': [],
-                              'h3': [],
-                              'list_tree_ui': [],
-                              'list_parent_ui': []}
 
         h1_columns = []
         h2_columns = []
