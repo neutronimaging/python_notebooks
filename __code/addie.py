@@ -301,29 +301,19 @@ class Interface(QMainWindow):
         import pprint
         pprint.pprint(h_columns_affected)
 
-        self.change_state_children(h_columns_affected=h_columns_affected,
+        self.change_state_children(list_ui=h_columns_affected['list_tree_ui'],
                                    state=item.checkState(0))
 
-    def change_state_children(self, h_columns_affected={}, state=0):
+    def change_state_children(self, list_ui=[], state=0):
         """
         Will repercute the state of the parent to the children
 
-        :param h_columns_affected:
+        :param list_ui:
         :param state:
         :return:
         """
-        h1 = h_columns_affected['h1']
-        h2 = h_columns_affected['h2']
-        h3 = h_columns_affected['h3']
-
-        if h1:
-            pass
-
-        # FIXME
-
-
-
-
+        for _ui in list_ui:
+            _ui.setCheckState(0, state)
 
     def get_h_columns_from_item_name(self, item_name=None):
         if item_name == None:
@@ -331,11 +321,13 @@ class Interface(QMainWindow):
 
         h_columns_affected = {'h1': [],
                               'h2': [],
-                              'h3': []}
+                              'h3': [],
+                              'list_tree_ui': []}
 
         h1_columns = []
         h2_columns = []
         h3_columns = []
+        list_tree_ui = []
 
         h1_global_counter = 0
         h2_global_counter = 0
@@ -353,28 +345,33 @@ class Interface(QMainWindow):
 
                         if td[_key_h1]['children'][_key_h2]['children']:
 
+                            list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
                             for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
                                 h3_columns.append(h3_global_counter)
+                                list_tree_ui.append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'])
                                 h3_global_counter += 1
 
                         else:
 
                             h2_columns.append(h2_global_counter)
+                            list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
                             h3_columns.append(h3_global_counter)
 
                             h2_global_counter += 1
                             h3_global_counter += 1
 
-
                     return {'h1': [h1_global_counter],
                             'h2': h2_columns,
-                            'h3': h3_columns}
+                            'h3': h3_columns,
+                            'list_tree_ui': list_tree_ui}
 
                 else:
 
+                    list_tree_ui.append(td[_key_h1]['ui'])
                     return {'h1': [h1_global_counter],
                             'h2': [h2_global_counter],
-                            'h3': [h3_global_counter]}
+                            'h3': [h3_global_counter],
+                            'list_tree_ui': list_tree_ui}
 
             else:
                 # start looking into the h2 layer if it has children
@@ -389,16 +386,20 @@ class Interface(QMainWindow):
                             if td[_key_h1]['children'][_key_h2]['children']:
                                 # if key_h2 has children
 
+                                # list all h3 leaves for this h2
                                 for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
                                     h3_columns.append(h3_global_counter)
+                                    list_tree_ui.append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'])
                                     h3_global_counter += 1
 
                             else:
                                 h3_columns = [h3_global_counter]
 
+                            list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
                             return {'h1': [],
                                     'h2': [h2_global_counter],
-                                    'h3': h3_columns}
+                                    'h3': h3_columns,
+                                    'list_tree_ui': list_tree_ui}
 
                         else:
                             # we did not find the item name yet
@@ -416,7 +417,8 @@ class Interface(QMainWindow):
 
                                         return {'h1': [],
                                                 'h2': [],
-                                                'h3': [h3_global_counter]}
+                                                'h3': [h3_global_counter],
+                                                'list_tree_ui': list_tree_ui}
 
                                     else:
 
@@ -436,7 +438,7 @@ class Interface(QMainWindow):
                     h2_global_counter += 1
                     h3_global_counter += 1
 
-        return {'h1': h1_columns, 'h2': h2_columns, 'h3': h3_columns}
+        return {'h1': h1_columns, 'h2': h2_columns, 'h3': h3_columns, 'list_tree_ui': list_tree_ui}
 
     def addItems(self, parent):
         td = self.tree_dict
