@@ -295,11 +295,11 @@ class Interface(QMainWindow):
 
     def tree_item_changed(self, item, _):
         """this will change the way the big table will look like by hidding or showing columns"""
-        print("name of item is: {}".format(self.get_item_name(item)))
+        # print("name of item is: {}".format(self.get_item_name(item)))
         h_columns_affected = self.get_h_columns_from_item_name(item_name=self.get_item_name(item))
 
-        import pprint
-        pprint.pprint(h_columns_affected)
+        # import pprint
+        # pprint.pprint(h_columns_affected)
 
         self.change_state_children(list_ui=h_columns_affected['list_tree_ui'],
                                    list_parent_ui=h_columns_affected['list_parent_ui'],
