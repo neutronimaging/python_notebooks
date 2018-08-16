@@ -357,6 +357,27 @@ class Interface(QMainWindow):
 
         self.ui.treeWidget.blockSignals(False)
 
+    def update_full_tree_status(self):
+        """this will update the tree_dict dictionary with the status of all the leaves"""
+        td = self.tree_dict
+        for _key_h1 in td.keys():
+
+            if td[_key_h1]['children']:
+
+                for _key_h2 in td[_key_h1]['children'].keys():
+
+                    if td[_key_h1]['children'][_key_h2]['children']:
+
+                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+                            pass #FIXME
+
+                    else:
+                        pass #FIXME
+            else:
+                pass #FIXME
+
+
+
     def get_h_columns_from_item_name(self, item_name=None):
         # h_columns_affected = {'h1': [],
         #                       'h2': [],
