@@ -14,7 +14,7 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
-from neutronbraggedge.experiment_handler import *
+#from neutronbraggedge.experiment_handler import *
 from NeuNorm.normalization import Normalization
 
 from __code.ui_display_counts_of_region_vs_stack import Ui_MainWindow as UiMainWindow

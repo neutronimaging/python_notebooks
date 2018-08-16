@@ -301,6 +301,30 @@ class Interface(QMainWindow):
         import pprint
         pprint.pprint(h_columns_affected)
 
+        self.change_state_children(h_columns_affected=h_columns_affected,
+                                   state=item.checkState(0))
+
+    def change_state_children(self, h_columns_affected={}, state=0):
+        """
+        Will repercute the state of the parent to the children
+
+        :param h_columns_affected:
+        :param state:
+        :return:
+        """
+        h1 = h_columns_affected['h1']
+        h2 = h_columns_affected['h2']
+        h3 = h_columns_affected['h3']
+
+        if h1:
+            pass
+
+        # FIXME
+
+
+
+
+
     def get_h_columns_from_item_name(self, item_name=None):
         if item_name == None:
             return
@@ -342,13 +366,13 @@ class Interface(QMainWindow):
                             h3_global_counter += 1
 
 
-                    return {'h1': [h1_gloabl_counter],
+                    return {'h1': [h1_global_counter],
                             'h2': h2_columns,
                             'h3': h3_columns}
 
                 else:
 
-                    return {'h1': [h1_gloabl_counter],
+                    return {'h1': [h1_global_counter],
                             'h2': [h2_global_counter],
                             'h3': [h3_global_counter]}
 

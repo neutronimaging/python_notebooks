@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/j35/git/IPTS/notebooks/ui/ui_display_counts_of_region_vs_stack.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_display_counts_of_region_vs_stack.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
