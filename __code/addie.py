@@ -302,8 +302,8 @@ class Interface(QMainWindow):
         # pprint.pprint(h_columns_affected)
 
         self.change_state_tree(list_ui=h_columns_affected['list_tree_ui'],
-                                   list_parent_ui=h_columns_affected['list_parent_ui'],
-                                   state=item.checkState(0))
+                               list_parent_ui=h_columns_affected['list_parent_ui'],
+                               state=item.checkState(0))
 
         self.change_state_table(columns_affected=h_columns_affected, state=item.checkState(0))
 
@@ -480,7 +480,8 @@ class Interface(QMainWindow):
 
     def change_state_tree(self, list_ui=[], list_parent_ui=[], state=0):
         """
-        Will transfer the state of the parent to the children
+        Will transfer the state of the parent to the children. We also need to make sure that if all the children
+        are disabled, the parent gets disable as well.
 
         :param list_ui:
         :param list_parent_ui:
@@ -504,6 +505,43 @@ class Interface(QMainWindow):
     def update_full_tree_status(self):
         """this will update the tree_dict dictionary with the status of all the leaves"""
         td = self.tree_dict
+
+        # clean tree
+        # if all h3 of an h2 are disabled, h2 should be disabled
+        # if all h2 of a h1 are disabled, h1 should be disabled
+        for _key_h1 in td.keys():
+
+            if td[_key_h1]['children']:
+
+                all_h2_disabled = True
+
+                for _key_h2 in td[_key_h1]['children'].keys():
+
+                    if td[_key_h1]['children'][_key_h2]['children']:
+
+                        all_h3_disabled = True
+                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+
+                            if td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'].checkState(0):
+                                all_h3_disabled = False
+                                all_h2_disabled = False
+                                break
+
+                        if all_h3_disabled:
+                            # we need to make sure the h2 is disabled as well
+                            td[_key_h1]['children'][_key_h2]['ui'].setCheckState(0, QtCore.Qt.Unchecked)
+
+                    else:
+
+                        if td[_key_h1]['children'][_key_h2]['ui'].checkState(0):
+                            all_h2_disabled = False
+
+                if all_h2_disabled:
+                    # we need to make sure the h1 is disabled as well then
+                    td[_key_h1]['ui'].setCheckState(0, QtCore.Qt.Unchecked)
+
+
+        # record full tree state
         for _key_h1 in td.keys():
 
             td[_key_h1]['state'] = td[_key_h1]['ui'].checkState(0)
