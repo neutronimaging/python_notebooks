@@ -305,7 +305,7 @@ class Interface(QMainWindow):
                                list_parent_ui=h_columns_affected['list_parent_ui'],
                                state=item.checkState(0))
 
-        self.change_state_table(columns_affected=h_columns_affected, state=item.checkState(0))
+        self.update_table_columns_visibility()
 
     def make_all_columns_visible(self):
         """Make all columns of all table visible"""
@@ -319,11 +319,70 @@ class Interface(QMainWindow):
         for _col in np.arange(nbr_col_h1):
             table_ui.setColumnHidden(_col, False)
 
-    def change_state_table(self, columns_affected=[], state=0):
+    def update_table_columns_visibility(self):
         # will update the table by hiding or not the columns
 
-        pass
+        def set_column_visibility(column=-1, table_ui=None, visible=0):
+            table_ui.setColumnHidden(column, not visible)
 
+        def get_boolean_state(key=None):
+            status = key['state']
+            if status == QtCore.Qt.Checked:
+                return True
+            else:
+                return False
+
+        h2_counter = 0
+        h3_counter = 0
+
+        td = self.tree_dict
+        for h1_counter, _key_h1 in enumerate(td.keys()):
+
+            _h1_boolean_status = get_boolean_state(td[_key_h1])
+            set_column_visibility(column=h1_counter,
+                                  table_ui=self.ui.h1_table,
+                                  visible=_h1_boolean_status)
+
+            if td[_key_h1]['children']:
+
+                for _key_h2 in td[_key_h1]['children'].keys():
+
+                    _h2_boolean_status = get_boolean_state(td[_key_h1]['children'][_key_h2])
+                    set_column_visibility(column=h2_counter,
+                                          table_ui=self.ui.h2_table,
+                                          visible=_h2_boolean_status)
+
+                    if td[_key_h1]['children'][_key_h2]['children']:
+
+                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+
+                            _h3_boolean_status = get_boolean_state(td[_key_h1]['children'][_key_h2]['children'][_key_h3])
+                            set_column_visibility(column=h3_counter,
+                                                  table_ui=self.ui.h3_table,
+                                                  visible=_h3_boolean_status)
+                            h3_counter += 1
+
+                    else:
+
+                        set_column_visibility(column=h3_counter,
+                                              table_ui=self.ui.h3_table,
+                                              visible=_h2_boolean_status)
+                        h3_counter += 1
+
+                    h2_counter += 1
+
+            else:
+
+                # h2 and h3 should have the same status as h1
+                set_column_visibility(column=h2_counter,
+                                      table_ui=self.ui.h2_table,
+                                      visible=_h1_boolean_status)
+                set_column_visibility(column=h3_counter,
+                                      table_ui=self.ui.h3_table,
+                                      visible=_h1_boolean_status)
+
+                h2_counter += 1
+                h3_counter += 1
 
         # # def set_column_hidden(column=-1, table_ui=None, status_col=0):
         # #     table_ui.setColumnHidden(column, status_col)
