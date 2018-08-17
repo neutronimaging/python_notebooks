@@ -320,27 +320,170 @@ class Interface(QMainWindow):
             table_ui.setColumnHidden(_col, False)
 
     def change_state_table(self, columns_affected=[], state=0):
-        self.make_all_columns_visible()
+        # will update the table by hiding or not the columns
 
-        is_column_hidden = True
-        if state == QtCore.Qt.Checked:
-            is_column_hidden = False
+        pass
 
-        def set_column_hidden(columns_affected=[], table_ui=None):
-            if columns_affected:
-                for _col in columns_affected:
-                    table_ui.setColumnHidden(_col, is_column_hidden)
 
-        set_column_hidden(columns_affected=columns_affected['h1'], table_ui=self.ui.h1_table)
-        set_column_hidden(columns_affected=columns_affected['h2'], table_ui=self.ui.h2_table)
-        set_column_hidden(columns_affected=columns_affected['h3'], table_ui=self.ui.h3_table)
+        # # def set_column_hidden(column=-1, table_ui=None, status_col=0):
+        # #     table_ui.setColumnHidden(column, status_col)
+        # #
+        # # h1_global_counter = 0
+        # # h2_global_counter = 0
+        # # h3_global_counter = 0
+        # #
+        # # td = self.tree_dict
+        # # for h1_global_counter, _key_h1 in enumerate(td.keys()):
+        # #
+        # #     set_column_hidden(h1_global_counter,
+        # #                       self.ui.h1_table,
+        # #                       td[_key_h1]['state'])
+        # #
+        # #     if td[_key_h1]['children']:
+        # #
+        # #         for _key_h2 in td[_key_h1]['children']:
+        # #
+        # #                 set_column_hidden(h2_global_counter,
+        # #                                   self.ui.h2_table,
+        #                                   td[_key_h1]['children'][_key_h1]['state'])
+        #
+        #
+        #
+        #
+        #                 if td[_key_h1]['children'][_key_h2]['children']:
+        #
+        #                     list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
+        #                     for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+        #                         h3_columns.append(h3_global_counter)
+        #                         list_tree_ui.append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'])
+        #                         h3_global_counter += 1
+        #
+        #                 else:
+        #
+        #                     h2_columns.append(h2_global_counter)
+        #                     list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
+        #                     h3_columns.append(h3_global_counter)
+        #
+        #                     h2_global_counter += 1
+        #                     h3_global_counter += 1
+        #
+        #             return {'h1': [h1_global_counter],
+        #                     'h2': h2_columns,
+        #                     'h3': h3_columns,
+        #                     'list_tree_ui': list_tree_ui,
+        #                     'list_parent_ui': list_parent_ui}
+        #
+        #         else:
+        #
+        #             list_tree_ui.append(td[_key_h1]['ui'])
+        #             return {'h1': [h1_global_counter],
+        #                     'h2': [h2_global_counter],
+        #                     'h3': [h3_global_counter],
+        #                     'list_tree_ui': list_tree_ui,
+        #                     'list_parent_ui': list_parent_ui}
+        #
+        #     else:
+        #         # start looking into the h2 layer if it has children
+        #
+        #         if td[_key_h1]['children']:
+        #
+        #             for _key_h2 in td[_key_h1]['children'].keys():
+        #
+        #                 if item_name == _key_h2:
+        #                     # get all h3 for this h2 and we are done
+        #
+        #                     if td[_key_h1]['children'][_key_h2]['children']:
+        #                         # if key_h2 has children
+        #
+        #                         # list all h3 leaves for this h2
+        #                         for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+        #                             h3_columns.append(h3_global_counter)
+        #                             list_tree_ui.append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'])
+        #                             h3_global_counter += 1
+        #
+        #                     else:
+        #                         h3_columns = [h3_global_counter]
+        #
+        #                     list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
+        #                     list_parent_ui.append(td[_key_h1]['ui'])
+        #                     return {'h1': [],
+        #                             'h2': [h2_global_counter],
+        #                             'h3': h3_columns,
+        #                             'list_tree_ui': list_tree_ui,
+        #                             'list_parent_ui': list_parent_ui}
+        #
+        #                 else:
+        #                     # we did not find the item name yet
+        #
+        #                     # start looking into all the h2 children (if any)
+        #                     if td[_key_h1]['children'][_key_h2]['children']:
+        #
+        #                         # loop through all the h3 and look for item_name. If found
+        #                         # we are done
+        #                         for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+        #
+        #                             if item_name == _key_h3:
+        #                                 # we found the item name at the h3 layer,
+        #                                 # no leaf below, so we are done
+        #
+        #                                 list_parent_ui.append(td[_key_h1]['ui'])
+        #                                 list_parent_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
+        #                                 return {'h1': [],
+        #                                         'h2': [],
+        #                                         'h3': [h3_global_counter],
+        #                                         'list_tree_ui': list_tree_ui,
+        #                                         'list_parent_ui': list_parent_ui}
+        #
+        #                             else:
+        #
+        #                                 h3_global_counter += 1
+        #
+        #                         h2_global_counter += 1
+        #
+        #                     else:
+        #                         # no children, we just keep going to the next h2 (and h3)
+        #
+        #                         h2_global_counter += 1
+        #                         h3_global_counter += 1
+        #
+        #         else:
+        #             # no children and item_name has not been found yet, so
+        #             # just keep going and move on to the next h1
+        #             h2_global_counter += 1
+        #             h3_global_counter += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # self.make_all_columns_visible()
+        #
+        # is_column_hidden = True
+        # if state == QtCore.Qt.Checked:
+        #     is_column_hidden = False
+        #
+        #
+        # set_column_hidden(columns_affected=columns_affected['h1'], table_ui=self.ui.h1_table)
+        # set_column_hidden(columns_affected=columns_affected['h2'], table_ui=self.ui.h2_table)
+        # set_column_hidden(columns_affected=columns_affected['h3'], table_ui=self.ui.h3_table)
 
     def change_state_tree(self, list_ui=[], list_parent_ui=[], state=0):
         """
         Will transfer the state of the parent to the children
 
         :param list_ui:
-        :parem list_parent_ui:
+        :param list_parent_ui:
         :param state:
         :return:
         """
@@ -355,6 +498,7 @@ class Interface(QMainWindow):
             for _ui in list_parent_ui:
                 _ui.setCheckState(0, state)
 
+        self.update_full_tree_status()
         self.ui.treeWidget.blockSignals(False)
 
     def update_full_tree_status(self):
@@ -362,21 +506,22 @@ class Interface(QMainWindow):
         td = self.tree_dict
         for _key_h1 in td.keys():
 
+            td[_key_h1]['state'] = td[_key_h1]['ui'].checkState(0)
+
             if td[_key_h1]['children']:
 
                 for _key_h2 in td[_key_h1]['children'].keys():
 
+                    td[_key_h1]['children'][_key_h2]['state'] = td[_key_h1]['children'][_key_h2]['ui'].checkState(0)
+
                     if td[_key_h1]['children'][_key_h2]['children']:
 
                         for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
-                            pass #FIXME
 
-                    else:
-                        pass #FIXME
-            else:
-                pass #FIXME
+                            td[_key_h1]['children'][_key_h2]['children'][_key_h3]['state'] = \
+                            td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'].checkState(0)
 
-
+        self.tree_dict = td
 
     def get_h_columns_from_item_name(self, item_name=None):
         # h_columns_affected = {'h1': [],
