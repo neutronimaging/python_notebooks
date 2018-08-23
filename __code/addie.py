@@ -164,6 +164,21 @@ class Interface(QMainWindow):
         # self.init_widgets()
         self.init_tables()
         self.init_tree()
+        self.init_signals()
+
+    def init_signals(self):
+        self.h1_header_table.sectionResized.connect(self.resizing_h1)
+        self.h2_header_table.sectionResized.connect(self.resizing_h2)
+        self.h3_header_table.sectionResized.connect(self.resizing_h3)
+
+    def resizing_h1(self, index_column, old_size, new_size):
+        print("resizing h1 column {}".format(index_column))
+
+    def resizing_h2(self, index_column, old_size, new_size):
+        print("resizing h2 column {}".format(index_column))
+
+    def resizing_h3(self, index_column, old_size, new_size):
+        print("resizing h3 column {}".format(index_column))
 
     def init_headers(self):
         td = self.tree_dict
@@ -259,6 +274,9 @@ class Interface(QMainWindow):
         self.init_table_col_width(table_width=self.table_width['h2'], table_ui=self.ui.h2_table)
         self.init_table_col_width(table_width=self.table_width['h3'], table_ui=self.ui.h3_table)
 
+        self.h1_header_table = self.ui.h1_table.horizontalHeader()
+        self.h2_header_table = self.ui.h2_table.horizontalHeader()
+        self.h3_header_table = self.ui.h3_table.horizontalHeader()
 
     def init_widgets(self):
         pass
