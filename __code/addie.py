@@ -144,6 +144,12 @@ class Interface(QMainWindow):
                      'h3': [],
                      }
 
+    # to find which h1 column goes with wich h2 and which h3
+    table_columns_links = {'h1': [],
+                           'h2': [],
+                           'h3': [],
+                           }
+
     default_width = 90
 
     table_width = {'h1': [],
@@ -165,6 +171,10 @@ class Interface(QMainWindow):
         self.init_tables()
         self.init_tree()
         self.init_signals()
+
+
+        import pprint
+        pprint.pprint(self.table_columns_links)
 
     def init_signals(self):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
@@ -277,6 +287,8 @@ class Interface(QMainWindow):
         self.h1_header_table = self.ui.h1_table.horizontalHeader()
         self.h2_header_table = self.ui.h2_table.horizontalHeader()
         self.h3_header_table = self.ui.h3_table.horizontalHeader()
+
+        self.make_tree_of_column_references()
 
     def init_widgets(self):
         pass
@@ -637,6 +649,71 @@ class Interface(QMainWindow):
                             td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'].checkState(0)
 
         self.tree_dict = td
+
+    def make_tree_of_column_references(self):
+        """
+        table_columns_links = {'h1': [], 'h2': [], 'h3': []}
+
+        h1 = [0, 1, 2]  # number of h1 columns
+        h2 = [[0], [1,2,3], [4]] link of h2 columns with h1
+        h3 = [ [[0]], [[1,2], [3,4], [5]], [[6,7,8]] ]
+
+        :return:
+        None
+        """
+
+        h1 = []
+        h2 = []
+        h3 = []
+
+        h2_index=0
+        h3_index=0
+
+        td = self.tree_dict
+        for h1_index, _key_h1 in enumerate(td.keys()):
+
+            h1.append(h1_index)
+
+
+            if td[_key_h1]['children']:
+
+                _h2 = []
+                _h3_h2 = []
+                for _key_h2 in td[_key_h1]['children']:
+
+                    if td[_key_h1]['children'][_key_h2]['children']:
+
+                        _h3_h3 = []
+                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children']:
+
+                            _h3_h3.append(h3_index)
+                            h3_index += 1
+
+                        _h3_h2.append(_h3_h3)
+
+                    else:
+                        # h2 does not have any h3 children
+                        _h3_h2.append([h3_index])
+                        h3_index += 1
+
+                    _h2.append(h2_index)
+                    h2_index += 1
+
+                h3.append(_h3_h2)
+                h2.append(_h2)
+
+            else:
+            # h1 does not have any h2 children
+
+                h2.append([h2_index])
+                h3.append([[h3_index]])
+                h2_index += 1
+                h3_index += 1
+
+        self.table_columns_links = {'h1': h1,
+                                    'h2': h2,
+                                    'h3': h3,
+                                    }
 
     def get_h_columns_from_item_name(self, item_name=None):
         # h_columns_affected = {'h1': [],
