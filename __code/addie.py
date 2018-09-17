@@ -172,7 +172,6 @@ class Interface(QMainWindow):
         self.init_tree()
         self.init_signals()
 
-
         import pprint
         pprint.pprint(self.table_columns_links)
 
@@ -183,6 +182,15 @@ class Interface(QMainWindow):
 
     def resizing_h1(self, index_column, old_size, new_size):
         print("resizing h1 column {}".format(index_column))
+
+
+
+
+
+
+
+
+
 
     def resizing_h2(self, index_column, old_size, new_size):
         print("resizing h2 column {}".format(index_column))
