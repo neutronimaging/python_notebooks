@@ -190,7 +190,15 @@ class Interface(QMainWindow):
         print("resizing h3 column {}".format(index_column))
 
     def resizing_table(self):
-        print("resizing table")
+        td = self.tree_dict
+
+        for _key_h1 in td.keys():
+
+            # if h1 header has children
+            if td[_key_h1]['children']:
+
+
+
 
 
     def init_headers(self):
@@ -243,7 +251,7 @@ class Interface(QMainWindow):
                     if td[_key_h1]['children'][_key_h2]['children']:
                         nbr_h3 = len(td[_key_h1]['children'][_key_h2]['children'])
 
-                        for _i in np.arange(nbr_h3):
+                        for _ in np.arange(nbr_h3):
                             table_width['h3'].append(self.default_width)
 
                         ## h2 header will be as wide as the number of h3 children

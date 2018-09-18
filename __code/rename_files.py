@@ -65,9 +65,11 @@ class NamingSchemaDefinition(object):
 
 	def pre_index_text_changed(self, sender):
 		self.box4.children[1].value = self.current_naming_schema()
+		self.demo_output_file_name()
 
 	def post_text_changed(self, sender):
 		self.box6.children[1].value = self.new_naming_schema()
+		self.demo_output_file_name()
 
 	def show(self):
 
@@ -93,6 +95,7 @@ class NamingSchemaDefinition(object):
 		before = widgets.VBox([self.box2, self.box4])
 
 		# new naming schema
+		box_text_width = '10%'
 		self.box1 = widgets.HBox([widgets.Label("Prefix File Name",
 		                                  layout=widgets.Layout(width='15%')),
 		                    widgets.Text(value='image',
@@ -101,12 +104,17 @@ class NamingSchemaDefinition(object):
 		self.box5 = widgets.HBox([widgets.Label("New Index Separator",
 		                                  layout=widgets.Layout(width='15%')),
 		                    widgets.Text(value='_',
-		                                layout=widgets.Layout(width='5%'))])
+		                                layout=widgets.Layout(width=box_text_width))])
 
 		self.box7 = widgets.HBox([widgets.Label("Number of digits",
 		                                  layout=widgets.Layout(width='15%')),
 		                    widgets.IntText(value=4,
-		                                   layout=widgets.Layout(width='5%'))])
+		                                   layout=widgets.Layout(width=box_text_width))])
+
+		self.box8 = widgets.HBox([widgets.Label("Offset",
+												layout=widgets.Layout(width='15%')),
+								  widgets.IntText(value=0,
+												  layout=widgets.Layout(width=box_text_width))])
 
 		self.box6 = widgets.HBox([widgets.Label("New Name Schema: ",
 		                                  layout=widgets.Layout(width='20%')),
@@ -116,16 +124,53 @@ class NamingSchemaDefinition(object):
 		self.box1.children[1].on_trait_change(self.post_text_changed, 'value')
 		self.box5.children[1].on_trait_change(self.post_text_changed, 'value')
 		self.box7.children[1].on_trait_change(self.post_text_changed, 'value')
+		self.box8.children[1].on_trait_change(self.post_text_changed, 'value')
 
-		after = widgets.VBox([self.box1, self.box5, self.box7, self.box6])
-
-
-
+		after = widgets.VBox([self.box1, self.box5, self.box7, self.box8, self.box6])
 
 		accordion = widgets.Accordion(children=[before, after])
 		accordion.set_title(0, 'Current Schema Name')
 		accordion.set_title(1, 'New Naming Schema')
-		display(accordion)
+
+		output_ui_1 = widgets.HBox([widgets.Label("Example of naming: ",
+												layout=widgets.Layout(width='20%'))])
+
+		self.output_ui_2 = widgets.HBox([widgets.Label("Old name: ",
+		                                  layout=widgets.Layout(width='40%')),
+		                    widgets.Label("",
+		                                 layout=widgets.Layout(width='60%'))])
+
+		self.output_ui_3 = widgets.HBox([widgets.Label("New name: ",
+		                                  layout=widgets.Layout(width='40%')),
+		                    widgets.Label("",
+		                                 layout=widgets.Layout(width='60%'))])
+
+		vbox = widgets.VBox([accordion, output_ui_1, self.output_ui_2, self.output_ui_3])
+		display(vbox)
+
+		self.demo_output_file_name()
+
+	def demo_output_file_name(self):
+		input_file = os.path.basename(self.list_files[0])
+		self.output_ui_2.children[1].value = input_file
+
+		old_index_separator = self.get_old_index_separator()
+		new_prefix_name = self.get_new_prefix_name()
+		new_index_separator = self.get_new_index_separator()
+		new_number_of_digits = self.get_new_number_of_digits()
+		offset = self.box8.children[1].value
+
+		try:
+			new_name = self.geneate_new_file_name(input_file,
+												  old_index_separator,
+												  new_prefix_name,
+												  new_index_separator,
+												  new_number_of_digits,
+												  offset)
+		except ValueError:
+			new_name = 'ERROR while generating new file name!'
+
+		self.output_ui_3.children[1].value = new_name
 
 	def get_old_index_separator(self):
 		return self.box2.children[1].value
@@ -139,6 +184,16 @@ class NamingSchemaDefinition(object):
 	def get_new_number_of_digits(self):
 		return self.box7.children[1].value	
 
+	def geneate_new_file_name(self, old_file_name, old_index_separator, new_prefix_name, new_index_separator,
+							  new_number_of_digits, offset):
+		[_pre_extension, _ext] = os.path.splitext(old_file_name)
+		_name_separated = _pre_extension.split(old_index_separator)
+		_index = np.int(_name_separated[-1]) + offset
+		new_name = new_prefix_name + new_index_separator + \
+				   '{:0{}}'.format(_index, new_number_of_digits) + \
+				   self.ext
+		return new_name
+
 	def get_dict_old_new_filenames(self):
 		list_of_input_files = self.list_files
 
@@ -146,17 +201,18 @@ class NamingSchemaDefinition(object):
 		new_prefix_name = self.get_new_prefix_name()
 		new_index_separator = self.get_new_index_separator()
 		new_number_of_digits = self.get_new_number_of_digits()
+		offset = self.box8.children[1].value
 
 		list_of_input_basename_files = [os.path.basename(_file) for _file in list_of_input_files]
 
 		new_list = {}
 		for _file_index, _file in enumerate(list_of_input_basename_files):
-			[_pre_extension, _ext] = os.path.splitext(_file)
-			_name_separated = _pre_extension.split(old_index_separator)
-			_index = np.int(_name_separated[-1])
-			new_name = new_prefix_name + new_index_separator + \
-		    	'{:0{}}'.format(_index, new_number_of_digits) + \
-		    	self.ext
+			new_name = self.geneate_new_file_name(_file,
+												  old_index_separator,
+												  new_prefix_name,
+												  new_index_separator,
+												  new_number_of_digits,
+												  offset)
 			new_list[list_of_input_files[_file_index]] = new_name
 
 		return new_list
@@ -165,12 +221,15 @@ class NamingSchemaDefinition(object):
 		self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
 																	 start_dir=self.working_dir,
 																	 multiple=False,
+																	 next=self.export,
 																	 type='directory')
 		self.output_folder_ui.show()
 
-	def export(self):
+	def export(self, value):
 		dict_old_new_names = self.get_dict_old_new_filenames()
 		new_output_folder = os.path.abspath(self.output_folder_ui.selected)
 
 		utilities.copy_files(dict_old_new_names=dict_old_new_names,
 							 new_output_folder=new_output_folder)
+
+		self.new_list_files = dict_old_new_names
