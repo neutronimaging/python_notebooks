@@ -37,6 +37,8 @@ class NamingSchemaDefinition(object):
 	list_files = []
 	working_dir = ''
 
+	ready_to_output = False
+
 	def __init__(self, o_format=None):
 		if o_format:
 			self.list_files = o_format.list_files
@@ -83,11 +85,12 @@ class NamingSchemaDefinition(object):
 		self.box4 = widgets.HBox([widgets.Label("Current Name Schema: ",
 		                                  layout=widgets.Layout(width='20%')),
 		                    widgets.Label(self.current_naming_schema(),
-		                                 layout=widgets.Layout(width='20%')),
+		                                 layout=widgets.Layout(width='30%')),
+		                    widgets.Label("Random Input:",
+										  layout=widgets.Layout(width='15%')),
 		                    widgets.Dropdown(options=self.random_input_list,
 		                    	value=self.random_input_list[0],
-		                    	description='Random Input',
-		                    	layout=widgets.Layout(width='40%'))
+		                    	layout=widgets.Layout(width='50%'))
 
 		                    ])
 
@@ -145,6 +148,7 @@ class NamingSchemaDefinition(object):
 		                    widgets.Label("",
 		                                 layout=widgets.Layout(width='60%'))])
 
+		self.output_ui_3.children[1].add_class("result_label")
 		vbox = widgets.VBox([accordion, output_ui_1, self.output_ui_2, self.output_ui_3])
 		display(vbox)
 
@@ -161,14 +165,41 @@ class NamingSchemaDefinition(object):
 		offset = self.box8.children[1].value
 
 		try:
+			display(HTML("""
+						  <style>
+						  .result_label {
+							 font-style: bold;
+							 color: black;
+							 font-size: 14px;
+						  }
+						  </style>
+						  """))
+
+
 			new_name = self.geneate_new_file_name(input_file,
 												  old_index_separator,
 												  new_prefix_name,
 												  new_index_separator,
 												  new_number_of_digits,
 												  offset)
+
+			self.ready_to_output = True
+
 		except ValueError:
+
+			display(HTML("""
+						  <style>
+						  .result_label {
+							 font-style: bold;
+							 color: red;
+							 font-size: 18px;
+						  }
+						  </style>
+						  """))
+
 			new_name = 'ERROR while generating new file name!'
+
+			self.ready_to_output = False
 
 		self.output_ui_3.children[1].value = new_name
 
@@ -197,6 +228,8 @@ class NamingSchemaDefinition(object):
 	def get_dict_old_new_filenames(self):
 		list_of_input_files = self.list_files
 
+		renaming_result = []
+
 		old_index_separator = self.get_old_index_separator()
 		new_prefix_name = self.get_new_prefix_name()
 		new_index_separator = self.get_new_index_separator()
@@ -214,16 +247,22 @@ class NamingSchemaDefinition(object):
 												  new_number_of_digits,
 												  offset)
 			new_list[list_of_input_files[_file_index]] = new_name
+			renaming_result.append("{} \t --> \t {}".format(_file, new_name))
 
+		self.renaming_result = renaming_result
 		return new_list
 
 	def select_export_folder(self):
-		self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
-																	 start_dir=self.working_dir,
-																	 multiple=False,
-																	 next=self.export,
-																	 type='directory')
-		self.output_folder_ui.show()
+
+		if self.ready_to_output:
+			self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
+																		 start_dir=self.working_dir,
+																		 multiple=False,
+																		 next=self.export,
+																		 type='directory')
+			self.output_folder_ui.show()
+		else:
+			display(HTML('<span style="font-size: 20px; color:red">You need to fix the namig convention first!</span>'))
 
 	def export(self, value):
 		dict_old_new_names = self.get_dict_old_new_filenames()
@@ -233,3 +272,15 @@ class NamingSchemaDefinition(object):
 							 new_output_folder=new_output_folder)
 
 		self.new_list_files = dict_old_new_names
+
+		self.display_renaming_result()
+
+	def display_renaming_result(self):
+
+		result = widgets.HBox([widgets.Label("Renmaing results: ",
+												layout=widgets.Layout(width='20%')),
+								  widgets.Dropdown(options=self.renaming_result,
+												   value=self.renaming_result[0],
+												   layout=widgets.Layout(width='80%'))
+								  ])
+		display(result)
