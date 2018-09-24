@@ -19,7 +19,6 @@ class CombineFolders(object):
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
-
         self.list_folders_short = []
 
     def select_folders(self):
