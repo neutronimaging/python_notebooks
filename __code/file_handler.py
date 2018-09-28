@@ -190,13 +190,17 @@ def retrieve_metadata_from_dsc_list_files(list_files=[]):
 
     return metadata
 
-def retrieve_list_of_most_dominand_extension_from_folder(folder=''):
+def retrieve_list_of_most_dominand_extension_from_folder(folder='', files=[]):
     '''
     This will return the list of files from the most dominand file extension found in the folder
     as well as the most dominand extension used
     '''
-    
-    list_of_input_files = glob.glob(os.path.join(folder, '*'))
+
+    if folder:
+        list_of_input_files = glob.glob(os.path.join(folder, '*'))
+    else:
+        list_of_input_files = files
+
     list_of_input_files.sort()
     list_of_base_name = [os.path.basename(_file) for _file in list_of_input_files]
 
