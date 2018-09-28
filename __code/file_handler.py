@@ -88,6 +88,13 @@ def save_data(data=[], filename=''):
     elif (data_type == '.tiff') or (data_type == '.tif'):
         make_tiff(data=data, filename=filename)
     
+
+def get_file_extension(filename):
+    '''retrieve the file extension of the filename and make sure
+    we only keep the extension value and not the "dot" before it'''
+    full_extension = get_data_type(filename)
+    return full_extension[1:]
+
 def get_data_type(file_name):
     '''
     using the file name extension, will return the type of the data
