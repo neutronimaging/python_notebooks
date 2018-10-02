@@ -837,41 +837,11 @@ class Initializer(object):
         self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
 
     def widgets(self):
-        _file_path = os.path.dirname(__file__)
-        left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_fast.png'))
-        self.parent.ui.left_rotation_button_fast.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_fast_file + "'); " + \
-                                                        "background-repeat: no-repeat")
-
-        right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_fast.png'))
-        self.parent.ui.right_rotation_button_fast.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_fast_file + "'); " + \
-                                                         "background-repeat: no-repeat")
-
-        left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_slow.png'))
-        self.parent.ui.left_rotation_button_slow.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_slow_file + "'); " + \
-                                                        "background-repeat: no-repeat")
-
-        right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_slow.png'))
-        self.parent.ui.right_rotation_button_slow.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_slow_file + "'); " + \
-                                                         "background-repeat: no-repeat")
-
         self.parent.ui.splitter_2.setSizes([250, 50])
         self.parent.ui.splitter.setSizes([500, 50])
 
         # file slider
         self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
-
-        # # update size of table columns
-        # nbr_columns = self.parent.ui.tableWidget.columnCount()
-        # for _col in range(nbr_columns):
-        #     self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
 
         # update size of summary table
         nbr_columns = self.parent.ui.summary_table.columnCount()
@@ -997,7 +967,7 @@ class DisplayImages(object):
         if self.parent.ui.grid_display_checkBox.isChecked():
 
             grid_size = self.parent.ui.grid_size_slider.value()
-            [height, width] = np.shape(self.parent.live_image)
+            [width, height] = np.shape(self.parent.live_image)
 
             pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
                                                       height=height,
