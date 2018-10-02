@@ -25,12 +25,12 @@ except AttributeError:
 
 from __code.color import  Color
 from __code.file_handler import retrieve_time_stamp, make_ascii_file
-from __code.ui_profile import Ui_MainWindow as UiMainWindow
+from __code.ui_integrated_roi_counts_vs_file_name_and_time_stamp import Ui_MainWindow as UiMainWindow
 from __code.decorators import wait_cursor
 from __code.file_handler import make_ascii_file
 
 
-class ProfileUi(QMainWindow):
+class IntegratedRoiUi(QMainWindow):
 
     data_dict = {}
     data_dict_raw = {}
@@ -827,9 +827,6 @@ class Initializer(object):
             _offset = list_time_stamp[_row] - time_0
             self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
 
-            self.parent.ui.all_plots_file_name_table.insertRow(_row)
-            self.set_item_all_plot_file_name_table(row=_row, value=os.path.basename(_file))
-
     def parameters(self):        
         # init the position of the measurement ROI
         [height, width] = np.shape(self.parent.data_dict['data'][0])
@@ -867,16 +864,14 @@ class Initializer(object):
 
         self.parent.ui.splitter_2.setSizes([250, 50])
         self.parent.ui.splitter.setSizes([500, 50])
-        self.parent.ui.all_plots_hori_splitter.setSizes([250, 100])
-        self.parent.ui.all_plots_verti_splitter.setSizes([300, 100])
 
         # file slider
         self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
 
-        # update size of table columns
-        nbr_columns = self.parent.ui.tableWidget.columnCount()
-        for _col in range(nbr_columns):
-            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
+        # # update size of table columns
+        # nbr_columns = self.parent.ui.tableWidget.columnCount()
+        # for _col in range(nbr_columns):
+        #     self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
 
         # update size of summary table
         nbr_columns = self.parent.ui.summary_table.columnCount()
@@ -904,14 +899,6 @@ class Initializer(object):
         vertical_layout2 = QtGui.QVBoxLayout()
         vertical_layout2.addWidget(self.parent.ui.profile_view)
         self.parent.ui.profile_widget.setLayout(vertical_layout2)
-
-        # all plots
-        self.parent.ui.all_plots_view = pg.PlotWidget()
-        self.parent.ui.all_plots_view.plot()
-        self.parent.all_plots_legend = self.parent.ui.all_plots_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
-        vertical_layout2.addWidget(self.parent.ui.all_plots_view)
-        self.parent.ui.all_plots_widget.setLayout(vertical_layout2)
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
