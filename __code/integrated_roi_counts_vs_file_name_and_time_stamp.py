@@ -665,30 +665,28 @@ class ExportProfiles(object):
         output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index+1))
         return output_file_name
 
-    def _create_metadata(self, profile_index=0):
-        metadata = ["# Counts vs pixel position"]
-        metadata.append("#average counts of width of profile is used!")
-        profile_dimension = self.parent.get_profile_dimensions(row=profile_index)
-        is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
-        x_left = profile_dimension.x_left
-        x_right = profile_dimension.x_right
-        y_top = profile_dimension.y_top
-        y_bottom = profile_dimension.y_bottom
+    def _create_metadata(self):
+        inte_algo = self.parent.get_integration_algo()
+        metadata = ["#Counts vs file index"]
+        metadata.append("#Algorithm selected: {}".format(inte_algo))
+
+        _nbr_profiles = self.parent.ui.tableWidget.rowCount()
         metadata.append("#Profile dimension:")
-        metadata.append("# * [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(x_left, y_top, x_right, y_bottom))
-        if is_x_profile_direction:
-            metadata.append("# * integrated over y_axis")
-            table_axis = ['#x_axis']
-        else:
-            metadata.append("# * integrated over x_axis")
-            table_axis = ['#y_axis']
-        nbr_files = len(self.parent.data_dict['file_name'])
-        metadata.append("#List of files ({} files)".format(nbr_files))
-        for _index, _file in enumerate(self.parent.data_dict['file_name']):
-            metadata.append("# * {} -> col{}".format(_file, _index+1))
-            table_axis.append("# col.{}".format(_index+1))
-        metadata.append("#")
-        metadata.append("#" + ",".join(table_axis))
+        axis = ["file_Index, time_stamp"]
+        for _profile_index in np.arange(_nbr_profiles):
+            profile_dimension = self.parent.get_profile_dimensions(row=_profile_index)
+            x_left = profile_dimension.x_left
+            x_right = profile_dimension.x_right
+            y_top = profile_dimension.y_top
+            y_bottom = profile_dimension.y_bottom
+            metadata.append("# ROI #{}: [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(_profile_index,
+                                                                                    x_left, y_top,
+                                                                                    x_right, y_bottom))
+            metadata.append("#")
+            axis.append("ROI#{}".format(_profile_index))
+
+
+        metadata.append(",".join(axis))
         return metadata
 
     def _create_data(self, profile_index=0):
@@ -707,6 +705,9 @@ class ExportProfiles(object):
         return data
 
     def run(self):
+        metadata = self._create_metadata()
+
+
         _nbr_profiles = self.parent.ui.tableWidget.rowCount()
         for _profile_index in np.arange(_nbr_profiles):
             _output_file_name = self._create_output_file_name(profile_index=_profile_index)
