@@ -122,30 +122,34 @@ class IntegratedRoiUi(QMainWindow):
         for _roi in self.list_profile_pyqt_roi:
             self.ui.image_view.removeItem(_roi)
 
-    def display_profiles(self):
-        nbr_row = self.ui.tableWidget.rowCount()
-        if nbr_row == 0:
-            return
+    def display_counts(self):
+        return
 
-        image = self.live_image
-        color = Color()
-        list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
+        #FIXME
 
-        self.ui.profile_view.clear()
-        try:
-            self.ui.profile_view.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
-
-        self.legend = self.ui.profile_view.addLegend()
-
-        for _row in np.arange(nbr_row):
-            [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-            _label = ' Profile #{}'.format(_row+1)
-            _color = list_rgb_profile_color[_row]
-            self.ui.profile_view.plot(x_axis, profile,
-                                        name=_label,
-                                        pen=_color)
+        # nbr_row = self.ui.tableWidget.rowCount()
+        # if nbr_row == 0:
+        #     return
+        #
+        # image = self.live_image
+        # color = Color()
+        # list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
+        #
+        # self.ui.profile_view.clear()
+        # try:
+        #     self.ui.profile_view.scene().removeItem(self.legend)
+        # except Exception as e:
+        #     print(e)
+        #
+        # self.legend = self.ui.profile_view.addLegend()
+        #
+        # for _row in np.arange(nbr_row):
+        #     [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
+        #     _label = ' Profile #{}'.format(_row+1)
+        #     _color = list_rgb_profile_color[_row]
+        #     self.ui.profile_view.plot(x_axis, profile,
+        #                                 name=_label,
+        #                                 pen=_color)
 
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
@@ -192,8 +196,8 @@ class IntegratedRoiUi(QMainWindow):
         # self.list_table_widget_checkbox.remove(self.list_profile_pyqt_roi[row])
 
         # all plots tab
-        self.ui.all_plots_profiles_table.removeRow(row)
-        self.rename_all_plots_profiles_table()
+        # self.ui.all_plots_profiles_table.removeRow(row)
+        # self.rename_all_plots_profiles_table()
 
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
@@ -420,7 +424,7 @@ class IntegratedRoiUi(QMainWindow):
         if source == 'tableWidget':
             ui = self.ui.tableWidget
         else:
-            ui = self.ui.tableWidget_2
+            raise ValueError("Table does not exist!")
         selection = ui.selectedRanges()
         if selection:
             top_row = selection[0].topRow()
@@ -490,63 +494,58 @@ class IntegratedRoiUi(QMainWindow):
         self.check_status_next_prev_image_button()
         self.display_image()
         self.ui.file_slider.blockSignals(False)
-        self.display_profiles()
+        self.display_counts()
 
     def slider_file_changed(self, index_selected):
         self.display_image()
         slider_value = self.ui.file_slider.value()
         self.ui.image_slider_value.setText(str(slider_value))
         self.check_status_next_prev_image_button()
-        self.display_profiles()
+        self.display_counts()
+
+    def add_summary_table_column(self, column):
+        self.ui.summary_table.insertColumn(column)
+
+    def remove_sumary_table_column(self, column):
+        self.ui.summary_table.removeColumn(column-1)
 
     ## Event Handler
     def tab_changed(self, tab_index):
-        if tab_index == 1: # display all plots
-            self.update_all_plots()
+        pass
+        # if tab_index == 1: # display all plots
+        #     self.update_all_plots()
 
     def guide_changed(self):
         self.update_guide_table_using_guide_rois()
         self.update_profile_rois()
 
     def table_widget_selection_changed(self):
-        self.ui.tableWidget_2.blockSignals(True)
-        nbr_col = self.ui.tableWidget_2.columnCount()
-        nbr_row = self.ui.tableWidget_2.rowCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(full_range, False)
-        row = self.get_selected_row()
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
-        self.highlight_guide_profile_pyqt_rois(row=row)
-        self.ui.tableWidget_2.blockSignals(False)
-        self.previous_active_row = row
-
-    def table_widget_2_selection_changed(self):
-        self.ui.tableWidget.blockSignals(True)
-        nbr_col = self.ui.tableWidget.columnCount()
-        nbr_row = self.ui.tableWidget.rowCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
-        self.ui.tableWidget.setRangeSelected(full_range, False)
-        row = self.get_selected_row(source='tableWidget_2')
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-        self.ui.tableWidget.setRangeSelected(new_selection, True)
-        self.highlight_guide_profile_pyqt_rois(row=row)
-        self.ui.tableWidget.blockSignals(False)
-        self.previous_active_row = row
+        pass
+        # # self.ui.tableWidget_2.blockSignals(True)
+        # # nbr_col = self.ui.tableWidget_2.columnCount()
+        # # nbr_row = self.ui.tableWidget_2.rowCount()
+        # # full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        # # self.ui.tableWidget_2.setRangeSelected(full_range, False)
+        # row = self.get_selected_row()
+        # new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        # # self.ui.tableWidget_2.setRangeSelected(new_selection, True)
+        # self.highlight_guide_profile_pyqt_rois(row=row)
+        # self.ui.tableWidget_2.blockSignals(False)
+        # self.previous_active_row = row
 
     def table_widget_cell_changed(self, row, column):
         self.update_guide_roi_using_guide_table(row=row)
         self.update_profile_rois(row=row)
-        self.display_profiles()
+        self.display_counts()
 
     def guide_state_changed(self, state):
         self.remove_all_guides()
         self.display_guides()
-        self.display_profiles()
+        self.display_counts()
 
     def profile_width_changed(self, new_value):
         self.update_profile_rois()
-        self.display_profiles()
+        self.display_counts()
 
     def display_grid_clicked(self):
         status = self.ui.grid_display_checkBox.isChecked()
@@ -573,42 +572,44 @@ class IntegratedRoiUi(QMainWindow):
     def right_rotation_slow_clicked(self):
         self.rotation_angle -= 0.1
         self.display_image(recalculate_image=True)
-        self.display_profiles()
+        self.display_counts()
 
     @wait_cursor
     def left_rotation_slow_clicked(self):
         self.rotation_angle += 0.1
         self.display_image(recalculate_image=True)
-        self.display_profiles()
+        self.display_counts()
 
     @wait_cursor
     def right_rotation_fast_clicked(self):
         self.rotation_angle -= 1
         self.display_image(recalculate_image=True)
-        self.display_profiles()
+        self.display_counts()
 
     @wait_cursor
     def left_rotation_fast_clicked(self):
         self.rotation_angle += 1
         self.display_image(recalculate_image=True)
-        self.display_profiles()
+        self.display_counts()
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
         self.insert_row(row=selected_row)
+        self.add_summary_table_column(column=selected_row+4) # +4 to append to column
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.previous_active_row = selected_row
-        self.display_profiles()
+        #self.display_counts()
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
-        self.display_profiles()
+        self.remove_sumary_table_column(column=selected_row+4)
+        self.display_counts()
 
     def profile_along_axis_changed(self):
         self.update_profile_rois()
-        self.display_profiles()
+        self.display_counts()
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
@@ -704,6 +705,7 @@ class ExportProfiles(object):
 
 
 class GuideAndProfileRoisHandler(object):
+    """This class creates the ROI box (pg.RectROI) in the image"""
 
     __profile = None
 
@@ -715,11 +717,9 @@ class GuideAndProfileRoisHandler(object):
 
     def add(self):
         self._define_guide()
-        # self._define_profile()
         self.parent.list_profile_pyqt_roi.insert(self.row, self.__profile)
 
     def update(self):
-        self._define_profile()
         self.parent.ui.image_view.removeItem(self.parent.list_profile_pyqt_roi[self.row])
         self.parent.list_profile_pyqt_roi[self.row] = self.__profile
 
@@ -734,71 +734,10 @@ class GuideAndProfileRoisHandler(object):
         self.parent.ui.image_view.addItem(guide_roi)
         self.parent.list_guide_pyqt_roi.insert(self.row, guide_roi)
 
-    def _define_profile(self):
-        # profile
-        # [x0, y0, width, height] = self.parent.get_item_row(row=self.row)
-        _profile_width = self.parent.get_profile_width(row=self.row)
-        is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
-        # delta_profile = (_profile_width - 1) / 2.
-
-        profile_dimension = self.parent.get_profile_dimensions(row=self.row)
-        x_left = profile_dimension.x_left
-        x_right = profile_dimension.x_right
-        y_top = profile_dimension.y_top
-        y_bottom = profile_dimension.y_bottom
-
-        if is_x_profile_direction:
-
-            pos = []
-            pos.append([x_left, y_top])
-            pos.append([x_right, y_top])
-            adj = []
-            adj.append([0, 1])
-
-            if y_top != y_bottom: # height == 1
-                pos.append([x_left, y_bottom])
-                pos.append([x_right, y_bottom])
-                adj.append([2, 3])
-
-            adj = np.array(adj)
-            pos = np.array(pos)
-
-        else: # y-profile direction
-
-            pos = []
-            pos.append([x_left, y_top])
-            pos.append([x_left, y_bottom])
-            adj = []
-            adj.append([0, 1])
-
-            if y_top != y_bottom:  # height == 1
-                pos.append([x_right, y_top])
-                pos.append([x_right, y_bottom])
-                adj.append([2, 3])
-
-            adj = np.array(adj)
-            pos = np.array(pos)
-
-        line_color = self.parent.profile_color
-        _list_line_color = list(line_color)
-        line_color = tuple(_list_line_color)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
-
-        profile = pg.GraphItem()
-        self.parent.ui.image_view.addItem(profile)
-        profile.setData(pos=pos,
-                     adj=adj,
-                     pen=lines,
-                     symbol=None,
-                     pxMode=False)
-
-        self.__profile = profile
 
 
 class Initializer(object):
+    """Main intialization of the UI such as the table, widgets, pyqtgraph..."""
 
     def __init__(self, parent=None):
         self.parent = parent
