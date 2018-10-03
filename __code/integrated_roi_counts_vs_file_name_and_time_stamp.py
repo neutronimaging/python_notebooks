@@ -36,7 +36,6 @@ class IntegratedRoiUi(QMainWindow):
     data_dict_raw = {}
     timestamp_dict = {}
 
-    rotation_angle = 0
     histogram_level = []
 
     # size of tables
@@ -50,6 +49,8 @@ class IntegratedRoiUi(QMainWindow):
                  'adj': None,
                  'item': None,
                  'color': (0, 0, 255, 255, 1)}
+
+    list_counts = list()
 
     profile_color = (0, 255, 0, 255, 1)
 
@@ -123,33 +124,28 @@ class IntegratedRoiUi(QMainWindow):
             self.ui.image_view.removeItem(_roi)
 
     def display_counts(self):
-        return
+        nbr_row = self.ui.tableWidget.rowCount()
+        if nbr_row == 0:
+            return
 
-        #FIXME
+        color = Color()
+        list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
 
-        # nbr_row = self.ui.tableWidget.rowCount()
-        # if nbr_row == 0:
-        #     return
-        #
-        # image = self.live_image
-        # color = Color()
-        # list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
-        #
-        # self.ui.profile_view.clear()
-        # try:
-        #     self.ui.profile_view.scene().removeItem(self.legend)
-        # except Exception as e:
-        #     print(e)
-        #
-        # self.legend = self.ui.profile_view.addLegend()
-        #
-        # for _row in np.arange(nbr_row):
-        #     [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-        #     _label = ' Profile #{}'.format(_row+1)
-        #     _color = list_rgb_profile_color[_row]
-        #     self.ui.profile_view.plot(x_axis, profile,
-        #                                 name=_label,
-        #                                 pen=_color)
+        self.ui.profile_view.clear()
+        try:
+            self.ui.profile_view.scene().removeItem(self.legend)
+        except Exception as e:
+            print(e)
+
+        self.legend = self.ui.profile_view.addLegend()
+
+        for _row in np.arange(nbr_row):
+            [x_axis, profile] = self.get_profile(profile_roi_row=_row)
+            _label = ' ROI #{}'.format(_row+1)
+            _color = list_rgb_profile_color[_row]
+            self.ui.profile_view.plot(x_axis, profile,
+                                        name=_label,
+                                        pen=_color)
 
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
@@ -202,6 +198,7 @@ class IntegratedRoiUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
         if row == nbr_row:
             row -= 1
+
 
         if nbr_row > 0:
             nbr_col = self.ui.tableWidget.columnCount()
@@ -364,49 +361,51 @@ class IntegratedRoiUi(QMainWindow):
             self.ui.tableWidget.setItem(row, col, item)
 
     def get_profile_dimensions(self, row=-1):
-        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
         [x0, y0, width, height] = self.get_item_row(row=row)
-        delta_profile = self.get_profile_width(row=row)
 
-        if is_x_profile_direction:
-            x_left = x0
-            x_right = x0 + width
+        x_left = np.int(x0)
+        x_right = np.int(x0) + np.int(width)
 
-            profile_center = y0 + np.abs(np.int((height)/2.))
-            y_top = profile_center - delta_profile
-            y_bottom = profile_center + delta_profile
+        y_top = np.int(y0)
+        y_bottom = np.int(y0) + np.int(height)
 
-        else:
-            profile_center = x0 + np.abs(np.int((width) / 2.))
-            x_left = profile_center - delta_profile
-            x_right = profile_center + delta_profile
-
-            y_top = y0
-            y_bottom = y0 + height
-
-        Profile = collections.namedtuple('Profile', ['x_left', 'x_right', 'y_top', 'y_bottom', 'profile_center'])
-        result = Profile(x_left, x_right, y_top, y_bottom, profile_center)
+        Profile = collections.namedtuple('Profile', ['x_left', 'x_right', 'y_top', 'y_bottom'])
+        result = Profile(x_left, x_right, y_top, y_bottom)
         return result
 
-    def get_profile(self, image=[], profile_roi_row=-1):
-        is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
+    def get_integration_algo(self):
+        if self.ui.add_radioButton.isChecked():
+            return 'add'
+        elif self.ui.mean_readioButton.isChecked():
+            return 'mean'
+        else:
+            raise ValueError("Integration algorithm not supported yet")
+
+    def get_profile(self, profile_roi_row=-1):
+        """will produce the 2D arrays of mean/add counts in the ROI vs file index"""
+
+        profile = []
 
         profile_dimension = self.get_profile_dimensions(row=profile_roi_row)
+        inte_algo = self.get_integration_algo()
         x_left = profile_dimension.x_left
         x_right = profile_dimension.x_right
         y_top = profile_dimension.y_top
         y_bottom = profile_dimension.y_bottom
 
-        if is_x_profile_direction:
-            mean_axis = 1
-            x_axis = np.arange(x_left, x_right)
+        x_axis = np.arange(len(self.data_dict['file_name']))
+        for _data in self.data_dict['data']:
 
-        else:
-            mean_axis = 0
-            x_axis = np.arange(y_top, y_bottom)
+            _roi_counts = _data[x_left:x_right, y_top:y_bottom] # because pyqtgrpah display transpose images
+            if inte_algo == 'add':
+                _counts = np.sum(_roi_counts)
+            elif inte_algo == 'mean':
+                _counts = np.mean(_roi_counts)
+            else:
+                raise ValueError("Not supported!")
 
-        _data = image[x_left: x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
-        profile = np.mean(_data, axis=mean_axis)
+            profile.append(_counts)
+
         return [x_axis, profile]
 
     def get_profile_width(self, row=0):
@@ -505,6 +504,8 @@ class IntegratedRoiUi(QMainWindow):
 
     def add_summary_table_column(self, column):
         self.ui.summary_table.insertColumn(column)
+        item = QtGui.QTableWidgetItem(str(column-2))
+        self.ui.summary_table.setHorizontalHeaderItem(column, item)
 
     def remove_sumary_table_column(self, column):
         self.ui.summary_table.removeColumn(column-1)
@@ -599,7 +600,7 @@ class IntegratedRoiUi(QMainWindow):
         self.add_summary_table_column(column=selected_row+4) # +4 to append to column
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.previous_active_row = selected_row
-        #self.display_counts()
+        self.display_counts()
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
