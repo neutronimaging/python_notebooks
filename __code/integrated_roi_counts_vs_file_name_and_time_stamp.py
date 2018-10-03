@@ -631,7 +631,7 @@ class IntegratedRoiUi(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/profile/")
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/integrated_roi_counts_vs_file_name_and_time_stamp/")
 
     def closeEvent(self, event=None):
         pass
