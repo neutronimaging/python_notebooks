@@ -242,6 +242,44 @@
                  </property>
                 </widget>
                </item>
+               <item row="1" column="0">
+                <widget class="QTableWidget" name="tableWidget">
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                 <column>
+                  <property name="text">
+                   <string>Enabled</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>X0</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Y0</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Width</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Height</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="label_3">
                  <property name="palette">
@@ -397,86 +435,87 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QTableWidget" name="tableWidget">
-                 <property name="alternatingRowColors">
-                  <bool>true</bool>
-                 </property>
-                 <property name="selectionMode">
-                  <enum>QAbstractItemView::SingleSelection</enum>
-                 </property>
-                 <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectRows</enum>
-                 </property>
-                 <column>
-                  <property name="text">
-                   <string>Enabled</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>X0</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Y0</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Width</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Height</string>
-                  </property>
-                 </column>
-                </widget>
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_4">
+                   <property name="font">
+                    <font>
+                     <pointsize>20</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>-</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_5">
+                   <property name="font">
+                    <font>
+                     <pointsize>20</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>+</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <item>
-                <widget class="QPushButton" name="pushButton_4">
-                 <property name="font">
-                  <font>
-                   <pointsize>20</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>-</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_5">
-                 <property name="font">
-                  <font>
-                   <pointsize>20</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>+</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QGroupBox" name="groupBox_2">
+               <property name="title">
+                <string>ROI Counts</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QRadioButton" name="add_radioButton">
+                  <property name="text">
+                   <string>Add</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="mean_readioButton">
+                  <property name="text">
+                   <string>Mean</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
              </item>
             </layout>
            </widget>

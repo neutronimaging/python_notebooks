@@ -184,7 +184,7 @@ class IntegratedRoiUi(QMainWindow):
 
         # maint tab
         self.ui.tableWidget.removeRow(row)
-        self.ui.tableWidget_2.removeRow(row)
+        # self.ui.tableWidget_2.removeRow(row)
         self.ui.image_view.removeItem(self.list_guide_pyqt_roi[row])
         self.list_guide_pyqt_roi.remove(self.list_guide_pyqt_roi[row])
         self.ui.image_view.removeItem(self.list_profile_pyqt_roi[row])
@@ -203,8 +203,8 @@ class IntegratedRoiUi(QMainWindow):
             nbr_col = self.ui.tableWidget.columnCount()
             new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
             self.ui.tableWidget.setRangeSelected(new_selection, True)
-            new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
-            self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
+            # new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
+            # self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
 
 
     def update_guide_roi_using_guide_table(self, row=-1):
@@ -292,25 +292,20 @@ class IntegratedRoiUi(QMainWindow):
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.ui.tableWidget.blockSignals(False)
 
-        self.ui.tableWidget_2.blockSignals(True)
-        self.ui.tableWidget_2.insertRow(row)
-        self.ui.tableWidget_2.setRowHeight(row, self.guide_table_height)
-        self.set_item_profile_table(row=row)
+        # # select new entry
+        # nbr_col = self.ui.tableWidget_2.columnCount()
+        # full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        # self.ui.tableWidget_2.setRangeSelected(full_range, False)
+        # new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        # self.ui.tableWidget_2.setRangeSelected(new_selection, True)
+        # self.ui.tableWidget_2.blockSignals(False)
 
-        # select new entry
-        nbr_col = self.ui.tableWidget_2.columnCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(full_range, False)
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
-        self.ui.tableWidget_2.setRangeSelected(new_selection, True)
-        self.ui.tableWidget_2.blockSignals(False)
-
-        # all plots tab
-        self.ui.all_plots_profiles_table.blockSignals(True)
-        self.ui.all_plots_profiles_table.insertRow(row)
-        self.set_item_all_plots_profile_table(row=row)
-        self.ui.all_plots_profiles_table.blockSignals(False)
-        self.rename_all_plots_profiles_table()
+        # # all plots tab
+        # self.ui.all_plots_profiles_table.blockSignals(True)
+        # self.ui.all_plots_profiles_table.insertRow(row)
+        # self.set_item_all_plots_profile_table(row=row)
+        # self.ui.all_plots_profiles_table.blockSignals(False)
+        # self.rename_all_plots_profiles_table()
 
     def rename_all_plots_profiles_table(self):
         """rename all the profile name"""
@@ -324,21 +319,21 @@ class IntegratedRoiUi(QMainWindow):
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
         self.ui.all_plots_profiles_table.setItem(row, 0, item)
 
-    def set_item_profile_table(self, row=0):
-        spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        widget = QtGui.QComboBox()
-        widget.addItems(self.default_profile_width_values)
-        widget.blockSignals(True)
-        widget.currentIndexChanged.connect(self.profile_width_changed)
-        spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        hori_layout = QtGui.QHBoxLayout()
-        hori_layout.addItem(spacerItem_left)
-        hori_layout.addWidget(widget)
-        hori_layout.addItem(spacerItem_right)
-        cell_widget = QtGui.QWidget()
-        cell_widget.setLayout(hori_layout)
-        self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
-        widget.blockSignals(False)
+    # def set_item_profile_table(self, row=0):
+    #     spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+    #     widget = QtGui.QComboBox()
+    #     widget.addItems(self.default_profile_width_values)
+    #     widget.blockSignals(True)
+    #     widget.currentIndexChanged.connect(self.profile_width_changed)
+    #     spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+    #     hori_layout = QtGui.QHBoxLayout()
+    #     hori_layout.addItem(spacerItem_left)
+    #     hori_layout.addWidget(widget)
+    #     hori_layout.addItem(spacerItem_right)
+    #     cell_widget = QtGui.QWidget()
+    #     cell_widget.setLayout(hori_layout)
+    #     self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
+    #     widget.blockSignals(False)
 
     def set_item_main_table(self, row=0, col=0, value=''):
         if col == 0:
@@ -720,7 +715,7 @@ class GuideAndProfileRoisHandler(object):
 
     def add(self):
         self._define_guide()
-        self._define_profile()
+        # self._define_profile()
         self.parent.list_profile_pyqt_roi.insert(self.row, self.__profile)
 
     def update(self):
