@@ -657,8 +657,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>272</x>
+     <y>595</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -673,8 +673,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>272</x>
+     <y>595</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -689,8 +689,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>149</x>
+     <y>598</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -705,8 +705,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>732</x>
+     <y>598</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -753,8 +753,8 @@
    <slot>remove_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>808</x>
+     <y>634</y>
     </hint>
     <hint type="destinationlabel">
      <x>751</x>
@@ -769,8 +769,8 @@
    <slot>add_row_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>1312</x>
+     <y>634</y>
     </hint>
     <hint type="destinationlabel">
      <x>1152</x>
@@ -785,8 +785,8 @@
    <slot>display_grid_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>95</y>
+     <x>116</x>
+     <y>228</y>
     </hint>
     <hint type="destinationlabel">
      <x>149</x>
@@ -801,8 +801,8 @@
    <slot>grid_size_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>277</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>483</x>
@@ -817,8 +817,8 @@
    <slot>grid_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>277</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>397</x>
@@ -833,8 +833,8 @@
    <slot>transparency_slider_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>603</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>731</x>
@@ -849,8 +849,8 @@
    <slot>transparency_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>603</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>1062</x>
@@ -865,8 +865,8 @@
    <slot>table_widget_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>874</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>958</x>
@@ -881,8 +881,8 @@
    <slot>table_widget_cell_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>874</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>1113</x>
@@ -897,8 +897,8 @@
    <slot>grid_size_slider_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>95</y>
+     <x>277</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>276</x>
@@ -919,6 +919,38 @@
     <hint type="destinationlabel">
      <x>781</x>
      <y>772</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>add_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>algo_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1216</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1272</x>
+     <y>24</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mean_readioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>algo_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1285</x>
+     <y>107</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1337</x>
+     <y>-4</y>
     </hint>
    </hints>
   </connection>
@@ -947,5 +979,6 @@
   <slot>profile_along_axis_changed()</slot>
   <slot>tab_changed()</slot>
   <slot>update_all_plots()</slot>
+  <slot>algo_changed()</slot>
  </slots>
 </ui>

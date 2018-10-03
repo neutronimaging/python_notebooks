@@ -520,6 +520,9 @@ class IntegratedRoiUi(QMainWindow):
         self.ui.summary_table.removeColumn(column-1)
 
     ## Event Handler
+    def algo_changed(self):
+        self.guide_changed()
+
     def tab_changed(self, tab_index):
         pass
         # if tab_index == 1: # display all plots

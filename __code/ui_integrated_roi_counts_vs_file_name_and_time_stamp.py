@@ -309,6 +309,8 @@ class Ui_MainWindow(object):
         self.tableWidget.cellChanged['int','int'].connect(MainWindow.table_widget_cell_changed)
         self.grid_size_slider.sliderReleased.connect(MainWindow.grid_size_slider_released)
         self.tabWidget.currentChanged['int'].connect(MainWindow.tab_changed)
+        self.add_radioButton.clicked.connect(MainWindow.algo_changed)
+        self.mean_readioButton.clicked.connect(MainWindow.algo_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
