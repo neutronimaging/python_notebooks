@@ -147,6 +147,15 @@ class IntegratedRoiUi(QMainWindow):
                                         name=_label,
                                         pen=_color)
 
+            self.populate_summary_table_counts(column=_row+3,
+                                               list_counts=profile)
+
+
+    def populate_summary_table_counts(self, column=-1, list_counts=[]):
+        for _row, _counts in enumerate(list_counts):
+            _item = QtGui.QTableWidgetItem(str(_counts))
+            self.ui.summary_table.setItem(_row, column, _item)
+
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
         list_index_profile_selected = self.get_all_plots_profiles_selected()
