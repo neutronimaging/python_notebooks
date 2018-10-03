@@ -124,6 +124,14 @@ class IntegratedRoiUi(QMainWindow):
             self.ui.image_view.removeItem(_roi)
 
     def display_counts(self):
+        """update the counts vs file index plot"""
+
+        self.ui.profile_view.clear()
+        try:
+            self.ui.profile_view.scene().removeItem(self.legend)
+        except Exception as e:
+            print(e)
+
         nbr_row = self.ui.tableWidget.rowCount()
         if nbr_row == 0:
             return
@@ -131,11 +139,6 @@ class IntegratedRoiUi(QMainWindow):
         color = Color()
         list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
 
-        self.ui.profile_view.clear()
-        try:
-            self.ui.profile_view.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
 
         self.legend = self.ui.profile_view.addLegend()
 
