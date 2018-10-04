@@ -664,9 +664,10 @@ class ExportProfiles(object):
         self.parent = parent
         self.export_folder = export_folder
 
-    def _create_output_file_name(self, profile_index=0):
+    def _create_output_file_name(self):
         base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index+1))
+        nbr_profile = self.parent.ui.tableWidget.rowCount()
+        output_file_name = os.path.join(self.export_folder, "{}_{}_integrated_counts_regions.txt".format(base_name, nbr_profile))
         return output_file_name
 
     def _create_metadata(self):
@@ -676,7 +677,7 @@ class ExportProfiles(object):
 
         _nbr_profiles = self.parent.ui.tableWidget.rowCount()
         metadata.append("#Profile dimension:")
-        axis = ["#file_Index, time_stamp"]
+        axis = ["#file_index, file_name, time_stamp"]
         for _profile_index in np.arange(_nbr_profiles):
             profile_dimension = self.parent.get_profile_dimensions(row=_profile_index)
             x_left = profile_dimension.x_left
@@ -686,9 +687,9 @@ class ExportProfiles(object):
             metadata.append("# ROI #{}: [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(_profile_index,
                                                                                     x_left, y_top,
                                                                                     x_right, y_bottom))
-            metadata.append("#")
             axis.append("ROI #{}".format(_profile_index))
 
+        metadata.append("#")
         metadata.append(", ".join(axis))
         return metadata
 
@@ -710,33 +711,32 @@ class ExportProfiles(object):
     def _format_data(self):
         _nbr_profiles = self.parent.ui.tableWidget.rowCount()
         all_profiles = []
+        list_counts = self.parent.list_counts
+        list_counts_transpose = np.transpose(list_counts)
 
+        _data = []
         for _row in np.arange(self.parent.ui.summary_table.rowCount()):
-            pass
+            _row_value = [str(_value) for _value in list_counts_transpose[_row]]
+            _file_index = str(_row)
+            _file_name = str(self.parent.ui.summary_table.item(_row, 0).text())
+            _time_stamp = str(self.parent.ui.summary_table.item(_row, 1).text())
 
+            _formated_row_value = " ,".join(_row_value)
+            _formated_row = "{}, {}, {}, ".format(_file_index, _file_name, _time_stamp) + _formated_row_value
+            _data.append(_formated_row)
+
+        return _data
 
     def run(self):
         metadata = self._create_metadata()
         data = self._format_data()
 
         # create output file name
-        print(self.parent.list_counts)
-        return
-
-
-
-
-        _nbr_profiles = self.parent.ui.tableWidget.rowCount()
-        for _profile_index in np.arange(_nbr_profiles):
-            _output_file_name = self._create_output_file_name(profile_index=_profile_index)
-            metadata = self._create_metadata(profile_index=_profile_index)
-            data = self._create_data(profile_index=_profile_index)
-            make_ascii_file(metadata=metadata,
-                            data=data,
-                            output_file_name=_output_file_name,
-                            dim='1d')
-
-            display(HTML("Exported Profile file {}".format(_output_file_name)))
+        _output_file_name = self._create_output_file_name()
+        make_ascii_file(metadata=metadata,
+                        data=data,
+                        output_file_name=_output_file_name,
+                        dim='1d')
 
 
 class GuideAndProfileRoisHandler(object):
