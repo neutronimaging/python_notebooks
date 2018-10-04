@@ -142,6 +142,7 @@ class IntegratedRoiUi(QMainWindow):
 
         self.legend = self.ui.profile_view.addLegend()
 
+        profile_list = list()
         for _row in np.arange(nbr_row):
             [x_axis, profile] = self.get_profile(profile_roi_row=_row)
             _label = ' ROI #{}'.format(_row+1)
@@ -153,6 +154,9 @@ class IntegratedRoiUi(QMainWindow):
             self.populate_summary_table_counts(column=_row+3,
                                                list_counts=profile)
 
+            # I need to save the profile here to quickly recover it when we export the data
+            profile_list.insert(_row, profile)
+            self.list_counts = profile_list
 
     def populate_summary_table_counts(self, column=-1, list_counts=[]):
         for _row, _counts in enumerate(list_counts):
@@ -683,7 +687,7 @@ class ExportProfiles(object):
                                                                                     x_left, y_top,
                                                                                     x_right, y_bottom))
             metadata.append("#")
-            axis.append("ROI#{}".format(_profile_index))
+            axis.append("ROI #{}".format(_profile_index))
 
         metadata.append(", ".join(axis))
         return metadata
@@ -703,14 +707,21 @@ class ExportProfiles(object):
 
         return data
 
+    def _format_data(self):
+        _nbr_profiles = self.parent.ui.tableWidget.rowCount()
+        all_profiles = []
+
+        for _row in np.arange(self.parent.ui.summary_table.rowCount()):
+            pass
+
+
     def run(self):
         metadata = self._create_metadata()
-        print(metadata)
+        data = self._format_data()
 
+        # create output file name
+        print(self.parent.list_counts)
         return
-
-
-
 
 
 
