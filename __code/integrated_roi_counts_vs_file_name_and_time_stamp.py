@@ -408,7 +408,7 @@ class IntegratedRoiUi(QMainWindow):
         x_axis = np.arange(len(self.data_dict['file_name']))
         for _data in self.data_dict['data']:
 
-            _roi_counts = _data[x_left:x_right, y_top:y_bottom] # because pyqtgrpah display transpose images
+            _roi_counts = _data[y_top:y_bottom, x_left:x_right] # because pyqtgrpah display transpose images
             if inte_algo == 'add':
                 _counts = np.sum(_roi_counts)
             elif inte_algo == 'mean':
@@ -672,7 +672,7 @@ class ExportProfiles(object):
 
         _nbr_profiles = self.parent.ui.tableWidget.rowCount()
         metadata.append("#Profile dimension:")
-        axis = ["file_Index, time_stamp"]
+        axis = ["#file_Index, time_stamp"]
         for _profile_index in np.arange(_nbr_profiles):
             profile_dimension = self.parent.get_profile_dimensions(row=_profile_index)
             x_left = profile_dimension.x_left
@@ -685,8 +685,7 @@ class ExportProfiles(object):
             metadata.append("#")
             axis.append("ROI#{}".format(_profile_index))
 
-
-        metadata.append(",".join(axis))
+        metadata.append(", ".join(axis))
         return metadata
 
     def _create_data(self, profile_index=0):
@@ -706,6 +705,14 @@ class ExportProfiles(object):
 
     def run(self):
         metadata = self._create_metadata()
+        print(metadata)
+
+        return
+
+
+
+
+
 
 
         _nbr_profiles = self.parent.ui.tableWidget.rowCount()

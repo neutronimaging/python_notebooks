@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Volumes/my_book_thunderbolt_duo/git/IPTS/python_notebooks/ui/ui_integrated_roi_counts_vs_file_name_and_time_stamp.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_integrated_roi_counts_vs_file_name_and_time_stamp.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
