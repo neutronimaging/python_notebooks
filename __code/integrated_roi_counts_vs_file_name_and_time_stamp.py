@@ -684,7 +684,7 @@ class ExportProfiles(object):
             x_right = profile_dimension.x_right
             y_top = profile_dimension.y_top
             y_bottom = profile_dimension.y_bottom
-            metadata.append("# ROI #{}: [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(_profile_index,
+            metadata.append("#ROI #{}: [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(_profile_index,
                                                                                     x_left, y_top,
                                                                                     x_right, y_bottom))
             axis.append("ROI #{}".format(_profile_index))
