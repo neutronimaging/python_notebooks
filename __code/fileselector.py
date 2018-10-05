@@ -390,8 +390,9 @@ def del_ftime(file_label):
 
 class FileSelection(object):
 
-    def __init__(self, working_dir='./'):
+    def __init__(self, working_dir='./', filter=''):
         self.working_dir = working_dir
+        self.filter = filter
 
     def select_file_help(self, value):
         import webbrowser
@@ -408,10 +409,17 @@ class FileSelection(object):
         help_ui.on_click(self.select_file_help)
         display(help_ui)
 
-        self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
-                                                             start_dir=self.working_dir,
-                                                             next=self.load_files,
-                                                             multiple=True)
+        if self.filter:
+            self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                                 start_dir=self.working_dir,
+                                                                 next=self.load_files,
+                                                                 filters=self.filter,
+                                                                 multiple=True)
+        else:
+             self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                                 start_dir=self.working_dir,
+                                                                 next=self.load_files,
+                                                                 multiple=True)
 
         self.files_ui.show()
 

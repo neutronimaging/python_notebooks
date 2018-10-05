@@ -100,7 +100,9 @@ class BraggEdge:
         print(_handler)
 
     def select_normalized_data_set(self):
-        self.o_selection = FileSelection(working_dir=self.working_dir)
+        self.o_selection = FileSelection(working_dir=self.working_dir,
+                                         filter={'FITS': "*.fits",
+                                                 'TIFF': "*.tif"})
         self.o_selection.select_data()
 
     def load_time_spectra(self):
@@ -119,7 +121,7 @@ class BraggEdge:
         self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
                                                                     start_dir=self.working_dir,
                                                                     # next=self.load_time_spectra,
-                                                                    filters={'spectra_file': "*_Spectra.txt"},
+                                                                    filters={'spectra_file': "_Spectra.txt"},
                                                                     multiple=False)
         self.time_spectra_ui.show()
 
