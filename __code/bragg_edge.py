@@ -3,6 +3,7 @@ from IPython.core.display import display
 import numpy as np
 import ipywe.fileselector
 import random
+import os
 
 from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
@@ -31,6 +32,7 @@ from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
 class BraggEdge:
 
     list_of_elements = ['Fe']
+    data = []
 
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
@@ -87,8 +89,8 @@ class BraggEdge:
 
         _handler = BraggEdgeLibrary(material=list_of_elements,
                                     number_of_bragg_edges=number_of_bragg_edges)
-        bragg_edges = _handler.bragg_edges
-        hkl = _handler.hkl
+        self.bragg_edges = _handler.bragg_edges
+        self.hkl = _handler.hkl
 
         print(_handler)
 
@@ -97,10 +99,16 @@ class BraggEdge:
         self.o_selection.select_data()
 
     def load_time_spectra(self, time_spectra_file):
-        print(time_spectra_file)
+        spectra_file = time_spectra_file
+        _tof_handler = TOF(filename=spectra_file)
+        _exp = Experiment(tof=_tof_handler.tof_array,
+                          distance_source_detector_m=np.float(self.dSD_ui.value),
+                          detector_offset_micros=np.float(self.detector_offset_ui.value))
+        self.lambda_array = _exp.lambda_array * 1e10 # to be in Angstroms
 
     def select_time_spectra_file(self):
-        self.data = self.o_selection.data_dict['sample']
+        self.working_dir = os.path.dirname(self.o_selection.data_dict['sample']['file_name'][0])
+        self.data = self.o_selection.data_dict['sample']['data']
 
         self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
                                                                     start_dir=self.working_dir,
@@ -110,7 +118,7 @@ class BraggEdge:
         self.time_spectra_ui.show()
 
     def how_many_data_to_use_to_select_sample_roi(self):
-        nbr_images = len(self.data['data'])
+        nbr_images = len(self.o_selection.data_dict['sample']['data'])
         init_value = np.int(nbr_images/10)
         if init_value == 0:
             init_value = 1
@@ -123,22 +131,47 @@ class BraggEdge:
         box2 = widgets.Label("(The more you select, the longer it will take to display the preview!)")
         vbox = widgets.VBox([box1, box2])
         display(vbox)
-        self.percentage_of_data_to_use_ui = box1.children[1]
+        self.number_of_data_to_use_ui = box1.children[1]
 
     def define_sample_roi(self):
-
-        percentage_of_data_to_use = self.percentage_of_data_to_use_ui.value
-        nbr_images = len(self.data['data'])
-        nbr_data_to_use = np.int(percentage_of_data_to_use * nbr_images / 100)
-        if nbr_data_to_use == 0:
-            nbr_data_to_use = 1
+        nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
+        nbr_images = len(self.o_selection.data_dict['sample']['data'])
         list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
 
         final_array = []
         for _index in list_of_indexes_to_keep:
-            final_array.append(self.data['data'][_index])
+            final_array.append(self.data[_index])
         final_image = np.mean(final_array, axis=0)
         self.final_image = final_image
+
+    def calculate_counts_vs_file_index_of_regions_selected(self, list_roi=[]):
+
+        counts_vs_file_index = []
+        for _data in self.data:
+
+            _array_data = []
+
+            for _roi in list_roi.keys():
+
+                x0 = np.int(list_roi[_roi]['x0'])
+                y0 = np.int(list_roi[_roi]['y0'])
+                x1 = np.int(list_roi[_roi]['x1'])
+                y1 = np.int(list_roi[_roi]['y1'])
+
+                _array_data.append(np.mean(_data[y0:y1, x0:x1]))
+
+            counts_vs_file_index.append(np.mean(_array_data))
+
+        self.counts_vs_file_index = counts_vs_file_index
+
+
+
+
+
+
+
+
+
 
 class Interface(QMainWindow):
 
