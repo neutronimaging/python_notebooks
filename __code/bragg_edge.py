@@ -1,9 +1,12 @@
 from ipywidgets import widgets
 from IPython.core.display import display
+import numpy as np
+import ipywe.fileselector
 
 from neutronbraggedge.experiment_handler import *
-from neutronbraggedge.braggedge import BraggEdge
+from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
+from __code.fileselector import FileSelection
 
 
 class BraggEdge:
@@ -58,5 +61,31 @@ class BraggEdge:
 
     def list_powder_bragg_edges(self):
 
-        list_of_elements_selected = self.
+        list_of_elements_selected = self.list_elements_ui.value
+        list_of_elements = list_of_elements_selected.split(',')
 
+        number_of_bragg_edges = np.int(self.nbr_bragg_edges_ui.value)
+
+        _handler = BraggEdgeLibrary(material=list_of_elements,
+                                    number_of_bragg_edges=number_of_bragg_edges)
+        bragg_edges = _handler.bragg_edges
+        hkl = _handler.hkl
+
+        print(_handler)
+
+    def select_normalized_data_set(self):
+        self.o_selection = FileSelection(working_dir=self.working_dir)
+        self.o_selection.select_data()
+
+    def load_time_spectra(self, time_spectra_file):
+        print(time_spectra_file)
+
+    def select_time_spectra_file(self):
+        self.data = self.o_selection.data_dict['sample']
+
+        self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
+                                                             start_dir=self.working_dir,
+                                                             next=self.load_time_spectra,
+                                                             multiple=False)
+
+        self.time_spectra_ui.show()
