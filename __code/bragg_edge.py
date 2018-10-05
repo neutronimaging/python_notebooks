@@ -89,3 +89,4 @@ class BraggEdge:
                                                              multiple=False)
 
         self.time_spectra_ui.show()
+
