@@ -15,6 +15,11 @@ from IPython.display import display
 import numpy as np
 from collections import OrderedDict
 
+from plotly.offline import iplot
+import plotly.graph_objs as go
+
+from ipywidgets import widgets
+
 import pyqtgraph as pg
 
 try:
@@ -47,12 +52,12 @@ class BraggEdge:
 
         box2 = widgets.HBox([widgets.Label("dSD (m)",
                                            layout=widgets.Layout(width=label_width)),
-                             widgets.Text(str(15.89),
+                             widgets.Text(str(16.08),
                                           layout=widgets.Layout(width='20%'))])
 
         box3 = widgets.HBox([widgets.Label("detector offset (microns)",
                                            layout=widgets.Layout(width=label_width)),
-                             widgets.Text(str(4200),
+                             widgets.Text(str(3700),
                                           layout=widgets.Layout(width='20%'))])
 
         retrieve_material = RetrieveMaterialMetadata(material='all')
@@ -84,7 +89,7 @@ class BraggEdge:
 
         list_of_elements_selected = self.list_elements_ui.value
         list_of_elements = list_of_elements_selected.split(',')
-
+        list_of_elements = [_element.strip() for _element in list_of_elements]
         number_of_bragg_edges = np.int(self.nbr_bragg_edges_ui.value)
 
         _handler = BraggEdgeLibrary(material=list_of_elements,
@@ -98,13 +103,14 @@ class BraggEdge:
         self.o_selection = FileSelection(working_dir=self.working_dir)
         self.o_selection.select_data()
 
-    def load_time_spectra(self, time_spectra_file):
-        spectra_file = time_spectra_file
+    def load_time_spectra(self):
+        spectra_file = self.time_spectra_ui.selected
         _tof_handler = TOF(filename=spectra_file)
         _exp = Experiment(tof=_tof_handler.tof_array,
                           distance_source_detector_m=np.float(self.dSD_ui.value),
                           detector_offset_micros=np.float(self.detector_offset_ui.value))
         self.lambda_array = _exp.lambda_array * 1e10 # to be in Angstroms
+        self.tof_array = _tof_handler.tof_array
 
     def select_time_spectra_file(self):
         self.working_dir = os.path.dirname(self.o_selection.data_dict['sample']['file_name'][0])
@@ -112,7 +118,15 @@ class BraggEdge:
 
         self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
                                                                     start_dir=self.working_dir,
-                                                                    next=self.load_time_spectra,
+                                                                    # next=self.load_time_spectra,
+                                                                    filters={'spectra_file': "*_Spectra.txt"},
+                                                                    multiple=False)
+        self.time_spectra_ui.show()
+
+    def select_just_time_spectra_file(self):
+        self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
+                                                                    start_dir=self.working_dir,
+                                                                    # next=self.load_time_spectra,
                                                                     filters={'spectra_file': "*_Spectra.txt"},
                                                                     multiple=False)
         self.time_spectra_ui.show()
@@ -164,12 +178,82 @@ class BraggEdge:
 
         self.counts_vs_file_index = counts_vs_file_index
 
+    def plot(self):
 
+        bragg_edges = self.bragg_edges
+        hkl = self.hkl
+        lambda_array = self.lambda_array
+        sum_cropped_data = self.final_image
 
+        # format hkl labels
+        _hkl_formated = {}
+        for _material in hkl:
+            _hkl_string = []
+            for _hkl in hkl[_material]:
+                _hkl_s = ",".join(str(x) for x in _hkl)
+                _hkl_s = _material + "\n" + _hkl_s
+                _hkl_string.append(_hkl_s)
+            _hkl_formated[_material] = _hkl_string
 
+        trace = go.Scatter(
+            x=self.lambda_array,
+            y=self.counts_vs_file_index,
+            mode='markers')
 
+        layout = go.Layout(
+            width="100%",
+            height=500,
+            title="Sum Counts vs TOF",
+            xaxis=dict(
+                title="Lambda (Angstroms)"
+            ),
+            yaxis=dict(
+                title="Sum Counts"
+            ),
+        )
 
+        max_x = 6
+        y_off = 1
 
+        for y_index, _material in enumerate(bragg_edges):
+            for _index, _value in enumerate(bragg_edges[_material]):
+                if _value > max_x:
+                    continue
+                bragg_line = {"type": "line",
+                              'x0': _value,
+                              'x1': _value,
+                              'yref': "paper",
+                              'y0': 0,
+                              'y1': 1,
+                              'line': {
+                                  'color': 'rgb(255, 0, 0)',
+                                  'width': 1
+                              }}
+                layout.shapes.append(bragg_line)
+                y_off = 1 - 0.25 * y_index
+
+                # add labels to plots
+                _annot = dict(
+                    x=_value,
+                    y=y_off,
+                    text=_hkl_formated[_material][_index],
+                    yref="paper",
+                    font=dict(
+                        family="Arial",
+                        size=16,
+                        color="rgb(150,50,50)"
+                    ),
+                    showarrow=True,
+                    arrowhead=3,
+                    ax=0,
+                    ay=-25)
+
+                layout.annotations.append(_annot)
+
+        data = [trace]
+
+        figure = go.Figure(data=data, layout=layout)
+        iplot(figure)
 
 
 
