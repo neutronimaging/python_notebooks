@@ -13,7 +13,7 @@ class System(object):
     start_path = ''
 
     @classmethod
-    def select_working_dir(cls, debugger_folder='', system_folder=''):
+    def select_working_dir(cls, debugger_folder='', system_folder='', facility='HFIR', instrument='CG1D'):
 
         try:
 
@@ -56,7 +56,7 @@ class System(object):
                 start_path = debugger_folder
             else:
                 if system_folder == '':
-                    start_path = config.system_folder
+                    start_path = "/{}/{}/".format(facility, instrument)
                 else:
                     start_path = system_folder
                 import warnings

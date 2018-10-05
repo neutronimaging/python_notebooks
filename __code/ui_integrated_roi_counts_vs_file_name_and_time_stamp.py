@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_integrated_roi_counts_vs_file_name_and_time_stamp.ui'
+# Form implementation generated from reading ui file '/Volumes/my_book_thunderbolt_duo/git/IPTS/python_notebooks/ui/ui_integrated_roi_counts_vs_file_name_and_time_stamp.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
@@ -324,7 +324,7 @@ class Ui_MainWindow(object):
         self.image_slider_value.setText(_translate("MainWindow", "0"))
         self.next_image_button.setText(_translate("MainWindow", "Next Image"))
         self.groupBox_2.setTitle(_translate("MainWindow", "ROI"))
-        self.label.setText(_translate("MainWindow", "Algorithm Integration "))
+        self.label.setText(_translate("MainWindow", "Integration Algorithm "))
         self.add_radioButton.setText(_translate("MainWindow", "Add"))
         self.mean_readioButton.setText(_translate("MainWindow", "Mean"))
         item = self.tableWidget.horizontalHeaderItem(0)

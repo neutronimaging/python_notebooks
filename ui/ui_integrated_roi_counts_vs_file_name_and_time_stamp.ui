@@ -251,7 +251,7 @@
                     <item>
                      <widget class="QLabel" name="label">
                       <property name="text">
-                       <string>Algorithm Integration </string>
+                       <string>Integration Algorithm </string>
                       </property>
                      </widget>
                     </item>
