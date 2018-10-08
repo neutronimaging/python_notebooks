@@ -137,8 +137,8 @@ class BraggEdge:
         spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
         if spectra_file:
             self.spectra_file = spectra_file[0]
-        display(HTML('<span style="font-size: 20px; color:blue"> Spectra File automatically located: ' + \
-                     spectra_file + '</span>'))
+            display(HTML('<span style="font-size: 20px; color:blue"> Spectra File automatically located: ' + \
+                         self.spectra_file + '</span>'))
 
         else:
             #ask for spectra file
