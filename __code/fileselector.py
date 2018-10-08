@@ -400,7 +400,7 @@ class FileSelection(object):
 
     def load_files(self, files):
         o_norm = Normalization()
-        o_norm.load(file=files, notebook=True)
+        o_norm.load(file=files.sort(), notebook=True)
         self.data_dict = o_norm.data
 
     def select_data(self):

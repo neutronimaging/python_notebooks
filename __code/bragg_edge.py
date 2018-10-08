@@ -4,6 +4,7 @@ import numpy as np
 import ipywe.fileselector
 import random
 import os
+import glob
 
 from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
@@ -32,6 +33,7 @@ except ImportError:
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
+from NeuNorm.normalization import Normalization
 
 
 class BraggEdge:
@@ -39,27 +41,12 @@ class BraggEdge:
     list_of_elements = ['Fe']
     data = []
 
+    label_width = '15%'
+
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
 
-    def exp_setup(self):
-
-        label_width = '15%'
-        box1 = widgets.HBox([widgets.Label("Default directory",
-                                           layout=widgets.Layout(width=label_width)),
-                             widgets.Text(self.working_dir,
-                                          layout=widgets.Layout(width='85%'))])
-
-        box2 = widgets.HBox([widgets.Label("dSD (m)",
-                                           layout=widgets.Layout(width=label_width)),
-                             widgets.Text(str(16.08),
-                                          layout=widgets.Layout(width='20%'))])
-
-        box3 = widgets.HBox([widgets.Label("detector offset (microns)",
-                                           layout=widgets.Layout(width=label_width)),
-                             widgets.Text(str(3700),
-                                          layout=widgets.Layout(width='20%'))])
-
+    def list_elements(self):
         retrieve_material = RetrieveMaterialMetadata(material='all')
         list_returned = retrieve_material.full_list_material()
 
@@ -67,23 +54,38 @@ class BraggEdge:
         # pprint.pprint(list_returned)
 
         box4 = widgets.HBox([widgets.Label("List of elements",
-                                           layout=widgets.Layout(width=label_width)),
+                                           layout=widgets.Layout(width=self.label_width)),
                              widgets.Text(','.join(self.list_of_elements),
                                           layout=widgets.Layout(width='20%'))])
 
         box5 = widgets.HBox([widgets.Label("Nbr Bragg Edges",
-                                           layout=widgets.Layout(width=label_width)),
+                                           layout=widgets.Layout(width=self.label_width)),
                              widgets.Text(str(8),
                                           layout=widgets.Layout(width='20%'))])
 
-        vertical_box = widgets.VBox([box1, box2, box3, box4, box5])
+        vertical_box = widgets.VBox([box4, box5])
         display(vertical_box)
 
-        self.default_directory_ui = box1.children[1]
-        self.dSD_ui = box2.children[1]
-        self.detector_offset_ui = box3.children[1]
         self.list_elements_ui = box4.children[1]
         self.nbr_bragg_edges_ui = box5.children[1]
+
+    def exp_setup(self):
+
+        box2 = widgets.HBox([widgets.Label("dSD (m)",
+                                           layout=widgets.Layout(width=self.label_width)),
+                             widgets.Text(str(16.08),
+                                          layout=widgets.Layout(width='20%'))])
+
+        box3 = widgets.HBox([widgets.Label("detector offset (microns)",
+                                           layout=widgets.Layout(width=self.label_width)),
+                             widgets.Text(str(3700),
+                                          layout=widgets.Layout(width='20%'))])
+
+        vertical_box = widgets.VBox([box2, box3])
+        display(vertical_box)
+
+        self.dSD_ui = box2.children[1]
+        self.detector_offset_ui = box3.children[1]
 
     def list_powder_bragg_edges(self):
 
@@ -99,28 +101,61 @@ class BraggEdge:
 
         print(_handler)
 
-    def select_normalized_data_set(self):
-        self.o_selection = FileSelection(working_dir=self.working_dir,
-                                         filter={'FITS': "*.fits",
-                                                 'TIFF': "*.tif"})
-        self.o_selection.select_data()
+    def select_working_folder(self):
+        select_data = ipywe.fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
+                                                            start_dir=self.working_dir,
+                                                            next=self.load_data,
+                                                            type='directory',
+                                                            multiple=False)
+        select_data.show()
+
+    def load_data(self, folder_selected):
+        list_files = glob.glob(os.path.join(folder_selected, '*.fits'))
+
+        if list_files == []:
+            list_files = glob.glob(os.path.join(folder_selected, '*.tif*'))
+
+
+        else: #fits
+            # keep only files of interest
+            list_files = [file for file in list_files if not "_SummedImg.fits" in file]
+            list_files = [file for file in list_files if ".fits" in file]
+
+        # sort list of files
+        list_files.sort()
+
+        o_norm = Normalization()
+        o_norm.load(file=list_files, notebook=True)
+
+        self.data = o_norm.data['sample']['data']
+        self.list_files = o_norm.data['sample']['file_name']
+
+        # define time spectra file
+        folder = os.path.dirname(self.list_files[0])
+        spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
+        if spectra_file:
+            self.spectra_file = spectra_file[0]
+        else:
+            #ask for spectra file
+            self.select_time_spectra_file()
 
     def load_time_spectra(self):
-        spectra_file = self.time_spectra_ui.selected
-        _tof_handler = TOF(filename=spectra_file)
+        _tof_handler = TOF(filename=self.spectra_file)
         _exp = Experiment(tof=_tof_handler.tof_array,
                           distance_source_detector_m=np.float(self.dSD_ui.value),
                           detector_offset_micros=np.float(self.detector_offset_ui.value))
         self.lambda_array = _exp.lambda_array * 1e10 # to be in Angstroms
         self.tof_array = _tof_handler.tof_array
 
+    def save_time_spectra(self, file):
+        self.spectra_file = file
+
     def select_time_spectra_file(self):
-        self.working_dir = os.path.dirname(self.o_selection.data_dict['sample']['file_name'][0])
-        self.data = self.o_selection.data_dict['sample']['data']
+        self.working_dir = os.path.dirname(self.list_files[0])
 
         self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
                                                                     start_dir=self.working_dir,
-                                                                    # next=self.load_time_spectra,
+                                                                    next=self.save_time_spectra,
                                                                     filters={'spectra_file': "_Spectra.txt"},
                                                                     multiple=False)
         self.time_spectra_ui.show()
@@ -134,7 +169,7 @@ class BraggEdge:
         self.time_spectra_ui.show()
 
     def how_many_data_to_use_to_select_sample_roi(self):
-        nbr_images = len(self.o_selection.data_dict['sample']['data'])
+        nbr_images = len(self.data)
         init_value = np.int(nbr_images/10)
         if init_value == 0:
             init_value = 1
@@ -151,7 +186,7 @@ class BraggEdge:
 
     def define_sample_roi(self):
         nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
-        nbr_images = len(self.o_selection.data_dict['sample']['data'])
+        nbr_images = len(self.data)
         list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
 
         final_array = []
