@@ -115,7 +115,6 @@ class BraggEdge:
         if list_files == []:
             list_files = glob.glob(os.path.join(folder_selected, '*.tif*'))
 
-
         else: #fits
             # keep only files of interest
             list_files = [file for file in list_files if not "_SummedImg.fits" in file]
@@ -130,11 +129,17 @@ class BraggEdge:
         self.data = o_norm.data['sample']['data']
         self.list_files = o_norm.data['sample']['file_name']
 
+        display(HTML('<span style="font-size: 20px; color:blue">' + str(len(list_files)) + \
+                     ' files have been loaded</span>'))
+
         # define time spectra file
         folder = os.path.dirname(self.list_files[0])
         spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
         if spectra_file:
             self.spectra_file = spectra_file[0]
+        display(HTML('<span style="font-size: 20px; color:blue"> Spectra File automatically located: ' + \
+                     spectra_file + '</span>'))
+
         else:
             #ask for spectra file
             self.select_time_spectra_file()
@@ -149,6 +154,8 @@ class BraggEdge:
 
     def save_time_spectra(self, file):
         self.spectra_file = file
+        display(HTML('<span style="font-size: 20px; color:blue"> Spectra File : ' + \
+                     self.spectra_file + '</span>'))
 
     def select_time_spectra_file(self):
         self.working_dir = os.path.dirname(self.list_files[0])
