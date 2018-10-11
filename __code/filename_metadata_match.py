@@ -1,4 +1,17 @@
-import ipywe.fileselector
+import codecs
+
+# to be able to run this code from the command line for testing
+try:
+    import ipywe.fileselector
+    from ipywidgets import widgets
+except:
+    pass
+
+import numpy as np
+import os
+import pandas as pd
+
+from __code.file_handler import get_file_extension
 
 
 class FilenameMetadataMatch(object):
@@ -20,3 +33,247 @@ class FilenameMetadataMatch(object):
         self.metadata_ui.show()
 
 
+class Metadata():
+    nbr_row_metadata = -1
+
+    def __init__(self,
+                 filename='',
+                 reference_line_showing_end_of_metadata='Number of loops',
+                 end_of_metadata_after_how_many_lines_from_reference_line=1):
+        self.filename = filename
+        self.reference_line_showing_end_of_metadata = reference_line_showing_end_of_metadata
+        self.end_of_metadata_after_how_many_lines_from_reference_line = end_of_metadata_after_how_many_lines_from_reference_line
+
+    def calculate_nbr_row_metadata(self):
+        file_handler = codecs.open(
+            self.filename, 'r', encoding='utf_8', errors='ignore')
+
+        for _row_index, _row in enumerate(file_handler.readlines()):
+            if self.reference_line_showing_end_of_metadata in _row:
+                self.nbr_row_metadata = _row_index + self.end_of_metadata_after_how_many_lines_from_reference_line + 1
+
+
+class TimeInfoColumn:
+    """this will allow to figure out where the time info is in the big table"""
+
+    index = -1
+    label = ''
+
+    def __init__(self, index=-1, label=''):
+        self.index = index
+        self.label = label
+
+
+class MPTFileParser(object):
+    nbr_row_metadata = -1
+
+    metadata_dict = {
+        'Acquisition started on': {
+            "split1": ' : ',
+            "value": '',
+            "split2": '',
+        },
+        'Electrode surface area': {
+            "split1": ' : ',
+            "value": '',
+            "split2": ' ',
+            "units": '',
+        },
+    }
+
+    #     time_info_index_column = 2  # in this file, the time information is in the column #2
+    time_info_column = None  # TimeInfoColumn object
+    time_column = []
+
+    def __init__(self,
+                 filename='',
+                 time_info_column=None,
+                 reference_line_showing_end_of_metadata='Number of loops',
+                 end_of_metadata_after_how_many_lines_from_reference_line=1):
+        self.filename = filename
+        self.reference_line_showing_end_of_metadata = reference_line_showing_end_of_metadata
+        self.end_of_metadata_after_how_many_lines_from_reference_line = end_of_metadata_after_how_many_lines_from_reference_line
+        self.time_info_column = time_info_column
+
+        self.evaluate_nbr_row_metadata()
+        self.parse()
+        self.set_time_info_as_index()
+
+        # self.save_time_column()
+        # self.remove_time_info_column()
+
+    def set_time_info_as_index(self):
+        time_info_column = self.time_info_column
+        if time_info_column.index != -1:
+            column_title = self.o_pd.columns.values[time_info_column.index]
+        elif time_info_column.label:
+            column_title = time_info_column.label
+            self.o_pd.set_index(column_title)
+        else:
+            return
+        self.o_pd = self.o_pd.set_index(column_title)
+
+    #     def save_time_column(self):
+    #         time_info_column = self.time_info_column
+    #         if time_info_column.index != -1:
+    #             self.time_column = self.o_pd.iloc[:,time_info_column.index]
+    #             column_title = self.o_pd.columns.values[time_info_column.index]
+    #         elif time_info_column.label:
+    #             column_title = time_info_column.label
+    #             self.o_pd.set_index(column_title)
+    #         else:
+    #             self.time_colmn = []
+    #             return
+    #         self.time_column = self.o_pd[column_title]
+
+    #     def remove_time_info_column(self):
+    #         time_info_column = self.time_info_column
+    #         list_columns = list(self.o_pd.columns.values)
+    #         if time_info_column.index != -1:
+    #             list_columns.pop(time_info_column.index)
+    #         elif time_info_column.label != '':
+    #             for _col_index, _col in enumerate(list_columns):
+    #                 if time_info_column.label in _col:
+    #                     list_columns.pop(_col_index)
+
+    #         self.list_columns = list_columns
+
+    def evaluate_nbr_row_metadata(self):
+        o_metadata = Metadata(filename=self.filename,
+                              reference_line_showing_end_of_metadata=self.reference_line_showing_end_of_metadata,
+                              end_of_metadata_after_how_many_lines_from_reference_line=self.end_of_metadata_after_how_many_lines_from_reference_line)
+        o_metadata.calculate_nbr_row_metadata()
+        self.nbr_row_metadata = o_metadata.nbr_row_metadata
+
+    def parse(self):
+        self.read_data()
+        self.read_metadata()
+
+    def read_data(self):
+        o_pd = pd.read_csv(
+            self.filename,
+            sep='\t',
+            encoding='iso8859_5',
+            error_bad_lines=False,
+            skiprows=self.nbr_row_metadata,
+        )
+        self.o_pd = o_pd
+
+    def read_metadata(self):
+        fdata = codecs.open(
+            self.filename, 'r', encoding='utf-8', errors='ignore')
+
+        metadata = []
+        for _row in np.arange(self.nbr_row_metadata):
+            metadata.append(fdata.readline())
+        self.metadata = metadata
+
+        self.read_specific_metadata()
+
+    def read_specific_metadata(self):
+        for _keys in self.metadata_dict.keys():
+            for _line in self.metadata:
+                if _keys in _line:
+                    result = _line.split(
+                        self.metadata_dict[_keys]['split1'])  # 1st split
+                    if not self.metadata_dict[_keys]['split2']:
+                        self.metadata_dict[_keys]['value'] = result[1].strip()
+                    else:  # 2nd split
+                        [value, units] = result[1].strip().split(
+                            self.metadata_dict[_keys]['split2'])
+                        self.metadata_dict[_keys]['value'] = value.strip()
+                        self.metadata_dict[_keys]['units'] = units.strip()
+
+
+class MetadataFileParser(object):
+    """This class will parse the entire file and isolate the metadata and data.
+    Then the time/s column will be used as index, the list of the columns left will be returned in
+    order for the user to select the columns he wants to keep. Once those selected, a new pandas object
+    of only the columns of interst and time/s as index will be created"""
+
+    filename = ''
+    meta_type = ''
+
+    def __init__(self,
+                 filename='',
+                 meta_type='',
+                 time_label='time/s',
+                 time_index=-1,
+                 reference_line_showing_end_of_metadata='Number of loops',
+                 end_of_metadata_after_how_many_lines_from_reference_line=1,
+                 ):
+        """
+        Arguments:
+         * filename: ascii input file name to parse
+         * meta_type: right now, only support file with extension mpt
+         * time_label: name of columns to use that contains time information
+         * time_index: column index to use to retrieve time info (take priority over time_label)
+         * reference_line_showing_end_of_metadata: string to use to locate end of metadata file (for complex ascii)
+         * end_of_metadata_after_how_many_lines_from_reference_line: number of rows to keep considering as part of metadata from reference_line...
+        """
+        self.filename = filename
+        self.time_label = time_label
+        self.time_index = time_index
+        if meta_type:
+            self.meta_type = meta_type
+        else:
+            self.meta_type = get_file_extension(filename)
+
+    def get_list_columns(self):
+        return list(self.meta.o_pd.columns.values)
+
+    def parse(self):
+        if self.meta_type == 'mpt':
+            time_info_column = TimeInfoColumn(label=self.time_label, index=self.time_index)
+            o_mpt = MPTFileParser(filename=self.filename, time_info_column=time_info_column)
+            self.meta = o_mpt
+        else:
+            raise NotImplementedError("This file format is not supported!")
+
+    def keep_only_columns_of_data_of_interest(self, list_columns_names=[]):
+        column_of_data_to_keep = self.meta.o_pd[list_columns_names]
+        return column_of_data_to_keep
+
+    def add_time_offset(self, time_offset_s=0):
+        o_pd = self.meta.o_pd
+        new_column_values = o_pd.index.values + time_offset_s
+        self.meta.o_pd = o_pd.set_index(new_column_values)
+
+    def create_metadata_selected_vs_time_stamp(self, metadata_selected):
+        # time_column = self.meta.o_pd.
+        pass
+
+if __name__ == "__main__":
+
+    import glob
+    import platform
+
+    if platform.node() == 'mac95470':
+        git_dir = os.path.abspath('~/git/')
+    else:
+        git_dir = '/Volumes/my_book_thunderbolt_duo/git/'
+
+    metadata_list_files = glob.glob(git_dir + '/standards/ASCII/*.mpt')
+
+    for _index_file, _file in enumerate(metadata_list_files):
+        metadata_file = _file
+        if os.path.exists(metadata_file):
+            print("working with file: {}".format(metadata_file))
+        else:
+            print("Failed to work with file: {}".format(metadata_file))
+
+        print("Running MetadataFileParser ...", end='\r')
+        o_meta = MetadataFileParser(filename=metadata_file,
+                                    meta_type='mpt',
+                                    time_label='time/s',
+                                    reference_line_showing_end_of_metadata='Number of loops',
+                                    end_of_metadata_after_how_many_lines_from_reference_line=1)
+        o_meta.parse()
+        print("MetadataFileParser ... Done!            ")
+
+        print("Adding arbitrary time offset of 2000s!")
+        o_meta.add_time_offset(time_offset_s=2000)
+        o_meta.meta.o_pd
+
+        print("Done working with file: {}".format(metadata_file))
+        print("")
