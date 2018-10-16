@@ -1,4 +1,5 @@
 import codecs
+import time, datetime
 
 # to be able to run this code from the command line for testing
 try:
@@ -14,7 +15,7 @@ import pandas as pd
 from __code.file_handler import get_file_extension
 
 
-class FilenameMetadataMatch(object):
+class MetadataAsciiParser(object):
 
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
@@ -70,13 +71,13 @@ class MPTFileParser(object):
     metadata_dict = {
         'Acquisition started on': {
             "split1": ' : ',
-            "value": '',
             "split2": '',
+            "value": '',
         },
         'Electrode surface area': {
             "split1": ' : ',
-            "value": '',
             "split2": ' ',
+            "value": '',
             "units": '',
         },
     }
@@ -89,7 +90,8 @@ class MPTFileParser(object):
                  filename='',
                  time_info_column=None,
                  reference_line_showing_end_of_metadata='Number of loops',
-                 end_of_metadata_after_how_many_lines_from_reference_line=1):
+                 end_of_metadata_after_how_many_lines_from_reference_line=1,
+                 ):
         self.filename = filename
         self.reference_line_showing_end_of_metadata = reference_line_showing_end_of_metadata
         self.end_of_metadata_after_how_many_lines_from_reference_line = end_of_metadata_after_how_many_lines_from_reference_line
@@ -98,9 +100,21 @@ class MPTFileParser(object):
         self.evaluate_nbr_row_metadata()
         self.parse()
         self.set_time_info_as_index()
+        self.add_acquisition_started_time_to_timestamp()
 
         # self.save_time_column()
         # self.remove_time_info_column()
+
+    def add_acquisition_started_time_to_timestamp(self):
+        str_acquisition_time = self.metadata_dict['Acquisition started on']['value']
+        timestamp = time.mktime(datetime.datetime.strptime(str_acquisition_time, "%m/%d/%Y %H:%M:%S").timetuple())
+        new_column_values = self.o_pd.index.values + timestamp
+        self.o_pd = self.o_pd.set_index(new_column_values)
+
+        #user friendly time stamp format
+        user_format = [datetime.datetime.fromtimestamp(_time).strftime('%m/%d/%Y %H:%M:%S')
+                       for _time in self.o_pd.index.values]
+        self.o_pd['time_user_format'] = pd.Series(user_format, index=self.o_pd.index)
 
     def set_time_info_as_index(self):
         time_info_column = self.time_info_column
@@ -148,6 +162,7 @@ class MPTFileParser(object):
     def parse(self):
         self.read_data()
         self.read_metadata()
+        self.read_specific_metadata()
 
     def read_data(self):
         o_pd = pd.read_csv(
@@ -160,8 +175,7 @@ class MPTFileParser(object):
         self.o_pd = o_pd
 
     def read_metadata(self):
-        fdata = codecs.open(
-            self.filename, 'r', encoding='utf-8', errors='ignore')
+        fdata = codecs.open(self.filename, 'r', encoding='utf-8', errors='ignore')
 
         metadata = []
         for _row in np.arange(self.nbr_row_metadata):
@@ -253,6 +267,7 @@ if __name__ == "__main__":
     else:
         git_dir = '/Volumes/my_book_thunderbolt_duo/git/'
 
+    # testing mpt files
     metadata_list_files = glob.glob(git_dir + '/standards/ASCII/*.mpt')
 
     for _index_file, _file in enumerate(metadata_list_files):
