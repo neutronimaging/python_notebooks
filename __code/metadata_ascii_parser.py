@@ -7,6 +7,7 @@ try:
     from ipywidgets import widgets
 except:
     pass
+from IPython.display import display
 
 import numpy as np
 import os
@@ -164,6 +165,16 @@ class MPTFileParser(object):
         self.read_metadata()
         self.read_specific_metadata()
 
+    def get_metadata(self):
+        return self.metadata
+
+    def get_data(self):
+        return self.o_pd
+
+    def keep_only_columns_of_data_of_interest(self, list_columns_names=[]):
+        column_of_data_to_keep = self.o_pd[list_columns_names]
+        return column_of_data_to_keep
+
     def read_data(self):
         o_pd = pd.read_csv(
             self.filename,
@@ -245,13 +256,47 @@ class MetadataFileParser(object):
             raise NotImplementedError("This file format is not supported!")
 
     def keep_only_columns_of_data_of_interest(self, list_columns_names=[]):
-        column_of_data_to_keep = self.meta.o_pd[list_columns_names]
-        return column_of_data_to_keep
+        if list_columns_names == []:
+            list_columns_names = list(self.box.children[1].value)
+
+        if list_columns_names:
+            return self.meta.keep_only_columns_of_data_of_interest(list_columns_names=list_columns_names)
+        else:
+            return []
 
     def add_time_offset(self, time_offset_s=0):
         o_pd = self.meta.o_pd
         new_column_values = o_pd.index.values + time_offset_s
         self.meta.o_pd = o_pd.set_index(new_column_values)
+
+    def get_metadata(self):
+        return self.meta.get_metadata()
+
+    def get_data(self):
+        return self.meta.get_data()
+
+    def get_data_column_names(self):
+        return list(self.meta.o_pd.columns.values)
+
+    def select_data_to_keep(self, default_selection=[-1]):
+
+        # names of the columns in the data part
+        list_columns = self.get_data_column_names()
+
+        # what to select by default when showing the widget
+        default_value = [list_columns[_index] for _index in default_selection]
+
+        self.box = widgets.HBox([widgets.Label("Select Metadata(s) to Keep:",
+                                          layout=widgets.Layout(width='20%'),
+                                          ),
+                            widgets.SelectMultiple(options=list_columns,
+                                                   value=default_value,
+                                                   rows=10,
+                                                   layout=widgets.Layout(width='30%')),
+                            ])
+        display(self.box)
+
+
 
     def create_metadata_selected_vs_time_stamp(self, metadata_selected):
         # time_column = self.meta.o_pd.
