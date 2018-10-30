@@ -181,8 +181,13 @@ class Interface(QMainWindow):
         self.h3_header_table.sectionResized.connect(self.resizing_h3)
 
     def resizing_h1(self, index_column, old_size, new_size):
-        pass
         #print("resizing h1 column {}".format(index_column))
+
+        h2_children = self.get_h2_children_from_h1(h1=index_column)
+        #print("h2 children: {}".format(h2_children))
+
+        last_h2_visible = self.get_last_h2_visible(list_h2=h2_children)
+        print("last h2 visible: {}".format(last_h2_visible))
 
     def resizing_h2(self, index_column, old_size, new_size):
         #print("resizing h2 column {}".format(index_column))
@@ -202,7 +207,26 @@ class Interface(QMainWindow):
         [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=index_column)
         #print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
 
+    def get_h2_children_from_h1(self, h1=-1):
+        if h1 == -1:
+            return None
 
+        table_columns_links = self.table_columns_links
+        list_h2_values = table_columns_links['h2']
+
+        return list_h2_values[h1]
+
+    def get_last_h2_visible(self, list_h2=[]):
+        if list_h2 == []:
+            return None
+
+        for _h2 in list_h2[::-1]:
+            if self.ui.h2_table.isColumnHidden(_h2):
+                continue
+            else:
+                return _h2
+
+        return None
 
     def get_last_h3_visible(self, list_h3=[]):
         if list_h3 == []:
@@ -214,7 +238,7 @@ class Interface(QMainWindow):
             else:
                 return _h3
 
-        return -1
+        return None
 
     def get_h3_children_from_h2(self, h2=-1):
         if h2 == -1:
