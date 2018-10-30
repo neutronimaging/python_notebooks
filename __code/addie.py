@@ -194,7 +194,7 @@ class Interface(QMainWindow):
         #print("h3 children: {}".format(h3_children))
 
         last_h3_visible = self.get_last_h3_visible(list_h3=h3_children)
-        print("last h3 visible is {}".format(last_h3_visible))
+        #print("last h3 visible is {}".format(last_h3_visible))
 
     def resizing_h3(self, index_column, old_size, new_size):
         #print("resizing h3 column {}".format(index_column))
@@ -207,6 +207,12 @@ class Interface(QMainWindow):
     def get_last_h3_visible(self, list_h3=[]):
         if list_h3 == []:
             return None
+
+        for _h3 in list_h3[::-1]:
+            if self.ui.h3_table.isColumnHidden(_h3):
+                continue
+            else:
+                return _h3
 
         return -1
 
