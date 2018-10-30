@@ -181,21 +181,61 @@ class Interface(QMainWindow):
         self.h3_header_table.sectionResized.connect(self.resizing_h3)
 
     def resizing_h1(self, index_column, old_size, new_size):
-        print("resizing h1 column {}".format(index_column))
+        pass
+        #print("resizing h1 column {}".format(index_column))
 
     def resizing_h2(self, index_column, old_size, new_size):
-        print("resizing h2 column {}".format(index_column))
+        #print("resizing h2 column {}".format(index_column))
+        h1_parent = self.get_h1_parent_from_h2(h2=index_column)
+        print("h1_parent: {}".format(h1_parent))
 
     def resizing_h3(self, index_column, old_size, new_size):
-        print("resizing h3 column {}".format(index_column))
+        #print("resizing h3 column {}".format(index_column))
+        [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=index_column)
+#        print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
+
+    def get_h1_parent_from_h2(self, h2=-1):
+        if h2 == -1:
+            return None
+
+        table_columns_links = self.table_columns_links
+        list_h2_values = table_columns_links['h2']
+
+        h1_parent_index = 0
+        for h2_values in list_h2_values:
+            if h2 in h2_values:
+                return h1_parent_index
+            h1_parent_index += 1
+
+        return None
+
+    def get_h1_h2_parent_from_h3(self, h3=-1):
+        if h3 == -1:
+            return [None, None]
+
+        table_columns_links = self.table_columns_links
+        list_h3_values = table_columns_links['h3']
+
+        h1_parent_index = 0
+        h2_parent_index = 0
+
+        for h3_values in list_h3_values:
+            for local_h3 in h3_values:
+                if h3 in local_h3:
+                    return [h1_parent_index, h2_parent_index]
+                h2_parent_index += 1
+            h1_parent_index += 1
+
+        return [None, None]
 
     def resizing_table(self):
-        td = self.tree_dict
-
-        for _key_h1 in td.keys():
-
-            # if h1 header has children
-            if td[_key_h1]['children']:
+        pass
+#         td = self.tree_dict
+#
+#         for _key_h1 in td.keys():
+#
+# #            if h1 header has children
+#             if td[_key_h1]['children']:
 
 
 
