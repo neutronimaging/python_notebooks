@@ -186,13 +186,50 @@ class Interface(QMainWindow):
 
     def resizing_h2(self, index_column, old_size, new_size):
         #print("resizing h2 column {}".format(index_column))
+
         h1_parent = self.get_h1_parent_from_h2(h2=index_column)
-        print("h1_parent: {}".format(h1_parent))
+        # print("h1_parent: {}".format(h1_parent))
+
+        h3_children = self.get_h3_children_from_h2(h2=index_column)
+        #print("h3 children: {}".format(h3_children))
+
+        last_h3_visible = self.get_last_h3_visible(list_h3=h3_children)
+        print("last h3 visible is {}".format(last_h3_visible))
 
     def resizing_h3(self, index_column, old_size, new_size):
         #print("resizing h3 column {}".format(index_column))
+
         [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=index_column)
-#        print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
+        #print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
+
+
+
+    def get_last_h3_visible(self, list_h3=[]):
+        if list_h3 == []:
+            return None
+
+        return -1
+
+    def get_h3_children_from_h2(self, h2=-1):
+        if h2 == -1:
+            return None
+
+        table_columns_links = self.table_columns_links
+        list_h3_values = table_columns_links['h3']
+        list_h2_values = table_columns_links['h2']
+
+        index_h2 = -1
+        index_h1 = 0
+        for h2_values in list_h2_values:
+            if h2 in h2_values:
+                index_h2 = h2_values.index(h2)
+                break
+            index_h1 += 1
+
+        if index_h2 == -1:
+            return []
+
+        return list_h3_values[index_h1][index_h2]
 
     def get_h1_parent_from_h2(self, h2=-1):
         if h2 == -1:
