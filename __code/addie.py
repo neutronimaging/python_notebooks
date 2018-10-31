@@ -181,13 +181,19 @@ class Interface(QMainWindow):
         self.h3_header_table.sectionResized.connect(self.resizing_h3)
 
     def resizing_h1(self, index_column, old_size, new_size):
-        #print("resizing h1 column {}".format(index_column))
+        # print("resizing h1 column {}".format(index_column))
 
         h2_children = self.get_h2_children_from_h1(h1=index_column)
-        #print("h2 children: {}".format(h2_children))
+        # print("h2 children: {}".format(h2_children))
 
         last_h2_visible = self.get_last_h2_visible(list_h2=h2_children)
-        print("last h2 visible: {}".format(last_h2_visible))
+        # print("last h2 visible: {}".format(last_h2_visible))
+
+        list_h3 = self.get_h3_children_from_h2(h2=last_h2_visible)
+        # print("h3 children: {}".format(list_h3))
+
+        last_h3_visible = self.get_last_h3_visible(list_h3=list_h3)
+        # print("Last h3 visible: {}".format(last_h3_visible))
 
     def resizing_h2(self, index_column, old_size, new_size):
         #print("resizing h2 column {}".format(index_column))
@@ -196,16 +202,16 @@ class Interface(QMainWindow):
         # print("h1_parent: {}".format(h1_parent))
 
         h3_children = self.get_h3_children_from_h2(h2=index_column)
-        #print("h3 children: {}".format(h3_children))
+        # print("h3 children: {}".format(h3_children))
 
         last_h3_visible = self.get_last_h3_visible(list_h3=h3_children)
-        #print("last h3 visible is {}".format(last_h3_visible))
+        # print("last h3 visible is {}".format(last_h3_visible))
 
     def resizing_h3(self, index_column, old_size, new_size):
-        #print("resizing h3 column {}".format(index_column))
+        # print("resizing h3 column {}".format(index_column))
 
         [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=index_column)
-        #print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
+        # print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
 
     def get_h2_children_from_h1(self, h1=-1):
         if h1 == -1:
