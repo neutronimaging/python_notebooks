@@ -266,8 +266,20 @@ class Interface(QMainWindow):
     def resizing_h3(self, index_column, old_size, new_size):
         # print("resizing h3 column {}".format(index_column))
 
+        self.block_table_ui()
+
         [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=index_column)
         # print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
+
+        size_diff = new_size - old_size
+
+        # get h2 and h1 size and resize them
+        h1_parent_size = self.get_size_column(h1=h1_parent)
+        self.set_size_column(h1=h1_parent, width=h1_parent_size+size_diff)
+        h2_parent_size = self.get_size_column(h2=h2_parent)
+        self.set_size_column(h2=h2_parent, width=h2_parent_size+size_diff)
+
+        self.block_table_ui(unblock_all=True)
 
     # Utilites
 
