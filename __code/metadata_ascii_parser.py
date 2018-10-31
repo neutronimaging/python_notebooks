@@ -1,5 +1,6 @@
 import codecs
 import time, datetime
+import inflect
 
 # to be able to run this code from the command line for testing
 try:
@@ -21,11 +22,12 @@ class MetadataAsciiParser(object):
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
 
-    def select_input_folder(self):
-        _instruction = "Select Input Folder ..."
-        self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instuction=_instruction,
+    def select_folder(self, instruction="Select Input Folder ...", next=None):
+
+        self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction=instruction,
                                                                     start_dir=self.working_dir,
-                                                                    type='directory')
+                                                                    type='directory',
+                                                                    next=next)
         self.input_folder_ui.show()
 
     def select_metadata_file(self):
@@ -219,6 +221,10 @@ class MetadataFileParser(object):
     filename = ''
     meta_type = ''
 
+    data_to_keep = []
+    data = []
+    metadata = []
+
     def __init__(self,
                  filename='',
                  meta_type='',
@@ -237,6 +243,8 @@ class MetadataFileParser(object):
          * end_of_metadata_after_how_many_lines_from_reference_line: number of rows to keep considering as part of metadata from reference_line...
         """
         self.filename = filename
+        self.working_dir = os.path.dirname(filename)
+        self.short_filename = os.path.basename(filename)
         self.time_label = time_label
         self.time_index = time_index
         if meta_type:
@@ -260,9 +268,9 @@ class MetadataFileParser(object):
             list_columns_names = list(self.box.children[1].value)
 
         if list_columns_names:
-            return self.meta.keep_only_columns_of_data_of_interest(list_columns_names=list_columns_names)
+            self.data_to_keep =  self.meta.keep_only_columns_of_data_of_interest(list_columns_names=list_columns_names)
         else:
-            return []
+            self.data_to_keep = []
 
     def add_time_offset(self, time_offset_s=0):
         o_pd = self.meta.o_pd
@@ -295,6 +303,35 @@ class MetadataFileParser(object):
                                                    layout=widgets.Layout(width='30%')),
                             ])
         display(self.box)
+
+    def select_output_location(self, default_filename=''):
+
+        if default_filename == '':
+            [filename, ext] = os.path.splitext(self.short_filename)
+            [_, nbr_columns] = np.shape(self.data_to_keep)
+            p = inflect.engine()
+            default_filename = filename + '_{}'.format(nbr_columns) + p.plural("column", nbr_columns)
+
+        self.box2 = widgets.HBox([widgets.Label("Output File Name:",
+                                           layout=widgets.Layout(width='20%')),
+                             widgets.Text(default_filename,
+                                          layout=widgets.Layout(width='70%')),
+                             widgets.Label(".txt",
+                                           layout=widgets.Layout(width='10%'))])
+        display(self.box2)
+
+        o_folder = MetadataAsciiParser(working_dir  = self.working_dir)
+        o_folder.select_folder(instruction = 'Select Output Folder ...',
+                               next=self.__export_table)
+
+
+    def __export_table(self, folder):
+        print("Folder is: {}".folder)
+        print("filename is: {}".self.box2.children[1].value)
+
+
+    def export_table(self, folder='', file_name=''):
+        pass
 
 
 
