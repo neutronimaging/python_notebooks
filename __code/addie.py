@@ -232,22 +232,15 @@ class Interface(QMainWindow):
 
         # add this size_diff to last_h2 and last_h3
         last_h2_visible_size = self.get_size_column(h2=last_h2_visible)
-        # print("last_h2_visible_size: {}".format(last_h2_visible_size))
-        # print("old_size of h1: {}".format(old_size))
-        # print("new size of h1: {}".format(new_size))
-        # print("new size of h2 will be: {}".format(last_h2_visible_size+size_diff))
         self.set_size_column(h2=last_h2_visible, width=last_h2_visible_size+size_diff)
-        new_h2_visible_size = self.get_size_column(h2=last_h2_visible)
-        # print("new size of h2 is now: {}".format(new_h2_visible_size))
-
-        #last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
-        #self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+        last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
+        self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
 
         self.block_table_ui(unblock_all=True)
         # print("")
 
     def resizing_h2(self, index_column, old_size, new_size):
-        print("resizing h2 column {}".format(index_column))
+        # print("resizing h2 column {}".format(index_column))
 
         self.block_table_ui()
 
@@ -264,9 +257,9 @@ class Interface(QMainWindow):
 
         # add this size_diff to parent and last h3
         parent_size = self.get_size_column(h1=h1_parent)
-        #self.set_size_column(h1=h1_parent, width=parent_size+size_diff)
-        # last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
-        # self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+        self.set_size_column(h1=h1_parent, width=parent_size+size_diff)
+        last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
+        self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
 
         self.block_table_ui(unblock_all=True)
 
