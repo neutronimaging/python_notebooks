@@ -195,6 +195,52 @@ class Interface(QMainWindow):
         last_h3_visible = self.get_last_h3_visible(list_h3=list_h3)
         # print("Last h3 visible: {}".format(last_h3_visible))
 
+        h1_old_size = old_size
+        h1_new_size = new_size
+        size_diff = new_size - old_size
+
+        # add this size_diff to last_h2 and last_h3
+        last_h2_visible_size = self.get_size_column(h2=last_h2_visible)
+        self.set_size_column(h2=last_h2_visible, width=last_h2_visible_size+size_diff)
+        last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
+        self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+
+    def get_table_ui(self, h1=None, h2=None, h3=None):
+        '''h1, h2 or h3 are column indexes'''
+        if not h1 is None:
+            table_ui = self.ui.h1_table
+        elif not h2 is None:
+            table_ui = self.ui.h2_table
+        elif not h3 is None:
+            table_ui = self.ui.h3_table
+        else:
+            table_ui = None
+        return table_ui
+
+    def get_master_h(self, h1=None, h2=None, h3=None):
+        '''return the only defined column index from h1, h2 or h3 table'''
+        if not h1 is None:
+            return h1
+        elif not h2 is None:
+            return h2
+        elif not h3 is None:
+            return h3
+        else:
+            return None
+
+    def get_size_column(self, h1=None, h2=None, h3=None):
+        table_ui = self.get_table_ui(h1=h1, h2=h2, h3=h3)
+        h = self.get_master_h(h1=h1, h2=h2, h3=h3)
+        return table_ui.columnWidth(h)
+
+    def set_size_column(self, h1=None, h2=None, h3=None, width=None):
+        if width is None:
+            return
+
+        table_ui = self.get_table_ui(h1=h1, h2=h2, h3=h3)
+        h = self.get_master_h(h1=h1, h2=h2, h3=h3)
+        table_ui.setColumnWidth(h, width)
+
     def resizing_h2(self, index_column, old_size, new_size):
         #print("resizing h2 column {}".format(index_column))
 
