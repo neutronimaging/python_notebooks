@@ -1,15 +1,17 @@
-from IPython.core.display import HTML
-from IPython.display import display
+#from IPython.core.display import HTML
+#from IPython.display import display
 import numpy as np
 from collections import OrderedDict
 
 try:
     from PyQt4.QtGui import QFileDialog
+    from PyQt4.QtCore import QObject
     from PyQt4 import QtCore, QtGui
     from PyQt4.QtGui import QMainWindow, QTableWidgetItem
 except ImportError:
     from PyQt5.QtWidgets import QFileDialog, QTreeWidgetItem, QTableWidgetItem
     from PyQt5 import QtCore, QtGui
+    from PyQt5.QtCore import QObject
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from __code.ui_addie  import Ui_MainWindow as UiMainWindow
@@ -159,8 +161,8 @@ class Interface(QMainWindow):
 
     def __init__(self, parent=None):
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
-            (maybe hidden behind this browser!)</span>'))
+        # display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+        #     (maybe hidden behind this browser!)</span>'))
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
@@ -179,6 +181,33 @@ class Interface(QMainWindow):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
         self.h2_header_table.sectionResized.connect(self.resizing_h2)
         self.h3_header_table.sectionResized.connect(self.resizing_h3)
+
+        self.ui.h1_table.horizontalScrollBar().valueChanged.connect(self.scroll_h1_table)
+        self.ui.h2_table.horizontalScrollBar().valueChanged.connect(self.scroll_h2_table)
+        self.ui.h3_table.horizontalScrollBar().valueChanged.connect(self.scroll_h3_table)
+
+    def scroll_h1_table(self):
+        print("scroll h1")
+        # get h1 position
+
+    def scroll_h2_table(self):
+        print("scroll h2")
+
+    def scroll_h3_table(self):
+        print("scroll h3")
+        h3_viewport = self.ui.h3_table.viewport()
+        h2_viewport = self.ui.h2_table.viewport()
+        h1_viewport = self.ui.h1_table.viewport()
+
+
+
+
+
+#        self.ui.h2_table.setViewport(viewport)
+
+
+
+
 
     def block_table_ui(self, block_all=True,
                        unblock_all=False,
