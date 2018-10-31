@@ -195,8 +195,6 @@ class Interface(QMainWindow):
         last_h3_visible = self.get_last_h3_visible(list_h3=list_h3)
         # print("Last h3 visible: {}".format(last_h3_visible))
 
-        h1_old_size = old_size
-        h1_new_size = new_size
         size_diff = new_size - old_size
 
         # add this size_diff to last_h2 and last_h3
@@ -204,6 +202,34 @@ class Interface(QMainWindow):
         self.set_size_column(h2=last_h2_visible, width=last_h2_visible_size+size_diff)
         last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
         self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+
+    def resizing_h2(self, index_column, old_size, new_size):
+        #print("resizing h2 column {}".format(index_column))
+
+        h1_parent = self.get_h1_parent_from_h2(h2=index_column)
+        # print("h1_parent: {}".format(h1_parent))
+
+        h3_children = self.get_h3_children_from_h2(h2=index_column)
+        # print("h3 children: {}".format(h3_children))
+
+        last_h3_visible = self.get_last_h3_visible(list_h3=h3_children)
+        # print("last h3 visible is {}".format(last_h3_visible))
+
+        size_diff = new_size - old_size
+
+        # add this size_diff to parent and last h3
+        parent_size = self.get_size_column(h1=h1_parent)
+        self.set_size_column(h1=h1_parent, width=parent_size+size_diff)
+        # last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
+        # self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+
+    def resizing_h3(self, index_column, old_size, new_size):
+        # print("resizing h3 column {}".format(index_column))
+
+        [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=index_column)
+        # print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
+
+    # Utilites
 
     def get_table_ui(self, h1=None, h2=None, h3=None):
         '''h1, h2 or h3 are column indexes'''
@@ -240,24 +266,6 @@ class Interface(QMainWindow):
         table_ui = self.get_table_ui(h1=h1, h2=h2, h3=h3)
         h = self.get_master_h(h1=h1, h2=h2, h3=h3)
         table_ui.setColumnWidth(h, width)
-
-    def resizing_h2(self, index_column, old_size, new_size):
-        #print("resizing h2 column {}".format(index_column))
-
-        h1_parent = self.get_h1_parent_from_h2(h2=index_column)
-        # print("h1_parent: {}".format(h1_parent))
-
-        h3_children = self.get_h3_children_from_h2(h2=index_column)
-        # print("h3 children: {}".format(h3_children))
-
-        last_h3_visible = self.get_last_h3_visible(list_h3=h3_children)
-        # print("last h3 visible is {}".format(last_h3_visible))
-
-    def resizing_h3(self, index_column, old_size, new_size):
-        # print("resizing h3 column {}".format(index_column))
-
-        [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=index_column)
-        # print("h1_parent, h2_parent: {},{}".format(h1_parent, h2_parent))
 
     def get_h2_children_from_h1(self, h1=-1):
         if h1 == -1:
