@@ -285,8 +285,19 @@ class Interface(QMainWindow):
         self.block_table_ui(unblock_all=True)
 
     def resizing_h1_using_all_visible_h2(self, h1=None):
-        '''automaticailly resize the h1 using all its h2 visible '''
-        pass
+        '''automatically resize the h1 using all its h2 visible '''
+        h2_children = self.get_h2_children_from_h1(h1=h1)
+        list_visible_h2 = self.get_all_h2_visible(list_h2=h2_children)
+        print("list_visible_h2: {}".format(list_visible_h2))
+
+        if list_visible_h2 is None:
+            return
+
+        full_size_h2 = 0
+        for _h2 in list_visible_h2:
+            full_size_h2 += self.get_size_column(h2=_h2)
+
+        self.ui.h1_table.setColumnWidth(h1, full_size_h2)
 
     def resizing_h3(self, index_column, old_size, new_size):
         # print("resizing h3 column {}".format(index_column))
@@ -361,6 +372,14 @@ class Interface(QMainWindow):
         list_h2_values = table_columns_links['h2']
 
         return list_h2_values[h1]
+
+    def get_all_h2_visible(self, list_h2=[]):
+        '''return the list of all the visible h2 from the list of h2 given'''
+        if list_h2 == []:
+            return None
+
+        list_h2_visible = [_h2 for _h2 in list_h2 if not self.ui.h2_table.isColumnHidden(_h2)]
+        return list_h2_visible
 
     def get_last_h2_visible(self, list_h2=[]):
         if list_h2 == []:
@@ -446,15 +465,18 @@ class Interface(QMainWindow):
         if tree_dict == {}:
             return
 
+        self.block_table_ui()
+
         # if user disabled or enabled at the h1 level, nothing to do as all the columns will be automatically
         # resized the right way
         h1 = tree_dict['h1']
+        h2 = tree_dict['h2']
+        h3 = tree_dict['h3']
         if not h1 == []:
-            return
+            pass
 
         # if user clicked at the h2 level
-        h2 = tree_dict['h2']
-        if not h2 == []:
+        elif not h2 == []:
 
             h2 = h2[0]
 
@@ -463,17 +485,15 @@ class Interface(QMainWindow):
 
             if is_h1_parent_visible:
                 # if h1 parent is visible, resized h1 parent using all visible h2
+                self.resizing_h1_using_all_visible_h2(h1=h1_parent)
                 pass
 
             else:
                 # if h1 parent is not visible, done !
                 pass
 
-            return
-
         # if user clicked at the h3 level
-        h3 = tree_dict['h3']
-        if not h3 == []:
+        elif not h3 == []:
 
             h3 = h3[0]
 
@@ -485,7 +505,8 @@ class Interface(QMainWindow):
             #      if h1_parent visible -> resize h1_parent using all h2 visible
             #      if h1_parent not visible -> Done !
 
-            return
+        self.block_table_ui(unblock_all=True)
+
 
     def init_headers(self):
         td = self.tree_dict
