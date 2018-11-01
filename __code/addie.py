@@ -284,6 +284,10 @@ class Interface(QMainWindow):
 
         self.block_table_ui(unblock_all=True)
 
+    def resizing_h1_using_all_visible_h2(self, h1=None):
+        '''automaticailly resize the h1 using all its h2 visible '''
+        pass
+
     def resizing_h3(self, index_column, old_size, new_size):
         # print("resizing h3 column {}".format(index_column))
 
@@ -302,7 +306,16 @@ class Interface(QMainWindow):
 
         self.block_table_ui(unblock_all=True)
 
+    def resizing_h2_using_all_visible_h3(self, h2=None):
+        '''automaticallly resizing the h2 using all its h3 visible'''
+        pass
+
     # Utilites
+
+    def is_h_visible(self, h1=None, h2=None, h3=None):
+        table_ui = self.get_table_ui(h1=h1, h2=h2, h3=h3)
+        master_h = self.get_master_h(h1=h1, h2=h2, h3=h3)
+        return not table_ui.isColumnHidden(master_h)
 
     def get_table_ui(self, h1=None, h2=None, h3=None):
         '''h1, h2 or h3 are column indexes'''
@@ -442,20 +455,27 @@ class Interface(QMainWindow):
         # if user clicked at the h2 level
         h2 = tree_dict['h2']
         if not h2 == []:
-            # FIXME
-            pass
 
-            # if h1 parent is visible, resized h1 parent using all visible h2
+            h2 = h2[0]
 
-            # if h1 parent is not visible, done !
+            h1_parent = self.get_h1_parent_from_h2(h2=h2)
+            is_h1_parent_visible = self.is_h_visible(h1=h1_parent)
+
+            if is_h1_parent_visible:
+                # if h1 parent is visible, resized h1 parent using all visible h2
+                pass
+
+            else:
+                # if h1 parent is not visible, done !
+                pass
 
             return
 
         # if user clicked at the h3 level
         h3 = tree_dict['h3']
         if not h3 == []:
-            # FIXME
-            pass
+
+            h3 = h3[0]
 
             # if we have more h3 siblings visible
             # - we need to resize h2_parent using visible h3 siblings
@@ -465,14 +485,7 @@ class Interface(QMainWindow):
             #      if h1_parent visible -> resize h1_parent using all h2 visible
             #      if h1_parent not visible -> Done !
 
-
-
-
-
-
-
-
-
+            return
 
     def init_headers(self):
         td = self.tree_dict
@@ -707,20 +720,6 @@ class Interface(QMainWindow):
 
                 h2_counter += 1
                 h3_counter += 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     def change_state_tree(self, list_ui=[], list_parent_ui=[], state=0):
         """
