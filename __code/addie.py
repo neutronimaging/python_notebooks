@@ -288,7 +288,6 @@ class Interface(QMainWindow):
         '''automatically resize the h1 using all its h2 visible '''
         h2_children = self.get_h2_children_from_h1(h1=h1)
         list_visible_h2 = self.get_all_h2_visible(list_h2=h2_children)
-        print("list_visible_h2: {}".format(list_visible_h2))
 
         if list_visible_h2 is None:
             return
@@ -318,8 +317,18 @@ class Interface(QMainWindow):
         self.block_table_ui(unblock_all=True)
 
     def resizing_h2_using_all_visible_h3(self, h2=None):
-        '''automaticallly resizing the h2 using all its h3 visible'''
-        pass
+        '''automatically resizing the h2 using all its h3 visible'''
+        h3_children = self.get_h3_children_from_h2(h2=h2)
+        list_visible_h3 = self.get_all_h3_visible(list_h3=h3_children)
+
+        if list_visible_h3 is None:
+            return
+
+        full_size_h3 = 0
+        for _h3 in list_visible_h3:
+            full_size_h3 += self.get_size_column(h3=_h3)
+
+        self.ui.h2_table.setColumnWidth(h2, full_size_h3)
 
     # Utilites
 
@@ -392,6 +401,14 @@ class Interface(QMainWindow):
                 return _h2
 
         return None
+
+    def get_all_h3_visible(self, list_h3=[]):
+        '''return the list of all the visible h3 from the list of h3 given'''
+        if list_h3 == []:
+            return None
+
+        list_h3_visible = [_h3 for _h3 in list_h3 if not self.ui.h3_table.isColumnHidden(_h3)]
+        return list_h3_visible
 
     def get_last_h3_visible(self, list_h3=[]):
         if list_h3 == []:
@@ -486,7 +503,6 @@ class Interface(QMainWindow):
             if is_h1_parent_visible:
                 # if h1 parent is visible, resized h1 parent using all visible h2
                 self.resizing_h1_using_all_visible_h2(h1=h1_parent)
-                pass
 
             else:
                 # if h1 parent is not visible, done !
@@ -497,13 +513,32 @@ class Interface(QMainWindow):
 
             h3 = h3[0]
 
-            # if we have more h3 siblings visible
-            # - we need to resize h2_parent using visible h3 siblings
-            # - we need to resize h1_parent using all visible h2
+            [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=h3)
+            is_h2_parent_visible = self.is_h_visible(h2=h2_parent)
 
-            # if there are no more h3 siblings then
-            #      if h1_parent visible -> resize h1_parent using all h2 visible
-            #      if h1_parent not visible -> Done !
+            if is_h2_parent_visible:
+                # if we have more h3 siblings visible
+                # - we need to resize h2_parent using visible h3 siblings
+                # - we need to resize h1_parent using all visible h2
+                self.resizing_h2_using_all_visible_h3(h2=h2_parent)
+                self.resizing_h1_using_all_visible_h2(h1=h1_parent)
+
+            else:
+                # if there are no more h3 siblings then
+                #      if h1_parent visible -> resize h1_parent using all h2 visible
+                #      if h1_parent not visible -> Done !
+                h2 = h2_parent
+
+                h1_parent = self.get_h1_parent_from_h2(h2=h2)
+                is_h1_parent_visible = self.is_h_visible(h1=h1_parent)
+
+                if is_h1_parent_visible:
+                    # if h1 parent is visible, resized h1 parent using all visible h2
+                    self.resizing_h1_using_all_visible_h2(h1=h1_parent)
+
+                else:
+                    # if h1 parent is not visible, done !
+                    pass
 
         self.block_table_ui(unblock_all=True)
 
