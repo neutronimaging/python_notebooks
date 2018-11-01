@@ -501,7 +501,10 @@ class Interface(QMainWindow):
             is_h1_parent_visible = self.is_h_visible(h1=h1_parent)
 
             if is_h1_parent_visible:
-                # if h1 parent is visible, resized h1 parent using all visible h2
+                # resize h2 using all visible h3
+                self.resizing_h2_using_all_visible_h3(h2=h2)
+
+                # if h1 parent is visible, re-sized h1 parent using all visible h2
                 self.resizing_h1_using_all_visible_h2(h1=h1_parent)
 
             else:
