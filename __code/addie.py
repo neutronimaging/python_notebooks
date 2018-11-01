@@ -177,8 +177,8 @@ class Interface(QMainWindow):
         self.init_tree()
         self.init_signals()
 
-        import pprint
-        pprint.pprint(self.table_columns_links)
+        # import pprint
+        # pprint.pprint(self.table_columns_links)
 
     def init_signals(self):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
@@ -428,14 +428,47 @@ class Interface(QMainWindow):
 
         return [None, None]
 
-    def resizing_table(self):
-        pass
-#         td = self.tree_dict
-#
-#         for _key_h1 in td.keys():
-#
-# #            if h1 header has children
-#             if td[_key_h1]['children']:
+    def resizing_table(self, tree_dict={}):
+        '''updating the size of the columns using visibility of the various elements of the tree'''
+        if tree_dict == {}:
+            return
+
+        # if user disabled or enabled at the h1 level, nothing to do as all the columns will be automatically
+        # resized the right way
+        h1 = tree_dict['h1']
+        if not h1 == []:
+            return
+
+        # if user clicked at the h2 level
+        h2 = tree_dict['h2']
+        if not h2 == []:
+            # FIXME
+            pass
+
+            # if h1 parent is visible, resized h1 parent using all visible h2
+
+            # if h1 parent is not visible, done !
+
+            return
+
+        # if user clicked at the h3 level
+        h3 = tree_dict['h3']
+        if not h3 == []:
+            # FIXME
+            pass
+
+            # if we have more h3 siblings visible
+            # - we need to resize h2_parent using visible h3 siblings
+            # - we need to resize h1_parent using all visible h2
+
+            # if there are no more h3 siblings then
+            #      if h1_parent visible -> resize h1_parent using all h2 visible
+            #      if h1_parent not visible -> Done !
+
+
+
+
+
 
 
 
@@ -592,7 +625,7 @@ class Interface(QMainWindow):
                                state=item.checkState(0))
 
         self.update_table_columns_visibility()
-        self.resizing_table()
+        self.resizing_table(tree_dict=h_columns_affected)
         
         self.h1_header_table.blockSignals(False)
         self.h2_header_table.blockSignals(False)
