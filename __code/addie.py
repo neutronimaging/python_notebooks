@@ -5,6 +5,7 @@ from os.path import expanduser
 import numpy as np
 from collections import OrderedDict
 import pickle
+from collections import OrderedDict
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -1155,19 +1156,34 @@ class SaveConfigInterface(QDialog):
 
     def __init__(self, parent=None):
         self.parent = parent
+
         QDialog.__init__(self, parent=parent)
         self.ui = UiDialogSave()
         self.ui.setupUi(self)
 
-    def create_config_dict(self):
+        self.ui.save_as_value.setPlaceholderText("undefined")
+
+    def create_config_dict(self, name=''):
+        if name == '':
+            name = 'undefined'
+
+        print("name: {}".format(name))
+
         o_current_table_config = TableConfig(parent=self.parent)
         current_config = o_current_table_config.get_current_config()
-        # print("create config dict")
-        # print(current_config)
+        full_config = OrderedDict()
+
+        # FIXME
+
+
+    def get_defined_name_config(self):
+        return str(self.ui.save_as_value.text())
 
     def ok_clicked(self):
-        self.create_config_dict()
-        self.close()
+        name_config = self.get_defined_name_config()
+        if name_config:
+            self.create_config_dict(name=name_config)
+            self.close()
 
     def cancel_clicked(self):
         self.close()
