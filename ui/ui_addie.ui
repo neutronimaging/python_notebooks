@@ -103,6 +103,12 @@
              <height>0</height>
             </size>
            </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
            <column>
             <property name="text">
              <string/>
@@ -209,5 +215,25 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>h3_table</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>h3_table_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>909</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1211</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>h3_table_right_click()</slot>
+ </slots>
 </ui>

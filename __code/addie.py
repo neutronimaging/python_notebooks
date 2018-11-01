@@ -1,27 +1,36 @@
 #from IPython.core.display import HTML
 #from IPython.display import display
+import os
+from os.path import expanduser
 import numpy as np
 from collections import OrderedDict
+import pickle
 
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4.QtCore import QObject
     from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow, QTableWidgetItem
+    from PyQt4.QtGui import QMainWindow, QTableWidgetItem, QMenu, QDialog
 except ImportError:
     try:
         from PyQt5.QtWidgets import QFileDialog, QTreeWidgetItem, QTableWidgetItem
         from PyQt5 import QtCore, QtGui
         from PyQt5.QtCore import QObject
-        from PyQt5.QtWidgets import QApplication, QMainWindow
+        from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QDialog
     except ImportError:
         raise ImportError("Requires PyQt5 or PyQt4.")
 
 from __code.ui_addie  import Ui_MainWindow as UiMainWindow
+from __code.ui_addie_save_config import Ui_Dialog as UiDialogSave
+
+
+user_home = expanduser("~")
+CONFIG_FILE = os.path.join(user_home, '.addie_config.cfg')
 
 
 class Interface(QMainWindow):
 
+    config_dict = {} # various configurations defined by the user (last 5)
     item_dict = {'ui': None,
                  'name': '',
                  'state': True,
@@ -188,6 +197,11 @@ class Interface(QMainWindow):
         self.ui.h1_table.horizontalScrollBar().valueChanged.connect(self.scroll_h1_table)
         self.ui.h2_table.horizontalScrollBar().valueChanged.connect(self.scroll_h2_table)
         self.ui.h3_table.horizontalScrollBar().valueChanged.connect(self.scroll_h3_table)
+
+    def h3_table_right_click(self, position):
+        o_h3_table = H3TableHandler(parent=self)
+        o_h3_table.right_click()
+
 
     def scroll_h1_table(self, value):
         self.ui.h2_table.horizontalScrollBar().setValue(value)
@@ -1133,7 +1147,76 @@ class Interface(QMainWindow):
         self.close()
 
     def closeEvent(self, eventhere=None):
-        print("Leaving Parameters Selection UI")
+        pass
+        #print("Leaving Parameters Selection UI")
+
+
+class SaveConfigInterface(QDialog):
+
+    def __init__(self, parent=None):
+        self.parent = parent
+        QDialog.__init__(self, parent=parent)
+        self.ui = UiDialogSave()
+        self.ui.setupUi(self)
+
+    def ok_clicked(self):
+        pass
+
+    def cancel_clicked(self):
+        self.close()
+
+class H3TableHandler:
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+    def retrieve_previous_configurations(self):
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'rb') as handle:
+                _cfg = pickle.load(handle)
+
+                try:
+                    config_dict = _cfg['configurations']
+                except KeyError:
+                    return
+
+        self.parent.config_dict = config_dict
+
+    def save_config(self):
+        o_save_config = SaveConfigInterface(parent=self.parent)
+        o_save_config.show()
+
+    def right_click(self):
+        top_menu = QMenu(self.parent)
+
+        menu = top_menu.addMenu("Menu")
+        config = menu.addMenu("Configuration ...")
+
+        _save_as = config.addAction("Save As ...")
+        _save = config.addAction("Save")
+
+        # config.addSeparator()
+        #
+        # config1 = config.addAction("Config1")
+        # config2 = config.addAction("Config2")
+        # config3 = config.addAction("Config3")
+
+        action = menu.exec_(QtGui.QCursor.pos())
+
+        if action == _save_as:
+            self.save_config()
+        elif action == _save:
+            pass
+        # elif action == config1:
+        #     # do this
+        #     pass
+        # elif action == config2:
+        #     # do this
+        #     pass
+        # elif action == config3:
+        #     # do this
+        #     pass
+
 
 
 

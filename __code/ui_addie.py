@@ -54,6 +54,8 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.h2_table)
         self.h3_table = QtWidgets.QTableWidget(self.frame)
         self.h3_table.setBaseSize(QtCore.QSize(0, 0))
+        self.h3_table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.h3_table.setAlternatingRowColors(True)
         self.h3_table.setObjectName("h3_table")
         self.h3_table.setColumnCount(8)
         self.h3_table.setRowCount(0)
@@ -101,6 +103,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.h3_table.customContextMenuRequested['QPoint'].connect(MainWindow.h3_table_right_click)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
