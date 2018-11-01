@@ -1159,8 +1159,15 @@ class SaveConfigInterface(QDialog):
         self.ui = UiDialogSave()
         self.ui.setupUi(self)
 
+    def create_config_dict(self):
+        o_current_table_config = TableConfig(parent=self.parent)
+        current_config = o_current_table_config.get_current_config()
+        # print("create config dict")
+        # print(current_config)
+
     def ok_clicked(self):
-        pass
+        self.create_config_dict()
+        self.close()
 
     def cancel_clicked(self):
         self.close()
@@ -1182,7 +1189,7 @@ class H3TableHandler:
 
         self.parent.config_dict = config_dict
 
-    def save_config(self):
+    def save_as_config(self):
         o_save_config = SaveConfigInterface(parent=self.parent)
         o_save_config.show()
 
@@ -1195,17 +1202,22 @@ class H3TableHandler:
         _save_as = config.addAction("Save As ...")
         _save = config.addAction("Save")
 
-        # config.addSeparator()
-        #
-        # config1 = config.addAction("Config1")
-        # config2 = config.addAction("Config2")
-        # config3 = config.addAction("Config3")
+        config.addSeparator()
+
+        config1 = config.addAction(u"Config1 \u2713")
+        config2 = config.addAction(u"Config2")
+        config3 = config.addAction(u"Config3")
+
+        menu.addSeparator()
+        _reset = menu.addAction("Full Reset Table/Tree")
 
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == _save_as:
-            self.save_config()
+            self.save_as_config()
         elif action == _save:
+            pass
+        elif action == _reset:
             pass
         # elif action == config1:
         #     # do this
@@ -1216,6 +1228,43 @@ class H3TableHandler:
         # elif action == config3:
         #     # do this
         #     pass
+
+
+class TableConfig:
+    '''This class will look at the h1, h2 and h3 table to create the config use width and visibility of each column'''
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+    def get_current_config(self):
+        current_config_dict = {}
+        current_config_dict['h1'] = self.__get_current_table_config(table='h1')
+        current_config_dict['h2'] = self.__get_current_table_config(table='h2')
+        current_config_dict['h3'] = self.__get_current_table_config(table='h3')
+        return current_config_dict
+
+    def __get_current_table_config(self, table='h1'):
+
+        if table == 'h1':
+            table_ui = self.parent.ui.h1_table
+        elif table == 'h2':
+            table_ui = self.parent.ui.h2_table
+        else:
+            table_ui = self.parent.ui.h3_table
+
+        nbr_column = table_ui.columnCount()
+        _dict = {}
+        for _col in np.arange(nbr_column):
+            _width = table_ui.columnWidth(_col)
+            _visible = not table_ui.isColumnHidden(_col)
+            _dict[_col] = {'width': _width,
+                           'visible': _visible}
+
+        return _dict
+
+
+
+
 
 
 
