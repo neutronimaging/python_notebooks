@@ -1256,7 +1256,6 @@ class ConfigHandler:
         new_config = OrderedDict()
         for _key in config:
             if _key == key:
-                print("yes")
                 pass
             else:
                 new_config[_key] = config[_key]
@@ -1298,10 +1297,8 @@ class H3TableHandler:
         # print(previous_config)
 
         if previous_config == {}:
-            save_state = False
             list_configs = []
         else:
-            save_state = True
             list_configs = previous_config.keys()
 
         top_menu = QMenu(self.parent)
@@ -1310,7 +1307,6 @@ class H3TableHandler:
         config = menu.addMenu("Configuration ...")
 
         _save = config.addAction("Save")
-        _save.setEnabled(save_state)
 
         _save_as = config.addAction("Save As ...")
 
@@ -1318,12 +1314,14 @@ class H3TableHandler:
         list_signal_remove_config = []
         list_config_displayed = []
 
+        save_state = False
         if not list_configs == []:
             config.addSeparator()
             for _label in list_configs:
                 if previous_config[_label]['active']:
                     self.parent.active_config_name = _label
                     _full_label = u"\u2713 " + _label
+                    save_state = True
 
                 else:
                     _full_label = u"\u200b   \u200b " + _label
@@ -1334,6 +1332,9 @@ class H3TableHandler:
                 temp_remove = temp.addAction("Remove")
                 list_signal_config_files.append(temp_select)
                 list_signal_remove_config.append(temp_remove)
+
+        # disable "save" button if we don't have any config activated
+        _save.setEnabled(save_state)
 
         self.parent.list_config_displayed = list_config_displayed
         menu.addSeparator()
