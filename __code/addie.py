@@ -32,6 +32,7 @@ CONFIG_FILE = os.path.join(user_home, '.addie_config.cfg')
 class Interface(QMainWindow):
 
     config_dict = {} # various configurations defined by the user (last 5)
+    active_config_name = ''
 
     item_dict = {'ui': None,
                  'name': '',
@@ -1173,21 +1174,30 @@ class SaveConfigInterface(QDialog):
         o_current_table_config = TableConfig(parent=self.parent)
         current_config = o_current_table_config.get_current_config()
 
-        # retrieve prevous config file
+        inside_dict = OrderedDict()
+        inside_dict['table'] = current_config
+        inside_dict['active'] = True
+
+        # retrieve previous config file
         previous_config_dict = self.parent.config_dict
         if previous_config_dict == {}:
+            # first time
             new_full_config = OrderedDict()
-            inside_dict = OrderedDict()
-            inside_dict['table'] = current_config
-            inside_dict['active'] = True
             new_full_config[name] = inside_dict
         else:
-            #FIXME
-            print("previous config found")
-            new_full_config = previous_config_dict
-            print(new_full_config)
+            self.deactivate_all_config()
+            old_full_config = self.parent.config_dict
+            list_keys = old_full_config.keys()
+            old_full_config[name] = inside_dict
+            new_full_config = old_full_config
 
         self.config_dict = new_full_config
+
+    def deactivate_all_config(self):
+        old_full_config = self.parent.config_dict
+        for _key in old_full_config:
+            old_full_config[_key]['active'] = False
+        self.parent.config_dict = old_full_config
 
     def export_config(self):
         with open(CONFIG_FILE, 'wb') as handle:
@@ -1260,12 +1270,20 @@ class H3TableHandler:
 
         _save_as = config.addAction("Save As ...")
 
+        list_signal_config_files = []
+        list_signal_remove_config = []
+
         if not list_configs == []:
             config.addSeparator()
             for _label in list_configs:
                 if previous_config[_label]['active']:
+                    self.parent.active_config_name = _label
                     _label += u" \u2713"
-                config1 = config.addAction(_label)
+                temp = config.addMenu(_label)
+                temp_select = temp.addAction("Select")
+                temp_remove = temp.addAction("Remove")
+                list_signal_config_files.append(temp_select)
+                list_signal_config_files.append(temp_remove)
 
         # config1 = config.addAction(u"Config1 \u2713")
         # config2 = config.addAction(u"Config2")
@@ -1278,19 +1296,24 @@ class H3TableHandler:
 
         if action == _save_as:
             self.save_as_config()
+
         elif action == _save:
             pass
+
         elif action == _reset:
             self.reset_table()
-        # elif action == config1:
-        #     # do this
-        #     pass
-        # elif action == config2:
-        #     # do this
-        #     pass
-        # elif action == config3:
-        #     # do this
-        #     pass
+
+        elif not list_signal_config_files == []:
+
+            for _index, _signal in enumerate(list_signal_config_files):
+                if action == _signal:
+                    print("select signal # {}".format(_index))
+
+        elif not list_signal_remove_config == []:
+
+            for _index, _signal in enumerate(list_signal_remove_config):
+                if action == _signal:
+                    print("remove signal # {}".format(_index))
 
 
 class TableConfig:
