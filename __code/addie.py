@@ -6,6 +6,7 @@ import numpy as np
 from collections import OrderedDict
 import pickle
 from collections import OrderedDict
+import pprint
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -203,6 +204,40 @@ class Interface(QMainWindow):
         self.ui.h2_table.horizontalScrollBar().valueChanged.connect(self.scroll_h2_table)
         self.ui.h3_table.horizontalScrollBar().valueChanged.connect(self.scroll_h3_table)
 
+    def load_this_config(self, key=''):
+        if key == '':
+            return
+
+        #FIXME
+        return
+
+        config_to_load = self.config_dict[key]['table']
+
+        h1_dict = config_to_load['h1']
+        h2_dict = config_to_load['h2']
+        h3_dict = config_to_load['h3']
+
+        print(config_to_load)
+
+        self.block_table_ui()
+
+        for _col in h1_dict:
+            _visible = h1_dict[_col]['visible']
+            _width = h1_dict[_col]['width']
+
+        for _col in h2_dict:
+            _visible = h2_dict[_col]['visible']
+            _width = h2_dict[_col]['width']
+            self.set_size_and_visibility_column(h2=_col, width=_width, visibility=_visible)
+
+        for _col in h3_dict:
+            _visible = h3_dict[_col]['visible']
+            _width = h3_dict[_col]['width']
+            self.set_size_and_visibility_column(h3=_col, width=_width, visibility=_visible)
+
+        self.block_table_ui(unblock_all=True)
+
+
     def h3_table_right_click(self, position):
         o_h3_table = H3TableHandler(parent=self)
         o_h3_table.right_click()
@@ -391,6 +426,15 @@ class Interface(QMainWindow):
         table_ui = self.get_table_ui(h1=h1, h2=h2, h3=h3)
         h = self.get_master_h(h1=h1, h2=h2, h3=h3)
         table_ui.setColumnWidth(h, width)
+
+    def set_visibility_column(self, h1=None, h2=None, h3=None, visibility=True):
+        table_ui = self.get_table_ui(h1=h1, h2=h2, h3=h3)
+        h = self.get_master_h(h1=h1, h2=h2, h3=h3)
+        table_ui.setColumnHidden(h, not visibility)
+
+    def set_size_and_visibility_column(self, h1=None, h2=None, h3=None, width=None, visibility=True):
+        self.set_size_column(h1=h1, h2=h2, h3=h3, width=width)
+        self.set_visibility_column(h1=h1, h2=h2, h3=h3, visibility=visibility)
 
     def get_h2_children_from_h1(self, h1=-1):
         if h1 == -1:
@@ -1285,6 +1329,13 @@ class H3TableHandler:
         o_save_config = SaveConfigInterface(parent=self.parent)
         o_save_config.show()
         self.o_save_config = o_save_config
+        # retrieve name defined in saveas ui
+        # save using name
+
+    def save_config(self):
+        pass
+        # retrieve the active name
+        # save using name
 
     def reset_table(self):
         pass
@@ -1353,7 +1404,7 @@ class H3TableHandler:
             return
 
         elif action == _save:
-            pass
+            #FIXME
             return
 
         elif action == _reset:
@@ -1386,6 +1437,7 @@ class H3TableHandler:
                                                          key=config)
         self.parent.config_dict = config_dict
         ConfigHandler.lazy_export_config(config_dict=config_dict)
+        self.parent.load_this_config(key=config)
 
 class TableConfig:
     '''This class will look at the h1, h2 and h3 table to create the config use width and visibility of each column'''
