@@ -32,6 +32,7 @@ CONFIG_FILE = os.path.join(user_home, '.addie_config.cfg')
 class Interface(QMainWindow):
 
     config_dict = {} # various configurations defined by the user (last 5)
+
     item_dict = {'ui': None,
                  'name': '',
                  'state': True,
@@ -1154,6 +1155,8 @@ class Interface(QMainWindow):
 
 class SaveConfigInterface(QDialog):
 
+    config_dict = {}
+
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -1167,14 +1170,32 @@ class SaveConfigInterface(QDialog):
         if name == '':
             name = 'undefined'
 
-        print("name: {}".format(name))
-
         o_current_table_config = TableConfig(parent=self.parent)
         current_config = o_current_table_config.get_current_config()
-        full_config = OrderedDict()
 
-        # FIXME
+        # retrieve prevous config file
+        previous_config_dict = self.parent.config_dict
+        if previous_config_dict == {}:
+            new_full_config = OrderedDict()
+            inside_dict = OrderedDict()
+            inside_dict['table'] = current_config
+            inside_dict['active'] = True
+            new_full_config[name] = inside_dict
+        else:
+            #FIXME
+            print("previous config found")
+            new_full_config = previous_config_dict
+            print(new_full_config)
 
+        self.config_dict = new_full_config
+
+    def export_config(self):
+        with open(CONFIG_FILE, 'wb') as handle:
+            full_config = {}
+            full_config['configurations'] = self.config_dict
+            pickle.dump(full_config,
+                        handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
 
     def get_defined_name_config(self):
         return str(self.ui.save_as_value.text())
@@ -1183,6 +1204,9 @@ class SaveConfigInterface(QDialog):
         name_config = self.get_defined_name_config()
         if name_config:
             self.create_config_dict(name=name_config)
+            self.export_config()
+            self.parent.ui.statusbar.showMessage("New configuration saved ({})".format(name_config), 8000)
+            self.parent.ui.statusbar.setStyleSheet("color: green")
             self.close()
 
     def cancel_clicked(self):
@@ -1203,7 +1227,7 @@ class H3TableHandler:
                 except KeyError:
                     return
 
-        self.parent.config_dict = config_dict
+            self.parent.config_dict = config_dict
 
     def save_as_config(self):
         o_save_config = SaveConfigInterface(parent=self.parent)
@@ -1213,17 +1237,36 @@ class H3TableHandler:
         pass
 
     def right_click(self):
+
+        self.retrieve_previous_configurations()
+        previous_config = self.parent.config_dict
+        print("previous config in right click")
+        print(previous_config)
+
+        if previous_config == {}:
+            save_state = False
+            list_configs = []
+        else:
+            save_state = True
+            list_configs = previous_config.keys()
+
         top_menu = QMenu(self.parent)
 
         menu = top_menu.addMenu("Menu")
         config = menu.addMenu("Configuration ...")
 
         _save = config.addAction("Save")
-        _save.setEnabled(False)
+        _save.setEnabled(save_state)
 
         _save_as = config.addAction("Save As ...")
 
-        # config.addSeparator()
+        if not list_configs == []:
+            config.addSeparator()
+            for _label in list_configs:
+                if list_configs[_label]['active']:
+                    _label += u"\u2713"
+                config1 = config.addAction(_label)
+
         # config1 = config.addAction(u"Config1 \u2713")
         # config2 = config.addAction(u"Config2")
         # config3 = config.addAction(u"Config3")
