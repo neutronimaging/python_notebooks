@@ -1263,8 +1263,8 @@ class H3TableHandler:
         if not list_configs == []:
             config.addSeparator()
             for _label in list_configs:
-                if list_configs[_label]['active']:
-                    _label += u"\u2713"
+                if previous_config[_label]['active']:
+                    _label += u" \u2713"
                 config1 = config.addAction(_label)
 
         # config1 = config.addAction(u"Config1 \u2713")
