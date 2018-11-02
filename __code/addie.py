@@ -17,13 +17,12 @@ except ImportError:
         from PyQt5.QtWidgets import QFileDialog, QTreeWidgetItem, QTableWidgetItem
         from PyQt5 import QtCore, QtGui
         from PyQt5.QtCore import QObject
-        from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QDialog
+        from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QDialog, QAction
     except ImportError:
         raise ImportError("Requires PyQt5 or PyQt4.")
 
 from __code.ui_addie  import Ui_MainWindow as UiMainWindow
 from __code.ui_addie_save_config import Ui_Dialog as UiDialogSave
-
 
 user_home = expanduser("~")
 CONFIG_FILE = os.path.join(user_home, '.addie_config.cfg')
@@ -33,6 +32,9 @@ class Interface(QMainWindow):
 
     config_dict = {} # various configurations defined by the user (last 5)
     active_config_name = ''
+
+    # list of config previously saved by user and display when doing right click in table
+    list_config_displayed = []
 
     item_dict = {'ui': None,
                  'name': '',
@@ -1250,8 +1252,8 @@ class H3TableHandler:
 
         self.retrieve_previous_configurations()
         previous_config = self.parent.config_dict
-        print("previous config in right click")
-        print(previous_config)
+        # print("previous config in right click")
+        # print(previous_config)
 
         if previous_config == {}:
             save_state = False
@@ -1272,23 +1274,26 @@ class H3TableHandler:
 
         list_signal_config_files = []
         list_signal_remove_config = []
+        list_config_displayed = []
 
         if not list_configs == []:
             config.addSeparator()
             for _label in list_configs:
                 if previous_config[_label]['active']:
                     self.parent.active_config_name = _label
-                    _label += u" \u2713"
+                    list_config_displayed.append(_label)
+                    _label = u"\u2713 " + _label
+
+                else:
+                    _label = u"\u200b   \u200b " + _label
+
                 temp = config.addMenu(_label)
                 temp_select = temp.addAction("Select")
                 temp_remove = temp.addAction("Remove")
                 list_signal_config_files.append(temp_select)
-                list_signal_config_files.append(temp_remove)
+                list_signal_remove_config.append(temp_remove)
 
-        # config1 = config.addAction(u"Config1 \u2713")
-        # config2 = config.addAction(u"Config2")
-        # config3 = config.addAction(u"Config3")
-
+        self.parent.list_config_displayed = list_config_displayed
         menu.addSeparator()
         _reset = menu.addAction("Full Reset Table/Tree")
 
