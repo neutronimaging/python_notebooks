@@ -1318,19 +1318,25 @@ class H3TableHandler:
         if not list_configs == []:
             config.addSeparator()
             for _label in list_configs:
+
+                this_one_is_active = False
+
                 if previous_config[_label]['active']:
                     self.parent.active_config_name = _label
                     _full_label = u"\u2713 " + _label
                     save_state = True
+                    this_one_is_active = True
 
                 else:
                     _full_label = u"\u200b   \u200b " + _label
 
                 list_config_displayed.append(_label)
                 temp = config.addMenu(_full_label)
-                temp_select = temp.addAction("Select")
+                if not this_one_is_active:
+                    temp_select = temp.addAction("Select")
+                    list_signal_config_files.append(temp_select)
+
                 temp_remove = temp.addAction("Remove")
-                list_signal_config_files.append(temp_select)
                 list_signal_remove_config.append(temp_remove)
 
         # disable "save" button if we don't have any config activated
