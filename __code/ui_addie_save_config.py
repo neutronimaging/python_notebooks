@@ -42,11 +42,14 @@ class Ui_Dialog(object):
         self.save_button.setObjectName("save_button")
         self.horizontalLayout_2.addWidget(self.save_button)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.label.setBuddy(self.label)
 
         self.retranslateUi(Dialog)
         self.cancel_button.clicked.connect(Dialog.cancel_clicked)
         self.save_button.clicked.connect(Dialog.ok_clicked)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+        Dialog.setTabOrder(self.save_as_value, self.save_button)
+        Dialog.setTabOrder(self.save_button, self.cancel_button)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate

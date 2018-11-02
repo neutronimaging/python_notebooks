@@ -27,6 +27,9 @@
        <property name="text">
         <string>Configuration Name:</string>
        </property>
+       <property name="buddy">
+        <cstring>label</cstring>
+       </property>
       </widget>
      </item>
      <item>
@@ -77,6 +80,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>save_as_value</tabstop>
+  <tabstop>save_button</tabstop>
+  <tabstop>cancel_button</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

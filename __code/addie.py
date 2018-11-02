@@ -1202,9 +1202,10 @@ class SaveConfigInterface(QDialog):
         self.parent.config_dict = old_full_config
 
     def export_config(self):
+        config_dict = self.config_dict
         with open(CONFIG_FILE, 'wb') as handle:
             full_config = {}
-            full_config['configurations'] = self.config_dict
+            full_config['configurations'] = config_dict
             pickle.dump(full_config,
                         handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
@@ -1224,7 +1225,39 @@ class SaveConfigInterface(QDialog):
     def cancel_clicked(self):
         self.close()
 
+class ConfigHandler:
+    '''This class takes care of the config dictionary manipulations'''
+
+    @staticmethod
+    def activate_this_config(key="", config={}):
+        print("looking to activate key: {}".format(key))
+        for _key in config:
+            print(" currently looking at key {}".format(_key))
+            if _key == key:
+                print(".... yes for a match!")
+                config[_key]['active'] = True
+                break
+        return config
+
+    @staticmethod
+    def deactivate_all_config(config={}):
+        for _key in config:
+            config[_key]['active'] = False
+        return config
+
+    @staticmethod
+    def lazy_export_config(config_dict={}):
+        with open(CONFIG_FILE, 'wb') as handle:
+            full_config = {}
+            full_config['configurations'] = config_dict
+            pickle.dump(full_config,
+                        handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
+
 class H3TableHandler:
+
+    # object that takes care of handling the config object
+    o_save_config = None
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -1244,6 +1277,7 @@ class H3TableHandler:
     def save_as_config(self):
         o_save_config = SaveConfigInterface(parent=self.parent)
         o_save_config.show()
+        self.o_save_config = o_save_config
 
     def reset_table(self):
         pass
@@ -1281,13 +1315,13 @@ class H3TableHandler:
             for _label in list_configs:
                 if previous_config[_label]['active']:
                     self.parent.active_config_name = _label
-                    list_config_displayed.append(_label)
-                    _label = u"\u2713 " + _label
+                    _full_label = u"\u2713 " + _label
 
                 else:
-                    _label = u"\u200b   \u200b " + _label
+                    _full_label = u"\u200b   \u200b " + _label
 
-                temp = config.addMenu(_label)
+                list_config_displayed.append(_label)
+                temp = config.addMenu(_full_label)
                 temp_select = temp.addAction("Select")
                 temp_remove = temp.addAction("Remove")
                 list_signal_config_files.append(temp_select)
@@ -1312,7 +1346,7 @@ class H3TableHandler:
 
             for _index, _signal in enumerate(list_signal_config_files):
                 if action == _signal:
-                    print("select signal # {}".format(_index))
+                    self.activate_this_config(config=list_config_displayed[_index])
 
         elif not list_signal_remove_config == []:
 
@@ -1320,6 +1354,15 @@ class H3TableHandler:
                 if action == _signal:
                     print("remove signal # {}".format(_index))
 
+    def activate_this_config(self, config):
+        print("I need to activate this config: {}".format(config))
+        config_dict = ConfigHandler.deactivate_all_config(config=self.parent.config_dict)
+        config_dict = ConfigHandler.activate_this_config(config=config_dict,
+                                                         key=config)
+        self.parent.config_dict = config_dict
+        import pprint
+        pprint.pprint(config_dict)
+        ConfigHandler.lazy_export_config(config_dict=config_dict)
 
 class TableConfig:
     '''This class will look at the h1, h2 and h3 table to create the config use width and visibility of each column'''
