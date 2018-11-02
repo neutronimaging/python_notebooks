@@ -1230,11 +1230,8 @@ class ConfigHandler:
 
     @staticmethod
     def activate_this_config(key="", config={}):
-        print("looking to activate key: {}".format(key))
         for _key in config:
-            print(" currently looking at key {}".format(_key))
             if _key == key:
-                print(".... yes for a match!")
                 config[_key]['active'] = True
                 break
         return config
@@ -1253,6 +1250,17 @@ class ConfigHandler:
             pickle.dump(full_config,
                         handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
+
+    @staticmethod
+    def remove_this_config(key="", config={}):
+        new_config = OrderedDict()
+        for _key in config:
+            if _key == key:
+                print("yes")
+                pass
+            else:
+                new_config[_key] = config[_key]
+        return new_config
 
 class H3TableHandler:
 
@@ -1335,33 +1343,41 @@ class H3TableHandler:
 
         if action == _save_as:
             self.save_as_config()
+            return
 
         elif action == _save:
             pass
+            return
 
         elif action == _reset:
             self.reset_table()
+            return
 
-        elif not list_signal_config_files == []:
+        if not (list_signal_config_files == []):
 
             for _index, _signal in enumerate(list_signal_config_files):
                 if action == _signal:
                     self.activate_this_config(config=list_config_displayed[_index])
 
-        elif not list_signal_remove_config == []:
+        if not (list_signal_remove_config == []):
 
             for _index, _signal in enumerate(list_signal_remove_config):
                 if action == _signal:
-                    print("remove signal # {}".format(_index))
+                    self.remove_this_config(config=list_config_displayed[_index])
+
+    def remove_this_config(self, config):
+        config_dict = ConfigHandler.remove_this_config(config=self.parent.config_dict,
+                                                       key=config)
+        self.parent.config_dict = config_dict
+        # import pprint
+        # pprint.pprint(config_dict)
+        ConfigHandler.lazy_export_config(config_dict=config_dict)
 
     def activate_this_config(self, config):
-        print("I need to activate this config: {}".format(config))
         config_dict = ConfigHandler.deactivate_all_config(config=self.parent.config_dict)
         config_dict = ConfigHandler.activate_this_config(config=config_dict,
                                                          key=config)
         self.parent.config_dict = config_dict
-        import pprint
-        pprint.pprint(config_dict)
         ConfigHandler.lazy_export_config(config_dict=config_dict)
 
 class TableConfig:
