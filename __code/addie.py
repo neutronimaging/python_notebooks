@@ -1209,20 +1209,24 @@ class H3TableHandler:
         o_save_config = SaveConfigInterface(parent=self.parent)
         o_save_config.show()
 
+    def reset_table(self):
+        pass
+
     def right_click(self):
         top_menu = QMenu(self.parent)
 
         menu = top_menu.addMenu("Menu")
         config = menu.addMenu("Configuration ...")
 
-        _save_as = config.addAction("Save As ...")
         _save = config.addAction("Save")
+        _save.setEnabled(False)
 
-        config.addSeparator()
+        _save_as = config.addAction("Save As ...")
 
-        config1 = config.addAction(u"Config1 \u2713")
-        config2 = config.addAction(u"Config2")
-        config3 = config.addAction(u"Config3")
+        # config.addSeparator()
+        # config1 = config.addAction(u"Config1 \u2713")
+        # config2 = config.addAction(u"Config2")
+        # config3 = config.addAction(u"Config3")
 
         menu.addSeparator()
         _reset = menu.addAction("Full Reset Table/Tree")
@@ -1234,7 +1238,7 @@ class H3TableHandler:
         elif action == _save:
             pass
         elif action == _reset:
-            pass
+            self.reset_table()
         # elif action == config1:
         #     # do this
         #     pass
