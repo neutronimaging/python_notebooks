@@ -1202,57 +1202,58 @@ class Interface(QMainWindow):
 
 class SaveConfigInterface(QDialog):
 
-    config_dict = {}
+    # config_dict = {}
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, grand_parent=None):
         self.parent = parent
+        self.grand_parent = grand_parent
 
-        QDialog.__init__(self, parent=parent)
+        QDialog.__init__(self, parent=grand_parent)
         self.ui = UiDialogSave()
         self.ui.setupUi(self)
 
         self.ui.save_as_value.setPlaceholderText("undefined")
 
-    def create_config_dict(self, name=''):
-        if name == '':
-            name = 'undefined'
+    # def create_config_dict(self, name=''):
+    #     if name == '':
+    #         name = 'undefined'
+    #
+    #     o_current_table_config = TableConfig(parent=self.parent)
+    #     current_config = o_current_table_config.get_current_config()
+    #
+    #     inside_dict = OrderedDict()
+    #     inside_dict['table'] = current_config
+    #     inside_dict['active'] = True
+    #
+    #     # retrieve previous config file
+    #     previous_config_dict = self.parent.config_dict
+    #     if previous_config_dict == {}:
+    #         # first time
+    #         new_full_config = OrderedDict()
+    #         new_full_config[name] = inside_dict
+    #     else:
+    #         self.deactivate_all_config()
+    #         old_full_config = self.parent.config_dict
+    #         list_keys = old_full_config.keys()
+    #         old_full_config[name] = inside_dict
+    #         new_full_config = old_full_config
+    #
+    #     self.config_dict = new_full_config
 
-        o_current_table_config = TableConfig(parent=self.parent)
-        current_config = o_current_table_config.get_current_config()
-
-        inside_dict = OrderedDict()
-        inside_dict['table'] = current_config
-        inside_dict['active'] = True
-
-        # retrieve previous config file
-        previous_config_dict = self.parent.config_dict
-        if previous_config_dict == {}:
-            # first time
-            new_full_config = OrderedDict()
-            new_full_config[name] = inside_dict
-        else:
-            self.deactivate_all_config()
-            old_full_config = self.parent.config_dict
-            list_keys = old_full_config.keys()
-            old_full_config[name] = inside_dict
-            new_full_config = old_full_config
-
-        self.config_dict = new_full_config
-
-    def deactivate_all_config(self):
-        old_full_config = self.parent.config_dict
-        for _key in old_full_config:
-            old_full_config[_key]['active'] = False
-        self.parent.config_dict = old_full_config
-
-    def export_config(self):
-        config_dict = self.config_dict
-        with open(CONFIG_FILE, 'wb') as handle:
-            full_config = {}
-            full_config['configurations'] = config_dict
-            pickle.dump(full_config,
-                        handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+    # def deactivate_all_config(self):
+    #     old_full_config = self.parent.config_dict
+    #     for _key in old_full_config:
+    #         old_full_config[_key]['active'] = False
+    #     self.parent.config_dict = old_full_config
+    #
+    # def export_config(self):
+    #     config_dict = self.config_dict
+    #     with open(CONFIG_FILE, 'wb') as handle:
+    #         full_config = {}
+    #         full_config['configurations'] = config_dict
+    #         pickle.dump(full_config,
+    #                     handle,
+    #                     protocol=pickle.HIGHEST_PROTOCOL)
 
     def get_defined_name_config(self):
         return str(self.ui.save_as_value.text())
@@ -1260,10 +1261,11 @@ class SaveConfigInterface(QDialog):
     def ok_clicked(self):
         name_config = self.get_defined_name_config()
         if name_config:
-            self.create_config_dict(name=name_config)
-            self.export_config()
-            self.parent.ui.statusbar.showMessage("New configuration saved ({})".format(name_config), 8000)
-            self.parent.ui.statusbar.setStyleSheet("color: green")
+            self.parent.save_as_config_name_selected(name=name_config)
+            # self.create_config_dict(name=name_config)
+            # self.export_config()
+            self.grand_parent.ui.statusbar.showMessage("New configuration saved ({})".format(name_config), 8000)
+            self.grand_parent.ui.statusbar.setStyleSheet("color: green")
             self.close()
 
     def cancel_clicked(self):
@@ -1309,6 +1311,7 @@ class H3TableHandler:
 
     # object that takes care of handling the config object
     o_save_config = None
+    config_dict = {}
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -1326,11 +1329,55 @@ class H3TableHandler:
             self.parent.config_dict = config_dict
 
     def save_as_config(self):
-        o_save_config = SaveConfigInterface(parent=self.parent)
+        o_save_config = SaveConfigInterface(parent=self,
+                                            grand_parent=self.parent)
         o_save_config.show()
         self.o_save_config = o_save_config
-        # retrieve name defined in saveas ui
-        # save using name
+
+    def save_as_config_name_selected(self, name=''):
+        self.create_config_dict(name=name)
+        self.export_config()
+
+    def create_config_dict(self, name=''):
+        if name == '':
+            name = 'undefined'
+
+        o_current_table_config = TableConfig(parent=self.parent)
+        current_config = o_current_table_config.get_current_config()
+
+        inside_dict = OrderedDict()
+        inside_dict['table'] = current_config
+        inside_dict['active'] = True
+
+        # retrieve previous config file
+        previous_config_dict = self.parent.config_dict
+        if previous_config_dict == {}:
+            # first time
+            new_full_config = OrderedDict()
+            new_full_config[name] = inside_dict
+        else:
+            self.deactivate_all_config()
+            old_full_config = self.parent.config_dict
+            list_keys = old_full_config.keys()
+            old_full_config[name] = inside_dict
+            new_full_config = old_full_config
+
+        self.config_dict = new_full_config
+
+    def deactivate_all_config(self):
+        old_full_config = self.parent.config_dict
+        for _key in old_full_config:
+            old_full_config[_key]['active'] = False
+        self.parent.config_dict = old_full_config
+
+    def export_config(self):
+        config_dict = self.config_dict
+        with open(CONFIG_FILE, 'wb') as handle:
+            full_config = {}
+            full_config['configurations'] = config_dict
+            pickle.dump(full_config,
+                        handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
 
     def save_config(self):
         pass

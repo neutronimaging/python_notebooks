@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Volumes/my_book_thunderbolt_duo/git/IPTS/python_notebooks/ui/ui_addie_save_config.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_addie_save_config.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
 
