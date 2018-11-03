@@ -209,7 +209,6 @@ class Interface(QMainWindow):
             return
 
         #FIXME
-        return
 
         config_to_load = self.config_dict[key]['table']
 
@@ -1214,47 +1213,6 @@ class SaveConfigInterface(QDialog):
 
         self.ui.save_as_value.setPlaceholderText("undefined")
 
-    # def create_config_dict(self, name=''):
-    #     if name == '':
-    #         name = 'undefined'
-    #
-    #     o_current_table_config = TableConfig(parent=self.parent)
-    #     current_config = o_current_table_config.get_current_config()
-    #
-    #     inside_dict = OrderedDict()
-    #     inside_dict['table'] = current_config
-    #     inside_dict['active'] = True
-    #
-    #     # retrieve previous config file
-    #     previous_config_dict = self.parent.config_dict
-    #     if previous_config_dict == {}:
-    #         # first time
-    #         new_full_config = OrderedDict()
-    #         new_full_config[name] = inside_dict
-    #     else:
-    #         self.deactivate_all_config()
-    #         old_full_config = self.parent.config_dict
-    #         list_keys = old_full_config.keys()
-    #         old_full_config[name] = inside_dict
-    #         new_full_config = old_full_config
-    #
-    #     self.config_dict = new_full_config
-
-    # def deactivate_all_config(self):
-    #     old_full_config = self.parent.config_dict
-    #     for _key in old_full_config:
-    #         old_full_config[_key]['active'] = False
-    #     self.parent.config_dict = old_full_config
-    #
-    # def export_config(self):
-    #     config_dict = self.config_dict
-    #     with open(CONFIG_FILE, 'wb') as handle:
-    #         full_config = {}
-    #         full_config['configurations'] = config_dict
-    #         pickle.dump(full_config,
-    #                     handle,
-    #                     protocol=pickle.HIGHEST_PROTOCOL)
-
     def get_defined_name_config(self):
         return str(self.ui.save_as_value.text())
 
@@ -1262,8 +1220,6 @@ class SaveConfigInterface(QDialog):
         name_config = self.get_defined_name_config()
         if name_config:
             self.parent.save_as_config_name_selected(name=name_config)
-            # self.create_config_dict(name=name_config)
-            # self.export_config()
             self.grand_parent.ui.statusbar.showMessage("New configuration saved ({})".format(name_config), 8000)
             self.grand_parent.ui.statusbar.setStyleSheet("color: green")
             self.close()
@@ -1380,9 +1336,8 @@ class H3TableHandler:
                         protocol=pickle.HIGHEST_PROTOCOL)
 
     def save_config(self):
-        pass
-        # retrieve the active name
-        # save using name
+        active_config_name = self.parent.active_config_name
+        self.save_as_config_name_selected(name=active_config_name)
 
     def reset_table(self):
         pass
@@ -1485,6 +1440,7 @@ class H3TableHandler:
         self.parent.config_dict = config_dict
         ConfigHandler.lazy_export_config(config_dict=config_dict)
         self.parent.load_this_config(key=config)
+
 
 class TableConfig:
     '''This class will look at the h1, h2 and h3 table to create the config use width and visibility of each column'''
