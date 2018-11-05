@@ -216,8 +216,10 @@ class Interface(QMainWindow):
         h2_dict = config_to_load['h2']
         h3_dict = config_to_load['h3']
 
-        print("load this config")
-        pprint.pprint(config_to_load)
+        # print("load this config")
+        # pprint.pprint(self.tree_dict)
+        # print()
+        # pprint.pprint(self.tree_dict.keys())
 
         self.block_table_ui()
 
@@ -236,7 +238,21 @@ class Interface(QMainWindow):
             _width = h3_dict[_col]['width']
             self.set_size_and_visibility_column(h3=_col, width=_width, visibility=_visible)
 
+        self.update_tree_dict(config_to_load)
+        self.update_full_tree_status()
+
         self.block_table_ui(unblock_all=True)
+
+
+    def update_tree_dict(self, config_to_load={}):
+        '''This method will update the tree_dict dictionary using config loaded'''
+
+        #FIXME
+        pass
+
+
+
+
 
 
     def h3_table_right_click(self, position):
@@ -1390,7 +1406,7 @@ class H3TableHandler:
                 if not this_one_is_active:
                     temp_select = temp.addAction("Select")
                 else:
-                    temp_select = None
+                    temp_select = temp.addAction("Refresh")
                 list_signal_config_files.append(temp_select)
 
                 temp_remove = temp.addAction("Remove")
