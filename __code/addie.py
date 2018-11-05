@@ -224,6 +224,7 @@ class Interface(QMainWindow):
         for _col in h1_dict:
             _visible = h1_dict[_col]['visible']
             _width = h1_dict[_col]['width']
+            self.set_size_and_visibility_column(h1=_col, width=_width, visibility=_visible)
 
         for _col in h2_dict:
             _visible = h2_dict[_col]['visible']
