@@ -53,174 +53,114 @@ class Interface(QMainWindow):
                'h2': -1,
                'h3': -1}
 
-    tree_dict = OrderedDict()
-    tree_dict['title'] = {'ui': None,
+
+    # test test !!!!
+    base_dict = {'ui': None,
                           'name': "Title",
                           'children': None,
                           'h_index': h_index.copy(),
                           }
 
+
+    tree_dict = OrderedDict()
+    tree_dict['title'] = base_dict.copy()
+    tree_dict['title']['name'] = "Title"
+
     sample_children_1 = OrderedDict()
-    sample_children_1['sample_runs'] = {'ui': None,
-                                        'name': "Runs",
-                                        'children': None,
-                                        'h_index': h_index.copy(),
-                                        }
+    sample_children_1['sample_runs'] = base_dict.copy()
+    sample_children_1['sample_runs']['name'] = "Runs"
 
     sample_children_2 = OrderedDict()
-    sample_children_2['sample_background_runs'] = {'ui': None,
-                                                   'name': "Runs",
-                                                   'children': None,
-                                                   'h_index': h_index.copy(),
-                                                   }
-    sample_children_2['sample_background_background'] = {'ui': None,
-                                                        'name': "Background",
-                                                        'children': None,
-                                                         'h_index': h_index.copy(),
-                                                         }
-    sample_children_1['sample_background'] = {'ui': None,
-                                              'name': "Background",
-                                              'children': sample_children_2,
-                                              'h_index': h_index.copy(),
-                                              }
+    sample_children_2['sample_background_runs'] = base_dict.copy()
+    sample_children_2['sample_background_runs']['name'] = "Runs"
 
-    sample_children_1['sample_material'] = {'ui': None,
-                                            'name': "Material",
-                                            'children': None,
-                                            'h_index': h_index.copy(),
-                                            }
+    sample_children_2['sample_background_background'] = base_dict.copy()
+    sample_children_2['sample_background_background']['name'] = "Background"
 
-    sample_children_1['sample_packing_fraction'] = {'ui': None,
-                                                    'name': "Packing Fraction",
-                                                    'children': None,
-                                                    'h_index': h_index.copy(),
-                                                    }
+    sample_children_1['sample_background'] = base_dict.copy()
+    sample_children_1['sample_background']['name'] = "Background"
+    sample_children_1['sample_background']['children'] = sample_children_2
+
+    sample_children_1['sample_material'] = base_dict.copy()
+    sample_children_1['sample_material']['name'] = "Material"
+
+    sample_children_1['sample_packing_fraction'] = base_dict.copy()
+    sample_children_1['sample_packing_fraction']['name'] = "Packing Fraction"
 
     sample_children_2 = OrderedDict()
-    sample_children_2['sample_geometry_shape'] = {'ui': None,
-                                                  'name': "Shape",
-                                                  'children': None,
-                                                  'h_index': h_index.copy(),
-                                                  }
-    sample_children_2['sample_geometry_radius'] = {'ui': None,
-                                                   'name': "Radius",
-                                                   'children': None,
-                                                   'h_index': h_index.copy(),
-                                                   }
-    sample_children_2['sample_geometry_Height'] = {'ui': None,
-                                                   'name': "Height",
-                                                   'children': None,
-                                                   'h_index': h_index.copy(),
-                                                   }
-    sample_children_1['sample_geometry'] = {'ui': None,
-                                            'name': "Geometry",
-                                            'children': sample_children_2,
-                                            'h_index': h_index.copy(),
-                                            }
+    sample_children_2['sample_geometry_shape'] = base_dict.copy()
+    sample_children_2['sample_geometry_shape']['name'] = "Shape"
 
-    sample_children_1['sample_absolute_correction'] = {'ui': None,
-                                                       'name': "Abs. Correction",
-                                                       'children': None,
-                                                       'h_index': h_index.copy(),
-                                                       }
+    sample_children_2['sample_geometry_radius'] = base_dict.copy()
+    sample_children_2['sample_geometry_radius']['name'] = "Radius"
 
-    sample_children_1['sample_multi_scattering_correction'] = {'ui': None,
-                                                               'name': "Multi Scattering Correction",
-                                                               'children': None,
-                                                               'h_index': h_index.copy(),
-                                                               }
-    sample_children_1['sample_inelastic_correction'] = {'ui': None,
-                                                        'name': "Inelastic Correction",
-                                                        'children': None,
-                                                        'h_index': h_index.copy(),
-                                                        }
+    sample_children_2['sample_geometry_Height'] = base_dict.copy()
+    sample_children_2['sample_geometry_Height']['name'] = "Height"
 
-    tree_dict['sample'] = {'ui': None,
-                           'name': "Sample",
-                           'children': sample_children_1,
-                           'h_index': h_index.copy(),
-                           }
+    sample_children_1['sample_geometry'] = base_dict.copy()
+    sample_children_1['sample_geometry']['name'] = "Geometry"
+    sample_children_1['sample_geometry']['children'] = sample_children_2
+
+    sample_children_1['sample_absolute_correction'] = base_dict.copy()
+    sample_children_1['sample_absolute_correction']['name'] = "Abs. Correction"
+
+    sample_children_1['sample_multi_scattering_correction'] = base_dict.copy()
+    sample_children_1['sample_multi_scattering_correction']['name'] = 'Multi Scattering Correction'
+
+    sample_children_1['sample_inelastic_correction'] = base_dict.copy()
+    sample_children_1['sample_inelastic_correction']['name'] = 'Inelastic Correction'
+
+    tree_dict['sample'] = base_dict.copy()
+    tree_dict['sample']['name'] = 'Sample'
+    tree_dict['sample']['children'] = sample_children_1
 
     vanadium_children_1 = OrderedDict()
-    vanadium_children_1['vanadium_runs'] = {'ui': None,
-                                            'name': "Runs",
-                                            'children': None,
-                                            'h_index': h_index.copy(),
-                                            }
+    vanadium_children_1['vanadium_runs'] = base_dict.copy()
+    vanadium_children_1['vanadium_runs']['name'] = "Runs"
 
     vanadium_children_2 = OrderedDict()
-    vanadium_children_2['vanadium_background_runs'] = {'ui': None,
-                                                       'name': "Runs",
-                                                       'children': None,
-                                                       'h_index': h_index.copy(),
-                                                       }
-    vanadium_children_2['vanadium_background_background'] = {'ui': None,
-                                                             'name': "Background",
-                                                             'children': None,
-                                                             'h_index': h_index.copy(),
-                                                             }
-    vanadium_children_1['vanadium_background'] = {'ui': None,
-                                              'name': "Background",
-                                              'children': vanadium_children_2,
-                                                  'h_index': h_index.copy(),
-                                                  }
+    vanadium_children_2['vanadium_background_runs'] = base_dict.copy()
+    vanadium_children_2['vanadium_background_runs']['name'] = "Runs"
 
-    vanadium_children_1['vanadium_material'] = {'ui': None,
-                                            'name': "Material",
-                                            'children': None,
-                                                'h_index': h_index.copy(),
-                                                }
+    vanadium_children_2['vanadium_background_background'] = base_dict.copy()
+    vanadium_children_2['vanadium_background_background']['name'] = "Background"
 
-    vanadium_children_1['vanadium_packing_fraction'] = {'ui': None,
-                                                    'name': "Packing Fraction",
-                                                    'children': None,
-                                                        'h_index': h_index.copy(),
-                                                        }
+    vanadium_children_1['vanadium_background'] = base_dict.copy()
+    vanadium_children_1['vanadium_background']['name'] = "Background"
+    vanadium_children_1['vanadium_background']['children'] = vanadium_children_2
+
+    vanadium_children_1['vanadium_material'] = base_dict.copy()
+    vanadium_children_1['vanadium_material']['name'] = "Materials"
+
+    vanadium_children_1['vanadium_packing_fraction'] = base_dict.copy()
+    vanadium_children_1['vanadium_packing_fraction']['name'] = "Packing Fraction"
 
     vanadium_children_2 = OrderedDict()
-    vanadium_children_2['vanadium_geometry_shape'] = {'ui': None,
-                                                  'name': "Shape",
-                                                  'children': None,
-                                                      'h_index': h_index.copy(),
-                                                      }
-    vanadium_children_2['vanadium_geometry_radius'] = {'ui': None,
-                                                   'name': "Radius",
-                                                   'children': None,
-                                                       'h_index': h_index.copy(),
-                                                       }
-    vanadium_children_2['vanadium_geometry_Height'] = {'ui': None,
-                                                   'name': "Height",
-                                                   'children': None,
-                                                       'h_index': h_index.copy(),
-                                                       }
-    vanadium_children_1['vanadium_geometry'] = {'ui': None,
-                                            'name': "Geometry",
-                                            'children': vanadium_children_2,
-                                                'h_index': h_index.copy(),
-                                                }
+    vanadium_children_2['vanadium_geometry_shape'] = base_dict.copy()
+    vanadium_children_2['vanadium_geometry_shape']['name'] = 'Shape'
 
-    vanadium_children_1['vanadium_absolute_correction'] = {'ui': None,
-                                                       'name': "Abs. Correction",
-                                                       'children': None,
-                                                           'h_index': h_index.copy(),
-                                                           }
+    vanadium_children_2['vanadium_geometry_radius'] = base_dict.copy()
+    vanadium_children_2['vanadium_geometry_radius']['name'] = 'Radius'
 
-    vanadium_children_1['vanadium_multi_scattering_correction'] = {'ui': None,
-                                                               'name': "Multi Scattering Correction",
-                                                               'children': None,
-                                                                   'h_index': h_index.copy(),
-                                                                   }
-    vanadium_children_1['vanadium_inelastic_correction'] = {'ui': None,
-                                                        'name': "Inelastic Correction",
-                                                        'children': None,
-                                                            'h_index': h_index.copy(),
-                                                            }
+    vanadium_children_2['vanadium_geometry_Height'] = base_dict.copy()
+    vanadium_children_2['vanadium_geometry_Height']['name'] = 'Height'
 
-    tree_dict['vanadium'] = {'ui': None,
-                             'name': "Vanadium",
-                             'children': vanadium_children_1,
-                             'h_index': h_index.copy(),
-                             }
+    vanadium_children_1['vanadium_geometry'] = base_dict.copy()
+    vanadium_children_1['vanadium_geometry']['name'] = 'Geometry'
+    vanadium_children_1['vanadium_geometry']['children'] = vanadium_children_2
+
+    vanadium_children_1['vanadium_absolute_correction'] = base_dict.copy()
+    vanadium_children_1['vanadium_absolute_correction']['name'] = "Abs. Correction"
+
+    vanadium_children_1['vanadium_multi_scattering_correction'] = base_dict.copy()
+    vanadium_children_1['vanadium_multi_scattering_correction']['name'] = 'Multi Scattering Correction'
+
+    vanadium_children_1['vanadium_inelastic_correction'] = base_dict.copy()
+    vanadium_children_1['vanadium_inelastic_correction']['name'] = "Inelastic Correction"
+
+    tree_dict['vanadium'] = base_dict.copy()
+    tree_dict['vanadium']['name'] = 'Vanadium'
+    tree_dict['vanadium']['children'] = vanadium_children_1
 
     table_headers = {'h1': [],
                      'h2': [],
