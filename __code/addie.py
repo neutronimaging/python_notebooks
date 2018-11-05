@@ -216,7 +216,8 @@ class Interface(QMainWindow):
         h2_dict = config_to_load['h2']
         h3_dict = config_to_load['h3']
 
-        print(config_to_load)
+        print("load this config")
+        pprint.pprint(config_to_load)
 
         self.block_table_ui()
 
@@ -1387,7 +1388,9 @@ class H3TableHandler:
                 temp = config.addMenu(_full_label)
                 if not this_one_is_active:
                     temp_select = temp.addAction("Select")
-                    list_signal_config_files.append(temp_select)
+                else:
+                    temp_select = None
+                list_signal_config_files.append(temp_select)
 
                 temp_remove = temp.addAction("Remove")
                 list_signal_remove_config.append(temp_remove)
@@ -1406,7 +1409,7 @@ class H3TableHandler:
             return
 
         elif action == _save:
-            #FIXME
+            self.save_config()
             return
 
         elif action == _reset:
@@ -1415,12 +1418,14 @@ class H3TableHandler:
 
         if not (list_signal_config_files == []):
 
+            # user clicked to select config
             for _index, _signal in enumerate(list_signal_config_files):
                 if action == _signal:
                     self.activate_this_config(config=list_config_displayed[_index])
 
         if not (list_signal_remove_config == []):
 
+            # user clicked to remove config
             for _index, _signal in enumerate(list_signal_remove_config):
                 if action == _signal:
                     self.remove_this_config(config=list_config_displayed[_index])
