@@ -196,9 +196,6 @@ class Interface(QMainWindow):
         self.init_tree()
         self.init_signals()
 
-
-
-
         # self.create_list_columns()
         # import pprint
         # pprint.pprint(self.table_columns_links)
@@ -1037,7 +1034,6 @@ class Interface(QMainWindow):
 
             h1.append(h1_index)
 
-
             if td[_key_h1]['children']:
 
                 _h2 = []
@@ -1219,15 +1215,26 @@ class Interface(QMainWindow):
     def addItems(self, parent):
         td = self.tree_dict
         absolute_parent = parent
-        local_parent = None
+
+        h1_index = 0
+        h2_index = 0
+        h3_index = 0
+
+        def set_h_indexes(location):
+            location['h_index']['h1'] = h1_index
+            location['h_index']['h2'] = h2_index
+            location['h_index']['h3'] = h3_index
+
         for _key_h1 in td.keys():
+
+            print("key is {}".format(_key_h1))
 
             # if there are children, we need to use addParent
             if td[_key_h1]['children']:
 
                 _h1_parent = self.addParent(absolute_parent,
-                                       td[_key_h1]['name'],
-                                       _key_h1)
+                                            td[_key_h1]['name'],
+                                            _key_h1)
                 td[_key_h1]['ui'] = _h1_parent
 
                 for _key_h2 in td[_key_h1]['children'].keys():
@@ -1246,17 +1253,29 @@ class Interface(QMainWindow):
                                                       _key_h3)
                             td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'] = _h3_child
 
+                            set_h_indexes(td[_key_h1]['children'][_key_h2]['children'][_key_h3])
+                            h3_index += 1
+
                     else: # key_h2 has no children, it's a leaf
                         _h3_child = self.addChild(_h1_parent,
                                                   td[_key_h1]['children'][_key_h2]['name'],
                                                   _key_h2)
                         td[_key_h1]['children'][_key_h2]['ui'] = _h3_child
 
+                    set_h_indexes(td[_key_h1]['children'][_key_h2])
+                    h2_index += 1
+                    h3_index += 1
+
             else: #_key_h1 has no children, using addChild
                 _child = self.addChild(absolute_parent,
                                        td[_key_h1]['name'],
                                        _key_h1)
                 td[_key_h1]['ui'] = _child
+
+            set_h_indexes(td[_key_h1])
+            h1_index += 1
+            h2_index += 1
+            h3_index += 1
 
     def addParent(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
