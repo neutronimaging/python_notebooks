@@ -176,6 +176,10 @@ class Interface(QMainWindow):
                    'h2': [],
                    'h3': []}
 
+    columns_label = {'h1': [],
+                     'h2': [],
+                     'h3': []}
+
 
     def __init__(self, parent=None):
 
@@ -192,8 +196,31 @@ class Interface(QMainWindow):
         self.init_tree()
         self.init_signals()
 
+        self.create_list_columns()
         # import pprint
         # pprint.pprint(self.table_columns_links)
+
+    def create_list_columns(self):
+        '''create list of 3 title rows (h1_table, h2_table and h3_table'''
+
+        def _get_list(table_ui=None):
+            if table_ui is None:
+                return []
+
+            list_item = []
+            for _col in range(table_ui.columnCount()):
+                _label = str(table_ui.horizontalHeaderItem(_col).text())
+                list_item.append(_label)
+
+            return list_item
+
+        columns_label = {}
+
+        columns_label['h1'] = _get_list(table_ui=self.ui.h1_table)
+        columns_label['h2'] = _get_list(table_ui=self.ui.h2_table)
+        columns_label['h3'] = _get_list(table_ui=self.ui.h3_table)
+
+        self.columns_label = columns_label
 
     def init_signals(self):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
@@ -238,17 +265,39 @@ class Interface(QMainWindow):
             _width = h3_dict[_col]['width']
             self.set_size_and_visibility_column(h3=_col, width=_width, visibility=_visible)
 
-        self.update_tree_dict(config_to_load)
-        self.update_full_tree_status()
+        self.update_tree_dict_and_tree(config_to_load)
+        # self.update_full_tree_status()
 
         self.block_table_ui(unblock_all=True)
 
 
-    def update_tree_dict(self, config_to_load={}):
-        '''This method will update the tree_dict dictionary using config loaded'''
+    def update_tree_dict_and_tree(self, config_to_load={}):
+        '''This method will update the tree_dict dictionary as well as the state of the tree'''
 
-        #FIXME
-        pass
+        def get_ui_state(visible):
+            if visible:
+                return QtCore.Qt.Checked
+            else:
+                return QtCore.Qt.Unchecked
+
+        columns_label = self.columns_label
+
+        print("columns_label")
+        pprint.pprint(columns_label)
+
+        print("")
+        print("config_to_load")
+        pprint.pprint(config_to_load)
+
+        # list_h1 =
+        # for h1_index in h1_dict:
+        #     _state = get_ui_state([h1_index]['visible'])
+        #     tree_dict[list_h1[h1_index]]['ui'].setCheckState(0, _state)
+
+
+
+
+
 
 
 
