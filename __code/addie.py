@@ -53,14 +53,11 @@ class Interface(QMainWindow):
                'h2': -1,
                'h3': -1}
 
-
-    # test test !!!!
     base_dict = {'ui': None,
                           'name': "Title",
                           'children': None,
                           'h_index': h_index.copy(),
                           }
-
 
     tree_dict = OrderedDict()
     tree_dict['title'] = base_dict.copy()
@@ -198,6 +195,9 @@ class Interface(QMainWindow):
         self.init_tables()
         self.init_tree()
         self.init_signals()
+
+
+
 
         # self.create_list_columns()
         # import pprint
