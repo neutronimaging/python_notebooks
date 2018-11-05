@@ -48,116 +48,179 @@ class Interface(QMainWindow):
     leaf = {'ui': None,
             'name': ''}
 
+    # to know the column index of each element of the tree
+    h_index = {'h1': -1,
+               'h2': -1,
+               'h3': -1}
+
     tree_dict = OrderedDict()
     tree_dict['title'] = {'ui': None,
                           'name': "Title",
-                           'children': None}
+                          'children': None,
+                          'h_index': h_index.copy(),
+                          }
 
     sample_children_1 = OrderedDict()
     sample_children_1['sample_runs'] = {'ui': None,
                                         'name': "Runs",
-                                        'children': None}
+                                        'children': None,
+                                        'h_index': h_index.copy(),
+                                        }
 
     sample_children_2 = OrderedDict()
     sample_children_2['sample_background_runs'] = {'ui': None,
                                                    'name': "Runs",
-                                                   'children': None}
+                                                   'children': None,
+                                                   'h_index': h_index.copy(),
+                                                   }
     sample_children_2['sample_background_background'] = {'ui': None,
                                                         'name': "Background",
-                                                        'children': None}
+                                                        'children': None,
+                                                         'h_index': h_index.copy(),
+                                                         }
     sample_children_1['sample_background'] = {'ui': None,
                                               'name': "Background",
-                                              'children': sample_children_2}
+                                              'children': sample_children_2,
+                                              'h_index': h_index.copy(),
+                                              }
 
     sample_children_1['sample_material'] = {'ui': None,
                                             'name': "Material",
-                                            'children': None}
+                                            'children': None,
+                                            'h_index': h_index.copy(),
+                                            }
 
     sample_children_1['sample_packing_fraction'] = {'ui': None,
                                                     'name': "Packing Fraction",
-                                                    'children': None}
+                                                    'children': None,
+                                                    'h_index': h_index.copy(),
+                                                    }
 
     sample_children_2 = OrderedDict()
     sample_children_2['sample_geometry_shape'] = {'ui': None,
                                                   'name': "Shape",
-                                                  'children': None}
+                                                  'children': None,
+                                                  'h_index': h_index.copy(),
+                                                  }
     sample_children_2['sample_geometry_radius'] = {'ui': None,
                                                    'name': "Radius",
-                                                   'children': None}
+                                                   'children': None,
+                                                   'h_index': h_index.copy(),
+                                                   }
     sample_children_2['sample_geometry_Height'] = {'ui': None,
                                                    'name': "Height",
-                                                   'children': None}
+                                                   'children': None,
+                                                   'h_index': h_index.copy(),
+                                                   }
     sample_children_1['sample_geometry'] = {'ui': None,
                                             'name': "Geometry",
-                                            'children': sample_children_2}
+                                            'children': sample_children_2,
+                                            'h_index': h_index.copy(),
+                                            }
 
     sample_children_1['sample_absolute_correction'] = {'ui': None,
                                                        'name': "Abs. Correction",
-                                                       'children': None}
+                                                       'children': None,
+                                                       'h_index': h_index.copy(),
+                                                       }
 
     sample_children_1['sample_multi_scattering_correction'] = {'ui': None,
-                                                               'name': "Mult. Scattering Correction",
-                                                               'children': None}
+                                                               'name': "Multi Scattering Correction",
+                                                               'children': None,
+                                                               'h_index': h_index.copy(),
+                                                               }
     sample_children_1['sample_inelastic_correction'] = {'ui': None,
                                                         'name': "Inelastic Correction",
-                                                        'children': None}
+                                                        'children': None,
+                                                        'h_index': h_index.copy(),
+                                                        }
 
     tree_dict['sample'] = {'ui': None,
                            'name': "Sample",
-                           'children': sample_children_1}
+                           'children': sample_children_1,
+                           'h_index': h_index.copy(),
+                           }
 
     vanadium_children_1 = OrderedDict()
     vanadium_children_1['vanadium_runs'] = {'ui': None,
-                                        'name': "Runs",
-                                        'children': None}
+                                            'name': "Runs",
+                                            'children': None,
+                                            'h_index': h_index.copy(),
+                                            }
 
     vanadium_children_2 = OrderedDict()
     vanadium_children_2['vanadium_background_runs'] = {'ui': None,
-                                                   'name': "Runs",
-                                                   'children': None}
+                                                       'name': "Runs",
+                                                       'children': None,
+                                                       'h_index': h_index.copy(),
+                                                       }
     vanadium_children_2['vanadium_background_background'] = {'ui': None,
-                                                         'name': "Background",
-                                                         'children': None}
+                                                             'name': "Background",
+                                                             'children': None,
+                                                             'h_index': h_index.copy(),
+                                                             }
     vanadium_children_1['vanadium_background'] = {'ui': None,
                                               'name': "Background",
-                                              'children': vanadium_children_2}
+                                              'children': vanadium_children_2,
+                                                  'h_index': h_index.copy(),
+                                                  }
 
     vanadium_children_1['vanadium_material'] = {'ui': None,
                                             'name': "Material",
-                                            'children': None}
+                                            'children': None,
+                                                'h_index': h_index.copy(),
+                                                }
 
     vanadium_children_1['vanadium_packing_fraction'] = {'ui': None,
                                                     'name': "Packing Fraction",
-                                                    'children': None}
+                                                    'children': None,
+                                                        'h_index': h_index.copy(),
+                                                        }
 
     vanadium_children_2 = OrderedDict()
     vanadium_children_2['vanadium_geometry_shape'] = {'ui': None,
                                                   'name': "Shape",
-                                                  'children': None}
+                                                  'children': None,
+                                                      'h_index': h_index.copy(),
+                                                      }
     vanadium_children_2['vanadium_geometry_radius'] = {'ui': None,
                                                    'name': "Radius",
-                                                   'children': None}
+                                                   'children': None,
+                                                       'h_index': h_index.copy(),
+                                                       }
     vanadium_children_2['vanadium_geometry_Height'] = {'ui': None,
                                                    'name': "Height",
-                                                   'children': None}
+                                                   'children': None,
+                                                       'h_index': h_index.copy(),
+                                                       }
     vanadium_children_1['vanadium_geometry'] = {'ui': None,
                                             'name': "Geometry",
-                                            'children': vanadium_children_2}
+                                            'children': vanadium_children_2,
+                                                'h_index': h_index.copy(),
+                                                }
 
     vanadium_children_1['vanadium_absolute_correction'] = {'ui': None,
                                                        'name': "Abs. Correction",
-                                                       'children': None}
+                                                       'children': None,
+                                                           'h_index': h_index.copy(),
+                                                           }
 
     vanadium_children_1['vanadium_multi_scattering_correction'] = {'ui': None,
-                                                               'name': "Mult. Scattering Correction",
-                                                               'children': None}
+                                                               'name': "Multi Scattering Correction",
+                                                               'children': None,
+                                                                   'h_index': h_index.copy(),
+                                                                   }
     vanadium_children_1['vanadium_inelastic_correction'] = {'ui': None,
                                                         'name': "Inelastic Correction",
-                                                        'children': None}
+                                                        'children': None,
+                                                            'h_index': h_index.copy(),
+                                                            }
 
     tree_dict['vanadium'] = {'ui': None,
                              'name': "Vanadium",
-                             'children': vanadium_children_1}
+                             'children': vanadium_children_1,
+                             'h_index': h_index.copy(),
+                             }
 
     table_headers = {'h1': [],
                      'h2': [],
@@ -196,31 +259,37 @@ class Interface(QMainWindow):
         self.init_tree()
         self.init_signals()
 
-        self.create_list_columns()
+        # self.create_list_columns()
         # import pprint
         # pprint.pprint(self.table_columns_links)
 
-    def create_list_columns(self):
-        '''create list of 3 title rows (h1_table, h2_table and h3_table'''
-
-        def _get_list(table_ui=None):
-            if table_ui is None:
-                return []
-
-            list_item = []
-            for _col in range(table_ui.columnCount()):
-                _label = str(table_ui.horizontalHeaderItem(_col).text())
-                list_item.append(_label)
-
-            return list_item
-
-        columns_label = {}
-
-        columns_label['h1'] = _get_list(table_ui=self.ui.h1_table)
-        columns_label['h2'] = _get_list(table_ui=self.ui.h2_table)
-        columns_label['h3'] = _get_list(table_ui=self.ui.h3_table)
-
-        self.columns_label = columns_label
+    # def create_list_columns(self):
+    #     '''create list of 3 title rows (h1_table, h2_table and h3_table'''
+    #
+    #     def _get_list(table_ui=None):
+    #         if table_ui is None:
+    #             return []
+    #
+    #         list_item = []
+    #         for _col in range(table_ui.columnCount()):
+    #             _label = str(table_ui.horizontalHeaderItem(_col).text())
+    #             # only lowercase
+    #             _label = _label.lower()
+    #             # _ between words
+    #             _label_list = _label.split(' ')
+    #             _label = "_".join(_label_list)
+    #
+    #             list_item.append(_label)
+    #
+    #         return list_item
+    #
+    #     columns_label = {}
+    #
+    #     columns_label['h1'] = _get_list(table_ui=self.ui.h1_table)
+    #     columns_label['h2'] = _get_list(table_ui=self.ui.h2_table)
+    #     columns_label['h3'] = _get_list(table_ui=self.ui.h3_table)
+    #
+    #     self.columns_label = columns_label
 
     def init_signals(self):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
@@ -274,20 +343,32 @@ class Interface(QMainWindow):
     def update_tree_dict_and_tree(self, config_to_load={}):
         '''This method will update the tree_dict dictionary as well as the state of the tree'''
 
-        def get_ui_state(visible):
+        def from_boolean_to_ui_status(visible):
             if visible:
                 return QtCore.Qt.Checked
             else:
                 return QtCore.Qt.Unchecked
 
-        columns_label = self.columns_label
-
-        print("columns_label")
-        pprint.pprint(columns_label)
-
-        print("")
         print("config_to_load")
         pprint.pprint(config_to_load)
+
+        print("--------------------")
+
+        print("table_columns_links")
+        pprint.pprint(self.table_columns_links)
+
+
+
+        # columns_label = self.columns_label
+        # print("columns_label")
+        # pprint.pprint(columns_label)
+        #
+        # h1_columns = columns_label['h1']
+        # tree_dict = self.tree_dict
+        # for _h1 in config_to_load['h1']:
+        #     print("h1: {}".format(_h1))
+        #     _status = from_boolean_to_ui_status(config_to_load['h1'][_h1]['visible'])
+        #     tree_dict[h1_columns[_h1]]['ui'].setCheckState(_status)
 
         # list_h1 =
         # for h1_index in h1_dict:
