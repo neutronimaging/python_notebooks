@@ -203,38 +203,6 @@ class Interface(QMainWindow):
         self.init_tree()
         self.init_signals()
 
-        # self.create_list_columns()
-        # import pprint
-        # pprint.pprint(self.table_columns_links)
-
-    # def create_list_columns(self):
-    #     '''create list of 3 title rows (h1_table, h2_table and h3_table'''
-    #
-    #     def _get_list(table_ui=None):
-    #         if table_ui is None:
-    #             return []
-    #
-    #         list_item = []
-    #         for _col in range(table_ui.columnCount()):
-    #             _label = str(table_ui.horizontalHeaderItem(_col).text())
-    #             # only lowercase
-    #             _label = _label.lower()
-    #             # _ between words
-    #             _label_list = _label.split(' ')
-    #             _label = "_".join(_label_list)
-    #
-    #             list_item.append(_label)
-    #
-    #         return list_item
-    #
-    #     columns_label = {}
-    #
-    #     columns_label['h1'] = _get_list(table_ui=self.ui.h1_table)
-    #     columns_label['h2'] = _get_list(table_ui=self.ui.h2_table)
-    #     columns_label['h3'] = _get_list(table_ui=self.ui.h3_table)
-    #
-    #     self.columns_label = columns_label
-
     def init_signals(self):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
         self.h2_header_table.sectionResized.connect(self.resizing_h2)
@@ -293,41 +261,39 @@ class Interface(QMainWindow):
             else:
                 return QtCore.Qt.Unchecked
 
+        def change_state_tree_widgets(list_tree_ui, list_h_columns):
+            for _ui, _key in zip(list_tree_ui, list_h_columns):
+                if _ui is None:
+                    continue
+                else:
+                    _config = list_h_columns[_key]
+                    _visibility = _config['visible']
+                    _state = from_boolean_to_ui_status(_visibility)
+                    _ui.setCheckState(0, _state)
+
+        self.ui.treeWidget.blockSignals(True)
+
         print("config_to_load")
         pprint.pprint(config_to_load)
 
-        print("--------------------")
+        tree_ui = self.tree_ui
 
-        print("tree_ui")
-        pprint.pprint(self.tree_ui)
+        # working with h1
+        list_h1_columns = config_to_load['h1']
+        list_h1_tree_ui = tree_ui['h1']
+        change_state_tree_widgets(list_h1_tree_ui, list_h1_columns)
 
+        # working with h2
+        list_h2_columns = config_to_load['h2']
+        list_h2_tree_ui = tree_ui['h2']
+        change_state_tree_widgets(list_h2_tree_ui, list_h2_columns)
 
+        # working with h3
+        list_h3_columns = config_to_load['h3']
+        list_h3_tree_ui = tree_ui['h3']
+        change_state_tree_widgets(list_h3_tree_ui, list_h3_columns)
 
-        # columns_label = self.columns_label
-        # print("columns_label")
-        # pprint.pprint(columns_label)
-        #
-        # h1_columns = columns_label['h1']
-        # tree_dict = self.tree_dict
-        # for _h1 in config_to_load['h1']:
-        #     print("h1: {}".format(_h1))
-        #     _status = from_boolean_to_ui_status(config_to_load['h1'][_h1]['visible'])
-        #     tree_dict[h1_columns[_h1]]['ui'].setCheckState(_status)
-
-        # list_h1 =
-        # for h1_index in h1_dict:
-        #     _state = get_ui_state([h1_index]['visible'])
-        #     tree_dict[list_h1[h1_index]]['ui'].setCheckState(0, _state)
-
-
-
-
-
-
-
-
-
-
+        self.ui.treeWidget.blockSignals(False)
 
     def h3_table_right_click(self, position):
         o_h3_table = H3TableHandler(parent=self)
@@ -868,6 +834,15 @@ class Interface(QMainWindow):
         nbr_col_h1 = table_ui.columnCount()
         for _col in np.arange(nbr_col_h1):
             table_ui.setColumnHidden(_col, False)
+
+    # def get_state_from_boolean(self, visibility=None):
+    #     if visibility is None:
+    #         return False
+    #
+    #     if visibility is True:
+    #         return QtCore.Qt.Checked
+    #     else:
+    #         return QtCore.Qt.Unchecked
 
     def update_table_columns_visibility(self):
         # will update the table by hiding or not the columns
