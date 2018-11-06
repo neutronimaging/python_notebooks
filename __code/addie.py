@@ -32,7 +32,7 @@ CONFIG_FILE = os.path.join(user_home, '.addie_config.cfg')
 
 class Interface(QMainWindow):
 
-    config_dict = {} # various configurations defined by the user (last 5)
+    config_dict = OrderedDict() # various configurations defined by the user
     active_config_name = ''
 
     # list of config previously saved by user and display when doing right click in table
@@ -202,6 +202,22 @@ class Interface(QMainWindow):
         self.init_tables()
         self.init_tree()
         self.init_signals()
+
+        self.save_raw_config()
+
+    def save_raw_config(self):
+        '''this will allow the user to reset the full table and get it back in its initial state'''
+        o_current_table_config = TableConfig(parent=self)
+        current_config = o_current_table_config.get_current_config()
+
+        inside_dict = OrderedDict()
+        inside_dict['table'] = current_config
+        inside_dict['active'] = False
+
+        new_full_config = self.config_dict
+        new_full_config["FULL_RESET"] = inside_dict
+
+        self.config_dict = new_full_config
 
     def init_signals(self):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
@@ -1417,7 +1433,7 @@ class H3TableHandler:
         else:
             self.deactivate_all_config()
             old_full_config = self.parent.config_dict
-            list_keys = old_full_config.keys()
+            #list_keys = old_full_config.keys()
             old_full_config[name] = inside_dict
             new_full_config = old_full_config
 
@@ -1446,7 +1462,6 @@ class H3TableHandler:
         pass
 
     def right_click(self):
-
         self.retrieve_previous_configurations()
         previous_config = self.parent.config_dict
         # print("previous config in right click")
