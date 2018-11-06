@@ -1,5 +1,6 @@
 #from IPython.core.display import HTML
 #from IPython.display import display
+import copy
 import os
 from os.path import expanduser
 import numpy as np
@@ -49,113 +50,113 @@ class Interface(QMainWindow):
             'name': ''}
 
     # to know the column index of each element of the tree
-    h_index = {'h1': -1,
-               'h2': -1,
-               'h3': -1}
+    h_index = {'h1': None,
+               'h2': None,
+               'h3': None}
 
     base_dict = {'ui': None,
                           'name': "Title",
                           'children': None,
-                          'h_index': h_index.copy(),
+                          'h_index': copy.deepcopy(h_index),
                           }
 
     tree_dict = OrderedDict()
-    tree_dict['title'] = base_dict.copy()
+    tree_dict['title'] = copy.deepcopy(base_dict)
     tree_dict['title']['name'] = "Title"
 
     sample_children_1 = OrderedDict()
-    sample_children_1['sample_runs'] = base_dict.copy()
+    sample_children_1['sample_runs'] = copy.deepcopy(base_dict)
     sample_children_1['sample_runs']['name'] = "Runs"
 
     sample_children_2 = OrderedDict()
-    sample_children_2['sample_background_runs'] = base_dict.copy()
+    sample_children_2['sample_background_runs'] = copy.deepcopy(base_dict)
     sample_children_2['sample_background_runs']['name'] = "Runs"
 
-    sample_children_2['sample_background_background'] = base_dict.copy()
+    sample_children_2['sample_background_background'] = copy.deepcopy(base_dict)
     sample_children_2['sample_background_background']['name'] = "Background"
 
-    sample_children_1['sample_background'] = base_dict.copy()
+    sample_children_1['sample_background'] = copy.deepcopy(base_dict)
     sample_children_1['sample_background']['name'] = "Background"
     sample_children_1['sample_background']['children'] = sample_children_2
 
-    sample_children_1['sample_material'] = base_dict.copy()
+    sample_children_1['sample_material'] = copy.deepcopy(base_dict)
     sample_children_1['sample_material']['name'] = "Material"
 
-    sample_children_1['sample_packing_fraction'] = base_dict.copy()
+    sample_children_1['sample_packing_fraction'] = copy.deepcopy(base_dict)
     sample_children_1['sample_packing_fraction']['name'] = "Packing Fraction"
 
     sample_children_2 = OrderedDict()
-    sample_children_2['sample_geometry_shape'] = base_dict.copy()
+    sample_children_2['sample_geometry_shape'] = copy.deepcopy(base_dict)
     sample_children_2['sample_geometry_shape']['name'] = "Shape"
 
-    sample_children_2['sample_geometry_radius'] = base_dict.copy()
+    sample_children_2['sample_geometry_radius'] = copy.deepcopy(base_dict)
     sample_children_2['sample_geometry_radius']['name'] = "Radius"
 
-    sample_children_2['sample_geometry_Height'] = base_dict.copy()
+    sample_children_2['sample_geometry_Height'] = copy.deepcopy(base_dict)
     sample_children_2['sample_geometry_Height']['name'] = "Height"
 
-    sample_children_1['sample_geometry'] = base_dict.copy()
+    sample_children_1['sample_geometry'] = copy.deepcopy(base_dict)
     sample_children_1['sample_geometry']['name'] = "Geometry"
     sample_children_1['sample_geometry']['children'] = sample_children_2
 
-    sample_children_1['sample_absolute_correction'] = base_dict.copy()
+    sample_children_1['sample_absolute_correction'] = copy.deepcopy(base_dict)
     sample_children_1['sample_absolute_correction']['name'] = "Abs. Correction"
 
-    sample_children_1['sample_multi_scattering_correction'] = base_dict.copy()
+    sample_children_1['sample_multi_scattering_correction'] = copy.deepcopy(base_dict)
     sample_children_1['sample_multi_scattering_correction']['name'] = 'Multi Scattering Correction'
 
-    sample_children_1['sample_inelastic_correction'] = base_dict.copy()
+    sample_children_1['sample_inelastic_correction'] = copy.deepcopy(base_dict)
     sample_children_1['sample_inelastic_correction']['name'] = 'Inelastic Correction'
 
-    tree_dict['sample'] = base_dict.copy()
+    tree_dict['sample'] = copy.deepcopy(base_dict)
     tree_dict['sample']['name'] = 'Sample'
     tree_dict['sample']['children'] = sample_children_1
 
     vanadium_children_1 = OrderedDict()
-    vanadium_children_1['vanadium_runs'] = base_dict.copy()
+    vanadium_children_1['vanadium_runs'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_runs']['name'] = "Runs"
 
     vanadium_children_2 = OrderedDict()
-    vanadium_children_2['vanadium_background_runs'] = base_dict.copy()
+    vanadium_children_2['vanadium_background_runs'] = copy.deepcopy(base_dict)
     vanadium_children_2['vanadium_background_runs']['name'] = "Runs"
 
-    vanadium_children_2['vanadium_background_background'] = base_dict.copy()
+    vanadium_children_2['vanadium_background_background'] = copy.deepcopy(base_dict)
     vanadium_children_2['vanadium_background_background']['name'] = "Background"
 
-    vanadium_children_1['vanadium_background'] = base_dict.copy()
+    vanadium_children_1['vanadium_background'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_background']['name'] = "Background"
     vanadium_children_1['vanadium_background']['children'] = vanadium_children_2
 
-    vanadium_children_1['vanadium_material'] = base_dict.copy()
+    vanadium_children_1['vanadium_material'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_material']['name'] = "Materials"
 
-    vanadium_children_1['vanadium_packing_fraction'] = base_dict.copy()
+    vanadium_children_1['vanadium_packing_fraction'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_packing_fraction']['name'] = "Packing Fraction"
 
     vanadium_children_2 = OrderedDict()
-    vanadium_children_2['vanadium_geometry_shape'] = base_dict.copy()
+    vanadium_children_2['vanadium_geometry_shape'] = copy.deepcopy(base_dict)
     vanadium_children_2['vanadium_geometry_shape']['name'] = 'Shape'
 
-    vanadium_children_2['vanadium_geometry_radius'] = base_dict.copy()
+    vanadium_children_2['vanadium_geometry_radius'] = copy.deepcopy(base_dict)
     vanadium_children_2['vanadium_geometry_radius']['name'] = 'Radius'
 
-    vanadium_children_2['vanadium_geometry_Height'] = base_dict.copy()
+    vanadium_children_2['vanadium_geometry_Height'] = copy.deepcopy(base_dict)
     vanadium_children_2['vanadium_geometry_Height']['name'] = 'Height'
 
-    vanadium_children_1['vanadium_geometry'] = base_dict.copy()
+    vanadium_children_1['vanadium_geometry'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_geometry']['name'] = 'Geometry'
     vanadium_children_1['vanadium_geometry']['children'] = vanadium_children_2
 
-    vanadium_children_1['vanadium_absolute_correction'] = base_dict.copy()
+    vanadium_children_1['vanadium_absolute_correction'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_absolute_correction']['name'] = "Abs. Correction"
 
-    vanadium_children_1['vanadium_multi_scattering_correction'] = base_dict.copy()
+    vanadium_children_1['vanadium_multi_scattering_correction'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_multi_scattering_correction']['name'] = 'Multi Scattering Correction'
 
-    vanadium_children_1['vanadium_inelastic_correction'] = base_dict.copy()
+    vanadium_children_1['vanadium_inelastic_correction'] = copy.deepcopy(base_dict)
     vanadium_children_1['vanadium_inelastic_correction']['name'] = "Inelastic Correction"
 
-    tree_dict['vanadium'] = base_dict.copy()
+    tree_dict['vanadium'] = copy.deepcopy(base_dict)
     tree_dict['vanadium']['name'] = 'Vanadium'
     tree_dict['vanadium']['children'] = vanadium_children_1
 
@@ -291,8 +292,8 @@ class Interface(QMainWindow):
 
         print("--------------------")
 
-        print("table_columns_links")
-        pprint.pprint(self.table_columns_links)
+        print("tree_dict")
+        pprint.pprint(self.tree_dict)
 
 
 
@@ -1220,14 +1221,12 @@ class Interface(QMainWindow):
         h2_index = 0
         h3_index = 0
 
-        def set_h_indexes(location):
-            location['h_index']['h1'] = h1_index
-            location['h_index']['h2'] = h2_index
-            location['h_index']['h3'] = h3_index
+        def set_h_indexes(location, h1=None, h2=None, h3=None):
+            location['h_index']['h1'] = h1
+            location['h_index']['h2'] = h2
+            location['h_index']['h3'] = h3
 
         for _key_h1 in td.keys():
-
-            print("key is {}".format(_key_h1))
 
             # if there are children, we need to use addParent
             if td[_key_h1]['children']:
@@ -1253,7 +1252,7 @@ class Interface(QMainWindow):
                                                       _key_h3)
                             td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'] = _h3_child
 
-                            set_h_indexes(td[_key_h1]['children'][_key_h2]['children'][_key_h3])
+                            set_h_indexes(td[_key_h1]['children'][_key_h2]['children'][_key_h3], h3=h3_index)
                             h3_index += 1
 
                     else: # key_h2 has no children, it's a leaf
@@ -1262,20 +1261,20 @@ class Interface(QMainWindow):
                                                   _key_h2)
                         td[_key_h1]['children'][_key_h2]['ui'] = _h3_child
 
-                    set_h_indexes(td[_key_h1]['children'][_key_h2])
+                        h3_index += 1
+
+                    set_h_indexes(td[_key_h1]['children'][_key_h2], h2=h2_index)
                     h2_index += 1
-                    h3_index += 1
 
             else: #_key_h1 has no children, using addChild
                 _child = self.addChild(absolute_parent,
                                        td[_key_h1]['name'],
                                        _key_h1)
                 td[_key_h1]['ui'] = _child
+                h2_index += 1
 
-            set_h_indexes(td[_key_h1])
+            set_h_indexes(td[_key_h1], h1=h1_index)
             h1_index += 1
-            h2_index += 1
-            h3_index += 1
 
     def addParent(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
