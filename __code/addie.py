@@ -380,10 +380,14 @@ class Interface(QMainWindow):
         size_diff = new_size - old_size
 
         # add this size_diff to last_h2 and last_h3
-        last_h2_visible_size = self.get_size_column(h2=last_h2_visible)
-        self.set_size_column(h2=last_h2_visible, width=last_h2_visible_size+size_diff)
         last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
-        self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+        if (last_h3_visible_size < self.minimum_col_width) and \
+                (new_size < old_size):
+            self.set_size_column(h1=index_column, width=old_size)
+        else:
+            last_h2_visible_size = self.get_size_column(h2=last_h2_visible)
+            self.set_size_column(h2=last_h2_visible, width=last_h2_visible_size+size_diff)
+            self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
 
         self.block_table_ui(unblock_all=True)
         # print("")
