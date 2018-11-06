@@ -189,6 +189,8 @@ class Interface(QMainWindow):
                      'h3': []}
 
 
+    minimum_col_width = 10
+
     def __init__(self, parent=None):
 
         # display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -402,11 +404,15 @@ class Interface(QMainWindow):
 
         size_diff = new_size - old_size
 
-        # add this size_diff to parent and last h3
-        parent_size = self.get_size_column(h1=h1_parent)
-        self.set_size_column(h1=h1_parent, width=parent_size+size_diff)
         last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
-        self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+        if (last_h3_visible_size < self.minimum_col_width) and \
+                (new_size < old_size):
+            self.set_size_column(h2=index_column, width=old_size)
+        else:
+            # add this size_diff to parent and last h3
+            parent_size = self.get_size_column(h1=h1_parent)
+            self.set_size_column(h1=h1_parent, width=parent_size+size_diff)
+            self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
 
         self.block_table_ui(unblock_all=True)
 
