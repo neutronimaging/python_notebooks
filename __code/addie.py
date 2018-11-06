@@ -215,10 +215,7 @@ class Interface(QMainWindow):
         inside_dict['table'] = current_config
         inside_dict['active'] = False
 
-        reset_config_dict = OrderedDict()
-        reset_config_dict["FULL_RESET"] = inside_dict
-
-        self.reset_config_dict = reset_config_dict
+        self.reset_config_dict = inside_dict
 
     def init_signals(self):
         self.h1_header_table.sectionResized.connect(self.resizing_h1)
@@ -229,7 +226,7 @@ class Interface(QMainWindow):
         self.ui.h2_table.horizontalScrollBar().valueChanged.connect(self.scroll_h2_table)
         self.ui.h3_table.horizontalScrollBar().valueChanged.connect(self.scroll_h3_table)
 
-    def load_this_config(self, key=''):
+    def load_this_config(self, key='', resize=False):
         if key == '':
             return
 
@@ -251,17 +248,17 @@ class Interface(QMainWindow):
         for _col in h1_dict:
             _visible = h1_dict[_col]['visible']
             _width = h1_dict[_col]['width']
-            self.set_size_and_visibility_column(h1=_col, width=_width, visibility=_visible)
+            self.set_size_and_visibility_column(h1=_col, width=_width, visibility=_visible, resize=resize)
 
         for _col in h2_dict:
             _visible = h2_dict[_col]['visible']
             _width = h2_dict[_col]['width']
-            self.set_size_and_visibility_column(h2=_col, width=_width, visibility=_visible)
+            self.set_size_and_visibility_column(h2=_col, width=_width, visibility=_visible, resize=resize)
 
         for _col in h3_dict:
             _visible = h3_dict[_col]['visible']
             _width = h3_dict[_col]['width']
-            self.set_size_and_visibility_column(h3=_col, width=_width, visibility=_visible)
+            self.set_size_and_visibility_column(h3=_col, width=_width, visibility=_visible, resize=resize)
 
         self.update_tree_dict_and_tree(config_to_load)
         # self.update_full_tree_status()
@@ -507,8 +504,9 @@ class Interface(QMainWindow):
         h = self.get_master_h(h1=h1, h2=h2, h3=h3)
         table_ui.setColumnHidden(h, not visibility)
 
-    def set_size_and_visibility_column(self, h1=None, h2=None, h3=None, width=None, visibility=True):
-        #self.set_size_column(h1=h1, h2=h2, h3=h3, width=width)
+    def set_size_and_visibility_column(self, h1=None, h2=None, h3=None, width=None, visibility=True, resize=False):
+        if resize:
+            self.set_size_column(h1=h1, h2=h2, h3=h3, width=width)
         self.set_visibility_column(h1=h1, h2=h2, h3=h3, visibility=visibility)
 
     def get_h2_children_from_h1(self, h1=-1):
@@ -1460,18 +1458,17 @@ class H3TableHandler:
         self.save_as_config_name_selected(name=active_config_name)
 
     def reset_table(self):
-
-        print("in reset_table")
-        pprint.pprint(self.parent.config_dict)
+        config_dict = self.parent.config_dict
+        if not ("FULL_RESET" in config_dict):
+            config_dict['FULL_RESET'] = self.parent.reset_config_dict
+            self.parent.config_dict = config_dict
 
         ConfigHandler.lazy_export_config(config_dict=self.parent.config_dict)
-        self.parent.load_this_config(key='FULL_RESET')
+        self.parent.load_this_config(key='FULL_RESET', resize=True)
 
     def right_click(self):
         self.retrieve_previous_configurations()
         previous_config = self.parent.config_dict
-        # print("previous config in right click")
-        # print(previous_config)
 
         if previous_config == {}:
             list_configs = []
@@ -1495,6 +1492,9 @@ class H3TableHandler:
         if not list_configs == []:
             config.addSeparator()
             for _label in list_configs:
+
+                if _label == "FULL_RESET":
+                    continue
 
                 this_one_is_active = False
 
