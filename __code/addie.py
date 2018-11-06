@@ -46,6 +46,12 @@ class Interface(QMainWindow):
     tree_dict_state = {}
     tree_column = 0
 
+    # this record the ui of each check box in the tree
+    tree_ui = {'h1': [],
+               'h2': [],
+               'h3': [],
+               }
+
     leaf = {'ui': None,
             'name': ''}
 
@@ -292,8 +298,8 @@ class Interface(QMainWindow):
 
         print("--------------------")
 
-        print("tree_dict")
-        pprint.pprint(self.tree_dict)
+        print("tree_ui")
+        pprint.pprint(self.tree_ui)
 
 
 
@@ -1217,6 +1223,10 @@ class Interface(QMainWindow):
         td = self.tree_dict
         absolute_parent = parent
 
+        tree_ui = {'h1': [],
+                   'h2': [],
+                   'h3': []}
+
         h1_index = 0
         h2_index = 0
         h3_index = 0
@@ -1235,6 +1245,7 @@ class Interface(QMainWindow):
                                             td[_key_h1]['name'],
                                             _key_h1)
                 td[_key_h1]['ui'] = _h1_parent
+                tree_ui['h1'].append(_h1_parent)
 
                 for _key_h2 in td[_key_h1]['children'].keys():
 
@@ -1245,6 +1256,7 @@ class Interface(QMainWindow):
                                                     td[_key_h1]['children'][_key_h2]['name'],
                                                     _key_h2)
                         td[_key_h1]['children'][_key_h2]['ui'] = _h2_parent
+                        tree_ui['h2'].append(_h2_parent)
 
                         for _key_h3 in td[_key_h1]['children'][_key_h2]['children']:
                             _h3_child = self.addChild(_h2_parent,
@@ -1253,6 +1265,7 @@ class Interface(QMainWindow):
                             td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'] = _h3_child
 
                             set_h_indexes(td[_key_h1]['children'][_key_h2]['children'][_key_h3], h3=h3_index)
+                            tree_ui['h3'].append(_h3_child)
                             h3_index += 1
 
                     else: # key_h2 has no children, it's a leaf
@@ -1260,7 +1273,8 @@ class Interface(QMainWindow):
                                                   td[_key_h1]['children'][_key_h2]['name'],
                                                   _key_h2)
                         td[_key_h1]['children'][_key_h2]['ui'] = _h3_child
-
+                        tree_ui['h2'].append(_h3_child)
+                        tree_ui['h3'].append(None)
                         h3_index += 1
 
                     set_h_indexes(td[_key_h1]['children'][_key_h2], h2=h2_index)
@@ -1271,11 +1285,16 @@ class Interface(QMainWindow):
                                        td[_key_h1]['name'],
                                        _key_h1)
                 td[_key_h1]['ui'] = _child
+                tree_ui['h1'].append(_child)
+                tree_ui['h2'].append(None)
+                tree_ui['h3'].append(None)
                 h2_index += 1
 
             set_h_indexes(td[_key_h1], h1=h1_index)
             h1_index += 1
             h3_index += 1
+
+            self.tree_ui = tree_ui
 
     def addParent(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
