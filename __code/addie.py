@@ -216,14 +216,14 @@ class Interface(QMainWindow):
         if key == '':
             return
 
-        #FIXME
-
         config_to_load = self.config_dict[key]['table']
 
         h1_dict = config_to_load['h1']
         h2_dict = config_to_load['h2']
         h3_dict = config_to_load['h3']
 
+        # print("config to load")
+        # pprint.pprint(config_to_load)
         # print("load this config")
         # pprint.pprint(self.tree_dict)
         # print()
@@ -273,8 +273,8 @@ class Interface(QMainWindow):
 
         self.ui.treeWidget.blockSignals(True)
 
-        print("config_to_load")
-        pprint.pprint(config_to_load)
+        # print("config_to_load")
+        # pprint.pprint(config_to_load)
 
         tree_ui = self.tree_ui
 
@@ -294,6 +294,7 @@ class Interface(QMainWindow):
         change_state_tree_widgets(list_h3_tree_ui, list_h3_columns)
 
         self.ui.treeWidget.blockSignals(False)
+
 
     def h3_table_right_click(self, position):
         o_h3_table = H3TableHandler(parent=self)
@@ -490,7 +491,7 @@ class Interface(QMainWindow):
         table_ui.setColumnHidden(h, not visibility)
 
     def set_size_and_visibility_column(self, h1=None, h2=None, h3=None, width=None, visibility=True):
-        self.set_size_column(h1=h1, h2=h2, h3=h3, width=width)
+        #self.set_size_column(h1=h1, h2=h2, h3=h3, width=width)
         self.set_visibility_column(h1=h1, h2=h2, h3=h3, visibility=visibility)
 
     def get_h2_children_from_h1(self, h1=-1):
@@ -864,6 +865,7 @@ class Interface(QMainWindow):
         for h1_counter, _key_h1 in enumerate(td.keys()):
 
             _h1_boolean_status = get_boolean_state(td[_key_h1])
+
             set_column_visibility(column=h1_counter,
                                   table_ui=self.ui.h1_table,
                                   visible=_h1_boolean_status)
