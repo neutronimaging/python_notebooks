@@ -1275,6 +1275,7 @@ class Interface(QMainWindow):
 
             set_h_indexes(td[_key_h1], h1=h1_index)
             h1_index += 1
+            h3_index += 1
 
     def addParent(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
