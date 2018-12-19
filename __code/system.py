@@ -32,7 +32,8 @@ class System(object):
                        """))
 
             start_path = cls.get_start_path(debugger_folder=debugger_folder,
-                                            system_folder=system_folder)
+                                            system_folder=system_folder,
+                                            instrument="CG1DImaging")
 
             cls.start_path = start_path
 
@@ -59,6 +60,7 @@ class System(object):
                                      widgets.Label("DOES NOT EXIST!",
                                                    layout=widgets.Layout(width='20%'))])
             cls.result_label = top_hbox.children[2]
+            cls.ipts_number = top_hbox.children[1]
             cls.result_label.add_class("result_label")
             or_label = widgets.Label("OR")
             bottom_hbox = widgets.HBox([widgets.Label("Select Folder",
@@ -74,6 +76,8 @@ class System(object):
             cls.working_dir_ui = bottom_hbox.children[1]
             cls.manual_ipts_entry_ui = top_hbox.children[1]
             cls.manual_ipts_entry_ui.observe(cls.check_ipts_input, names='value')
+
+            cls.result_label.value = ""
 
         except:
             display(HTML('<span style="font-size: 20px; color:red">TURN ON DEBUGGIN MODE!!!!!</span>'))
@@ -174,6 +178,7 @@ class System(object):
         instrument = value_dict['new']
 
         start_path = cls.get_start_path(instrument=instrument)
+        cls.start_path = start_path
         list_and_default_folders = cls.get_list_folders(start_path=start_path)
         user_list_folders = list_and_default_folders['user_list_folders']
         default_value = list_and_default_folders['default_value']
@@ -181,6 +186,8 @@ class System(object):
         cls.working_dir_ui.options = user_list_folders
         cls.working_dir_ui.value = default_value
 
+        cls.ipts_number.value = ''
+        cls.result_label.value = ''
 
     @classmethod
     def check_ipts_input(cls, value):
