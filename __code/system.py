@@ -7,7 +7,7 @@ from IPython.core.display import display
 from IPython.core.display import HTML
 from IPython.display import clear_output
 
-list_instrument_per_facility = {'HFIR': ['CG-1D'],
+list_instrument_per_facility = {'HFIR': ['CG1DImaging'],
                                 'SNS': ['SNAP', 'VENUS']}
 
 
