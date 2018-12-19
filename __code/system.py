@@ -19,7 +19,7 @@ class System(object):
     @classmethod
     def select_working_dir(cls, debugger_folder='', system_folder='', facility='HFIR', instrument='CG1D'):
 
-        #try:
+        try:
 
             display(HTML("""
                        <style>
@@ -34,33 +34,17 @@ class System(object):
             start_path = cls.get_start_path(debugger_folder=debugger_folder,
                                             system_folder=system_folder)
 
-
             cls.start_path = start_path
-            # list_folders = sorted(glob.glob(start_path + '*'))
-            # short_list_folders = [os.path.basename(_folder) for _folder in list_folders if os.path.isdir(_folder)]
-            # #short_list_folders = sorted(short_list_folders)
-            #
-            # # if user mode, only display folder user can access
-            # default_value = ''
-            # if not debugging:
-            #     user_list_folders = [os.path.basename(_folder) for _folder in list_folders if os.access(_folder, os.R_OK)]
-            #     if len(user_list_folders) > 0:
-            #         default_value = user_list_folders[0]
-            # else:  # debugging
-            #     user_list_folders = short_list_folders
-            #     default_value = config.project_folder
-            #     if not (default_value in user_list_folders):
-            #         if len(user_list_folders) > 0:
-            #             default_value = user_list_folders[0]
 
             list_and_default_folders = cls.get_list_folders(start_path=start_path)
             user_list_folders = list_and_default_folders['user_list_folders']
             default_value = list_and_default_folders['default_value']
+            full_list_instruments = cls.get_full_list_instrument()
 
             select_instrument_ui = widgets.HBox([widgets.Label("Select Instrument",
                                                       layout=widgets.Layout(width='20%')),
-                                        widgets.Select(options=["CG-1D", "SNAP", "VENUS"],
-                                                       value="CG-1D",
+                                        widgets.Select(options=full_list_instruments,
+                                                       value=full_list_instruments[0],
                                                        layout=widgets.Layout(width='20%'))])
             cls.instrument_ui = select_instrument_ui.children[1]
             cls.instrument_ui.observe(cls.check_instrument_input, names='value')
@@ -91,8 +75,18 @@ class System(object):
             cls.manual_ipts_entry_ui = top_hbox.children[1]
             cls.manual_ipts_entry_ui.observe(cls.check_ipts_input, names='value')
 
-        # except:
-        #     display(HTML('<span style="font-size: 20px; color:red">TURN ON DEBUGGIN MODE!!!!!</span>'))
+        except:
+            display(HTML('<span style="font-size: 20px; color:red">TURN ON DEBUGGIN MODE!!!!!</span>'))
+
+    @classmethod
+    def get_full_list_instrument(cls):
+
+        list_instrument = []
+        for _key in list_instrument_per_facility.keys():
+            _facility_list_instrument = list_instrument_per_facility[_key]
+            for _instr in _facility_list_instrument:
+                list_instrument.append(_instr)
+        return list_instrument
 
     @classmethod
     def get_list_folders(cls, start_path=''):
@@ -119,7 +113,7 @@ class System(object):
                 'default_value': default_value}
 
     @classmethod
-    def get_facility_from_instrument(cls, instrument='CG-1D'):
+    def get_facility_from_instrument(cls, instrument='CG1DImaging'):
 
         for _facility in list_instrument_per_facility:
             list_instrument = list_instrument_per_facility[_facility]
