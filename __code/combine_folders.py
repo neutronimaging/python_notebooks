@@ -53,7 +53,11 @@ class CombineFolders(object):
         nbr_files = {}
         file_format = ''
         for _folder in self.list_folders:
-            _list_files = self.__get_list_files(file_format=file_format, folder=_folder)
+            _local_list_files_dict = self.__get_list_files(file_format=file_format, folder=_folder)
+
+            _list_files = _local_list_files_dict['list_files']
+            _format = _local_list_files_dict['file_format']
+
             _short = os.path.basename(_folder)
             list_files_dict[_short] = _list_files
             self.list_folders_short.append(_short)
@@ -69,6 +73,7 @@ class CombineFolders(object):
         else:
             display(HTML('<span style="font-size: 20px; color:green">All the folders selected contain the ' + \
                          'same number of files (' + str(list(values)[0]) + ' files each)!</span>'))
+            display(HTML('<span style="font-size: 20px; color:green">Format: ' + _format))
             self.nbr_files_in_each_folder = list(values)[0]
 
         self.list_files_dict = list_files_dict
@@ -96,8 +101,8 @@ class CombineFolders(object):
         while (_index_folder < len(_list_folders_short)):
             _new_folder_name_list = []
             from_index = _index_folder
-            to_index = from_index + merging_value
-            if to_index >= len(_list_folders_short):
+            to_index = from_index + (merging_value)
+            if to_index > len(_list_folders_short):
                 break
 
             _tmp_list_folder = []
@@ -133,7 +138,7 @@ class CombineFolders(object):
 
         final_nbr_folders = len(merging_dict.keys())
         folder_level_ui = widgets.HBox([widgets.Label("Folder Progress:",
-                                                      layout=widgets.Layout(width='10%')),
+                                                      layout=widgets.Layout(width='20%')),
                                         widgets.IntProgress(max=final_nbr_folders,
                                                             layout=widgets.Layout(width='50%'))])
         display(folder_level_ui)
@@ -141,7 +146,7 @@ class CombineFolders(object):
 
         nbr_files_to_merge = self.nbr_files_in_each_folder
         file_level_ui = widgets.HBox([widgets.Label("File Progress:",
-                                                    layout=widgets.Layout(width='10%')),
+                                                    layout=widgets.Layout(width='20%')),
                                      widgets.IntProgress(max=nbr_files_to_merge,
                                                          layout=widgets.Layout(width='50%'))])
         display(file_level_ui)
@@ -178,7 +183,7 @@ class CombineFolders(object):
             _list_folders_to_add = merging_dict[_key]
             _tmp_list_files_to_merge = []
             for _folder in _list_folders_to_add:
-                _tmp_list_files_to_merge.append(list_files_dict[_folder]['list_files'])
+                _tmp_list_files_to_merge.append(list_files_dict[_folder])
             final_dict_of_files_to_merge[_key] = list(zip(*_tmp_list_files_to_merge))
 
         return final_dict_of_files_to_merge
@@ -191,46 +196,7 @@ class CombineFolders(object):
 
     def __merging_algorithm(self, function_, *args):
         return function_(*args)
-
-
-
-
-    # def load_list_files(self, filename_array=[]):
-    #     data = []
-    #     for _filename in filename_array:
-    #         data = file_handler.load_data(filename=_filename)
-    #         data.append(_data)
-    #     return data
-
-    # def add(self, array=[]):
-    #     return np.array(array).sum(axis=0)
-    #
-    # def mean(self, array=[]):
-    #     return np.array(array).mean(axis=0)
-    #
-    # def run(self):
-    #     merged_images = {'file_name': [],
-    #                      'data': []}
-    #     nbr_files = list(values)[0]
-    #
-    #     box1 = widgets.HBox([widgets.Label("Merging Progress:",
-    #                                        layout=widgets.Layout(width='10%')),
-    #                          widgets.IntProgress(max=nbr_files)])
-    #     display(box1)
-    #     w1 = box1.children[1]
-    #
-    #     for _index_file in np.arange(nbr_files):
-    #         _list_file_to_merge = []
-    #         for _key in list_files_dict.keys():
-    #             _file = list_files_dict[_key][_index_file]
-    #             _list_file_to_merge.append(_file)
-    #             merged_images['file_name'].append(os.path.basename(_file))
-    #
-    #         _data_array = load_list_files(_list_file_to_merge)
-    #         merged_data = add(_data_array)
-    #
-    #         w1.value = _index_file + 1
-
+ 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
                                                                                      'output folders ...',

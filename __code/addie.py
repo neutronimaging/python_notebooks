@@ -831,7 +831,7 @@ class Interface(QMainWindow):
 
         self.h1_header_table.blockSignals(True)
         self.h2_header_table.blockSignals(True)
-        self.h3_header_table.blockSignals(True)
+        #self.h3_header_table.blockSignals(True)
 
         h_columns_affected = self.get_h_columns_from_item_name(item_name=self.get_item_name(item))
 
@@ -847,7 +847,7 @@ class Interface(QMainWindow):
         
         self.h1_header_table.blockSignals(False)
         self.h2_header_table.blockSignals(False)
-        self.h3_header_table.blockSignals(False)
+        #self.h3_header_table.blockSignals(False)
 
     def make_all_columns_visible(self):
         """Make all columns of all table visible"""
@@ -875,6 +875,10 @@ class Interface(QMainWindow):
 
         def set_column_visibility(column=-1, table_ui=None, visible=0):
             table_ui.setColumnHidden(column, not visible)
+            if not visible:
+                table_ui.hideColumn(column)
+
+            QtGui.QGuiApplication.processEvents()
 
         def get_boolean_state(key=None):
             status = key['state']
