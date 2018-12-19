@@ -196,7 +196,7 @@ class CombineFolders(object):
 
     def __merging_algorithm(self, function_, *args):
         return function_(*args)
- 
+
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
                                                                                      'output folders ...',
