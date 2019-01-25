@@ -342,7 +342,9 @@ class MetadataFileParser(object):
         # reformat data
         pandas_data = pd.DataFrame(data)
         pandas_data = pandas_data.reset_index()
-        pandas_data.rename(index=str, columns={"index": "TimeStamp"})
+        pandas_data = pandas_data.rename(index=str, columns={"index": "TimeStamp"})
+
+        self.data_to_export = pandas_data
 
         csv_format = pandas_data.to_csv()
         make_ascii_file_from_string(text=csv_format, filename=full_output_filename)
