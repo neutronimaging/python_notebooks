@@ -87,7 +87,6 @@ def save_data(data=[], filename=''):
         make_fits(data=data, filename=filename)
     elif (data_type == '.tiff') or (data_type == '.tif'):
         make_tiff(data=data, filename=filename)
-    
 
 def get_file_extension(filename):
     '''retrieve the file extension of the filename and make sure
@@ -167,6 +166,7 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d'):
 def make_ascii_file_from_string(text="", filename=''):
     with open(filename, 'w') as f:
         f.write(text)
+    f.close()
 
 def read_ascii(filename=''):
     '''return contain of an ascii file'''

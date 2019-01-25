@@ -15,6 +15,7 @@ import os
 import pandas as pd
 
 from __code.file_handler import get_file_extension
+from __code.file_handler import make_ascii_file_from_string
 
 
 class MetadataAsciiParser(object):
@@ -295,7 +296,7 @@ class MetadataFileParser(object):
         default_value = [list_columns[_index] for _index in default_selection]
 
         self.box = widgets.HBox([widgets.Label("Select Metadata(s) to Keep:",
-                                          layout=widgets.Layout(width='20%'),
+                                          layout=widgets.Layout(width='30%'),
                                           ),
                             widgets.SelectMultiple(options=list_columns,
                                                    value=default_value,
@@ -321,23 +322,31 @@ class MetadataFileParser(object):
         display(self.box2)
 
         o_folder = MetadataAsciiParser(working_dir  = self.working_dir)
-        o_folder.select_folder(instruction = 'Select Output Folder ...',
+        o_folder.select_folder(instruction = 'Select Output Folder:',
                                next=self.__export_table)
 
-
     def __export_table(self, folder):
-        print("Folder is: {}".folder)
-        print("filename is: {}".self.box2.children[1].value)
+        output_filename = self.box2.children[1].value
+        self.box2.close()
 
+        # record metadata selected
+        metadata_name_selected = np.array(self.box.children[1].value)
+        data = self.get_data()
+        self.data_to_export = data[metadata_name_selected]
 
-    def export_table(self, folder='', file_name=''):
-        pass
+        self.export_table(data=self.data_to_export, folder=folder, filename=output_filename)
 
+    def export_table(self, data=None, folder='', filename=''):
+        full_output_filename = os.path.join(folder, filename)
 
+        # reformat data
+        pandas_data = pd.DataFrame(data)
+        pandas_data = pandas_data.reset_index()
+        pandas_data.rename(index=str, columns={"index": "TimeStamp"})
 
-    def create_metadata_selected_vs_time_stamp(self, metadata_selected):
-        # time_column = self.meta.o_pd.
-        pass
+        csv_format = pandas_data.to_csv()
+        make_ascii_file_from_string(text=csv_format, filename=full_output_filename)
+
 
 if __name__ == "__main__":
 
