@@ -16,9 +16,12 @@ import pandas as pd
 
 from __code.file_handler import get_file_extension
 from __code.file_handler import make_ascii_file_from_string
+from __code.file_handler import force_file_extension
 
 
 class MetadataAsciiParser(object):
+
+    metadata_file = ''
 
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
@@ -31,10 +34,14 @@ class MetadataAsciiParser(object):
                                                                     next=next)
         self.input_folder_ui.show()
 
+    def save_metadata_file(self, filename):
+        self.metadata_file = filename
+
     def select_metadata_file(self):
         _instruction = "Select Metadata File ..."
         self.metadata_ui = ipywe.fileselector.FileSelectorPanel(instruction=_instruction,
-                                                                start_dir=self.working_dir)
+                                                                start_dir=self.working_dir,
+                                                                next=self.save_metadata_file)
         self.metadata_ui.show()
 
 
@@ -327,6 +334,8 @@ class MetadataFileParser(object):
 
     def __export_table(self, folder):
         output_filename = self.box2.children[1].value
+        output_filename = force_file_extension(output_filename, '.txt')
+
         self.box2.close()
 
         # record metadata selected

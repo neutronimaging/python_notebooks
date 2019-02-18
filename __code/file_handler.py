@@ -15,6 +15,22 @@ from IPython.core.display import display, HTML
 from __code.metadata_handler import MetadataHandler
 
 
+def force_file_extension(filename, ext='.txt'):
+    """this method check the name of the file and makes sure the extension is the one we are requesting"""
+    [base, extension] = os.path.splitext(filename)
+
+    # name of file does not have any extension
+    if extension == "":
+        return filename + ext
+
+    # name of file has the right extension
+    if extension == ext:
+        return filename
+
+    # name of file has the wrong extension
+    else:
+        return base + ext
+
 def test_image(file_name, threshold=5000):
     # check size of image and return False if size is below threshold 
     statinfo = os.stat(file_name)
