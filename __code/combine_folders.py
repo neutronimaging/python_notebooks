@@ -25,6 +25,7 @@ class CombineFolders(object):
         self.folder_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder to combine',
                                                                        start_dir=self.working_dir,
                                                                        type='directory',
+                                                                       next=self.check_number_of_files,
                                                                        multiple=True)
         self.folder_list_widget.show()
 
@@ -45,10 +46,12 @@ class CombineFolders(object):
             _list_files = glob.glob(folder + "/*." + file_format)
             return {'file_format': file_format, 'list_files': _list_files}
 
-    def check_number_of_files(self):
+    def check_number_of_files(self, list_folders):
         # initialization of dictionary that will store the list of files
         list_files_dict = {}
-        self.list_folders = self.folder_list_widget.selected
+
+        #self.list_folders = self.folder_list_widget.selected
+        self.list_folders = list_folders
 
         nbr_files = {}
         file_format = ''
@@ -69,7 +72,7 @@ class CombineFolders(object):
         if len(values) > 1:
             display(HTML('<span style="font-size: 20px; color:red">All the folders selected DO NOT ' + \
                          'contain the same number of files </span>'))
-            raise ValueError("Folder do not have the same number of files!")
+#            raise ValueError("Folder do not have the same number of files!")
         else:
             display(HTML('<span style="font-size: 20px; color:green">All the folders selected contain the ' + \
                          'same number of files (' + str(list(values)[0]) + ' files each)!</span>'))
@@ -118,7 +121,7 @@ class CombineFolders(object):
 
         return merging_dict
 
-    def merging(self):
+    def merging(self, output_folder):
         """combine images using algorithm provided"""
 
         # get merging algorithm
@@ -128,7 +131,7 @@ class CombineFolders(object):
             algorithm = self.__mean
 
         # get output folder
-        output_folder = os.path.abspath(self.output_folder_widget.selected)
+        output_folder = os.path.abspath(output_folder)
 
         # create dictionary of how the images will be combined
         merging_dict = self.__create_merging_dictionary()
@@ -201,6 +204,7 @@ class CombineFolders(object):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
                                                                                      'output folders ...',
                                                                          start_dir=self.working_dir,
+                                                                         next=self.merging,
                                                                          type='directory')
 
         self.output_folder_widget.show()
