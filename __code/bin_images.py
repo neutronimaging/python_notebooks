@@ -28,14 +28,15 @@ class BinHandler(object):
         _instruction = 'Select images to bin'
         self.images_ui = ipywe.fileselector.FileSelectorPanel(instruction=_instruction,
                                                               start_dir=self.working_dir,
-                                                              multiple=True)
+                                                              multiple=True,
+                                                              next=self.load)
         self.images_ui.show()
 
     def get_list_images(self):
         return self.images_ui.selected
 
-    def load(self):
-        list_images = self.get_list_images()
+    def load(self, list_images):
+        #list_images = self.get_list_images()
         self.list_file_names = list_images
         self.o_norm = Normalization()
         self.o_norm.load(file=list_images, notebook=True)
@@ -65,13 +66,13 @@ class BinHandler(object):
         _width = self.image_dimension['width']
         _height = self.image_dimension['height']
         left_widgets = widgets.VBox([widgets.HTML(value="<b>Current Image Size:</b>",
-                                                  layout=widgets.Layout(width='200px')),
+                                                  layout=widgets.Layout(width='250px')),
                                      widgets.Label("Width: {} pixels".format(_width),
                                                    layout=widgets.Layout(width='100%')),
                                      widgets.Label("Height: {} pixels".format(_height),
                                                    layout=widgets.Layout(width='100%'))])
 
-        options_list = [str(_) for _ in np.arange(2, 5)]
+        options_list = [str(_) for _ in np.arange(2, 21)]
         self.bin_para = widgets.Dropdown(options=options_list,
                                     value='2',
                                     continuous_update=False,
@@ -79,11 +80,11 @@ class BinHandler(object):
         self.bin_para.observe(self.__bin_parameter_changed)
 
         center_widgets = widgets.VBox([widgets.HTML("<b>Bin Parameter:</b>",
-                                                    layout=widgets.Layout(width='200px')),
+                                                    layout=widgets.Layout(width='250px')),
                                        self.bin_para])
 
         self.right_widgets = widgets.VBox([widgets.HTML("<b>New Image Size:</b>",
-                                                   layout=widgets.Layout(width='200px')),
+                                                   layout=widgets.Layout(width='250px')),
                                       widgets.Label("Width: {} pixels".format(250),
                                                     layout=widgets.Layout(width='100%')),
                                       widgets.Label("Height: {} pixels".format(250),
@@ -102,6 +103,7 @@ class BinHandler(object):
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
                                                                      start_dir=self.working_dir,
                                                                      multiple=False,
+                                                                     next=self.export,
                                                                      type='directory')
         self.output_folder_ui.show()
 
@@ -137,11 +139,12 @@ class BinHandler(object):
         full_dir_name = os.path.dirname(_file0)
         return os.path.basename(full_dir_name)
 
-    def export(self):
+    def export(self, output_folder):
 
         input_folder = self.get_input_folder()
-        output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected,
-                                                     "{}_rebin_by_{}".format(input_folder, self.bin_value)))
+        # output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected,
+        #                                              "{}_rebin_by_{}".format(input_folder, self.bin_value)))
+        output_folder = os.path.abspath(os.path.join(output_folder, "{}_rebin_by_{}".format(input_folder, self.bin_value)))
         utilities.make_dir(dir=output_folder, overwrite=False)
 
         w = widgets.IntProgress()
