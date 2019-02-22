@@ -23,16 +23,17 @@ class Deal(object):
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
                                                                     start_dir=self.working_dir,
                                                                     multiple=False,
+                                                                     next=self.deal,
                                                                     type='directory')
 
         self.output_folder_ui.show()
 
-    def deal(self):
+    def deal(self, output_folder):
 
         self.input_folder = self.input_folder_ui.selected
         self.list_input_images = glob.glob(os.path.join(self.input_folder, '*.*'))
 
-        self.output_folder = self.output_folder_ui.selected
+        self.output_folder = output_folder
 
         result_dict = self.__split(list_images=self.list_input_images)
 
