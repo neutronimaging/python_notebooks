@@ -322,9 +322,7 @@ class FixImages(FileFolderBrowser):
         _all_data_corrected[_index] = _data_corrected
         self.data_corrected = _all_data_corrected
 
-    def export(self):
-        output_folder = os.path.abspath(self.list_output_folders_ui.selected)
-
+    def export(self, output_folder):
         base_input_folder = os.path.basename(os.path.dirname(os.path.abspath(self.list_files[0])))
         new_folder_name = base_input_folder + '_cleaned'
         output_folder = os.path.join(output_folder, new_folder_name)
@@ -339,3 +337,7 @@ class FixImages(FileFolderBrowser):
             save_data(data=_data, filename=_full_output_file_name)
 
         display(HTML('<span style="font-size: 20px; color:blue">Files have been created in ' + output_folder + '</span>'))
+
+    def select_folder_and_export_images(self):
+        self.next_function = self.export
+        self.select_output_folder()
