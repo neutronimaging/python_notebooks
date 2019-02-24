@@ -119,17 +119,17 @@ class FixImages(FileFolderBrowser):
                                  widgets.Label(str(number_of_pixels))])
 
             box3 = widgets.HBox([widgets.Label("Negative values:",
-                                               layout=widgets.Layout(width='10%')),
+                                               layout=widgets.Layout(width='30%')),
                                  widgets.Label("{} pixels ({:.3}%)".format(negative_values, negative_percentage),
                                                layout=widgets.Layout(width='15%'))])
 
             box4 = widgets.HBox([widgets.Label("Infinite values:",
-                                               layout=widgets.Layout(width='10%')),
+                                               layout=widgets.Layout(width='30%')),
                                  widgets.Label("{} pixels ({:.3}%)".format(infinite_values, infinite_percentage),
                                                layout=widgets.Layout(width='15%'))])
 
             box5 = widgets.HBox([widgets.Label("NaN values:",
-                                               layout=widgets.Layout(width='10%')),
+                                               layout=widgets.Layout(width='30%')),
                                  widgets.Label("{} pixels ({:.3}%)".format(nan_values, nan_percentage),
                                                layout=widgets.Layout(width='15%'))])
 
@@ -258,6 +258,7 @@ class FixImages(FileFolderBrowser):
                                            layout=widgets.Layout(width='20%')),
                              widgets.IntSlider(value=self.index_image_selected,
                                                max=len(self.list_files)-1,
+                                               continuous_update=False,
                                                layout=widgets.Layout(width='20%'))])
         index_slider = box2.children[1]
         index_slider.observe(self.index_on_change)
