@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Volumes/my_book_thunderbolt_duo/git/IPTS/python_notebooks/ui/ui_profile.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_profile.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -23,6 +23,7 @@ class Ui_MainWindow(object):
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.tab)
+        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.splitter_2 = QtWidgets.QSplitter(self.tab)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
@@ -284,6 +285,7 @@ class Ui_MainWindow(object):
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.tab_3)
+        self.verticalLayout_10.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_10.setObjectName("verticalLayout_10")
         self.all_plots_hori_splitter = QtWidgets.QSplitter(self.tab_3)
         self.all_plots_hori_splitter.setOrientation(QtCore.Qt.Horizontal)
@@ -329,6 +331,7 @@ class Ui_MainWindow(object):
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.tab_2)
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.summary_table = QtWidgets.QTableWidget(self.tab_2)
         self.summary_table.setAlternatingRowColors(True)
