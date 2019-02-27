@@ -1,17 +1,46 @@
-
 import glob
 import os
+from IPython.display import display
+from IPython.core.display import HTML
 
 from __code import file_handler
+from __code.file_folder_browser import FileFolderBrowser
 
 
-class CreateExportTimeStamp(object):
+class CreateExportTimeStamp(FileFolderBrowser):
 
-	def __init__(self, dsc_folder='', tiff_folder='', output_folder=''):
-		self.dsc_folder = dsc_folder
-		self.tiff_folder = tiff_folder
+	def __init__(self, working_dir='./'):
+		FileFolderBrowser.__init__(self, working_dir=working_dir)
+		__slots__ = {'dsc_folder', 'tiff_folder', 'output_folder'}
+		self.__select_input_folder()
+
+	def __select_input_folder(self):
+		self.next_function = self.output_select_dsc_folder
+		self.select_input_folder(instruction='Select DSC folder ...')
+
+	def output_select_dsc_folder(self, folder):
+		self.dsc_folder = folder
+		display(HTML('<span style="font-size: 20px; color:blue">You have selected the DSC folder: ' + folder +
+					 '</span>'))
+		parent_dsc_folder = os.path.dirname(self.dsc_folder)
+		self.working_dir = parent_dsc_folder
+
+	def select_tiff_folder(self):
+		self.next_function = self.output_select_tiff_folder
+		self.select_input_folder(instruction='Select TIFF folder ...')
+
+	def output_select_tiff_folder(self, folder):
+		self.tiff_folder = folder
+		display(HTML('<span style="font-size: 20px; color:blue">You have selected the TIFF folder: ' + folder +
+					 '</span>'))
+
+	def select_output_folder_and_create_ascii_file(self):
+		self.next_function = self.create_ascii_file
+		self.select_output_folder(instruction='Select TIFF folder ...')
+
+	def create_ascii_file(self, output_folder):
 		self.output_folder = output_folder
-
+		self.run()
 
 	def run(self):
 		# retrive metadata from dsc file
