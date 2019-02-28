@@ -32,7 +32,8 @@ class RotateAndCropImages(QMainWindow):
 
     # output
     rotated_working_data = []
-    rotation_value = 0
+    rotation_angle = 0
+    list_files = []
 
     def __init__(self, parent=None, o_load=None):
 
@@ -267,29 +268,37 @@ class RotateAndCropImages(QMainWindow):
 
 class Export(object):
 
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir='', data=None, list_files=None, rotation_angle=0):
         self.working_dir = working_dir
+        self.data=data
+        self.list_files=list_files
+        self.rotation_angle=rotation_angle
 
     def select_folder(self):
 
         display(HTML(
-            '<span style="font-size: 20px; color:blue">Select where you want to create the rotated images folder!</span>'))
+           '<span style="font-size: 20px; color:blue">Select where you want to create the rotated images folder!</span>'))
 
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction = 'Select Output Folder ...',
-                                                                start_dir = self.working_dir,
-                                                                type = 'directory')
+                                                                     start_dir = self.working_dir,
+                                                                     type = 'directory',
+                                                                     next=self.export)
+
         self.output_folder_ui.show()
 
-    def get_folder(self):
-        return os.path.abspath(self.output_folder_ui.selected)
 
-    def export(self, new_folder='', data='', list_files=''):
+    def export(self, output_folder):
+
+        new_folder = 'rotated_{}deg'.format(self.rotation_angle)
+
+        list_files = self.list_files
+        data = self.data
 
         w = widgets.IntProgress()
         w.max = len(list_files)
         display(w)
 
-        output_folder = self.get_folder()
+        output_folder = os.path.abspath(output_folder)
         full_output_folder = os.path.join(output_folder, new_folder)
         if not os.path.exists(full_output_folder):
             os.makedirs(full_output_folder)
@@ -304,7 +313,6 @@ class Export(object):
 
         w.close()
 
+        display(HTML(''))
         display(HTML(
-            '<span style="font-size: 20px; color:blue">Files created in ' + full_output_folder + '</span>'))
-
-
+           '<span style="font-size: 20px; color:blue">Files created in ' + full_output_folder + '</span>'))
