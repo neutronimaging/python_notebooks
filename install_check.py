@@ -1,20 +1,19 @@
 from __future__ import print_function
 
-tutorial_name = 'Jupyter widget ecosystem'
-
 requirements = [
-    'ipywidgets',
-    'bqplot',
-    'ipyleaflet',
-    'ipyvolume',
-    'pythreejs',
-    'ccdproc',
-    'ginga'
+    'jupyter',
+    'matplotlib',
+    'astropy',
+    'neunorm',
+    'pillow',
+    'scipy',
+    'scikit-image',
+    'numpy',
 ]
 
 import_result = {p: False for p in requirements}
 
-print("Checking requirements for {}".format(tutorial_name))
+print("Checking requirements for Jupyter Imaging notebooks")
 
 for package in requirements:
     try:
@@ -25,17 +24,23 @@ for package in requirements:
 
 success = all(import_result.values())
 
-version_check_packages = {'ipywidgets': '7.0.0a11',
-                          'bqplot': '0.10',
-                          'ipyleaflet': '0.4',
-                          'ipyvolume': '0.4'}
+version_check_packages = {'numpy': '1.15.2',
+                          'jupyter': '4.4.0',
+                          'matplotlib': '3.0.0',
+                          'astropy': '3.0.4',
+                          'NeuNorm': '1.4.3',
+                          'Pillow': '5.2.0',
+                          'scipy': '1.1.0',
+                          'scikit-image': '0.14.0',
+                      }
+
 
 
 if success:
     print('All required packages installed')
 else:
     print('Please install these missing packages '
-          'for the tutorial "{}":'.format(tutorial_name))
+          'to be able to run the Imaging Notebooks.')
     missing = [k for k, v in import_result.items() if not v]
     print('\t' + '\n\t'.join(missing))
 
@@ -54,40 +59,50 @@ def version_checker(package_name, version, nbextension=None):
         print('        pip install --pre --upgrade {}'.format(package_name))
         print('        jupyter nbextension enable --py {}'.format(nbextension))
     else:
-        print('\n{} version is good!'.format(package_name))
+        print('{} version is good!'.format(package_name))
 
 
 # Check as many packages as we can...
 
 
 try:
-    import ipywidgets
+    import matplotlib
 except ImportError:
     pass
 else:
-    ipywidgets_version = ipywidgets.__version__
-    version_checker('ipywidgets', ipywidgets_version,
-                    nbextension='widgetsnbextension')
-try:
-    import bqplot
-except ImportError:
-    pass
-else:
-    bqplot_version = bqplot.__version__
-    version_checker('bqplot', bqplot_version)
+    version_checker('matplotlib', matplotlib.__version__)
 
 try:
-    import ipyleaflet
+    import NeuNorm
 except ImportError:
     pass
 else:
-    ipyleaflet_version = ipyleaflet.__version__
-    version_checker('ipyleaflet', ipyleaflet_version)
+    version_checker('NeuNorm', NeuNorm.__version__)
 
 try:
-    import ipyvolume
+    import PIL
 except ImportError:
     pass
 else:
-    ipyvolume_version = ipyvolume.__version__
-    version_checker('ipyvolume', ipyvolume_version)
+    version_checker('Pillow', PIL.__version__)
+
+try:
+    import scipy
+except ImportError:
+    pass
+else:
+    version_checker('scipy', scipy.__version__)
+
+try:
+    import skimage
+except ImportError:
+    pass
+else:
+    version_checker('scikit-image', skimage.__version__)
+
+try:
+    import numpy
+except ImportError:
+    pass
+else:
+    version_checker('numpy', numpy.__version__)
