@@ -32,6 +32,11 @@ version_check_packages = {'numpy': '1.15.2',
                           'Pillow': '5.2.0',
                           'scipy': '1.1.0',
                           'scikit-image': '0.14.0',
+                          'ipywidgets': '7.4.1',
+                          'pandas': '0.23.4',
+                          'plotly': '3.2.1',
+                          'pyqtgraph': '0.10.0',
+                          'sectorizedradialprofile': '',
                       }
 
 
@@ -63,7 +68,6 @@ def version_checker(package_name, version, nbextension=None):
 
 
 # Check as many packages as we can...
-
 
 try:
     import matplotlib
@@ -106,3 +110,38 @@ except ImportError:
     pass
 else:
     version_checker('numpy', numpy.__version__)
+
+try:
+    import ipywidgets
+except ImportError:
+    pass
+else:
+    version_checker('ipywidgets', ipywidgets.__version__)
+
+try:
+    import pandas
+except ImportError:
+    pass
+else:
+    version_checker('pandas', pandas.__version__)
+
+try:
+    import plotly
+except ImportError:
+    pass
+else:
+    version_checker('plotly', plotly.__version__)
+
+try:
+    import pyqtgraph
+except ImportError:
+    pass
+else:
+    version_checker('pyqtgraph', pyqtgraph.__version__)
+
+try:
+    import sectorizedradialprofile
+except ImportError:
+    pass
+else:
+    version_checker('sectorizedradialprofile', 'N/A') 
