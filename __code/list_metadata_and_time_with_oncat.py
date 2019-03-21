@@ -66,3 +66,6 @@ class ListMetadata:
         dict_metadata = OrderedDict(_data.to_dict())
         return dict_metadata.keys()
 
+    def export_ascii(self, output_folder):
+        print("output folder is: {}".format(output_folder))
+
