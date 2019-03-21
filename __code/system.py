@@ -7,7 +7,7 @@ from IPython.core.display import display
 from IPython.core.display import HTML
 from IPython.display import clear_output
 
-list_instrument_per_facility = {'HFIR': ['CG1DImaging'],
+list_instrument_per_facility = {'HFIR': ['CG1D'],
                                 'SNS': ['SNAP', 'VENUS']}
 
 
@@ -31,16 +31,17 @@ class System(object):
                        </style>
                        """))
 
+            full_list_instruments = cls.get_full_list_instrument()
+            full_list_instruments.sort()
             start_path = cls.get_start_path(debugger_folder=debugger_folder,
                                             system_folder=system_folder,
-                                            instrument="CG1DImaging")
+                                            instrument=full_list_instruments[0])
 
             cls.start_path = start_path
 
             list_and_default_folders = cls.get_list_folders(start_path=start_path)
             user_list_folders = list_and_default_folders['user_list_folders']
             default_value = list_and_default_folders['default_value']
-            full_list_instruments = cls.get_full_list_instrument()
 
             select_instrument_ui = widgets.HBox([widgets.Label("Select Instrument",
                                                       layout=widgets.Layout(width='20%')),
@@ -117,7 +118,7 @@ class System(object):
                 'default_value': default_value}
 
     @classmethod
-    def get_facility_from_instrument(cls, instrument='CG1DImaging'):
+    def get_facility_from_instrument(cls, instrument='CG1D'):
 
         for _facility in list_instrument_per_facility:
             list_instrument = list_instrument_per_facility[_facility]
