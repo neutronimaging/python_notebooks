@@ -4,7 +4,6 @@ import re
 
 CLIENT_ID = '35b12436-99cc-4ee1-9faf-b2608ea3e6e6'
 
-
 class Oncat:
 
     oncat = None
@@ -21,7 +20,6 @@ class Oncat:
                         token_setter=token_store.set_token,
                         flow=pyoncat.RESOURCE_OWNER_CREDENTIALS_FLOW,
                         )
-
         self.username = getpass.getuser()
 
     def authentication(self):
@@ -51,7 +49,6 @@ class GetEverything:
 
     def __remove_leading_backslash(self, run):
         return run[1:]
-
 
 # Create token store
 class InMemoryTokenStore(object):

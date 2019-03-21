@@ -9,7 +9,10 @@ requirements = [
     'scipy',
     'scikit-image',
     'numpy',
+<<<<<<< HEAD
     'pyoncat',
+=======
+>>>>>>> 8b631de4d027c6502a2e6797bd432cb2ec5e5b79
 ]
 
 import_result = {p: False for p in requirements}
@@ -33,6 +36,7 @@ version_check_packages = {'numpy': '1.15.2',
                           'Pillow': '5.2.0',
                           'scipy': '1.1.0',
                           'scikit-image': '0.14.0',
+<<<<<<< HEAD
                           'ipywidgets': '7.4.1',
                           'pandas': '0.23.4',
                           'plotly': '3.2.1',
@@ -40,6 +44,8 @@ version_check_packages = {'numpy': '1.15.2',
                           'sectorizedradialprofile': '',
                           'pyoncat': '1.0',
                           'oauthlib': '3.0.1',
+=======
+>>>>>>> 8b631de4d027c6502a2e6797bd432cb2ec5e5b79
                       }
 
 
@@ -72,6 +78,10 @@ def version_checker(package_name, version, nbextension=None):
 
 # Check as many packages as we can...
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8b631de4d027c6502a2e6797bd432cb2ec5e5b79
 try:
     import matplotlib
 except ImportError:
