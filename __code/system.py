@@ -127,6 +127,14 @@ class System(object):
         return 'HFIR'
 
     @classmethod
+    def get_instrument_selected(cls):
+        return cls.instrument_ui.value
+
+    @classmethod
+    def get_facility_selected(cls):
+        return cls.get_facility_from_instrument(instrument=cls.get_instrument_selected())
+
+    @classmethod
     def get_start_path(cls, debugger_folder='', system_folder='', instrument=''):
 
         facility = cls.get_facility_from_instrument(instrument=instrument)
