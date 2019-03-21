@@ -15,7 +15,6 @@ class Oncat:
         self.oncat = pyoncat.ONCat(
                     'https://oncat.ornl.gov',
                     client_id=ID,
-                    # scopes=['api:read',
                     client_secret=None,
                     token_getter=token_store.get_token,
                     token_setter=token_store.set_token,
@@ -25,7 +24,6 @@ class Oncat:
         self.username = getpass.getuser()
 
     def authentication(self):
-
         try:
             self.oncat.login(self.username,
                              getpass.getpass("Enter Password for {}:".format(self.username)))
@@ -35,6 +33,20 @@ class Oncat:
 
         return True
 
+
+class GetEverything:
+
+    def __init__(self,
+                 instrument='CG1D',
+                 facility='HFIR',
+                 runs='',
+                 oncat=None):
+
+        self.datafiles = oncat.Datafile.list(
+            facility=facility,
+            instrument=instrument,
+            tags=['type/raw'],
+            runs=runs)
 
 
 # Create token store
