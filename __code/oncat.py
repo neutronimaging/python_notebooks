@@ -50,6 +50,26 @@ class GetEverything:
     def __remove_leading_backslash(self, run):
         return run[1:]
 
+
+class GetProjection:
+
+    def __init__(self,
+                 instrument='CG1D',
+                 facility='HFIR',
+                 runs=[],
+                 oncat=None,
+                 projection=[]):
+
+        #projection = ['']
+
+        self.datafiles = oncat.Datafile.retrieve(runs,
+                                                 facility=facility,
+                                                 instrument=instrument,
+                                                 projection=projection)
+
+
+
+
 # Create token store
 class InMemoryTokenStore(object):
     def __init__(self):

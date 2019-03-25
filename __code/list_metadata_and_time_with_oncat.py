@@ -40,18 +40,23 @@ class ListMetadata:
                                           layout=widgets.Layout(width='20%')),
                             widgets.SelectMultiple(options=self.list_metadata_with_examples,
                                                    layout=widgets.Layout(width='80%',
-                                                                         height='80%'))],
-                           layout=widgets.Layout(height='400px'))
-        select_box = box1.children[1]
+                                                                         height='100%'))],
+                           layout=widgets.Layout(height='500px'))
+        self.select_box = box1.children[1]
         display(box1)
 
     def retrieve_list_metadata_with_examples(self):
         list_metadata = self.retrieve_list_metadata()
-        raw_data = self.raw_oncat_data
+        raw_data = self.raw_oncat_metadata
+        list_metadata_with_examples = ListMetadata.format_list_metadata_with_examples(list_metadata, raw_data)
+        return list_metadata_with_examples
+
+    @staticmethod
+    def format_list_metadata_with_examples(list_metadata, raw_data):
         list_metadata_with_examples = []
         for _key in list_metadata:
             _key_with_value = "{:>40} \t --> \texample: {}".format(_key,
-                                                             raw_data[_key])
+                                                                   raw_data[_key])
             list_metadata_with_examples.append(_key_with_value)
         return list_metadata_with_examples
 
@@ -61,11 +66,36 @@ class ListMetadata:
                                          run=self.first_file,
                                          oncat=self.oncat_session)
 
+        self.raw_oncat_data = _data.datafiles
+        sorted_dict_metadata = self.create_sorted_dict_metadata(_data)
+        return sorted_dict_metadata.keys()
+
+    def create_sorted_dict_metadata(self, _data):
         _data = _data.datafiles['metadata']
-        self.raw_oncat_data = _data
-        dict_metadata = OrderedDict(_data.to_dict())
-        return dict_metadata.keys()
+        dict_metadata = _data.to_dict()
+        keys_sorted = sorted(dict_metadata.keys())
+        sorted_dict_metadata = OrderedDict()
+        for _key in keys_sorted:
+            sorted_dict_metadata[_key] = dict_metadata[_key]
+        self.raw_oncat_metadata = sorted_dict_metadata
+        return sorted_dict_metadata
 
     def export_ascii(self, output_folder):
-        print("output folder is: {}".format(output_folder))
+        list_metadata_selected = self.get_list_metadata_selected()
+        list_files = self.list_of_files
+
+        
+
+
+
+
+    def get_list_metadata_selected(self):
+        list_metadata_selected = []
+        for metadata_selected in self.select_box.value:
+            metadata_name = metadata_selected.split("\t -->")
+            list_metadata_selected.append(metadata_name[0])
+
+        return list_metadata_selected
+
+
 
