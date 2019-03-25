@@ -56,18 +56,18 @@ class GetProjection:
     def __init__(self,
                  instrument='CG1D',
                  facility='HFIR',
-                 runs=[],
+                 list_files=[],
                  oncat=None,
                  projection=[]):
 
-        #projection = ['']
+        projection.append('ingested')
 
-        self.datafiles = oncat.Datafile.retrieve(runs,
-                                                 facility=facility,
-                                                 instrument=instrument,
-                                                 projection=projection)
-
-
+        self.datafiles = {}
+        for _file in list_files:
+            self.datafiles[_file] =oncat.Datafile.retrieve(_file,
+                                                           facility=facility,
+                                                           instrument=instrument,
+                                                           projection=projection)
 
 
 # Create token store

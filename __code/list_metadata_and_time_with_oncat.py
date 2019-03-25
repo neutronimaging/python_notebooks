@@ -1,7 +1,10 @@
-from __code import oncat
 from IPython.core.display import display, HTML
 from ipywidgets import widgets
 from collections import OrderedDict
+import os
+
+from __code import oncat
+from __code.file_handler import make_ascii_file
 
 
 class ListMetadata:
@@ -81,20 +84,61 @@ class ListMetadata:
         return sorted_dict_metadata
 
     def export_ascii(self, output_folder):
-        list_metadata_selected = self.get_list_metadata_selected()
         list_files = self.list_of_files
+        projection = self.create_projection()
+        output_ascii_file_name = ListMetadata.create_output_ascii_name(list_files, output_folder)
 
-        
+        o_metadata_selected = oncat.GetProjection(instrument=self.instrument,
+                                                  facility=self.facility,
+                                                  list_files=list_files,
+                                                  oncat=self.oncat_session,
+                                                  projection=projection)
+        metadata_selected = o_metadata_selected.datafiles
 
+        name_metadata = self.create_metadata_name_row()
+        value_metadata = self.create_metadata_value_rows(list_files, metadata_selected)
+        make_ascii_file(metadata=name_metadata,
+                        data=value_metadata,
+                        output_file_name=output_ascii_file_name,
+                        dim='1d')
+        display(HTML('<span style="font-size: 20px; color:Green">File ' + output_ascii_file_name +
+                     ' has been created with success!</span>'))
 
+    def create_metadata_value_rows(self, list_files, metadata_selected):
+        value_metadata = []
+        for _file in list_files:
+            time_stamp = metadata_selected[_file]['ingested']
+            _metadata = []
+            for _metadata_name in self.get_list_metadata_selected():
+                _metadata.append(str(metadata_selected[_file]['metadata'][_metadata_name]))
+            row_string = "{}, {}, {}".format(_file,
+                                             time_stamp,
+                                             ", ".join(_metadata))
+            value_metadata.append(row_string)
+        return value_metadata
 
+    def create_metadata_name_row(self):
+        name_metadata = ["#file_name, time_stamp" + ", ".join(self.get_list_metadata_selected())]
+        return name_metadata
+
+    @staticmethod
+    def create_output_ascii_name(list_files, output_folder):
+        output_ascii_file_name = os.path.abspath(os.path.basename(os.path.dirname(list_files[0]))) + \
+                                 '_metadata_report.txt'
+        return os.path.join(output_folder, output_ascii_file_name)
+
+    def create_projection(self):
+        list_metadata_selected = self.get_list_metadata_selected()
+        projection = []
+        for _metadata_selected in list_metadata_selected:
+            projection.append('metadata.{}'.format(_metadata_selected.strip()))
+        return projection
 
     def get_list_metadata_selected(self):
         list_metadata_selected = []
         for metadata_selected in self.select_box.value:
             metadata_name = metadata_selected.split("\t -->")
-            list_metadata_selected.append(metadata_name[0])
-
+            list_metadata_selected.append(metadata_name[0].strip())
         return list_metadata_selected
 
 
