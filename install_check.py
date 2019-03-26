@@ -9,6 +9,7 @@ requirements = [
     'scipy',
     'scikit-image',
     'numpy',
+    'pyoncat',
 ]
 
 import_result = {p: False for p in requirements}
@@ -32,11 +33,22 @@ version_check_packages = {'numpy': '1.15.2',
                           'Pillow': '5.2.0',
                           'scipy': '1.1.0',
                           'scikit-image': '0.14.0',
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 8bd22bd86dae204d87f0b04c6bfbf5d833b08045
                           'ipywidgets': '7.4.1',
                           'pandas': '0.23.4',
                           'plotly': '3.2.1',
                           'pyqtgraph': '0.10.0',
                           'sectorizedradialprofile': '',
+<<<<<<< HEAD
+=======
+                          'pyoncat': '1.0',
+                          'oauthlib': '3.0.1',
+=======
+>>>>>>> 8b631de4d027c6502a2e6797bd432cb2ec5e5b79
+>>>>>>> 8bd22bd86dae204d87f0b04c6bfbf5d833b08045
                       }
 
 
@@ -69,6 +81,13 @@ def version_checker(package_name, version, nbextension=None):
 
 # Check as many packages as we can...
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8b631de4d027c6502a2e6797bd432cb2ec5e5b79
+>>>>>>> 8bd22bd86dae204d87f0b04c6bfbf5d833b08045
 try:
     import matplotlib
 except ImportError:
@@ -145,3 +164,21 @@ except ImportError:
     pass
 else:
     version_checker('sectorizedradialprofile', 'N/A') 
+<<<<<<< HEAD
+=======
+
+try:
+    import pyoncat
+except ImportError:
+    pass
+else:
+    version_checker('pyoncat', pyoncat.__version__)
+
+try:
+    import oauthlib
+except ImportError:
+    pass
+else:
+    version_checker('oauthlib', oauthlib.__version__)
+
+>>>>>>> 8bd22bd86dae204d87f0b04c6bfbf5d833b08045

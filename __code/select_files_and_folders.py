@@ -18,3 +18,14 @@ class SelectFiles(FileFolderBrowser):
 
     def retrieve_list_of_files(self, list_of_files=''):
         self.list_of_files = list_of_files
+
+
+class SelectFolder(FileFolderBrowser):
+
+    def __init__(self, system=None, next_function=None):
+        working_dir = system.System.get_working_dir()
+
+        super(SelectFolder, self).__init__(working_dir=working_dir,
+                                           next_function=next_function)
+
+        self.select_output_folder()
