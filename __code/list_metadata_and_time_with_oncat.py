@@ -118,7 +118,7 @@ class ListMetadata:
         return value_metadata
 
     def create_metadata_name_row(self):
-        name_metadata = ["#file_name, time_stamp" + ", ".join(self.get_list_metadata_selected())]
+        name_metadata = ["#filename, timestamp, " + ", ".join(self.get_list_metadata_selected())]
         return name_metadata
 
     @staticmethod

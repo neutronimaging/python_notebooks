@@ -9,6 +9,7 @@ try:
 except:
     pass
 from IPython.display import display
+from IPython.core.display import HTML
 
 import numpy as np
 import os
@@ -333,6 +334,12 @@ class MetadataFileParser(object):
                                next=self.__export_table)
 
     def __export_table(self, folder):
+
+        display(HTML('<span style="font-size: 20px; color:blue">You selected the metadata file: ' +
+                     self.filename + '!</span>'))
+
+        display(HTML('<span style="font-size: 20px; color:black">Work in progress! ... </span>'))
+
         output_filename = self.box2.children[1].value
         output_filename = force_file_extension(output_filename, '.txt')
 
@@ -346,7 +353,7 @@ class MetadataFileParser(object):
         self.export_table(data=self.data_to_export, folder=folder, filename=output_filename)
 
     def export_table(self, data=None, folder='', filename=''):
-        full_output_filename = os.path.join(folder, filename)
+        full_output_filename = os.path.join(os.path.abspath(folder), filename)
 
         # reformat data
         pandas_data = pd.DataFrame(data)
@@ -357,6 +364,11 @@ class MetadataFileParser(object):
 
         csv_format = pandas_data.to_csv()
         make_ascii_file_from_string(text=csv_format, filename=full_output_filename)
+
+        display(HTML('<span style="font-size: 20px; color:black">Done!</span>'))
+
+        display(HTML('<span style="font-size: 20px; color:green">Output file created: ' +
+                     full_output_filename + '!</span>'))
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ def calculate_file_temperature(left_T=-1, right_T=-1, left_time=-1, right_time=-
     part1 = coeff * (float(file_time) - float(left_time))
     return part1 + float(left_T)
 
+
 def get_first_temperature_and_index_value(index=-1, data_array=[], direction='left'):
     if direction == 'left':
         coeff = -1
@@ -26,6 +27,7 @@ def get_first_temperature_and_index_value(index=-1, data_array=[], direction='le
     while (np.isnan(data_array[index])):
         index += coeff
     return [data_array[index], index]
+
 
 def extract_temperature(index=-1, temperature_array=[], time_stamp_array=[]):
     
@@ -43,9 +45,11 @@ def extract_temperature(index=-1, temperature_array=[], time_stamp_array=[]):
 
     return file_temperature
 
+
 def retrieve_T_from_file_vs_temperature_array(file_name='', file_array=[], temperature_array=[]):
     index = file_array.index(file_name)
     return temperature_array[index]
+
 
 def make_output_file_name(bin_number=-1, index=-1, algorithm='mean'):
     '''
@@ -74,9 +78,11 @@ def make_output_file_name(bin_number=-1, index=-1, algorithm='mean'):
     _output_file_name = "bin#{:03d}_{:04d}_{}.fits".format(bin_number, index, algorithm)
     return _output_file_name
 
+
 def keep_folder_name(image):
     image_array = image.split('_')
     return image_array[0]
+
 
 def is_extension(filename='', ext='.fits'):
     _ext = os.path.splitext(filename)[1]
@@ -84,17 +90,20 @@ def is_extension(filename='', ext='.fits'):
         return True
     else:
         return False
-    
+
+
 def index_first_boolean(result, boolean=True):
     for _index, _value in enumerate(result):
         if _value == boolean:
             return _index
-        
+
+
 def index_last_boolean(result, boolean=True):
     for _index, _value in reversed(list(enumerate(result))):
         if _value == boolean:
             return _index
-        
+
+
 def find_index_of_value_in_array(array=[], value=-1, index_type='le'):
     '''
     index_type is either 'le' or 'ge'
@@ -105,7 +114,8 @@ def find_index_of_value_in_array(array=[], value=-1, index_type='le'):
     else:
         result = x_axis > value
         return index_last_boolean(result, False)
-    
+
+
 def make_user_friendly_list_of_bins(full_list_of_bins):
     return [os.path.basename(_file) for _file in full_list_of_bins]
         
@@ -121,7 +131,8 @@ def get_ipts():
         ipts = ''
         
     return ipts
-    
+
+
 def get_working_dir(ipts='', debugging=False):
     '''
     if there is an ipts argument passed in, the working dir will be '/HFIR/CG1DImaging/IPTS-{}'.format(ipts)
@@ -150,6 +161,7 @@ def get_working_dir(ipts='', debugging=False):
 
     return working_dir
 
+
 def make_dir(dir='', overwrite=True):
     if dir== '':
         return
@@ -161,6 +173,7 @@ def make_dir(dir='', overwrite=True):
     else:
         if not (os.path.exists(dir)):
             os.mkdir(dir)
+
 
 def format_file_index(filename='', number_of_digits=4):
     '''
@@ -184,6 +197,7 @@ def format_file_index(filename='', number_of_digits=4):
 
     return ''
 
+
 def get_n_random_element(input_list=[], n=1):
     '''
     will return a list of n element taken from the input array called input_list
@@ -191,6 +205,7 @@ def get_n_random_element(input_list=[], n=1):
     n_random = np.random.randint(0, len(input_list)-1, n)
     new_list = [input_list[_index] for _index in n_random]
     return new_list
+
 
 def rename_files(dict_old_new_names={}, new_output_folder=''):
     make_dir(dir=new_output_folder)
@@ -206,6 +221,7 @@ def rename_files(dict_old_new_names={}, new_output_folder=''):
         os.rename(_old_name, _new_name)
         w1.value = _index + 1
 
+
 def copy_files(dict_old_new_names={}, new_output_folder=''):
     make_dir(dir=new_output_folder)
 
@@ -219,6 +235,30 @@ def copy_files(dict_old_new_names={}, new_output_folder=''):
         _new_name = os.path.join(new_output_folder, dict_old_new_names[_old_name])
         copyfile(_old_name, _new_name)
         w1.value = _index + 1
+
+
+def display_html_message(*, title_message='', message='', message_type='info'):
+
+    if message_type == 'info':
+        line_color = 'blue'
+        message_color = 'black'
+
+    elif message_type == 'error':
+        line_color = 'red'
+        message_color = 'red'
+
+    elif message_type == 'ok':
+        line_color = 'green'
+        message_color = 'black'
+
+    else:
+        line_color = 'black'
+        message_color = 'black'
+
+    display(HTML('<span style="font-size: 15px; color:{}">{}: '.format(line_color,
+                                                                       title_message) +
+                 '<span style="color:{}"> '.format(message_color) +
+                 message + '</span>'))
 
 
 class ListRunsParser(object):
