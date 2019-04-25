@@ -255,7 +255,7 @@ def display_html_message(*, title_message='', message='', message_type='info'):
         line_color = 'black'
         message_color = 'black'
 
-    display(HTML('<span style="font-size: 15px; color:{}">{}: '.format(line_color,
+    display(HTML('<span style="font-size: 15px; color:{}">{} '.format(line_color,
                                                                        title_message) +
                  '<span style="color:{}"> '.format(message_color) +
                  message + '</span>'))

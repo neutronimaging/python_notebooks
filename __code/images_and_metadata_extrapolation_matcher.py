@@ -29,14 +29,31 @@ class ImagesAndMetadataExtrapolationMatcher:
 
     def retrieve_dataframe(self, filename=''):
         _dataframe = pd.read_csv(filename)
-        _dataframe.set_index(INDEX)
         return _dataframe
 
     def merge_data(self):
+
+        if (INDEX in self.filename_vs_timestamp_dataframe) and \
+                (INDEX in self.metadata_ascii_file_dataframe):
+            self.simple_merge()
+
+        else:
+            self.merge_with_extrapolation()
+
+    def simple_merge(self):
+        self.set_index(self.filename_vs_timestamp_dataframe)
+        self.set_index(self.metadata_ascii_file_dataframe)
+
         self.merged_dataframe = pd.merge(self.filename_vs_timestamp_dataframe,
                                          self.metadata_ascii_file_dataframe,
                                          on=INDEX,
                                          how='outer')
+
+    def set_index(self, dataframe, index=INDEX):
+        return dataframe.set_index(index)
+
+    def merge_with_extrapolation(self):
+        pass
 
     def get_output_file_name(self):
         base_part1 = self.get_base_name(self.filename_vs_timestamp)
@@ -49,10 +66,10 @@ class ImagesAndMetadataExtrapolationMatcher:
 
     def make_and_inform_of_full_output_file_name(self, folder_name):
         folder_name = os.path.abspath(folder_name)
-        display_html_message(title_message='Output folder name', message=folder_name)
+        display_html_message(title_message='Output folder name:', message=folder_name)
 
         output_file_name = self.get_output_file_name()
-        display_html_message(title_message='Output file name', message=output_file_name)
+        display_html_message(title_message='Output file name:', message=output_file_name)
 
         return os.path.join(folder_name, output_file_name)
 

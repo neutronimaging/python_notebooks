@@ -57,5 +57,5 @@ class SelectAsciiFile(FileFolderBrowser):
 
     def done_message(self, file_selected):
         self.ascii_file = file_selected
-        display_html_message(title_message='Selected Ascii File',
+        display_html_message(title_message='Selected Ascii File:',
                              message=file_selected)
