@@ -202,11 +202,7 @@ class TimestampFormatter:
         time_dict.tm_sec
         """
         # time_string = 09/18/2018 12:00:35
-        print("timestamp: {}".format(timestamp))
-        print("input_time_format: {}".format(input_time_format))
         time_dict = time.strptime(timestamp.strip(), input_time_format)
-        print("time_dict: {}".format(time_dict))
-        print("")
         return time_dict
 
 

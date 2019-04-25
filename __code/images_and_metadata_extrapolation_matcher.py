@@ -29,7 +29,13 @@ class ImagesAndMetadataExtrapolationMatcher:
 
     def retrieve_dataframe(self, filename=''):
         _dataframe = pd.read_csv(filename)
+        _dataframe = self.remove_white_space_in_column_names(_dataframe)
         return _dataframe
+
+    def remove_white_space_in_column_names(self, dataframe):
+        clean_column_names = [_old_col_name.strip() for _old_col_name in list(dataframe.columns.values)]
+        dataframe.columns = clean_column_names
+        return dataframe
 
     def merge_data(self):
 
