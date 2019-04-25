@@ -107,7 +107,7 @@ class ListMetadata:
     def create_metadata_value_rows(self, list_files, metadata_selected):
         value_metadata = []
         for _file in list_files:
-            time_stamp = metadata_selected[_file]['ingested']
+            time_stamp = self.unify_timestamp_format(metadata_selected[_file]['ingested'])
             _metadata = []
             for _metadata_name in self.get_list_metadata_selected():
                 _metadata.append(str(metadata_selected[_file]['metadata'][_metadata_name]))
@@ -117,8 +117,13 @@ class ListMetadata:
             value_metadata.append(row_string)
         return value_metadata
 
+    def unify_timestamp_format(self, old_timestamp):
+        o_time = TimestampFormatter(timesdtamp=old_timestamp)
+        new_timestamp = o_time.format_oncat_timestamp()
+        return new_timestamp
+
     def create_metadata_name_row(self):
-        name_metadata = ["#filename, timestamp, " + ", ".join(self.get_list_metadata_selected())]
+        name_metadata = ["#filename, timestamp_user_format, " + ", ".join(self.get_list_metadata_selected())]
         return name_metadata
 
     @staticmethod

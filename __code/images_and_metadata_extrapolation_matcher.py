@@ -10,22 +10,24 @@ from IPython.display import display
 from IPython.core.display import HTML
 
 from __code.utilities import display_html_message
+from __code.time_utility import TimestampFormatter
 
 INDEX = '#filename'
 
 
 class ImagesAndMetadataExtrapolationMatcher:
 
-    def __init__(self, filename_vs_timestamp='', metadata_ascii_file=''):
-        self.filename_vs_timestamp = filename_vs_timestamp
-        self.metadata_ascii_file = metadata_ascii_file
+    def __init__(self, ascii_file_1='', ascii_file_2=''):
+        self.ascii_file_1 = ascii_file_1
+        self.ascii_file_2 = ascii_file_2
 
         self.load_ascii_files()
+        #self.unify_timestamp_columns()
         self.merge_data()
 
     def load_ascii_files(self):
-        self.filename_vs_timestamp_dataframe = self.retrieve_dataframe(filename=self.filename_vs_timestamp)
-        self.metadata_ascii_file_dataframe = self.retrieve_dataframe(filename=self.metadata_ascii_file)
+        self.ascii_file_1_dataframe = self.retrieve_dataframe(filename=self.ascii_file_1)
+        self.ascii_file_2_dataframe = self.retrieve_dataframe(filename=self.ascii_file_2)
 
     def retrieve_dataframe(self, filename=''):
         _dataframe = pd.read_csv(filename)
@@ -37,21 +39,31 @@ class ImagesAndMetadataExtrapolationMatcher:
         dataframe.columns = clean_column_names
         return dataframe
 
-    def merge_data(self):
+    def unify_timestamp_columns(self):
+        self.ascii_file_1_dataframe = self.format_timestamp(self.ascii_file_1_dataframe)
+        self.ascii_file_2_dataframe = self.format_timestamp(self.ascii_file_2_dataframe)
 
-        if (INDEX in self.filename_vs_timestamp_dataframe) and \
-                (INDEX in self.metadata_ascii_file_dataframe):
+    def format_timestamp(self, dataframe):
+        timestamp_user_format = list(dataframe['timestamp_user_format'])
+        o_time = TimestampFormatter(timestamp=timestamp_user_format)
+        new_timestamp_user_format = o_time.format()
+        dataframe['timestamp_user_format'] = new_timestamp_user_format
+        return dataframe
+
+    def merge_data(self):
+        if (INDEX in self.ascii_file_1_dataframe) and \
+                (INDEX in self.ascii_file_2_dataframe):
             self.simple_merge()
 
         else:
             self.merge_with_extrapolation()
 
     def simple_merge(self):
-        self.set_index(self.filename_vs_timestamp_dataframe)
-        self.set_index(self.metadata_ascii_file_dataframe)
+        self.set_index(self.ascii_file_1_dataframe)
+        self.set_index(self.ascii_file_2_dataframe)
 
-        self.merged_dataframe = pd.merge(self.filename_vs_timestamp_dataframe,
-                                         self.metadata_ascii_file_dataframe,
+        self.merged_dataframe = pd.merge(self.ascii_file_1_dataframe,
+                                         self.ascii_file_2_dataframe,
                                          on=INDEX,
                                          how='outer')
 
@@ -62,8 +74,8 @@ class ImagesAndMetadataExtrapolationMatcher:
         pass
 
     def get_output_file_name(self):
-        base_part1 = self.get_base_name(self.filename_vs_timestamp)
-        base_part2 = self.get_base_name(self.metadata_ascii_file)
+        base_part1 = self.get_base_name(self.ascii_file_1)
+        base_part2 = self.get_base_name(self.ascii_file_2)
         return "{}_combined_with_{}.txt".format(base_part1, base_part2)
 
     def get_base_name(self, part1):

@@ -141,7 +141,8 @@ class TimestampFormatter:
     list_input_timestamp = ["%m/%d/%Y %I:%M:%S",
                             "%Y-%m-%d %I:%M:%S",
                             "%d/%m/%Y %I:%M:%S",
-                            "%Y/%m/%d %I:%M:%S"]
+                            "%Y/%m/%d %I:%M:%S",
+                            "%Y-%m-%dT%I:%M:%S-"]
 
     def __init__(self, timestamp="",
                  input_timestamp_format=None,
@@ -152,6 +153,13 @@ class TimestampFormatter:
         else:
             self.input_timestamp_format = list(input_timestamp_format)
         self.output_timestamp_format = output_timestamp_format
+
+    def format_oncat_timestamp(self)
+        """go from 2018-09-17T21:50:50.978000-04:00, to 2018-09/17 21:50:50.978000"""
+        oncat_timestamp = self.timestamp
+        [date, time_edt] = oncat_timestamp.split("T")
+        [time, _] = time_edt.split("-")
+        return "{} {}".format(date, time)
 
     def format(self):
         if self.input_timestamp_format[0] == TIMESTAMP_FORMAT:
@@ -181,12 +189,12 @@ class TimestampFormatter:
             break
 
         if o_time:
-            converted_timestamp = "{}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(o_time.tm_year,
-                                                                         o_time.tm_mon,
-                                                                         o_time.tm_mday,
-                                                                         o_time.tm_hour,
-                                                                         o_time.tm_min,
-                                                                         o_time.tm_sec)
+            converted_timestamp = "{}-{:02d}-{:02d} {:02d}:{:02d}:{:2.4f}".format(o_time.tm_year,
+                                                                                  o_time.tm_mon,
+                                                                                  o_time.tm_mday,
+                                                                                  o_time.tm_hour,
+                                                                                  o_time.tm_min,
+                                                                                  o_time.tm_sec)
             return converted_timestamp
         else:
             raise ValueError("Time could not be converted!")
@@ -204,10 +212,3 @@ class TimestampFormatter:
         # time_string = 09/18/2018 12:00:35
         time_dict = time.strptime(timestamp.strip(), input_time_format)
         return time_dict
-
-
-
-
-
-
-

@@ -126,7 +126,7 @@ class MPTFileParser(object):
         #user friendly time stamp format
         user_format = [datetime.datetime.fromtimestamp(_time).strftime('%m/%d/%Y %H:%M:%S')
                        for _time in self.o_pd.index.values]
-        self.o_pd['time_user_format'] = pd.Series(user_format, index=self.o_pd.index)
+        self.o_pd['timestamp_user_format'] = pd.Series(user_format, index=self.o_pd.index)
 
     def set_time_info_as_index(self):
         time_info_column = self.time_info_column
