@@ -5,6 +5,7 @@ import os
 
 from __code import oncat
 from __code.file_handler import make_ascii_file
+from __code.time_utility import TimestampFormatter
 
 
 class ListMetadata:
@@ -118,7 +119,7 @@ class ListMetadata:
         return value_metadata
 
     def unify_timestamp_format(self, old_timestamp):
-        o_time = TimestampFormatter(timesdtamp=old_timestamp)
+        o_time = TimestampFormatter(timestamp=old_timestamp)
         new_timestamp = o_time.format_oncat_timestamp()
         return new_timestamp
 

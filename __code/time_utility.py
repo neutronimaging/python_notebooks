@@ -154,7 +154,7 @@ class TimestampFormatter:
             self.input_timestamp_format = list(input_timestamp_format)
         self.output_timestamp_format = output_timestamp_format
 
-    def format_oncat_timestamp(self)
+    def format_oncat_timestamp(self):
         """go from 2018-09-17T21:50:50.978000-04:00, to 2018-09/17 21:50:50.978000"""
         oncat_timestamp = self.timestamp
         [date, time_edt] = oncat_timestamp.split("T")
