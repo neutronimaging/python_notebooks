@@ -22,8 +22,11 @@ class ImagesAndMetadataExtrapolationMatcher:
         self.ascii_file_2 = ascii_file_2
 
         self.load_ascii_files()
-        #self.unify_timestamp_columns()
+        self.unify_timestamp_columns()
         self.merge_data()
+
+    def get_merged_dataframe(self):
+        return self.merged_dataframe
 
     def load_ascii_files(self):
         self.ascii_file_1_dataframe = self.retrieve_dataframe(filename=self.ascii_file_1)
