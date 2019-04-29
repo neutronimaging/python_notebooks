@@ -17,6 +17,8 @@ INDEX = '#filename'
 
 class ImagesAndMetadataExtrapolationMatcher:
 
+    merged_dataframe = []
+
     def __init__(self, ascii_file_1='', ascii_file_2=''):
         self.ascii_file_1 = ascii_file_1
         self.ascii_file_2 = ascii_file_2

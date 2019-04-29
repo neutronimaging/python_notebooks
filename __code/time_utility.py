@@ -10,7 +10,7 @@ from IPython.core.display import display
 from __code import file_handler
 from __code.metadata_handler import MetadataHandler
 
-TIMESTAMP_FORMAT = "%Y-%m-%d %I:%M:%S"
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def format_time_stamp(file_name = None, time_stamp = None):
@@ -138,10 +138,13 @@ class RetrieveTimeStamp(object):
 
 class TimestampFormatter:
 
-    list_input_timestamp = ["%m/%d/%Y %I:%M:%S",
-                            "%Y-%m-%d %I:%M:%S",
+    list_input_timestamp = ["%m/%d/%Y %H:%M:%S",
+                            "%m/%d/%Y %I:%M:%S",
                             "%Y-%m-%d %H:%M:%S",
+                            "%Y-%m-%d %I:%M:%S",
+                            "%d/%m/%Y %H:%M:%S",
                             "%d/%m/%Y %I:%M:%S",
+                            "%Y/%m/%d %H:%M:%S",
                             "%Y/%m/%d %I:%M:%S",
                             "%Y-%m-%dT%I:%M:%S-"]
 
@@ -180,14 +183,11 @@ class TimestampFormatter:
 
         o_time = None
         for _input_timestamp_format in input_timestamp_format:
-
-            try:
-                o_time = TimestampFormatter.get_time_dict(timestamp=timestamp,
-                                                          input_time_format=_input_timestamp_format)
-            except:
-                continue
-
-            break
+            # print("trying this format {} with this {}".format(_input_timestamp_format, timestamp))
+            o_time = TimestampFormatter.get_time_dict(timestamp=timestamp,
+                                                      input_time_format=_input_timestamp_format)
+            if o_time:
+                break
 
         if o_time:
             converted_timestamp = "{}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(o_time.tm_year,
@@ -201,7 +201,7 @@ class TimestampFormatter:
             raise ValueError("Time {} could not be converted! ".format(timestamp))
 
     @staticmethod
-    def get_time_dict(timestamp="", input_time_format='%m/%d/%Y %I:%M:%S'):
+    def get_time_dict(timestamp="", input_time_format='%m/%d/%Y %H:%M:%S'):
         """return the time dict using the input time format proposed
         time_dict.tm_year
         time_dict.tm_mon
@@ -211,5 +211,11 @@ class TimestampFormatter:
         time_dict.tm_sec
         """
         # time_string = 09/18/2018 12:00:35
-        time_dict = time.strptime(timestamp.strip(), input_time_format)
+        try:
+            time_dict = time.strptime(timestamp.strip(), input_time_format)
+            # print("{} -> {}".format(timestamp, time_dict))
+        except:
+            ValueError("Error converting {} -> {}".format(timestamp, input_time_format))
+            time_dict = None
+
         return time_dict
