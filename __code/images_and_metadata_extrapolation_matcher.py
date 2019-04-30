@@ -12,7 +12,8 @@ from IPython.core.display import HTML
 from __code.utilities import display_html_message
 from __code.time_utility import TimestampFormatter
 
-INDEX = '#filename'
+INDEX_SIMPLE_MERGE = '#filename'
+INDEX_EXTRAPOLATION_MERGE = 'timestamp_user_format'
 
 
 class ImagesAndMetadataExtrapolationMatcher:
@@ -56,8 +57,8 @@ class ImagesAndMetadataExtrapolationMatcher:
         return dataframe
 
     def merge_data(self):
-        if (INDEX in self.ascii_file_1_dataframe) and \
-                (INDEX in self.ascii_file_2_dataframe):
+        if (INDEX_SIMPLE_MERGE in self.ascii_file_1_dataframe) and \
+                (INDEX_SIMPLE_MERGE in self.ascii_file_2_dataframe):
             self.simple_merge()
 
         else:
@@ -69,14 +70,60 @@ class ImagesAndMetadataExtrapolationMatcher:
 
         self.merged_dataframe = pd.merge(self.ascii_file_1_dataframe,
                                          self.ascii_file_2_dataframe,
-                                         on=INDEX,
+                                         on=INDEX_SIMPLE_MERGE,
                                          how='outer')
 
-    def set_index(self, dataframe, index=INDEX):
+    def set_index(self, dataframe, index=INDEX_SIMPLE_MERGE):
         return dataframe.set_index(index)
 
     def merge_with_extrapolation(self):
-        pass
+        self.set_index(self.ascii_file_1_dataframe, index=INDEX_EXTRAPOLATION_MERGE)
+        self.set_index(self.ascii_file_2_dataframe, index=INDEX_EXTRAPOLATION_MERGE)
+
+        merged_dataframe = pd.merge(self.ascii_file_1_dataframe,
+                                    self.ascii_file_2_dataframe,
+                                    on=INDEX_EXTRAPOLATION_MERGE,
+                                    how='outer')
+        merged_dataframe.sort_values(by=INDEX_EXTRAPOLATION_MERGE,
+                                     inplace=True)
+        self.merged_dataframe = merged_dataframe.reset_index(drop=True)
+
+        self.select_metadata_to_extrapolate()
+
+    def select_metadata_to_extrapolate(self):
+        list_metadata = self.get_column_names(self.merged_dataframe)
+        display(HTML('<span style="font-size: 15px; color:blue">CTRL + Click to select multiple rows!</span>'))
+        box = widgets.HBox([widgets.Label("Select Metadata to Extrapolate:",
+                                         layout=widgets.Layout(width='30%')),
+                           widgets.SelectMultiple(options=list_metadata,
+                                                  layout=widgets.Layout(width='70%',
+                                                                        height='70%'))
+                           ],
+                           layout=widgets.Layout(height='250px'))
+        self.metadata_to_extrapolate_widget = box.children[1]
+        display(box)
+
+    def extrapolate_metadata(self):
+        list_metadata_to_extrapolate = self.metadata_to_extrapolate_widget.value
+        
+
+
+
+
+
+    def get_column_names(self, dataframe):
+        """removing INDEX_EXTRAPOLATION_MERGE from list"""
+        list_columns = dataframe.columns
+        clean_list_columns = [_name for _name in list_columns if
+                               not self._is_name_in_list(name=_name,
+                                                         list_name=[INDEX_EXTRAPOLATION_MERGE,
+                                                         INDEX_SIMPLE_MERGE])]
+        return clean_list_columns
+
+    def _is_name_in_list(self, name='', list_name=[]):
+        if name in list_name:
+            return True
+        return False
 
     def get_output_file_name(self):
         base_part1 = self.get_base_name(self.ascii_file_1)
@@ -100,3 +147,49 @@ class ImagesAndMetadataExtrapolationMatcher:
         full_output_file_name = self.make_and_inform_of_full_output_file_name(folder_name)
         self.merged_dataframe.to_csv(full_output_file_name)
         display_html_message(title_message='File Created with Success!', message_type='ok')
+
+
+class Extrapolate:
+
+    @staticmethod
+    def get_first_metadata_and_index_value(index=-1, metadata_array=[], direction='left'):
+        if direction == 'left':
+            coeff = -1
+        else:
+            coeff = +1
+
+        while (np.isnan(metadata_array[index])):
+            index += coeff
+
+            # if last file timestamp is > last metadata recorded, raise error
+            if index >= len(metadata_array):
+                raise ValueError("Not enough metadata to extrapolate value!")
+
+        return [metadata_array[index], index]
+
+    @staticmethod
+    def calculate_extrapolated_metadata(global_index=-1, metadata_array=[], timestamp_array=[]):
+        [left_metadata_value, left_index] = get_first_metadata_and_index_value(index=global_index,
+                                                                               metadata_array=metadata_array,
+                                                                               direction='left')
+        [right_metadata_value, right_index] = get_first_metadata_and_index_value(index=global_index,
+                                                                                 metadata_array=metadata_array,
+                                                                                 direction='right')
+
+        left_timestamp_s_format = convert_to_second(timestamp_array[left_index])
+        right_timestamp_s_format = convert_to_second(timestamp_array[right_index])
+
+        x_timestamp_s_format = convert_to_second(timestamp_array[global_index])
+
+        extra_value = extrapolate_value(x=x_timestamp_s_format,
+                                        x_left=left_timestamp_s_format,
+                                        x_right=right_timestamp_s_format,
+                                        y_left=left_metadata_value,
+                                        y_right=right_metadata_value)
+        return extra_value
+
+    @staticmethod
+    def extrapolate_value(x=1, x_left=1, x_right=1, y_left=1, y_right=1):
+        coeff = (float(y_right) - float(y_left)) / (float(x_right) - float(x_left))
+        part1 = coeff * (float(x) - float(x_left))
+        return part1 + float(y_left)

@@ -219,3 +219,9 @@ class TimestampFormatter:
             time_dict = None
 
         return time_dict
+
+    @staticmethod
+    def convert_to_second(timestamp_value, timestamp_format=TIMESTAMP_FORMAT):
+        d = datetime.datetime.strptime(timestamp_value, timestamp_format)
+        return time.mktime(d.timetuple())
+
