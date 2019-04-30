@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 try:
     import ipywe.fileselector
@@ -14,11 +16,12 @@ from __code.time_utility import TimestampFormatter
 
 INDEX_SIMPLE_MERGE = '#filename'
 INDEX_EXTRAPOLATION_MERGE = 'timestamp_user_format'
-
+TIMESTAMP_FORMAT = "%Y-%m-%d %I:%M:%S"
 
 class ImagesAndMetadataExtrapolationMatcher:
 
     merged_dataframe = []
+    fig = None
 
     def __init__(self, ascii_file_1='', ascii_file_2=''):
         self.ascii_file_1 = ascii_file_1
@@ -103,13 +106,87 @@ class ImagesAndMetadataExtrapolationMatcher:
         self.metadata_to_extrapolate_widget = box.children[1]
         display(box)
 
-    def extrapolate_metadata(self):
-        list_metadata_to_extrapolate = self.metadata_to_extrapolate_widget.value
-        
+    def extrapolate_selected_metadata(self):
+        self.list_metadata_to_extrapolate = self.metadata_to_extrapolate_widget.value
+
+        for _metadata_to_extrapolate in self.list_metadata_to_extrapolate:
+            self.extrapolate_metadata(metadata_name=_metadata_to_extrapolate)
+
+        self.display_extrapolation()
+
+    def extrapolate_metadata(self, metadata_name=''):
+        metadata_array = self.merged_dataframe[metadata_name]
+        timestamp_array = self.merged_dataframe['timestamp_user_format']
+
+        new_metadata_array = []
+        for _index in np.arange(len(metadata_array)):
+            _metadata_value = metadata_array[_index]
+            if np.isnan(_metadata_value):
+                _new_value = Extrapolate.calculate_extrapolated_metadata(global_index=_index,
+                                                                         metadata_array=metadata_array,
+                                                                         timestamp_array=timestamp_array)
+            else:
+                _new_value = _metadata_value
+
+            new_metadata_array.append(_new_value)
+
+        self.merged_dataframe[metadata_name] = new_metadata_array
+
+    def metadata_to_display_init(self):
+        value = self.metadata_to_preview_widget.value
+        self.metadata_to_display_changed({'new': value})
+
+    def metadata_to_display_changed(self, value):
+        name_of_metadata_to_display = value['new']
+
+        self.extract_known_and_unknown_axis_infos(metadata_name=name_of_metadata_to_display)
+
+        if self.fig:
+            self.fig, self.ax = plt.subplots()
+            self.line = self.ax.plot(self.timestamp_s_metadata_known, self.metadata_column, '+',
+                    label='{} vs Timestamp'.format(name_of_metadata_to_display))
+            self.ax.set_xlabel("Time (s)")
+            self.ax.set_ylabel(name_of_metadata_to_display)
+            # self.fig.canvas.draw()
+            # self.fig.canvas.flush_events()
+        else:
+            self.line.set_ydata(self.metadata_column)
+            self.line.set_xdata(self.timestamp_s_metadata_known)
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
 
 
 
 
+    def extract_known_and_unknown_axis_infos(self, metadata_name=''):
+        # known metadata values
+        timestamp_metadata_known = self.ascii_file_2_dataframe['timestamp_user_format']
+        self.timestamp_s_metadata_known = [TimestampFormatter.convert_to_second(_time,
+                                                                                timestamp_format=TIMESTAMP_FORMAT)
+                                           for _time in timestamp_metadata_known]
+        self.metadata_column = self.ascii_file_2_dataframe[metadata_name]
+
+        # unknown metadata values
+        list_index = list(np.where(np.isnan(self.merged_dataframe[metadata_name])))
+        timestamp_metadata_unknown = np.array(self.merged_dataframe['timestamp_user_format'])[list_index]
+        self.timestamp_s_metadata_unknown = [TimestampFormatter.convert_to_second(_time,
+                                                                                  timestamp_format=TIMESTAMP_FORMAT)
+                                             for _time in timestamp_metadata_unknown]
+
+
+    def display_extrapolation(self):
+        box = widgets.HBox([widgets.Label("Select Metadata to Preview:",
+                                         layout=widgets.Layout(width='30%')),
+                           widgets.Select(options=self.list_metadata_to_extrapolate,
+                                          layout=widgets.Layout(width='70%',
+                                                                height='70%'))
+                           ],
+                           layout=widgets.Layout(height='250px'))
+        self.metadata_to_preview_widget = box.children[1]
+        self.metadata_to_preview_widget.observe(self.metadata_to_display_changed, names='value')
+        display(box)
+
+        self.metadata_to_display_init()
 
     def get_column_names(self, dataframe):
         """removing INDEX_EXTRAPOLATION_MERGE from list"""
@@ -158,7 +235,7 @@ class Extrapolate:
         else:
             coeff = +1
 
-        while (np.isnan(metadata_array[index])):
+        while np.isnan(metadata_array[index]):
             index += coeff
 
             # if last file timestamp is > last metadata recorded, raise error
@@ -169,23 +246,23 @@ class Extrapolate:
 
     @staticmethod
     def calculate_extrapolated_metadata(global_index=-1, metadata_array=[], timestamp_array=[]):
-        [left_metadata_value, left_index] = get_first_metadata_and_index_value(index=global_index,
-                                                                               metadata_array=metadata_array,
-                                                                               direction='left')
-        [right_metadata_value, right_index] = get_first_metadata_and_index_value(index=global_index,
-                                                                                 metadata_array=metadata_array,
-                                                                                 direction='right')
+        [left_metadata_value, left_index] = Extrapolate.get_first_metadata_and_index_value(index=global_index,
+                                                                                           metadata_array=metadata_array,
+                                                                                           direction='left')
+        [right_metadata_value, right_index] = Extrapolate.get_first_metadata_and_index_value(index=global_index,
+                                                                                             metadata_array=metadata_array,
+                                                                                             direction='right')
 
-        left_timestamp_s_format = convert_to_second(timestamp_array[left_index])
-        right_timestamp_s_format = convert_to_second(timestamp_array[right_index])
+        left_timestamp_s_format = TimestampFormatter.convert_to_second(timestamp_array[left_index])
+        right_timestamp_s_format = TimestampFormatter.convert_to_second(timestamp_array[right_index])
 
-        x_timestamp_s_format = convert_to_second(timestamp_array[global_index])
+        x_timestamp_s_format = TimestampFormatter.convert_to_second(timestamp_array[global_index])
 
-        extra_value = extrapolate_value(x=x_timestamp_s_format,
-                                        x_left=left_timestamp_s_format,
-                                        x_right=right_timestamp_s_format,
-                                        y_left=left_metadata_value,
-                                        y_right=right_metadata_value)
+        extra_value = Extrapolate.extrapolate_value(x=x_timestamp_s_format,
+                                                    x_left=left_timestamp_s_format,
+                                                    x_right=right_timestamp_s_format,
+                                                    y_left=left_metadata_value,
+                                                    y_right=right_metadata_value)
         return extra_value
 
     @staticmethod
