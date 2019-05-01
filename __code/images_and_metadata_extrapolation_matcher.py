@@ -11,6 +11,11 @@ except:
 from IPython.display import display
 from IPython.core.display import HTML
 
+from plotly.offline import plot, init_notebook_mode, iplot
+init_notebook_mode()
+import plotly.plotly as py
+import plotly.graph_objs as go
+
 from __code.utilities import display_html_message
 from __code.time_utility import TimestampFormatter
 
@@ -21,7 +26,9 @@ TIMESTAMP_FORMAT = "%Y-%m-%d %I:%M:%S"
 class ImagesAndMetadataExtrapolationMatcher:
 
     merged_dataframe = []
-    fig = None
+    extrapolated_dataframe_only = {}
+    extrapolated_timestamp_only = {}
+    figure = None
 
     def __init__(self, ascii_file_1='', ascii_file_2=''):
         self.ascii_file_1 = ascii_file_1
@@ -108,7 +115,6 @@ class ImagesAndMetadataExtrapolationMatcher:
 
     def extrapolate_selected_metadata(self):
         self.list_metadata_to_extrapolate = self.metadata_to_extrapolate_widget.value
-
         for _metadata_to_extrapolate in self.list_metadata_to_extrapolate:
             self.extrapolate_metadata(metadata_name=_metadata_to_extrapolate)
 
@@ -119,44 +125,54 @@ class ImagesAndMetadataExtrapolationMatcher:
         timestamp_array = self.merged_dataframe['timestamp_user_format']
 
         new_metadata_array = []
+        extrapolated_metadata_array = []
+        extrapolated_timestamp_array = []
         for _index in np.arange(len(metadata_array)):
             _metadata_value = metadata_array[_index]
             if np.isnan(_metadata_value):
                 _new_value = Extrapolate.calculate_extrapolated_metadata(global_index=_index,
                                                                          metadata_array=metadata_array,
                                                                          timestamp_array=timestamp_array)
+                extrapolated_metadata_array.append(_new_value)
+                extrapolated_timestamp_array.append(timestamp_array[_index])
             else:
                 _new_value = _metadata_value
 
             new_metadata_array.append(_new_value)
 
         self.merged_dataframe[metadata_name] = new_metadata_array
+        self.extrapolated_dataframe_only[metadata_name] = extrapolated_metadata_array
+        self.extrapolated_timestamp_only[metadata_name] = extrapolated_timestamp_array
 
     def metadata_to_display_init(self):
-        value = self.metadata_to_preview_widget.value
-        self.metadata_to_display_changed({'new': value})
+        self.list_metadata_to_extrapolate = self.metadata_to_extrapolate_widget.value
+        for value in self.list_metadata_to_extrapolate:
+            self.metadata_to_display_changed(value)
 
-    def metadata_to_display_changed(self, value):
-        name_of_metadata_to_display = value['new']
-
+    def metadata_to_display_changed(self, name_of_metadata_to_display):
         self.extract_known_and_unknown_axis_infos(metadata_name=name_of_metadata_to_display)
 
-        if self.fig:
-            self.fig, self.ax = plt.subplots()
-            self.line = self.ax.plot(self.timestamp_s_metadata_known, self.metadata_column, '+',
-                    label='{} vs Timestamp'.format(name_of_metadata_to_display))
-            self.ax.set_xlabel("Time (s)")
-            self.ax.set_ylabel(name_of_metadata_to_display)
-            # self.fig.canvas.draw()
-            # self.fig.canvas.flush_events()
-        else:
-            self.line.set_ydata(self.metadata_column)
-            self.line.set_xdata(self.timestamp_s_metadata_known)
-            self.fig.canvas.draw()
-            self.fig.canvas.flush_events()
+        data_known = go.Scatter(x=self.timestamp_s_metadata_known,
+                                y=self.metadata_column,
+                                mode='markers',
+                                name="Original metadata")
 
+        data_extrapolated = go.Scatter(x=self.timestamp_s_metadata_unknown,
+                                       y=self.extrapolated_dataframe_only[name_of_metadata_to_display],
+                                       mode='markers',
+                                       name='Extrapolated')
 
+        layout = go.Layout(width=800,
+                           height=500,
+                           showlegend=True,
+                           title="Extrapolated metadata: {}".format(name_of_metadata_to_display),
+                           xaxis=dict(title="Time (s)"),
+                           yaxis=dict(title=name_of_metadata_to_display),
+                           )
 
+        data = [data_known, data_extrapolated]
+        figure = go.Figure(data=data, layout=layout)
+        iplot(figure)
 
     def extract_known_and_unknown_axis_infos(self, metadata_name=''):
         # known metadata values
@@ -167,25 +183,17 @@ class ImagesAndMetadataExtrapolationMatcher:
         self.metadata_column = self.ascii_file_2_dataframe[metadata_name]
 
         # unknown metadata values
-        list_index = list(np.where(np.isnan(self.merged_dataframe[metadata_name])))
-        timestamp_metadata_unknown = np.array(self.merged_dataframe['timestamp_user_format'])[list_index]
+        # list_index = list(np.where(np.isnan(self.merged_dataframe[metadata_name])))
+        #timestamp_metadata_unknown = np.array(self.merged_dataframe['timestamp_user_format'])[list_index]
+        # self.timestamp_s_metadata_unknown = [TimestampFormatter.convert_to_second(_time,
+        #                                                                           timestamp_format=TIMESTAMP_FORMAT)
+        #                                      for _time in timestamp_metadata_unknown]
+        timestamp_metadata_unknown = self.extrapolated_timestamp_only[metadata_name]
         self.timestamp_s_metadata_unknown = [TimestampFormatter.convert_to_second(_time,
                                                                                   timestamp_format=TIMESTAMP_FORMAT)
                                              for _time in timestamp_metadata_unknown]
 
-
     def display_extrapolation(self):
-        box = widgets.HBox([widgets.Label("Select Metadata to Preview:",
-                                         layout=widgets.Layout(width='30%')),
-                           widgets.Select(options=self.list_metadata_to_extrapolate,
-                                          layout=widgets.Layout(width='70%',
-                                                                height='70%'))
-                           ],
-                           layout=widgets.Layout(height='250px'))
-        self.metadata_to_preview_widget = box.children[1]
-        self.metadata_to_preview_widget.observe(self.metadata_to_display_changed, names='value')
-        display(box)
-
         self.metadata_to_display_init()
 
     def get_column_names(self, dataframe):
