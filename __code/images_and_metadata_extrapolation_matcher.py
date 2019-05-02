@@ -230,9 +230,13 @@ class ImagesAndMetadataExtrapolationMatcher:
 
     def export_ascii(self, folder_name):
         full_output_file_name = self.make_and_inform_of_full_output_file_name(folder_name)
+        self.cleanup_merged_dataframe()
         self.merged_dataframe.to_csv(full_output_file_name)
         display_html_message(title_message='File Created with Success!', message_type='ok')
 
+    def cleanup_merged_dataframe(self):
+        # keeping only the raws with filename information defined
+        self.merged_dataframe = self.merged_dataframe.dropna(subset=['#filename'])
 
 class Extrapolate:
 
