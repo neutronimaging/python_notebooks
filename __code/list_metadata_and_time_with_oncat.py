@@ -31,6 +31,7 @@ class ListMetadata:
             return
 
         if not system:
+            display(HTML('<span style="font-size: 20px; color:red">No input folder selected!</span>'))
             return
 
         self.instrument = system.System.get_instrument_selected()
@@ -88,7 +89,6 @@ class ListMetadata:
         list_files = self.list_of_files
         projection = self.create_projection()
         output_ascii_file_name = ListMetadata.create_output_ascii_name(list_files, output_folder)
-
         o_metadata_selected = oncat.GetProjection(instrument=self.instrument,
                                                   facility=self.facility,
                                                   list_files=list_files,
@@ -102,6 +102,7 @@ class ListMetadata:
                         data=value_metadata,
                         output_file_name=output_ascii_file_name,
                         dim='1d')
+        print("Done!")
         display(HTML('<span style="font-size: 20px; color:Green">File ' + output_ascii_file_name +
                      ' has been created with success!</span>'))
 
@@ -129,8 +130,8 @@ class ListMetadata:
 
     @staticmethod
     def create_output_ascii_name(list_files, output_folder):
-        output_ascii_file_name = os.path.abspath(os.path.basename(os.path.dirname(list_files[0]))) + \
-                                 '_metadata_report.txt'
+        output_ascii_file_name = os.path.basename(os.path.dirname(list_files[0]) + '_metadata_report_from_oncat.txt')
+        output_folder = os.path.abspath(output_folder)
         return os.path.join(output_folder, output_ascii_file_name)
 
     def create_projection(self):

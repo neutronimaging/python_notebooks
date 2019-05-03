@@ -162,7 +162,10 @@ class TimestampFormatter:
         """go from 2018-09-17T21:50:50.978000-04:00, to 2018-09/17 21:50:50.978000"""
         oncat_timestamp = self.timestamp
         [date, time_edt] = oncat_timestamp.split("T")
-        [time, _] = time_edt.split(".")
+        if "." in time_edt:
+            [time, _] = time_edt.split(".")
+        else:
+            time = time_edt
         return "{} {}".format(date, time)
 
     def format(self):
