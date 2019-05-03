@@ -2,7 +2,11 @@ import getpass
 import pyoncat
 import re
 
+from ipywidgets import widgets
+from IPython.core.display import display
+
 CLIENT_ID = '35b12436-99cc-4ee1-9faf-b2608ea3e6e6'
+
 
 class Oncat:
 
@@ -58,16 +62,31 @@ class GetProjection:
                  facility='HFIR',
                  list_files=[],
                  oncat=None,
-                 projection=[]):
+                 projection=[],
+                 with_progressbar=False):
 
         projection.append('ingested')
 
+        if with_progressbar:
+            box1 = widgets.HBox([widgets.Label("Retrieving Metadata ...",
+                                               layout=widgets.Layout(width='30%')),
+                                 widgets.IntProgress(max=len(list_files),
+                                                     layout=widgets.Layout(width='70%'))])
+            display(box1)
+            slider = box1.children[1]
+
         self.datafiles = {}
-        for _file in list_files:
-            self.datafiles[_file] =oncat.Datafile.retrieve(_file,
-                                                           facility=facility,
-                                                           instrument=instrument,
-                                                           projection=projection)
+        for _index, _file in enumerate(list_files):
+            self.datafiles[_file] = oncat.Datafile.retrieve(_file,
+                                                            facility=facility,
+                                                            instrument=instrument,
+                                                            projection=projection)
+
+            if with_progressbar:
+                slider.value = _index
+
+        if with_progressbar:
+            box1.close()
 
 
 # Create token store

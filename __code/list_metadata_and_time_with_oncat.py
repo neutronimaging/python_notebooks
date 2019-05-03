@@ -67,9 +67,9 @@ class ListMetadata:
 
     def retrieve_list_metadata(self):
         _data = oncat.GetEverything(instrument=self.instrument,
-                                         facility=self.facility,
-                                         run=self.first_file,
-                                         oncat=self.oncat_session)
+                                    facility=self.facility,
+                                    run=self.first_file,
+                                    oncat=self.oncat_session)
 
         self.raw_oncat_data = _data.datafiles
         sorted_dict_metadata = self.create_sorted_dict_metadata(_data)
@@ -89,11 +89,13 @@ class ListMetadata:
         list_files = self.list_of_files
         projection = self.create_projection()
         output_ascii_file_name = ListMetadata.create_output_ascii_name(list_files, output_folder)
+
         o_metadata_selected = oncat.GetProjection(instrument=self.instrument,
                                                   facility=self.facility,
                                                   list_files=list_files,
                                                   oncat=self.oncat_session,
-                                                  projection=projection)
+                                                  projection=projection,
+                                                  with_progressbar=True)
         metadata_selected = o_metadata_selected.datafiles
 
         name_metadata = self.create_metadata_name_row()
