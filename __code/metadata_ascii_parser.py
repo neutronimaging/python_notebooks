@@ -1,12 +1,13 @@
 import codecs
-import time, datetime
+import time
+import datetime
 import inflect
 
 # to be able to run this code from the command line for testing
 try:
     import ipywe.fileselector
     from ipywidgets import widgets
-except:
+except ImportError:
     pass
 from IPython.display import display
 from IPython.core.display import HTML
@@ -293,7 +294,10 @@ class MetadataFileParser(object):
         return self.meta.get_data()
 
     def get_data_column_names(self):
-        return list(self.meta.o_pd.columns.values)
+        raw_list = list(self.meta.o_pd.columns.values)
+        # remove 'timestamp_user_format'
+        clean_list = [_name for _name in raw_list if _name != 'timestamp_user_format']
+        return clean_list
 
     def select_data_to_keep(self, default_selection=[-1]):
 
@@ -304,13 +308,13 @@ class MetadataFileParser(object):
         default_value = [list_columns[_index] for _index in default_selection]
 
         self.box = widgets.HBox([widgets.Label("Select Metadata(s) to Keep:",
-                                          layout=widgets.Layout(width='30%'),
-                                          ),
-                            widgets.SelectMultiple(options=list_columns,
-                                                   value=default_value,
-                                                   rows=10,
-                                                   layout=widgets.Layout(width='30%')),
-                            ])
+                                               layout=widgets.Layout(width='30%'),
+                                              ),
+                                 widgets.SelectMultiple(options=list_columns,
+                                                        value=default_value,
+                                                        rows=10,
+                                                        layout=widgets.Layout(width='30%')),
+                                ])
         display(self.box)
 
     def select_output_location(self, default_filename=''):
@@ -347,6 +351,7 @@ class MetadataFileParser(object):
 
         # record metadata selected
         metadata_name_selected = np.array(self.box.children[1].value)
+        metadata_name_selected = np.append(metadata_name_selected, 'timestamp_user_format')
         data = self.get_data()
         self.data_to_export = data[metadata_name_selected]
 
@@ -368,7 +373,7 @@ class MetadataFileParser(object):
         display(HTML('<span style="font-size: 20px; color:black">Done!</span>'))
 
         display(HTML('<span style="font-size: 20px; color:green">Output file created: ' +
-                     full_output_filename + '!</span>'))
+                     full_output_filename + '</span>'))
 
 
 if __name__ == "__main__":
