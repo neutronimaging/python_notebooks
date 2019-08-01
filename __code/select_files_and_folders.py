@@ -79,13 +79,16 @@ class SelectFolderWithDefaultPaths(FileFolderBrowser):
 
 class SelectFolder(FileFolderBrowser):
 
-    def __init__(self, system=None, next_function=None):
+    def __init__(self, system=None, next_function=None, is_input_folder=False):
         working_dir = system.System.get_working_dir()
 
         super(SelectFolder, self).__init__(working_dir=working_dir,
                                            next_function=next_function)
 
-        self.select_output_folder()
+        if is_input_folder:
+            self.select_input_folder()
+        else:
+            self.select_output_folder()
 
 
 class SelectAsciiFile(FileFolderBrowser):
