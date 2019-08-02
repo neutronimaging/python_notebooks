@@ -1,8 +1,10 @@
 from IPython.core.display import display, HTML
-from ipywidgets import widgets
+from ipywidgets import widgets, interact
 from collections import OrderedDict
 from pathlib import Path
-import glob
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 from __code.file_handler import make_ascii_file
 from __code.time_utility import TimestampFormatter
@@ -13,19 +15,66 @@ class ShiftTimeOffset:
     instrument = 'CG1D'
     facility = 'HFIR'
     first_file = ''
-    list_metadata = []
+    list_of_fits_files = []
+    timestamp_file = ''
+    counts_vs_time_array = []
 
     def __init__(self):
         pass
 
-    def built_list_of_files(self, input_folder):
+    def display_counts_vs_time(self, input_folder):
+        self.built_list_of_fits_files(input_folder)
+        self.retrieve_name_of_timestamp_file(input_folder)
+        if self.timestamp_file:
+            self.load_timestamp_file()
+            self.plot_timestamp_file()
+
+    def built_list_of_fits_files(self, input_folder):
         list_of_fits_files = list(Path(input_folder).glob('*.fits'))
-        print(list_of_fits_files)
+        list_of_fits_files.sort()
+        if list_of_fits_files:
+            nbr_fits_files = len(list_of_fits_files)
+            display(HTML('<span style="font-size: 15px; color:green">Found ' + str(nbr_fits_files) + ' FITS files to process!</span>'))
+            self.list_of_fits_files = list_of_fits_files
+        else:
+            display(HTML('<span style="font-size: 15px; color:red">No FITS files Found!</span>'))
 
+    def retrieve_name_of_timestamp_file(self, input_folder):
+        timestamp_files = list(Path(input_folder).glob('*_Spectra.txt'))
+        timestamp_file = timestamp_files[0]
+        if Path(timestamp_file).exists():
+            display(HTML('<span style="font-size: 15px; color:green">Time stamp file Found (' +str(timestamp_file) + ')</span>'))
+            self.timestamp_file = timestamp_file
+        else:
+            display(HTML('<span style="font-size: 15px; color:red">Time stamp not Found</span>'))
 
+    def load_timestamp_file(self):
+        timestamp_file = self.timestamp_file
+        counts_vs_time_array = pd.read_csv(timestamp_file, sep='\t')
+        self.counts_vs_time_array = np.array(counts_vs_time_array)
 
+    def plot_timestamp_file(self):
+        if self.counts_vs_time_array == []:
+            return
 
+        x_axis = self.counts_vs_time_array[:,0]
+        y_axis = self.counts_vs_time_array[:,1]
+        x_index_axis = np.arange(len(y_axis))
 
+        def plot_cutoff(index):
+
+            fig, ax1 = plt.subplots()
+            ax1.plot(x_axis, y_axis)
+            ax1.set_xlabel(r"Time (micros)")
+
+            x_position = x_axis[index]
+            plt.axvline(x_position, color='red')
+
+        interact(plot_cutoff,
+                 index=widgets.IntSlider(min=0,
+                                         max=x_index_axis[-1],
+                                         value=0,
+                                         continuous_update=False))
 
     def step2(self, system=None, input_folder=""):
         if not input_folder:
