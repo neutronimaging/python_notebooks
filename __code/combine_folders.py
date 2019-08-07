@@ -59,6 +59,7 @@ class CombineFolders(object):
             _local_list_files_dict = self.__get_list_files(file_format=file_format, folder=_folder)
 
             _list_files = _local_list_files_dict['list_files']
+            _list_files.sort()
             _format = _local_list_files_dict['file_format']
 
             _short = os.path.basename(_folder)
@@ -135,9 +136,11 @@ class CombineFolders(object):
 
         # create dictionary of how the images will be combined
         merging_dict = self.__create_merging_dictionary()
+        self.merginc_dict_debugging = merging_dict
 
         # create final list of files to merge
         final_dict_of_files_to_merge = self.__create_dict_of_files_to_merge(merging_dict)
+        self.final_dict_of_files_to_merge_debugging = final_dict_of_files_to_merge
 
         final_nbr_folders = len(merging_dict.keys())
         folder_level_ui = widgets.HBox([widgets.Label("Folder Progress:",
@@ -163,10 +166,12 @@ class CombineFolders(object):
             for _index_files_to_merge, _files_to_merge in enumerate(list_files_to_merge):
 
                 _files_to_merge = [_file for _file in _files_to_merge]
+                self.files_to_merge_for_testing = _files_to_merge
                 o_load = Normalization()
                 o_load.load(file=_files_to_merge)
                 _data = o_load.data['sample']['data']
                 combined_data = self.__merging_algorithm(algorithm, _data)
+                self.combined_data_for_testing = combined_data
 
                 _base_name_file = os.path.basename(_files_to_merge[0])
                 output_file_name = os.path.join(output_folder, _final_folder, _base_name_file)
