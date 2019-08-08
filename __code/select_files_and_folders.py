@@ -29,11 +29,16 @@ class SelectFiles(FileFolderBrowser):
 
 class SelectFolderWithDefaultPaths(FileFolderBrowser):
 
-    def __init__(self, system=None, next_function=None):
-        working_dir = system.System.get_working_dir()
+    def __init__(self, system=None, working_dir='', next_function=None, multiple_flag=False):
+        if working_dir == '':
+            if system is None:
+                working_dir = './'
+            else:
+                working_dir = system.System.get_working_dir()
 
         super(SelectFolderWithDefaultPaths, self).__init__(working_dir=working_dir,
-                                                           next_function=next_function)
+                                                           next_function=next_function,
+                                                           multiple_flag=multiple_flag)
 
         ipts = os.path.basename(self.working_dir)
 
@@ -79,14 +84,14 @@ class SelectFolderWithDefaultPaths(FileFolderBrowser):
 
 class SelectFolder(FileFolderBrowser):
 
-    def __init__(self, system=None, next_function=None, is_input_folder=False):
-        working_dir = system.System.get_working_dir()
+    def __init__(self, system=None, next_function=None, is_input_folder=False, working_dir='', multiple_flags=False):
+        if not working_dir:
+            working_dir = system.System.get_working_dir()
 
         super(SelectFolder, self).__init__(working_dir=working_dir,
                                            next_function=next_function)
-
         if is_input_folder:
-            self.select_input_folder()
+            self.select_input_folder(multiple_flag=multiple_flags)
         else:
             self.select_output_folder()
 

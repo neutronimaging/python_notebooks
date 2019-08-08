@@ -3,7 +3,8 @@ import ipywe.fileselector
 
 class FileFolderBrowser(object):
 
-    def __init__(self, working_dir='', next_function=None):
+    def __init__(self, working_dir='',
+                 next_function=None):
         self.working_dir = working_dir
         self.next_function = next_function
 

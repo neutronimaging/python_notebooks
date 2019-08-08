@@ -4,9 +4,13 @@ from collections import OrderedDict
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import re
+import os
+from shutil import copyfile
 import matplotlib.pyplot as plt
 
 from __code.file_handler import make_ascii_file
+from __code.file_handler import make_or_reset_folder
 from __code.time_utility import TimestampFormatter
 
 
@@ -18,26 +22,45 @@ class ShiftTimeOffset:
     list_of_fits_files = []
     timestamp_file = ''
     counts_vs_time_array = []
+    list_of_other_folders = []
 
     def __init__(self):
         pass
 
     def display_counts_vs_time(self, input_folder):
+        self.input_folder = input_folder
         self.built_list_of_fits_files(input_folder)
         self.retrieve_name_of_timestamp_file(input_folder)
+        self.retrieve_parent_folder(input_folder)
         if self.timestamp_file:
-            self.load_timestamp_file()
+            self.counts_vs_time_array = self.load_timestamp_file(self.timestamp_file)
             self.plot_timestamp_file()
 
-    def built_list_of_fits_files(self, input_folder):
+    def get_list_of_fits_files(self, input_folder):
         list_of_fits_files = list(Path(input_folder).glob('*.fits'))
         list_of_fits_files.sort()
+        return list_of_fits_files
+
+    def built_list_of_fits_files(self, input_folder):
+        list_of_fits_files = self.get_list_of_fits_files(input_folder)
         if list_of_fits_files:
             nbr_fits_files = len(list_of_fits_files)
             display(HTML('<span style="font-size: 15px; color:green">Found ' + str(nbr_fits_files) + ' FITS files to process!</span>'))
             self.list_of_fits_files = list_of_fits_files
         else:
             display(HTML('<span style="font-size: 15px; color:red">No FITS files Found!</span>'))
+
+    def retrieve_parent_folder(self, folder):
+        self.working_dir = Path(folder).parent
+
+    def selected_other_folders(self, list_of_other_folders):
+        self.list_of_other_folders = list_of_other_folders
+
+        display(HTML(
+            '<span style="font-size: 15px; color:green">The Time correction will also be applied to the following folders:</span>'))
+        for _folder in list_of_other_folders:
+            display(HTML(
+                '<span style="font-size: 15px; color:green"> - ' + _folder + ' FITS files to process!</span>'))
 
     def retrieve_name_of_timestamp_file(self, input_folder):
         timestamp_files = list(Path(input_folder).glob('*_Spectra.txt'))
@@ -48,10 +71,9 @@ class ShiftTimeOffset:
         else:
             display(HTML('<span style="font-size: 15px; color:red">Time stamp not Found</span>'))
 
-    def load_timestamp_file(self):
-        timestamp_file = self.timestamp_file
+    def load_timestamp_file(self, timestamp_file):
         counts_vs_time_array = pd.read_csv(timestamp_file, sep='\t')
-        self.counts_vs_time_array = np.array(counts_vs_time_array)
+        return np.array(counts_vs_time_array)
 
     def plot_timestamp_file(self):
         if self.counts_vs_time_array == []:
@@ -70,129 +92,123 @@ class ShiftTimeOffset:
             x_position = x_axis[index]
             plt.axvline(x_position, color='red')
 
-        interact(plot_cutoff,
-                 index=widgets.IntSlider(min=0,
-                                         max=x_index_axis[-1],
-                                         value=0,
-                                         continuous_update=False))
+            return index
 
-    def step2(self, system=None, input_folder=""):
-        if not input_folder:
-            display(HTML('<span style="font-size: 20px; color:red">No data folder selected!</span>'))
-            return
+        self.index_slider = interact(plot_cutoff,
+                                     index=widgets.IntSlider(min=0,
+                                                             max=x_index_axis[-1],
+                                                             value=0,
+                                                             continuous_update=False))
 
-        if not system:
-            display(HTML('<span style="font-size: 20px; color:red">No input folder selected!</span>'))
-            return
+    def get_file_prefix(self, file_name):
+        short_file_name = str(Path(file_name).name)
+        m = re.match(r"(?P<prefix>.*)_\d*.fits", short_file_name)
 
-        self.instrument = system.System.get_instrument_selected()
-        self.facility = system.System.get_facility_selected()
-        self.input_folder = input_folder
+        if m:
+            return m.group("prefix")
+        else:
+            return ""
 
+    def offset_images(self):
+        list_of_folders = [self.input_folder]
+        for _folder in self.list_of_other_folders:
+            list_of_folders.append(_folder)
 
+        list_of_folders = set(list_of_folders)
 
+        nbr_folder = len(list_of_folders)
 
+        progress_bar = widgets.IntProgress(max=nbr_folder,
+                            layout=widgets.Layout(width='50%'))
+        display(progress_bar)
 
+        offset_index = self.index_slider.widget.result
 
-    def retrieve_list_metadata_with_examples(self):
-        list_metadata = self.retrieve_list_metadata()
-        raw_data = self.raw_oncat_metadata
-        list_metadata_with_examples = ListMetadata.format_list_metadata_with_examples(list_metadata, raw_data)
-        return list_metadata_with_examples
+        list_folder_with_error = []
 
-    @staticmethod
-    def format_list_metadata_with_examples(list_metadata, raw_data):
-        list_metadata_with_examples = []
-        for _key in list_metadata:
-            _key_with_value = "{:>40} \t --> \texample: {}".format(_key,
-                                                                   raw_data[_key])
-            list_metadata_with_examples.append(_key_with_value)
-        return list_metadata_with_examples
+        for _index, _current_working_folder in enumerate(list_of_folders):
 
-    def retrieve_list_metadata(self):
-        _data = oncat.GetEverything(instrument=self.instrument,
-                                    facility=self.facility,
-                                    run=self.first_file,
-                                    oncat=self.oncat_session)
+            # get full list of FITS files
+            list_of_fits_files = np.array(self.get_list_of_fits_files(_current_working_folder))
+            if list_of_fits_files == []:
+                continue
 
-        self.raw_oncat_data = _data.datafiles
-        sorted_dict_metadata = self.create_sorted_dict_metadata(_data)
-        return sorted_dict_metadata.keys()
+            # find out prefix of file name  -> prefix_#####.fits
+            prefix = self.get_file_prefix(list_of_fits_files[0])
 
-    def create_sorted_dict_metadata(self, _data):
-        _data = _data.datafiles['metadata']
-        dict_metadata = _data.to_dict()
-        keys_sorted = sorted(dict_metadata.keys())
-        sorted_dict_metadata = OrderedDict()
-        for _key in keys_sorted:
-            sorted_dict_metadata[_key] = dict_metadata[_key]
-        self.raw_oncat_metadata = sorted_dict_metadata
-        return sorted_dict_metadata
+            # locate timestamp file
+            self.retrieve_name_of_timestamp_file(_current_working_folder)
+            timestamp_file = self.timestamp_file
+            if not Path(timestamp_file).exists():
+                list_folder_with_error.append(f"Error in {_current_working_folder}. Timestamp file missing!")
+                continue
 
-    def export_ascii(self, output_folder):
-        list_files = self.list_of_files
-        projection = self.create_projection()
-        output_ascii_file_name = ListMetadata.create_output_ascii_name(list_files, output_folder)
+            # rename all files starting by file at index offset_index which will become index 0
+            new_list_of_fits_files = np.roll(list_of_fits_files, -offset_index)
 
-        o_metadata_selected = oncat.GetProjection(instrument=self.instrument,
-                                                  facility=self.facility,
-                                                  list_files=list_files,
-                                                  oncat=self.oncat_session,
-                                                  projection=projection,
-                                                  with_progressbar=True)
-        metadata_selected = o_metadata_selected.datafiles
+            current_working_dir = str(Path(new_list_of_fits_files[0]).parent)
+            new_output_dir = current_working_dir + "_timeoffset_corrected"
 
-        name_metadata = self.create_metadata_name_row()
-        value_metadata = self.create_metadata_value_rows(list_files, metadata_selected)
-        make_ascii_file(metadata=name_metadata,
-                        data=value_metadata,
-                        output_file_name=output_ascii_file_name,
-                        dim='1d')
-        print("Done!")
-        display(HTML('<span style="font-size: 20px; color:Green">File ' + output_ascii_file_name +
-                     ' has been created with success!</span>'))
+            self.copy_and_renamed_fits_files(output_dir=new_output_dir,
+                                             original_list_of_files=new_list_of_fits_files,
+                                             prefix=prefix)
 
-    def create_metadata_value_rows(self, list_files, metadata_selected):
-        value_metadata = []
-        for _file in list_files:
-            time_stamp = self.unify_timestamp_format(metadata_selected[_file]['ingested'])
-            _metadata = []
-            for _metadata_name in self.get_list_metadata_selected():
-                _metadata.append(str(metadata_selected[_file]['metadata'][_metadata_name]))
-            row_string = "{}, {}, {}".format(_file,
-                                             time_stamp,
-                                             ", ".join(_metadata))
-            value_metadata.append(row_string)
-        return value_metadata
-
-    def unify_timestamp_format(self, old_timestamp):
-        o_time = TimestampFormatter(timestamp=old_timestamp)
-        new_timestamp = o_time.format_oncat_timestamp()
-        return new_timestamp
-
-    def create_metadata_name_row(self):
-        name_metadata = ["#filename, timestamp_user_format, " + ", ".join(self.get_list_metadata_selected())]
-        return name_metadata
-
-    @staticmethod
-    def create_output_ascii_name(list_files, output_folder):
-        output_ascii_file_name = os.path.basename(os.path.dirname(list_files[0]) + '_metadata_report_from_oncat.txt')
-        output_folder = os.path.abspath(output_folder)
-        return os.path.join(output_folder, output_ascii_file_name)
-
-    def create_projection(self):
-        list_metadata_selected = self.get_list_metadata_selected()
-        projection = []
-        for _metadata_selected in list_metadata_selected:
-            projection.append('metadata.{}'.format(_metadata_selected.strip()))
-        return projection
-
-    def get_list_metadata_selected(self):
-        list_metadata_selected = []
-        for metadata_selected in self.select_box.value:
-            metadata_name = metadata_selected.split("\t -->")
-            list_metadata_selected.append(metadata_name[0].strip())
-        return list_metadata_selected
+            # modify timestamp file
+            new_timestamp_filename = self.create_new_timestamp_filename(output_dir=new_output_dir,
+                                                                        old_timestamp_filename=timestamp_file)
+            self.create_new_timestamp_file(timestamp_file=timestamp_file,
+                                           offset=offset_index,
+                                           new_timestamp_filename=new_timestamp_filename)
 
 
 
+
+
+
+            progress_bar.value = _index + 1
+
+        progress_bar.close
+
+        self.display_errors(list_folder_with_error=list_folder_with_error)
+
+
+    def create_new_timestamp_filename(self, output_dir='./', old_timestamp_filename=''):
+        short_old_timestamp_filename = str(Path(old_timestamp_filename).name)
+        return str(Path(output_dir).joinpath(short_old_timestamp_filename))
+
+    def create_new_timestamp_file(self, timestamp_file='', offset=0, new_timestamp_filename=''):
+        timestamp_array = self.load_timestamp_file(timestamp_file)
+        time_axis = timestamp_array[:,0]
+        new_counts_axis = np.roll(np.array(timestamp_array[:,1]), -offset)
+
+        delta_time = time_axis[1] - time_axis[0]
+
+        new_time_axis = np.arange(len(new_counts_axis)) * delta_time
+
+        # bring back axis together
+        combined_array = np.stack((new_time_axis, new_counts_axis)).T
+        # print("new timesamp_filename is {}".format(new_timestamp_filename))
+        make_ascii_file(data=combined_array, output_file_name=new_timestamp_filename,sep='\t')
+
+    def display_errors(self, list_folder_with_error=[]):
+        for _line in list_folder_with_error:
+            display(HTML('<span style="font-size: 20px; color:red">' + _line + '!</span>'))
+
+    def copy_and_renamed_fits_files(self, output_dir='./', original_list_of_files=[], prefix='test'):
+        current_working_dir = str(Path(original_list_of_files[0]).parent)
+        make_or_reset_folder(output_dir)
+        log_file = str(Path(output_dir).joinpath(f"renaming_log.txt"))
+
+        renaming_log_file = [f"Renaming schema of folder {current_working_dir}",
+                             "old name -> new name", ""]
+        for index, _file  in enumerate(original_list_of_files):
+
+            old_name = Path(_file).name
+            new_name = Path(output_dir).joinpath(prefix + f"_{index:05d}.fits")
+            new_short_name = Path(new_name).name
+            renaming_log_file.append(f"{old_name} -> {new_short_name}")
+
+            # renamed here
+            copyfile(_file, new_name)
+
+        make_ascii_file(metadata=renaming_log_file, data=[], output_file_name=log_file)

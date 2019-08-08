@@ -163,7 +163,7 @@ def remove_SummedImg_from_list(list_files):
         list_files_cleaned.append(_file)
     return list_files_cleaned
     
-def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d'):
+def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','):
     f = open(output_file_name, 'w')
     for _meta in metadata:
         _line = _meta + "\n"
@@ -172,7 +172,7 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d'):
     for _data in data:
         if dim == '2d':
             _str_data = [str(_value) for _value in _data]
-            _line = ",".join(_str_data) + "\n"
+            _line = sep.join(_str_data) + "\n"
         else:
             _line = str(_data) + '\n'
         f.write(_line)
