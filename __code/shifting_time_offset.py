@@ -197,14 +197,14 @@ class ShiftTimeOffset:
     def copy_and_renamed_fits_files(self, output_dir='./', original_list_of_files=[], prefix='test'):
         current_working_dir = str(Path(original_list_of_files[0]).parent)
         make_or_reset_folder(output_dir)
-        log_file = str(Path(output_dir).joinpath(f"renaming_log.txt"))
+        log_file = str(Path(output_dir).joinpath("renaming_log.txt"))
 
-        renaming_log_file = [f"Renaming schema of folder {current_working_dir}",
+        renaming_log_file = ["Renaming schema of folder {}".format(current_working_dir),
                              "old name -> new name", ""]
         for index, _file  in enumerate(original_list_of_files):
 
             old_name = Path(_file).name
-            new_name = Path(output_dir).joinpath(prefix + f"_{index:05d}.fits")
+            new_name = Path(output_dir).joinpath(prefix + "_{:05d}.fits".format(index))
             new_short_name = Path(new_name).name
             renaming_log_file.append(f"{old_name} -> {new_short_name}")
 
