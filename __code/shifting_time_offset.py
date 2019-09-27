@@ -140,7 +140,7 @@ class ShiftTimeOffset:
             self.retrieve_name_of_timestamp_file(_current_working_folder)
             timestamp_file = self.timestamp_file
             if not Path(timestamp_file).exists():
-                list_folder_with_error.append(f"Error in {_current_working_folder}. Timestamp file missing!")
+                list_folder_with_error.append("Error in {}. Timestamp file missing!".format(_current_working_folder))
                 continue
 
             # rename all files starting by file at index offset_index which will become index 0
