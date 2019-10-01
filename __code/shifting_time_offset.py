@@ -206,7 +206,7 @@ class ShiftTimeOffset:
             old_name = Path(_file).name
             new_name = Path(output_dir).joinpath(prefix + "_{:05d}.fits".format(index))
             new_short_name = Path(new_name).name
-            renaming_log_file.append(f"{old_name} -> {new_short_name}")
+            renaming_log_file.append("{} -> {}".format(old_name, new_short_name))
 
             # renamed here
             copyfile(_file, new_name)
