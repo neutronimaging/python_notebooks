@@ -1,24 +1,29 @@
 import os
-import ipywe.fileselector
 from scipy.stats.mstats import gmean
-
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 from PIL import Image
 import collections
+import glob
+
+import ipywe.fileselector
+from NeuNorm.normalization import Normalization
 
 from __code import file_handler
-from NeuNorm.normalization import Normalization
-import glob
+from __code import metadata_handler
 
 
 class SequentialCombineImagesUsingMetadata(object):
     working_dir = ''
+    default_metadata_to_select = [65044, 65040]
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
         self.folder_selected = ''
+        self.list_images = []
+        self.dict_of_metadata = {} # key is 'tag->value' and value is 'tag'
+        self.delta_metadata = 1  # +/- value to consider metadata as the same value
 
     def select_folder(self):
         self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to combine',
@@ -50,15 +55,23 @@ class SequentialCombineImagesUsingMetadata(object):
 
         info = collections.OrderedDict(sorted(o_image0.tag_v2.items()))
         display_format = []
+        list_default_value_selected = []
+        dict_of_metadata = {}
         for tag, value in info.items():
-            display_format.append("{} -> {}".format(tag, value))
+            formatted_string = "{} -> {}".format(tag, value)
+            dict_of_metadata[formatted_string] = tag
+            display_format.append(formatted_string)
+            if tag in self.default_metadata_to_select:
+                list_default_value_selected.append(formatted_string)
 
         self.box1 = widgets.HBox([widgets.Label("Select Metadata:",
                                                 layout=widgets.Layout(width='10%')),
-                                  widgets.Dropdown(options=display_format,
-                                                   value=display_format[0],
-                                                   layout=widgets.Layout(width='50%'))])
+                                  widgets.SelectMultiple(options=display_format,
+                                                         value=list_default_value_selected,
+                                                         layout=widgets.Layout(width='50%',
+                                                                               height='300px'))])
         display(self.box1)
+        self.dict_of_metadata = dict_of_metadata
 
     def how_to_combine(self):
         _file = open("__docs/combine_images/geometric_mean.png", 'rb')
@@ -79,6 +92,81 @@ class SequentialCombineImagesUsingMetadata(object):
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
         display(vertical)
+
+    def create_merging_list(self, list_of_files=[]):
+        """ this method will create a dictionary of files to combine by stepping one by one
+        through the list of files and checking the metadata value selected
+
+        {'cycle0' : {'list_position':  {'position0' : {'list_files': [file1, file2, file3],
+                                                        'list_metadata': {'meta1': value1,
+                                                                          'meta2': value2,
+                                                                         },
+                                                       },
+                                        'position1' : {'list_files' : [file4, file5, file6],
+                                                       'list_metadata': {'meta1': value3,
+                                                                         'meta2': value4,
+                                                                        },
+                                                       },
+                                        },
+                    },
+         'cycle1' : ....
+        }
+        """
+
+        create_list_progress = widgets.HBox([widgets.Label("Creating Merging List:",
+                                                           layout=widgets.Layout(width='20%')),
+                                             widgets.IntProgress(max=len(self.list_images),
+                                                                 min=1,
+                                                                 value=1,
+                                                                 layout=widgets.Layout(width='80%'))])
+        display(create_list_progress)
+        progress_bar = create_list_progress.children[1]
+
+        list_images_to_combine = collections.OrderedDict()
+
+        # retrieve list of tag selected (to match between runs)
+        list_of_tag_selected = self.get_list_of_tag_selected()
+        if list_of_files == []:
+            list_of_files = self.list_images
+
+        cycle_prefix = 'cycle'
+        cycle_counter = 0
+
+        position_prefix = 'position'
+        position_counter = 0
+
+        delta_metadata = self.delta_metadata
+
+        # initialization
+        _position_list = [list_of_files[0]]
+        _metadata_list = []
+
+        for _index, _file in enumerate(list_of_files[1:]):
+
+
+
+
+
+
+
+
+
+            progress_bar.value=_index+1
+
+
+        create_list_progress.close()
+        del create_list_progress
+
+
+
+
+    def get_list_of_tag_selected(self):
+        ui_selection = self.box1.children[1].value
+        result = []
+        for _selection_value in ui_selection:
+            result.append(self.dict_of_metadata[_selection_value])
+
+        return result
 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \

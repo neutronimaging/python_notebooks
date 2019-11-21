@@ -56,3 +56,16 @@ class MetadataHandler(object):
         unix_epoch_timestamp = EPOCH_OFFSET + epics_timestamp
 
         return unix_epoch_timestamp
+
+    @staticmethod
+    def get_metata(filename='', list_metadata=[]):
+        if filename == "":
+            return {}
+
+        image = Image.open(filename)
+        metadata = image.tag_v2.as_dict()
+        result = {}
+        for _meta in list_metadata:
+            result[_meta] = metadata[_meta]
+
+        return result
