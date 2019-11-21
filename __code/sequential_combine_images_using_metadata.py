@@ -5,9 +5,12 @@ from scipy.stats.mstats import gmean
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
+from PIL import Image
+import collections
 
 from __code import file_handler
 from NeuNorm.normalization import Normalization
+import glob
 
 
 class SequentialCombineImagesUsingMetadata(object):
@@ -15,8 +18,9 @@ class SequentialCombineImagesUsingMetadata(object):
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
+        self.folder_selected = ''
 
-    def select_files(self):
+    def select_folder(self):
         self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to combine',
                                                                       start_dir=self.working_dir,
                                                                       type='directory',
@@ -27,6 +31,34 @@ class SequentialCombineImagesUsingMetadata(object):
     def info_folder_selected(self, selected):
         display(HTML('<span style="font-size: 20px; color:blue">You selected folder: ' + \
                      selected + '</span>'))
+        self.folder_selected = selected
+
+    def select_metadata_to_match(self):
+        pass
+
+    def get_list_of_images(self):
+        list_of_images = glob.glob(self.folder_selected + "/*.tiff")
+        list_of_images.sort()
+        return list_of_images
+
+    def display_metadata_list(self):
+        self.list_images = self.get_list_of_images()
+        list_images = self.list_images
+
+        image0 = list_images[0]
+        o_image0 = Image.open(image0)
+
+        info = collections.OrderedDict(sorted(o_image0.tag_v2.items()))
+        display_format = []
+        for tag, value in info.items():
+            display_format.append("{} -> {}".format(tag, value))
+
+        self.box1 = widgets.HBox([widgets.Label("Select Metadata:",
+                                                layout=widgets.Layout(width='10%')),
+                                  widgets.Dropdown(options=display_format,
+                                                   value=display_format[0],
+                                                   layout=widgets.Layout(width='50%'))])
+        display(self.box1)
 
     def how_to_combine(self):
         _file = open("__docs/combine_images/geometric_mean.png", 'rb')
