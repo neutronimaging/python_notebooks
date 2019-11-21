@@ -11,7 +11,7 @@ import ipywe.fileselector
 from NeuNorm.normalization import Normalization
 
 from __code import file_handler
-from __code import metadata_handler
+from __code.metadata_handler import MetadataHandler
 
 
 class SequentialCombineImagesUsingMetadata(object):
@@ -23,7 +23,7 @@ class SequentialCombineImagesUsingMetadata(object):
         self.folder_selected = ''
         self.list_images = []
         self.dict_of_metadata = {} # key is 'tag->value' and value is 'tag'
-        self.delta_metadata = 1  # +/- value to consider metadata as the same value
+        # self.delta_metadata = 1  # +/- value to consider metadata as the same value
 
     def select_folder(self):
         self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to combine',
@@ -97,19 +97,17 @@ class SequentialCombineImagesUsingMetadata(object):
         """ this method will create a dictionary of files to combine by stepping one by one
         through the list of files and checking the metadata value selected
 
-        {'cycle0' : {'list_position':  {'position0' : {'list_files': [file1, file2, file3],
-                                                        'list_metadata': {'meta1': value1,
-                                                                          'meta2': value2,
-                                                                         },
-                                                       },
-                                        'position1' : {'list_files' : [file4, file5, file6],
-                                                       'list_metadata': {'meta1': value3,
-                                                                         'meta2': value4,
-                                                                        },
-                                                       },
-                                        },
-                    },
-         'cycle1' : ....
+        {'position0' : {'list_files': [file1, file2, file3],
+                        'dict_metadata': {'meta1': value1,
+                                          'meta2': value2,
+                                         },
+                       },
+         'position1' : {'list_files' : [file4, file5, file6],
+                        'dict_metadata': {'meta1': value3,
+                                          'meta2': value4,
+                                         },
+                       },
+         ...
         }
         """
 
@@ -126,37 +124,43 @@ class SequentialCombineImagesUsingMetadata(object):
 
         # retrieve list of tag selected (to match between runs)
         list_of_tag_selected = self.get_list_of_tag_selected()
-        if list_of_files == []:
+        if not list_of_files:
             list_of_files = self.list_images
-
-        cycle_prefix = 'cycle'
-        cycle_counter = 0
 
         position_prefix = 'position'
         position_counter = 0
 
-        delta_metadata = self.delta_metadata
+        # delta_metadata = self.delta_metadata
 
         # initialization
-        _position_list = [list_of_files[0]]
-        _metadata_list = []
+        _list_files = [list_of_files[0]]
+        _dict_metadata = {}
+
+        _previous_metadata = MetadataHandler.get_metata(filename=list_of_files[0],
+                                                        list_metadata=list_of_tag_selected)
 
         for _index, _file in enumerate(list_of_files[1:]):
 
+            _currentmetadata = MetadataHandler.get_metata(filename=_file,
+                                                          list_metadata=list_of_tag_selected)
 
-
-
-
-
-
-
+            if _currentmetadata == _previous_metadata:
+                _list_files.append(_file)
+            else:
+                tag_name = "{}{}".format(position_prefix, position_counter)
+                list_images_to_combine[tag_name] = {'list_of_files': _list_files,
+                                                    'dict_metadata': _dict_metadata,
+                                                   }
+                _dict_metadata = _currentmetadata
+                position_counter += 1
+                _list_files = [_file]
 
             progress_bar.value=_index+1
-
 
         create_list_progress.close()
         del create_list_progress
 
+        print(list_images_to_combine)
 
 
 

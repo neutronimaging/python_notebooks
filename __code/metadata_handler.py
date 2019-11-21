@@ -63,9 +63,10 @@ class MetadataHandler(object):
             return {}
 
         image = Image.open(filename)
-        metadata = image.tag_v2.as_dict()
+        metadata = image.tag_v2
         result = {}
         for _meta in list_metadata:
-            result[_meta] = metadata[_meta]
+            result[_meta] = metadata.get(_meta)
 
+        image.close()
         return result
