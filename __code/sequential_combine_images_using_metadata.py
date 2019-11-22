@@ -189,9 +189,9 @@ class SequentialCombineImagesUsingMetadata(object):
         box2 = widgets.VBox([widgets.Label("List of Files for this position",
                                            layout=widgets.Layout(width='100%')),
                              widgets.Select(options=self.list_images_to_combine[list_of_positions_ui.value]['list_of_files'],
-                                            layout=widgets.Layout(width='500px',
+                                            layout=widgets.Layout(width='100%',
                                                                   height='500px'))],
-                            layout=widgets.Layout(width="515px"))
+                            layout=widgets.Layout(width="815px"))
 
         box3 = widgets.VBox([widgets.Label("Metadata"),
                              widgets.Textarea("",
