@@ -111,6 +111,11 @@ class SequentialCombineImagesUsingMetadata(object):
         }
         """
 
+        # FOR DEBUGGING ONLY
+        # FIXME (REMOVE_ME)
+        self.list_images = self.list_images[0:20]
+        #
+
         create_list_progress = widgets.HBox([widgets.Label("Creating Merging List:",
                                                            layout=widgets.Layout(width='20%')),
                                              widgets.IntProgress(max=len(self.list_images),
@@ -141,26 +146,36 @@ class SequentialCombineImagesUsingMetadata(object):
 
         for _index, _file in enumerate(list_of_files[1:]):
 
-            _currentmetadata = MetadataHandler.get_metata(filename=_file,
+
+
+            _current_metadata = MetadataHandler.get_metata(filename=_file,
                                                           list_metadata=list_of_tag_selected)
 
-            if _currentmetadata == _previous_metadata:
+
+            if _current_metadata == _previous_metadata:
                 _list_files.append(_file)
             else:
                 tag_name = "{}{}".format(position_prefix, position_counter)
                 list_images_to_combine[tag_name] = {'list_of_files': _list_files,
-                                                    'dict_metadata': _dict_metadata,
+                                                    'dict_metadata': _previous_metadata.copy(),
                                                    }
-                _dict_metadata = _currentmetadata
+
+                _previous_metadata = _current_metadata
                 position_counter += 1
                 _list_files = [_file]
+        else:
+            tag_name = "{}{}".format(position_prefix, position_counter)
+            list_images_to_combine[tag_name] = {'list_of_files': _list_files,
+                                                'dict_metadata': _previous_metadata.copy(),
+                                                }
 
             progress_bar.value=_index+1
 
         create_list_progress.close()
         del create_list_progress
 
-        print(list_images_to_combine)
+        import pprint
+        pprint.pprint(list_images_to_combine)
 
 
 
