@@ -24,6 +24,7 @@ class SequentialCombineImagesUsingMetadata(object):
         self.list_images = []
         self.dict_of_metadata = {} # key is 'tag->value' and value is 'tag'
         # self.delta_metadata = 1  # +/- value to consider metadata as the same value
+        self.list_images_to_combine = None
 
     def select_folder(self):
         self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to combine',
@@ -97,12 +98,12 @@ class SequentialCombineImagesUsingMetadata(object):
         """ this method will create a dictionary of files to combine by stepping one by one
         through the list of files and checking the metadata value selected
 
-        {'position0' : {'list_files': [file1, file2, file3],
+        {'position0' : {'list_of_files': [file1, file2, file3],
                         'dict_metadata': {'meta1': value1,
                                           'meta2': value2,
                                          },
                        },
-         'position1' : {'list_files' : [file4, file5, file6],
+         'position1' : {'list_of_files' : [file4, file5, file6],
                         'dict_metadata': {'meta1': value3,
                                           'meta2': value4,
                                          },
@@ -174,10 +175,57 @@ class SequentialCombineImagesUsingMetadata(object):
         create_list_progress.close()
         del create_list_progress
 
-        import pprint
-        pprint.pprint(list_images_to_combine)
+        self.list_images_to_combine = list_images_to_combine
 
+    def recap_merging_list(self):
+        box1 = widgets.VBox([widgets.Label("List of positiions",
+                                           layout=widgets.Layout(width='100%')),
+                             widgets.Select(options=self.list_images_to_combine.keys(),
+                                            layout=widgets.Layout(width='150px',
+                                                                  height='300px'))],
+                            layout=widgets.Layout(width="160px"))
+        list_of_positions_ui = box1.children[1]
 
+        box2 = widgets.VBox([widgets.Label("List of Files for this position",
+                                           layout=widgets.Layout(width='100%')),
+                             widgets.Select(options=self.list_images_to_combine[list_of_positions_ui.value]['list_of_files'],
+                                            layout=widgets.Layout(width='500px',
+                                                                  height='500px'))],
+                            layout=widgets.Layout(width="515px"))
+
+        box3 = widgets.VBox([widgets.Label("Metadata"),
+                             widgets.Textarea("",
+                                              disabled=True)],
+                            layout=widgets.Layout(width="300px"))
+        str_metadata = self.get_str_metadata(position_key=list_of_positions_ui.value)
+        self.metadata_recap_textarea = box3.children[1]
+        self.metadata_recap_textarea.value = str_metadata
+
+        horiBox = widgets.HBox([box1, box2, box3],
+                               layout=widgets.Layout(width='100%'))
+
+        list_of_positions_ui.on_trait_change(self.recap_positions_changed, name='value')
+        self.widget_position_recap = list_of_positions_ui
+        self.widget_files_recap = box2.children[1]
+
+        display(horiBox)
+
+    def get_str_metadata(self, position_key=None):
+        """format the metadata to display them as a string"""
+
+        metadata = self.list_images_to_combine[position_key]['dict_metadata']
+        str_metadata = ""
+        for _key, _value in metadata.items():
+            str_metadata += "{} -> {}\n".format(_key, _value)
+        return str_metadata
+
+    def recap_positions_changed(self):
+        position_selected = self.widget_position_recap.value
+        list_files_of_position_selected = self.list_images_to_combine[position_selected]['list_of_files']
+        self.widget_files_recap.options = list_files_of_position_selected
+
+        str_metadata = self.get_str_metadata(position_key=position_selected)
+        self.metadata_recap_textarea.value = str_metadata
 
     def get_list_of_tag_selected(self):
         ui_selection = self.box1.children[1].value
