@@ -13,6 +13,8 @@ from NeuNorm.normalization import Normalization
 from __code import file_handler
 from __code.metadata_handler import MetadataHandler
 
+METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
+
 
 class SequentialCombineImagesUsingMetadata(object):
     working_dir = ''
@@ -23,7 +25,6 @@ class SequentialCombineImagesUsingMetadata(object):
         self.folder_selected = ''
         self.list_images = []
         self.dict_of_metadata = {} # key is 'tag->value' and value is 'tag'
-        # self.delta_metadata = 1  # +/- value to consider metadata as the same value
         self.list_images_to_combine = None
 
     def select_folder(self):
@@ -114,7 +115,7 @@ class SequentialCombineImagesUsingMetadata(object):
 
         # FOR DEBUGGING ONLY
         # FIXME (REMOVE_ME)
-        self.list_images = self.list_images[0:20]
+        # self.list_images = self.list_images[0:20]
         #
 
         create_list_progress = widgets.HBox([widgets.Label("Creating Merging List:",
@@ -147,13 +148,10 @@ class SequentialCombineImagesUsingMetadata(object):
 
         for _index, _file in enumerate(list_of_files[1:]):
 
-
-
             _current_metadata = MetadataHandler.get_metata(filename=_file,
                                                           list_metadata=list_of_tag_selected)
 
-
-            if _current_metadata == _previous_metadata:
+            if self.are_metadata_within_error_range(_current_metadata, _previous_metadata):
                 _list_files.append(_file)
             else:
                 tag_name = "{}{}".format(position_prefix, position_counter)
@@ -177,6 +175,24 @@ class SequentialCombineImagesUsingMetadata(object):
 
         self.list_images_to_combine = list_images_to_combine
 
+    def are_metadata_within_error_range(self, metadata1, metadata2):
+        """will go through all the metadata and make sure they are all identical, within the given
+        METADATA_ERROR range"""
+        for _key in metadata1.keys():
+            if np.abs(self.isolate_value_from_metadata(metadata1[_key])
+                      - self.isolate_value_from_metadata(metadata2[_key])) > METADATA_ERROR:
+                return False
+
+        return True
+
+    def isolate_value_from_metadata(self, metadata_string):
+        """Isolate the value from the metadatastring
+        ex: metadata_string: MotLongAxis.RBV:300.345454
+        will return: 300.345454
+        """
+        metadata_split = metadata_string.split(":")
+        return np.float(metadata_split[1])
+
     def recap_merging_list(self):
         box1 = widgets.VBox([widgets.Label("List of positiions",
                                            layout=widgets.Layout(width='100%')),
@@ -195,8 +211,10 @@ class SequentialCombineImagesUsingMetadata(object):
 
         box3 = widgets.VBox([widgets.Label("Metadata"),
                              widgets.Textarea("",
-                                              disabled=True)],
-                            layout=widgets.Layout(width="300px"))
+                                              disabled=True),
+                             widgets.Label("Error allowed: {}".format(METADATA_ERROR))],
+                             layout=widgets.Layout(width="300px"))
+
         str_metadata = self.get_str_metadata(position_key=list_of_positions_ui.value)
         self.metadata_recap_textarea = box3.children[1]
         self.metadata_recap_textarea.value = str_metadata
