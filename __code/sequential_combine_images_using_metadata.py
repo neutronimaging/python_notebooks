@@ -357,11 +357,10 @@ class SequentialCombineImagesUsingMetadata(object):
     def _merging_algorithm(function_, *args):
         return function_(*args)
 
-    def merge(self, output_folder=""):
+    def merge(self, output_folder):
         """combine images using algorithm provided"""
 
-        if output_folder == "":
-            output_folder = self.output_folder_widget.selected
+        output_folder = os.path.abspath(output_folder)
 
         merging_list = self.master_list_images_to_combine
         algorithm = self.get_merging_algorithm()
@@ -373,6 +372,8 @@ class SequentialCombineImagesUsingMetadata(object):
         display(merging_ui)
         progress_bar_ui = merging_ui.children[1]
 
+        output_folder = self.make_output_folder(output_folder)
+
         _run_index = 0
         for _run in merging_list.keys():
 
@@ -381,9 +382,6 @@ class SequentialCombineImagesUsingMetadata(object):
             for _position in positions_dict.keys():
 
                 list_of_files = positions_dict[_position]['list_of_files']
-
-                print(list_of_files)
-                print("")
 
                 o_load = Normalization()
                 o_load.load(file=list_of_files, notebook=True)
@@ -398,15 +396,23 @@ class SequentialCombineImagesUsingMetadata(object):
 
                 file_handler.save_data(data=combined_data, filename=output_file_name)
 
-            progress_bar_ui.value = _run_index + 1
+            _run_index += 1
+            progress_bar_ui.value = _run_index
 
-        progress_bar_ui.close()
-        del progress_bar_ui
+        merging_ui.close()
+        del merging_ui
 
         # display(HTML('<span style="font-size: 20px; color:blue">File created: ' + \
         #              os.path.basename(output_file_name) + '</span>'))
         # display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + \
         #              output_folder + '</span>'))
+
+    def make_output_folder(self, output_folder):
+        algorithm_selected = self.__get_formated_merging_algo_name()
+        folder_selected = os.path.dirname(self.folder_selected)
+        output_folder = os.path.join(output_folder, "{}_{}".format(folder_selected, algorithm_selected))
+        file_handler.make_folder(output_folder)
+        return output_folder
 
     def _define_merged_file_name(self, output_folder='', run_label='', position_label=''):
         """Create the new merged file name using the run, position labels
@@ -418,10 +424,6 @@ class SequentialCombineImagesUsingMetadata(object):
 
                 return: "/Users/zizou/exp28_add_merged/run1_position6.tiff"
         """
-        folder_selected = self.folder_selected
-        algorithm_selected = self.__get_formated_merging_algo_name()
-
-        output_folder = os.path.join(output_folder, "{}_{}".format(folder_selected, algorithm_selected))
         return os.path.join(output_folder, "{}_{}.tiff".format(run_label, position_label))
 
 
