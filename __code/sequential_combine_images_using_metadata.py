@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 import collections
 import glob
+import re
 
 import ipywe.fileselector
 from NeuNorm.normalization import Normalization
@@ -26,6 +27,7 @@ class SequentialCombineImagesUsingMetadata(object):
         self.list_images = []
         self.dict_of_metadata = {} # key is 'tag->value' and value is 'tag'
         self.list_images_to_combine = None
+        self.filename_regular_expression = "^\w*_(?P<run>run\d+)_\w*.tiff$"
 
     def select_folder(self):
         self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to combine',
@@ -99,18 +101,20 @@ class SequentialCombineImagesUsingMetadata(object):
         """ this method will create a dictionary of files to combine by stepping one by one
         through the list of files and checking the metadata value selected
 
-        {'position0' : {'list_of_files': [file1, file2, file3],
-                        'dict_metadata': {'meta1': value1,
-                                          'meta2': value2,
-                                         },
-                       },
-         'position1' : {'list_of_files' : [file4, file5, file6],
-                        'dict_metadata': {'meta1': value3,
-                                          'meta2': value4,
-                                         },
-                       },
+        {'run1':  {'position0' : {'list_of_files': [file1, file2, file3],
+                                  'dict_metadata': {'meta1': value1,
+                                                    'meta2': value2,
+                                                   },
+                                 },
+                   'position1' : {'list_of_files' : [file4, file5, file6],
+                                  'dict_metadata': {'meta1': value3,
+                                                    'meta2': value4,
+                                                   },
+                                 },
+                   ...
+                  },
          ...
-        }
+         }
         """
 
         # FOR DEBUGGING ONLY
@@ -127,6 +131,7 @@ class SequentialCombineImagesUsingMetadata(object):
         display(create_list_progress)
         progress_bar = create_list_progress.children[1]
 
+        master_list_images_to_combine = collections.OrderedDict()
         list_images_to_combine = collections.OrderedDict()
 
         # retrieve list of tag selected (to match between runs)
@@ -145,13 +150,16 @@ class SequentialCombineImagesUsingMetadata(object):
 
         _previous_metadata = MetadataHandler.get_metata(filename=list_of_files[0],
                                                         list_metadata=list_of_tag_selected)
+        _previous_run = self.isolate_run_text_from_filename(list_of_files[0])
 
         for _index, _file in enumerate(list_of_files[1:]):
 
             _current_metadata = MetadataHandler.get_metata(filename=_file,
                                                           list_metadata=list_of_tag_selected)
+            _current_run = self.isolate_run_text_from_filename(_file)
 
-            if self.are_metadata_within_error_range(_current_metadata, _previous_metadata):
+            if self.are_metadata_within_error_range(_current_metadata, _previous_metadata) and \
+                    (_previous_run == _current_run):
                 _list_files.append(_file)
             else:
                 tag_name = "{}{}".format(position_prefix, position_counter)
@@ -159,21 +167,28 @@ class SequentialCombineImagesUsingMetadata(object):
                                                     'dict_metadata': _previous_metadata.copy(),
                                                    }
 
-                _previous_metadata = _current_metadata
                 position_counter += 1
                 _list_files = [_file]
+
+                if _previous_run != _current_run:
+                    master_list_images_to_combine[_previous_run] = list_images_to_combine
+                    list_images_to_combine = collections.OrderedDict()
+
+                _previous_metadata = _current_metadata
+                _previous_run = _current_run
+
         else:
             tag_name = "{}{}".format(position_prefix, position_counter)
             list_images_to_combine[tag_name] = {'list_of_files': _list_files,
                                                 'dict_metadata': _previous_metadata.copy(),
                                                 }
-
-            progress_bar.value=_index+1
+            master_list_images_to_combine[_previous_run] = list_images_to_combine
+            progress_bar.value = _index+1
 
         create_list_progress.close()
         del create_list_progress
 
-        self.list_images_to_combine = list_images_to_combine
+        self.master_list_images_to_combine = master_list_images_to_combine
 
     def are_metadata_within_error_range(self, metadata1, metadata2):
         """will go through all the metadata and make sure they are all identical, within the given
@@ -182,7 +197,6 @@ class SequentialCombineImagesUsingMetadata(object):
             if np.abs(self.isolate_value_from_metadata(metadata1[_key])
                       - self.isolate_value_from_metadata(metadata2[_key])) > METADATA_ERROR:
                 return False
-
         return True
 
     def isolate_value_from_metadata(self, metadata_string):
@@ -193,21 +207,39 @@ class SequentialCombineImagesUsingMetadata(object):
         metadata_split = metadata_string.split(":")
         return np.float(metadata_split[1])
 
+    def isolate_run_text_from_filename(self, full_file_name):
+        basename = os.path.basename(full_file_name)
+        regular_expression = self.filename_regular_expression
+        m = re.search(regular_expression, basename)
+        if m is not None:
+            return m.group('run')
+        else:
+            return None
+
     def recap_merging_list(self):
-        box1 = widgets.VBox([widgets.Label("List of positiions",
+        box0 = widgets.VBox([widgets.Label("List of Runs",
                                            layout=widgets.Layout(width='100%')),
-                             widgets.Select(options=self.list_images_to_combine.keys(),
+                             widgets.Select(options=self.master_list_images_to_combine.keys(),
                                             layout=widgets.Layout(width='150px',
                                                                   height='300px'))],
                             layout=widgets.Layout(width="160px"))
-        list_of_positions_ui = box1.children[1]
+        self.list_of_runs_ui = box0.children[1]
+
+        box1 = widgets.VBox([widgets.Label("List of positions",
+                                           layout=widgets.Layout(width='100%')),
+                             widgets.Select(options=self.get_list_of_position_for_select_run(),
+                                            layout=widgets.Layout(width='150px',
+                                                                  height='300px'))],
+                            layout=widgets.Layout(width="160px"))
+        self.list_of_positions_ui = box1.children[1]
 
         box2 = widgets.VBox([widgets.Label("List of Files for this position",
                                            layout=widgets.Layout(width='100%')),
-                             widgets.Select(options=self.list_images_to_combine[list_of_positions_ui.value]['list_of_files'],
+                             widgets.Select(options=self.get_list_of_files_for_selected_run_position(),
                                             layout=widgets.Layout(width='100%',
                                                                   height='500px'))],
                             layout=widgets.Layout(width="815px"))
+        self.list_of_files_ui = box2.children[1]
 
         box3 = widgets.VBox([widgets.Label("Metadata"),
                              widgets.Textarea("",
@@ -215,35 +247,59 @@ class SequentialCombineImagesUsingMetadata(object):
                              widgets.Label("Error allowed: {}".format(METADATA_ERROR))],
                              layout=widgets.Layout(width="300px"))
 
-        str_metadata = self.get_str_metadata(position_key=list_of_positions_ui.value)
+        str_metadata = self.get_str_metadata(metadata_dict=self.get_metadata_for_selected_run_position())
         self.metadata_recap_textarea = box3.children[1]
         self.metadata_recap_textarea.value = str_metadata
 
-        horiBox = widgets.HBox([box1, box2, box3],
+        hori_box = widgets.HBox([box1, box2, box3],
                                layout=widgets.Layout(width='100%'))
 
-        list_of_positions_ui.on_trait_change(self.recap_positions_changed, name='value')
-        self.widget_position_recap = list_of_positions_ui
-        self.widget_files_recap = box2.children[1]
+        self.list_of_positions_ui.on_trait_change(self.recap_positions_changed, name='value')
+        self.list_of_runs_ui.on_trait_change(self.recap_runs_changed, name='value')
 
-        display(horiBox)
+        display(hori_box)
 
-    def get_str_metadata(self, position_key=None):
+    def get_list_of_position_for_select_run(self):
+        selected_run = self.list_of_runs_ui.value
+        return self.master_list_images_to_combine[selected_run].keys()
+
+    def get_list_of_files_for_selected_run_position(self):
+        dict = self._get_dict_from_selected_run_position()
+        return dict['list_of_files']
+
+    def get_metadata_for_selected_run_position(self):
+        _dict = self._get_dict_from_selected_run_position()
+        return _dict['dict_metadata']
+
+    def _get_dict_for_selected_run_position(self):
+        selected_run = self.list_of_runs_ui.value
+        selected_position = self.list_of_positions_ui.value
+        return self.master_list_images_to_combine[selected_run][selected_position]
+
+    def get_str_metadata(self, metadata_dict={}):
         """format the metadata to display them as a string"""
-
-        metadata = self.list_images_to_combine[position_key]['dict_metadata']
         str_metadata = ""
-        for _key, _value in metadata.items():
+        for _key, _value in metadata_dict.items():
             str_metadata += "{} -> {}\n".format(_key, _value)
         return str_metadata
 
     def recap_positions_changed(self):
-        position_selected = self.widget_position_recap.value
-        list_files_of_position_selected = self.list_images_to_combine[position_selected]['list_of_files']
-        self.widget_files_recap.options = list_files_of_position_selected
+        position_selected = self.list_of_positions_ui.value
+        run_selected = self.list_of_runs_ui.value
+
+        list_files_of_files = self.master_list_images_to_combine[run_selected][position_selected]['list_of_files']
+        self.list_of_files_ui.options = list_files_of_files
 
         str_metadata = self.get_str_metadata(position_key=position_selected)
         self.metadata_recap_textarea.value = str_metadata
+
+    def recap_runs_changed(self):
+        run_selected = self.list_of_runs_ui.value
+
+        list_of_positions = self.master_list_images_to_combine[run_selected].keys()
+        self.list_of_positions_ui.options = list_of_positions
+
+        self.recap_positions_changed()
 
     def get_list_of_tag_selected(self):
         ui_selection = self.box1.children[1].value
