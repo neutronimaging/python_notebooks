@@ -342,23 +342,26 @@ class SequentialCombineImagesUsingMetadata(object):
         return algorithm
 
     @staticmethod
-    def __add(self, data_array):
+    def __add(data_array):
         return np.sum(data_array, axis=0)
 
     @staticmethod
-    def __arithmetic_mean(self, data_array):
+    def __arithmetic_mean(data_array):
         return np.mean(data_array, axis=0)
 
     @staticmethod
-    def __geo_mean(self, data_array):
+    def __geo_mean(data_array):
         return gmean(data_array, axis=0)
 
     @staticmethod
-    def __merging_algorithm(self, function_, *args):
+    def _merging_algorithm(function_, *args):
         return function_(*args)
 
-    def merge(self, output_folder):
+    def merge(self, output_folder=""):
         """combine images using algorithm provided"""
+
+        if output_folder == "":
+            output_folder = self.output_folder_widget.selected
 
         merging_list = self.master_list_images_to_combine
         algorithm = self.get_merging_algorithm()
@@ -377,13 +380,16 @@ class SequentialCombineImagesUsingMetadata(object):
 
             for _position in positions_dict.keys():
 
-                list_of_files = positions_dict[_position]
+                list_of_files = positions_dict[_position]['list_of_files']
+
+                print(list_of_files)
+                print("")
 
                 o_load = Normalization()
                 o_load.load(file=list_of_files, notebook=True)
                 _data = o_load.data['sample']['data']
 
-                combined_data = self.__merging_algorithm(algorithm, _data)
+                combined_data = SequentialCombineImagesUsingMetadata._merging_algorithm(algorithm, _data)
 
                 _new_name = self._define_merged_file_name(output_folder=output_folder,
                                                           run_label=_run,
