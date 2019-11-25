@@ -42,9 +42,6 @@ class SequentialCombineImagesUsingMetadata(object):
                      selected + '</span>'))
         self.folder_selected = selected
 
-    def select_metadata_to_match(self):
-        pass
-
     def get_list_of_images(self):
         list_of_images = glob.glob(self.folder_selected + "/*.tiff")
         list_of_images.sort()
