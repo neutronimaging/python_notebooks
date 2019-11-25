@@ -402,10 +402,8 @@ class SequentialCombineImagesUsingMetadata(object):
         merging_ui.close()
         del merging_ui
 
-        # display(HTML('<span style="font-size: 20px; color:blue">File created: ' + \
-        #              os.path.basename(output_file_name) + '</span>'))
-        # display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + \
-        #              output_folder + '</span>'))
+        display(HTML('<span style="font-size: 20px; color:blue">Files have been created in : ' + \
+                     output_folder + '</span>'))
 
     def make_output_folder(self, output_folder):
         algorithm_selected = self.__get_formated_merging_algo_name()
