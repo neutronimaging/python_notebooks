@@ -70,3 +70,29 @@ class MetadataHandler(object):
 
         image.close()
         return result
+
+    @staticmethod
+    def get_metadata(filename='', list_metadata=[]):
+        if filename == "":
+            return {}
+
+        image = Image.open(filename)
+        metadata = image.tag_v2
+        result = {}
+        for _meta in list_metadata:
+            result[_meta] = metadata.get(_meta)
+
+        image.close()
+        return result
+
+    @staticmethod
+    def retrieve_metadata(list_files=[], list_metadata=[]):
+        if list_files == []:
+            return {}
+
+        _dict = {}
+        for _file in list_files:
+            _meta = MetadataHandler.get_metadata(filename=_file, list_metadata=list_metadata)
+            _dict[_file] = _meta
+
+        return _dict

@@ -16,7 +16,7 @@ from NeuNorm.normalization import Normalization
 PV_EXPOSURE_TIME = '65027'
 
 
-class WhichOpenBeamToUse(object):
+class WhichOBandDFtoUse(object):
     working_dir = ''
 
     def __init__(self, working_dir=''):
@@ -33,25 +33,28 @@ class WhichOpenBeamToUse(object):
         self.list_of_images_widget.show()
 
     def retrieve_metadata(self, list_of_images):
-        self.list_of_images = self.list_of_images
+        self.list_of_images = list_of_images
 
         _dict = file_handler.retrieve_time_stamp(self.list_of_images)
 
         self.first_image = self.isolate_infos_from_file_index(index=0, dict=_dict)
         self.last_image = self.isolate_infos_from_file_index(index=-1, dict=_dict)
-
-        self.first_image_acquisition_time = self.retrieve_acquisition_time(self.first_image['file_name'])
+        self.list_metadata_dict = self.retrieve_acquisition_time(self.list_of_images)
 
         display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
                      self.first_image['user_format_time'] + '</span>'))
         display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
                      self.last_image['user_format_time'] + '</span>'))
 
-    def retrieve_acquisition_time(self, file_name):
-        raw_acquisition_time = metadata_handler.MetadataHandler(filename=file_name,
-                                                                list_metadata=['65027'])
-        split_pv = raw_acquisition_time.split(":")
-        return np.float(split_pv[1])
+    def retrieve_acquisition_time(self, list_files):
+        """acquisition time is tag 65027"""
+        dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
+                                                                       list_metadata = ['65027'])
+        for _key in dict.keys():
+            _raw_value = dict[_key]
+            split_raw_value = _raw_value.split(":")
+            dict[_key] = np.float(split_raw_value[1])
+        return dict
 
     def isolate_infos_from_file_index(self, index=-1, dict={}):
         _image = dict['list_images'][index]
