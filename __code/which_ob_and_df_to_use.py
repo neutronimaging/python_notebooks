@@ -65,11 +65,10 @@ class WhichOBandDFtoUse(object):
                 'user_format_time':_user_format_time_image}
 
     def select_ob_time_range(self):
-
         box = widgets.HBox([widgets.Label("Time (hours)",
                                           layout=widgets.Layout(width='20%')),
                             widgets.IntProgress(min=0,
-                                                max=len(list_images),
+                                                max=len(self.list_of_images),
                                                 value=0,
                                                 layout=widgets.Layout(width='50%'))
                             ])
