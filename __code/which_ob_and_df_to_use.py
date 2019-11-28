@@ -28,23 +28,23 @@ class WhichOBandDFtoUse(object):
         self.list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of data'
                                                                                          'to normalize',
                                                                              start_dir=self.working_dir,
-                                                                             next=self.retrieve_metadata,
+                                                                             next=self.retrieve_sample_metadata,
                                                                              multiple=True)
         self.list_of_images_widget.show()
 
-    def retrieve_metadata(self, list_of_images):
+    def retrieve_sample_metadata(self, list_of_images):
         self.list_of_images = list_of_images
 
         _dict = file_handler.retrieve_time_stamp(self.list_of_images)
 
-        self.first_image = self.isolate_infos_from_file_index(index=0, dict=_dict)
-        self.last_image = self.isolate_infos_from_file_index(index=-1, dict=_dict)
+        self.first_image_dict = self.isolate_infos_from_file_index(index=0, dict=_dict)
+        self.last_image_dict = self.isolate_infos_from_file_index(index=-1, dict=_dict)
         self.list_metadata_dict = self.retrieve_acquisition_time(self.list_of_images)
 
         display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
-                     self.first_image['user_format_time'] + '</span>'))
+                     self.first_image_dict['user_format_time'] + '</span>'))
         display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
-                     self.last_image['user_format_time'] + '</span>'))
+                     self.last_image_dict['user_format_time'] + '</span>'))
 
     def retrieve_acquisition_time(self, list_files):
         """acquisition time is tag 65027"""
@@ -54,16 +54,46 @@ class WhichOBandDFtoUse(object):
             _raw_value = dict[_file_key][PV_EXPOSURE_TIME]
             split_raw_value = _raw_value.split(":")
             dict[_file_key] = np.float(split_raw_value[1])
-
         return dict
 
-    def isolate_infos_from_file_index(self, index=-1, dict={}):
-        _image = dict['list_images'][index]
-        _time_image = dict['list_time_stamp'][index]
-        _user_format_time_image = dict['list_time_stamp_user_format'][index]
-        return {'file_name':_image,
-                'system_time':_time_image,
-                'user_format_time':_user_format_time_image}
+    def isolate_infos_from_file_index(self, index=-1, dict=None, all_keys=False):
+        result_dict = collections.OrderedDict()
+
+        if all_keys:
+            for _image in dict['list_images'].keys():
+                _time_image = dict['list_time_stamp'][index]
+                _user_format_time_image = dict['list_time_stamp_user_format'][index]
+                result_dict[_image] = {'system_time': _time_image,
+                                       'user_format_time': _user_format_time_image}
+        else:
+            _image = dict['list_images'][index]
+            _time_image = dict['list_time_stamp'][index]
+            _user_format_time_image = dict['list_time_stamp_user_format'][index]
+            result_dict = {'file_name': _image,
+                           'system_time': _time_image,
+                           'user_format_time': _user_format_time_image}
+
+        return result_dict
+
+    def select_ob_folder(self):
+        self.ob_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select open beam folder',
+                                                                     start_dir=self.working_dir,
+                                                                     next=self.retrieve_ob_metadata,
+                                                                     type='directory',
+                                                                     multiple=False)
+        self.ob_folder_widget.show()
+
+    def retrieve_ob_metadata(self, selected_folder):
+        self.list_ob = self.get_list_of_tiff_files(folder=selected_folder)
+        self.ob_time_stamp_dict = file_handler.retrieve_time_stamp(self.list_ob)
+        self._ob_acquisition_time_dict = self.retrieve_acquisition_time(self.list_ob)
+
+        
+
+    def get_list_of_tiff_files(self, folder=""):
+        list_files = glob.glob(os.path.join(folder, "*.tiff"))
+        list_files.sort()
+        return list_files
 
     def select_ob_time_range(self):
         box = widgets.HBox([widgets.Label("Time (hours)",
