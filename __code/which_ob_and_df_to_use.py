@@ -75,27 +75,46 @@ class WhichOBandDFtoUse(object):
 
         return result_dict
 
-    def select_ob_folder(self):
-        self.ob_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select open beam folder',
-                                                                     start_dir=self.working_dir,
-                                                                     next=self.retrieve_ob_metadata,
-                                                                     type='directory',
-                                                                     multiple=False)
-        self.ob_folder_widget.show()
+    def select_of_folder(self):
+        self.select_folder(message='open beam',
+                           next_function=self.retrieve_ob_metadata())
+
+    def select_df_folder(self):
+        self.select_folder(message='dark field',
+                           next_function=self.retrieve_df_metadata())
+
+    def select_folder(self, message="", next_function=None):
+        self.folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
+                                                                  start_dir=self.working_dir,
+                                                                  next=next_function,
+                                                                  type='directory',
+                                                                  multiple=False)
+        self.folder_widget.show()
+
+    def retrieve_metadata(self, selected_folder=""):
+        list_files = self.get_list_of_tiff_files(folder=selected_folder)
+        time_stamp_dict = file_handler.retrieve_time_stamp(list_files)
+        acquisition_time_dict = self.retrieve_acquisition_time(list_files)
+        return {'list_files_dict': list_files,
+                'time_stamp_dict': time_stamp_dict,
+                'acquisition_time_dict': acquisition_time_dict}
 
     def retrieve_ob_metadata(self, selected_folder):
-        self.list_ob = self.get_list_of_tiff_files(folder=selected_folder)
-        self.ob_time_stamp_dict = file_handler.retrieve_time_stamp(self.list_ob)
-        self._ob_acquisition_time_dict = self.retrieve_acquisition_time(self.list_ob)
+        dict_result = self.retrieve_metadata(selected_folder=selected_folder)
+        self.list_ob = dict_result['list_files_dict']
+        self.ob_time_stamp_dict = dict_result['time_stamp_dict']
+        self.ob_acquisition_time_dict = dict_result['acquisition_time_dict']
 
-        
+    def retrieve_df_metadata(self, selected_folder):
+        dict_result = self.retrieve_metadata(selected_folder=selected_folder)
+        self.list_df = dict_result['list_files_dict']
+        self.df_time_stamp_dict = dict_result['time_stamp_dict']
+        self.df_acquisition_time_dict = dict_result['acquisition_time_dict']
 
-    def get_list_of_tiff_files(self, folder=""):
-        list_files = glob.glob(os.path.join(folder, "*.tiff"))
-        list_files.sort()
-        return list_files
 
-    def select_ob_time_range(self):
+
+
+    def select_time_range(self):
         box = widgets.HBox([widgets.Label("Time (hours)",
                                           layout=widgets.Layout(width='20%')),
                             widgets.IntProgress(min=0,
@@ -105,6 +124,15 @@ class WhichOBandDFtoUse(object):
                             ])
         progress_bar = box.children[1]
         display(box)
+
+
+
+    def get_list_of_tiff_files(self, folder=""):
+        list_files = glob.glob(os.path.join(folder, "*.tiff"))
+        list_files.sort()
+        return list_files
+
+
 
 
 
