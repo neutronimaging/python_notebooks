@@ -13,7 +13,7 @@ from __code import time_utility
 from __code import metadata_handler
 from NeuNorm.normalization import Normalization
 
-PV_EXPOSURE_TIME = '65027'
+PV_EXPOSURE_TIME = 65027
 
 
 class WhichOBandDFtoUse(object):
@@ -49,11 +49,12 @@ class WhichOBandDFtoUse(object):
     def retrieve_acquisition_time(self, list_files):
         """acquisition time is tag 65027"""
         dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
-                                                                       list_metadata = ['65027'])
-        for _key in dict.keys():
-            _raw_value = dict[_key]
+                                                                  list_metadata=[PV_EXPOSURE_TIME])
+        for _file_key in dict.keys():
+            _raw_value = dict[_file_key][PV_EXPOSURE_TIME]
             split_raw_value = _raw_value.split(":")
-            dict[_key] = np.float(split_raw_value[1])
+            dict[_file_key] = np.float(split_raw_value[1])
+
         return dict
 
     def isolate_infos_from_file_index(self, index=-1, dict={}):
