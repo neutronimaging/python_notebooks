@@ -138,17 +138,20 @@ class WhichOBandDFtoUse(object):
 
     def retrieve_ob_metadata(self, selected_folder):
         dict_result = self.retrieve_metadata(selected_folder=selected_folder)
-        self.list_ob = dict_result['list_files_dict']
+        #self.list_ob = dict_result['list_files_dict']
         self.ob_time_stamp_dict = dict_result['time_stamp_dict']
         self.ob_acquisition_time_dict = dict_result['acquisition_time_dict']
 
+
+
     def retrieve_df_metadata(self, selected_folder):
         dict_result = self.retrieve_metadata(selected_folder=selected_folder)
-        self.list_df = dict_result['list_files_dict']
+        # self.list_df = dict_result['list_files_dict']
         self.df_time_stamp_dict = dict_result['time_stamp_dict']
         self.df_acquisition_time_dict = dict_result['acquisition_time_dict']
 
     def select_time_range(self):
+        self.keep_df_and_ob_with_same_acquisition_time()
         max_time_range = self.calculate_max_time_range_between_images()
         box01 = widgets.HBox([widgets.Label("Time (hours)",
                                             layout=widgets.Layout(width='10%')),
@@ -158,16 +161,17 @@ class WhichOBandDFtoUse(object):
                                                 layout=widgets.Layout(width='50%'))
                              ])
         self.time_slider = box01.children[1]
-        self.time_slider.on_trait_change(self.time_slider_changed, name='value')
+        self.time_slider.on_trait_change(self.recalculate_files_in_range, name='value')
 
+        timelapse_options = {'BEFORE or AFTER sample data acquisition': 'before_or_after',
+                             'Only BEFORE sample acquisition': 'before',
+                             'Only AFTER sample acquisition': 'after'}
         box02 = widgets.HBox([widgets.Label("Select timelapse",
                                             layout=widgets.Layout(width='10%')),
-                              widgets.RadioButtons(options=['BEFORE and AFTER sample data acquisition',
-                                                            'Only BEFORE sample acquisition',
-                                                            'Only AFTER sample acquisition'],
+                              widgets.RadioButtons(options=timelapse_options,
                                                    layout=widgets.Layout(width="300px"))])
         self.timelapse_selection_widget = box02.children[1]
-        self.timelapse_selection_widget.on_trait_change(self.timelapse_radio_buttons_changed, name='value')
+        self.timelapse_selection_widget.on_trait_change(self.recalculate_files_in_range, name='value')
 
         list_of_ob_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value*3600,
                                                                data_type='ob')
@@ -199,21 +203,64 @@ class WhichOBandDFtoUse(object):
 
         display(master_box)
 
-    def get_list_of_images_in_range(self, time_range_s=1, data_type='ob'):
-        return []
+    def keep_df_and_ob_with_same_acquisition_time(self):
+        pass
 
+    def get_list_of_images_in_range(self, time_range_s=1,
+                                    timelapse_option="before_or_after",
+                                    data_type='ob'):
 
-    def time_slider_changed(self):
+        if data_type == 'ob':
+            data = self.ob_time_stamp_dict
+        else:
+            data = self.df_time_stamp_dict
+
+        first_image_system_time = self.first_image_dict['system_time']
+        last_image_system_time = self.last_image_dict['system_time']
+
+        list_filename = data['list_images']
+        list_timestamp = data['list_time_stamp']
+
+        # before
+        list_index_to_keep = []
+        for _index, _time in enumerate(list_timestamp):
+
+            # ob or df was taken after first raw and before last raw data, we keep it
+            if (_time > first_image_system_time) and (_time < last_image_system_time):
+                list_index_to_keep.append(_index)
+                continue
+
+            if timelapse_option == 'before':
+                if (_time < first_image_system_time) and \
+                        (np.abs(first_image_system_time-_time) <= time_range_s):
+                    list_index_to_keep.append(_index)
+            elif timelapse_option == 'after':
+                if (_time > last_image_system_time) and \
+                        (np.abs(last_image_system_time-_time) <= time_range_s):
+                    list_index_to_keep.append(_index)
+            else:
+                if ((_time < first_image_system_time) and
+                    (np.abs(first_image_system_time - _time) <= time_range_s)) or \
+                        ((_time > last_image_system_time) and
+                         (np.abs(last_image_system_time - _time) <= time_range_s)):
+                    list_index_to_keep.append(_index)
+
+        return list_filename[list_index_to_keep]
+
+    def recalculate_files_in_range(self):
         time_range_value = self.time_slider.value
-        print("time_range is: {}".format(time_range_value))
-
-    def timelapse_radio_buttons_changed(self):
         timelapse = self.timelapse_selection_widget.value
-        print("timelapse: {}".format(timelapse))
 
+        list_ob_in_range = self.get_list_of_images_in_range(time_range_s=time_range_value*3600,
+                                                            timelapse_option=timelapse,
+                                                            data_type='ob')
+        #
+        # list_df_in_range = self.get_list_of_images_in_range(time_range_s=time_range_value * 3600,
+        #                                                     timelapse_option=timelapse,
+        #                                                     data_type='df')
 
-
-
+        self.list_of_ob_in_range_widget.value = list_ob_in_range
+        # self.list_of_df_in_range_widget.value = list_df_in_range
 
     def calculate_max_time_range_between_images(self):
         """this method will determine what is the max time difference between the sample data set and
