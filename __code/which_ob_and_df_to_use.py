@@ -166,6 +166,8 @@ class WhichOBandDFtoUse(object):
                                                             'Only BEFORE sample acquisition',
                                                             'Only AFTER sample acquisition'],
                                                    layout=widgets.Layout(width="300px"))])
+        self.timelapse_selection_widget = box02.children[1]
+        self.timelapse_selection_widget.on_trait_change(self.timelapse_radio_buttons_changed, name='value')
 
         list_of_ob_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value*3600,
                                                                data_type='ob')
@@ -175,7 +177,7 @@ class WhichOBandDFtoUse(object):
                                             layout=widgets.Layout(width='500px',
                                                                   height='300px'))],
                             layout=widgets.Layout(width="520px"))
-        self.list_of_ob_in_range = box1.children[1]
+        self.list_of_ob_in_range_widget = box1.children[1]
 
         list_of_df_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value * 3600,
                                                                data_type='df')
@@ -185,7 +187,7 @@ class WhichOBandDFtoUse(object):
                                             layout=widgets.Layout(width='500px',
                                                                   height='300px'))],
                             layout=widgets.Layout(width="520px"))
-        self.list_of_df_in_range = box2.children[1]
+        self.list_of_df_in_range_widget = box2.children[1]
 
         spacer = "_" * 60
         box3 = widgets.Label(spacer + " R E S U L T " + spacer,
@@ -203,6 +205,11 @@ class WhichOBandDFtoUse(object):
 
     def time_slider_changed(self):
         time_range_value = self.time_slider.value
+        print("time_range is: {}".format(time_range_value))
+
+    def timelapse_radio_buttons_changed(self):
+        timelapse = self.timelapse_selection_widget.value
+        print("timelapse: {}".format(timelapse))
 
 
 
