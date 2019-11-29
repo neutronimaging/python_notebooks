@@ -25,12 +25,32 @@ class WhichOBandDFtoUse(object):
         self.last_image_dict = {}
         self.list_metadata_dict = {}
 
+        # list of open beam files (full path)
         self.list_ob = []
+
+        """ 
+        {'list_images: [],
+         'list_time_stamp': [],
+         'list_time_stamp_user_format': [],
+        }
+        """
         self.ob_time_stamp_dict = {}
+
+        # {'file1': time1, 'file2': time2, ...}
         self.ob_acquisition_time_dict = {}
 
+        # list of dark field files (full path)
         self.list_df = []
+
+        """ 
+        {'list_images: [],
+         'list_time_stamp': [],
+         'list_time_stamp_user_format': [],
+        }
+        """
         self.df_time_stamp_dict = {}
+
+        # {'file1': time1, 'file2': time2, ...}
         self.df_acquisition_time_dict = {}
 
     def select_images(self):
@@ -129,16 +149,64 @@ class WhichOBandDFtoUse(object):
         self.df_acquisition_time_dict = dict_result['acquisition_time_dict']
 
     def select_time_range(self):
-        self.calculate_max_time_range_between_images()
-        box = widgets.HBox([widgets.Label("Time (hours)",
-                                          layout=widgets.Layout(width='20%')),
-                            widgets.IntProgress(min=0,
-                                                max=len(self.list_of_images),
+        max_time_range = self.calculate_max_time_range_between_images()
+        box01 = widgets.HBox([widgets.Label("Time (hours)",
+                                            layout=widgets.Layout(width='10%')),
+                              widgets.IntSlider(min=1,
+                                                max=max_time_range,
                                                 value=0,
                                                 layout=widgets.Layout(width='50%'))
-                            ])
-        progress_bar = box.children[1]
-        display(box)
+                             ])
+        self.time_slider = box01.children[1]
+        self.time_slider.on_trait_change(self.time_slider_changed, name='value')
+
+        box02 = widgets.HBox([widgets.Label("Select timelapse",
+                                            layout=widgets.Layout(width='10%')),
+                              widgets.RadioButtons(options=['BEFORE and AFTER sample data acquisition',
+                                                            'Only BEFORE sample acquisition',
+                                                            'Only AFTER sample acquisition'],
+                                                   layout=widgets.Layout(width="300px"))])
+
+        list_of_ob_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value*3600,
+                                                               data_type='ob')
+        box1 = widgets.VBox([widgets.Label("List of OB Runs in the range",
+                                           layout=widgets.Layout(width='100%')),
+                             widgets.Select(options=list_of_ob_in_range,
+                                            layout=widgets.Layout(width='500px',
+                                                                  height='300px'))],
+                            layout=widgets.Layout(width="520px"))
+        self.list_of_ob_in_range = box1.children[1]
+
+        list_of_df_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value * 3600,
+                                                               data_type='df')
+        box2 = widgets.VBox([widgets.Label("List of DF runs in the range",
+                                           layout=widgets.Layout(width='100%')),
+                             widgets.Select(options=list_of_df_in_range,
+                                            layout=widgets.Layout(width='500px',
+                                                                  height='300px'))],
+                            layout=widgets.Layout(width="520px"))
+        self.list_of_df_in_range = box2.children[1]
+
+        spacer = "_" * 60
+        box3 = widgets.Label(spacer + " R E S U L T " + spacer,
+                             layout=widgets.Layout(width="100%"))
+
+        master_box_12 = widgets.HBox([box1, box2],
+                                     layout=widgets.Layout(width="100%"))
+        master_box = widgets.VBox([box01, box02, box3, master_box_12])
+
+        display(master_box)
+
+    def get_list_of_images_in_range(self, time_range_s=1, data_type='ob'):
+        return []
+
+
+    def time_slider_changed(self):
+        time_range_value = self.time_slider.value
+
+
+
+
 
     def calculate_max_time_range_between_images(self):
         """this method will determine what is the max time difference between the sample data set and
@@ -146,13 +214,15 @@ class WhichOBandDFtoUse(object):
         The algorithm will use the first and last ob, df and sample data set to find this range
         """
         first_image_system_time = self.first_image_dict['system_time']
-        last_image_system_time = self.last_image_dict['system.time']
+        last_image_system_time = self.last_image_dict['system_time']
 
-        first_and_last_ob_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(self.ob_time_stamp_dict)
+        _ob_time_stamp_dict = self.ob_time_stamp_dict['list_time_stamp']
+        first_and_last_ob_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(_ob_time_stamp_dict)
         first_ob_system_time = first_and_last_ob_system_time['first_stamp']
         last_ob_system_time = first_and_last_ob_system_time['last_stamp']
 
-        first_and_last_df_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(self.df_time_stamp_dict)
+        _df_time_stamp_dict = self.df_time_stamp_dict['list_time_stamp']
+        first_and_last_df_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(_df_time_stamp_dict)
         first_df_system_time = first_and_last_df_system_time['first_stamp']
         last_df_system_time = first_and_last_df_system_time['last_stamp']
 
@@ -168,13 +238,14 @@ class WhichOBandDFtoUse(object):
             time_offset_after = last_ob_and_df_system_time - last_image_system_time
 
         max_time_range_s = np.max([time_offset_before, time_offset_after])
+        max_time_range_hours = time_utility.convert_system_time_into_hours(max_time_range_s)
 
-        return time_utility.convert_system_time_into_hours(max_time_range_s)
-    
+        return np.ceil(max_time_range_hours)
+
     @staticmethod
     def calculate_first_and_last_system_time(list_stamp_dict):
         first_stamp = list_stamp_dict[0]
-        last_stamp = list_stamp_dict[0]
+        last_stamp = list_stamp_dict[-1]
         for _time in list_stamp_dict[1:]:
             if _time < first_stamp:
                 first_stamp = _time
