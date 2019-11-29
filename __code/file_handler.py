@@ -31,12 +31,14 @@ def force_file_extension(filename, ext='.txt'):
     else:
         return base + ext
 
+
 def test_image(file_name, threshold=5000):
     # check size of image and return False if size is below threshold 
     statinfo = os.stat(file_name)
     if statinfo.st_size < threshold:
         return False
     return True
+
 
 def load_data(filenames='', folder='', showing_progress=False):
     '''
@@ -104,11 +106,13 @@ def save_data(data=[], filename=''):
     elif (data_type == '.tiff') or (data_type == '.tif'):
         make_tiff(data=data, filename=filename)
 
+
 def get_file_extension(filename):
     '''retrieve the file extension of the filename and make sure
     we only keep the extension value and not the "dot" before it'''
     full_extension = get_data_type(filename)
     return full_extension[1:]
+
 
 def get_data_type(file_name):
     '''
@@ -123,6 +127,7 @@ def get_data_type(file_name):
     filename, file_extension = os.path.splitext(file_name)
     return file_extension.strip()
 
+
 def save_file(folder='', base_file_name='', suffix='', dictionary={}):
     if folder == '':
         return
@@ -131,23 +136,28 @@ def save_file(folder='', base_file_name='', suffix='', dictionary={}):
     pickle.dump(dictionary, open(output_file, "wb"))
     
     return output_file
-       
+
+
 def make_tiff(data=[], filename=''):
     new_image = Image.fromarray(data)
     new_image.save(filename)
-    
+
+
 def make_fits(data=[], filename=''):
     fits.writeto(filename, data, clobber=True)
+
 
 def make_folder(folder_name):
     if not (os.path.exists(folder_name)):
         os.makedirs(folder_name)
 
+
 def make_or_reset_folder(folder_name):
     if os.path.exists(folder_name):
          shutil.rmtree(folder_name)
     os.makedirs(folder_name)         
-    
+
+
 def remove_SummedImg_from_list(list_files):
     base_name_and_extension = os.path.basename(list_files[0])
     dir_name = os.path.dirname(list_files[0])
@@ -162,7 +172,8 @@ def remove_SummedImg_from_list(list_files):
             continue
         list_files_cleaned.append(_file)
     return list_files_cleaned
-    
+
+
 def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','):
     f = open(output_file_name, 'w')
     for _meta in metadata:
@@ -179,10 +190,12 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','
        
     f.close()
 
+
 def make_ascii_file_from_string(text="", filename=''):
     with open(filename, 'w') as f:
         f.write(text)
     f.close()
+
 
 def read_ascii(filename=''):
     '''return contain of an ascii file'''
@@ -190,6 +203,7 @@ def read_ascii(filename=''):
     text = f.read()
     f.close()
     return text
+
 
 def retrieve_metadata_from_dsc_file(filename=''):
     text = read_ascii(filename=filename)
@@ -200,6 +214,7 @@ def retrieve_metadata_from_dsc_file(filename=''):
     metadata['os_format'] = splitted_text[-7]
 
     return metadata
+
 
 def retrieve_metadata_from_dsc_list_files(list_files=[]):
     w = widgets.IntProgress()
@@ -212,6 +227,7 @@ def retrieve_metadata_from_dsc_list_files(list_files=[]):
         w.value = _index+1
 
     return metadata
+
 
 def retrieve_list_of_most_dominand_extension_from_folder(folder='', files=[]):
     '''
@@ -246,6 +262,7 @@ def retrieve_list_of_most_dominand_extension_from_folder(folder='', files=[]):
 
     return [list_of_input_files, dominand_extension]
 
+
 def remove_file_from_list(list_files=[], regular_expression=''):
     '''
     This method will look through the list of files provided and will try
@@ -272,6 +289,7 @@ def remove_file_from_list(list_files=[], regular_expression=''):
 
     return list_files
 
+
 def convert_to_human_readable_format(timestamp):
     """Convert the unix time stamp into a human readable time format
 
@@ -296,6 +314,7 @@ def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
     EPOCH_OFFSET = 0
     unix_epoch_timestamp = EPOCH_OFFSET + epics_timestamp
     return unix_epoch_timestamp
+
 
 def retrieve_time_stamp(list_images):
     [_, ext] = os.path.splitext(list_images[0])
@@ -332,6 +351,13 @@ def retrieve_time_stamp(list_images):
     return {'list_images': list_images,
             'list_time_stamp': list_time_stamp,
             'list_time_stamp_user_format': list_time_stamp_user_format}
+
+
+def get_list_of_files(folder="", extension='tiff'):
+    list_files = glob.glob(os.path.join(folder, "*.{}".format(extension)))
+    list_files.sort()
+    return list_files
+
 
 class ListMostDominantExtension(object):
     Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))

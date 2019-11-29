@@ -1,17 +1,13 @@
 import os
-import ipywe.fileselector
-from scipy.stats.mstats import gmean
-import glob
 import collections
-
+import numpy as np
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
-import numpy as np
+
+import ipywe.fileselector
 
 from __code import file_handler
-from __code import time_utility
 from __code import metadata_handler
-from NeuNorm.normalization import Normalization
 
 PV_EXPOSURE_TIME = 65027
 
@@ -24,56 +20,70 @@ class WhichOBandDFtoUse(object):
         self.list_of_images = []
         self.input_data_folder = []
 
+        self.first_image_dict = {}
+        self.last_image_dict = {}
+        self.list_metadata_dict = {}
+
+        self.list_ob = []
+        self.ob_time_stamp_dict = {}
+        self.ob_acquisition_time_dict = {}
+
+        self.list_df = []
+        self.df_time_stamp_dict = {}
+        self.df_acquisition_time_dict = {}
+
     def select_images(self):
-        self.list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of data'
-                                                                                         'to normalize',
-                                                                             start_dir=self.working_dir,
-                                                                             next=self.retrieve_sample_metadata,
-                                                                             multiple=True)
-        self.list_of_images_widget.show()
+        list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of data'
+                                                                                 'to normalize',
+                                                                     start_dir=self.working_dir,
+                                                                     next=self.retrieve_sample_metadata,
+                                                                     multiple=True)
+        list_of_images_widget.show()
 
     def retrieve_sample_metadata(self, list_of_images):
         self.list_of_images = list_of_images
 
         _dict = file_handler.retrieve_time_stamp(self.list_of_images)
 
-        self.first_image_dict = self.isolate_infos_from_file_index(index=0, dict=_dict)
-        self.last_image_dict = self.isolate_infos_from_file_index(index=-1, dict=_dict)
-        self.list_metadata_dict = self.retrieve_acquisition_time(self.list_of_images)
+        self.first_image_dict = WhichOBandDFtoUse.isolate_infos_from_file_index(index=0, dictionary=_dict)
+        self.last_image_dict = WhichOBandDFtoUse.isolate_infos_from_file_index(index=-1, dictionary=_dict)
+        self.list_metadata_dict = WhichOBandDFtoUse.retrieve_acquisition_time(self.list_of_images)
 
         display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
                      self.first_image_dict['user_format_time'] + '</span>'))
         display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
                      self.last_image_dict['user_format_time'] + '</span>'))
 
-    def retrieve_acquisition_time(self, list_files):
+    @staticmethod
+    def retrieve_acquisition_time(list_files):
         """acquisition time is tag 65027"""
-        dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
-                                                                  list_metadata=[PV_EXPOSURE_TIME])
-        for _file_key in dict.keys():
-            _raw_value = dict[_file_key][PV_EXPOSURE_TIME]
+        _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
+                                                                   list_metadata=[PV_EXPOSURE_TIME])
+        for _file_key in _dict.keys():
+            _raw_value = _dict[_file_key][PV_EXPOSURE_TIME]
             split_raw_value = _raw_value.split(":")
-            dict[_file_key] = np.float(split_raw_value[1])
-        return dict
+            _dict[_file_key] = np.float(split_raw_value[1])
+        return _dict
 
-    def isolate_infos_from_file_index(self, index=-1, dict=None, all_keys=False):
-        result_dict = collections.OrderedDict()
+    @staticmethod
+    def isolate_infos_from_file_index(index=-1, dictionary=None, all_keys=False):
+        result_dictionary = collections.OrderedDict()
 
         if all_keys:
-            for _image in dict['list_images'].keys():
-                _time_image = dict['list_time_stamp'][index]
-                _user_format_time_image = dict['list_time_stamp_user_format'][index]
-                result_dict[_image] = {'system_time': _time_image,
-                                       'user_format_time': _user_format_time_image}
+            for _image in dictionary['list_images'].keys():
+                _time_image = dictionary['list_time_stamp'][index]
+                _user_format_time_image = dictionary['list_time_stamp_user_format'][index]
+                result_dictionary[_image] = {'system_time': _time_image,
+                                             'user_format_time': _user_format_time_image}
         else:
-            _image = dict['list_images'][index]
-            _time_image = dict['list_time_stamp'][index]
-            _user_format_time_image = dict['list_time_stamp_user_format'][index]
-            result_dict = {'file_name': _image,
-                           'system_time': _time_image,
-                           'user_format_time': _user_format_time_image}
+            _image = dictionary['list_images'][index]
+            _time_image = dictionary['list_time_stamp'][index]
+            _user_format_time_image = dictionary['list_time_stamp_user_format'][index]
+            result_dictionary = {'file_name': _image,
+                                 'system_time': _time_image,
+                                 'user_format_time': _user_format_time_image}
 
-        return result_dict
+        return result_dictionary
 
     def select_of_folder(self):
         self.select_folder(message='open beam',
@@ -84,17 +94,23 @@ class WhichOBandDFtoUse(object):
                            next_function=self.retrieve_df_metadata())
 
     def select_folder(self, message="", next_function=None):
-        self.folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
-                                                                  start_dir=self.working_dir,
-                                                                  next=next_function,
-                                                                  type='directory',
-                                                                  multiple=False)
-        self.folder_widget.show()
+        folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
+                                                             start_dir=self.working_dir,
+                                                             next=next_function,
+                                                             type='directory',
+                                                             multiple=False)
+        folder_widget.show()
+
+    @staticmethod
+    def get_list_of_tiff_files(folder=""):
+        list_of_tiff_files = file_handler.get_list_of_files(folder=folder,
+                                                            extension='tiff')
+        return list_of_tiff_files
 
     def retrieve_metadata(self, selected_folder=""):
-        list_files = self.get_list_of_tiff_files(folder=selected_folder)
+        list_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
         time_stamp_dict = file_handler.retrieve_time_stamp(list_files)
-        acquisition_time_dict = self.retrieve_acquisition_time(list_files)
+        acquisition_time_dict = WhichOBandDFtoUse.retrieve_acquisition_time(list_files)
         return {'list_files_dict': list_files,
                 'time_stamp_dict': time_stamp_dict,
                 'acquisition_time_dict': acquisition_time_dict}
@@ -111,9 +127,6 @@ class WhichOBandDFtoUse(object):
         self.df_time_stamp_dict = dict_result['time_stamp_dict']
         self.df_acquisition_time_dict = dict_result['acquisition_time_dict']
 
-
-
-
     def select_time_range(self):
         box = widgets.HBox([widgets.Label("Time (hours)",
                                           layout=widgets.Layout(width='20%')),
@@ -127,10 +140,6 @@ class WhichOBandDFtoUse(object):
 
 
 
-    def get_list_of_tiff_files(self, folder=""):
-        list_files = glob.glob(os.path.join(folder, "*.tiff"))
-        list_files.sort()
-        return list_files
 
 
 
@@ -138,25 +147,6 @@ class WhichOBandDFtoUse(object):
 
 
 
-    def how_to_combine(self):
-        _file = open("__docs/combine_images/geometric_mean.png", 'rb')
-        _geo_image = _file.read()
-        geo_box = widgets.HBox([widgets.Label("Geometric Mean",
-                                              layout=widgets.Layout(width='20%')),
-                                widgets.Image(value=_geo_image,
-                                              format='png')])
-        _file = open("__docs/combine_images/algebric_mean.png", 'rb')
-        _alge_image = _file.read()
-        alge_box = widgets.HBox([widgets.Label("Arithmetic Mean",
-                                              layout=widgets.Layout(width='20%')),
-                                widgets.Image(value=_alge_image,
-                                              format='png')])
-
-        self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean'],
-                                                   value='arithmetic mean')
-
-        vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
-        display(vertical)
 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
@@ -166,14 +156,7 @@ class WhichOBandDFtoUse(object):
 
         self.output_folder_widget.show()
 
-    def __get_formated_merging_algo_name(self):
-        _algo = self.combine_method.value
-        if _algo =='arithmetic mean':
-            return 'arithmetic_mean'
-        elif _algo == 'geometric mean':
-            return 'geometric_mean'
-        else:
-            return _algo
+
 
     def define_output_filename(self):
         list_files = self.files_list_widget.selected
@@ -196,76 +179,8 @@ class WhichOBandDFtoUse(object):
         vertical_box = widgets.VBox([top_label, box])
         display(vertical_box)
 
-    def merging(self):
-        """combine images using algorithm provided"""
 
-        list_files = self.files_list_widget.selected
-        nbr_files = len(list_files)
 
-        # get merging algorithm
-        merging_algo = self.combine_method.value
-        algorithm = self.__add
-        if merging_algo =='arithmetic mean':
-            algorithm = self.__arithmetic_mean
-        elif merging_algo == 'geometric mean':
-            algorithm = self.__geo_mean
-
-        # get output folder
-        output_folder = os.path.abspath(self.output_folder_widget.selected)
-
-        o_load = Normalization()
-        o_load.load(file=list_files, notebook=True)
-        _data = o_load.data['sample']['data']
-
-        merging_ui = widgets.HBox([widgets.Label("Merging Progress",
-                                                 layout=widgets.Layout(width='20%')),
-                                   widgets.IntProgress(max=2)])
-        display(merging_ui)
-        w1 = merging_ui.children[1]
-
-        combined_data = self.__merging_algorithm(algorithm, _data)
-        w1.value = 1
-
-        #_new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
-        _new_name = self.default_filename_ui.value + self.ext_ui.value
-        output_file_name = os.path.join(output_folder, _new_name)
-
-        file_handler.save_data(data=combined_data, filename=output_file_name)
-
-        w1.value = 2
-
-        display(HTML('<span style="font-size: 20px; color:blue">File created: ' + \
-                     os.path.basename(output_file_name) + '</span>'))
-        display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + \
-                     output_folder + '</span>'))
-
-    def __create_merged_file_name(self, list_files_names=[]):
-        """Create the new base name using a combine name of all the input file
-
-        :param list_files_names: ['/Users/j35/image001.fits','/Users/j35/iamge002.fits']
-        :return:
-            'image001_image002.fits'
-        """
-        ext = ''
-        list_base_name = []
-        for _file in list_files_names:
-            basename = os.path.basename(_file)
-            [_name, ext] = os.path.splitext(basename)
-            list_base_name.append(_name)
-
-        return ('_'.join(list_base_name), ext)
-
-    def __add(self, data_array):
-        return np.sum(data_array, axis=0)
-
-    def __arithmetic_mean(self, data_array):
-        return np.mean(data_array, axis=0)
-
-    def __geo_mean(self, data_array):
-        return gmean(data_array, axis=0)
-
-    def __merging_algorithm(self, function_, *args):
-        return function_(*args)
 
 
 
