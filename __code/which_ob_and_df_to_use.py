@@ -8,6 +8,7 @@ import ipywe.fileselector
 
 from __code import file_handler
 from __code import metadata_handler
+from __code import time_utility
 
 PV_EXPOSURE_TIME = 65027
 
@@ -128,6 +129,7 @@ class WhichOBandDFtoUse(object):
         self.df_acquisition_time_dict = dict_result['acquisition_time_dict']
 
     def select_time_range(self):
+        self.calculate_max_time_range_between_images()
         box = widgets.HBox([widgets.Label("Time (hours)",
                                           layout=widgets.Layout(width='20%')),
                             widgets.IntProgress(min=0,
@@ -138,15 +140,49 @@ class WhichOBandDFtoUse(object):
         progress_bar = box.children[1]
         display(box)
 
+    def calculate_max_time_range_between_images(self):
+        """this method will determine what is the max time difference between the sample data set and
+        the ob and df images
+        The algorithm will use the first and last ob, df and sample data set to find this range
+        """
+        first_image_system_time = self.first_image_dict['system_time']
+        last_image_system_time = self.last_image_dict['system.time']
 
+        first_and_last_ob_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(self.ob_time_stamp_dict)
+        first_ob_system_time = first_and_last_ob_system_time['first_stamp']
+        last_ob_system_time = first_and_last_ob_system_time['last_stamp']
 
+        first_and_last_df_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(self.df_time_stamp_dict)
+        first_df_system_time = first_and_last_df_system_time['first_stamp']
+        last_df_system_time = first_and_last_df_system_time['last_stamp']
 
+        first_ob_and_df_system_time = np.min([first_ob_system_time, first_df_system_time])
+        last_ob_and_df_system_time = np.max([last_ob_system_time, last_df_system_time])
 
+        time_offset_before = 0
+        if first_image_system_time > first_ob_and_df_system_time:
+            time_offset_before = first_image_system_time - first_ob_and_df_system_time
 
+        time_offset_after = 0
+        if last_image_system_time < last_ob_and_df_system_time:
+            time_offset_after = last_ob_and_df_system_time - last_image_system_time
 
+        max_time_range_s = np.max([time_offset_before, time_offset_after])
 
+        return time_utility.convert_system_time_into_hours(max_time_range_s)
+    
+    @staticmethod
+    def calculate_first_and_last_system_time(list_stamp_dict):
+        first_stamp = list_stamp_dict[0]
+        last_stamp = list_stamp_dict[0]
+        for _time in list_stamp_dict[1:]:
+            if _time < first_stamp:
+                first_stamp = _time
+            elif _time > last_stamp:
+                last_stamp = _time
 
-
+        return {'first_stamp': first_stamp,
+                'last_stamp': last_stamp}
 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \

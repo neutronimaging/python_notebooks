@@ -33,6 +33,12 @@ def format_time_stamp(file_name = None, time_stamp = None):
     
     return [_short_file_name, _dict_time_stamp]
 
+
+def convert_system_time_into_hours(system_time_s):
+    time_hour = system_time_s / 3600
+    return time_hour
+
+
 def retrieve_time_stamp(filename=''):
     if not os.path.exists(filename):
         raise OSError
