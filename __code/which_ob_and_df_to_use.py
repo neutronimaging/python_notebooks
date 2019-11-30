@@ -68,7 +68,7 @@ class WhichOBandDFtoUse(object):
 
         self.first_image_dict = WhichOBandDFtoUse.isolate_infos_from_file_index(index=0, dictionary=_dict)
         self.last_image_dict = WhichOBandDFtoUse.isolate_infos_from_file_index(index=-1, dictionary=_dict)
-        self.list_metadata_dict = WhichOBandDFtoUse.retrieve_acquisition_time(self.list_of_images)
+        self.list_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(self.list_of_images)
 
         display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
                      self.first_image_dict['user_format_time'] + '</span>'))
@@ -76,8 +76,13 @@ class WhichOBandDFtoUse(object):
                      self.last_image_dict['user_format_time'] + '</span>'))
 
     @staticmethod
-    def retrieve_acquisition_time(list_files):
-        """acquisition time is tag 65027"""
+    def retrieve_metadata(list_files):
+        """list of metadata to retrieve is:
+            - acquisition time -> 65027
+            - detector type -> 65026 (Manufacturer)
+            - slits positions ->
+            - aperture value
+        """
         _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
                                                                    list_metadata=[PV_EXPOSURE_TIME])
         for _file_key in _dict.keys():
@@ -142,8 +147,6 @@ class WhichOBandDFtoUse(object):
         self.ob_time_stamp_dict = dict_result['time_stamp_dict']
         self.ob_acquisition_time_dict = dict_result['acquisition_time_dict']
 
-
-
     def retrieve_df_metadata(self, selected_folder):
         dict_result = self.retrieve_metadata(selected_folder=selected_folder)
         # self.list_df = dict_result['list_files_dict']
@@ -183,11 +186,11 @@ class WhichOBandDFtoUse(object):
                             layout=widgets.Layout(width="520px"))
         self.list_of_ob_in_range_widget = box1.children[1]
 
-        list_of_df_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value * 3600,
-                                                               data_type='df')
-        box2 = widgets.VBox([widgets.Label("List of DF runs in the range",
+        list_of_matching_df = self.get_list_of_matching_df()
+
+        box2 = widgets.VBox([widgets.Label("List of DF",
                                            layout=widgets.Layout(width='100%')),
-                             widgets.Select(options=list_of_df_in_range,
+                             widgets.Select(options=list_of_matching_df,
                                             layout=widgets.Layout(width='500px',
                                                                   height='300px'))],
                             layout=widgets.Layout(width="520px"))
@@ -204,7 +207,12 @@ class WhichOBandDFtoUse(object):
         display(master_box)
 
     def keep_df_and_ob_with_same_acquisition_time(self):
+        #FIXME
         pass
+
+    def get_list_of_matching_df(self):
+        #FIXME
+        return []
 
     def get_list_of_images_in_range(self, time_range_s=1,
                                     timelapse_option="before_or_after",
@@ -254,18 +262,12 @@ class WhichOBandDFtoUse(object):
         list_ob_in_range = self.get_list_of_images_in_range(time_range_s=time_range_value*3600,
                                                             timelapse_option=timelapse,
                                                             data_type='ob')
-        #
-        # list_df_in_range = self.get_list_of_images_in_range(time_range_s=time_range_value * 3600,
-        #                                                     timelapse_option=timelapse,
-        #                                                     data_type='df')
-
         self.list_of_ob_in_range_widget.value = list_ob_in_range
-        # self.list_of_df_in_range_widget.value = list_df_in_range
 
     def calculate_max_time_range_between_images(self):
         """this method will determine what is the max time difference between the sample data set and
-        the ob and df images
-        The algorithm will use the first and last ob, df and sample data set to find this range
+        the ob images
+        The algorithm will use the first and last ob and sample data set to find this range
         """
         first_image_system_time = self.first_image_dict['system_time']
         last_image_system_time = self.last_image_dict['system_time']
@@ -275,21 +277,13 @@ class WhichOBandDFtoUse(object):
         first_ob_system_time = first_and_last_ob_system_time['first_stamp']
         last_ob_system_time = first_and_last_ob_system_time['last_stamp']
 
-        _df_time_stamp_dict = self.df_time_stamp_dict['list_time_stamp']
-        first_and_last_df_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(_df_time_stamp_dict)
-        first_df_system_time = first_and_last_df_system_time['first_stamp']
-        last_df_system_time = first_and_last_df_system_time['last_stamp']
-
-        first_ob_and_df_system_time = np.min([first_ob_system_time, first_df_system_time])
-        last_ob_and_df_system_time = np.max([last_ob_system_time, last_df_system_time])
-
         time_offset_before = 0
-        if first_image_system_time > first_ob_and_df_system_time:
-            time_offset_before = first_image_system_time - first_ob_and_df_system_time
+        if first_image_system_time > first_ob_system_time:
+            time_offset_before = first_image_system_time - first_ob_system_time
 
         time_offset_after = 0
-        if last_image_system_time < last_ob_and_df_system_time:
-            time_offset_after = last_ob_and_df_system_time - last_image_system_time
+        if last_image_system_time < last_ob_system_time:
+            time_offset_after = last_ob_system_time - last_image_system_time
 
         max_time_range_s = np.max([time_offset_before, time_offset_after])
         max_time_range_hours = time_utility.convert_system_time_into_hours(max_time_range_s)
