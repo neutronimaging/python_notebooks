@@ -11,6 +11,7 @@ from __code import metadata_handler
 from __code import time_utility
 
 PV_EXPOSURE_TIME = 65027
+METADATA_KEYS = [PV_EXPOSURE_TIME, 65028, 65029]
 
 
 class WhichOBandDFtoUse(object):
@@ -63,32 +64,91 @@ class WhichOBandDFtoUse(object):
 
     def retrieve_sample_metadata(self, list_of_images):
         self.list_of_images = list_of_images
-
-        _dict = file_handler.retrieve_time_stamp(self.list_of_images)
-
-        self.first_image_dict = WhichOBandDFtoUse.isolate_infos_from_file_index(index=0, dictionary=_dict)
-        self.last_image_dict = WhichOBandDFtoUse.isolate_infos_from_file_index(index=-1, dictionary=_dict)
-        self.list_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(self.list_of_images)
-
-        display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
-                     self.first_image_dict['user_format_time'] + '</span>'))
-        display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
-                     self.last_image_dict['user_format_time'] + '</span>'))
+        self.sample_metadata = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_images)
 
     @staticmethod
-    def retrieve_metadata(list_files):
+    def _reformat_dict(dictionary={}):
+        """
+        to go from
+            {'list_images': [], 'list_time_stamp': [], 'list_time_stamp_user_format':[]}
+        to
+            {'0': {'filename': file1,
+                   'time_stamp': 'value',
+                   'time_stamp_user_format': 'value',
+                   },
+             ...,
+             }
+        """
+        formatted_dictionary = collections.OrderedDict()
+        list_files = dictionary['list_images']
+        list_time_stamp = dictionary['list_time_stamp']
+        list_time_stamp_user_format = dictionary['list_time_stamp_user_format']
+
+        for _index, _file in enumerate(list_files):
+            formatted_dictionary[_index] = {'filename': _file,
+                                            'time_stamp': list_time_stamp[_index],
+                                            'time_stamp_user_format': list_time_stamp_user_format[_index]}
+        return formatted_dictionary
+
+    @staticmethod
+    def _combine_dictionaries(master_dictionary={}, to_combine_dictionary={}):
+        return {}
+
+
+    @staticmethod
+    def retrieve_metadata(list_of_files=[]):
+        """
+        dict = {'file1': {'metadata1': 'value',
+                          'metadata2': 'value',
+                          'metadata3': 'value',
+                          ...
+                          },
+                ...
+                }
+        """
+        _dict = file_handler.retrieve_time_stamp(list_of_files)
+        sample_time_metadata_dict = WhichOBandDFtoUse._reformat_dict(dictionary=_dict)
+
+        sample_beamline_metadata_dict = WhichOBandDFtoUse.retrieve_beamline_metadata(list_of_files)
+
+        import pprint
+        pprint.pprint(sample_beamline_metadata_dict)
+
+        # sample_metadata_dict = WhichOBandDFtoUse._combine_dictionaries(master_dictionary=_dict,
+        #                                                                to_combine_dictionary=sample_metadata)
+
+
+        # self.first_image_dict = sample_metadata
+        # self.last_image_dict = sample_metadata[len(sample_metadata)-1]
+        # self.list_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(self.list_of_images)
+        #
+        # display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
+        #              self.first_image_dict['user_format_time'] + '</span>'))
+        # display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
+        #              self.last_image_dict['user_format_time'] + '</span>'))
+
+    @staticmethod
+    def retrieve_beamline_metadata(list_files):
         """list of metadata to retrieve is:
             - acquisition time -> 65027
             - detector type -> 65026 (Manufacturer)
             - slits positions ->
             - aperture value
         """
+        list_metadata = METADATA_KEYS
         _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
-                                                                   list_metadata=[PV_EXPOSURE_TIME])
+                                                                   list_metadata=list_metadata)
+
         for _file_key in _dict.keys():
-            _raw_value = _dict[_file_key][PV_EXPOSURE_TIME]
-            split_raw_value = _raw_value.split(":")
-            _dict[_file_key] = np.float(split_raw_value[1])
+            _file_dict = {}
+            for _pv in list_metadata:
+                _raw_value = _dict[_file_key][_pv]
+                if _raw_value is not None:
+                    split_raw_value = _raw_value.split(":")
+                    _file_dict[_pv] = np.float(split_raw_value[1])
+                else:
+                    _file_dict[_pv] = None
+            _dict[_file_key] = _file_dict
         return _dict
 
     @staticmethod
@@ -133,13 +193,13 @@ class WhichOBandDFtoUse(object):
                                                             extension='tiff')
         return list_of_tiff_files
 
-    def retrieve_metadata(self, selected_folder=""):
-        list_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
-        time_stamp_dict = file_handler.retrieve_time_stamp(list_files)
-        acquisition_time_dict = WhichOBandDFtoUse.retrieve_acquisition_time(list_files)
-        return {'list_files_dict': list_files,
-                'time_stamp_dict': time_stamp_dict,
-                'acquisition_time_dict': acquisition_time_dict}
+    # def retrieve_metadata(self, selected_folder=""):
+    #     list_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
+    #     time_stamp_dict = file_handler.retrieve_time_stamp(list_files)
+    #     acquisition_time_dict = WhichOBandDFtoUse.retrieve_acquisition_time(list_files)
+    #     return {'list_files_dict': list_files,
+    #             'time_stamp_dict': time_stamp_dict,
+    #             'acquisition_time_dict': acquisition_time_dict}
 
     def retrieve_ob_metadata(self, selected_folder):
         dict_result = self.retrieve_metadata(selected_folder=selected_folder)
