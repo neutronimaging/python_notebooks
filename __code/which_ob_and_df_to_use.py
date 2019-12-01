@@ -91,9 +91,15 @@ class WhichOBandDFtoUse(object):
         return formatted_dictionary
 
     @staticmethod
-    def _combine_dictionaries(master_dictionary={}, to_combine_dictionary={}):
-        return {}
-
+    def _combine_dictionaries(master_dictionary={}, servant_dictionary={}):
+        new_master_dictionary = collections.OrderedDict()
+        for _key in master_dictionary.keys():
+            _servant_key = master_dictionary[_key]['filename']
+            _dict1 = master_dictionary[_key]
+            _dict2 = servant_dictionary[_servant_key]
+            _dict3 = {**_dict1, **_dict2}
+            new_master_dictionary[_key] = _dict3
+        return new_master_dictionary
 
     @staticmethod
     def retrieve_metadata(list_of_files=[]):
@@ -110,13 +116,8 @@ class WhichOBandDFtoUse(object):
         sample_time_metadata_dict = WhichOBandDFtoUse._reformat_dict(dictionary=_dict)
 
         sample_beamline_metadata_dict = WhichOBandDFtoUse.retrieve_beamline_metadata(list_of_files)
-
-        import pprint
-        pprint.pprint(sample_beamline_metadata_dict)
-
-        # sample_metadata_dict = WhichOBandDFtoUse._combine_dictionaries(master_dictionary=_dict,
-        #                                                                to_combine_dictionary=sample_metadata)
-
+        sample_metadata_dict = WhichOBandDFtoUse._combine_dictionaries(master_dictionary=sample_time_metadata_dict,
+                                                                       servant_dictionary=sample_beamline_metadata_dict)
 
         # self.first_image_dict = sample_metadata
         # self.last_image_dict = sample_metadata[len(sample_metadata)-1]
