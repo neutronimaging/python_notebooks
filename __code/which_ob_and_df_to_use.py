@@ -22,9 +22,15 @@ class WhichOBandDFtoUse(object):
         self.list_of_images = []
         self.input_data_folder = []
 
-        self.first_image_dict = {}
-        self.last_image_dict = {}
-        self.list_metadata_dict = {}
+        # {0: {65027: 55.0,
+        #      65028: 59.2,
+        #      65029: 1.0,
+        #      'filename': 'full_filename',
+        #      'time_stamp': 1454544.34545,
+        #      'time_stamp_user_format': '2019-11-19 02:48:47'},
+        #  ...,
+        # }
+        self.sample_metadata_dict = {}
 
         # list of open beam files (full path)
         self.list_ob = []
@@ -64,7 +70,36 @@ class WhichOBandDFtoUse(object):
 
     def retrieve_sample_metadata(self, list_of_images):
         self.list_of_images = list_of_images
-        self.sample_metadata = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_images)
+        self.sample_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_images,
+                                                                        display_infos=True)
+
+    def select_ob_folder(self):
+        self.select_folder(message='open beam',
+                           next_function=self.retrieve_ob_metadata())
+
+    def retrieve_ob_metadata(self, selected_folder):
+        list_of_ob_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
+        self.ob_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_ob_files)
+
+    def select_folder(self, message="", next_function=None):
+        folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
+                                                             start_dir=self.working_dir,
+                                                             next=next_function,
+                                                             type='directory',
+                                                             multiple=False)
+        folder_widget.show()
+
+    def select_df_folder(self):
+        self.select_folder(message='dark field',
+                           next_function=self.retrieve_df_metadata())
+
+    def retrieve_df_metadata(self, selected_folder):
+        list_of_df_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
+        self.df_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_df_files)
+
+
+
+
 
     @staticmethod
     def _reformat_dict(dictionary={}):
@@ -102,7 +137,7 @@ class WhichOBandDFtoUse(object):
         return new_master_dictionary
 
     @staticmethod
-    def retrieve_metadata(list_of_files=[]):
+    def retrieve_metadata(list_of_files=[], display_infos=True):
         """
         dict = {'file1': {'metadata1': 'value',
                           'metadata2': 'value',
@@ -113,24 +148,26 @@ class WhichOBandDFtoUse(object):
                 }
         """
         _dict = file_handler.retrieve_time_stamp(list_of_files)
-        sample_time_metadata_dict = WhichOBandDFtoUse._reformat_dict(dictionary=_dict)
+        _time_metadata_dict = WhichOBandDFtoUse._reformat_dict(dictionary=_dict)
 
-        sample_beamline_metadata_dict = WhichOBandDFtoUse.retrieve_beamline_metadata(list_of_files)
-        sample_metadata_dict = WhichOBandDFtoUse._combine_dictionaries(master_dictionary=sample_time_metadata_dict,
-                                                                       servant_dictionary=sample_beamline_metadata_dict)
+        _beamline_metadata_dict = WhichOBandDFtoUse.retrieve_beamline_metadata(list_of_files)
+        _metadata_dict = WhichOBandDFtoUse._combine_dictionaries(master_dictionary=_time_metadata_dict,
+                                                                 servant_dictionary=_beamline_metadata_dict)
 
-        # self.first_image_dict = sample_metadata
-        # self.last_image_dict = sample_metadata[len(sample_metadata)-1]
-        # self.list_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(self.list_of_images)
-        #
-        # display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
-        #              self.first_image_dict['user_format_time'] + '</span>'))
-        # display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
-        #              self.last_image_dict['user_format_time'] + '</span>'))
+        if display_infos:
+            display(HTML('<span style="font-size: 20px; color:blue">Nbr of images: ' + str(len(_metadata_dict)) +
+                         '</span'))
+            display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
+                         _metadata_dict[0]['time_stamp_user_format'] + '</span>'))
+            last_index = len(_metadata_dict)-1
+            display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
+                         _metadata_dict[last_index]['time_stamp_user_format'] + '</span>'))
+
+        return _metadata_dict
 
     @staticmethod
     def retrieve_beamline_metadata(list_files):
-        """list of metadata to retrieve is:
+        """list of metadata to retrieve is:000
             - acquisition time -> 65027
             - detector type -> 65026 (Manufacturer)
             - slits positions ->
@@ -172,21 +209,9 @@ class WhichOBandDFtoUse(object):
 
         return result_dictionary
 
-    def select_of_folder(self):
-        self.select_folder(message='open beam',
-                           next_function=self.retrieve_ob_metadata())
 
-    def select_df_folder(self):
-        self.select_folder(message='dark field',
-                           next_function=self.retrieve_df_metadata())
 
-    def select_folder(self, message="", next_function=None):
-        folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
-                                                             start_dir=self.working_dir,
-                                                             next=next_function,
-                                                             type='directory',
-                                                             multiple=False)
-        folder_widget.show()
+
 
     @staticmethod
     def get_list_of_tiff_files(folder=""):
@@ -202,17 +227,6 @@ class WhichOBandDFtoUse(object):
     #             'time_stamp_dict': time_stamp_dict,
     #             'acquisition_time_dict': acquisition_time_dict}
 
-    def retrieve_ob_metadata(self, selected_folder):
-        dict_result = self.retrieve_metadata(selected_folder=selected_folder)
-        #self.list_ob = dict_result['list_files_dict']
-        self.ob_time_stamp_dict = dict_result['time_stamp_dict']
-        self.ob_acquisition_time_dict = dict_result['acquisition_time_dict']
-
-    def retrieve_df_metadata(self, selected_folder):
-        dict_result = self.retrieve_metadata(selected_folder=selected_folder)
-        # self.list_df = dict_result['list_files_dict']
-        self.df_time_stamp_dict = dict_result['time_stamp_dict']
-        self.df_acquisition_time_dict = dict_result['acquisition_time_dict']
 
     def select_time_range(self):
         self.keep_df_and_ob_with_same_acquisition_time()
