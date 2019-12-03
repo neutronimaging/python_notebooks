@@ -12,6 +12,7 @@ from __code import time_utility
 
 PV_EXPOSURE_TIME = 65027
 METADATA_KEYS = [PV_EXPOSURE_TIME, 65028, 65029]
+MAX_DF_COUNTS_ALLOWED = 900
 
 
 class WhichOBandDFtoUse(object):
@@ -31,34 +32,24 @@ class WhichOBandDFtoUse(object):
         #  ...,
         # }
         self.sample_metadata_dict = {}
+        self.ob_metadata_dict = {}
+        self.df_metadata_dict = {}
 
-        # list of open beam files (full path)
-        self.list_ob = []
+        # key of dictionary being the acquisition time
+        # {'50': {'config0': {'list_sample': [file1, file2, file3],
+        #                     'list_ob': [file1, file2],
+        #                     'list_df': [file1, file2, file3],
+        #                     'metadata_infos': {},
+        #                      },
+        #         'config1': {...},
+        #        },
+        #  '30': {...},
+        # }
+        self.final_full_master_dict = {}
 
-        """ 
-        {'list_images: [],
-         'list_time_stamp': [],
-         'list_time_stamp_user_format': [],
-        }
-        """
-        self.ob_time_stamp_dict = {}
-
-        # {'file1': time1, 'file2': time2, ...}
-        self.ob_acquisition_time_dict = {}
-
-        # list of dark field files (full path)
-        self.list_df = []
-
-        """ 
-        {'list_images: [],
-         'list_time_stamp': [],
-         'list_time_stamp_user_format': [],
-        }
-        """
-        self.df_time_stamp_dict = {}
-
-        # {'file1': time1, 'file2': time2, ...}
-        self.df_acquisition_time_dict = {}
+        # same as the final_full_master_dict but in this one, the OB outside the time range
+        # defined as excluded
+        self.final_with_time_range_master_dict = {}
 
     def select_images(self):
         list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of data'
@@ -97,9 +88,39 @@ class WhichOBandDFtoUse(object):
         list_of_df_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
         self.df_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_df_files)
 
+    def match_files(self):
+        """This is where the files will be associated with their respective OB, DF"""
+
+        final_full_master_dict = collections.OrderedDict()
+        sample_metadata_dict = self.sample_metadata_dict
+        for _file_index in sample_metadata_dict.keys():
+            _dict_file_index = sample_metadata_dict[_file_index]
+            _sample_file = _dict_file_index['filename']
+            _acquisition_time = _dict_file_index[PV_EXPOSURE_TIME]
+            _instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_dict_file_index)
+
+            if (len(final_full_master_dict) == 0) or not (_acquisition_time in final_full_master_dict.keys()):
+                _temp_dict = {'list_sample': [_sample_file],
+                              'list_ob': [],
+                              'list_df': [],
+                              'metadata_infos': _instrument_metadata}
+                final_full_master_dict[_acquisition_time] = {}
+                final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
+            else:
+                # check that all the metadata_infos match for the first group of that acquisition time,
+                # otherwise check the next one or create a group
+                pass
 
 
-
+    @staticmethod
+    def _isolate_instrument_metadata(dictionary):
+        """create a dictionary of all the instrument metadata without the acquisition time"""
+        isolated_dictionary = {}
+        for _key in dictionary.keys():
+            if _key == PV_EXPOSURE_TIME:
+                continue
+            isolated_dictionary[_key] = dictionary[_key]
+        return isolated_dictionary
 
     @staticmethod
     def _reformat_dict(dictionary={}):
