@@ -13,7 +13,8 @@ from __code import time_utility
 PV_EXPOSURE_TIME = 65027
 METADATA_KEYS = [PV_EXPOSURE_TIME, 65028, 65029]
 MAX_DF_COUNTS_ALLOWED = 900
-
+METADATA_ERROR_ALLOWED = 1
+LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
 
 class WhichOBandDFtoUse(object):
     working_dir = ''
@@ -36,14 +37,14 @@ class WhichOBandDFtoUse(object):
         self.df_metadata_dict = {}
 
         # key of dictionary being the acquisition time
-        # {'50': {'config0': {'list_sample': [file1, file2, file3],
+        # {50: {'config0': {'list_sample': [file1, file2, file3],
         #                     'list_ob': [file1, file2],
         #                     'list_df': [file1, file2, file3],
         #                     'metadata_infos': {},
         #                      },
         #         'config1': {...},
         #        },
-        #  '30': {...},
+        #  30: {...},
         # }
         self.final_full_master_dict = {}
 
@@ -99,18 +100,57 @@ class WhichOBandDFtoUse(object):
             _acquisition_time = _dict_file_index[PV_EXPOSURE_TIME]
             _instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_dict_file_index)
 
+            # first entry or first time seeing that acquisition time
             if (len(final_full_master_dict) == 0) or not (_acquisition_time in final_full_master_dict.keys()):
                 _temp_dict = {'list_sample': [_sample_file],
                               'list_ob': [],
                               'list_df': [],
-                              'metadata_infos': _instrument_metadata}
+                              'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
                 final_full_master_dict[_acquisition_time] = {}
                 final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
             else:
                 # check that all the metadata_infos match for the first group of that acquisition time,
                 # otherwise check the next one or create a group
-                pass
+                if _acquisition_time in final_full_master_dict.keys():
+                    _dict_for_this_acquisition_time = final_full_master_dict[_acquisition_time]
+                    _found_a_match = False
+                    for _config_key in _dict_for_this_acquisition_time.keys():
+                        _config = _dict_for_this_acquisition_time[_config_key]
+                        if (WhichOBandDFtoUse.all_metadata_match(metadata_1=_config['metadata_infos'],
+                                                                 metadata_2=_instrument_metadata)):
+                            _config['list_sample'].append(_sample_file)
+                            _found_a_match = True
+                    if not _found_a_match:
+                        _temp_dict = {'list_sample': [_sample_file],
+                                      'list_ob': [],
+                                      'list_df': [],
+                                      'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
+                        nbr_config = len(_dict_for_this_acquisition_time.keys())
+                        _dict_for_this_acquisition_time['config{}'.format(nbr_config)] = _temp_dict
+                else:
+                    _temp_dict = {'list_sample': [_sample_file],
+                                  'list_ob': [],
+                                  'list_df': [],
+                                  'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
+                    final_full_master_dict[_acquisition_time] = {}
+                    final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
 
+        self.final_full_master_dict = final_full_master_dict
+
+    @staticmethod
+    def get_instrument_metadata_only(metadata_dict):
+        _clean_dict = {}
+        for _key in metadata_dict.keys():
+            if not _key in LIST_METADATA_NOT_INSTRUMENT_RELATED:
+                _clean_dict[_key] = metadata_dict[_key]
+        return _clean_dict
+    
+    @staticmethod
+    def all_metadata_match(metadata_1={}, metadata_2={}):
+        for _key in metadata_1.keys():
+            if np.abs(np.float(metadata_1[_key] - np.float(metadata_2[_key]))) > METADATA_ERROR_ALLOWED:
+                return False
+        return True
 
     @staticmethod
     def _isolate_instrument_metadata(dictionary):
