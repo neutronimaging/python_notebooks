@@ -37,16 +37,13 @@ class WhichOBandDFtoUse(object):
         self.df_metadata_dict = {}
 
         # key of dictionary being the acquisition time
-        # {50: {'config0': {'list_sample': [file1, file2, file3],
+        # {50: {'config0': {'list_sample': [self.sample_metadata_dict[0],
+        #                                   self.sample_metadata_dict[1],..],
         #                     'list_ob': [self.ob_metadata_dict[0],
         #                                 self.ob_metadata_dict[1],
         #                                 ...],
         #                     'list_df': [file1, file2, file3],
         #                     'metadata_infos': {},
-        #                     'time_stamp': {'first_image': '4545454545',
-        #                                    'last_image': '999994944'},
-        #                     'time_stamp_user_format': {'first_image': '2019-11-19 02:48:47',
-        #                                                'last_image': '2019-11-19 02:55:43'},
         #                      },
         #         'config1': {...},
         #        },
@@ -99,7 +96,11 @@ class WhichOBandDFtoUse(object):
         """This is where the files will be associated with their respective OB, DF"""
 
         self.create_master_sample_dict()
-        self.match_ob()
+
+        import pprint
+        pprint.pprint(self.final_full_master_dict)
+
+        # self.match_ob()
 
 
     def match_ob(self):
@@ -142,7 +143,7 @@ class WhichOBandDFtoUse(object):
 
             # first entry or first time seeing that acquisition time
             if (len(final_full_master_dict) == 0) or not (_acquisition_time in final_full_master_dict.keys()):
-                _temp_dict = {'list_sample': [_sample_file],
+                _temp_dict = {'list_sample': [_dict_file_index],
                               'list_ob': [],
                               'list_df': [],
                               'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
@@ -158,17 +159,17 @@ class WhichOBandDFtoUse(object):
                         _config = _dict_for_this_acquisition_time[_config_key]
                         if (WhichOBandDFtoUse.all_metadata_match(metadata_1=_config['metadata_infos'],
                                                                  metadata_2=_instrument_metadata)):
-                            _config['list_sample'].append(_sample_file)
+                            _config['list_sample'].append(_dict_file_index)
                             _found_a_match = True
                     if not _found_a_match:
-                        _temp_dict = {'list_sample': [_sample_file],
+                        _temp_dict = {'list_sample': [_dict_file_index],
                                       'list_ob': [],
                                       'list_df': [],
                                       'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
                         nbr_config = len(_dict_for_this_acquisition_time.keys())
                         _dict_for_this_acquisition_time['config{}'.format(nbr_config)] = _temp_dict
                 else:
-                    _temp_dict = {'list_sample': [_sample_file],
+                    _temp_dict = {'list_sample': [_dict_file_index],
                                   'list_ob': [],
                                   'list_df': [],
                                   'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
