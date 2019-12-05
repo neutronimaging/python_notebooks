@@ -101,8 +101,6 @@ class WhichOBandDFtoUse(object):
         self.create_master_sample_dict()
         self.match_ob()
 
-        import pprint
-        pprint.pprint(self.final_full_master_dict)
 
     def match_ob(self):
         """we will go through all the ob and associate them with the right sample based on
@@ -125,6 +123,14 @@ class WhichOBandDFtoUse(object):
         self.final_full_master_dict = final_full_master_dict
 
     def create_master_sample_dict(self):
+
+        # FIXME
+        # I need to add the following infos
+        # 'time_stamp': {'first_image': '4545454545',
+        #                                                   'last_image': '999994944'},
+        #                                    'time_stamp_user_format': {'first_image': '2019-11-19 02:48:47',
+        #                                                               'last_image': '2019-11-19 02:55:43'},
+        #                                     },
 
         final_full_master_dict = collections.OrderedDict()
         sample_metadata_dict = self.sample_metadata_dict
