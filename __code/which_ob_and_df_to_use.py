@@ -38,9 +38,15 @@ class WhichOBandDFtoUse(object):
 
         # key of dictionary being the acquisition time
         # {50: {'config0': {'list_sample': [file1, file2, file3],
-        #                     'list_ob': [file1, file2],
+        #                     'list_ob': [self.ob_metadata_dict[0],
+        #                                 self.ob_metadata_dict[1],
+        #                                 ...],
         #                     'list_df': [file1, file2, file3],
         #                     'metadata_infos': {},
+        #                     'time_stamp': {'first_image': '4545454545',
+        #                                    'last_image': '999994944'},
+        #                     'time_stamp_user_format': {'first_image': '2019-11-19 02:48:47',
+        #                                                'last_image': '2019-11-19 02:55:43'},
         #                      },
         #         'config1': {...},
         #        },
@@ -91,6 +97,34 @@ class WhichOBandDFtoUse(object):
 
     def match_files(self):
         """This is where the files will be associated with their respective OB, DF"""
+
+        self.create_master_sample_dict()
+        self.match_ob()
+
+        import pprint
+        pprint.pprint(self.final_full_master_dict)
+
+    def match_ob(self):
+        """we will go through all the ob and associate them with the right sample based on
+        acquisition time, instrument metadata"""
+        list_ob_dict = self.ob_metadata_dict
+        final_full_master_dict = self.final_full_master_dict
+        list_of_sample_aquisition = final_full_master_dict.keys()
+
+        for _index_ob in list_ob_dict.keys():
+            _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
+            _ob_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_ob_instrument_metadata)
+            _acquisition_time = _all_ob_instrument_metadata[PV_EXPOSURE_TIME]
+            if _acquisition_time in list_of_sample_aquisition:
+                for _config_id in final_full_master_dict[_acquisition_time].keys():
+                    _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
+                    if WhichOBandDFtoUse.all_metadata_match(_sample_metadata_infos,
+                                                            _ob_instrument_metadata):
+                        final_full_master_dict[_acquisition_time][_config_id]['list_ob'].append(list_ob_dict[_index_ob])
+
+        self.final_full_master_dict = final_full_master_dict
+
+    def create_master_sample_dict(self):
 
         final_full_master_dict = collections.OrderedDict()
         sample_metadata_dict = self.sample_metadata_dict
@@ -144,7 +178,7 @@ class WhichOBandDFtoUse(object):
             if not _key in LIST_METADATA_NOT_INSTRUMENT_RELATED:
                 _clean_dict[_key] = metadata_dict[_key]
         return _clean_dict
-    
+
     @staticmethod
     def all_metadata_match(metadata_1={}, metadata_2={}):
         for _key in metadata_1.keys():
