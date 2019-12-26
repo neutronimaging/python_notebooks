@@ -11,10 +11,13 @@ from __code import metadata_handler
 from __code import time_utility
 
 PV_EXPOSURE_TIME = 65027
-METADATA_KEYS = [PV_EXPOSURE_TIME, 65028, 65029]
+# PV_DETECTOR_MANUFACTURER = 65026
+METADATA_KEYS = [PV_EXPOSURE_TIME, 65029]
+
 MAX_DF_COUNTS_ALLOWED = 900
 METADATA_ERROR_ALLOWED = 1
 LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
+
 
 class WhichOBandDFtoUse(object):
     working_dir = ''
@@ -95,19 +98,23 @@ class WhichOBandDFtoUse(object):
         self.df_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_df_files)
 
     def match_files(self):
-        """This is where the files will be associated with their respective OB, DF"""
+        """This is where the files will be associated with their respective OB, DF by using the metadata"""
 
         self.create_master_sample_dict()
+        self.match_ob()
 
         import pprint
         pprint.pprint(self.final_full_master_dict)
 
-        # self.match_ob()
-
-
     def match_ob(self):
         """we will go through all the ob and associate them with the right sample based on
-        acquisition time, instrument metadata"""
+        acquisition time, instrument metadata
+
+        OB will be associated with a sample if the following metadata matches
+        - acquisition time
+        - detector type
+        - aperture
+        """
         list_ob_dict = self.ob_metadata_dict
         final_full_master_dict = self.final_full_master_dict
         list_of_sample_aquisition = final_full_master_dict.keys()
