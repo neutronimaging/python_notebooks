@@ -135,6 +135,7 @@ class WhichOBandDFtoUse(object):
         last_sample_image = sample_metadata_dict[0]
 
         for _file_index in sample_metadata_dict.keys():
+
             _dict_file_index = sample_metadata_dict[_file_index]
             _sample_file = _dict_file_index['filename']
             _acquisition_time = _dict_file_index[PV_EXPOSURE_TIME]
@@ -150,7 +151,7 @@ class WhichOBandDFtoUse(object):
             # first entry or first time seeing that acquisition time
             if (len(final_full_master_dict) == 0) or not (_acquisition_time in final_full_master_dict.keys()):
                 _temp_dict = {'list_sample': [_dict_file_index],
-                              'fist_image': first_sample_image,
+                              'first_image': first_sample_image,
                               'last_image': last_sample_image,
                               'list_ob': [],
                               'list_df': [],
@@ -168,7 +169,10 @@ class WhichOBandDFtoUse(object):
                         if (WhichOBandDFtoUse.all_metadata_match(metadata_1=_config['metadata_infos'],
                                                                  metadata_2=_instrument_metadata)):
                             _config['list_sample'].append(_dict_file_index)
+                            _config['first_image'] = first_sample_image
+                            _config['last_image'] = last_sample_image
                             _found_a_match = True
+
                     if not _found_a_match:
                         _temp_dict = {'list_sample': [_dict_file_index],
                                       'first_image': first_sample_image,
@@ -178,6 +182,7 @@ class WhichOBandDFtoUse(object):
                                       'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
                         nbr_config = len(_dict_for_this_acquisition_time.keys())
                         _dict_for_this_acquisition_time['config{}'.format(nbr_config)] = _temp_dict
+
                 else:
                     _temp_dict = {'list_sample': [_dict_file_index],
                                   'first_image': first_sample_image,
