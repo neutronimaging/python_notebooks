@@ -6,6 +6,7 @@ import random
 import os
 import glob
 
+import neutronbraggedge
 from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
