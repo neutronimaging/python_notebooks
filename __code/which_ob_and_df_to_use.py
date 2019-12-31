@@ -335,10 +335,6 @@ class WhichOBandDFtoUse(object):
 
         return result_dictionary
 
-
-
-
-
     @staticmethod
     def get_list_of_tiff_files(folder=""):
         list_of_tiff_files = file_handler.get_list_of_files(folder=folder,

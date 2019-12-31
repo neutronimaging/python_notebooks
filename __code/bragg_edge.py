@@ -11,6 +11,7 @@ from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
 from __code.fileselector import FileSelection
+from __code import file_handler
 
 from IPython.core.display import HTML
 from IPython.display import display
@@ -47,9 +48,32 @@ class BraggEdge:
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
 
+    def full_list_elements(self):
+        retrieve_material = RetrieveMaterialMetadata(material='all')
+        self.list_returned = retrieve_material.full_list_material()
+
+        # import pprint
+        # pprint.pprint(list_returned)
+
+        box4 = widgets.HBox([widgets.Label("List of elements",
+                                           layout=widgets.Layout(width=self.label_width)),
+                             widgets.Select(options=self.list_returned,
+                                          layout=widgets.Layout(width='20%'))])
+
+        box5 = widgets.HBox([widgets.Label("Nbr Bragg Edges",
+                                           layout=widgets.Layout(width=self.label_width)),
+                             widgets.IntText(8,
+                                            layout=widgets.Layout(width='20%'))])
+
+        vertical_box = widgets.VBox([box4, box5])
+        display(vertical_box)
+
+        self.list_elements_ui = box4.children[1]
+        self.nbr_bragg_edges_ui = box5.children[1]
+
     def list_elements(self):
         retrieve_material = RetrieveMaterialMetadata(material='all')
-        list_returned = retrieve_material.full_list_material()
+        self.list_returned = retrieve_material.full_list_material()
 
         # import pprint
         # pprint.pprint(list_returned)
@@ -99,6 +123,7 @@ class BraggEdge:
                                     number_of_bragg_edges=number_of_bragg_edges)
         self.bragg_edges = _handler.bragg_edges
         self.hkl = _handler.hkl
+        self.handler = _handler
 
         print(_handler)
 
@@ -300,6 +325,47 @@ class BraggEdge:
         figure = go.Figure(data=data, layout=layout)
         iplot(figure)
 
+    def select_output_folder(self):
+        self.select_folder(message='output',
+                           next_function=self.export_table)
+
+    def export_table(self, output_folder):
+        material = self.handler.material[0]
+        lattice = self.handler.lattice[material]
+        crystal_structure = self.handler.crystal_structure[material]
+        metadata = ["# material: {}".format(material),
+                    "# crystal structure: {}".format(crystal_structure),
+                    "# lattice: {} Angstroms".format(lattice),
+                    "#",
+                    "# hkl, d(angstroms), BraggEdge"]
+        data = []
+        bragg_edges = self.bragg_edges[material]
+        hkl = self.hkl[material]
+        for _index in np.arange(len(bragg_edges)):
+            _hkl_str = [str(i) for i in hkl[_index]]
+            _hkl = "".join(_hkl_str)
+            _bragg_edges = np.float(bragg_edges[_index])
+            _d = _bragg_edges/2.
+            _row = "{}, {}, {}".format(_hkl, _d, _bragg_edges)
+            data.append(_row)
+
+        output_file_name = os.path.join(output_folder, 'bragg_edges_of_{}.txt'.format(material))
+
+        file_handler.make_ascii_file(metadata=metadata,
+                                     data=data,
+                                     dim='1d',
+                                     output_file_name=output_file_name)
+
+        display(HTML('<span style="font-size: 20px; color:blue">File created : ' + \
+                     output_file_name + '</span>'))
+
+    def select_folder(self, message="", next_function=None):
+        folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
+                                                             start_dir=self.working_dir,
+                                                             next=next_function,
+                                                             type='directory',
+                                                             multiple=False)
+        folder_widget.show()
 
 
 class Interface(QMainWindow):
@@ -709,4 +775,3 @@ class Interface(QMainWindow):
 
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")
-
