@@ -11,8 +11,18 @@ from __code import metadata_handler
 from __code import time_utility
 
 PV_EXPOSURE_TIME = 65027
-# PV_DETECTOR_MANUFACTURER = 65026
-METADATA_KEYS = [PV_EXPOSURE_TIME, 65029]
+PV_DETECTOR_MANUFACTURER = 65026
+PV_APERTURE_HR = 65068
+PV_APERTURE_HL = 65070
+PV_APERTURE_VT = 65066
+PV_APERTURE_VB = 65064
+METADATA_KEYS = [PV_EXPOSURE_TIME, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT, PV_APERTURE_VB]
+
+METADATA_KEYS = {'ob': [PV_EXPOSURE_TIME, PV_DETECTOR_MANUFACTURER, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT,
+                        PV_APERTURE_VB],
+                 'df': [PV_EXPOSURE_TIME, PV_DETECTOR_MANUFACTURER],
+                 'all': [PV_DETECTOR_MANUFACTURER, PV_EXPOSURE_TIME, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT,
+                         PV_APERTURE_VB]}
 
 MAX_DF_COUNTS_ALLOWED = 900
 METADATA_ERROR_ALLOWED = 1
@@ -132,6 +142,9 @@ class WhichOBandDFtoUse(object):
 
         self.final_full_master_dict = final_full_master_dict
 
+    def match_df(self):
+        pass
+
     def create_master_sample_dict(self):
 
         final_full_master_dict = collections.OrderedDict()
@@ -213,8 +226,12 @@ class WhichOBandDFtoUse(object):
     @staticmethod
     def all_metadata_match(metadata_1={}, metadata_2={}):
         for _key in metadata_1.keys():
-            if np.abs(np.float(metadata_1[_key] - np.float(metadata_2[_key]))) > METADATA_ERROR_ALLOWED:
-                return False
+            try:
+                if np.abs(np.float(metadata_1[_key] - np.float(metadata_2[_key]))) > METADATA_ERROR_ALLOWED:
+                    return False
+            except ValueError:
+                if metadata_1[_key] != metadata_2[_key]:
+                    return False
         return True
 
     @staticmethod
@@ -299,7 +316,7 @@ class WhichOBandDFtoUse(object):
             - slits positions ->
             - aperture value
         """
-        list_metadata = METADATA_KEYS
+        list_metadata = METADATA_KEYS['all']
         _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
                                                                    list_metadata=list_metadata)
 
@@ -309,7 +326,12 @@ class WhichOBandDFtoUse(object):
                 _raw_value = _dict[_file_key][_pv]
                 if _raw_value is not None:
                     split_raw_value = _raw_value.split(":")
-                    _file_dict[_pv] = np.float(split_raw_value[1])
+                    try:
+                        _value = np.float(split_raw_value[1])
+                    except ValueError:
+                        _value = split_raw_value[1]
+                    finally:
+                        _file_dict[_pv] = _value
                 else:
                     _file_dict[_pv] = None
             _dict[_file_key] = _file_dict
