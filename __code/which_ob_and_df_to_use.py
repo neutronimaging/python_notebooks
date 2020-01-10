@@ -85,13 +85,17 @@ class WhichOBandDFtoUse(object):
         # key of dictionary being the acquisition time
         # {50: {'config0': {'list_sample': [self.sample_metadata_dict[0],
         #                                   self.sample_metadata_dict[1],..],
-        #                   'first_sample_image': self.sample_metadata_dict[0],
-        #                   'last_sample_image': self._sample_metadata_dict[34],
         #                   'list_ob': [self.ob_metadata_dict[0],
         #                               self.ob_metadata_dict[1],
         #                               ...],
         #                   'list_df': [file1, file2, file3],
         #                   'metadata_infos': {},
+        #                   'first_images': {'sample': {},
+        #                                    'ob': {},
+        #                                    'df': {}},
+        #                   'last_images': {'sample': {},
+        #                                    'ob': {},
+        #                                    'df': {}},
         #                  },
         #       'config1': {...},
         #      },
@@ -222,9 +226,15 @@ class WhichOBandDFtoUse(object):
 
             # first entry or first time seeing that acquisition time
             if (len(final_full_master_dict) == 0) or not (_acquisition_time in final_full_master_dict.keys()):
+                _first_images_dict = {'sample': first_sample_image,
+                                      'ob': {},
+                                      'df': {}}
+                _last_images_dict = {'sample': last_sample_image,
+                                     'ob': {},
+                                     'df': {}}
                 _temp_dict = {'list_sample': [_dict_file_index],
-                              'first_image': first_sample_image,
-                              'last_image': last_sample_image,
+                              'first_images': _first_images_dict,
+                              'last_images': _last_images_dict,
                               'list_ob': [],
                               'list_df': [],
                               'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
@@ -241,14 +251,29 @@ class WhichOBandDFtoUse(object):
                         if (WhichOBandDFtoUse.all_metadata_match(metadata_1=_config['metadata_infos'],
                                                                  metadata_2=_instrument_metadata)):
                             _config['list_sample'].append(_dict_file_index)
-                            _config['first_image'] = first_sample_image
-                            _config['last_image'] = last_sample_image
+
+                            _first_images_dict = {'sample': first_sample_image,
+                                                  'ob': {},
+                                                  'df': {}}
+                            _last_images_dict = {'sample': last_sample_image,
+                                                 'ob': {},
+                                                 'df': {}}
+
+                            _config['first_images'] = _first_images_dict
+                            _config['last_images'] = _last_images_dict
                             _found_a_match = True
 
                     if not _found_a_match:
+                        _first_images_dict = {'sample': first_sample_image,
+                                              'ob': {},
+                                              'df': {}}
+                        _last_images_dict = {'sample': last_sample_image,
+                                             'ob': {},
+                                             'df': {}}
+
                         _temp_dict = {'list_sample': [_dict_file_index],
-                                      'first_image': first_sample_image,
-                                      'last_image': last_sample_image,
+                                      'first_images': _first_images_dict,
+                                      'last_images': _last_images_dict,
                                       'list_ob': [],
                                       'list_df': [],
                                       'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
@@ -256,9 +281,16 @@ class WhichOBandDFtoUse(object):
                         _dict_for_this_acquisition_time['config{}'.format(nbr_config)] = _temp_dict
 
                 else:
+                    _first_images_dict = {'sample': first_sample_image,
+                                          'ob': {},
+                                          'df': {}}
+                    _last_images_dict = {'sample': last_sample_image,
+                                         'ob': {},
+                                         'df': {}}
+
                     _temp_dict = {'list_sample': [_dict_file_index],
-                                  'first_image': first_sample_image,
-                                  'last_image': last_sample_image,
+                                  'first_images': _first_images_dict,
+                                  'last_images': _last_images_dict,
                                   'list_ob': [],
                                   'list_df': [],
                                   'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
