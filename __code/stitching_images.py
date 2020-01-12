@@ -10,7 +10,7 @@ from __code import file_handler
 from NeuNorm.normalization import Normalization
 
 
-class CombineImages(object):
+class StitchingImages(object):
     working_dir = ''
 
     def __init__(self, working_dir=''):

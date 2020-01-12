@@ -96,6 +96,10 @@ class WhichOBandDFtoUse(object):
         #                   'last_images': {'sample': {},
         #                                    'ob': {},
         #                                    'df': {}},
+        #                   'time_range_s_selected': {'before': np.NaN,
+        #                                             'after': np.NaN},
+        #                   'time_range_s': {'before': np.NaN,
+        #                                    'after': np.NaN},
         #                  },
         #       'config1': {...},
         #      },
@@ -185,9 +189,6 @@ class WhichOBandDFtoUse(object):
         final_full_master_dict = self.final_full_master_dict
         list_of_sample_acquisition = final_full_master_dict.keys()
 
-        import pprint
-        pprint.pprint(">> in match_df <<")
-
         for _index_df in list_df_dict.keys():
             _all_df_instrument_metadata = self.get_instrument_metadata_only(list_df_dict[_index_df])
             _df_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_df_instrument_metadata)
@@ -206,7 +207,7 @@ class WhichOBandDFtoUse(object):
         final_full_master_dict = collections.OrderedDict()
         sample_metadata_dict = self.sample_metadata_dict
 
-        # we need to keep record of which iamge was the first one taken and which image was the last one taken
+        # we need to keep record of which image was the first one taken and which image was the last one taken
         first_sample_image = sample_metadata_dict[0]
         last_sample_image = sample_metadata_dict[0]
 
@@ -237,6 +238,10 @@ class WhichOBandDFtoUse(object):
                               'last_images': _last_images_dict,
                               'list_ob': [],
                               'list_df': [],
+                              'time_range_s_selected': {'before': np.NaN,
+                                                        'after': np.NaN},
+                              'time_range_s': {'before': np.NaN,
+                                               'after': np.NaN},
                               'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
                 final_full_master_dict[_acquisition_time] = {}
                 final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
@@ -276,6 +281,10 @@ class WhichOBandDFtoUse(object):
                                       'last_images': _last_images_dict,
                                       'list_ob': [],
                                       'list_df': [],
+                                      'time_range_s_selected': {'before': np.NaN,
+                                                                'after': np.NaN},
+                                      'time_range_s': {'before': np.NaN,
+                                                       'after': np.NaN},
                                       'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
                         nbr_config = len(_dict_for_this_acquisition_time.keys())
                         _dict_for_this_acquisition_time['config{}'.format(nbr_config)] = _temp_dict
@@ -293,11 +302,71 @@ class WhichOBandDFtoUse(object):
                                   'last_images': _last_images_dict,
                                   'list_ob': [],
                                   'list_df': [],
+                                  'time_range_s_selected': {'before': np.NAN,
+                                                            'after': np.NaN},
+                                  'time_range_s': {'before': np.NaN,
+                                                   'after': np.NaN},
                                   'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
                     final_full_master_dict[_acquisition_time] = {}
                     final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
 
         self.final_full_master_dict = final_full_master_dict
+
+    def calculate_first_and_last_ob(self):
+        """this will loop through all the acquisition time keys, and config keys, to figure out
+        what is the first ob and last ob in this dictionary"""
+        _final_full_master_dict = self.final_full_master_dict
+        for _acquisition in _final_full_master_dict.keys():
+            current_acquisition_dict = _final_full_master_dict[_acquisition]
+
+            _first_ob_time = np.NaN
+            _first_ob = {}
+            _last_ob_time = np.NaN
+            _last_ob = {}
+            for _config in current_acquisition_dict.keys():
+                current_acquisition_config_dict = current_acquisition_dict[_config]
+                for _ob in current_acquisition_config_dict['list_ob']:
+                    _current_ob_time = _ob['time_stamp']
+                    if np.isnan(_first_ob_time):
+                        _first_ob_time = _current_ob_time
+                        _last_ob_time = _current_ob_time
+                        _first_ob = _last_ob = _ob
+                    elif _current_ob_time < _first_ob_time:
+                        _first_ob_time = _current_ob_time
+                        _first_ob = _ob
+                    elif _current_ob_time > _last_ob_time:
+                        _last_ob_time = _current_ob_time
+                        _last_ob = _ob
+
+                current_acquisition_config_dict['first_images']['ob'] = _first_ob
+                current_acquisition_config_dict['last_images']['ob'] = _last_ob
+
+    def calculate_time_range(self):
+        """this method will calculate the max time range of OB taken before or after and will use that
+        for the slider selection time range
+        Provide option to use all (not used any time range)
+        """
+        _final_full_master_dict = self.final_full_master_dict
+        for _acquisition in _final_full_master_dict.keys():
+            current_acquisition_dict = _final_full_master_dict[_acquisition]
+            for _config in current_acquisition_dict.keys():
+                current_acquisition_config_dict = current_acquisition_dict[_config]
+            
+            first_sample_image = current_acquisition_config_dict['first_images']['sample']
+            first_ob_image = current_acquisition_config_dict['first_images']['ob']
+            delta_time_before = first_sample_image - first_ob_image
+            _time_range_s_before = delta_time_before if delta_time_before > 0 else 0
+
+            last_sample_image = current_acquisition_config_dict['last_images']['sample']
+            last_ob_image = current_acquisition_config_dict['last_images']['ob']
+            delta_time_after = last_ob_image - last_sample_image
+            _time_range_s_after = delta_time_after if delta_time_after > 0 else 0
+            
+            _final_full_master_dict[_acquisition][_config]['time_range_s']['before'] = _time_range_s_before
+            _final_full_master_dict[_acquisition][_config]['time_range_s']['after'] = _time_range_s_after
+
+
+
 
     @staticmethod
     def get_instrument_metadata_only(metadata_dict):
