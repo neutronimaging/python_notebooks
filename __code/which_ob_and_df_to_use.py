@@ -163,13 +163,13 @@ class WhichOBandDFtoUse(object):
         """
         list_ob_dict = self.ob_metadata_dict
         final_full_master_dict = self.final_full_master_dict
-        list_of_sample_aquisition = final_full_master_dict.keys()
+        list_of_sample_aqquisition = final_full_master_dict.keys()
 
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_ob_instrument_metadata)
             _acquisition_time = _all_ob_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]
-            if _acquisition_time in list_of_sample_aquisition:
+            if _acquisition_time in list_of_sample_aqquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
                     if WhichOBandDFtoUse.all_metadata_match(_sample_metadata_infos,
