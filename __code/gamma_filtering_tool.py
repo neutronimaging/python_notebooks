@@ -140,7 +140,7 @@ class Interface(QMainWindow):
         for _row, _file in enumerate(self.list_files):
 
             o_norm = Normalization()
-            o_norm.load(file=_file, gamma_filter=True, threshold=self.__get_filtering_coefficient_value())
+            o_norm.load(file=_file, auto_gamma_filter=False, manual_gamma_filter=True, manual_gamma_threshold=self.__get_filtering_coefficient_value())
             _raw_data = o_norm.data['sample']['data']
             nbr_pixel_corrected = self.get_number_pixel_gamma_corrected(data=_raw_data)
 
@@ -313,7 +313,7 @@ class Interface(QMainWindow):
 
         o_norm = Normalization()
         file_name = self.list_files[file_index]
-        o_norm.load(file=file_name, gamma_filter=False)
+        o_norm.load(file=file_name, auto_gamma_filter=False)
         _image = o_norm.data['sample']['data'][0]
 
         _image = np.transpose(_image)
@@ -360,7 +360,7 @@ class Interface(QMainWindow):
 
         o_norm = Normalization()
         file_name = self.list_files[file_index]
-        o_norm.load(file=file_name, gamma_filter=True, threshold=self.__get_filtering_coefficient_value())
+        o_norm.load(file=file_name, auto_gamma_filter=True, manual_gamma_filter=True, manual_gamma_threshold=self.__get_filtering_coefficient_value())
         _image = o_norm.data['sample']['data'][0]
 
         #self.ui.filtered_image_view.clear()
