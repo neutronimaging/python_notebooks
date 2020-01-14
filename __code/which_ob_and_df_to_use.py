@@ -344,7 +344,7 @@ class WhichOBandDFtoUse(object):
     def calculate_time_range(self):
         """this method will calculate the max time range of OB taken before or after and will use that
         for the slider selection time range
-        Provide option to use all (not used any time range)
+        Provide option to use all (that means, do not used any time range)
         """
         _final_full_master_dict = self.final_full_master_dict
         for _acquisition in _final_full_master_dict.keys():
@@ -354,16 +354,56 @@ class WhichOBandDFtoUse(object):
             
             first_sample_image = current_acquisition_config_dict['first_images']['sample']
             first_ob_image = current_acquisition_config_dict['first_images']['ob']
-            delta_time_before = first_sample_image - first_ob_image
+            delta_time_before = first_sample_image['time_stamp'] - first_ob_image['time_stamp']
             _time_range_s_before = delta_time_before if delta_time_before > 0 else 0
 
             last_sample_image = current_acquisition_config_dict['last_images']['sample']
             last_ob_image = current_acquisition_config_dict['last_images']['ob']
-            delta_time_after = last_ob_image - last_sample_image
+            delta_time_after = last_ob_image['time_stamp'] - last_sample_image['time_stamp']
             _time_range_s_after = delta_time_after if delta_time_after > 0 else 0
             
             _final_full_master_dict[_acquisition][_config]['time_range_s']['before'] = _time_range_s_before
             _final_full_master_dict[_acquisition][_config]['time_range_s']['after'] = _time_range_s_after
+
+    def display_time_range_selection_widgets(self):
+        _final_ful_master_dict = self.final_full_master_dict
+
+        _acquisition_tabs = widgets.Tab()
+        for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
+            _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
+
+            _config_tab = widgets.Tab()
+            for _index, _config in enumerate(_dict_of_this_acquisition.keys()):
+                _dict_config = _dict_of_this_acquisition[_config]
+                _layout = self.get_full_layout_for_this_config(_dict_config)
+                _config_tab.children += (_layout,)
+                _config_tab.set_title(_index, _config)
+
+            _acquisition_tabs.children += (_config_tab,)  # add all the config tab to top acquisition tab
+            _acquisition_tabs.set_title(_acquisition_index, "Acquisition: {}s".format(_acquisition))
+            _config_tab
+
+        display(_acquisition_tabs)
+
+    def get_full_layout_for_this_config(self, dict_config):
+        check_box_user_time_range = widgets.Checkbox(layout=widgets.Layout(width="20%"))
+        hori_layout = widgets.HBox([check_box_user_time_range,
+                                    widgets.FloatSlider(value=-10,
+                                                        min=-10,
+                                                        max=0,
+                                                        step=0.1,
+                                                        readout=True,
+                                                        layout=widgets.Layout(width="30%")),
+                                    widgets.Label(" <<< EXPERIMENT >>>",
+                                                  layout=widgets.Layout(width="20%")),
+                                    widgets.FloatSlider(value=20,
+                                                        min=0,
+                                                        max=20,
+                                                        step=0.1,
+                                                        readout=True,
+                                                        layout=widgets.Layout(width="30%")),
+                                    ])
+        return hori_layout
 
 
 
