@@ -387,7 +387,9 @@ class WhichOBandDFtoUse(object):
 
     def get_full_layout_for_this_config(self, dict_config):
         check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
+                                                     value=False,
                                                      layout=widgets.Layout(width="35%"))
+        check_box_user_time_range.observe(self.update_config_widgets, names='value')
 
         hori_layout1 = widgets.HBox([check_box_user_time_range,
                                     widgets.FloatSlider(value=-10,
@@ -395,18 +397,23 @@ class WhichOBandDFtoUse(object):
                                                         max=0,
                                                         step=0.1,
                                                         readout=False,
-                                                        layout=widgets.Layout(width="30%")),
-                                    widgets.Label(" <<< EXPERIMENT >>>",
-                                                  layout=widgets.Layout(width="20%")),
+                                                        layout=widgets.Layout(width="30%",
+                                                                              visibility='hidden')),
+                                    widgets.Label(" <<< EXPERIMENT >>> ",
+                                                  layout=widgets.Layout(width="20%",
+                                                                        visibility='hidden')),
                                     widgets.FloatSlider(value=20,
                                                         min=0,
                                                         max=20,
                                                         step=0.1,
                                                         readout=False,
-                                                        layout=widgets.Layout(width="30%")),
+                                                        layout=widgets.Layout(width="30%",
+                                                                              visibility='hidden')),
                                     ])
+        self.hori_layout1 = hori_layout1
         self.time_before_slider = hori_layout1.children[1]
         self.time_after_slider = hori_layout1.children[3]
+        self.experiment_label = hori_layout1.children[2]
         self.time_after_slider.observe(self.update_time_range_message, names='value')
         self.time_before_slider.observe(self.update_time_range_message, names='value')
 
@@ -414,37 +421,62 @@ class WhichOBandDFtoUse(object):
                                                    layout=widgets.Layout(width="20%")),
                                      widgets.HTML("",
                                                    layout=widgets.Layout(width="80%"))])
-        # widgets.Label("",
-                                     #               layout=widgets.Layout(width="80%"))])
+        self.hori_layout2 = hori_layout2
         self.time_before_and_after_message = hori_layout2.children[1]
 
         verti_layout = widgets.VBox([hori_layout1, hori_layout2])
-
         self.update_time_range_message(None)
 
         return verti_layout
 
+    def update_config_widgets(self, state):
+
+        if state['new'] is False:
+            # exp_label = ""
+            message = None
+            visibility = 'hidden'
+        else:
+            # exp_label = " <<< EXPERIMENT >>> "
+            message = True
+            visibility = 'visible'
+
+        # self.experiment_label.value = exp_label
+        self.time_before_slider.layout.visibility = visibility
+        self.time_after_slider.layout.visibility = visibility
+        self.experiment_label.layout.visibility = visibility
+        # self.time_before_slider.disabled = not state['new']
+        # self.time_after_slider.disabled = not state['new']
+        self.update_time_range_message(message)
+
     def update_time_range_message(self, value):
-        time_before_selected = self.time_before_slider.value
-        time_after_selected = self.time_after_slider.value
 
-        def _format_time(_time_s):
-            if _time_s < 60:
-                return "{:.02f}s".format(_time_s)
-            elif _time_s < 3600:
-                _time_mn = _time_s / 60.
-                return "{:.02f}mn".format(_time_mn)
-            else:
-                _time_hr = _time_s / 3600.
-                return "{:.02f}hr".format(_time_hr)
+        if value is None:
+            _message = f"Use <b><font color='red'>All </b> " \
+                       f"<font color='black'>OBs and DFs " \
+                       f"matching the samples images</font>"
+        else:
 
-        str_time_before = _format_time(time_before_selected)
-        str_time_after = _format_time(time_after_selected)
+            time_before_selected = self.time_before_slider.value
+            time_after_selected = self.time_after_slider.value
 
-        _message = f"Use OB and DF taken up to <b><font color='red'>{str_time_before}</b> " \
-                   f"<font color='black'>before and up to </font>" \
-                   f"<b><font color='red'>{str_time_after}</b> " \
-                   f"<font color='black'>after experiment!</font>"
+            def _format_time(_time_s):
+                if _time_s < 60:
+                    return "{:.02f}s".format(_time_s)
+                elif _time_s < 3600:
+                    _time_mn = _time_s / 60.
+                    return "{:.02f}mn".format(_time_mn)
+                else:
+                    _time_hr = _time_s / 3600.
+                    return "{:.02f}hr".format(_time_hr)
+
+            str_time_before = _format_time(time_before_selected)
+            str_time_after = _format_time(time_after_selected)
+
+            _message = f"Use OB and DF taken up to <b><font color='red'>{str_time_before}</b> " \
+                       f"<font color='black'>before and up to </font>" \
+                       f"<b><font color='red'>{str_time_after}</b> " \
+                       f"<font color='black'>after experiment!</font>"
+
         self.time_before_and_after_message.value = _message
 
     @staticmethod
