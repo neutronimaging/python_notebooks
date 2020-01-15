@@ -386,13 +386,15 @@ class WhichOBandDFtoUse(object):
         display(_acquisition_tabs)
 
     def get_full_layout_for_this_config(self, dict_config):
-        check_box_user_time_range = widgets.Checkbox(layout=widgets.Layout(width="20%"))
-        hori_layout = widgets.HBox([check_box_user_time_range,
+        check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
+                                                     layout=widgets.Layout(width="35%"))
+
+        hori_layout1 = widgets.HBox([check_box_user_time_range,
                                     widgets.FloatSlider(value=-10,
                                                         min=-10,
                                                         max=0,
                                                         step=0.1,
-                                                        readout=True,
+                                                        readout=False,
                                                         layout=widgets.Layout(width="30%")),
                                     widgets.Label(" <<< EXPERIMENT >>>",
                                                   layout=widgets.Layout(width="20%")),
@@ -400,13 +402,50 @@ class WhichOBandDFtoUse(object):
                                                         min=0,
                                                         max=20,
                                                         step=0.1,
-                                                        readout=True,
+                                                        readout=False,
                                                         layout=widgets.Layout(width="30%")),
                                     ])
-        return hori_layout
+        self.time_before_slider = hori_layout1.children[1]
+        self.time_after_slider = hori_layout1.children[3]
+        self.time_after_slider.observe(self.update_time_range_message, names='value')
+        self.time_before_slider.observe(self.update_time_range_message, names='value')
 
+        hori_layout2 = widgets.HBox([widgets.Label("    ",
+                                                   layout=widgets.Layout(width="20%")),
+                                     widgets.HTML("",
+                                                   layout=widgets.Layout(width="80%"))])
+        # widgets.Label("",
+                                     #               layout=widgets.Layout(width="80%"))])
+        self.time_before_and_after_message = hori_layout2.children[1]
 
+        verti_layout = widgets.VBox([hori_layout1, hori_layout2])
 
+        self.update_time_range_message(None)
+
+        return verti_layout
+
+    def update_time_range_message(self, value):
+        time_before_selected = self.time_before_slider.value
+        time_after_selected = self.time_after_slider.value
+
+        def _format_time(_time_s):
+            if _time_s < 60:
+                return "{:.02f}s".format(_time_s)
+            elif _time_s < 3600:
+                _time_mn = _time_s / 60.
+                return "{:.02f}mn".format(_time_mn)
+            else:
+                _time_hr = _time_s / 3600.
+                return "{:.02f}hr".format(_time_hr)
+
+        str_time_before = _format_time(time_before_selected)
+        str_time_after = _format_time(time_after_selected)
+
+        _message = f"Use OB and DF taken up to <b><font color='red'>{str_time_before}</b> " \
+                   f"<font color='black'>before and up to </font>" \
+                   f"<b><font color='red'>{str_time_after}</b> " \
+                   f"<font color='black'>after experiment!</font>"
+        self.time_before_and_after_message.value = _message
 
     @staticmethod
     def get_instrument_metadata_only(metadata_dict):
