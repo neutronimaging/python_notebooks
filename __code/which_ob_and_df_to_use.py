@@ -155,6 +155,11 @@ class WhichOBandDFtoUse(object):
         self.match_ob()
         self.match_df()
 
+        # for debugging only, exporting the json
+        # import json
+        # with open('/Users/j35/Desktop/which_ob_and_df_to_use.json', 'w') as outfile:
+        #     json.dump(self.final_full_master_dict, outfile)
+
     def match_ob(self):
         """we will go through all the ob and associate them with the right sample based on
         - acquisition time
