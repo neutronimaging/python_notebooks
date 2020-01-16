@@ -386,6 +386,8 @@ class WhichOBandDFtoUse(object):
         display(_acquisition_tabs)
 
     def get_full_layout_for_this_config(self, dict_config):
+
+        # use custom time range
         check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
                                                      value=False,
                                                      layout=widgets.Layout(width="35%"))
@@ -417,6 +419,7 @@ class WhichOBandDFtoUse(object):
         self.time_after_slider.observe(self.update_time_range_message, names='value')
         self.time_before_slider.observe(self.update_time_range_message, names='value')
 
+        # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",
                                                    layout=widgets.Layout(width="20%")),
                                      widgets.HTML("",
@@ -424,8 +427,47 @@ class WhichOBandDFtoUse(object):
         self.hori_layout2 = hori_layout2
         self.time_before_and_after_message = hori_layout2.children[1]
 
-        verti_layout = widgets.VBox([hori_layout1, hori_layout2])
+        # table of metadata
+        table_label = widgets.Label("List of Metadata used to match data set",
+                                    layout=widgets.Layout(width='30%'))
+        table = widgets.HTML(value="<table style='width:50%;background-color:#eee'>"
+                                   "<tr><th>Name</th><th>Value</th></tr>"
+                                   "<tr><td>cell1</td><td>cell2</td></tr>"
+                                   "<tr><td>cell3</td><td>cell4</td></tr>"
+                                   "</table>")
+
         self.update_time_range_message(None)
+
+        select_width = '300px'
+        sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs",
+                                           layout=widgets.Layout(width='100%')),
+                             widgets.Select(options=['a', 'b', 'c'],
+                                            layout=widgets.Layout(width=select_width,
+                                                                  height='300px'))],
+                            layout=widgets.Layout(width="360px"))
+        # self.list_of_runs_ui = box0.children[1]
+        ob_list_of_runs = widgets.VBox([widgets.Label("List of OB",
+                                                          layout=widgets.Layout(width='100%')),
+                                            widgets.Select(options=['a', 'b', 'c'],
+                                                           layout=widgets.Layout(width=select_width,
+                                                                                 height='300px'))],
+                                           layout=widgets.Layout(width="360px"))
+        df_list_of_runs = widgets.VBox([widgets.Label("List of DF",
+                                                          layout=widgets.Layout(width='100%')),
+                                            widgets.Select(options=['a', 'b', 'c'],
+                                                           layout=widgets.Layout(width=select_width,
+                                                                                 height='300px'))],
+                                           layout=widgets.Layout(width="360px"))
+
+        list_runs_layout = widgets.HBox([sample_list_of_runs,
+                                         ob_list_of_runs,
+                                         df_list_of_runs])
+
+        verti_layout = widgets.VBox([hori_layout1,
+                                     hori_layout2,
+                                     table_label,
+                                     table,
+                                     list_runs_layout])
 
         return verti_layout
 
