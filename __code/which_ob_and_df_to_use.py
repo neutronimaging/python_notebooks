@@ -373,11 +373,14 @@ class WhichOBandDFtoUse(object):
     def display_time_range_selection_widgets(self):
         _final_ful_master_dict = self.final_full_master_dict
 
+        _config_tab_dict = {}  # will keep record of each config tab for each acquisition
         _acquisition_tabs = widgets.Tab()
+
         for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
             _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
 
             _config_tab = widgets.Tab()
+            _config_tab_dict[_acquisition_index] = _config_tab
             for _index, _config in enumerate(_dict_of_this_acquisition.keys()):
                 _dict_config = _dict_of_this_acquisition[_config]
                 _layout = self.get_full_layout_for_this_config(_dict_config)
@@ -390,12 +393,16 @@ class WhichOBandDFtoUse(object):
 
         display(_acquisition_tabs)
 
+        self.acquisition_tab = _acquisition_tabs
+        self.config_tab_dict = _config_tab_dict
+
     def get_full_layout_for_this_config(self, dict_config):
 
         # use custom time range
         check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
                                                      value=False,
                                                      layout=widgets.Layout(width="35%"))
+        data = "this is my data"
         check_box_user_time_range.observe(self.update_config_widgets, names='value')
 
         hori_layout1 = widgets.HBox([check_box_user_time_range,
@@ -477,6 +484,8 @@ class WhichOBandDFtoUse(object):
         return verti_layout
 
     def update_config_widgets(self, state):
+
+
 
         if state['new'] is False:
             # exp_label = ""
@@ -674,75 +683,80 @@ class WhichOBandDFtoUse(object):
                                                             extension='tiff')
         return list_of_tiff_files
 
-    # def retrieve_metadata(self, selected_folder=""):
-    #     list_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
-    #     time_stamp_dict = file_handler.retrieve_time_stamp(list_files)
-    #     acquisition_time_dict = WhichOBandDFtoUse.retrieve_acquisition_time(list_files)
-    #     return {'list_files_dict': list_files,
-    #             'time_stamp_dict': time_stamp_dict,
-    #             'acquisition_time_dict': acquisition_time_dict}
 
 
-    def select_time_range(self):
-        self.keep_df_and_ob_with_same_acquisition_time()
-        max_time_range = self.calculate_max_time_range_between_images()
-        box01 = widgets.HBox([widgets.Label("Time (hours)",
-                                            layout=widgets.Layout(width='10%')),
-                              widgets.IntSlider(min=1,
-                                                max=max_time_range,
-                                                value=0,
-                                                layout=widgets.Layout(width='50%'))
-                             ])
-        self.time_slider = box01.children[1]
-        self.time_slider.on_trait_change(self.recalculate_files_in_range, name='value')
 
-        timelapse_options = {'BEFORE or AFTER sample data acquisition': 'before_or_after',
-                             'Only BEFORE sample acquisition': 'before',
-                             'Only AFTER sample acquisition': 'after'}
-        box02 = widgets.HBox([widgets.Label("Select timelapse",
-                                            layout=widgets.Layout(width='10%')),
-                              widgets.RadioButtons(options=timelapse_options,
-                                                   layout=widgets.Layout(width="300px"))])
-        self.timelapse_selection_widget = box02.children[1]
-        self.timelapse_selection_widget.on_trait_change(self.recalculate_files_in_range, name='value')
 
-        list_of_ob_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value*3600,
-                                                               data_type='ob')
-        box1 = widgets.VBox([widgets.Label("List of OB Runs in the range",
-                                           layout=widgets.Layout(width='100%')),
-                             widgets.Select(options=list_of_ob_in_range,
-                                            layout=widgets.Layout(width='500px',
-                                                                  height='300px'))],
-                            layout=widgets.Layout(width="520px"))
-        self.list_of_ob_in_range_widget = box1.children[1]
 
-        list_of_matching_df = self.get_list_of_matching_df()
 
-        box2 = widgets.VBox([widgets.Label("List of DF",
-                                           layout=widgets.Layout(width='100%')),
-                             widgets.Select(options=list_of_matching_df,
-                                            layout=widgets.Layout(width='500px',
-                                                                  height='300px'))],
-                            layout=widgets.Layout(width="520px"))
-        self.list_of_df_in_range_widget = box2.children[1]
 
-        spacer = "_" * 60
-        box3 = widgets.Label(spacer + " R E S U L T " + spacer,
-                             layout=widgets.Layout(width="100%"))
 
-        master_box_12 = widgets.HBox([box1, box2],
-                                     layout=widgets.Layout(width="100%"))
-        master_box = widgets.VBox([box01, box02, box3, master_box_12])
 
-        display(master_box)
 
-    def keep_df_and_ob_with_same_acquisition_time(self):
-        #FIXME
-        pass
 
-    def get_list_of_matching_df(self):
-        #FIXME
-        return []
+
+
+    # def select_time_range(self):
+    #
+    #     self.keep_df_and_ob_with_same_acquisition_time()
+    #     max_time_range = self.calculate_max_time_range_between_images()
+    #     box01 = widgets.HBox([widgets.Label("Time (hours)",
+    #                                         layout=widgets.Layout(width='10%')),
+    #                           widgets.IntSlider(min=1,
+    #                                             max=max_time_range,
+    #                                             value=0,
+    #                                             layout=widgets.Layout(width='50%'))
+    #                          ])
+    #     self.time_slider = box01.children[1]
+    #     self.time_slider.on_trait_change(self.recalculate_files_in_range, name='value')
+    #
+    #     timelapse_options = {'BEFORE or AFTER sample data acquisition': 'before_or_after',
+    #                          'Only BEFORE sample acquisition': 'before',
+    #                          'Only AFTER sample acquisition': 'after'}
+    #     box02 = widgets.HBox([widgets.Label("Select timelapse",
+    #                                         layout=widgets.Layout(width='10%')),
+    #                           widgets.RadioButtons(options=timelapse_options,
+    #                                                layout=widgets.Layout(width="300px"))])
+    #     self.timelapse_selection_widget = box02.children[1]
+    #     self.timelapse_selection_widget.on_trait_change(self.recalculate_files_in_range, name='value')
+    #
+    #     list_of_ob_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value*3600,
+    #                                                            data_type='ob')
+    #     box1 = widgets.VBox([widgets.Label("List of OB Runs in the range",
+    #                                        layout=widgets.Layout(width='100%')),
+    #                          widgets.Select(options=list_of_ob_in_range,
+    #                                         layout=widgets.Layout(width='500px',
+    #                                                               height='300px'))],
+    #                         layout=widgets.Layout(width="520px"))
+    #     self.list_of_ob_in_range_widget = box1.children[1]
+    #
+    #     list_of_matching_df = self.get_list_of_matching_df()
+    #
+    #     box2 = widgets.VBox([widgets.Label("List of DF",
+    #                                        layout=widgets.Layout(width='100%')),
+    #                          widgets.Select(options=list_of_matching_df,
+    #                                         layout=widgets.Layout(width='500px',
+    #                                                               height='300px'))],
+    #                         layout=widgets.Layout(width="520px"))
+    #     self.list_of_df_in_range_widget = box2.children[1]
+    #
+    #     spacer = "_" * 60
+    #     box3 = widgets.Label(spacer + " R E S U L T " + spacer,
+    #                          layout=widgets.Layout(width="100%"))
+    #
+    #     master_box_12 = widgets.HBox([box1, box2],
+    #                                  layout=widgets.Layout(width="100%"))
+    #     master_box = widgets.VBox([box01, box02, box3, master_box_12])
+    #
+    #     display(master_box)
+    #
+    # def keep_df_and_ob_with_same_acquisition_time(self):
+    #     #FIXME
+    #     pass
+    #
+    # def get_list_of_matching_df(self):
+    #     #FIXME
+    #     return []
 
     def get_list_of_images_in_range(self, time_range_s=1,
                                     timelapse_option="before_or_after",
