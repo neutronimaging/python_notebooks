@@ -380,12 +380,16 @@ class WhichOBandDFtoUse(object):
             _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
 
             _config_tab = widgets.Tab()
-            _config_tab_dict[_acquisition_index] = _config_tab
+            _current_acquisition_tab_widgets_id = {'config_tab_id': _config_tab}
             for _index, _config in enumerate(_dict_of_this_acquisition.keys()):
                 _dict_config = _dict_of_this_acquisition[_config]
-                _layout = self.get_full_layout_for_this_config(_dict_config)
+                _dict = self.get_full_layout_for_this_config(_dict_config)
+                _layout = _dict['verti_layout']
+                _config_widgets_id_dict = _dict['config_widgets_id_dict']
                 _config_tab.children += (_layout,)
                 _config_tab.set_title(_index, _config)
+                _current_acquisition_tab_widgets_id[_index] = _config_widgets_id_dict
+            _config_tab_dict[_acquisition_index] = _current_acquisition_tab_widgets_id
 
             _acquisition_tabs.children += (_config_tab,)  # add all the config tab to top acquisition tab
             _acquisition_tabs.set_title(_acquisition_index, "Acquisition: {}s".format(_acquisition))
@@ -398,13 +402,17 @@ class WhichOBandDFtoUse(object):
 
     def get_full_layout_for_this_config(self, dict_config):
 
-        # use custom time range
+        config_widgets_id_dict = {}
+
+        # use custom time range check box
         check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
                                                      value=False,
                                                      layout=widgets.Layout(width="35%"))
+        config_widgets_id_dict['use_custom_time_range_checkbox'] = check_box_user_time_range
         data = "this is my data"
         check_box_user_time_range.observe(self.update_config_widgets, names='value')
 
+        # time sliders
         hori_layout1 = widgets.HBox([check_box_user_time_range,
                                     widgets.FloatSlider(value=-10,
                                                         min=-10,
@@ -423,13 +431,16 @@ class WhichOBandDFtoUse(object):
                                                         readout=False,
                                                         layout=widgets.Layout(width="30%",
                                                                               visibility='hidden')),
-                                    ])
+                                     ])
         self.hori_layout1 = hori_layout1
         self.time_before_slider = hori_layout1.children[1]
         self.time_after_slider = hori_layout1.children[3]
         self.experiment_label = hori_layout1.children[2]
         self.time_after_slider.observe(self.update_time_range_message, names='value')
         self.time_before_slider.observe(self.update_time_range_message, names='value')
+        config_widgets_id_dict['time_slider_before_experiment'] = hori_layout1.children[1]
+        config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
+        config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
 
         # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",
@@ -438,6 +449,7 @@ class WhichOBandDFtoUse(object):
                                                    layout=widgets.Layout(width="80%"))])
         self.hori_layout2 = hori_layout2
         self.time_before_and_after_message = hori_layout2.children[1]
+        config_widgets_id_dict['time_slider_before_message'] = hori_layout2.children[1]
 
         # table of metadata
         table_label = widgets.Label("List of Metadata used to match data set",
@@ -448,7 +460,7 @@ class WhichOBandDFtoUse(object):
                                    "<tr><td>cell3</td><td>cell4</td></tr>"
                                    "</table>")
 
-        self.update_time_range_message(None)
+        # self.update_time_range_message(None)
 
         select_width = '300px'
         sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs",
@@ -474,6 +486,9 @@ class WhichOBandDFtoUse(object):
         list_runs_layout = widgets.HBox([sample_list_of_runs,
                                          ob_list_of_runs,
                                          df_list_of_runs])
+        config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs
+        config_widgets_id_dict['list_of_ob'] = ob_list_of_runs
+        config_widgets_id_dict['list_of_df'] = df_list_of_runs
 
         verti_layout = widgets.VBox([hori_layout1,
                                      hori_layout2,
@@ -481,11 +496,9 @@ class WhichOBandDFtoUse(object):
                                      table,
                                      list_runs_layout])
 
-        return verti_layout
+        return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
 
     def update_config_widgets(self, state):
-
-
 
         if state['new'] is False:
             # exp_label = ""
@@ -496,24 +509,49 @@ class WhichOBandDFtoUse(object):
             message = True
             visibility = 'visible'
 
-        # self.experiment_label.value = exp_label
-        self.time_before_slider.layout.visibility = visibility
-        self.time_after_slider.layout.visibility = visibility
-        self.experiment_label.layout.visibility = visibility
-        # self.time_before_slider.disabled = not state['new']
-        # self.time_after_slider.disabled = not state['new']
+        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
+        time_before_selected_ui.layout.visibility = visibility
+        time_after_selected_ui.layout.visibility = visibility
+        experiment_label_ui = self.get_experiment_label_ui_of_this_config()
+        experiment_label_ui.layout.visibility = visibility
         self.update_time_range_message(message)
 
-    def update_time_range_message(self, value):
+    def get_active_tabs(self):
+        active_acquisition_tab = self.acquisition_tab.selected_index
+        config_tab_dict = self.config_tab_dict[active_acquisition_tab]
+        active_config_tab = config_tab_dict['config_tab_id'].selected_index
+        return [active_acquisition_tab, active_config_tab]
 
+    def get_time_before_and_after_of_this_config(self):
+        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
+        return [time_before_selected_ui.value, time_after_selected_ui.value]
+
+    def get_time_before_and_after_ui_of_this_config(self):
+        current_config = self.get_current_config()
+        return [current_config['time_slider_before_experiment'], current_config['time_slider_after_experiment']]
+
+    def get_time_before_and_after_message_ui_of_this_config(self):
+        current_config = self.get_current_config()
+        return current_config['time_slider_before_message']
+
+    def get_experiment_label_ui_of_this_config(self):
+        current_config = self.get_current_config()
+        return current_config['experiment_label']
+
+    def get_current_config(self):
+        [active_acquisition, active_config] = self.get_active_tabs()
+        all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
+        current_config = all_config_tab_of_acquisition[active_config]
+        return current_config
+
+    def update_time_range_message(self, value):
         if value is None:
             _message = f"Use <b><font color='red'>All </b> " \
                        f"<font color='black'>OBs and DFs " \
                        f"matching the samples images</font>"
         else:
 
-            time_before_selected = self.time_before_slider.value
-            time_after_selected = self.time_after_slider.value
+            [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
 
             def _format_time(_time_s):
                 if _time_s < 60:
@@ -533,7 +571,8 @@ class WhichOBandDFtoUse(object):
                        f"<b><font color='red'>{str_time_after}</b> " \
                        f"<font color='black'>after experiment!</font>"
 
-        self.time_before_and_after_message.value = _message
+        time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
+        time_before_and_after_message_ui.value = _message
 
     @staticmethod
     def get_instrument_metadata_only(metadata_dict):
