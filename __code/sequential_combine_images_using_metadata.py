@@ -403,8 +403,9 @@ class SequentialCombineImagesUsingMetadata(object):
                      output_folder + '</span>'))
 
     def make_output_folder(self, output_folder):
+
         algorithm_selected = self.__get_formated_merging_algo_name()
-        folder_selected = os.path.dirname(self.folder_selected)
+        folder_selected = os.path.basename(os.path.dirname(self.folder_selected))
         output_folder = os.path.join(output_folder, "{}_{}".format(folder_selected, algorithm_selected))
         file_handler.make_folder(output_folder)
         return output_folder
