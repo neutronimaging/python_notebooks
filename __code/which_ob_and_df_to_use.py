@@ -13,38 +13,38 @@ from __code import time_utility
 
 
 class MetadataName(Enum):
-    PV_EXPOSURE_TIME = 65027
-    PV_DETECTOR_MANUFACTURER = 65026
-    PV_APERTURE_HR = 65068
-    PV_APERTURE_HL = 65070
-    PV_APERTURE_VT = 65066
-    PV_APERTURE_VB = 65064
+    EXPOSURE_TIME = 65027
+    DETECTOR_MANUFACTURER = 65026
+    APERTURE_HR = 65068
+    APERTURE_HL = 65070
+    APERTURE_VT = 65066
+    APERTURE_VB = 65064
 
     def __str__(self):
         return self.value
 
-# METADATA_KEYS = [PV_EXPOSURE_TIME, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT, PV_APERTURE_VB]
+# METADATA_KEYS = [EXPOSURE_TIME, APERTURE_HR, APERTURE_HL, APERTURE_VT, APERTURE_VB]
 
-# METADATA_KEYS = {'ob': [PV_EXPOSURE_TIME, PV_DETECTOR_MANUFACTURER, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT,
-#                         PV_APERTURE_VB],
-#                  'df': [PV_EXPOSURE_TIME, PV_DETECTOR_MANUFACTURER],
-#                  'all': [PV_DETECTOR_MANUFACTURER, PV_EXPOSURE_TIME, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT,
-#                          PV_APERTURE_VB]}
+# METADATA_KEYS = {'ob': [EXPOSURE_TIME, DETECTOR_MANUFACTURER, APERTURE_HR, APERTURE_HL, APERTURE_VT,
+#                         APERTURE_VB],
+#                  'df': [EXPOSURE_TIME, DETECTOR_MANUFACTURER],
+#                  'all': [DETECTOR_MANUFACTURER, EXPOSURE_TIME, APERTURE_HR, APERTURE_HL, APERTURE_VT,
+#                          APERTURE_VB]}
 
-METADATA_KEYS = {'ob': [MetadataName.PV_EXPOSURE_TIME,
-                        MetadataName.PV_DETECTOR_MANUFACTURER,
-                        MetadataName.PV_APERTURE_HR,
-                        MetadataName.PV_APERTURE_HL,
-                        MetadataName.PV_APERTURE_VT,
-                        MetadataName.PV_APERTURE_VB],
-                 'df': [MetadataName.PV_EXPOSURE_TIME,
-                        MetadataName.PV_DETECTOR_MANUFACTURER],
-                 'all': [MetadataName.PV_EXPOSURE_TIME,
-                        MetadataName.PV_DETECTOR_MANUFACTURER,
-                        MetadataName.PV_APERTURE_HR,
-                        MetadataName.PV_APERTURE_HL,
-                        MetadataName.PV_APERTURE_VT,
-                        MetadataName.PV_APERTURE_VB]}
+METADATA_KEYS = {'ob': [MetadataName.EXPOSURE_TIME,
+                        MetadataName.DETECTOR_MANUFACTURER,
+                        MetadataName.APERTURE_HR,
+                        MetadataName.APERTURE_HL,
+                        MetadataName.APERTURE_VT,
+                        MetadataName.APERTURE_VB],
+                 'df': [MetadataName.EXPOSURE_TIME,
+                        MetadataName.DETECTOR_MANUFACTURER],
+                 'all': [MetadataName.EXPOSURE_TIME,
+                        MetadataName.DETECTOR_MANUFACTURER,
+                        MetadataName.APERTURE_HR,
+                        MetadataName.APERTURE_HL,
+                        MetadataName.APERTURE_VT,
+                        MetadataName.APERTURE_VB]}
 
 MAX_DF_COUNTS_ALLOWED = 900
 METADATA_ERROR_ALLOWED = 1
@@ -52,12 +52,12 @@ LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_us
 
 
 class MetadataName:
-    PV_EXPOSURE_TIME = 65027
-    PV_DETECTOR_MANUFACTURER = 65026
-    PV_APERTURE_HR = 65068
-    PV_APERTURE_HL = 65070
-    PV_APERTURE_VT = 65066
-    PV_APERTURE_VB = 65064
+    EXPOSURE_TIME = 65027
+    DETECTOR_MANUFACTURER = 65026
+    APERTURE_HR = 65068
+    APERTURE_HL = 65070
+    APERTURE_VT = 65066
+    APERTURE_VB = 65064
 
 
 class WhichOBandDFtoUse(object):
@@ -171,7 +171,7 @@ class WhichOBandDFtoUse(object):
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_ob_instrument_metadata)
-            _acquisition_time = _all_ob_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]['value']
+            _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_aqquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
@@ -195,7 +195,7 @@ class WhichOBandDFtoUse(object):
         for _index_df in list_df_dict.keys():
             _all_df_instrument_metadata = self.get_instrument_metadata_only(list_df_dict[_index_df])
             _df_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_df_instrument_metadata)
-            _acquisition_time = _all_df_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]['value']
+            _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
@@ -219,7 +219,7 @@ class WhichOBandDFtoUse(object):
             _dict_file_index = sample_metadata_dict[_file_index]
             _sample_file = _dict_file_index['filename']
 
-            _acquisition_time = _dict_file_index[MetadataName.PV_EXPOSURE_TIME]['value']
+            _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME]['value']
             _instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_dict_file_index)
             _sample_time_stamp = _dict_file_index['time_stamp']
 
@@ -496,7 +496,7 @@ class WhichOBandDFtoUse(object):
 
         table_value = "<table style='width:50%;background-color:#eee'>"
         for _key, _value in metadata_config.items():
-            table_value += "<tr><th>{}</th><th>{}</th></tr>".format(_key, _value)
+            table_value += "<tr><th>{}</th><th>{}</th></tr>".format(_value['name'], _value['value'])
         table_value += "</table>"
 
         table = widgets.HTML(value=table_value)
@@ -603,7 +603,7 @@ class WhichOBandDFtoUse(object):
         """create a dictionary of all the instrument metadata without the acquisition time"""
         isolated_dictionary = {}
         for _key in dictionary.keys():
-            if _key == MetadataName.PV_EXPOSURE_TIME:
+            if _key == MetadataName.EXPOSURE_TIME:
                 continue
             isolated_dictionary[_key] = dictionary[_key]
         return isolated_dictionary
