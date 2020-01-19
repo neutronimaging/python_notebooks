@@ -171,7 +171,7 @@ class WhichOBandDFtoUse(object):
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_ob_instrument_metadata)
-            _acquisition_time = _all_ob_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]
+            _acquisition_time = _all_ob_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_aqquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
@@ -195,7 +195,7 @@ class WhichOBandDFtoUse(object):
         for _index_df in list_df_dict.keys():
             _all_df_instrument_metadata = self.get_instrument_metadata_only(list_df_dict[_index_df])
             _df_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_df_instrument_metadata)
-            _acquisition_time = _all_df_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]
+            _acquisition_time = _all_df_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
@@ -218,7 +218,8 @@ class WhichOBandDFtoUse(object):
 
             _dict_file_index = sample_metadata_dict[_file_index]
             _sample_file = _dict_file_index['filename']
-            _acquisition_time = _dict_file_index[MetadataName.PV_EXPOSURE_TIME]
+
+            _acquisition_time = _dict_file_index[MetadataName.PV_EXPOSURE_TIME]['value']
             _instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_dict_file_index)
             _sample_time_stamp = _dict_file_index['time_stamp']
 
@@ -590,10 +591,10 @@ class WhichOBandDFtoUse(object):
     def all_metadata_match(metadata_1={}, metadata_2={}):
         for _key in metadata_1.keys():
             try:
-                if np.abs(np.float(metadata_1[_key] - np.float(metadata_2[_key]))) > METADATA_ERROR_ALLOWED:
+                if np.abs(np.float(metadata_1[_key]['value'] - np.float(metadata_2[_key]['value']))) > METADATA_ERROR_ALLOWED:
                     return False
             except ValueError:
-                if metadata_1[_key] != metadata_2[_key]:
+                if metadata_1[_key]['value'] != metadata_2[_key]['value']:
                     return False
         return True
 
