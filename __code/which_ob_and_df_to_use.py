@@ -3,6 +3,7 @@ import collections
 import numpy as np
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
+from enum import Enum
 
 import ipywe.fileselector
 
@@ -10,20 +11,17 @@ from __code import file_handler
 from __code import metadata_handler
 from __code import time_utility
 
-# PV_EXPOSURE_TIME = 65027
-# PV_DETECTOR_MANUFACTURER = 65026
-# PV_APERTURE_HR = 65068
-# PV_APERTURE_HL = 65070
-# PV_APERTURE_VT = 65066
-# PV_APERTURE_VB = 65064
 
-class MetadataName:
+class MetadataName(Enum):
     PV_EXPOSURE_TIME = 65027
     PV_DETECTOR_MANUFACTURER = 65026
     PV_APERTURE_HR = 65068
     PV_APERTURE_HL = 65070
     PV_APERTURE_VT = 65066
     PV_APERTURE_VB = 65064
+
+    def __str__(self):
+        return self.value
 
 # METADATA_KEYS = [PV_EXPOSURE_TIME, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT, PV_APERTURE_VB]
 
@@ -452,15 +450,7 @@ class WhichOBandDFtoUse(object):
         config_widgets_id_dict['time_slider_before_message'] = hori_layout2.children[1]
 
         # table of metadata
-        table_label = widgets.Label("List of Metadata used to match data set",
-                                    layout=widgets.Layout(width='30%'))
-        table = widgets.HTML(value="<table style='width:50%;background-color:#eee'>"
-                                   "<tr><th>Name</th><th>Value</th></tr>"
-                                   "<tr><td>cell1</td><td>cell2</td></tr>"
-                                   "<tr><td>cell3</td><td>cell4</td></tr>"
-                                   "</table>")
-
-        # self.update_time_range_message(None)
+        [metadata_table_label, metadata_table] = self.populate_metadata_table(dict_config)
 
         select_width = '300px'
         sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs",
@@ -492,11 +482,25 @@ class WhichOBandDFtoUse(object):
 
         verti_layout = widgets.VBox([hori_layout1,
                                      hori_layout2,
-                                     table_label,
-                                     table,
+                                     metadata_table_label,
+                                     metadata_table,
                                      list_runs_layout])
 
         return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
+
+    def populate_metadata_table(self, current_config):
+        metadata_config = current_config['metadata_infos']
+        table_label = widgets.Label("List of Metadata used to match data set",
+                                    layout=widgets.Layout(width='30%'))
+
+        table_value = "<table style='width:50%;background-color:#eee'>"
+        for _key, _value in metadata_config.items():
+            table_value += "<tr><th>{}</th><th>{}</th></tr>".format(_key, _value)
+        table_value += "</table>"
+
+        table = widgets.HTML(value=table_value)
+
+        return [table_label, table]
 
     def update_config_widgets(self, state):
 
@@ -641,9 +645,9 @@ class WhichOBandDFtoUse(object):
     @staticmethod
     def retrieve_metadata(list_of_files=[], display_infos=True):
         """
-        dict = {'file1': {'metadata1': 'value',
-                          'metadata2': 'value',
-                          'metadata3': 'value',
+        dict = {'file1': {'metadata1_key': {'value': value, 'name': name},
+                          'metadata2_key': {'value': value, 'name': name},
+                          'metadata3_key': {'value': value, 'name': name},
                           ...
                           },
                 ...
@@ -677,7 +681,8 @@ class WhichOBandDFtoUse(object):
         """
         list_metadata = METADATA_KEYS['all']
         _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
-                                                                   list_metadata=list_metadata)
+                                                                   list_metadata=list_metadata,
+                                                                   using_enum_object=True)
 
         for _file_key in _dict.keys():
             _file_dict = {}
@@ -690,9 +695,9 @@ class WhichOBandDFtoUse(object):
                     except ValueError:
                         _value = split_raw_value[1]
                     finally:
-                        _file_dict[_pv] = _value
+                        _file_dict[_pv.value] = {'value': _value, 'name': _pv.name}
                 else:
-                    _file_dict[_pv] = None
+                    _file_dict[_pv.value] = {}
             _dict[_file_key] = _file_dict
         return _dict
 

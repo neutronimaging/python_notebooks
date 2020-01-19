@@ -72,7 +72,7 @@ class MetadataHandler(object):
         return result
 
     @staticmethod
-    def get_metadata(filename='', list_metadata=[]):
+    def get_metadata(filename='', list_metadata=[], using_enum_object=False):
         if filename == "":
             return {}
 
@@ -80,19 +80,21 @@ class MetadataHandler(object):
         metadata = image.tag_v2
         result = {}
         for _meta in list_metadata:
-            result[_meta] = metadata.get(_meta)
+            result[_meta] = metadata.get(_meta.value)
 
         image.close()
         return result
 
     @staticmethod
-    def retrieve_metadata(list_files=[], list_metadata=[]):
+    def retrieve_metadata(list_files=[], list_metadata=[], using_enum_object=False):
         if list_files == []:
             return {}
 
         _dict = {}
         for _file in list_files:
-            _meta = MetadataHandler.get_metadata(filename=_file, list_metadata=list_metadata)
+            _meta = MetadataHandler.get_metadata(filename=_file,
+                                                 list_metadata=list_metadata,
+                                                 using_enum_object=using_enum_object)
             _dict[_file] = _meta
 
         return _dict
