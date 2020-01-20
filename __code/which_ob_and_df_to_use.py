@@ -46,10 +46,6 @@ METADATA_KEYS = {'ob': [MetadataName.EXPOSURE_TIME,
                         MetadataName.APERTURE_VT,
                         MetadataName.APERTURE_VB]}
 
-MAX_DF_COUNTS_ALLOWED = 900
-METADATA_ERROR_ALLOWED = 1
-LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
-
 
 class MetadataName:
     EXPOSURE_TIME = 65027
@@ -58,6 +54,11 @@ class MetadataName:
     APERTURE_HL = 65070
     APERTURE_VT = 65066
     APERTURE_VB = 65064
+
+
+MAX_DF_COUNTS_ALLOWED = 900
+METADATA_ERROR_ALLOWED = 1
+LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
 
 
 class WhichOBandDFtoUse(object):
@@ -435,8 +436,8 @@ class WhichOBandDFtoUse(object):
         self.time_before_slider = hori_layout1.children[1]
         self.time_after_slider = hori_layout1.children[3]
         self.experiment_label = hori_layout1.children[2]
-        self.time_after_slider.observe(self.update_time_range_message, names='value')
-        self.time_before_slider.observe(self.update_time_range_message, names='value')
+        self.time_after_slider.observe(self.update_time_range_event, names='value')
+        self.time_before_slider.observe(self.update_time_range_event, names='value')
         config_widgets_id_dict['time_slider_before_experiment'] = hori_layout1.children[1]
         config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
         config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
@@ -519,13 +520,27 @@ class WhichOBandDFtoUse(object):
         time_after_selected_ui.layout.visibility = visibility
         experiment_label_ui = self.get_experiment_label_ui_of_this_config()
         experiment_label_ui.layout.visibility = visibility
-        self.update_time_range_message(message)
+        self.update_time_range_event(message)
 
     def get_active_tabs(self):
         active_acquisition_tab = self.acquisition_tab.selected_index
         config_tab_dict = self.config_tab_dict[active_acquisition_tab]
         active_config_tab = config_tab_dict['config_tab_id'].selected_index
         return [active_acquisition_tab, active_config_tab]
+
+    def get_active_tab_acquisition_key(self):
+        active_acquisition_tab_index = self.acquisition_tab.selected_index
+        title = self.acquisition_tab.get_title(active_acquisition_tab_index)
+        [_, time_s] = title.split(": ")
+        acquisition_key = time_s[:-1]
+        return acquisition_key
+
+    def get_active_tab_config_key(self):
+        [active_acquisition, _] = self.get_active_tabs()
+        all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
+        current_config_tab = all_config_tab_of_acquisition['config_tab_id']
+        current_config_tab_index = current_config_tab.selected_index
+        return current_config_tab.get_title(current_config_tab_index)
 
     def get_time_before_and_after_of_this_config(self):
         [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
@@ -548,6 +563,34 @@ class WhichOBandDFtoUse(object):
         all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
         current_config = all_config_tab_of_acquisition[active_config]
         return current_config
+
+    def update_time_range_event(self, value):
+        self.update_time_range_message(value)
+        self.update_list_of_files_in_widgets_using_new_time_range()
+
+    def update_list_of_files_in_widgets_using_new_time_range(self):
+
+        # retrieve acquisition and config values
+        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
+        config_key = self.get_active_tab_config_key()  # ex: 'config0'
+
+        # retrieve list of ob and df for this config for this acquisition
+        final_full_master_dict = self.final_full_master_dict
+        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
+        list_ob = dict_for_this_config['list_ob']
+        list_df = dict_for_this_config['list_df']
+
+        # retrieve first and last sample file for this config and for this acquisition
+        first_images = dict_for_this_config['first_images']
+        last_images = dict_for_this_config['last_images']
+
+        # retrieve time before and after selected
+        
+
+        # calculate list of ob and df that are within that time range
+
+
+
 
     def update_time_range_message(self, value):
         if value is None:
