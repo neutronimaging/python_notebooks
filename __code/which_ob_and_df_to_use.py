@@ -400,6 +400,48 @@ class WhichOBandDFtoUse(object):
         self.acquisition_tab = _acquisition_tabs
         self.config_tab_dict = _config_tab_dict
 
+    def get_max_time_elapse_before_experiment(self):
+        # this will use the first sample image taken, the first OB image taken and will calculate that
+        # difference. If the OB was taken after the first image, time will be 0
+
+        # retrieve acquisition and config values
+        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
+        config_key = self.get_active_tab_config_key()  # ex: 'config0'
+
+        # retrieve list of ob and df for this config for this acquisition
+        final_full_master_dict = self.final_full_master_dict
+        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
+
+        # retrieve first and last sample file for this config and for this acquisition
+        first_sample_image_time_stamp = dict_for_this_config['first_images']['sample']['time_stamp']
+        first_ob = dict_for_this_config['first_images']['ob']['time_stamp']
+
+        if first_ob > first_sample_image_time_stamp:
+            return 0
+        else:
+            return first_sample_image_time_stamp - first_ob
+
+    def get_max_time_elapse_after_experiment(self):
+        # this will use the last sample image taken, the last OB image taken and will calculate that
+        # difference. If the last OB was taken before the last image, time will be 0
+
+        # retrieve acquisition and config values
+        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
+        config_key = self.get_active_tab_config_key()  # ex: 'config0'
+
+        # retrieve list of ob and df for this config for this acquisition
+        final_full_master_dict = self.final_full_master_dict
+        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
+
+        # retrieve first and last sample file for this config and for this acquisition
+        last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
+        last_ob = dict_for_this_config['last_images']['ob']['time_stamp']
+
+        if last_ob < last_sample_images_time_stamp:
+            return 0
+        else:
+            return last_sample_images_time_stamp - last_ob
+
     def get_full_layout_for_this_config(self, dict_config):
 
         config_widgets_id_dict = {}
@@ -413,9 +455,13 @@ class WhichOBandDFtoUse(object):
         check_box_user_time_range.observe(self.update_config_widgets, names='value')
 
         # time sliders
+        # max_time_elapse_before_experiment = self.get_max_time_elapse_before_experiment()
+        # max_time_elapse_after_experiment = self.get_max_time_elapse_after_experiment()
+
+        [max_time_elapse_before_experiment, max_time_elapse_after_experiment] = self.calculate_max_time_before_and_after_exp_for_this_config(dict_config)
         hori_layout1 = widgets.HBox([check_box_user_time_range,
-                                    widgets.FloatSlider(value=-10,
-                                                        min=-10,
+                                    widgets.FloatSlider(value=-max_time_elapse_before_experiment,
+                                                        min=-max_time_elapse_before_experiment,
                                                         max=0,
                                                         step=0.1,
                                                         readout=False,
@@ -424,9 +470,9 @@ class WhichOBandDFtoUse(object):
                                     widgets.Label(" <<< EXPERIMENT >>> ",
                                                   layout=widgets.Layout(width="20%",
                                                                         visibility='hidden')),
-                                    widgets.FloatSlider(value=20,
+                                    widgets.FloatSlider(value=max_time_elapse_before_experiment,
                                                         min=0,
-                                                        max=20,
+                                                        max=max_time_elapse_after_experiment,
                                                         step=0.1,
                                                         readout=False,
                                                         layout=widgets.Layout(width="30%",
@@ -489,6 +535,30 @@ class WhichOBandDFtoUse(object):
                                      list_runs_layout])
 
         return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
+
+    def calculate_max_time_before_and_after_exp_for_this_config(self, dict_config):
+
+        max_time_before = 0
+
+        first_sample_image_time_stamp = dict_config['first_images']['sample']['time_stamp']
+        first_ob_image_time_stamp = dict_config['first_images']['ob']['time_stamp']
+
+        if first_ob_image_time_stamp > first_sample_image_time_stamp:
+            max_time_before = 0
+        else:
+            max_time_before = (first_sample_image_time_stamp - first_ob_image_time_stamp)
+
+        max_time_after = 0
+
+        last_sample_image_time_stamp = dict_config['last_images']['sample']['time_stamp']
+        last_ob_image_time_stamp = dict_config['last_images']['ob']['time_stamp']
+
+        if last_ob_image_time_stamp < last_sample_image_time_stamp:
+            max_time_after = 0
+        else:
+            max_time_after = last_ob_image_time_stamp - last_sample_image_time_stamp
+
+        return [max_time_before, max_time_after]
 
     def populate_metadata_table(self, current_config):
         metadata_config = current_config['metadata_infos']
@@ -565,8 +635,13 @@ class WhichOBandDFtoUse(object):
         return current_config
 
     def update_time_range_event(self, value):
+        # reach when user interact with the sliders in the config tab
         self.update_time_range_message(value)
         self.update_list_of_files_in_widgets_using_new_time_range()
+
+    # def update_time_range_for_current_config(self):
+    #     # reach when value of min and max time range needs to be calculated for current config
+    #     pass
 
     def update_list_of_files_in_widgets_using_new_time_range(self):
 
@@ -578,19 +653,30 @@ class WhichOBandDFtoUse(object):
         final_full_master_dict = self.final_full_master_dict
         dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
         list_ob = dict_for_this_config['list_ob']
-        list_df = dict_for_this_config['list_df']
 
         # retrieve first and last sample file for this config and for this acquisition
-        first_images = dict_for_this_config['first_images']
-        last_images = dict_for_this_config['last_images']
+        first_sample_image_time_stamp = dict_for_this_config['first_images']['sample']['time_stamp']
+        last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
 
         # retrieve time before and after selected
-        
+        [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
 
-        # calculate list of ob and df that are within that time range
+        # calculate list of ob that are within that time range
+        list_ob_to_keep = []
+        for _ob_file in list_ob:
+            _ob_time_stamp = _ob_file['time_stamp']
+            if (_ob_time_stamp < first_sample_image_time_stamp) and \
+                    ((first_sample_image_time_stamp-_ob_time_stamp) <= time_before_selected):
+                list_ob_to_keep.append(_ob_file['filename'])
+            elif (_ob_time_stamp > last_sample_images_time_stamp) and \
+                    ((_ob_time_stamp - last_sample_images_time_stamp) <= time_after_selected):
+                list_ob_to_keep.append(_ob_file['filename'])
 
+        self.update_list_of_ob_for_current_config_tab(list_ob=list_ob_to_keep)
 
-
+    def update_list_of_ob_for_current_config_tab(self, list_ob=[]):
+        [active_acquisition, active_config] = self.get_active_tabs()
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].value = list_ob
 
     def update_time_range_message(self, value):
         if value is None:
@@ -600,6 +686,8 @@ class WhichOBandDFtoUse(object):
         else:
 
             [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
+
+            time_before_selected = np.abs(time_before_selected)
 
             def _format_time(_time_s):
                 if _time_s < 60:
@@ -614,7 +702,7 @@ class WhichOBandDFtoUse(object):
             str_time_before = _format_time(time_before_selected)
             str_time_after = _format_time(time_after_selected)
 
-            _message = f"Use OB and DF taken up to <b><font color='red'>{str_time_before}</b> " \
+            _message = f"Use OB taken up to <b><font color='red'>{str_time_before}</b> " \
                        f"<font color='black'>before and up to </font>" \
                        f"<b><font color='red'>{str_time_after}</b> " \
                        f"<font color='black'>after experiment!</font>"
