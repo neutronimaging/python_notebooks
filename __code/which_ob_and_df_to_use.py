@@ -446,6 +446,13 @@ class WhichOBandDFtoUse(object):
 
         config_widgets_id_dict = {}
 
+        def _make_list_basename_file(list_name='list_sample'):
+            return [os.path.basename(_entry['filename']) for _entry in dict_config[list_name]]
+
+        list_sample = _make_list_basename_file(list_name='list_sample')
+        list_ob = _make_list_basename_file(list_name='list_ob')
+        list_df = _make_list_basename_file(list_name='list_df')
+
         # use custom time range check box
         check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
                                                      value=False,
@@ -503,20 +510,20 @@ class WhichOBandDFtoUse(object):
         select_width = '300px'
         sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs",
                                            layout=widgets.Layout(width='100%')),
-                             widgets.Select(options=['a', 'b', 'c'],
+                             widgets.Select(options=list_sample,
                                             layout=widgets.Layout(width=select_width,
                                                                   height='300px'))],
                             layout=widgets.Layout(width="360px"))
         # self.list_of_runs_ui = box0.children[1]
         ob_list_of_runs = widgets.VBox([widgets.Label("List of OB",
                                                           layout=widgets.Layout(width='100%')),
-                                            widgets.Select(options=['a', 'b', 'c'],
+                                            widgets.Select(options=list_ob,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="360px"))
         df_list_of_runs = widgets.VBox([widgets.Label("List of DF",
                                                           layout=widgets.Layout(width='100%')),
-                                            widgets.Select(options=['a', 'b', 'c'],
+                                            widgets.Select(options=list_df,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="360px"))
