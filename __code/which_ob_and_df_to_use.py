@@ -458,14 +458,11 @@ class WhichOBandDFtoUse(object):
                                                      value=False,
                                                      layout=widgets.Layout(width="35%"))
         config_widgets_id_dict['use_custom_time_range_checkbox'] = check_box_user_time_range
-        data = "this is my data"
+
         check_box_user_time_range.observe(self.update_config_widgets, names='value')
 
-        # time sliders
-        # max_time_elapse_before_experiment = self.get_max_time_elapse_before_experiment()
-        # max_time_elapse_after_experiment = self.get_max_time_elapse_after_experiment()
-
         [max_time_elapse_before_experiment, max_time_elapse_after_experiment] = self.calculate_max_time_before_and_after_exp_for_this_config(dict_config)
+
         hori_layout1 = widgets.HBox([check_box_user_time_range,
                                     widgets.FloatSlider(value=-max_time_elapse_before_experiment,
                                                         min=-max_time_elapse_before_experiment,
@@ -584,11 +581,11 @@ class WhichOBandDFtoUse(object):
     def update_config_widgets(self, state):
 
         if state['new'] is False:
-            # exp_label = ""
+            # use all files
             message = None
             visibility = 'hidden'
         else:
-            # exp_label = " <<< EXPERIMENT >>> "
+            # user defines ranges
             message = True
             visibility = 'visible'
 
@@ -597,7 +594,21 @@ class WhichOBandDFtoUse(object):
         time_after_selected_ui.layout.visibility = visibility
         experiment_label_ui = self.get_experiment_label_ui_of_this_config()
         experiment_label_ui.layout.visibility = visibility
+
+        self.show_or_not_before_and_after_sliders()
         self.update_time_range_event(message)
+
+    def show_or_not_before_and_after_sliders(self):
+        current_config = self.get_current_config_dict()
+        [max_time_elapse_before_experiment, max_time_elapse_after_experiment] = \
+            self.calculate_max_time_before_and_after_exp_for_this_config(current_config)
+
+        slider_before_visibility = 'visible' if max_time_elapse_before_experiment > 0 else 'hidden'
+        slider_after_visibility = 'visible' if max_time_elapse_after_experiment > 0 else 'hidden'
+
+        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
+        time_before_selected_ui.layout.visibility = slider_before_visibility
+        time_after_selected_ui.layout.visibility = slider_after_visibility
 
     def get_active_tabs(self):
         active_acquisition_tab = self.acquisition_tab.selected_index
@@ -624,22 +635,28 @@ class WhichOBandDFtoUse(object):
         return [time_before_selected_ui.value, time_after_selected_ui.value]
 
     def get_time_before_and_after_ui_of_this_config(self):
-        current_config = self.get_current_config()
+        current_config = self.get_current_config_of_widgets_id()
         return [current_config['time_slider_before_experiment'], current_config['time_slider_after_experiment']]
 
     def get_time_before_and_after_message_ui_of_this_config(self):
-        current_config = self.get_current_config()
+        current_config = self.get_current_config_of_widgets_id()
         return current_config['time_slider_before_message']
 
     def get_experiment_label_ui_of_this_config(self):
-        current_config = self.get_current_config()
+        current_config = self.get_current_config_of_widgets_id()
         return current_config['experiment_label']
 
-    def get_current_config(self):
+    def get_current_config_dict(self):
+        [active_acquisition, active_config] = self.get_active_tabs()
+        final_full_master_dict = self.final_full_master_dict
+        current_config = final_full_master_dict[active_acquisition][active_config]
+        return current_config
+
+    def get_current_config_of_widgets_id(self):
         [active_acquisition, active_config] = self.get_active_tabs()
         all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
-        current_config = all_config_tab_of_acquisition[active_config]
-        return current_config
+        current_config_of_widgets_id = all_config_tab_of_acquisition[active_config]
+        return current_config_of_widgets_id
 
     def update_time_range_event(self, value):
         # reach when user interact with the sliders in the config tab
