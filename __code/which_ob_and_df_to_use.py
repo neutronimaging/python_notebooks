@@ -647,7 +647,8 @@ class WhichOBandDFtoUse(object):
         return current_config['experiment_label']
 
     def get_current_config_dict(self):
-        [active_acquisition, active_config] = self.get_active_tabs()
+        active_acquisition = np.float(self.get_active_tab_acquisition_key())
+        active_config = self.get_active_tab_config_key()
         final_full_master_dict = self.final_full_master_dict
         current_config = final_full_master_dict[active_acquisition][active_config]
         return current_config
