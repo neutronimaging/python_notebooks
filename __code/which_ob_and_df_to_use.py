@@ -528,9 +528,9 @@ class WhichOBandDFtoUse(object):
         list_runs_layout = widgets.HBox([sample_list_of_runs,
                                          ob_list_of_runs,
                                          df_list_of_runs])
-        config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs
-        config_widgets_id_dict['list_of_ob'] = ob_list_of_runs
-        config_widgets_id_dict['list_of_df'] = df_list_of_runs
+        config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
+        config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
+        config_widgets_id_dict['list_of_df'] = df_list_of_runs.children[1]
 
         verti_layout = widgets.VBox([hori_layout1,
                                      hori_layout2,
@@ -691,17 +691,18 @@ class WhichOBandDFtoUse(object):
         for _ob_file in list_ob:
             _ob_time_stamp = _ob_file['time_stamp']
             if (_ob_time_stamp < first_sample_image_time_stamp) and \
-                    ((first_sample_image_time_stamp-_ob_time_stamp) <= time_before_selected):
+                    ((first_sample_image_time_stamp-_ob_time_stamp) <= np.abs(time_before_selected)):
                 list_ob_to_keep.append(_ob_file['filename'])
             elif (_ob_time_stamp > last_sample_images_time_stamp) and \
-                    ((_ob_time_stamp - last_sample_images_time_stamp) <= time_after_selected):
+                    ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
                 list_ob_to_keep.append(_ob_file['filename'])
 
         self.update_list_of_ob_for_current_config_tab(list_ob=list_ob_to_keep)
 
     def update_list_of_ob_for_current_config_tab(self, list_ob=[]):
         [active_acquisition, active_config] = self.get_active_tabs()
-        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].value = list_ob
+        short_version_list_ob = WhichOBandDFtoUse.keep_basename_only(list_files=list_ob)
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = short_version_list_ob
 
     def update_time_range_message(self, value):
         if value is None:
@@ -734,6 +735,11 @@ class WhichOBandDFtoUse(object):
 
         time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
         time_before_and_after_message_ui.value = _message
+
+    @staticmethod
+    def keep_basename_only(list_files=[]):
+        basename_only = [os.path.basename(_file) for _file in list_files]
+        return basename_only
 
     @staticmethod
     def get_instrument_metadata_only(metadata_dict):
