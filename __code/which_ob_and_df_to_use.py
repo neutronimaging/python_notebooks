@@ -646,6 +646,10 @@ class WhichOBandDFtoUse(object):
         current_config = self.get_current_config_of_widgets_id()
         return current_config['experiment_label']
 
+    def is_custom_time_range_checked_for_this_config(self):
+        current_config = self.get_current_config_of_widgets_id()
+        return current_config['use_custom_time_range_checkbox'].value
+
     def get_current_config_dict(self):
         active_acquisition = np.float(self.get_active_tab_acquisition_key())
         active_config = self.get_active_tab_config_key()
@@ -679,23 +683,29 @@ class WhichOBandDFtoUse(object):
         dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
         list_ob = dict_for_this_config['list_ob']
 
-        # retrieve first and last sample file for this config and for this acquisition
-        first_sample_image_time_stamp = dict_for_this_config['first_images']['sample']['time_stamp']
-        last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
+        # no need to do anything more if user wants to use all the files
+        if not self.is_custom_time_range_checked_for_this_config():
+            list_ob_to_keep = [_file['filename'] for _file in list_ob]
 
-        # retrieve time before and after selected
-        [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
+        else:
 
-        # calculate list of ob that are within that time range
-        list_ob_to_keep = []
-        for _ob_file in list_ob:
-            _ob_time_stamp = _ob_file['time_stamp']
-            if (_ob_time_stamp < first_sample_image_time_stamp) and \
-                    ((first_sample_image_time_stamp-_ob_time_stamp) <= np.abs(time_before_selected)):
-                list_ob_to_keep.append(_ob_file['filename'])
-            elif (_ob_time_stamp > last_sample_images_time_stamp) and \
-                    ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
-                list_ob_to_keep.append(_ob_file['filename'])
+            # retrieve first and last sample file for this config and for this acquisition
+            first_sample_image_time_stamp = dict_for_this_config['first_images']['sample']['time_stamp']
+            last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
+
+            # retrieve time before and after selected
+            [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
+
+            # calculate list of ob that are within that time range
+            list_ob_to_keep = []
+            for _ob_file in list_ob:
+                _ob_time_stamp = _ob_file['time_stamp']
+                if (_ob_time_stamp < first_sample_image_time_stamp) and \
+                        ((first_sample_image_time_stamp-_ob_time_stamp) <= np.abs(time_before_selected)):
+                    list_ob_to_keep.append(_ob_file['filename'])
+                elif (_ob_time_stamp > last_sample_images_time_stamp) and \
+                        ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
+                    list_ob_to_keep.append(_ob_file['filename'])
 
         self.update_list_of_ob_for_current_config_tab(list_ob=list_ob_to_keep)
 
