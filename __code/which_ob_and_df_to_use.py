@@ -11,6 +11,8 @@ from __code import file_handler
 from __code import metadata_handler
 from __code import time_utility
 
+JSON_DEBUGGING = True
+
 
 class MetadataName(Enum):
     EXPOSURE_TIME = 65027
@@ -150,14 +152,17 @@ class WhichOBandDFtoUse(object):
     def match_files(self):
         """This is where the files will be associated with their respective OB, DF by using the metadata"""
 
-        self.create_master_sample_dict()
+        if not JSON_DEBUGGING:
+            self.create_master_sample_dict()
+
         self.match_ob()
         self.match_df()
 
-        # for debugging only, exporting the json
-        # import json
-        # with open('/Users/j35/Desktop/which_ob_and_df_to_use.json', 'w') as outfile:
-        #     json.dump(self.final_full_master_dict, outfile)
+        if JSON_DEBUGGING:
+            # for debugging only, exporting the json
+            import json
+            with open('/Users/j35/Desktop/which_ob_and_df_to_use.json', 'w') as outfile:
+                json.dump(self.final_full_master_dict, outfile)
 
     def match_ob(self):
         """we will go through all the ob and associate them with the right sample based on
@@ -167,13 +172,13 @@ class WhichOBandDFtoUse(object):
         """
         list_ob_dict = self.ob_metadata_dict
         final_full_master_dict = self.final_full_master_dict
-        list_of_sample_aqquisition = final_full_master_dict.keys()
+        list_of_sample_acquisition = final_full_master_dict.keys()
 
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_ob_instrument_metadata)
             _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
-            if _acquisition_time in list_of_sample_aqquisition:
+            if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
                     if WhichOBandDFtoUse.all_metadata_match(_sample_metadata_infos,
@@ -210,6 +215,8 @@ class WhichOBandDFtoUse(object):
 
         final_full_master_dict = collections.OrderedDict()
         sample_metadata_dict = self.sample_metadata_dict
+
+        print("sample_metadata_dict: {}".format(sample_metadata_dict))
 
         # we need to keep record of which image was the first one taken and which image was the last one taken
         first_sample_image = sample_metadata_dict[0]
@@ -651,7 +658,7 @@ class WhichOBandDFtoUse(object):
         return current_config['use_custom_time_range_checkbox'].value
 
     def get_current_config_dict(self):
-        active_acquisition = np.float(self.get_active_tab_acquisition_key())
+        active_acquisition = self.get_active_tab_acquisition_key()
         active_config = self.get_active_tab_config_key()
         final_full_master_dict = self.final_full_master_dict
         current_config = final_full_master_dict[active_acquisition][active_config]
@@ -675,7 +682,7 @@ class WhichOBandDFtoUse(object):
     def update_list_of_files_in_widgets_using_new_time_range(self):
 
         # retrieve acquisition and config values
-        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
+        acquisition_key = self.get_active_tab_acquisition_key()  # ex: '55.0'
         config_key = self.get_active_tab_config_key()  # ex: 'config0'
 
         # retrieve list of ob and df for this config for this acquisition
@@ -745,6 +752,22 @@ class WhichOBandDFtoUse(object):
 
         time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
         time_before_and_after_message_ui.value = _message
+
+    def create_final_json(self):
+        # go through each of the acquisition tab and into each of the config to create the list of sample, ob and df
+        # to use
+        _final_ful_master_dict = self.final_full_master_dict
+        _config_tab_dict = self.config_tab_dict
+        for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
+            _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
+            _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
+            print("working on acquisition: {}".format(_acquisition))
+            for _index, _config in enumerate(_dict_of_this_acquisition.keys()):
+                print("working on this config: {}".format(_config))
+
+
+
+
 
     @staticmethod
     def keep_basename_only(list_files=[]):
