@@ -754,30 +754,51 @@ class WhichOBandDFtoUse(object):
         # to use
         _final_ful_master_dict = self.final_full_master_dict
         _config_tab_dict = self.config_tab_dict
+        _final_json_dict = {}
         for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
+
+            _final_json_for_this_acquisition = {}
             _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
             _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
             for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
                 this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
 
-                list_sample = _config['list_sample']
-                list_df = _config['list_df']
+                _dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
 
-                list_ob = []
+                list_sample = _dict_of_this_acquisition_this_config['list_sample']
+                list_df = _dict_of_this_acquisition_this_config['list_df']
+
+                list_ob = _dict_of_this_acquisition_this_config['list_ob']
                 use_custom_time_range_checkbox_id = this_config_tab_dict["use_custom_time_range_checkbox"]
                 if not use_custom_time_range_checkbox_id.value:
-                    list_ob = _config['list_ob']
+                    list_ob_to_keep = _dict_of_this_acquisition_this_config['list_ob']
                 else:
                     # retrieve first and last sample file for this config and for this acquisition
-                    first_sample_image_time_stamp = _config['first_images']['sample']['time_stamp']
-                    last_sample_images_time_stamp = _config['last_images']['sample']['time_stamp']
+                    first_sample_image_time_stamp = _dict_of_this_acquisition_this_config['first_images']['sample']['time_stamp']
+                    last_sample_images_time_stamp = _dict_of_this_acquisition_this_config['last_images']['sample']['time_stamp']
 
                     [time_before_selected, time_after_selected] = \
-                        self.get_time_before_and_after_of_this_config(current_config=_config)
+                        self.get_time_before_and_after_of_this_config(current_config=_dict_of_this_acquisition_this_config)
 
+                    # calculate list of ob that are within that time range
+                    list_ob_to_keep = []
+                    for _ob_file in list_ob:
+                        _ob_time_stamp = _ob_file['time_stamp']
+                        if (_ob_time_stamp < first_sample_image_time_stamp) and \
+                                ((first_sample_image_time_stamp - _ob_time_stamp) <= np.abs(time_before_selected)):
+                            list_ob_to_keep.append(_ob_file['filename'])
+                        elif (_ob_time_stamp > last_sample_images_time_stamp) and \
+                                ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
+                            list_ob_to_keep.append(_ob_file['filename'])
 
+                _final_json_for_this_acquisition[_config] = {'list_sample': list_sample,
+                                                             'list_df': list_df,
+                                                             'list_ob': list_ob_to_keep}
 
+            _final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
+        import pprint
+        pprint.pprint(_final_json_dict)
 
 
 
