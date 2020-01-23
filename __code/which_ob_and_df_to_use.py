@@ -216,8 +216,6 @@ class WhichOBandDFtoUse(object):
         final_full_master_dict = collections.OrderedDict()
         sample_metadata_dict = self.sample_metadata_dict
 
-        print("sample_metadata_dict: {}".format(sample_metadata_dict))
-
         # we need to keep record of which image was the first one taken and which image was the last one taken
         first_sample_image = sample_metadata_dict[0]
         last_sample_image = sample_metadata_dict[0]
@@ -363,7 +361,7 @@ class WhichOBandDFtoUse(object):
             current_acquisition_dict = _final_full_master_dict[_acquisition]
             for _config in current_acquisition_dict.keys():
                 current_acquisition_config_dict = current_acquisition_dict[_config]
-            
+
             first_sample_image = current_acquisition_config_dict['first_images']['sample']
             first_ob_image = current_acquisition_config_dict['first_images']['ob']
             delta_time_before = first_sample_image['time_stamp'] - first_ob_image['time_stamp']
@@ -373,7 +371,7 @@ class WhichOBandDFtoUse(object):
             last_ob_image = current_acquisition_config_dict['last_images']['ob']
             delta_time_after = last_ob_image['time_stamp'] - last_sample_image['time_stamp']
             _time_range_s_after = delta_time_after if delta_time_after > 0 else 0
-            
+
             _final_full_master_dict[_acquisition][_config]['time_range_s']['before'] = _time_range_s_before
             _final_full_master_dict[_acquisition][_config]['time_range_s']['after'] = _time_range_s_after
 
@@ -637,12 +635,14 @@ class WhichOBandDFtoUse(object):
         current_config_tab_index = current_config_tab.selected_index
         return current_config_tab.get_title(current_config_tab_index)
 
-    def get_time_before_and_after_of_this_config(self):
-        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
+    def get_time_before_and_after_of_this_config(self, current_config=None):
+        [time_before_selected_ui, time_after_selected_ui] = \
+            self.get_time_before_and_after_ui_of_this_config(current_config=current_config)
         return [time_before_selected_ui.value, time_after_selected_ui.value]
 
-    def get_time_before_and_after_ui_of_this_config(self):
-        current_config = self.get_current_config_of_widgets_id()
+    def get_time_before_and_after_ui_of_this_config(self, current_config=None):
+        if current_config is None:
+            current_config = self.get_current_config_of_widgets_id()
         return [current_config['time_slider_before_experiment'], current_config['time_slider_after_experiment']]
 
     def get_time_before_and_after_message_ui_of_this_config(self):
@@ -674,10 +674,6 @@ class WhichOBandDFtoUse(object):
         # reach when user interact with the sliders in the config tab
         self.update_time_range_message(value)
         self.update_list_of_files_in_widgets_using_new_time_range()
-
-    # def update_time_range_for_current_config(self):
-    #     # reach when value of min and max time range needs to be calculated for current config
-    #     pass
 
     def update_list_of_files_in_widgets_using_new_time_range(self):
 
@@ -761,9 +757,25 @@ class WhichOBandDFtoUse(object):
         for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
             _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
             _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
-            print("working on acquisition: {}".format(_acquisition))
-            for _index, _config in enumerate(_dict_of_this_acquisition.keys()):
-                print("working on this config: {}".format(_config))
+            for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
+                this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
+
+                list_sample = _config['list_sample']
+                list_df = _config['list_df']
+
+                list_ob = []
+                use_custom_time_range_checkbox_id = this_config_tab_dict["use_custom_time_range_checkbox"]
+                if not use_custom_time_range_checkbox_id.value:
+                    list_ob = _config['list_ob']
+                else:
+                    # retrieve first and last sample file for this config and for this acquisition
+                    first_sample_image_time_stamp = _config['first_images']['sample']['time_stamp']
+                    last_sample_images_time_stamp = _config['last_images']['sample']['time_stamp']
+
+                    [time_before_selected, time_after_selected] = \
+                        self.get_time_before_and_after_of_this_config(current_config=_config)
+
+
 
 
 
