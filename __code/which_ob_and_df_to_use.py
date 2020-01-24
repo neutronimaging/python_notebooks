@@ -765,13 +765,13 @@ class WhichOBandDFtoUse(object):
 
                 _dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
 
-                list_sample = _dict_of_this_acquisition_this_config['list_sample']
-                list_df = _dict_of_this_acquisition_this_config['list_df']
+                list_sample = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_sample']]
+                list_df = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_df']]
 
                 list_ob = _dict_of_this_acquisition_this_config['list_ob']
                 use_custom_time_range_checkbox_id = this_config_tab_dict["use_custom_time_range_checkbox"]
                 if not use_custom_time_range_checkbox_id.value:
-                    list_ob_to_keep = _dict_of_this_acquisition_this_config['list_ob']
+                    list_ob_to_keep = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_ob']]
                 else:
                     # retrieve first and last sample file for this config and for this acquisition
                     first_sample_image_time_stamp = _dict_of_this_acquisition_this_config['first_images']['sample']['time_stamp']
