@@ -62,12 +62,19 @@ class CombineImagesNByN(object):
         self.bin_size_label = vertical_layout.children[1]
 
         self.bin_size_ui.observe(self.update_how_many_files, names='value')
+        self.update_how_many_files()
 
-    def update_how_many_files(self, bin_value):
-        nbr_images = np.int(len(self.list_files)/bin_value)
+    def _get_number_of_files_will_be_created(self, bin_value=2):
+        return np.int(len(self.list_files)/bin_value)
+
+    def update_how_many_files(self, bin_value_object=None):
+        if bin_value_object:
+            bin_value = np.int(bin_value_object['new'])
+            nbr_images = self._get_number_of_files_will_be_created(bin_value=bin_value)
+        else:
+            nbr_images = self._get_number_of_files_will_be_created()
         message = "You are about to create {} files".format(nbr_images)
         self.bin_size_label.value = message
-
 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
