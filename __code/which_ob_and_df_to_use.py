@@ -778,7 +778,7 @@ class WhichOBandDFtoUse(object):
                     last_sample_images_time_stamp = _dict_of_this_acquisition_this_config['last_images']['sample']['time_stamp']
 
                     [time_before_selected, time_after_selected] = \
-                        self.get_time_before_and_after_of_this_config(current_config=_dict_of_this_acquisition_this_config)
+                        self.get_time_before_and_after_of_this_config(current_config=this_config_tab_dict)
 
                     # calculate list of ob that are within that time range
                     list_ob_to_keep = []
@@ -799,6 +799,11 @@ class WhichOBandDFtoUse(object):
 
         import pprint
         pprint.pprint(_final_json_dict)
+
+    def normalization_recap(self):
+        """this will show all the config that will be run and if they have the minimum requirements or not,
+        which mean, at least 1 OB"""
+        pass
 
 
 
