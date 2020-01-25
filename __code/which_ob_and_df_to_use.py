@@ -3,6 +3,7 @@ import collections
 import numpy as np
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
+from enum import Enum
 
 import ipywe.fileselector
 
@@ -10,56 +11,56 @@ from __code import file_handler
 from __code import metadata_handler
 from __code import time_utility
 
-# PV_EXPOSURE_TIME = 65027
-# PV_DETECTOR_MANUFACTURER = 65026
-# PV_APERTURE_HR = 65068
-# PV_APERTURE_HL = 65070
-# PV_APERTURE_VT = 65066
-# PV_APERTURE_VB = 65064
+JSON_DEBUGGING = True
+
+
+class MetadataName(Enum):
+    EXPOSURE_TIME = 65027
+    DETECTOR_MANUFACTURER = 65026
+    APERTURE_HR = 65068
+    APERTURE_HL = 65070
+    APERTURE_VT = 65066
+    APERTURE_VB = 65064
+
+    def __str__(self):
+        return self.value
+
+# METADATA_KEYS = [EXPOSURE_TIME, APERTURE_HR, APERTURE_HL, APERTURE_VT, APERTURE_VB]
+
+# METADATA_KEYS = {'ob': [EXPOSURE_TIME, DETECTOR_MANUFACTURER, APERTURE_HR, APERTURE_HL, APERTURE_VT,
+#                         APERTURE_VB],
+#                  'df': [EXPOSURE_TIME, DETECTOR_MANUFACTURER],
+#                  'all': [DETECTOR_MANUFACTURER, EXPOSURE_TIME, APERTURE_HR, APERTURE_HL, APERTURE_VT,
+#                          APERTURE_VB]}
+
+METADATA_KEYS = {'ob': [MetadataName.EXPOSURE_TIME,
+                        MetadataName.DETECTOR_MANUFACTURER,
+                        MetadataName.APERTURE_HR,
+                        MetadataName.APERTURE_HL,
+                        MetadataName.APERTURE_VT,
+                        MetadataName.APERTURE_VB],
+                 'df': [MetadataName.EXPOSURE_TIME,
+                        MetadataName.DETECTOR_MANUFACTURER],
+                 'all': [MetadataName.EXPOSURE_TIME,
+                        MetadataName.DETECTOR_MANUFACTURER,
+                        MetadataName.APERTURE_HR,
+                        MetadataName.APERTURE_HL,
+                        MetadataName.APERTURE_VT,
+                        MetadataName.APERTURE_VB]}
+
 
 class MetadataName:
-    PV_EXPOSURE_TIME = 65027
-    PV_DETECTOR_MANUFACTURER = 65026
-    PV_APERTURE_HR = 65068
-    PV_APERTURE_HL = 65070
-    PV_APERTURE_VT = 65066
-    PV_APERTURE_VB = 65064
+    EXPOSURE_TIME = 65027
+    DETECTOR_MANUFACTURER = 65026
+    APERTURE_HR = 65068
+    APERTURE_HL = 65070
+    APERTURE_VT = 65066
+    APERTURE_VB = 65064
 
-# METADATA_KEYS = [PV_EXPOSURE_TIME, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT, PV_APERTURE_VB]
-
-# METADATA_KEYS = {'ob': [PV_EXPOSURE_TIME, PV_DETECTOR_MANUFACTURER, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT,
-#                         PV_APERTURE_VB],
-#                  'df': [PV_EXPOSURE_TIME, PV_DETECTOR_MANUFACTURER],
-#                  'all': [PV_DETECTOR_MANUFACTURER, PV_EXPOSURE_TIME, PV_APERTURE_HR, PV_APERTURE_HL, PV_APERTURE_VT,
-#                          PV_APERTURE_VB]}
-
-METADATA_KEYS = {'ob': [MetadataName.PV_EXPOSURE_TIME,
-                        MetadataName.PV_DETECTOR_MANUFACTURER,
-                        MetadataName.PV_APERTURE_HR,
-                        MetadataName.PV_APERTURE_HL,
-                        MetadataName.PV_APERTURE_VT,
-                        MetadataName.PV_APERTURE_VB],
-                 'df': [MetadataName.PV_EXPOSURE_TIME,
-                        MetadataName.PV_DETECTOR_MANUFACTURER],
-                 'all': [MetadataName.PV_EXPOSURE_TIME,
-                        MetadataName.PV_DETECTOR_MANUFACTURER,
-                        MetadataName.PV_APERTURE_HR,
-                        MetadataName.PV_APERTURE_HL,
-                        MetadataName.PV_APERTURE_VT,
-                        MetadataName.PV_APERTURE_VB]}
 
 MAX_DF_COUNTS_ALLOWED = 900
 METADATA_ERROR_ALLOWED = 1
 LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
-
-
-class MetadataName:
-    PV_EXPOSURE_TIME = 65027
-    PV_DETECTOR_MANUFACTURER = 65026
-    PV_APERTURE_HR = 65068
-    PV_APERTURE_HL = 65070
-    PV_APERTURE_VT = 65066
-    PV_APERTURE_VB = 65064
 
 
 class WhichOBandDFtoUse(object):
@@ -151,14 +152,17 @@ class WhichOBandDFtoUse(object):
     def match_files(self):
         """This is where the files will be associated with their respective OB, DF by using the metadata"""
 
-        self.create_master_sample_dict()
+        if not JSON_DEBUGGING:
+            self.create_master_sample_dict()
+
         self.match_ob()
         self.match_df()
 
-        # for debugging only, exporting the json
-        # import json
-        # with open('/Users/j35/Desktop/which_ob_and_df_to_use.json', 'w') as outfile:
-        #     json.dump(self.final_full_master_dict, outfile)
+        if JSON_DEBUGGING:
+            # for debugging only, exporting the json
+            import json
+            with open('/Users/j35/Desktop/which_ob_and_df_to_use.json', 'w') as outfile:
+                json.dump(self.final_full_master_dict, outfile)
 
     def match_ob(self):
         """we will go through all the ob and associate them with the right sample based on
@@ -168,13 +172,13 @@ class WhichOBandDFtoUse(object):
         """
         list_ob_dict = self.ob_metadata_dict
         final_full_master_dict = self.final_full_master_dict
-        list_of_sample_aqquisition = final_full_master_dict.keys()
+        list_of_sample_acquisition = final_full_master_dict.keys()
 
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_ob_instrument_metadata)
-            _acquisition_time = _all_ob_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]
-            if _acquisition_time in list_of_sample_aqquisition:
+            _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
+            if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
                     if WhichOBandDFtoUse.all_metadata_match(_sample_metadata_infos,
@@ -197,7 +201,7 @@ class WhichOBandDFtoUse(object):
         for _index_df in list_df_dict.keys():
             _all_df_instrument_metadata = self.get_instrument_metadata_only(list_df_dict[_index_df])
             _df_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_df_instrument_metadata)
-            _acquisition_time = _all_df_instrument_metadata[MetadataName.PV_EXPOSURE_TIME]
+            _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
@@ -220,7 +224,8 @@ class WhichOBandDFtoUse(object):
 
             _dict_file_index = sample_metadata_dict[_file_index]
             _sample_file = _dict_file_index['filename']
-            _acquisition_time = _dict_file_index[MetadataName.PV_EXPOSURE_TIME]
+
+            _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME]['value']
             _instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_dict_file_index)
             _sample_time_stamp = _dict_file_index['time_stamp']
 
@@ -356,7 +361,7 @@ class WhichOBandDFtoUse(object):
             current_acquisition_dict = _final_full_master_dict[_acquisition]
             for _config in current_acquisition_dict.keys():
                 current_acquisition_config_dict = current_acquisition_dict[_config]
-            
+
             first_sample_image = current_acquisition_config_dict['first_images']['sample']
             first_ob_image = current_acquisition_config_dict['first_images']['ob']
             delta_time_before = first_sample_image['time_stamp'] - first_ob_image['time_stamp']
@@ -366,7 +371,7 @@ class WhichOBandDFtoUse(object):
             last_ob_image = current_acquisition_config_dict['last_images']['ob']
             delta_time_after = last_ob_image['time_stamp'] - last_sample_image['time_stamp']
             _time_range_s_after = delta_time_after if delta_time_after > 0 else 0
-            
+
             _final_full_master_dict[_acquisition][_config]['time_range_s']['before'] = _time_range_s_before
             _final_full_master_dict[_acquisition][_config]['time_range_s']['after'] = _time_range_s_after
 
@@ -380,12 +385,16 @@ class WhichOBandDFtoUse(object):
             _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
 
             _config_tab = widgets.Tab()
-            _config_tab_dict[_acquisition_index] = _config_tab
+            _current_acquisition_tab_widgets_id = {'config_tab_id': _config_tab}
             for _index, _config in enumerate(_dict_of_this_acquisition.keys()):
                 _dict_config = _dict_of_this_acquisition[_config]
-                _layout = self.get_full_layout_for_this_config(_dict_config)
+                _dict = self.get_full_layout_for_this_config(_dict_config)
+                _layout = _dict['verti_layout']
+                _config_widgets_id_dict = _dict['config_widgets_id_dict']
                 _config_tab.children += (_layout,)
                 _config_tab.set_title(_index, _config)
+                _current_acquisition_tab_widgets_id[_index] = _config_widgets_id_dict
+            _config_tab_dict[_acquisition_index] = _current_acquisition_tab_widgets_id
 
             _acquisition_tabs.children += (_config_tab,)  # add all the config tab to top acquisition tab
             _acquisition_tabs.set_title(_acquisition_index, "Acquisition: {}s".format(_acquisition))
@@ -396,18 +405,72 @@ class WhichOBandDFtoUse(object):
         self.acquisition_tab = _acquisition_tabs
         self.config_tab_dict = _config_tab_dict
 
+    def get_max_time_elapse_before_experiment(self):
+        # this will use the first sample image taken, the first OB image taken and will calculate that
+        # difference. If the OB was taken after the first image, time will be 0
+
+        # retrieve acquisition and config values
+        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
+        config_key = self.get_active_tab_config_key()  # ex: 'config0'
+
+        # retrieve list of ob and df for this config for this acquisition
+        final_full_master_dict = self.final_full_master_dict
+        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
+
+        # retrieve first and last sample file for this config and for this acquisition
+        first_sample_image_time_stamp = dict_for_this_config['first_images']['sample']['time_stamp']
+        first_ob = dict_for_this_config['first_images']['ob']['time_stamp']
+
+        if first_ob > first_sample_image_time_stamp:
+            return 0
+        else:
+            return first_sample_image_time_stamp - first_ob
+
+    def get_max_time_elapse_after_experiment(self):
+        # this will use the last sample image taken, the last OB image taken and will calculate that
+        # difference. If the last OB was taken before the last image, time will be 0
+
+        # retrieve acquisition and config values
+        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
+        config_key = self.get_active_tab_config_key()  # ex: 'config0'
+
+        # retrieve list of ob and df for this config for this acquisition
+        final_full_master_dict = self.final_full_master_dict
+        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
+
+        # retrieve first and last sample file for this config and for this acquisition
+        last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
+        last_ob = dict_for_this_config['last_images']['ob']['time_stamp']
+
+        if last_ob < last_sample_images_time_stamp:
+            return 0
+        else:
+            return last_sample_images_time_stamp - last_ob
+
     def get_full_layout_for_this_config(self, dict_config):
 
-        # use custom time range
+        config_widgets_id_dict = {}
+
+        def _make_list_basename_file(list_name='list_sample'):
+            return [os.path.basename(_entry['filename']) for _entry in dict_config[list_name]]
+
+        list_sample = _make_list_basename_file(list_name='list_sample')
+        list_ob = _make_list_basename_file(list_name='list_ob')
+        list_df = _make_list_basename_file(list_name='list_df')
+
+        # use custom time range check box
         check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
                                                      value=False,
                                                      layout=widgets.Layout(width="35%"))
-        data = "this is my data"
+        config_widgets_id_dict['use_custom_time_range_checkbox'] = check_box_user_time_range
+
         check_box_user_time_range.observe(self.update_config_widgets, names='value')
 
+        [max_time_elapse_before_experiment, max_time_elapse_after_experiment] = self.calculate_max_time_before_and_after_exp_for_this_config(dict_config)
+
         hori_layout1 = widgets.HBox([check_box_user_time_range,
-                                    widgets.FloatSlider(value=-10,
-                                                        min=-10,
+                                    widgets.FloatSlider(value=-max_time_elapse_before_experiment,
+                                                        min=-max_time_elapse_before_experiment,
                                                         max=0,
                                                         step=0.1,
                                                         readout=False,
@@ -416,20 +479,23 @@ class WhichOBandDFtoUse(object):
                                     widgets.Label(" <<< EXPERIMENT >>> ",
                                                   layout=widgets.Layout(width="20%",
                                                                         visibility='hidden')),
-                                    widgets.FloatSlider(value=20,
+                                    widgets.FloatSlider(value=max_time_elapse_before_experiment,
                                                         min=0,
-                                                        max=20,
+                                                        max=max_time_elapse_after_experiment,
                                                         step=0.1,
                                                         readout=False,
                                                         layout=widgets.Layout(width="30%",
                                                                               visibility='hidden')),
-                                    ])
+                                     ])
         self.hori_layout1 = hori_layout1
         self.time_before_slider = hori_layout1.children[1]
         self.time_after_slider = hori_layout1.children[3]
         self.experiment_label = hori_layout1.children[2]
-        self.time_after_slider.observe(self.update_time_range_message, names='value')
-        self.time_before_slider.observe(self.update_time_range_message, names='value')
+        self.time_after_slider.observe(self.update_time_range_event, names='value')
+        self.time_before_slider.observe(self.update_time_range_event, names='value')
+        config_widgets_id_dict['time_slider_before_experiment'] = hori_layout1.children[1]
+        config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
+        config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
 
         # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",
@@ -438,35 +504,28 @@ class WhichOBandDFtoUse(object):
                                                    layout=widgets.Layout(width="80%"))])
         self.hori_layout2 = hori_layout2
         self.time_before_and_after_message = hori_layout2.children[1]
+        config_widgets_id_dict['time_slider_before_message'] = hori_layout2.children[1]
 
         # table of metadata
-        table_label = widgets.Label("List of Metadata used to match data set",
-                                    layout=widgets.Layout(width='30%'))
-        table = widgets.HTML(value="<table style='width:50%;background-color:#eee'>"
-                                   "<tr><th>Name</th><th>Value</th></tr>"
-                                   "<tr><td>cell1</td><td>cell2</td></tr>"
-                                   "<tr><td>cell3</td><td>cell4</td></tr>"
-                                   "</table>")
-
-        self.update_time_range_message(None)
+        [metadata_table_label, metadata_table] = self.populate_metadata_table(dict_config)
 
         select_width = '300px'
         sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs",
                                            layout=widgets.Layout(width='100%')),
-                             widgets.Select(options=['a', 'b', 'c'],
+                             widgets.Select(options=list_sample,
                                             layout=widgets.Layout(width=select_width,
                                                                   height='300px'))],
                             layout=widgets.Layout(width="360px"))
         # self.list_of_runs_ui = box0.children[1]
         ob_list_of_runs = widgets.VBox([widgets.Label("List of OB",
                                                           layout=widgets.Layout(width='100%')),
-                                            widgets.Select(options=['a', 'b', 'c'],
+                                            widgets.Select(options=list_ob,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="360px"))
         df_list_of_runs = widgets.VBox([widgets.Label("List of DF",
                                                           layout=widgets.Layout(width='100%')),
-                                            widgets.Select(options=['a', 'b', 'c'],
+                                            widgets.Select(options=list_df,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="360px"))
@@ -474,46 +533,200 @@ class WhichOBandDFtoUse(object):
         list_runs_layout = widgets.HBox([sample_list_of_runs,
                                          ob_list_of_runs,
                                          df_list_of_runs])
+        config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
+        config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
+        config_widgets_id_dict['list_of_df'] = df_list_of_runs.children[1]
 
         verti_layout = widgets.VBox([hori_layout1,
                                      hori_layout2,
-                                     table_label,
-                                     table,
+                                     metadata_table_label,
+                                     metadata_table,
                                      list_runs_layout])
 
-        return verti_layout
+        return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
+
+    def calculate_max_time_before_and_after_exp_for_this_config(self, dict_config):
+
+        max_time_before = 0
+
+        first_sample_image_time_stamp = dict_config['first_images']['sample']['time_stamp']
+        first_ob_image_time_stamp = dict_config['first_images']['ob']['time_stamp']
+
+        if first_ob_image_time_stamp > first_sample_image_time_stamp:
+            max_time_before = 0
+        else:
+            max_time_before = (first_sample_image_time_stamp - first_ob_image_time_stamp)
+
+        max_time_after = 0
+
+        last_sample_image_time_stamp = dict_config['last_images']['sample']['time_stamp']
+        last_ob_image_time_stamp = dict_config['last_images']['ob']['time_stamp']
+
+        if last_ob_image_time_stamp < last_sample_image_time_stamp:
+            max_time_after = 0
+        else:
+            max_time_after = last_ob_image_time_stamp - last_sample_image_time_stamp
+
+        return [max_time_before, max_time_after]
+
+    def populate_metadata_table(self, current_config):
+        metadata_config = current_config['metadata_infos']
+        table_label = widgets.Label("List of Metadata used to match data set",
+                                    layout=widgets.Layout(width='30%'))
+
+        table_value = "<table style='width:50%;background-color:#eee'>"
+        for _key, _value in metadata_config.items():
+            table_value += "<tr><th>{}</th><th>{}</th></tr>".format(_value['name'], _value['value'])
+        table_value += "</table>"
+
+        table = widgets.HTML(value=table_value)
+
+        return [table_label, table]
 
     def update_config_widgets(self, state):
 
-
-
         if state['new'] is False:
-            # exp_label = ""
+            # use all files
             message = None
             visibility = 'hidden'
         else:
-            # exp_label = " <<< EXPERIMENT >>> "
+            # user defines ranges
             message = True
             visibility = 'visible'
 
-        # self.experiment_label.value = exp_label
-        self.time_before_slider.layout.visibility = visibility
-        self.time_after_slider.layout.visibility = visibility
-        self.experiment_label.layout.visibility = visibility
-        # self.time_before_slider.disabled = not state['new']
-        # self.time_after_slider.disabled = not state['new']
-        self.update_time_range_message(message)
+        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
+        time_before_selected_ui.layout.visibility = visibility
+        time_after_selected_ui.layout.visibility = visibility
+        experiment_label_ui = self.get_experiment_label_ui_of_this_config()
+        experiment_label_ui.layout.visibility = visibility
+
+        self.show_or_not_before_and_after_sliders()
+        self.update_time_range_event(message)
+
+    def show_or_not_before_and_after_sliders(self):
+        current_config = self.get_current_config_dict()
+        [max_time_elapse_before_experiment, max_time_elapse_after_experiment] = \
+            self.calculate_max_time_before_and_after_exp_for_this_config(current_config)
+
+        slider_before_visibility = 'visible' if max_time_elapse_before_experiment > 0 else 'hidden'
+        slider_after_visibility = 'visible' if max_time_elapse_after_experiment > 0 else 'hidden'
+
+        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
+        time_before_selected_ui.layout.visibility = slider_before_visibility
+        time_after_selected_ui.layout.visibility = slider_after_visibility
+
+    def get_active_tabs(self):
+        active_acquisition_tab = self.acquisition_tab.selected_index
+        config_tab_dict = self.config_tab_dict[active_acquisition_tab]
+        active_config_tab = config_tab_dict['config_tab_id'].selected_index
+        return [active_acquisition_tab, active_config_tab]
+
+    def get_active_tab_acquisition_key(self):
+        active_acquisition_tab_index = self.acquisition_tab.selected_index
+        title = self.acquisition_tab.get_title(active_acquisition_tab_index)
+        [_, time_s] = title.split(": ")
+        acquisition_key = time_s[:-1]
+        return acquisition_key
+
+    def get_active_tab_config_key(self):
+        [active_acquisition, _] = self.get_active_tabs()
+        all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
+        current_config_tab = all_config_tab_of_acquisition['config_tab_id']
+        current_config_tab_index = current_config_tab.selected_index
+        return current_config_tab.get_title(current_config_tab_index)
+
+    def get_time_before_and_after_of_this_config(self, current_config=None):
+        [time_before_selected_ui, time_after_selected_ui] = \
+            self.get_time_before_and_after_ui_of_this_config(current_config=current_config)
+        return [time_before_selected_ui.value, time_after_selected_ui.value]
+
+    def get_time_before_and_after_ui_of_this_config(self, current_config=None):
+        if current_config is None:
+            current_config = self.get_current_config_of_widgets_id()
+        return [current_config['time_slider_before_experiment'], current_config['time_slider_after_experiment']]
+
+    def get_time_before_and_after_message_ui_of_this_config(self):
+        current_config = self.get_current_config_of_widgets_id()
+        return current_config['time_slider_before_message']
+
+    def get_experiment_label_ui_of_this_config(self):
+        current_config = self.get_current_config_of_widgets_id()
+        return current_config['experiment_label']
+
+    def is_custom_time_range_checked_for_this_config(self):
+        current_config = self.get_current_config_of_widgets_id()
+        return current_config['use_custom_time_range_checkbox'].value
+
+    def get_current_config_dict(self):
+        active_acquisition = self.get_active_tab_acquisition_key()
+        active_config = self.get_active_tab_config_key()
+        final_full_master_dict = self.final_full_master_dict
+        current_config = final_full_master_dict[active_acquisition][active_config]
+        return current_config
+
+    def get_current_config_of_widgets_id(self):
+        [active_acquisition, active_config] = self.get_active_tabs()
+        all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
+        current_config_of_widgets_id = all_config_tab_of_acquisition[active_config]
+        return current_config_of_widgets_id
+
+    def update_time_range_event(self, value):
+        # reach when user interact with the sliders in the config tab
+        self.update_time_range_message(value)
+        self.update_list_of_files_in_widgets_using_new_time_range()
+
+    def update_list_of_files_in_widgets_using_new_time_range(self):
+
+        # retrieve acquisition and config values
+        acquisition_key = self.get_active_tab_acquisition_key()  # ex: '55.0'
+        config_key = self.get_active_tab_config_key()  # ex: 'config0'
+
+        # retrieve list of ob and df for this config for this acquisition
+        final_full_master_dict = self.final_full_master_dict
+        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
+        list_ob = dict_for_this_config['list_ob']
+
+        # no need to do anything more if user wants to use all the files
+        if not self.is_custom_time_range_checked_for_this_config():
+            list_ob_to_keep = [_file['filename'] for _file in list_ob]
+
+        else:
+
+            # retrieve first and last sample file for this config and for this acquisition
+            first_sample_image_time_stamp = dict_for_this_config['first_images']['sample']['time_stamp']
+            last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
+
+            # retrieve time before and after selected
+            [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
+
+            # calculate list of ob that are within that time range
+            list_ob_to_keep = []
+            for _ob_file in list_ob:
+                _ob_time_stamp = _ob_file['time_stamp']
+                if (_ob_time_stamp < first_sample_image_time_stamp) and \
+                        ((first_sample_image_time_stamp-_ob_time_stamp) <= np.abs(time_before_selected)):
+                    list_ob_to_keep.append(_ob_file['filename'])
+                elif (_ob_time_stamp > last_sample_images_time_stamp) and \
+                        ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
+                    list_ob_to_keep.append(_ob_file['filename'])
+
+        self.update_list_of_ob_for_current_config_tab(list_ob=list_ob_to_keep)
+
+    def update_list_of_ob_for_current_config_tab(self, list_ob=[]):
+        [active_acquisition, active_config] = self.get_active_tabs()
+        short_version_list_ob = WhichOBandDFtoUse.keep_basename_only(list_files=list_ob)
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = short_version_list_ob
 
     def update_time_range_message(self, value):
-
         if value is None:
             _message = f"Use <b><font color='red'>All </b> " \
                        f"<font color='black'>OBs and DFs " \
                        f"matching the samples images</font>"
         else:
 
-            time_before_selected = self.time_before_slider.value
-            time_after_selected = self.time_after_slider.value
+            [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
+
+            time_before_selected = np.abs(time_before_selected)
 
             def _format_time(_time_s):
                 if _time_s < 60:
@@ -528,12 +741,76 @@ class WhichOBandDFtoUse(object):
             str_time_before = _format_time(time_before_selected)
             str_time_after = _format_time(time_after_selected)
 
-            _message = f"Use OB and DF taken up to <b><font color='red'>{str_time_before}</b> " \
+            _message = f"Use OB taken up to <b><font color='red'>{str_time_before}</b> " \
                        f"<font color='black'>before and up to </font>" \
                        f"<b><font color='red'>{str_time_after}</b> " \
                        f"<font color='black'>after experiment!</font>"
 
-        self.time_before_and_after_message.value = _message
+        time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
+        time_before_and_after_message_ui.value = _message
+
+    def create_final_json(self):
+        # go through each of the acquisition tab and into each of the config to create the list of sample, ob and df
+        # to use
+        _final_ful_master_dict = self.final_full_master_dict
+        _config_tab_dict = self.config_tab_dict
+        _final_json_dict = {}
+        for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
+
+            _final_json_for_this_acquisition = {}
+            _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
+            _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
+            for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
+                this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
+
+                _dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
+
+                list_sample = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_sample']]
+                list_df = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_df']]
+
+                list_ob = _dict_of_this_acquisition_this_config['list_ob']
+                use_custom_time_range_checkbox_id = this_config_tab_dict["use_custom_time_range_checkbox"]
+                if not use_custom_time_range_checkbox_id.value:
+                    list_ob_to_keep = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_ob']]
+                else:
+                    # retrieve first and last sample file for this config and for this acquisition
+                    first_sample_image_time_stamp = _dict_of_this_acquisition_this_config['first_images']['sample']['time_stamp']
+                    last_sample_images_time_stamp = _dict_of_this_acquisition_this_config['last_images']['sample']['time_stamp']
+
+                    [time_before_selected, time_after_selected] = \
+                        self.get_time_before_and_after_of_this_config(current_config=this_config_tab_dict)
+
+                    # calculate list of ob that are within that time range
+                    list_ob_to_keep = []
+                    for _ob_file in list_ob:
+                        _ob_time_stamp = _ob_file['time_stamp']
+                        if (_ob_time_stamp < first_sample_image_time_stamp) and \
+                                ((first_sample_image_time_stamp - _ob_time_stamp) <= np.abs(time_before_selected)):
+                            list_ob_to_keep.append(_ob_file['filename'])
+                        elif (_ob_time_stamp > last_sample_images_time_stamp) and \
+                                ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
+                            list_ob_to_keep.append(_ob_file['filename'])
+
+                _final_json_for_this_acquisition[_config] = {'list_sample': list_sample,
+                                                             'list_df': list_df,
+                                                             'list_ob': list_ob_to_keep}
+
+            _final_json_dict[_acquisition] = _final_json_for_this_acquisition
+
+        import pprint
+        pprint.pprint(_final_json_dict)
+
+    def normalization_recap(self):
+        """this will show all the config that will be run and if they have the minimum requirements or not,
+        which mean, at least 1 OB"""
+        pass
+
+
+
+    @staticmethod
+    def keep_basename_only(list_files=[]):
+        basename_only = [os.path.basename(_file) for _file in list_files]
+        return basename_only
 
     @staticmethod
     def get_instrument_metadata_only(metadata_dict):
@@ -547,10 +824,10 @@ class WhichOBandDFtoUse(object):
     def all_metadata_match(metadata_1={}, metadata_2={}):
         for _key in metadata_1.keys():
             try:
-                if np.abs(np.float(metadata_1[_key] - np.float(metadata_2[_key]))) > METADATA_ERROR_ALLOWED:
+                if np.abs(np.float(metadata_1[_key]['value'] - np.float(metadata_2[_key]['value']))) > METADATA_ERROR_ALLOWED:
                     return False
             except ValueError:
-                if metadata_1[_key] != metadata_2[_key]:
+                if metadata_1[_key]['value'] != metadata_2[_key]['value']:
                     return False
         return True
 
@@ -559,7 +836,7 @@ class WhichOBandDFtoUse(object):
         """create a dictionary of all the instrument metadata without the acquisition time"""
         isolated_dictionary = {}
         for _key in dictionary.keys():
-            if _key == MetadataName.PV_EXPOSURE_TIME:
+            if _key == MetadataName.EXPOSURE_TIME:
                 continue
             isolated_dictionary[_key] = dictionary[_key]
         return isolated_dictionary
@@ -602,9 +879,9 @@ class WhichOBandDFtoUse(object):
     @staticmethod
     def retrieve_metadata(list_of_files=[], display_infos=True):
         """
-        dict = {'file1': {'metadata1': 'value',
-                          'metadata2': 'value',
-                          'metadata3': 'value',
+        dict = {'file1': {'metadata1_key': {'value': value, 'name': name},
+                          'metadata2_key': {'value': value, 'name': name},
+                          'metadata3_key': {'value': value, 'name': name},
                           ...
                           },
                 ...
@@ -638,7 +915,8 @@ class WhichOBandDFtoUse(object):
         """
         list_metadata = METADATA_KEYS['all']
         _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
-                                                                   list_metadata=list_metadata)
+                                                                   list_metadata=list_metadata,
+                                                                   using_enum_object=True)
 
         for _file_key in _dict.keys():
             _file_dict = {}
@@ -651,9 +929,9 @@ class WhichOBandDFtoUse(object):
                     except ValueError:
                         _value = split_raw_value[1]
                     finally:
-                        _file_dict[_pv] = _value
+                        _file_dict[_pv.value] = {'value': _value, 'name': _pv.name}
                 else:
-                    _file_dict[_pv] = None
+                    _file_dict[_pv.value] = {}
             _dict[_file_key] = _file_dict
         return _dict
 
