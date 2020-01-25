@@ -128,6 +128,7 @@ class CombineImagesNByN(object):
         """combine images using algorithm provided"""
 
         dict_list_files = self.create_list_of_files_to_merge()
+        nbr_of_files_to_create = len(dict_list_files.keys())
         algorithm = self.get_merging_algorithm()
 
         horizontal_layout = widgets.HBox([widgets.Label("Merging Progress",
@@ -148,7 +149,9 @@ class CombineImagesNByN(object):
             combined_data = self.__merging_algorithm(algorithm, _data)
             del o_load
 
-            output_file_name = self.__create_merged_file_name(list_files_names=list_files, index=_key)
+            output_file_name = self.__create_merged_file_name(bin_value=self.bin_value,
+                                                              list_files_names=list_files,
+                                                              index=_key)
             o_save = Normalization()
             o_save.load(data=combined_data)
             o_save.data['sample']['metadata'] = metadata
@@ -160,25 +163,11 @@ class CombineImagesNByN(object):
 
         global_slider.close()
 
-        # #_new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
-        # _new_name = self.default_filename_ui.value + self.ext_ui.value
-        # output_file_name = os.path.join(output_folder, _new_name)
-        #
-        # file_handler.save_data(data=combined_data, filename=output_file_name)
-        #
-        # w1.value = 2
-        #
-        # display(HTML('<span style="font-size: 20px; color:blue">File created: ' + \
-        #              os.path.basename(output_file_name) + '</span>'))
-        # display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + \
-        #              output_folder + '</span>'))
+        display(HTML('<span style="font-size: 20px; color:blue">' + nbr_of_files_to_create +
+                     ' files have been created in ' + output_folder + '</span>'))
 
-    def __create_merged_file_name(self, list_files_names=[], index=0):
+    def __create_merged_file_name(self, list_files_names=[], bin_value=2, index=0):
         """Create the new base name using a combine name of all the input file
-
-        :param list_files_names: ['/Users/j35/image001.fits','/Users/j35/iamge002.fits']
-        :return:
-            'image001_image002.fits'
         """
         # ext = ''
         # list_base_name = []
@@ -188,7 +177,7 @@ class CombineImagesNByN(object):
         #     list_base_name.append(_name)
         #
         # return ('_'.join(list_base_name), ext)
-        return 'test_file_{}.tiff'.format(index)
+        return '{}_files_combined_{}.tiff'.format(bin_value, index)
 
     def __add(self, data_array):
         return np.sum(data_array, axis=0)
