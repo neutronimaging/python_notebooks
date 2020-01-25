@@ -73,13 +73,15 @@ class CombineImagesNByN(object):
             nbr_images = self._get_number_of_files_will_be_created(bin_value=bin_value)
         else:
             nbr_images = self._get_number_of_files_will_be_created()
-        message = "You are about to create {} files".format(nbr_images)
+        message = "You are about to create {} files out of {} files selected.".format(nbr_images,
+                                                                                      len(self.list_files))
         self.bin_size_label.value = message
 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
                                                                                      'combined image ...',
                                                                          start_dir=self.working_dir,
+                                                                         next=self.merging,
                                                                          type='directory')
 
         self.output_folder_widget.show()
@@ -93,85 +95,100 @@ class CombineImagesNByN(object):
         else:
             return _algo
 
-    def define_output_filename(self):
-        list_files = self.files_list_widget.selected
-        short_list_files = [os.path.basename(_file) for _file in list_files]
-
-        merging_algo = self.__get_formated_merging_algo_name()
-        [default_new_name, ext] = self.__create_merged_file_name(list_files_names=short_list_files)
-
-        top_label = widgets.Label("You have the option to change the default output file name")
-
-        box = widgets.HBox([widgets.Label("Default File Name",
-                                          layout=widgets.Layout(width='20%')),
-                            widgets.Text(default_new_name,
-                                         layout=widgets.Layout(width='60%')),
-                            widgets.Label("_{}{}".format(merging_algo, ext),
-                                          layout=widgets.Layout(width='20%')),
-                            ])
-        self.default_filename_ui = box.children[1]
-        self.ext_ui = box.children[2]
-        vertical_box = widgets.VBox([top_label, box])
-        display(vertical_box)
-
-    def merging(self):
-        """combine images using algorithm provided"""
-
-        list_files = self.files_list_widget.selected
+    def create_list_of_files_to_merge(self):
+        bin_value = np.int(self.bin_size_ui.value)
+        self.bin_value = bin_value
+        list_files = self.list_files
         nbr_files = len(list_files)
 
+        dict_list_files = {}
+        global_index = 0
+        for _index in np.arange(0, nbr_files, bin_value):
+            # make sure we don't go over board
+            right_threshold = _index + bin_value
+            if right_threshold >= nbr_files:
+                break
+            dict_list_files[global_index] = list_files[_index: _index+bin_value]
+            global_index += 1
+
+        self.dict_list_files = dict_list_files
+        return dict_list_files
+
+    def get_merging_algorithm(self):
         # get merging algorithm
         merging_algo = self.combine_method.value
         algorithm = self.__add
-        if merging_algo =='arithmetic mean':
+        if merging_algo == 'arithmetic mean':
             algorithm = self.__arithmetic_mean
         elif merging_algo == 'geometric mean':
             algorithm = self.__geo_mean
+        return algorithm
 
-        # get output folder
-        output_folder = os.path.abspath(self.output_folder_widget.selected)
+    def merging(self, output_folder):
+        """combine images using algorithm provided"""
 
-        o_load = Normalization()
-        o_load.load(file=list_files, notebook=True)
-        _data = o_load.data['sample']['data']
+        dict_list_files = self.create_list_of_files_to_merge()
+        algorithm = self.get_merging_algorithm()
 
-        merging_ui = widgets.HBox([widgets.Label("Merging Progress",
-                                                 layout=widgets.Layout(width='20%')),
-                                   widgets.IntProgress(max=2)])
-        display(merging_ui)
-        w1 = merging_ui.children[1]
+        horizontal_layout = widgets.HBox([widgets.Label("Merging Progress",
+                                                        layout=widgets.Layout(width='20%')),
+                                          widgets.IntProgress(max=len(dict_list_files.keys()),
+                                                              value=0,
+                                                              layout=widgets.Layout(width='50%'))])
+        global_slider = horizontal_layout.children[1]
+        display(horizontal_layout)
 
-        combined_data = self.__merging_algorithm(algorithm, _data)
-        w1.value = 1
+        for _key in dict_list_files.keys():
+            list_files = dict_list_files[_key]
+            o_load = Normalization()
+            o_load.load(file=list_files, notebook=False)
+            _data = o_load.data['sample']['data']
+            metadata = o_load.data['sample']['metadata']
 
-        #_new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
-        _new_name = self.default_filename_ui.value + self.ext_ui.value
-        output_file_name = os.path.join(output_folder, _new_name)
+            combined_data = self.__merging_algorithm(algorithm, _data)
+            del o_load
 
-        file_handler.save_data(data=combined_data, filename=output_file_name)
+            output_file_name = self.__create_merged_file_name(list_files_names=list_files, index=_key)
+            o_save = Normalization()
+            o_save.load(data=combined_data)
+            o_save.data['sample']['metadata'] = metadata
+            o_save.data['sample']['file_name'] = [output_file_name]
+            o_save.export(folder=output_folder, data_type='sample')
+            del o_save
 
-        w1.value = 2
+            global_slider.value += 1
 
-        display(HTML('<span style="font-size: 20px; color:blue">File created: ' + \
-                     os.path.basename(output_file_name) + '</span>'))
-        display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + \
-                     output_folder + '</span>'))
+        global_slider.close()
 
-    def __create_merged_file_name(self, list_files_names=[]):
+        # #_new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
+        # _new_name = self.default_filename_ui.value + self.ext_ui.value
+        # output_file_name = os.path.join(output_folder, _new_name)
+        #
+        # file_handler.save_data(data=combined_data, filename=output_file_name)
+        #
+        # w1.value = 2
+        #
+        # display(HTML('<span style="font-size: 20px; color:blue">File created: ' + \
+        #              os.path.basename(output_file_name) + '</span>'))
+        # display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + \
+        #              output_folder + '</span>'))
+
+    def __create_merged_file_name(self, list_files_names=[], index=0):
         """Create the new base name using a combine name of all the input file
 
         :param list_files_names: ['/Users/j35/image001.fits','/Users/j35/iamge002.fits']
         :return:
             'image001_image002.fits'
         """
-        ext = ''
-        list_base_name = []
-        for _file in list_files_names:
-            basename = os.path.basename(_file)
-            [_name, ext] = os.path.splitext(basename)
-            list_base_name.append(_name)
-
-        return ('_'.join(list_base_name), ext)
+        # ext = ''
+        # list_base_name = []
+        # for _file in list_files_names:
+        #     basename = os.path.basename(_file)
+        #     [_name, ext] = os.path.splitext(basename)
+        #     list_base_name.append(_name)
+        #
+        # return ('_'.join(list_base_name), ext)
+        return 'test_file_{}.tiff'.format(index)
 
     def __add(self, data_array):
         return np.sum(data_array, axis=0)
