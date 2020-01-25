@@ -163,7 +163,7 @@ class CombineImagesNByN(object):
 
         global_slider.close()
 
-        display(HTML('<span style="font-size: 20px; color:blue">' + nbr_of_files_to_create +
+        display(HTML('<span style="font-size: 20px; color:blue">' + str(nbr_of_files_to_create) +
                      ' files have been created in ' + output_folder + '</span>'))
 
     def __create_merged_file_name(self, list_files_names=[], bin_value=2, index=0):
@@ -177,7 +177,7 @@ class CombineImagesNByN(object):
         #     list_base_name.append(_name)
         #
         # return ('_'.join(list_base_name), ext)
-        return '{}_files_combined_{}.tiff'.format(bin_value, index)
+        return '{}_files_combined_{:03d}.tiff'.format(bin_value, index)
 
     def __add(self, data_array):
         return np.sum(data_array, axis=0)
