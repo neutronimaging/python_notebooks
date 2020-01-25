@@ -797,13 +797,40 @@ class WhichOBandDFtoUse(object):
 
             _final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
-        import pprint
-        pprint.pprint(_final_json_dict)
+        self.final_json_dict = _final_json_for_this_acquisition
+
+        # import pprint
+        # pprint.pprint(_final_json_dict)
 
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,
         which mean, at least 1 OB"""
-        pass
+        final_json = self.final_json_dict
+
+        table = "<table style='width:50%;background-color:#eee'>"
+        table += "<tr><th>Config. name</th><th>Nbr sample</th><th>Nbr OB</th><th>Nbr DF</th><th>Status</th></tr>"
+        for _name_config in final_json.keys():
+            _current_config_dict = final_json[_name_config]
+
+            nbr_ob = len(_current_config_dict['list_ob'])
+            nbr_df = len(_current_config_dict['list_df'])
+            nbr_sample = len(_current_config_dict['list_sample'])
+            table += WhichOBandDFtoUse.populate_normalization_recap_row(config_name=_name_config,
+                                                                        nbr_sample=nbr_sample,
+                                                                        nbr_ob=nbr_ob,
+                                                                        nbr_df=nbr_df)
+
+        table += "</table>"
+        table_ui = widgets.HTML(table)
+        display(table_ui)
+
+
+    @staticmethod
+    def populate_normalization_recap_row(config_name="", nbr_sample=0, nbr_ob=0, nbr_df=0):
+        _row = ""
+        _row = "<tr><th>{}</th><th>{}</th><th>{}</th><th>{}</th></tr>".format(config_name, nbr_sample, nbr_ob, nbr_df)
+        return _row
+
 
 
 
@@ -974,156 +1001,94 @@ class WhichOBandDFtoUse(object):
 
 
 
-    # def select_time_range(self):
+    # def get_list_of_images_in_range(self, time_range_s=1,
+    #                                 timelapse_option="before_or_after",
+    #                                 data_type='ob'):
     #
-    #     self.keep_df_and_ob_with_same_acquisition_time()
-    #     max_time_range = self.calculate_max_time_range_between_images()
-    #     box01 = widgets.HBox([widgets.Label("Time (hours)",
-    #                                         layout=widgets.Layout(width='10%')),
-    #                           widgets.IntSlider(min=1,
-    #                                             max=max_time_range,
-    #                                             value=0,
-    #                                             layout=widgets.Layout(width='50%'))
-    #                          ])
-    #     self.time_slider = box01.children[1]
-    #     self.time_slider.on_trait_change(self.recalculate_files_in_range, name='value')
+    #     if data_type == 'ob':
+    #         data = self.ob_time_stamp_dict
+    #     else:
+    #         data = self.df_time_stamp_dict
     #
-    #     timelapse_options = {'BEFORE or AFTER sample data acquisition': 'before_or_after',
-    #                          'Only BEFORE sample acquisition': 'before',
-    #                          'Only AFTER sample acquisition': 'after'}
-    #     box02 = widgets.HBox([widgets.Label("Select timelapse",
-    #                                         layout=widgets.Layout(width='10%')),
-    #                           widgets.RadioButtons(options=timelapse_options,
-    #                                                layout=widgets.Layout(width="300px"))])
-    #     self.timelapse_selection_widget = box02.children[1]
-    #     self.timelapse_selection_widget.on_trait_change(self.recalculate_files_in_range, name='value')
+    #     first_image_system_time = self.first_image_dict['system_time']
+    #     last_image_system_time = self.last_image_dict['system_time']
     #
-    #     list_of_ob_in_range = self.get_list_of_images_in_range(time_range_s=self.time_slider.value*3600,
-    #                                                            data_type='ob')
-    #     box1 = widgets.VBox([widgets.Label("List of OB Runs in the range",
-    #                                        layout=widgets.Layout(width='100%')),
-    #                          widgets.Select(options=list_of_ob_in_range,
-    #                                         layout=widgets.Layout(width='500px',
-    #                                                               height='300px'))],
-    #                         layout=widgets.Layout(width="520px"))
-    #     self.list_of_ob_in_range_widget = box1.children[1]
+    #     list_filename = data['list_images']
+    #     list_timestamp = data['list_time_stamp']
     #
-    #     list_of_matching_df = self.get_list_of_matching_df()
+    #     # before
+    #     list_index_to_keep = []
+    #     for _index, _time in enumerate(list_timestamp):
     #
-    #     box2 = widgets.VBox([widgets.Label("List of DF",
-    #                                        layout=widgets.Layout(width='100%')),
-    #                          widgets.Select(options=list_of_matching_df,
-    #                                         layout=widgets.Layout(width='500px',
-    #                                                               height='300px'))],
-    #                         layout=widgets.Layout(width="520px"))
-    #     self.list_of_df_in_range_widget = box2.children[1]
+    #         # ob or df was taken after first raw and before last raw data, we keep it
+    #         if (_time > first_image_system_time) and (_time < last_image_system_time):
+    #             list_index_to_keep.append(_index)
+    #             continue
     #
-    #     spacer = "_" * 60
-    #     box3 = widgets.Label(spacer + " R E S U L T " + spacer,
-    #                          layout=widgets.Layout(width="100%"))
+    #         if timelapse_option == 'before':
+    #             if (_time < first_image_system_time) and \
+    #                     (np.abs(first_image_system_time-_time) <= time_range_s):
+    #                 list_index_to_keep.append(_index)
+    #         elif timelapse_option == 'after':
+    #             if (_time > last_image_system_time) and \
+    #                     (np.abs(last_image_system_time-_time) <= time_range_s):
+    #                 list_index_to_keep.append(_index)
+    #         else:
+    #             if ((_time < first_image_system_time) and
+    #                 (np.abs(first_image_system_time - _time) <= time_range_s)) or \
+    #                     ((_time > last_image_system_time) and
+    #                      (np.abs(last_image_system_time - _time) <= time_range_s)):
+    #                 list_index_to_keep.append(_index)
     #
-    #     master_box_12 = widgets.HBox([box1, box2],
-    #                                  layout=widgets.Layout(width="100%"))
-    #     master_box = widgets.VBox([box01, box02, box3, master_box_12])
+    #     return list_filename[list_index_to_keep]
+
+    # def recalculate_files_in_range(self):
+    #     time_range_value = self.time_slider.value
+    #     timelapse = self.timelapse_selection_widget.value
     #
-    #     display(master_box)
+    #     list_ob_in_range = self.get_list_of_images_in_range(time_range_s=time_range_value*3600,
+    #                                                         timelapse_option=timelapse,
+    #                                                         data_type='ob')
+    #     self.list_of_ob_in_range_widget.value = list_ob_in_range
+
+    # def calculate_max_time_range_between_images(self):
+    #     """this method will determine what is the max time difference between the sample data set and
+    #     the ob images
+    #     The algorithm will use the first and last ob and sample data set to find this range
+    #     """
+    #     first_image_system_time = self.first_image_dict['system_time']
+    #     last_image_system_time = self.last_image_dict['system_time']
     #
-    # def keep_df_and_ob_with_same_acquisition_time(self):
-    #     #FIXME
-    #     pass
+    #     _ob_time_stamp_dict = self.ob_time_stamp_dict['list_time_stamp']
+    #     first_and_last_ob_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(_ob_time_stamp_dict)
+    #     first_ob_system_time = first_and_last_ob_system_time['first_stamp']
+    #     last_ob_system_time = first_and_last_ob_system_time['last_stamp']
     #
-    # def get_list_of_matching_df(self):
-    #     #FIXME
-    #     return []
+    #     time_offset_before = 0
+    #     if first_image_system_time > first_ob_system_time:
+    #         time_offset_before = first_image_system_time - first_ob_system_time
+    #
+    #     time_offset_after = 0
+    #     if last_image_system_time < last_ob_system_time:
+    #         time_offset_after = last_ob_system_time - last_image_system_time
+    #
+    #     max_time_range_s = np.max([time_offset_before, time_offset_after])
+    #     max_time_range_hours = time_utility.convert_system_time_into_hours(max_time_range_s)
+    #
+    #     return np.ceil(max_time_range_hours)
 
-    def get_list_of_images_in_range(self, time_range_s=1,
-                                    timelapse_option="before_or_after",
-                                    data_type='ob'):
-
-        if data_type == 'ob':
-            data = self.ob_time_stamp_dict
-        else:
-            data = self.df_time_stamp_dict
-
-        first_image_system_time = self.first_image_dict['system_time']
-        last_image_system_time = self.last_image_dict['system_time']
-
-        list_filename = data['list_images']
-        list_timestamp = data['list_time_stamp']
-
-        # before
-        list_index_to_keep = []
-        for _index, _time in enumerate(list_timestamp):
-
-            # ob or df was taken after first raw and before last raw data, we keep it
-            if (_time > first_image_system_time) and (_time < last_image_system_time):
-                list_index_to_keep.append(_index)
-                continue
-
-            if timelapse_option == 'before':
-                if (_time < first_image_system_time) and \
-                        (np.abs(first_image_system_time-_time) <= time_range_s):
-                    list_index_to_keep.append(_index)
-            elif timelapse_option == 'after':
-                if (_time > last_image_system_time) and \
-                        (np.abs(last_image_system_time-_time) <= time_range_s):
-                    list_index_to_keep.append(_index)
-            else:
-                if ((_time < first_image_system_time) and
-                    (np.abs(first_image_system_time - _time) <= time_range_s)) or \
-                        ((_time > last_image_system_time) and
-                         (np.abs(last_image_system_time - _time) <= time_range_s)):
-                    list_index_to_keep.append(_index)
-
-        return list_filename[list_index_to_keep]
-
-    def recalculate_files_in_range(self):
-        time_range_value = self.time_slider.value
-        timelapse = self.timelapse_selection_widget.value
-
-        list_ob_in_range = self.get_list_of_images_in_range(time_range_s=time_range_value*3600,
-                                                            timelapse_option=timelapse,
-                                                            data_type='ob')
-        self.list_of_ob_in_range_widget.value = list_ob_in_range
-
-    def calculate_max_time_range_between_images(self):
-        """this method will determine what is the max time difference between the sample data set and
-        the ob images
-        The algorithm will use the first and last ob and sample data set to find this range
-        """
-        first_image_system_time = self.first_image_dict['system_time']
-        last_image_system_time = self.last_image_dict['system_time']
-
-        _ob_time_stamp_dict = self.ob_time_stamp_dict['list_time_stamp']
-        first_and_last_ob_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(_ob_time_stamp_dict)
-        first_ob_system_time = first_and_last_ob_system_time['first_stamp']
-        last_ob_system_time = first_and_last_ob_system_time['last_stamp']
-
-        time_offset_before = 0
-        if first_image_system_time > first_ob_system_time:
-            time_offset_before = first_image_system_time - first_ob_system_time
-
-        time_offset_after = 0
-        if last_image_system_time < last_ob_system_time:
-            time_offset_after = last_ob_system_time - last_image_system_time
-
-        max_time_range_s = np.max([time_offset_before, time_offset_after])
-        max_time_range_hours = time_utility.convert_system_time_into_hours(max_time_range_s)
-
-        return np.ceil(max_time_range_hours)
-
-    @staticmethod
-    def calculate_first_and_last_system_time(list_stamp_dict):
-        first_stamp = list_stamp_dict[0]
-        last_stamp = list_stamp_dict[-1]
-        for _time in list_stamp_dict[1:]:
-            if _time < first_stamp:
-                first_stamp = _time
-            elif _time > last_stamp:
-                last_stamp = _time
-
-        return {'first_stamp': first_stamp,
-                'last_stamp': last_stamp}
+    # @staticmethod
+    # def calculate_first_and_last_system_time(list_stamp_dict):
+    #     first_stamp = list_stamp_dict[0]
+    #     last_stamp = list_stamp_dict[-1]
+    #     for _time in list_stamp_dict[1:]:
+    #         if _time < first_stamp:
+    #             first_stamp = _time
+    #         elif _time > last_stamp:
+    #             last_stamp = _time
+    #
+    #     return {'first_stamp': first_stamp,
+    #             'last_stamp': last_stamp}
 
     def select_output_folder(self):
         self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
