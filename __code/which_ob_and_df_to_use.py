@@ -11,7 +11,7 @@ from __code import file_handler
 from __code import metadata_handler
 from NeuNorm.normalization import Normalization
 
-JSON_DEBUGGING = True
+JSON_DEBUGGING = False
 
 
 class MetadataName(Enum):
@@ -112,8 +112,11 @@ class WhichOBandDFtoUse(object):
         # defined as excluded
         self.final_with_time_range_master_dict = {}
 
-    def select_images(self):
-        list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of data'
+    def select_sample_images_and_create_configuration(self):
+        self.select_sample_images()
+
+    def select_sample_images(self):
+        list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select images'
                                                                                  'to normalize',
                                                                      start_dir=self.working_dir,
                                                                      next=self.retrieve_sample_metadata,
@@ -124,6 +127,12 @@ class WhichOBandDFtoUse(object):
         self.list_of_images = list_of_images
         self.sample_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_images,
                                                                         display_infos=True)
+        self.auto_retrieve_ob_metadata()
+        self.auto_retrieve_df_metadata()
+        self.match_files()
+        self.calculate_first_and_last_ob()
+        self.calculate_time_range()
+        self.display_time_range_selection_widgets()
 
     def select_ob_folder(self):
         self.select_folder(message='open beam',
@@ -131,6 +140,12 @@ class WhichOBandDFtoUse(object):
 
     def retrieve_ob_metadata(self, selected_folder):
         list_of_ob_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
+        self.ob_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_ob_files)
+
+    def auto_retrieve_ob_metadata(self):
+        folder = os.path.join(self.working_dir, 'raw', 'ob')
+        list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
+                                                                            extensions=['tiff','tif'])
         self.ob_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_ob_files)
 
     def select_folder(self, message="", next_function=None):
@@ -147,6 +162,12 @@ class WhichOBandDFtoUse(object):
 
     def retrieve_df_metadata(self, selected_folder):
         list_of_df_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
+        self.df_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_df_files)
+
+    def auto_retrieve_df_metadata(self):
+        folder = os.path.join(self.working_dir, 'raw', 'df')
+        list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
+                                                                            extensions=['tiff','tif'])
         self.df_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_df_files)
 
     def match_files(self):
@@ -376,13 +397,12 @@ class WhichOBandDFtoUse(object):
             _final_full_master_dict[_acquisition][_config]['time_range_s']['after'] = _time_range_s_after
 
     def display_time_range_selection_widgets(self):
-        _final_ful_master_dict = self.final_full_master_dict
-
+        _final_full_master_dict = self.final_full_master_dict
         _config_tab_dict = {}  # will keep record of each config tab for each acquisition
         _acquisition_tabs = widgets.Tab()
 
-        for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
-            _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
+        for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
+            _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
 
             _config_tab = widgets.Tab()
             _current_acquisition_tab_widgets_id = {'config_tab_id': _config_tab}
@@ -752,14 +772,14 @@ class WhichOBandDFtoUse(object):
     def create_final_json(self):
         # go through each of the acquisition tab and into each of the config to create the list of sample, ob and df
         # to use
-        _final_ful_master_dict = self.final_full_master_dict
+        _final_full_master_dict = self.final_full_master_dict
         _config_tab_dict = self.config_tab_dict
         _final_json_dict = {}
-        for _acquisition_index, _acquisition in enumerate(_final_ful_master_dict.keys()):
+        for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
 
             _final_json_for_this_acquisition = {}
             _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
-            _dict_of_this_acquisition = _final_ful_master_dict[_acquisition]
+            _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
             for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
                 this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
 
