@@ -9,7 +9,7 @@ import ipywe.fileselector
 
 from __code import file_handler
 from __code import metadata_handler
-from __code import time_utility
+from NeuNorm.normalization import Normalization
 
 JSON_DEBUGGING = True
 
@@ -799,13 +799,11 @@ class WhichOBandDFtoUse(object):
 
         self.final_json_dict = _final_json_dict
 
-        # import pprint
-        # pprint.pprint(_final_json_dict)
-
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,
         which mean, at least 1 OB"""
         final_json = self.final_json_dict
+        self.number_of_normalization = 0
 
         table = "<table style='width:50%;border:1px solid black'>"
         table += "<tr style='background-color:#eee'><th>Acquisition (s)</th><th>Config. name</th>" \
@@ -818,6 +816,7 @@ class WhichOBandDFtoUse(object):
                 nbr_ob = len(_current_config_dict['list_ob'])
                 nbr_df = len(_current_config_dict['list_df'])
                 nbr_sample = len(_current_config_dict['list_sample'])
+                self.number_of_normalization += 1 if nbr_ob > 0 else 0
                 table += WhichOBandDFtoUse.populate_normalization_recap_row(acquisition=_name_acquisition,
                                                                             config=_name_config,
                                                                             nbr_sample=nbr_sample,
@@ -827,6 +826,70 @@ class WhichOBandDFtoUse(object):
         table += "</table>"
         table_ui = widgets.HTML(table)
         display(table_ui)
+
+    def select_output_folder(self):
+        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+                                                                                     'normalized folders',
+                                                                         start_dir=self.working_dir,
+                                                                         next=self.normalization,
+                                                                         type='directory')
+
+        self.output_folder_widget.show()
+
+    def normalization(self, output_folder):
+        final_json = self.final_json_dict
+        number_of_normalization = self.number_of_normalization
+
+        horizontal_layout = widgets.HBox([widgets.Label("Normalization progress",
+                                                        layout=widgets.Layout(width='20%')),
+                                          widgets.IntProgress(max=number_of_normalization,
+                                                              value=0,
+                                                              layout=widgets.Layout(width='50%'))])
+        normalization_progress = horizontal_layout.children[1]
+        display(horizontal_layout)
+
+        for _name_acquisition in final_json.keys():
+            _current_acquisition_dict = final_json[_name_acquisition]
+            for _name_config in _current_acquisition_dict.keys():
+                _current_config = _current_acquisition_dict[_name_config]
+
+                list_ob = _current_config['list_ob']
+                if list_ob == []:
+                    continue
+
+                list_sample = _current_config['list_sample']
+                full_output_normalization_folder_name = \
+                    WhichOBandDFtoUse.make_full_output_normalization_folder_name(output_folder=output_folder,
+                                                                                 first_sample_file_name=list_sample[0],
+                                                                                 name_acquisition=_name_acquisition,
+                                                                                 name_config=_name_config)
+                list_df = _current_config['list_df']
+
+                o_load = Normalization()
+                o_load.load(file=list_sample, notebook=False)
+                o_load.load(file=list_ob, data_type='ob')
+                o_load.load(file=list_df, data_type='df')
+
+                o_load.normalization()
+                o_load.export(folder=full_output_normalization_folder_name, file_type='tif')
+
+                del o_load
+
+                normalization_progress.value += 1
+
+        normalization_progress.close()
+
+        display(HTML('<span style="font-size: 20px; color:blue">Message here</span>'))
+
+    @staticmethod
+    def make_full_output_normalization_folder_name(output_folder='', first_sample_file_name='',
+                                                   name_acquisition='', name_config=''):
+
+        basename_sample_folder = os.path.basename(os.path.dirname(first_sample_file_name))
+        basename_sample_folder += "_{}_{}".format(name_acquisition, name_config)
+        full_basename_sample_folder = os.path.abspath(os.path.join(output_folder, basename_sample_folder))
+        file_handler.make_or_reset_folder(full_basename_sample_folder)
+        return full_basename_sample_folder
 
     @staticmethod
     def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0):
@@ -1097,13 +1160,7 @@ class WhichOBandDFtoUse(object):
     #     return {'first_stamp': first_stamp,
     #             'last_stamp': last_stamp}
 
-    def select_output_folder(self):
-        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
-                                                                                     'combined image ...',
-                                                                         start_dir=self.working_dir,
-                                                                         type='directory')
 
-        self.output_folder_widget.show()
 
 
 
