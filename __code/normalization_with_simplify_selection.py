@@ -9,6 +9,7 @@ import ipywe.fileselector
 
 from __code import file_handler
 from __code import metadata_handler
+from __code import fileselector
 from NeuNorm.normalization import Normalization
 
 JSON_DEBUGGING = False
@@ -63,7 +64,7 @@ METADATA_ERROR_ALLOWED = 1
 LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
 
 
-class WhichOBandDFtoUse(object):
+class NormalizationWithSimplifySelection(object):
     working_dir = ''
 
     def __init__(self, working_dir=''):
@@ -138,7 +139,7 @@ class WhichOBandDFtoUse(object):
 
     def retrieve_sample_metadata(self, list_of_images):
         self.list_of_images = list_of_images
-        self.sample_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_images,
+        self.sample_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_images,
                                                                         display_infos=False)
         self.auto_retrieve_ob_metadata()
         self.auto_retrieve_df_metadata()
@@ -152,14 +153,14 @@ class WhichOBandDFtoUse(object):
                            next_function=self.retrieve_ob_metadata())
 
     def retrieve_ob_metadata(self, selected_folder):
-        list_of_ob_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
-        self.ob_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_ob_files)
+        list_of_ob_files = NormalizationWithSimplifySelection.get_list_of_tiff_files(folder=selected_folder)
+        self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files)
 
     def auto_retrieve_ob_metadata(self):
         folder = os.path.join(self.working_dir, 'raw', 'ob')
         list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff','tif'])
-        self.ob_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_ob_files)
+        self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files)
 
     def select_folder(self, message="", next_function=None):
         folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
@@ -174,14 +175,14 @@ class WhichOBandDFtoUse(object):
                            next_function=self.retrieve_df_metadata())
 
     def retrieve_df_metadata(self, selected_folder):
-        list_of_df_files = WhichOBandDFtoUse.get_list_of_tiff_files(folder=selected_folder)
-        self.df_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_df_files)
+        list_of_df_files = NormalizationWithSimplifySelection.get_list_of_tiff_files(folder=selected_folder)
+        self.df_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_df_files)
 
     def auto_retrieve_df_metadata(self):
         folder = os.path.join(self.working_dir, 'raw', 'df')
         list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff','tif'])
-        self.df_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_df_files)
+        self.df_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_df_files)
 
     def match_files(self):
         """This is where the files will be associated with their respective OB, DF by using the metadata"""
@@ -210,12 +211,12 @@ class WhichOBandDFtoUse(object):
 
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
-            _ob_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_ob_instrument_metadata)
+            _ob_instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(_all_ob_instrument_metadata)
             _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
-                    if WhichOBandDFtoUse.all_metadata_match(_sample_metadata_infos,
+                    if NormalizationWithSimplifySelection.all_metadata_match(_sample_metadata_infos,
                                                             _ob_instrument_metadata):
                         final_full_master_dict[_acquisition_time][_config_id]['list_ob'].append(list_ob_dict[_index_ob])
 
@@ -234,12 +235,12 @@ class WhichOBandDFtoUse(object):
 
         for _index_df in list_df_dict.keys():
             _all_df_instrument_metadata = self.get_instrument_metadata_only(list_df_dict[_index_df])
-            _df_instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_all_df_instrument_metadata)
+            _df_instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(_all_df_instrument_metadata)
             _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
-                    if WhichOBandDFtoUse.all_metadata_match(_sample_metadata_infos,
+                    if NormalizationWithSimplifySelection.all_metadata_match(_sample_metadata_infos,
                                                             _df_instrument_metadata):
                         final_full_master_dict[_acquisition_time][_config_id]['list_df'].append(list_df_dict[_index_df])
 
@@ -260,7 +261,7 @@ class WhichOBandDFtoUse(object):
             _sample_file = _dict_file_index['filename']
 
             _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME]['value']
-            _instrument_metadata = WhichOBandDFtoUse._isolate_instrument_metadata(_dict_file_index)
+            _instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(_dict_file_index)
             _sample_time_stamp = _dict_file_index['time_stamp']
 
             # find which image was first and which image was last
@@ -286,7 +287,7 @@ class WhichOBandDFtoUse(object):
                                                         'after': np.NaN},
                               'time_range_s': {'before': np.NaN,
                                                'after': np.NaN},
-                              'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
+                              'metadata_infos': NormalizationWithSimplifySelection.get_instrument_metadata_only(_instrument_metadata)}
                 final_full_master_dict[_acquisition_time] = {}
                 final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
             else:
@@ -297,7 +298,7 @@ class WhichOBandDFtoUse(object):
                     _found_a_match = False
                     for _config_key in _dict_for_this_acquisition_time.keys():
                         _config = _dict_for_this_acquisition_time[_config_key]
-                        if (WhichOBandDFtoUse.all_metadata_match(metadata_1=_config['metadata_infos'],
+                        if (NormalizationWithSimplifySelection.all_metadata_match(metadata_1=_config['metadata_infos'],
                                                                  metadata_2=_instrument_metadata)):
                             _config['list_sample'].append(_dict_file_index)
 
@@ -329,7 +330,7 @@ class WhichOBandDFtoUse(object):
                                                                 'after': np.NaN},
                                       'time_range_s': {'before': np.NaN,
                                                        'after': np.NaN},
-                                      'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
+                                      'metadata_infos': NormalizationWithSimplifySelection.get_instrument_metadata_only(_instrument_metadata)}
                         nbr_config = len(_dict_for_this_acquisition_time.keys())
                         _dict_for_this_acquisition_time['config{}'.format(nbr_config)] = _temp_dict
 
@@ -350,7 +351,7 @@ class WhichOBandDFtoUse(object):
                                                             'after': np.NaN},
                                   'time_range_s': {'before': np.NaN,
                                                    'after': np.NaN},
-                                  'metadata_infos': WhichOBandDFtoUse.get_instrument_metadata_only(_instrument_metadata)}
+                                  'metadata_infos': NormalizationWithSimplifySelection.get_instrument_metadata_only(_instrument_metadata)}
                     final_full_master_dict[_acquisition_time] = {}
                     final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
 
@@ -747,7 +748,7 @@ class WhichOBandDFtoUse(object):
 
     def update_list_of_ob_for_current_config_tab(self, list_ob=[]):
         [active_acquisition, active_config] = self.get_active_tabs()
-        short_version_list_ob = WhichOBandDFtoUse.keep_basename_only(list_files=list_ob)
+        short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
         self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = short_version_list_ob
 
     def update_time_range_message(self, value):
@@ -854,7 +855,7 @@ class WhichOBandDFtoUse(object):
                 nbr_df = len(_current_config_dict['list_df'])
                 nbr_sample = len(_current_config_dict['list_sample'])
                 self.number_of_normalization += 1 if nbr_ob > 0 else 0
-                table += WhichOBandDFtoUse.populate_normalization_recap_row(acquisition=_name_acquisition,
+                table += NormalizationWithSimplifySelection.populate_normalization_recap_row(acquisition=_name_acquisition,
                                                                             config=_name_config,
                                                                             nbr_sample=nbr_sample,
                                                                             nbr_ob=nbr_ob,
@@ -865,15 +866,20 @@ class WhichOBandDFtoUse(object):
         display(table_ui)
 
     def select_output_folder(self):
-        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+        self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(instruction='select where to create the ' + \
                                                                                      'normalized folders',
-                                                                         start_dir=self.working_dir,
-                                                                         next=self.normalization,
-                                                                         type='directory')
+                                                                              start_dir=self.working_dir,
+                                                                              next=self.normalization,
+                                                                              type='directory',
+                                                                              newdir_toolbar_button=True)
 
-        self.output_folder_widget.show()
+
+
 
     def normalization(self, output_folder):
+
+        self.output_folder_ui.shortcut_buttons.close() # hack to hide the buttons
+
         final_json = self.final_json_dict
         number_of_normalization = self.number_of_normalization
 
@@ -897,7 +903,7 @@ class WhichOBandDFtoUse(object):
 
                 list_sample = _current_config['list_sample']
                 full_output_normalization_folder_name = \
-                    WhichOBandDFtoUse.make_full_output_normalization_folder_name(output_folder=output_folder,
+                    NormalizationWithSimplifySelection.make_full_output_normalization_folder_name(output_folder=output_folder,
                                                                                  first_sample_file_name=list_sample[0],
                                                                                  name_acquisition=_name_acquisition,
                                                                                  name_config=_name_config)
@@ -1026,10 +1032,10 @@ class WhichOBandDFtoUse(object):
                 }
         """
         _dict = file_handler.retrieve_time_stamp(list_of_files)
-        _time_metadata_dict = WhichOBandDFtoUse._reformat_dict(dictionary=_dict)
+        _time_metadata_dict = NormalizationWithSimplifySelection._reformat_dict(dictionary=_dict)
 
-        _beamline_metadata_dict = WhichOBandDFtoUse.retrieve_beamline_metadata(list_of_files)
-        _metadata_dict = WhichOBandDFtoUse._combine_dictionaries(master_dictionary=_time_metadata_dict,
+        _beamline_metadata_dict = NormalizationWithSimplifySelection.retrieve_beamline_metadata(list_of_files)
+        _metadata_dict = NormalizationWithSimplifySelection._combine_dictionaries(master_dictionary=_time_metadata_dict,
                                                                  servant_dictionary=_beamline_metadata_dict)
 
         if display_infos:
@@ -1098,136 +1104,3 @@ class WhichOBandDFtoUse(object):
         list_of_tiff_files = file_handler.get_list_of_files(folder=folder,
                                                             extension='tiff')
         return list_of_tiff_files
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # def get_list_of_images_in_range(self, time_range_s=1,
-    #                                 timelapse_option="before_or_after",
-    #                                 data_type='ob'):
-    #
-    #     if data_type == 'ob':
-    #         data = self.ob_time_stamp_dict
-    #     else:
-    #         data = self.df_time_stamp_dict
-    #
-    #     first_image_system_time = self.first_image_dict['system_time']
-    #     last_image_system_time = self.last_image_dict['system_time']
-    #
-    #     list_filename = data['list_images']
-    #     list_timestamp = data['list_time_stamp']
-    #
-    #     # before
-    #     list_index_to_keep = []
-    #     for _index, _time in enumerate(list_timestamp):
-    #
-    #         # ob or df was taken after first raw and before last raw data, we keep it
-    #         if (_time > first_image_system_time) and (_time < last_image_system_time):
-    #             list_index_to_keep.append(_index)
-    #             continue
-    #
-    #         if timelapse_option == 'before':
-    #             if (_time < first_image_system_time) and \
-    #                     (np.abs(first_image_system_time-_time) <= time_range_s):
-    #                 list_index_to_keep.append(_index)
-    #         elif timelapse_option == 'after':
-    #             if (_time > last_image_system_time) and \
-    #                     (np.abs(last_image_system_time-_time) <= time_range_s):
-    #                 list_index_to_keep.append(_index)
-    #         else:
-    #             if ((_time < first_image_system_time) and
-    #                 (np.abs(first_image_system_time - _time) <= time_range_s)) or \
-    #                     ((_time > last_image_system_time) and
-    #                      (np.abs(last_image_system_time - _time) <= time_range_s)):
-    #                 list_index_to_keep.append(_index)
-    #
-    #     return list_filename[list_index_to_keep]
-
-    # def recalculate_files_in_range(self):
-    #     time_range_value = self.time_slider.value
-    #     timelapse = self.timelapse_selection_widget.value
-    #
-    #     list_ob_in_range = self.get_list_of_images_in_range(time_range_s=time_range_value*3600,
-    #                                                         timelapse_option=timelapse,
-    #                                                         data_type='ob')
-    #     self.list_of_ob_in_range_widget.value = list_ob_in_range
-
-    # def calculate_max_time_range_between_images(self):
-    #     """this method will determine what is the max time difference between the sample data set and
-    #     the ob images
-    #     The algorithm will use the first and last ob and sample data set to find this range
-    #     """
-    #     first_image_system_time = self.first_image_dict['system_time']
-    #     last_image_system_time = self.last_image_dict['system_time']
-    #
-    #     _ob_time_stamp_dict = self.ob_time_stamp_dict['list_time_stamp']
-    #     first_and_last_ob_system_time = WhichOBandDFtoUse.calculate_first_and_last_system_time(_ob_time_stamp_dict)
-    #     first_ob_system_time = first_and_last_ob_system_time['first_stamp']
-    #     last_ob_system_time = first_and_last_ob_system_time['last_stamp']
-    #
-    #     time_offset_before = 0
-    #     if first_image_system_time > first_ob_system_time:
-    #         time_offset_before = first_image_system_time - first_ob_system_time
-    #
-    #     time_offset_after = 0
-    #     if last_image_system_time < last_ob_system_time:
-    #         time_offset_after = last_ob_system_time - last_image_system_time
-    #
-    #     max_time_range_s = np.max([time_offset_before, time_offset_after])
-    #     max_time_range_hours = time_utility.convert_system_time_into_hours(max_time_range_s)
-    #
-    #     return np.ceil(max_time_range_hours)
-
-    # @staticmethod
-    # def calculate_first_and_last_system_time(list_stamp_dict):
-    #     first_stamp = list_stamp_dict[0]
-    #     last_stamp = list_stamp_dict[-1]
-    #     for _time in list_stamp_dict[1:]:
-    #         if _time < first_stamp:
-    #             first_stamp = _time
-    #         elif _time > last_stamp:
-    #             last_stamp = _time
-    #
-    #     return {'first_stamp': first_stamp,
-    #             'last_stamp': last_stamp}
-
-
-
-
-
-    def define_output_filename(self):
-        list_files = self.files_list_widget.selected
-        short_list_files = [os.path.basename(_file) for _file in list_files]
-
-        merging_algo = self.__get_formated_merging_algo_name()
-        [default_new_name, ext] = self.__create_merged_file_name(list_files_names=short_list_files)
-
-        top_label = widgets.Label("You have the option to change the default output file name")
-
-        box = widgets.HBox([widgets.Label("Default File Name",
-                                          layout=widgets.Layout(width='20%')),
-                            widgets.Text(default_new_name,
-                                         layout=widgets.Layout(width='60%')),
-                            widgets.Label("_{}{}".format(merging_algo, ext),
-                                          layout=widgets.Layout(width='20%')),
-                            ])
-        self.default_filename_ui = box.children[1]
-        self.ext_ui = box.children[2]
-        vertical_box = widgets.VBox([top_label, box])
-        display(vertical_box)
-
-
-
-
-
-

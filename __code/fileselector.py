@@ -424,4 +424,88 @@ class FileSelection(object):
 
         self.files_ui.show()
 
+class FileSelectorPanelWithJumpFolders:
+
+    def __init__(
+            self,
+            instruction="Select Output Folder",
+            start_dir=".",
+            type='file',
+            next=None,
+            multiple=False,
+            newdir_toolbar_button=False,
+            custom_layout=None,
+            filters=dict(), default_filter=None,
+            stay_alive=False,
+            ipts_folder='./',
+    ):
+
+        def display_file_selector_from_shared(ev):
+            start_dir = os.path.join(ipts_folder, 'shared')
+            self.output_folder_ui.remove()
+            self.display_file_selector(start_dir=start_dir)
+
+        def display_file_selector_from_home(ev):
+            import getpass
+            _user = getpass.getuser()
+            start_dir = os.path.join('/SNS/users', _user)
+            self.output_folder_ui.remove()
+            self.display_file_selector(start_dir=start_dir)
+
+        ipts = os.path.basename(start_dir)
+
+        button_layout = widgets.Layout(width='30%',
+                                       border='1px solid gray')
+
+        hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
+                                            button_style='success',
+                                            layout=button_layout),
+                             widgets.Button(description="Jump to My Home Folder",
+                                            button_style='success',
+                                            layout=button_layout)])
+        go_to_shared_button_ui = hbox.children[0]
+        go_to_home_button_ui = hbox.children[1]
+
+        go_to_shared_button_ui.on_click(display_file_selector_from_shared)
+        go_to_home_button_ui.on_click(display_file_selector_from_home)
+
+        display(hbox)
+        self.shortcut_buttons = hbox
+
+        self.display_file_selector(instruction=instruction,
+                                   start_dir=start_dir,
+                                   type=type,
+                                   next=next,
+                                   multiple=multiple,
+                                   newdir_toolbar_button=newdir_toolbar_button,
+                                   custom_layout=custom_layout,
+                                   filters=filters,
+                                   default_filter=default_filter,
+                                   stay_alive=stay_alive,
+                                   ipts_folder=ipts_folder)
+
+    def display_file_selector(self, instruction="",
+                                    ipts_folder="./",
+                                    start_dir="./",
+                                    multiple=False,
+                                    default_filter=None,
+                                    next=None,
+                                    newdir_toolbar_button=False,
+                                    type='file',
+                                    custom_layout=None,
+                                    filters=None,
+                                    stay_alive=False):
+
+        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction=instruction,
+                                                                     start_dir=start_dir,
+                                                                     multiple=multiple,
+                                                                     next=next,
+                                                                     newdir_toolbar_button=newdir_toolbar_button,
+                                                                     type=type,
+                                                                     custom_layout=custom_layout,
+                                                                     default_filter=default_filter,
+                                                                     filters=filters,
+                                                                     stay_alive=stay_alive)
+
+        self.output_folder_ui.show()
 
