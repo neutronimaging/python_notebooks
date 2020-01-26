@@ -113,7 +113,8 @@ class WhichOBandDFtoUse(object):
         self.final_with_time_range_master_dict = {}
 
     def select_sample_images_and_create_configuration(self):
-        self.select_sample_images()
+        # self.select_sample_images()
+        self.select_sample_folder()
 
     def select_sample_images(self):
         list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select images'
@@ -123,10 +124,22 @@ class WhichOBandDFtoUse(object):
                                                                      multiple=True)
         list_of_images_widget.show()
 
+    def select_sample_folder(self):
+        folder_sample_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to normalize',
+                                                                    start_dir=self.working_dir,
+                                                                    next=self.retrieve_sample_metadata_from_sample_folder,
+                                                                    type='directory',
+                                                                    multiple=False)
+        folder_sample_widget.show()
+
+    def retrieve_sample_metadata_from_sample_folder(self, sample_folder):
+        [list_of_images, _] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=sample_folder)
+        self.retrieve_sample_metadata(list_of_images)
+
     def retrieve_sample_metadata(self, list_of_images):
         self.list_of_images = list_of_images
         self.sample_metadata_dict = WhichOBandDFtoUse.retrieve_metadata(list_of_files=list_of_images,
-                                                                        display_infos=True)
+                                                                        display_infos=False)
         self.auto_retrieve_ob_metadata()
         self.auto_retrieve_df_metadata()
         self.match_files()
@@ -646,7 +659,7 @@ class WhichOBandDFtoUse(object):
         title = self.acquisition_tab.get_title(active_acquisition_tab_index)
         [_, time_s] = title.split(": ")
         acquisition_key = time_s[:-1]
-        return acquisition_key
+        return np.float(acquisition_key)
 
     def get_active_tab_config_key(self):
         [active_acquisition, _] = self.get_active_tabs()
@@ -703,7 +716,7 @@ class WhichOBandDFtoUse(object):
 
         # retrieve list of ob and df for this config for this acquisition
         final_full_master_dict = self.final_full_master_dict
-        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
+        dict_for_this_config = final_full_master_dict[np.float(acquisition_key)][config_key]
         list_ob = dict_for_this_config['list_ob']
 
         # no need to do anything more if user wants to use all the files
@@ -768,6 +781,10 @@ class WhichOBandDFtoUse(object):
 
         time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
         time_before_and_after_message_ui.value = _message
+
+    def checking_normalization_workflow(self):
+        self.create_final_json()
+        self.normalization_recap()
 
     def create_final_json(self):
         # go through each of the acquisition tab and into each of the config to create the list of sample, ob and df
@@ -868,6 +885,7 @@ class WhichOBandDFtoUse(object):
         normalization_progress = horizontal_layout.children[1]
         display(horizontal_layout)
 
+        list_full_output_normalization_folder_name = []
         for _name_acquisition in final_json.keys():
             _current_acquisition_dict = final_json[_name_acquisition]
             for _name_config in _current_acquisition_dict.keys():
@@ -883,6 +901,7 @@ class WhichOBandDFtoUse(object):
                                                                                  first_sample_file_name=list_sample[0],
                                                                                  name_acquisition=_name_acquisition,
                                                                                  name_config=_name_config)
+                list_full_output_normalization_folder_name.append(full_output_normalization_folder_name)
                 list_df = _current_config['list_df']
 
                 o_load = Normalization()
@@ -897,9 +916,11 @@ class WhichOBandDFtoUse(object):
 
                 normalization_progress.value += 1
 
-        normalization_progress.close()
+        horizontal_layout.close()
 
-        display(HTML('<span style="font-size: 20px; color:blue">Message here</span>'))
+        display(HTML('<span style="font-size: 20px; color:blue">Following folders have been created:</span>'))
+        for _folder in list_full_output_normalization_folder_name:
+            display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + '</span>'))
 
     @staticmethod
     def make_full_output_normalization_folder_name(output_folder='', first_sample_file_name='',
@@ -994,7 +1015,7 @@ class WhichOBandDFtoUse(object):
         return new_master_dictionary
 
     @staticmethod
-    def retrieve_metadata(list_of_files=[], display_infos=True):
+    def retrieve_metadata(list_of_files=[], display_infos=False):
         """
         dict = {'file1': {'metadata1_key': {'value': value, 'name': name},
                           'metadata2_key': {'value': value, 'name': name},
