@@ -797,7 +797,7 @@ class WhichOBandDFtoUse(object):
 
             _final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
-        self.final_json_dict = _final_json_for_this_acquisition
+        self.final_json_dict = _final_json_dict
 
         # import pprint
         # pprint.pprint(_final_json_dict)
@@ -807,31 +807,38 @@ class WhichOBandDFtoUse(object):
         which mean, at least 1 OB"""
         final_json = self.final_json_dict
 
-        table = "<table style='width:50%;background-color:#eee'>"
-        table += "<tr><th>Config. name</th><th>Nbr sample</th><th>Nbr OB</th><th>Nbr DF</th><th>Status</th></tr>"
-        for _name_config in final_json.keys():
-            _current_config_dict = final_json[_name_config]
+        table = "<table style='width:50%;border:1px solid black'>"
+        table += "<tr style='background-color:#eee'><th>Acquisition (s)</th><th>Config. name</th>" \
+                 "<th>Nbr sample</th><th>Nbr OB</th><th>Nbr DF</th><th>Status</th></tr>"
+        for _name_acquisition in final_json.keys():
+            _current_acquisition_dict = final_json[_name_acquisition]
+            for _name_config in _current_acquisition_dict.keys():
+                _current_config_dict = _current_acquisition_dict[_name_config]
 
-            nbr_ob = len(_current_config_dict['list_ob'])
-            nbr_df = len(_current_config_dict['list_df'])
-            nbr_sample = len(_current_config_dict['list_sample'])
-            table += WhichOBandDFtoUse.populate_normalization_recap_row(config_name=_name_config,
-                                                                        nbr_sample=nbr_sample,
-                                                                        nbr_ob=nbr_ob,
-                                                                        nbr_df=nbr_df)
+                nbr_ob = len(_current_config_dict['list_ob'])
+                nbr_df = len(_current_config_dict['list_df'])
+                nbr_sample = len(_current_config_dict['list_sample'])
+                table += WhichOBandDFtoUse.populate_normalization_recap_row(acquisition=_name_acquisition,
+                                                                            config=_name_config,
+                                                                            nbr_sample=nbr_sample,
+                                                                            nbr_ob=nbr_ob,
+                                                                            nbr_df=nbr_df)
 
         table += "</table>"
         table_ui = widgets.HTML(table)
         display(table_ui)
 
-
     @staticmethod
-    def populate_normalization_recap_row(config_name="", nbr_sample=0, nbr_ob=0, nbr_df=0):
+    def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0):
+        if nbr_ob > 0:
+            status_string = "<th style='color:#odbc2e'>OK</th>"
+        else:
+            status_string = "<th style='color:#ff0000'>Missing OB!</th>"
+
         _row = ""
-        _row = "<tr><th>{}</th><th>{}</th><th>{}</th><th>{}</th></tr>".format(config_name, nbr_sample, nbr_ob, nbr_df)
+        _row = "<tr><th>{}</th><th>{}</th><th>{}</th><th>{}</th><th>{}</th>{}</tr>".\
+            format(acquisition, config, nbr_sample, nbr_ob, nbr_df, status_string)
         return _row
-
-
 
 
     @staticmethod
