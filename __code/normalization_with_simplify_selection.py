@@ -873,12 +873,9 @@ class NormalizationWithSimplifySelection(object):
                                                                               type='directory',
                                                                               newdir_toolbar_button=True)
 
-
-
-
     def normalization(self, output_folder):
 
-        self.output_folder_ui.shortcut_buttons.close() # hack to hide the buttons
+        self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
 
         final_json = self.final_json_dict
         number_of_normalization = self.number_of_normalization
