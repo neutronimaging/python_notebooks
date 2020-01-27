@@ -158,6 +158,10 @@ def make_or_reset_folder(folder_name):
     os.makedirs(folder_name)         
 
 
+def copy_files_to_folder(list_files=[], output_folder=""):
+    for _file in list_files:
+        shutil.copy(_file, output_folder)
+
 def remove_SummedImg_from_list(list_files):
     base_name_and_extension = os.path.basename(list_files[0])
     dir_name = os.path.dirname(list_files[0])

@@ -47,7 +47,6 @@ class ExtractEvenlySpacedFiles(object):
         display(HTML('<span style="font-size: 15px; color:blue">' + str(self.number_of_files) +
                  ' files will be used in the extraction.</span>'))
 
-
     def how_to_extract(self):
         # how to extract
         hori_layout_1 = widgets.HBox([widgets.Label("Extract 1 over ",
@@ -93,6 +92,9 @@ class ExtractEvenlySpacedFiles(object):
                                                                               newdir_toolbar_button=True)
 
     def extract(self, output_folder):
+
+        self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
+
         list_of_files_to_extract = self.list_of_files_to_extract
         name_of_parent_folder = os.path.basename(os.path.dirname(list_of_files_to_extract[0]))
         extracting_value = self.extracting_ui.value
@@ -100,4 +102,9 @@ class ExtractEvenlySpacedFiles(object):
         new_folder = name_of_parent_folder + "_extracted_1_every_{}_files".format(extracting_value)
         full_output_folder_name = os.path.abspath(os.path.join(output_folder, new_folder))
 
+        file_handler.make_or_reset_folder(full_output_folder_name)
+        file_handler.copy_files_to_folder(list_files=list_of_files_to_extract,
+                                          output_folder=full_output_folder_name)
 
+        display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
+                 ' files have been copied into ' + full_output_folder_name + '</span>'))
