@@ -753,9 +753,9 @@ class NormalizationWithSimplifySelection(object):
 
     def update_time_range_message(self, value):
         if value is None:
-            _message = f"Use <b><font color='red'>All </b> " \
-                       f"<font color='black'>OBs and DFs " \
-                       f"matching the samples images</font>"
+            _message = "Use <b><font color='red'>All </b> " \
+                       "<font color='black'>OBs and DFs " \
+                       "matching the samples images</font>"
         else:
 
             [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
@@ -775,10 +775,10 @@ class NormalizationWithSimplifySelection(object):
             str_time_before = _format_time(time_before_selected)
             str_time_after = _format_time(time_after_selected)
 
-            _message = f"Use OB taken up to <b><font color='red'>{str_time_before}</b> " \
-                       f"<font color='black'>before and up to </font>" \
-                       f"<b><font color='red'>{str_time_after}</b> " \
-                       f"<font color='black'>after experiment!</font>"
+            _message = "Use OB taken up to <b><font color='red'>{str_time_before}</b> " \
+                       "<font color='black'>before and up to </font>" \
+                       "<b><font color='red'>{str_time_after}</b> " \
+                       "<font color='black'>after experiment!</font>"
 
         time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
         time_before_and_after_message_ui.value = _message
@@ -908,7 +908,7 @@ class NormalizationWithSimplifySelection(object):
                 list_df = _current_config['list_df']
 
                 o_load = Normalization()
-                o_load.load(file=list_sample, notebook=False)
+                o_load.load(file=list_sample, notebook=True)
                 o_load.load(file=list_ob, data_type='ob')
                 o_load.load(file=list_df, data_type='df')
 
