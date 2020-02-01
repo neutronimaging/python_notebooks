@@ -159,7 +159,8 @@ class SequentialCombineImagesUsingMetadata(object):
                     (_previous_run == _current_run):
                 _list_files.append(_file)
             else:
-                tag_name = "{}{}".format(position_prefix, position_counter)
+                str_position_counter = "{:04d}".format(position_counter)
+                tag_name = "{}{}".format(position_prefix, str_position_counter)
                 list_images_to_combine[tag_name] = {'list_of_files': _list_files,
                                                     'dict_metadata': _previous_metadata.copy(),
                                                    }
@@ -177,7 +178,8 @@ class SequentialCombineImagesUsingMetadata(object):
             progress_bar.value = _index+1
 
         else:
-            tag_name = "{}{}".format(position_prefix, position_counter)
+            str_position_counter = "{:04d}".format(position_counter)
+            tag_name = "{}{}".format(position_prefix, str_position_counter)
             list_images_to_combine[tag_name] = {'list_of_files': _list_files,
                                                 'dict_metadata': _previous_metadata.copy(),
                                                 }
