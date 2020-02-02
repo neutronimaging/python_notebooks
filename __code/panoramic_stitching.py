@@ -1,6 +1,5 @@
 from IPython.core.display import HTML
 from IPython.display import display
-from collections import OrderedDict
 import pyqtgraph as pg
 import numpy as np
 import os
@@ -18,6 +17,7 @@ from NeuNorm.normalization import Normalization
 
 from __code.ui_panoramic_stitching import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
+from __code._panoramic_stitching.gui_initialization import GuiInitialization
 
 
 class InterfaceHandler(FileFolderBrowser):
@@ -46,28 +46,39 @@ class Interface(QMainWindow):
 
         self.list_files = self.o_norm.data['sample']['file_name']
         self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
+
         self.list_data = self.o_norm.data['sample']['data']
+
+        self.list_reference = self.get_list_files(start_index=0, end_index=-1)
+        self.list_target = self.get_list_files(start_index=1)
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
-        self.init_statusbar()
         self.setWindowTitle("Panoramic Stitching")
 
-        self.init_pyqtgraph()
-        self.initialize_master_dict()
-        self.init_table()
-        self.init_widgets()
+        o_initialization = GuiInitialization(parent=self)
+        o_initialization.all()
+
+    def get_list_files(self, start_index=0, end_index=None):
+        if end_index is None:
+            end_index = len(self.list_files)+1
+
+        _list = {'files': self.list_files[start_index: end_index],
+                 'data': self.list_data[start_index: end_index],
+                 'basename_files': []}
+        _list['basename_files'] = [os.path.basename(_file) for _file in _list['files']]
+        return _list
 
     # event handler
     def table_widget_selection_changed(self):
         reference_file_index_selected = self.get_reference_index_selected()
 
         # +1 because the target file starts at the second file
-        target_file_index_selected = self.get_target_index_selected_from_row(row=reference_file_index_selected) + 1
+        target_file_index_selected = self.get_target_index_selected_from_row(row=reference_file_index_selected)
 
-        reference_data = self.list_data[reference_file_index_selected]
-        target_data = self.list_data[target_file_index_selected]
+        reference_data = self.list_reference['data'][reference_file_index_selected]
+        target_data = self.list_target['data'][target_file_index_selected]
 
         self.display_reference_data(data=reference_data)
         self.display_target_data(data=target_data)
@@ -81,6 +92,8 @@ class Interface(QMainWindow):
         self.ui.target_view.setImage(data)
 
     def get_reference_index_selected(self):
+        print(self.ui.tableWidget.selectedRanges())
+
         _selection = self.ui.tableWidget.selectedRanges()[0]
         _row_selected = _selection.topRow()
         return _row_selected
@@ -92,81 +105,7 @@ class Interface(QMainWindow):
     def table_widget_target_image_changed(self, index):
         self.table_widget_selection_changed()
 
-    def init_pyqtgraph(self):
-        self.ui.reference_view = pg.ImageView()
-        self.ui.reference_view.ui.roiBtn.hide()
-        self.ui.reference_view.ui.menuBtn.hide()
-        self.ui.target_view = pg.ImageView()
-        self.ui.target_view.ui.roiBtn.hide()
-        self.ui.target_view.ui.menuBtn.hide()
-        reference_layout = QtGui.QVBoxLayout()
-        reference_layout.addWidget(self.ui.reference_view)
-        target_layout = QtGui.QVBoxLayout()
-        target_layout.addWidget(self.ui.target_view)
-        self.ui.reference_widget.setLayout(reference_layout)
-        self.ui.target_widget.setLayout(target_layout)
 
-    def initialize_master_dict(self):
-        master_dict = OrderedDict()
-        _each_file_dict = {'associated_with_file_index': 0,
-                           'reference_roi': {'x0': np.NaN,
-                                             'y0': np.NaN,
-                                             'width': np.NaN,
-                                             'height': np.NaN},
-                           'target_roi':  {'x0': np.NaN,
-                                             'y0': np.NaN,
-                                             'width': np.NaN,
-                                             'height': np.NaN},
-                           'status': ""}
-
-        list_files = self.list_files
-        for _file in list_files:
-            master_dict[_file] = _each_file_dict.copy()
-
-        self.master_dict = master_dict
-
-    def init_table(self):
-        master_dict = self.master_dict
-        for _row, _file_name in enumerate(master_dict.keys()):
-
-            # skip the last one
-            if _row == (len(master_dict.keys())-1):
-                break
-
-            self.ui.tableWidget.insertRow(_row)
-
-            _dict_of_this_row = master_dict[_file_name]
-
-            # file name
-            _item = QtGui.QTableWidgetItem(os.path.basename(_file_name))
-            self.ui.tableWidget.setItem(_row, 0, _item)
-
-            # target image
-            _combobox = QtGui.QComboBox()
-            _combobox.blockSignals(True)
-            _combobox.currentIndexChanged.connect(self.table_widget_target_image_changed)
-            _combobox.addItems(self.basename_list_files[1:])
-            _combobox.setCurrentIndex(_row+1)
-            _combobox.blockSignals(False)
-            self.ui.tableWidget.setCellWidget(_row, 1, _combobox)
-
-            # status
-            _item = QtGui.QTableWidgetItem(_dict_of_this_row['status'])
-            self.ui.tableWidget.setItem(_row, 2, _item)
-
-        for _column_index, _width in enumerate(self.tableWidget_columns_size):
-            self.ui.tableWidget.setColumnWidth(_column_index, _width)
-
-    def init_widgets(self):
-        self.ui.run_stitching_button.setEnabled(False)
-        self.ui.export_button.setEnabled(False)
-
-    def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        self.eventProgress.setMinimumSize(20, 14)
-        self.eventProgress.setMaximumSize(540, 100)
-        self.eventProgress.setVisible(False)
-        self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
     def apply_clicked(self):
         # do stuff

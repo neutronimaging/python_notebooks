@@ -16,18 +16,18 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="main_vertical_splitter">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QSplitter" name="splitter">
+         <widget class="QSplitter" name="splitter_between_previews_and_table">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QSplitter" name="splitter_3">
+          <widget class="QSplitter" name="splitter_between_previews">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -61,6 +61,12 @@
            </widget>
           </widget>
           <widget class="QTableWidget" name="tableWidget">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>200</height>
+            </size>
+           </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
@@ -98,6 +104,12 @@
        </layout>
       </widget>
       <widget class="QGroupBox" name="groupBox_3">
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>100</height>
+        </size>
+       </property>
        <property name="title">
         <string>Stiched Image</string>
        </property>
@@ -106,7 +118,14 @@
          <widget class="QWidget" name="stitched_widget" native="true"/>
         </item>
         <item>
-         <widget class="QTableWidget" name="stitched_table"/>
+         <widget class="QTableWidget" name="stitched_table">
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
