@@ -1,7 +1,9 @@
 from IPython.core.display import HTML
 from IPython.display import display
-
+from collections import OrderedDict
 import pyqtgraph as pg
+import numpy as np
+import os
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -14,7 +16,7 @@ except ImportError:
 
 from NeuNorm.normalization import Normalization
 
-from __code.ui_template  import Ui_MainWindow as UiMainWindow
+from __code.ui_panoramic_stitching import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
 
 
@@ -32,7 +34,8 @@ class InterfaceHandler(FileFolderBrowser):
 
 class Interface(QMainWindow):
 
-    live_data = []
+    master_dict = {}
+    tableWidget_columns_size = [400, 400, 100]
 
     def __init__(self, parent=None, o_norm=None):
 
@@ -42,48 +45,82 @@ class Interface(QMainWindow):
         self.o_norm = o_norm
 
         self.list_files = self.o_norm.data['sample']['file_name']
+        self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
         self.list_data = self.o_norm.data['sample']['data']
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
         self.init_statusbar()
-        self.setWindowTitle("Template UI")
+        self.setWindowTitle("Panoramic Stitching")
 
-        self.ui.image_view = pg.ImageView()
-        self.ui.image_view.ui.roiBtn.hide()
-        self.ui.image_view.ui.menuBtn.hide()
+        self.ui.reference_view = pg.ImageView()
+        self.ui.reference_view.ui.roiBtn.hide()
+        self.ui.reference_view.ui.menuBtn.hide()
 
-        bottom_layout = QtGui.QHBoxLayout()
+        self.ui.target_view = pg.ImageView()
+        self.ui.target_view.ui.roiBtn.hide()
+        self.ui.target_view.ui.menuBtn.hide()
 
-        # file index slider
-        label_1 = QtGui.QLabel("File Index")
-        self.ui.slider = QtGui.QSlider(QtCore.Qt.Horizontal)
-        self.ui.slider.setMaximum(len(self.list_files) - 1)
-        self.ui.slider.setMinimum(0)
-        self.ui.slider.valueChanged.connect(self.file_index_changed)
+        reference_layout = QtGui.QVBoxLayout()
+        reference_layout.addWidget(self.ui.reference_view)
 
-        # spacer
-        spacer = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        target_layout = QtGui.QVBoxLayout()
+        target_layout.addWidget(self.ui.target_view)
 
-        bottom_layout.addWidget(label_1)
-        bottom_layout.addWidget(self.ui.slider)
-        bottom_layout.addItem(spacer)
+        self.ui.reference_widget.setLayout(reference_layout)
+        self.ui.target_widget.setLayout(target_layout)
 
-        bottom_widget = QtGui.QWidget()
-        bottom_widget.setLayout(bottom_layout)
 
-        vertical_layout = QtGui.QVBoxLayout()
-        vertical_layout.addWidget(self.ui.image_view)
-        vertical_layout.addWidget(bottom_widget)
-
-        self.ui.widget.setLayout(vertical_layout)
-
+        self.initialize_master_dict()
+        self.init_table()
         self.init_widgets()
-        self.file_index_changed()
+
+    def initialize_master_dict(self):
+        master_dict = OrderedDict()
+        _each_file_dict = {'associated_with_file_index': 0,
+                           'reference_roi': {'x0': np.NaN,
+                                             'y0': np.NaN,
+                                             'width': np.NaN,
+                                             'height': np.NaN},
+                           'target_roi':  {'x0': np.NaN,
+                                             'y0': np.NaN,
+                                             'width': np.NaN,
+                                             'height': np.NaN},
+                           'status': ""}
+
+        list_files = self.list_files
+        for _file in list_files:
+            master_dict[_file] = _each_file_dict.copy()
+
+        self.master_dict = master_dict
+
+    def init_table(self):
+        master_dict = self.master_dict
+        for _row, _file_name in enumerate(master_dict.keys()):
+            self.ui.tableWidget.insertRow(_row)
+
+            _dict_of_this_row = master_dict[_file_name]
+
+            # file name
+            _item = QtGui.QTableWidgetItem(os.path.basename(_file_name))
+            self.ui.tableWidget.setItem(_row, 0, _item)
+
+            # target image
+            _item = QtGui.QComboBox()
+            _item.addItems(self.basename_list_files)
+            self.ui.tableWidget.setCellWidget(_row, 1, _item)
+
+            # status
+            _item = QtGui.QTableWidgetItem(_dict_of_this_row['status'])
+            self.ui.tableWidget.setItem(_row, 2, _item)
+
+        for _column_index, _width in enumerate(self.tableWidget_columns_size):
+            self.ui.tableWidget.setColumnWidth(_column_index, _width)
 
     def init_widgets(self):
-        pass
+        self.ui.run_stitching_button.setEnabled(False)
+        self.ui.export_button.setEnabled(False)
 
     def init_statusbar(self):
         self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
@@ -99,17 +136,11 @@ class Interface(QMainWindow):
     def cancel_clicked(self):
         self.close()
 
-    def file_index_changed(self):
-        file_index = self.ui.slider.value()
-        new_live_image = self.list_data[file_index]
-        self.ui.image_view.setImage(new_live_image)
-        self.ui.file_name.setText(self.list_files[file_index])
-
     def display_image(self, image):
         self.ui.image_view.setImage(image)
 
     def closeEvent(self, eventhere=None):
-        print("Leaving Parameters Selection UI")
+        print("Leaving Panoramic Stitching UI")
 
 
 
