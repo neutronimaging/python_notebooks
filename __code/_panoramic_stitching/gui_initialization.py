@@ -12,6 +12,8 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
+from __code._panoramic_stitching.utilities import Utilities
+
 DEFAULT_ROI = [100, 100, 300, 300]  # x0, y0, width, height
 
 
@@ -21,8 +23,9 @@ class GuiInitialization:
         self.parent = parent
 
     def all(self):
-        self.pyqtgraph()
         self.master_dict()
+        self.pyqtgraph()
+        self.roi()
         self.widgets()
         self.table()
         self.statusbar()
@@ -47,17 +50,37 @@ class GuiInitialization:
         self.parent.ui.reference_widget.setLayout(reference_layout)
         self.parent.ui.target_widget.setLayout(target_layout)
 
+    def roi(self):
+        color = QtGui.QColor(62, 13, 244)
+        _pen = QtGui.QPen()
+        _pen.setColor(color)
+        _pen.setWidth(0.02)
+
+        o_utilities = Utilities(parent=self.parent)
+
+        # reference view
+        [x0, y0, width, height] = o_utilities.get_roi(data_type='reference')
+        _roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
+        _roi_id.addScaleHandle([1, 1], [0, 0])
+        _roi_id.addScaleHandle([0, 0], [1, 1])
+        self.parent.ui.reference_view.addItem(_roi_id)
+        _roi_id.sigRegionChanged.connect(self.parent.reference_roi_changed)
+
+        # target view
+        [x1, y1] = o_utilities.get_roi(data_type='target')
+        _roi_id = pg.ROI([x1, y1], [width, height], pen=_pen, scaleSnap=True)
+        self.parent.ui.target_view.addItem(_roi_id)
+        _roi_id.sigRegionChanged.connect(self.parent.target_roi_changed)
+
     def master_dict(self):
         master_dict = OrderedDict()
         _each_file_dict = {'associated_with_file_index': 0,
-                           'reference_roi': {'x0': np.NaN,
-                                             'y0': np.NaN,
-                                             'width': np.NaN,
-                                             'height': np.NaN},
-                           'target_roi':  {'x0': np.NaN,
-                                           'y0': np.NaN,
-                                           'width': np.NaN,
-                                           'height': np.NaN},
+                           'reference_roi': {'x0': DEFAULT_ROI[0],
+                                             'y0': DEFAULT_ROI[1],
+                                             'width': DEFAULT_ROI[2],
+                                             'height': DEFAULT_ROI[3]},
+                           'target_roi':  {'x0': DEFAULT_ROI[0],
+                                           'y0': DEFAULT_ROI[1]},
                            'status': ""}
 
         list_files = self.parent.list_files

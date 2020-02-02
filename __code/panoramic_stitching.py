@@ -75,6 +75,12 @@ class Interface(QMainWindow):
         return _list
 
     # event handler
+    def reference_roi_changed(self):
+        pass
+
+    def target_roi_changed(self):
+        pass
+
     def table_widget_selection_changed(self):
         reference_file_index_selected = self.get_reference_index_selected()
 
@@ -100,7 +106,7 @@ class Interface(QMainWindow):
 
         _view = ui.getView()
         _view_box = _view.getViewBox()
-        self._view_box = _view_box
+        # self._view_box = _view_box
         _state = _view_box.getState()
 
         first_update = False
@@ -112,11 +118,19 @@ class Interface(QMainWindow):
         data = np.transpose(data)
         ui.setImage(data)
 
+        # add roi
+        profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
+        ui.addItem(profile_line)
+        profile_line.sigRegionChanged.connect(self.roi_changed)
+
         _view_box.setState(_state)
 
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[data_type][0],
                                     self.histogram_level[data_type][1])
+
+    def roi_changed(self):
+        print("roi changed")
 
     def get_reference_index_selected(self):
         _selection = self.ui.tableWidget.selectedRanges()[0]
