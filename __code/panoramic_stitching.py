@@ -118,11 +118,6 @@ class Interface(QMainWindow):
         data = np.transpose(data)
         ui.setImage(data)
 
-        # add roi
-        profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
-        ui.addItem(profile_line)
-        profile_line.sigRegionChanged.connect(self.roi_changed)
-
         _view_box.setState(_state)
 
         if not first_update:

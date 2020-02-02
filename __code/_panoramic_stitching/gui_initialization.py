@@ -59,7 +59,7 @@ class GuiInitialization:
         o_utilities = Utilities(parent=self.parent)
 
         # reference view
-        [x0, y0, width, height] = o_utilities.get_roi(data_type='reference')
+        [x0, y0, width, height] = o_utilities.get_roi(full_file_name=self.parent.list_reference['files'][0])
         _roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
         _roi_id.addScaleHandle([1, 1], [0, 0])
         _roi_id.addScaleHandle([0, 0], [1, 1])
@@ -67,7 +67,7 @@ class GuiInitialization:
         _roi_id.sigRegionChanged.connect(self.parent.reference_roi_changed)
 
         # target view
-        [x1, y1] = o_utilities.get_roi(data_type='target')
+        [x1, y1, width, height] = o_utilities.get_roi(full_file_name=self.parent.list_target['files'][0])
         _roi_id = pg.ROI([x1, y1], [width, height], pen=_pen, scaleSnap=True)
         self.parent.ui.target_view.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(self.parent.target_roi_changed)
@@ -80,7 +80,9 @@ class GuiInitialization:
                                              'width': DEFAULT_ROI[2],
                                              'height': DEFAULT_ROI[3]},
                            'target_roi':  {'x0': DEFAULT_ROI[0],
-                                           'y0': DEFAULT_ROI[1]},
+                                           'y0': DEFAULT_ROI[1],
+                                           'width': DEFAULT_ROI[2],
+                                           'height': DEFAULT_ROI[3]},
                            'status': ""}
 
         list_files = self.parent.list_files
