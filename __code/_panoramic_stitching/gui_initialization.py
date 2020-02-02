@@ -12,6 +12,8 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
+DEFAULT_ROI = [100, 100, 300, 300]  # x0, y0, width, height
+
 
 class GuiInitialization:
 
@@ -28,12 +30,16 @@ class GuiInitialization:
         self.table_selection()
 
     def pyqtgraph(self):
-        self.parent.ui.reference_view = pg.ImageView()
+        self.parent.ui.reference_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.reference_view.ui.roiBtn.hide()
         self.parent.ui.reference_view.ui.menuBtn.hide()
-        self.parent.ui.target_view = pg.ImageView()
+        self.parent.pyqtgraph_image_view['reference'] = self.parent.ui.reference_view
+
+        self.parent.ui.target_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.target_view.ui.roiBtn.hide()
         self.parent.ui.target_view.ui.menuBtn.hide()
+        self.parent.pyqtgraph_image_view['target'] = self.parent.ui.target_view
+
         reference_layout = QtGui.QVBoxLayout()
         reference_layout.addWidget(self.parent.ui.reference_view)
         target_layout = QtGui.QVBoxLayout()

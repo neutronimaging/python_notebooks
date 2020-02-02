@@ -36,6 +36,10 @@ class Interface(QMainWindow):
 
     master_dict = {}
     tableWidget_columns_size = [400, 400, 100]
+    histogram_level = {'reference': [],
+                       'target': []}
+    pyqtgraph_image_view = {'reference': None,
+                            'data': None}
 
     def __init__(self, parent=None, o_norm=None):
 
@@ -84,16 +88,37 @@ class Interface(QMainWindow):
         self.display_target_data(data=target_data)
 
     def display_reference_data(self, data=[]):
-        data = np.transpose(data)
-        self.ui.reference_view.setImage(data)
+        self.display_data(data_type='reference', data=data)
 
     def display_target_data(self, data=[]):
+        self.display_data(data_type='target', data=data)
+
+    def display_data(self, data_type='reference', data=[]):
+
+        ui = self.pyqtgraph_image_view[data_type]
+        histogram_level = self.histogram_level[data_type]
+
+        _view = ui.getView()
+        _view_box = _view.getViewBox()
+        self._view_box = _view_box
+        _state = _view_box.getState()
+
+        first_update = False
+        if histogram_level == []:
+            first_update = True
+        _histo_widget = ui.getHistogramWidget()
+        self.histogram_level[data_type] = _histo_widget.getLevels()
+
         data = np.transpose(data)
-        self.ui.target_view.setImage(data)
+        ui.setImage(data)
+
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.histogram_level[data_type][0],
+                                    self.histogram_level[data_type][1])
 
     def get_reference_index_selected(self):
-        print(self.ui.tableWidget.selectedRanges())
-
         _selection = self.ui.tableWidget.selectedRanges()[0]
         _row_selected = _selection.topRow()
         return _row_selected
@@ -104,8 +129,6 @@ class Interface(QMainWindow):
 
     def table_widget_target_image_changed(self, index):
         self.table_widget_selection_changed()
-
-
 
     def apply_clicked(self):
         # do stuff
