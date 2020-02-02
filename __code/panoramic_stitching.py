@@ -40,6 +40,8 @@ class Interface(QMainWindow):
                        'target': []}
     pyqtgraph_image_view = {'reference': None,
                             'data': None}
+    live_rois_id = {'reference': None,
+                    'target': None}
 
     def __init__(self, parent=None, o_norm=None):
 

@@ -25,12 +25,12 @@ class GuiInitialization:
     def all(self):
         self.master_dict()
         self.pyqtgraph()
-        self.roi()
         self.widgets()
         self.table()
         self.statusbar()
         self.splitters()
         self.table_selection()
+        self.built_first_roi()
 
     def pyqtgraph(self):
         self.parent.ui.reference_view = pg.ImageView(view=pg.PlotItem())
@@ -50,27 +50,44 @@ class GuiInitialization:
         self.parent.ui.reference_widget.setLayout(reference_layout)
         self.parent.ui.target_widget.setLayout(target_layout)
 
-    def roi(self):
+    def built_first_roi(self):
+        master_dict = self.parent.master_dict
+        _first_file = self.parent.list_reference['files'][0]
+        _reference_roi_id = GuiInitialization._built_single_roi(roi_position=master_dict[_first_file]['reference_roi'],
+                                                                view=self.parent.ui.reference_view,
+                                                                connected_method=self.parent.reference_roi_changed)
+        self.parent.live_rois_id['reference'] = _reference_roi_id
+
+        _target_roi_id = GuiInitialization._built_single_roi(roi_position=master_dict[_first_file]['target_roi'],
+                                                             view=self.parent.ui.target_view,
+                                                             connected_method=self.parent.target_roi_changed)
+        self.parent.live_rois_id['target'] = _target_roi_id
+
+    @staticmethod
+    def _built_single_roi(roi_position=[], view=None, connected_method=None):
+        _roi_id = GuiInitialization._make_roi_id(roi_position, is_with_handle=True)
+        view.addItem(_roi_id)
+        _roi_id.sigRegionChanged.connect(connected_method)
+        return _roi_id
+
+    @staticmethod
+    def _make_roi_id(roi_dict={}, is_with_handle=True):
         color = QtGui.QColor(62, 13, 244)
         _pen = QtGui.QPen()
         _pen.setColor(color)
         _pen.setWidth(0.02)
 
-        o_utilities = Utilities(parent=self.parent)
+        x0 = roi_dict['x0']
+        y0 = roi_dict['y0']
+        width = roi_dict['width']
+        height = roi_dict['height']
 
-        # reference view
-        [x0, y0, width, height] = o_utilities.get_roi(full_file_name=self.parent.list_reference['files'][0])
         _roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
-        _roi_id.addScaleHandle([1, 1], [0, 0])
-        _roi_id.addScaleHandle([0, 0], [1, 1])
-        self.parent.ui.reference_view.addItem(_roi_id)
-        _roi_id.sigRegionChanged.connect(self.parent.reference_roi_changed)
+        if is_with_handle:
+            _roi_id.addScaleHandle([1, 1], [0, 0])
+            _roi_id.addScaleHandle([0, 0], [1, 1])
 
-        # target view
-        [x1, y1, width, height] = o_utilities.get_roi(full_file_name=self.parent.list_target['files'][0])
-        _roi_id = pg.ROI([x1, y1], [width, height], pen=_pen, scaleSnap=True)
-        self.parent.ui.target_view.addItem(_roi_id)
-        _roi_id.sigRegionChanged.connect(self.parent.target_roi_changed)
+        return _roi_id
 
     def master_dict(self):
         master_dict = OrderedDict()
