@@ -71,7 +71,6 @@ class Interface(QMainWindow):
         self.ui.reference_widget.setLayout(reference_layout)
         self.ui.target_widget.setLayout(target_layout)
 
-
         self.initialize_master_dict()
         self.init_table()
         self.init_widgets()

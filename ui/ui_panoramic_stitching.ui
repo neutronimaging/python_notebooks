@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>982</width>
-    <height>811</height>
+    <width>1013</width>
+    <height>819</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,73 +16,76 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <widget class="QSplitter" name="splitter">
+     <widget class="QSplitter" name="splitter_2">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QSplitter" name="splitter_3">
+         <widget class="QSplitter" name="splitter">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QGroupBox" name="groupBox_2">
-           <property name="title">
-            <string>Reference Image</string>
+          <widget class="QSplitter" name="splitter_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QWidget" name="reference_widget" native="true"/>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>Reference Image</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QWidget" name="reference_widget" native="true"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>Target Image</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QWidget" name="target_widget" native="true"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
           </widget>
-          <widget class="QGroupBox" name="groupBox">
-           <property name="title">
-            <string>Target Image</string>
+          <widget class="QTableWidget" name="tableWidget">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
-               <widget class="QWidget" name="target_widget" native="true"/>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <column>
+            <property name="text">
+             <string>Reference Images</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Target Images</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Status</string>
+            </property>
+           </column>
           </widget>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTableWidget" name="tableWidget">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::SingleSelection</enum>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-          <column>
-           <property name="text">
-            <string>Reference Images</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Target Images</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Status</string>
-           </property>
-          </column>
          </widget>
         </item>
         <item>
@@ -132,7 +135,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="apply_button">
+       <widget class="QPushButton" name="export_button">
         <property name="text">
          <string>Export ...</string>
         </property>
@@ -147,7 +150,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>982</width>
+     <width>1013</width>
      <height>22</height>
     </rect>
    </property>
@@ -173,7 +176,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>apply_button</sender>
+   <sender>export_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>apply_clicked()</slot>
