@@ -18,6 +18,7 @@ from NeuNorm.normalization import Normalization
 from __code.ui_panoramic_stitching import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
 from __code._panoramic_stitching.gui_initialization import GuiInitialization
+from __code._panoramic_stitching.utilities import Utilities
 
 
 class InterfaceHandler(FileFolderBrowser):
@@ -79,16 +80,31 @@ class Interface(QMainWindow):
 
     # event handler
     def reference_roi_changed(self):
-        print("reference_roi_changed")
+        self.save_roi_changed(data_type='reference')
 
     def target_roi_changed(self):
-        print("target_roi_changed")
+        self.save_roi_changed(data_type='target')
+
+    def save_roi_changed(self, data_type='reference'):
+        roi_id = self.live_rois_id[data_type]
+        o_utilities = Utilities(parent=self)
+        view = o_utilities.get_view(data_type=data_type)
+        image = o_utilities.get_image(data_type=data_type)
+
+        region = roi_id.getArraySlice(image,
+                                      view.imageItem)
+
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
 
     def table_widget_selection_changed(self):
-        reference_file_index_selected = self.get_reference_index_selected()
+        o_utilities = Utilities(parent=self)
+        reference_file_index_selected = o_utilities.get_reference_index_selected()
 
         # +1 because the target file starts at the second file
-        target_file_index_selected = self.get_target_index_selected_from_row(row=reference_file_index_selected)
+        target_file_index_selected = o_utilities.get_target_index_selected_from_row(row=reference_file_index_selected)
 
         reference_data = self.list_reference['data'][reference_file_index_selected]
         target_data = self.list_target['data'][target_file_index_selected]
@@ -135,7 +151,8 @@ class Interface(QMainWindow):
                                     self.histogram_level[data_type][1])
 
     def display_roi(self, data_type='reference'):
-        _file_key = self.get_reference_file_selected()
+        o_utilities = Utilities(parent=self)
+        _file_key = o_utilities.get_reference_file_selected()
         file_dict = self.master_dict[_file_key]
 
         _roi_key = "{}_roi".format(data_type)
@@ -161,18 +178,18 @@ class Interface(QMainWindow):
         _roi_id.sigRegionChanged.connect(method)
         self.live_rois_id[data_type] = _roi_id
 
-    def get_reference_file_selected(self):
-        _row_selected = self.get_reference_index_selected()
-        return self.list_reference['files'][_row_selected]
+    # def get_reference_file_selected(self):
+    #     _row_selected = self.get_reference_index_selected()
+    #     return self.list_reference['files'][_row_selected]
+    #
+    # def get_reference_index_selected(self):
+    #     _selection = self.ui.tableWidget.selectedRanges()[0]
+    #     _row_selected = _selection.topRow()
+    #     return _row_selected
 
-    def get_reference_index_selected(self):
-        _selection = self.ui.tableWidget.selectedRanges()[0]
-        _row_selected = _selection.topRow()
-        return _row_selected
-
-    def get_target_index_selected_from_row(self, row=0):
-        _widget = self.ui.tableWidget.cellWidget(row, 1)
-        return _widget.currentIndex()
+    # def get_target_index_selected_from_row(self, row=0):
+    #     _widget = self.ui.tableWidget.cellWidget(row, 1)
+    #     return _widget.currentIndex()
 
     def table_widget_target_image_changed(self, index):
         self.table_widget_selection_changed()
