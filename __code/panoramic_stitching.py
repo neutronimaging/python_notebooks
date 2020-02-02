@@ -79,10 +79,10 @@ class Interface(QMainWindow):
 
     # event handler
     def reference_roi_changed(self):
-        pass
+        print("reference_roi_changed")
 
     def target_roi_changed(self):
-        pass
+        print("target_roi_changed")
 
     def table_widget_selection_changed(self):
         reference_file_index_selected = self.get_reference_index_selected()
@@ -160,9 +160,6 @@ class Interface(QMainWindow):
         ui.addItem(_roi_id)
         _roi_id.sigRegionChanged.connect(method)
         self.live_rois_id[data_type] = _roi_id
-
-    def roi_changed(self):
-        print("roi changed")
 
     def get_reference_file_selected(self):
         _row_selected = self.get_reference_index_selected()

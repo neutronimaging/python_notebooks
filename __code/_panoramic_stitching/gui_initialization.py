@@ -49,32 +49,6 @@ class GuiInitialization:
         self.parent.ui.reference_widget.setLayout(reference_layout)
         self.parent.ui.target_widget.setLayout(target_layout)
 
-    @staticmethod
-    def _built_single_roi(roi_position=[], view=None, connected_method=None):
-        _roi_id = GuiInitialization._make_roi_id(roi_position, is_with_handle=True)
-        view.addItem(_roi_id)
-        _roi_id.sigRegionChanged.connect(connected_method)
-        return _roi_id
-
-    @staticmethod
-    def _make_roi_id(roi_dict={}, is_with_handle=True):
-        color = QtGui.QColor(62, 13, 244)
-        _pen = QtGui.QPen()
-        _pen.setColor(color)
-        _pen.setWidth(0.02)
-
-        x0 = roi_dict['x0']
-        y0 = roi_dict['y0']
-        width = roi_dict['width']
-        height = roi_dict['height']
-
-        _roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
-        if is_with_handle:
-            _roi_id.addScaleHandle([1, 1], [0, 0])
-            _roi_id.addScaleHandle([0, 0], [1, 1])
-
-        return _roi_id
-
     def master_dict(self):
         master_dict = OrderedDict()
         _each_file_dict = {'associated_with_file_index': 0,
