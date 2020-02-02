@@ -61,10 +61,36 @@ class Interface(QMainWindow):
 
     # event handler
     def table_widget_selection_changed(self):
-        print("selection changed")
+        reference_file_index_selected = self.get_reference_index_selected()
+
+        # +1 because the target file starts at the second file
+        target_file_index_selected = self.get_target_index_selected_from_row(row=reference_file_index_selected) + 1
+
+        reference_data = self.list_data[reference_file_index_selected]
+        target_data = self.list_data[target_file_index_selected]
+
+        self.display_reference_data(data=reference_data)
+        self.display_target_data(data=target_data)
+
+    def display_reference_data(self, data=[]):
+        data = np.transpose(data)
+        self.ui.reference_view.setImage(data)
+
+    def display_target_data(self, data=[]):
+        data = np.transpose(data)
+        self.ui.target_view.setImage(data)
+
+    def get_reference_index_selected(self):
+        _selection = self.ui.tableWidget.selectedRanges()[0]
+        _row_selected = _selection.topRow()
+        return _row_selected
+
+    def get_target_index_selected_from_row(self, row=0):
+        _widget = self.ui.tableWidget.cellWidget(row, 1)
+        return _widget.currentIndex()
 
     def table_widget_target_image_changed(self, index):
-        print("target selection changed")
+        self.table_widget_selection_changed()
 
     def init_pyqtgraph(self):
         self.ui.reference_view = pg.ImageView()
