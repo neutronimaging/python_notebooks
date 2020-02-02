@@ -54,26 +54,31 @@ class Interface(QMainWindow):
         self.init_statusbar()
         self.setWindowTitle("Panoramic Stitching")
 
-        self.ui.reference_view = pg.ImageView()
-        self.ui.reference_view.ui.roiBtn.hide()
-        self.ui.reference_view.ui.menuBtn.hide()
-
-        self.ui.target_view = pg.ImageView()
-        self.ui.target_view.ui.roiBtn.hide()
-        self.ui.target_view.ui.menuBtn.hide()
-
-        reference_layout = QtGui.QVBoxLayout()
-        reference_layout.addWidget(self.ui.reference_view)
-
-        target_layout = QtGui.QVBoxLayout()
-        target_layout.addWidget(self.ui.target_view)
-
-        self.ui.reference_widget.setLayout(reference_layout)
-        self.ui.target_widget.setLayout(target_layout)
-
+        self.init_pyqtgraph()
         self.initialize_master_dict()
         self.init_table()
         self.init_widgets()
+
+    # event handler
+    def table_widget_selection_changed(self):
+        print("selection changed")
+
+    def table_widget_target_image_changed(self, index):
+        print("target selection changed")
+
+    def init_pyqtgraph(self):
+        self.ui.reference_view = pg.ImageView()
+        self.ui.reference_view.ui.roiBtn.hide()
+        self.ui.reference_view.ui.menuBtn.hide()
+        self.ui.target_view = pg.ImageView()
+        self.ui.target_view.ui.roiBtn.hide()
+        self.ui.target_view.ui.menuBtn.hide()
+        reference_layout = QtGui.QVBoxLayout()
+        reference_layout.addWidget(self.ui.reference_view)
+        target_layout = QtGui.QVBoxLayout()
+        target_layout.addWidget(self.ui.target_view)
+        self.ui.reference_widget.setLayout(reference_layout)
+        self.ui.target_widget.setLayout(target_layout)
 
     def initialize_master_dict(self):
         master_dict = OrderedDict()
@@ -97,6 +102,11 @@ class Interface(QMainWindow):
     def init_table(self):
         master_dict = self.master_dict
         for _row, _file_name in enumerate(master_dict.keys()):
+
+            # skip the last one
+            if _row == (len(master_dict.keys())-1):
+                break
+
             self.ui.tableWidget.insertRow(_row)
 
             _dict_of_this_row = master_dict[_file_name]
@@ -106,9 +116,13 @@ class Interface(QMainWindow):
             self.ui.tableWidget.setItem(_row, 0, _item)
 
             # target image
-            _item = QtGui.QComboBox()
-            _item.addItems(self.basename_list_files)
-            self.ui.tableWidget.setCellWidget(_row, 1, _item)
+            _combobox = QtGui.QComboBox()
+            _combobox.blockSignals(True)
+            _combobox.currentIndexChanged.connect(self.table_widget_target_image_changed)
+            _combobox.addItems(self.basename_list_files[1:])
+            _combobox.setCurrentIndex(_row+1)
+            _combobox.blockSignals(False)
+            self.ui.tableWidget.setCellWidget(_row, 1, _combobox)
 
             # status
             _item = QtGui.QTableWidgetItem(_dict_of_this_row['status'])

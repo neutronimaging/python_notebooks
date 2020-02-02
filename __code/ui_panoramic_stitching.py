@@ -103,6 +103,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.cancel_button.clicked.connect(MainWindow.cancel_clicked)
         self.export_button.clicked.connect(MainWindow.apply_clicked)
+        self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
