@@ -30,7 +30,6 @@ class GuiInitialization:
         self.statusbar()
         self.splitters()
         self.table_selection()
-        self.built_first_roi()
 
     def pyqtgraph(self):
         self.parent.ui.reference_view = pg.ImageView(view=pg.PlotItem())
@@ -49,19 +48,6 @@ class GuiInitialization:
         target_layout.addWidget(self.parent.ui.target_view)
         self.parent.ui.reference_widget.setLayout(reference_layout)
         self.parent.ui.target_widget.setLayout(target_layout)
-
-    def built_first_roi(self):
-        master_dict = self.parent.master_dict
-        _first_file = self.parent.list_reference['files'][0]
-        _reference_roi_id = GuiInitialization._built_single_roi(roi_position=master_dict[_first_file]['reference_roi'],
-                                                                view=self.parent.ui.reference_view,
-                                                                connected_method=self.parent.reference_roi_changed)
-        self.parent.live_rois_id['reference'] = _reference_roi_id
-
-        _target_roi_id = GuiInitialization._built_single_roi(roi_position=master_dict[_first_file]['target_roi'],
-                                                             view=self.parent.ui.target_view,
-                                                             connected_method=self.parent.target_roi_changed)
-        self.parent.live_rois_id['target'] = _target_roi_id
 
     @staticmethod
     def _built_single_roi(roi_position=[], view=None, connected_method=None):
@@ -110,6 +96,7 @@ class GuiInitialization:
 
     def table(self):
         master_dict = self.parent.master_dict
+        self.parent.ui.tableWidget.blockSignals(True)
         for _row, _file_name in enumerate(self.parent.list_reference['files']):
 
             self.parent.ui.tableWidget.insertRow(_row)
@@ -132,6 +119,7 @@ class GuiInitialization:
             # status
             _item = QtGui.QTableWidgetItem(_dict_of_this_row['status'])
             self.parent.ui.tableWidget.setItem(_row, 2, _item)
+        self.parent.ui.tableWidget.blockSignals(False)
 
         for _column_index, _width in enumerate(self.parent.tableWidget_columns_size):
             self.parent.ui.tableWidget.setColumnWidth(_column_index, _width)

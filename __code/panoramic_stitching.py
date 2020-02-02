@@ -55,6 +55,7 @@ class Interface(QMainWindow):
 
         self.list_data = self.o_norm.data['sample']['data']
 
+        # have a format {'files': [], 'data': [], 'basename_files': []}
         self.list_reference = self.get_list_files(start_index=0, end_index=-1)
         self.list_target = self.get_list_files(start_index=1)
 
@@ -104,6 +105,11 @@ class Interface(QMainWindow):
     def display_data(self, data_type='reference', data=[]):
 
         ui = self.pyqtgraph_image_view[data_type]
+
+        roi_id = self.live_rois_id[data_type]
+        if roi_id:
+            ui.removeItem(roi_id)
+
         histogram_level = self.histogram_level[data_type]
 
         _view = ui.getView()
@@ -120,14 +126,47 @@ class Interface(QMainWindow):
         data = np.transpose(data)
         ui.setImage(data)
 
+        self.display_roi(data_type=data_type)
+
         _view_box.setState(_state)
 
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[data_type][0],
                                     self.histogram_level[data_type][1])
 
+    def display_roi(self, data_type='reference'):
+        _file_key = self.get_reference_file_selected()
+        file_dict = self.master_dict[_file_key]
+
+        _roi_key = "{}_roi".format(data_type)
+        x0 = file_dict[_roi_key]['x0']
+        y0 = file_dict[_roi_key]['y0']
+        width = file_dict[_roi_key]['width']
+        height = file_dict[_roi_key]['height']
+
+        ui = self.pyqtgraph_image_view[data_type]
+        color = QtGui.QColor(62, 13, 244)
+        _pen = QtGui.QPen()
+        _pen.setColor(color)
+        _pen.setWidth(0.02)
+        _roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
+        if data_type == 'reference':
+            _roi_id.addScaleHandle([1, 1], [0, 0])
+            _roi_id.addScaleHandle([0, 0], [1, 1])
+            method = self.reference_roi_changed
+        else:
+            method = self.target_roi_changed
+
+        ui.addItem(_roi_id)
+        _roi_id.sigRegionChanged.connect(method)
+        self.live_rois_id[data_type] = _roi_id
+
     def roi_changed(self):
         print("roi changed")
+
+    def get_reference_file_selected(self):
+        _row_selected = self.get_reference_index_selected()
+        return self.list_reference['files'][_row_selected]
 
     def get_reference_index_selected(self):
         _selection = self.ui.tableWidget.selectedRanges()[0]
