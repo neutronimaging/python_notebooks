@@ -43,6 +43,7 @@ class ExtractEvenlySpacedFiles(object):
 
     def _retrieve_list_of_files(self, folder_selected):
         [self.list_files, _] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=folder_selected)
+        self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
         self.number_of_files = len(self.list_files)
         display(HTML('<span style="font-size: 15px; color:blue">' + str(self.number_of_files) +
                  ' files will be used in the extraction.</span>'))
@@ -63,11 +64,12 @@ class ExtractEvenlySpacedFiles(object):
         self.extracting_label_ui = hori_layout_2.children[0]
 
         # list of files that will be extracted
+
         hori_layout_3 = widgets.HBox([widgets.Label("List of files extracted",
-                                                    layout=widgets.Layout(width='10%')),
-                                      widgets.Select(options=self.list_files,
-                                                     layout=widgets.Layout(width='50%',
-                                                                           height='200px'))])
+                                                    layout=widgets.Layout(width='20%')),
+                                      widgets.Select(options=self.basename_list_files,
+                                                     layout=widgets.Layout(width='80%',
+                                                                           height='400px'))])
         self.list_of_files_that_will_be_extracted_ui = hori_layout_3.children[1]
 
         verti_layout = widgets.VBox([hori_layout_1, hori_layout_2, hori_layout_3])
@@ -81,8 +83,34 @@ class ExtractEvenlySpacedFiles(object):
         self.extracting_label_ui.value = self.extract_message.format(nbr_files_extracted)
 
         list_of_files_that_will_be_extracted = self.get_list_of_files_to_extract()
-        self.list_of_files_that_will_be_extracted_ui.options = list_of_files_that_will_be_extracted
         self.list_of_files_to_extract = list_of_files_that_will_be_extracted
+
+        basename_list_of_files_that_will_be_extracted = [os.path.basename(_file) for _file in list_of_files_that_will_be_extracted]
+        self.list_of_files_that_will_be_extracted_ui.options = basename_list_of_files_that_will_be_extracted
+        self.basename_list_of_files_that_will_be_extracted = basename_list_of_files_that_will_be_extracted
+
+    def get_renamed_basename_list_of_files(self):
+        list_of_files_to_extract = self.basename_list_of_files_that_will_be_extracted
+
+        for _counter, _file in enumerate(list_of_files_to_extract):
+            [_name, ext] = os.path.splitext(_file)
+            _name_split = _name.split('_')
+            new_name = "_".join(_name_split[:-1]) + "{:04d}".format(_counter, )
+
+
+    def renamed_files(self):
+        renamed_basename_list_of_files = self.get_renamed_basename_list_of_files()
+        question_widget = widgets.ToggleButton(value=True,
+                                               description="Rename files?",
+                                               tooltip="Do you want to renamed the output files?",
+                                               icon='check')
+        horizontal_layout = widgets.HBox[widgets.Select(options=self.basename_list_files,
+                                                        layout=widgets.Layout(width='40%')),
+                                         widgets.Select(options=self.renamed_basemane_list_files,
+                                                        layout=widgets.Layout(width='40%'))]
+        vertical_layout = widgets.VBox([question_widget, horizontal_layout])
+        display(vertical_layout)
+
 
     def select_output_folder(self):
         self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(instruction='select where to extract the files',
