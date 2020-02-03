@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1013, 819)
+        MainWindow.resize(982, 811)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -96,7 +96,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1013, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 982, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -107,6 +107,7 @@ class Ui_MainWindow(object):
         self.cancel_button.clicked.connect(MainWindow.cancel_clicked)
         self.export_button.clicked.connect(MainWindow.apply_clicked)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
+        self.run_stitching_button.clicked.connect(MainWindow.run_stitching_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

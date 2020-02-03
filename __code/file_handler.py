@@ -162,6 +162,13 @@ def copy_files_to_folder(list_files=[], output_folder=""):
     for _file in list_files:
         shutil.copy(_file, output_folder)
 
+
+def copy_and_rename_files_to_folder(list_files=[], new_list_files_names=[], output_folder=''):
+    for _index_file, _original_file in enumerate(list_files):
+        _new_file = os.path.join(output_folder, new_list_files_names[_index_file])
+        shutil.copy(_original_file, _new_file)
+
+
 def remove_SummedImg_from_list(list_files):
     base_name_and_extension = os.path.basename(list_files[0])
     dir_name = os.path.dirname(list_files[0])

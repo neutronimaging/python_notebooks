@@ -65,11 +65,11 @@ class Interface(QMainWindow):
             self.ui.table_roi.setColumnWidth(_col, self.roi_column_width)
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        self.eventProgress.setMinimumSize(20, 14)
-        self.eventProgress.setMaximumSize(540, 100)
-        self.eventProgress.setVisible(False)
-        self.ui.statusbar.addPermanentWidget(self.eventProgress)
+        self.parent.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.parent.eventProgress.setMinimumSize(20, 14)
+        self.parent.eventProgress.setMaximumSize(540, 100)
+        self.parent.eventProgress.setVisible(False)
+        self.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def __get_recap(self, data_array):
         if data_array:

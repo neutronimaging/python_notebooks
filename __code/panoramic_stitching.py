@@ -207,7 +207,7 @@ class Interface(QMainWindow):
         """enable the button if all the target files have been selected at least once"""
         o_utilities = Utilities(parent=self)
         o_utilities.reset_all_status()
-        
+
         nbr_row = self.ui.tableWidget.rowCount()
         list_target_file = set()
         for _row in np.arange(nbr_row):
@@ -229,6 +229,10 @@ class Interface(QMainWindow):
     def table_widget_target_image_changed(self, index):
         self.table_widget_selection_changed()
         self.check_status_of_stitching_button()
+
+    def run_stitching_button_clicked(self):
+        self.eventProgress.setVisible(True)
+        print("running stitching button")
 
     def apply_clicked(self):
         # do stuff

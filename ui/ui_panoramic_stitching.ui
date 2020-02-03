@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1013</width>
-    <height>819</height>
+    <width>982</width>
+    <height>811</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -169,7 +169,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1013</width>
+     <width>982</width>
      <height>22</height>
     </rect>
    </property>
@@ -226,6 +226,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>run_stitching_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>run_stitching_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>377</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -236,5 +252,6 @@
   <slot>guide_color_changed()</slot>
   <slot>grid_size_changed()</slot>
   <slot>table_widget_selection_changed()</slot>
+  <slot>run_stitching_button_clicked()</slot>
  </slots>
 </ui>

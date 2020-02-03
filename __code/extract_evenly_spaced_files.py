@@ -43,7 +43,9 @@ class ExtractEvenlySpacedFiles(object):
 
     def _retrieve_list_of_files(self, folder_selected):
         [self.list_files, _] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=folder_selected)
+        self.list_of_files_to_extract = self.list_files
         self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
+        self.basename_list_of_files_that_will_be_extracted = [os.path.basename(_file) for _file in self.list_files]
         self.number_of_files = len(self.list_files)
         display(HTML('<span style="font-size: 15px; color:blue">' + str(self.number_of_files) +
                  ' files will be used in the extraction.</span>'))
@@ -53,6 +55,7 @@ class ExtractEvenlySpacedFiles(object):
         hori_layout_1 = widgets.HBox([widgets.Label("Extract 1 over ",
                                                     layout=widgets.Layout(width="10%")),
                                       widgets.Dropdown(options=np.arange(1, self.number_of_files),
+                                                       value=2,
                                                        layout=widgets.Layout(width="5%")),
                                       widgets.Label("files",
                                                     layout=widgets.Layout(width="10%"))])
@@ -92,25 +95,44 @@ class ExtractEvenlySpacedFiles(object):
     def get_renamed_basename_list_of_files(self):
         list_of_files_to_extract = self.basename_list_of_files_that_will_be_extracted
 
+        renamed_list_of_files_to_extract = []
         for _counter, _file in enumerate(list_of_files_to_extract):
             [_name, ext] = os.path.splitext(_file)
             _name_split = _name.split('_')
-            new_name = "_".join(_name_split[:-1]) + "{:04d}".format(_counter, )
+            new_name = "_".join(_name_split[:-1]) + "_{:04d}{}".format(_counter, ext)
+            renamed_list_of_files_to_extract.append(new_name)
+        return renamed_list_of_files_to_extract
 
+    def renaming_checkbox_changed(self, value):
+        if value['new']:
+            visibility = 'visible'
+        else:
+            visibility = 'hidden'
+        self.left_vertical_layout.layout.visibility = visibility
+        self.right_vertical_layout.layout.visibility = visibility
 
     def renamed_files(self):
-        renamed_basename_list_of_files = self.get_renamed_basename_list_of_files()
-        question_widget = widgets.ToggleButton(value=True,
-                                               description="Rename files?",
-                                               tooltip="Do you want to renamed the output files?",
-                                               icon='check')
-        horizontal_layout = widgets.HBox[widgets.Select(options=self.basename_list_files,
-                                                        layout=widgets.Layout(width='40%')),
-                                         widgets.Select(options=self.renamed_basemane_list_files,
-                                                        layout=widgets.Layout(width='40%'))]
-        vertical_layout = widgets.VBox([question_widget, horizontal_layout])
-        display(vertical_layout)
+        self.renamed_basename_list_of_files = self.get_renamed_basename_list_of_files()
+        question_widget = widgets.Checkbox(value=True,
+                                           description="Rename files?")
+        question_widget.observe(self.renaming_checkbox_changed, names='value')
+        self.renaming_files_widget = question_widget
 
+        self.left_vertical_layout = widgets.VBox([widgets.Label("Before renaming",
+                                                                layout=widgets.Layout(width='100%')),
+                                                  widgets.Select(options=self.basename_list_files,
+                                                                 layout=widgets.Layout(width='90%',
+                                                                                  height='400px'))],
+                                                  layout=widgets.Layout(width='40%'))
+        self.right_vertical_layout = widgets.VBox([widgets.Label("After renaming",
+                                                                 layout=widgets.Layout(width='100%')),
+                                                   widgets.Select(options=self.renamed_basename_list_of_files,
+                                                                  layout=widgets.Layout(width='90%',
+                                                                                   height='400px'))],
+                                                   layout=widgets.Layout(width='40%'))
+        horizontal_layout = widgets.HBox([self.left_vertical_layout, self.right_vertical_layout])
+        full_vertical_layout = widgets.VBox([question_widget, horizontal_layout])
+        display(full_vertical_layout)
 
     def select_output_folder(self):
         self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(instruction='select where to extract the files',
@@ -131,8 +153,15 @@ class ExtractEvenlySpacedFiles(object):
         full_output_folder_name = os.path.abspath(os.path.join(output_folder, new_folder))
 
         file_handler.make_or_reset_folder(full_output_folder_name)
-        file_handler.copy_files_to_folder(list_files=list_of_files_to_extract,
-                                          output_folder=full_output_folder_name)
-
-        display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
-                 ' files have been copied into ' + full_output_folder_name + '</span>'))
+        if self.renaming_files_widget.value:
+            list_files_new_name = self.renamed_basename_list_of_files
+            file_handler.copy_and_rename_files_to_folder(list_files=list_of_files_to_extract,
+                                                         new_list_files_names=list_files_new_name,
+                                                         output_folder=full_output_folder_name)
+            display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
+                         ' files have been copied and renamed into ' + full_output_folder_name + '</span>'))
+        else:
+            file_handler.copy_files_to_folder(list_files=list_of_files_to_extract,
+                                              output_folder=full_output_folder_name)
+            display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
+                     ' files have been copied into ' + full_output_folder_name + '</span>'))
