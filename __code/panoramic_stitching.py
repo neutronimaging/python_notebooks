@@ -113,6 +113,15 @@ class Interface(QMainWindow):
                                            width=width,
                                            height=height)
 
+        # we need to make sure the target roi has the same size
+        if data_type == 'reference':
+            master_dict_key = o_utilities.get_reference_selected(key='files')
+            o_utilities.set_roi_to_master_dict(master_dict_key=master_dict_key,
+                                               data_type='target',
+                                               width=width,
+                                               height=height)
+            self.display_target_data(data=o_utilities.get_image(data_type='target'))
+
     def table_widget_selection_changed(self):
         o_utilities = Utilities(parent=self)
         reference_file_index_selected = o_utilities.get_reference_selected(key='index')

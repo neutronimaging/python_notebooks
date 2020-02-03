@@ -15,14 +15,14 @@ class Utilities:
         return [x0, y0, width, height]
 
     def set_roi_to_master_dict(self, master_dict_key=None, data_type='reference',
-                               x0=np.NaN, y0=np.NaN, width=np.NaN, height=np.NaN):
+                               x0=None, y0=None, width=np.NaN, height=np.NaN):
         roi_key = "{}_roi".format(data_type)
         roi_dict = self.parent.master_dict[master_dict_key][roi_key]
-        roi_dict['x0'] = x0
-        roi_dict['y0'] = y0
+        if x0:
+            roi_dict['x0'] = x0
+            roi_dict['y0'] = y0
         roi_dict['width'] = width
         roi_dict['height'] = height
-        self.parent.master_dict[master_dict_key][roi_key] = roi_dict
 
     def get_view(self, data_type='reference'):
         if data_type == 'reference':
@@ -45,7 +45,7 @@ class Utilities:
         return self.parent.list_reference[key][_row_selected]
 
     def get_target_selected(self, key='files'):
-        row = self.__get_reference_file_selected()
+        row = self.get_reference_selected(key='index')
         combobox_index_selected = self.get_target_index_selected_from_row(row=row)
         return self.parent.list_target[key][combobox_index_selected]
 
