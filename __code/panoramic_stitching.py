@@ -67,6 +67,7 @@ class Interface(QMainWindow):
 
         o_initialization = GuiInitialization(parent=self)
         o_initialization.all()
+        self.check_status_of_stitching_button()
 
     def get_list_files(self, start_index=0, end_index=None):
         if end_index is None:
@@ -121,6 +122,8 @@ class Interface(QMainWindow):
                                                width=width,
                                                height=height)
             self.display_target_data(data=o_utilities.get_image(data_type='target'))
+
+        self.check_status_of_stitching_button()
 
     def table_widget_selection_changed(self):
         o_utilities = Utilities(parent=self)
@@ -200,8 +203,32 @@ class Interface(QMainWindow):
         _roi_id.sigRegionChanged.connect(method)
         self.live_rois_id[data_type] = _roi_id
 
+    def check_status_of_stitching_button(self):
+        """enable the button if all the target files have been selected at least once"""
+        o_utilities = Utilities(parent=self)
+        o_utilities.reset_all_status()
+        
+        nbr_row = self.ui.tableWidget.rowCount()
+        list_target_file = set()
+        for _row in np.arange(nbr_row):
+            _target_file = o_utilities.get_target_file_selected_for_this_row(_row)
+            if _target_file in list_target_file:
+                o_utilities.set_status_of_this_row_to_message(row=_row, message="Already used!")
+            list_target_file.add(_target_file)
+
+        if len(list_target_file) == len(self.list_target['files']):
+            enabled_button = True
+            statusbar_message = ""
+        else:
+            enabled_button = False
+            statusbar_message = "Make sure all files are used as reference"
+
+        self.ui.statusbar.showMessage(statusbar_message)
+        self.ui.run_stitching_button.setEnabled(enabled_button)
+
     def table_widget_target_image_changed(self, index):
         self.table_widget_selection_changed()
+        self.check_status_of_stitching_button()
 
     def apply_clicked(self):
         # do stuff

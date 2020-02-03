@@ -62,7 +62,14 @@ class Utilities:
         _widget = self.parent.ui.tableWidget.cellWidget(row, 1)
         return _widget.currentIndex()
 
-    # def get_target_file_selected(self):
-    #     row = self.get_reference_file_selected()
-    #     combobox_index_selected = self.get_target_index_selected_from_row(row=row)
-    #     return self.parent.list_target['files'][combobox_index_selected]
+    def get_target_file_selected_for_this_row(self, row=0):
+        combobox_index_selected = self.get_target_index_selected_from_row(row=row)
+        return self.parent.list_target['files'][combobox_index_selected]
+
+    def set_status_of_this_row_to_message(self, row=0, message=''):
+        self.parent.ui.tableWidget.item(row, 2).setText(message)
+
+    def reset_all_status(self):
+        nbr_row = self.parent.ui.tableWidget.rowCount()
+        for _row in np.arange(nbr_row):
+            self.set_status_of_this_row_to_message(row=_row, message="")
