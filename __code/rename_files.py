@@ -16,9 +16,9 @@ class FormatFileNameIndex(object):
 
 	def select_input_folder(self):
 		self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Input Folder',
-                                                             	    type='directory',
-                                                                    start_dir=self.working_dir,
-                                                                    multiple=False)
+																	type='directory',
+																	start_dir=self.working_dir,
+																	multiple=False)
 		self.input_folder_ui.show()
 
 	def calculate_most_dominant_files(self):
@@ -47,22 +47,24 @@ class NamingSchemaDefinition(object):
 
 		if self.list_files:
 			_random_input_list = utilities.get_n_random_element(input_list=self.list_files,
-																	n=10)
+																n=10)
 			self.random_input_list = [os.path.basename(_file) for _file in _random_input_list]
 
 	def current_naming_schema(self):
 		pre_index_separator = self.box2.children[1].value
-		schema = "<none_relevant_part>" + pre_index_separator + '<digit>' + self.ext
-	    
+		schema = "<file_name_prefix>" + pre_index_separator + '<digit>' + self.ext
 		return schema
 
 	def new_naming_schema(self):
-		prefix = self.box1.children[1].value
+		if not self.use_previous_prefix_widget.value:
+			prefix = self.new_prefix_text_widget.value
+		else:
+			prefix = "previous_prefix"  # FIXME
+
 		post_index_separator = self.box5.children[1].value
 		nbr_digits = self.box7.children[1].value
 
 		schema = prefix + post_index_separator + nbr_digits * '#' + self.ext
-	    
 		return schema
 
 	def pre_index_text_changed(self, sender):
@@ -72,6 +74,16 @@ class NamingSchemaDefinition(object):
 	def post_text_changed(self, sender):
 		self.box6.children[1].value = self.new_naming_schema()
 		self.demo_output_file_name()
+
+	def changed_use_previous_prefix_name(self, value):
+		self.user_new_prefix_widget.value = not value['new']
+		self.new_prefix_text_widget.disabled = value['new']
+		self.post_text_changed(None)
+
+	def changed_use_new_prefix_name(self, value):
+		self.use_previous_prefix_widget.value = not value['new']
+		self.new_prefix_text_widget.disabled = not value['new']
+		self.post_text_changed(None)
 
 	def show(self):
 
@@ -91,7 +103,6 @@ class NamingSchemaDefinition(object):
 		                    widgets.Dropdown(options=self.random_input_list,
 		                    	value=self.random_input_list[0],
 		                    	layout=widgets.Layout(width='50%'))
-
 		                    ])
 
 		self.box2.children[1].on_trait_change(self.pre_index_text_changed, 'value')
@@ -99,10 +110,25 @@ class NamingSchemaDefinition(object):
 
 		# new naming schema
 		box_text_width = '10%'
-		self.box1 = widgets.HBox([widgets.Label("Prefix File Name",
-		                                  layout=widgets.Layout(width='15%')),
-		                    widgets.Text(value='image',
-		                                layout=widgets.Layout(width='25%'))])
+		self.box1 = widgets.HBox([widgets.Label("New prefix File Name",
+												layout=widgets.Layout(width='10%')),
+								  widgets.Checkbox(value=True,
+												   description='Use previous prefix name',
+												   layout=widgets.Layout(width='30%'))])
+		self.use_previous_prefix_widget = self.box1.children[1]
+		self.box1.children[1].observe(self.changed_use_previous_prefix_name, names='value')
+
+		self.box1b = widgets.HBox([widgets.Label("",
+												layout=widgets.Layout(width='10%')),
+								  widgets.Checkbox(value=False,
+												   description='Use new prefix',
+												   layout=widgets.Layout(width='20%')),
+								  widgets.Text(value='image',
+											   disabled=True,
+											   layout=widgets.Layout(width='25%'))])
+		self.new_prefix_text_widget = self.box1b.children[2]
+		self.user_new_prefix_widget = self.box1b.children[1]
+		self.user_new_prefix_widget.observe(self.changed_use_new_prefix_name, names='value')
 
 		self.box5 = widgets.HBox([widgets.Label("New Index Separator",
 		                                  layout=widgets.Layout(width='15%')),
@@ -129,24 +155,24 @@ class NamingSchemaDefinition(object):
 		self.box7.children[1].on_trait_change(self.post_text_changed, 'value')
 		self.box8.children[1].on_trait_change(self.post_text_changed, 'value')
 
-		after = widgets.VBox([self.box1, self.box5, self.box7, self.box8, self.box6])
+		after = widgets.VBox([self.box1, self.box1b, self.box5, self.box7, self.box8, self.box6])
 
 		accordion = widgets.Accordion(children=[before, after])
 		accordion.set_title(0, 'Current Schema Name')
 		accordion.set_title(1, 'New Naming Schema')
 
 		output_ui_1 = widgets.HBox([widgets.Label("Example of naming: ",
-												layout=widgets.Layout(width='20%'))])
+												  layout=widgets.Layout(width='20%'))])
 
 		self.output_ui_2 = widgets.HBox([widgets.Label("Old name: ",
-		                                  layout=widgets.Layout(width='40%')),
+		                                 layout=widgets.Layout(width='40%')),
 		                    widgets.Label("",
-		                                 layout=widgets.Layout(width='60%'))])
+		                                  layout=widgets.Layout(width='60%'))])
 
 		self.output_ui_3 = widgets.HBox([widgets.Label("New name: ",
-		                                  layout=widgets.Layout(width='40%')),
+		                                 layout=widgets.Layout(width='40%')),
 		                    widgets.Label("",
-		                                 layout=widgets.Layout(width='60%'))])
+		                                  layout=widgets.Layout(width='60%'))])
 
 		self.output_ui_3.children[1].add_class("result_label")
 		vbox = widgets.VBox([accordion, output_ui_1, self.output_ui_2, self.output_ui_3])
