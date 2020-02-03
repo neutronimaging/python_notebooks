@@ -439,18 +439,38 @@ class FileSelectorPanelWithJumpFolders:
             stay_alive=False,
             ipts_folder='./',
     ):
+        self.type = type
+        self.next = next
 
         def display_file_selector_from_shared(ev):
             start_dir = os.path.join(ipts_folder, 'shared')
             self.output_folder_ui.remove()
-            self.display_file_selector(start_dir=start_dir)
+            self.display_file_selector(instruction=instruction,
+                                       start_dir=start_dir,
+                                       type=type,
+                                       next=next,
+                                       multiple=multiple,
+                                       newdir_toolbar_button=newdir_toolbar_button,
+                                       custom_layout=custom_layout,
+                                       filters=filters,
+                                       stay_alive=stay_alive,
+                                       )
 
         def display_file_selector_from_home(ev):
             import getpass
             _user = getpass.getuser()
             start_dir = os.path.join('/SNS/users', _user)
             self.output_folder_ui.remove()
-            self.display_file_selector(start_dir=start_dir)
+            self.display_file_selector(instruction=instruction,
+                                       start_dir=start_dir,
+                                       type=type,
+                                       next=next,
+                                       multiple=multiple,
+                                       newdir_toolbar_button=newdir_toolbar_button,
+                                       custom_layout=custom_layout,
+                                       filters=filters,
+                                       stay_alive=stay_alive,
+                                       )
 
         ipts = os.path.basename(start_dir)
 
@@ -474,18 +494,16 @@ class FileSelectorPanelWithJumpFolders:
 
         self.display_file_selector(instruction=instruction,
                                    start_dir=start_dir,
-                                   type=type,
+                                   type=self.type,
                                    next=next,
                                    multiple=multiple,
                                    newdir_toolbar_button=newdir_toolbar_button,
                                    custom_layout=custom_layout,
                                    filters=filters,
                                    default_filter=default_filter,
-                                   stay_alive=stay_alive,
-                                   ipts_folder=ipts_folder)
+                                   stay_alive=stay_alive)
 
     def display_file_selector(self, instruction="",
-                                    ipts_folder="./",
                                     start_dir="./",
                                     multiple=False,
                                     default_filter=None,

@@ -113,6 +113,7 @@ class ExtractEvenlySpacedFiles(object):
 
     def renamed_files(self):
         self.renamed_basename_list_of_files = self.get_renamed_basename_list_of_files()
+        basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
         question_widget = widgets.Checkbox(value=True,
                                            description="Rename files?")
         question_widget.observe(self.renaming_checkbox_changed, names='value')
@@ -120,7 +121,7 @@ class ExtractEvenlySpacedFiles(object):
 
         self.left_vertical_layout = widgets.VBox([widgets.Label("Before renaming",
                                                                 layout=widgets.Layout(width='100%')),
-                                                  widgets.Select(options=self.basename_list_files,
+                                                  widgets.Select(options=basename_list_of_files_that_will_be_extracted,
                                                                  layout=widgets.Layout(width='90%',
                                                                                   height='400px'))],
                                                   layout=widgets.Layout(width='40%'))
@@ -139,6 +140,7 @@ class ExtractEvenlySpacedFiles(object):
                                                                               start_dir=self.working_dir,
                                                                               next=self.extract,
                                                                               type='directory',
+                                                                              ipts_folder=self.working_dir,
                                                                               newdir_toolbar_button=True)
 
     def extract(self, output_folder):
@@ -155,12 +157,16 @@ class ExtractEvenlySpacedFiles(object):
         file_handler.make_or_reset_folder(full_output_folder_name)
         if self.renaming_files_widget.value:
             list_files_new_name = self.renamed_basename_list_of_files
+            display(HTML('<span style="font-size: 15px; color:green">Copying and renaming ' + str(len(list_of_files_to_extract)) +
+                         ' files into ' + full_output_folder_name + '... IN PROGRESS!</span>'))
             file_handler.copy_and_rename_files_to_folder(list_files=list_of_files_to_extract,
                                                          new_list_files_names=list_files_new_name,
                                                          output_folder=full_output_folder_name)
             display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
-                         ' files have been copied and renamed into ' + full_output_folder_name + '</span>'))
+                         ' files have been copied and renamed into ' + full_output_folder_name + '... DONE!</span>'))
         else:
+            display(HTML('<span style="font-size: 15px; color:green">Copying ' + str(len(list_of_files_to_extract)) +
+                         ' files into ' + full_output_folder_name + '... IN PROGRESS!</span>'))
             file_handler.copy_files_to_folder(list_files=list_of_files_to_extract,
                                               output_folder=full_output_folder_name)
             display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
