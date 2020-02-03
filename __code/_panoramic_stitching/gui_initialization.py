@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import pyqtgraph as pg
 import os
+import copy
 import numpy as np
 
 try:
@@ -64,7 +65,7 @@ class GuiInitialization:
 
         list_files = self.parent.list_files
         for _file in list_files:
-            master_dict[_file] = _each_file_dict.copy()
+            master_dict[_file] = copy.deepcopy(_each_file_dict)
 
         self.parent.master_dict = master_dict
 
