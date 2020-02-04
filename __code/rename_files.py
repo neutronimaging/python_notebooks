@@ -50,6 +50,8 @@ class NamingSchemaDefinition(object):
 																n=10)
 			self.random_input_list = [os.path.basename(_file) for _file in _random_input_list]
 
+		self.basename = os.path.basename(self.list_files[0])
+
 	def current_naming_schema(self):
 		pre_index_separator = self.box2.children[1].value
 		schema = "<file_name_prefix>" + pre_index_separator + '<digit>' + self.ext
@@ -59,7 +61,7 @@ class NamingSchemaDefinition(object):
 		if not self.use_previous_prefix_widget.value:
 			prefix = self.new_prefix_text_widget.value
 		else:
-			prefix = "previous_prefix"  # FIXME
+			prefix = self.basename_selected_by_user.value
 
 		post_index_separator = self.box5.children[1].value
 		nbr_digits = self.box7.children[1].value
@@ -80,19 +82,46 @@ class NamingSchemaDefinition(object):
 		self.new_prefix_text_widget.disabled = value['new']
 		self.post_text_changed(None)
 
-	def changed_use_new_prefix_name(self, value):
-		self.use_previous_prefix_widget.value = not value['new']
-		self.new_prefix_text_widget.disabled = not value['new']
+	def changed_use_new_prefix_name(self, value=[]):
+		if value == []:
+			_value = self.user_new_prefix_widget.value
+		else:
+			_value = value['new']
+		self.use_previous_prefix_widget.value = not _value
+		self.new_prefix_text_widget.disabled = not _value
 		self.post_text_changed(None)
+
+	def change_int_range_slider(self, value=[]):
+		if value == []:
+			[start_index, end_index] = self.int_range_slider.value
+		else:
+			[start_index, end_index] = value['new']
+		new_basename = self.basename[start_index: end_index+1]
+		self.basename_selected_by_user.value = new_basename
+
+		# update in the second ui
+		if self.use_previous_prefix_widget.value:
+			self.changed_use_new_prefix_name()
 
 	def show(self):
 
 		# current schema name
-
 		self.box2 = widgets.HBox([widgets.Label("Pre. Index Separator",
 		                                  layout=widgets.Layout(width='15%')),
 		                    widgets.Text(value='__',
 		                                layout=widgets.Layout(width='5%'))])
+
+		self.box2b = widgets.HBox([widgets.Label("File name prefix:",
+												 layout=widgets.Layout(width="20%")),
+								   widgets.Label("",
+												 layout=widgets.Layout(width='40%')),
+								   widgets.IntRangeSlider(value=[0,2],
+														  min=0,
+														  max=len(self.basename),
+														  step=1)])
+		self.int_range_slider = self.box2b.children[2]
+		self.int_range_slider.observe(self.change_int_range_slider, names='value')
+		self.basename_selected_by_user = self.box2b.children[1]
 
 		self.box4 = widgets.HBox([widgets.Label("Current Name Schema: ",
 		                                  layout=widgets.Layout(width='20%')),
@@ -106,7 +135,7 @@ class NamingSchemaDefinition(object):
 		                    ])
 
 		self.box2.children[1].on_trait_change(self.pre_index_text_changed, 'value')
-		before = widgets.VBox([self.box2, self.box4])
+		before = widgets.VBox([self.box2, self.box2b, self.box4])
 
 		# new naming schema
 		box_text_width = '10%'
@@ -148,7 +177,7 @@ class NamingSchemaDefinition(object):
 		self.box6 = widgets.HBox([widgets.Label("New Name Schema: ",
 		                                  layout=widgets.Layout(width='20%')),
 		                    widgets.Label(self.new_naming_schema(),
-		                                 layout=widgets.Layout(width='20%'))])
+		                                 layout=widgets.Layout(width='40%'))])
 
 		self.box1.children[1].on_trait_change(self.post_text_changed, 'value')
 		self.box5.children[1].on_trait_change(self.post_text_changed, 'value')
@@ -179,6 +208,8 @@ class NamingSchemaDefinition(object):
 		display(vbox)
 
 		self.demo_output_file_name()
+		self.change_int_range_slider()
+		self.changed_use_new_prefix_name()
 
 	def demo_output_file_name(self):
 		input_file = os.path.basename(self.list_files[0])
