@@ -290,11 +290,13 @@ class NamingSchemaDefinition(object):
 						 	   old_index_separator,
 						 	   new_prefix_name,
 						 	   new_index_separator,
-						 	   new_number_of_digits, offset):
+						 	   new_number_of_digits,
+							   offset):
 
 		[_pre_extension, _ext] = os.path.splitext(old_file_name)
 		_name_separated = _pre_extension.split(old_index_separator)
-		_index = np.double(_name_separated[-1]) + offset
+		_index = np.int(_name_separated[-1]) + offset
+
 		new_name = new_prefix_name + new_index_separator + \
 				   '{:0{}}'.format(_index, new_number_of_digits) + \
 				   self.ext
