@@ -91,24 +91,33 @@ class NamingSchemaDefinition(object):
 		self.new_prefix_text_widget.disabled = not _value
 		self.post_text_changed(None)
 
+	def get_basename_of_current_dropdown_selected_file(self):
+		full_file_name = self.random_input_checkbox.value
+		[basename, _] = os.path.splitext(full_file_name)
+		return basename
+
 	def change_int_range_slider(self, value=[]):
 		if value == []:
 			[start_index, end_index] = self.int_range_slider.value
 		else:
 			[start_index, end_index] = value['new']
-		new_basename = self.basename[start_index: end_index+1]
+		basename = self.get_basename_of_current_dropdown_selected_file()
+		new_basename = basename[start_index: end_index+1]
 		self.basename_selected_by_user.value = new_basename
 
 		# update in the second ui
 		if self.use_previous_prefix_widget.value:
 			self.changed_use_new_prefix_name()
 
+	def random_input_checkbox_value_changed(self, value):
+		self.change_int_range_slider()
+
 	def show(self):
 
 		# current schema name
 		self.box2 = widgets.HBox([widgets.Label("Pre. Index Separator",
 		                                  layout=widgets.Layout(width='15%')),
-		                    widgets.Text(value='__',
+		                    widgets.Text(value='_',
 		                                layout=widgets.Layout(width='5%'))])
 
 		self.box2b = widgets.HBox([widgets.Label("File name prefix:",
@@ -136,6 +145,8 @@ class NamingSchemaDefinition(object):
 
 		self.box2.children[1].on_trait_change(self.pre_index_text_changed, 'value')
 		before = widgets.VBox([self.box2, self.box2b, self.box4])
+		self.random_input_checkbox = self.box4.children[3]
+		self.random_input_checkbox.observe(self.random_input_checkbox_value_changed, 'value')
 
 		# new naming schema
 		box_text_width = '10%'
@@ -232,8 +243,7 @@ class NamingSchemaDefinition(object):
 						  </style>
 						  """))
 
-
-			new_name = self.geneate_new_file_name(input_file,
+			new_name = self.generate_new_file_name(input_file,
 												  old_index_separator,
 												  new_prefix_name,
 												  new_index_separator,
@@ -264,7 +274,11 @@ class NamingSchemaDefinition(object):
 		return self.box2.children[1].value
 
 	def get_new_prefix_name(self):
-		return self.box1.children[1].value
+		if self.use_previous_prefix_widget.value == True:
+			new_prefix_name = self.basename_selected_by_user.value
+		else:
+			new_prefix_name = self.new_prefix_text_widget.value
+		return new_prefix_name
 
 	def get_new_index_separator(self):
 		return self.box5.children[1].value
@@ -272,11 +286,15 @@ class NamingSchemaDefinition(object):
 	def get_new_number_of_digits(self):
 		return self.box7.children[1].value	
 
-	def geneate_new_file_name(self, old_file_name, old_index_separator, new_prefix_name, new_index_separator,
-							  new_number_of_digits, offset):
+	def generate_new_file_name(self, old_file_name,
+						 	   old_index_separator,
+						 	   new_prefix_name,
+						 	   new_index_separator,
+						 	   new_number_of_digits, offset):
+
 		[_pre_extension, _ext] = os.path.splitext(old_file_name)
 		_name_separated = _pre_extension.split(old_index_separator)
-		_index = np.int(_name_separated[-1]) + offset
+		_index = np.double(_name_separated[-1]) + offset
 		new_name = new_prefix_name + new_index_separator + \
 				   '{:0{}}'.format(_index, new_number_of_digits) + \
 				   self.ext
@@ -297,12 +315,12 @@ class NamingSchemaDefinition(object):
 
 		new_list = {}
 		for _file_index, _file in enumerate(list_of_input_basename_files):
-			new_name = self.geneate_new_file_name(_file,
-												  old_index_separator,
-												  new_prefix_name,
-												  new_index_separator,
-												  new_number_of_digits,
-												  offset)
+			new_name = self.generate_new_file_name(_file,
+												   old_index_separator,
+												   new_prefix_name,
+												   new_index_separator,
+												   new_number_of_digits,
+												   offset)
 			new_list[list_of_input_files[_file_index]] = new_name
 			renaming_result.append("{} \t --> \t {}".format(_file, new_name))
 
