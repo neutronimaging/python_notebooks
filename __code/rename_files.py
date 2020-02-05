@@ -91,10 +91,13 @@ class NamingSchemaDefinition(object):
 		self.new_prefix_text_widget.disabled = not _value
 		self.post_text_changed(None)
 
-	def get_basename_of_current_dropdown_selected_file(self):
+	def get_basename_of_current_dropdown_selected_file(self, is_with_ext=False):
 		full_file_name = self.random_input_checkbox.value
-		[basename, _] = os.path.splitext(full_file_name)
-		return basename
+		if is_with_ext:
+			return full_file_name
+		else:
+			[basename, _] = os.path.splitext(full_file_name)
+			return basename
 
 	def change_int_range_slider(self, value=[]):
 		if value == []:
@@ -223,7 +226,7 @@ class NamingSchemaDefinition(object):
 		self.changed_use_new_prefix_name()
 
 	def demo_output_file_name(self):
-		input_file = os.path.basename(self.list_files[0])
+		input_file = self.get_basename_of_current_dropdown_selected_file(is_with_ext=True)
 		self.output_ui_2.children[1].value = input_file
 
 		old_index_separator = self.get_old_index_separator()
@@ -244,11 +247,11 @@ class NamingSchemaDefinition(object):
 						  """))
 
 			new_name = self.generate_new_file_name(input_file,
-												  old_index_separator,
-												  new_prefix_name,
-												  new_index_separator,
-												  new_number_of_digits,
-												  offset)
+												   old_index_separator,
+												   new_prefix_name,
+												   new_index_separator,
+												   new_number_of_digits,
+												   offset)
 
 			self.ready_to_output = True
 
