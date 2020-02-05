@@ -3,11 +3,11 @@ from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import os
 import numpy as np
-import ipywe.fileselector
 from __code import utilities
+import ipywe
 
-from __code.file_handler import  ListMostDominantExtension
-
+from __code.file_handler import ListMostDominantExtension
+from __code.fileselector import FileSelectorPanelWithJumpFolders
 
 class FormatFileNameIndex(object):
 
@@ -335,27 +335,34 @@ class NamingSchemaDefinition(object):
 	def select_export_folder(self):
 
 		if self.ready_to_output:
-			self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
-																		 start_dir=self.working_dir,
-																		 multiple=False,
-																		 next=self.export,
-																		 type='directory')
-			self.output_folder_ui.show()
+			self.output_folder_ui = FileSelectorPanelWithJumpFolders(instruction='Select Output Folder',
+																	 start_dir=self.working_dir,
+																	 multiple=False,
+																	 next=self.export,
+			                                                         newdir_toolbar_button=True,
+																	 type='directory')
 		else:
 			display(HTML('<span style="font-size: 20px; color:red">You need to fix the namig convention first!</span>'))
 
-	def export(self, value):
+	def export(self, selected):
+
+		self.output_folder_ui.shortcut_buttons.close()
+
 		dict_old_new_names = self.get_dict_old_new_filenames()
-		new_output_folder = os.path.abspath(self.output_folder_ui.selected)
+		new_output_folder = os.path.abspath(selected)
 
 		utilities.copy_files(dict_old_new_names=dict_old_new_names,
-							 new_output_folder=new_output_folder)
+							 new_output_folder=new_output_folder,
+		                     overwrite=False)
 
 		self.new_list_files = dict_old_new_names
 
-		self.display_renaming_result()
+		self.display_renaming_result(selected)
 
-	def display_renaming_result(self):
+	def display_renaming_result(self, selected):
+
+		display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
+		             selected + '</span>'))
 
 		result = widgets.HBox([widgets.Label("Renmaing results: ",
 												layout=widgets.Layout(width='20%')),
