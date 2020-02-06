@@ -169,6 +169,7 @@ class NamingSchemaDefinition(object):
 								  widgets.Text(value='image',
 											   disabled=True,
 											   layout=widgets.Layout(width='25%'))])
+		self.box1b.children[2].observe(self.changed_use_new_prefix_name, names='value')
 		self.new_prefix_text_widget = self.box1b.children[2]
 		self.user_new_prefix_widget = self.box1b.children[1]
 		self.user_new_prefix_widget.observe(self.changed_use_new_prefix_name, names='value')
