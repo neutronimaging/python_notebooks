@@ -15,7 +15,7 @@ except ImportError:
 
 from __code._panoramic_stitching.utilities import Utilities
 
-DEFAULT_ROI = [100, 100, 300, 300]  # x0, y0, width, height
+DEFAULT_ROI = [100, 100, 300, 300]  # x0, y0, width, height for reference only
 
 
 class GuiInitialization:
@@ -59,8 +59,8 @@ class GuiInitialization:
                                              'height': DEFAULT_ROI[3]},
                            'target_roi':  {'x0': DEFAULT_ROI[0],
                                            'y0': DEFAULT_ROI[1],
-                                           'width': DEFAULT_ROI[2],
-                                           'height': DEFAULT_ROI[3]},
+                                           'width': DEFAULT_ROI[2]*self.parent.target_box_size_coefficient['x'],
+                                           'height': DEFAULT_ROI[3]*self.parent.target_box_size_coefficient['y']},
                            'status': ""}
 
         list_files = self.parent.list_files

@@ -44,6 +44,10 @@ class Interface(QMainWindow):
     live_rois_id = {'reference': None,
                     'target': None}
 
+    # the target box will be x and y times the size of the reference box
+    target_box_size_coefficient = {'x': 1.5,
+                                   'y': 1.5}
+
     def __init__(self, parent=None, o_norm=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -114,13 +118,13 @@ class Interface(QMainWindow):
                                            width=width,
                                            height=height)
 
-        # we need to make sure the target roi has the same size
+        # we need to make sure the target roi has the proper size
         if data_type == 'reference':
             master_dict_key = o_utilities.get_reference_selected(key='files')
             o_utilities.set_roi_to_master_dict(master_dict_key=master_dict_key,
                                                data_type='target',
-                                               width=width,
-                                               height=height)
+                                               width=self.target_box_size_coefficient['x']*width,
+                                               height=self.target_box_size_coefficient['y']*height)
             self.display_target_data(data=o_utilities.get_image(data_type='target'))
 
         self.check_status_of_stitching_button()
