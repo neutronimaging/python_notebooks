@@ -15,7 +15,7 @@ except ImportError:
 
 from __code._panoramic_stitching.utilities import Utilities
 
-DEFAULT_ROI = [100, 100, 300, 300]  # x0, y0, width, height for reference only
+DEFAULT_ROI = [0, 50, 75, 250]  # x0, y0, width, height for reference only
 
 
 class GuiInitialization:
