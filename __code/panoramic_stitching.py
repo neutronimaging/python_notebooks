@@ -53,7 +53,7 @@ class Interface(QMainWindow):
     list_target = []
 
     # the target box will be x and y times the size of the reference box
-    target_box_size_coefficient = {'x': 1,
+    target_box_size_coefficient = {'x': 1.5,
                                    'y': 1.5}
 
     def __init__(self, parent=None, o_norm=None):
