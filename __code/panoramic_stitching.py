@@ -19,6 +19,7 @@ from __code.ui_panoramic_stitching import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
 from __code._panoramic_stitching.gui_initialization import GuiInitialization
 from __code._panoramic_stitching.utilities import Utilities
+from __code._panoramic_stitching.stiching import Stitching
 
 
 class InterfaceHandler(FileFolderBrowser):
@@ -35,6 +36,11 @@ class InterfaceHandler(FileFolderBrowser):
 
 class Interface(QMainWindow):
 
+    # master_dict = OrderedDict(['full_file_name1': {'associated_with_file_index': 0,
+    #                                                'reference_roi': {'x0':100, 'y0':100', 'width':300, 'height':300},
+    #                                                'target_roi': {'x0':100, 'y0': 100', 'width': 450', 'height':450'},
+    #                                                'status': ''},
+    #                            'full_file_name2': ... }
     master_dict = {}
     tableWidget_columns_size = [400, 400, 100]
     histogram_level = {'reference': [],
@@ -43,6 +49,12 @@ class Interface(QMainWindow):
                             'data': None}
     live_rois_id = {'reference': None,
                     'target': None}
+    list_reference = []
+    list_target = []
+
+    # the target box will be x and y times the size of the reference box
+    target_box_size_coefficient = {'x': 1.5,
+                                   'y': 1.5}
 
     def __init__(self, parent=None, o_norm=None):
 
@@ -93,7 +105,7 @@ class Interface(QMainWindow):
         image = o_utilities.get_image(data_type=data_type)
         master_dict_key = o_utilities.get_reference_selected(key='files')
 
-        region = roi_id.getArraySlice(image,
+        region = roi_id.getArraySlice(np.transpose(image),
                                       view.imageItem)
 
         x0 = region[0][0].start
@@ -114,13 +126,13 @@ class Interface(QMainWindow):
                                            width=width,
                                            height=height)
 
-        # we need to make sure the target roi has the same size
+        # we need to make sure the target roi has the proper size
         if data_type == 'reference':
             master_dict_key = o_utilities.get_reference_selected(key='files')
             o_utilities.set_roi_to_master_dict(master_dict_key=master_dict_key,
                                                data_type='target',
-                                               width=width,
-                                               height=height)
+                                               width=self.target_box_size_coefficient['x']*width,
+                                               height=self.target_box_size_coefficient['y']*height)
             self.display_target_data(data=o_utilities.get_image(data_type='target'))
 
         self.check_status_of_stitching_button()
@@ -232,7 +244,8 @@ class Interface(QMainWindow):
 
     def run_stitching_button_clicked(self):
         self.eventProgress.setVisible(True)
-        print("running stitching button")
+        o_stitch = Stitching(parent=self)
+        o_stitch.run()
 
     def apply_clicked(self):
         # do stuff
