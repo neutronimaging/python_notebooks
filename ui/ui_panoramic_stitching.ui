@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>982</width>
-    <height>811</height>
+    <width>1495</width>
+    <height>1052</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QSplitter" name="splitter_between_previews_and_table">
@@ -66,6 +66,9 @@
              <width>16777215</width>
              <height>200</height>
             </size>
+           </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
@@ -169,8 +172,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>982</width>
-     <height>22</height>
+     <width>1495</width>
+     <height>23</height>
     </rect>
    </property>
   </widget>

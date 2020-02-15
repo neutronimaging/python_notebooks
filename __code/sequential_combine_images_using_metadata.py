@@ -25,9 +25,12 @@ class SequentialCombineImagesUsingMetadata(object):
         self.working_dir = working_dir
         self.folder_selected = ''
         self.list_images = []
+        self.file_extension = 'tiff'
         self.dict_of_metadata = {} # key is 'tag->value' and value is 'tag'
         self.list_images_to_combine = None
-        self.filename_regular_expression = "^\w*_(?P<run>run\d+)_\w*.tiff$"
+        self.extension_to_regular_expression_dict = {'tiff': "^\w*_(?P<run>run\d+)_\w*.tiff$",
+                                                    'tif': "^\w*_(?P<run>run\d+)_\w*.tif$"}
+        # self.filename_regular_expression = "^\w*_(?P<run>run\d+)_\w*.tiff$"
 
     def select_folder(self):
         self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to combine',
@@ -42,14 +45,18 @@ class SequentialCombineImagesUsingMetadata(object):
                      selected + '</span>'))
         self.folder_selected = selected
 
+    def record_file_extension(self, filename=''):
+        self.file_extension = file_handler.get_file_extension(filename)
+
     def get_list_of_images(self):
-        list_of_images = glob.glob(self.folder_selected + "/*.tiff")
+        list_of_images = glob.glob(self.folder_selected + "/*.tif*")
         list_of_images.sort()
         return list_of_images
 
     def display_metadata_list(self):
         self.list_images = self.get_list_of_images()
         list_images = self.list_images
+        self.record_file_extension(filename=list_images[0])
 
         image0 = list_images[0]
         o_image0 = Image.open(image0)
@@ -209,7 +216,7 @@ class SequentialCombineImagesUsingMetadata(object):
 
     def isolate_run_text_from_filename(self, full_file_name):
         basename = os.path.basename(full_file_name)
-        regular_expression = self.filename_regular_expression
+        regular_expression = self.extension_to_regular_expression_dict[self.file_extension]
         m = re.search(regular_expression, basename)
         if m is not None:
             return m.group('run')
