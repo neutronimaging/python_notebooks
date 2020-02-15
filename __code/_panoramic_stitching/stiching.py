@@ -25,7 +25,6 @@ class Stitching:
 			[starting_target_x0, starting_target_y0, target_width, target_height] = Stitching.retrieve_roi_parameters(roi_dict=target_roi)
 
 			_data_reference_of_roi = _data_reference[ref_y0:ref_y0+ref_height, ref_x0:ref_x0+ref_width]
-			print("np.shape(_data_reference_of_roi: {}".format(np.shape(_data_reference_of_roi)))
 
 			# where to start from
 			moving_target_x0 = starting_target_x0
@@ -41,11 +40,11 @@ class Stitching:
 			moving_target_x1 = moving_target_x0 + moving_target_width
 			moving_target_y1 = moving_target_y0 + moving_target_height
 
-			# print("Reference:")
-			# print("x0:{}, y0:{}, width:{}, height:{}".format(ref_x0, ref_y0, ref_width, ref_height))
-			# print("target:")
-			# print("x0:{}, y0:{}, width:{}, height:{}".format(starting_target_x0, starting_target_y0,
-			#                                                  target_width, target_height))
+			print("Reference:")
+			print("x0:{}, y0:{}, width:{}, height:{}".format(ref_x0, ref_y0, ref_width, ref_height))
+			print("target:")
+			print("x0:{}, y0:{}, width:{}, height:{}".format(starting_target_x0, starting_target_y0,
+			                                                 target_width, target_height))
 
 			counts_and_x0_position_dict = defaultdict(list)
 			counts_and_y0_position_dict = defaultdict(list)
@@ -71,7 +70,6 @@ class Stitching:
 					moving_target_y0 += 1
 					if moving_target_y0 > final_target_y0:
 						break
-
 
 			import pprint
 			pprint.pprint(counts_and_x0_position_dict)
