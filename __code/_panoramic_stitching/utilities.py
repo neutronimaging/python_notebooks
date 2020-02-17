@@ -67,6 +67,10 @@ class Utilities:
         _widget = self.parent.ui.tableWidget.cellWidget(row, 0)
         return _widget.currentIndex()
 
+    def get_reference_file_selected_for_this_row(self, row=0):
+        combobox_index_selected = self.get_reference_index_selected_from_row(row=row)
+        return self.parent.list_reference['files'][combobox_index_selected]
+
     def get_target_file_selected_for_this_row(self, row=0):
         combobox_index_selected = self.get_target_index_selected_from_row(row=row)
         return self.parent.list_target['files'][combobox_index_selected]

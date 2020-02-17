@@ -42,7 +42,7 @@ class Interface(QMainWindow):
     #                                                'status': ''},
     #                            'full_file_name2': ... }
     master_dict = {}
-    tableWidget_columns_size = [400, 400, 100]
+    tableWidget_columns_size = [400, 400, 500]
     histogram_level = {'reference': [],
                        'target': []}
     pyqtgraph_image_view = {'reference': None,
@@ -69,8 +69,10 @@ class Interface(QMainWindow):
         self.list_data = self.o_norm.data['sample']['data']
 
         # have a format {'files': [], 'data': [], 'basename_files': []}
-        self.list_reference = self.get_list_files(start_index=0, end_index=-1)
-        self.list_target = self.get_list_files(start_index=1)
+        # self.list_reference = self.get_list_files(start_index=0, end_index=-1)
+        # self.list_target = self.get_list_files(start_index=1)
+        self.list_reference = self.get_list_files()
+        self.list_target = self.get_list_files()
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
@@ -139,10 +141,11 @@ class Interface(QMainWindow):
 
     def table_widget_selection_changed(self):
         o_utilities = Utilities(parent=self)
-        reference_file_index_selected = o_utilities.get_reference_selected(key='index')
+        row_selected = o_utilities.get_reference_selected(key='index')
 
         # +1 because the target file starts at the second file
-        target_file_index_selected = o_utilities.get_target_index_selected_from_row(row=reference_file_index_selected)
+        target_file_index_selected = o_utilities.get_target_index_selected_from_row(row=row_selected)
+        reference_file_index_selected = o_utilities.get_reference_index_selected_from_row(row=row_selected)
 
         reference_data = self.list_reference['data'][reference_file_index_selected]
         target_data = self.list_target['data'][target_file_index_selected]
@@ -223,7 +226,13 @@ class Interface(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
         list_target_file = set()
         for _row in np.arange(nbr_row):
+            _reference_file = o_utilities.get_reference_file_selected_for_this_row(_row)
             _target_file = o_utilities.get_target_file_selected_for_this_row(_row)
+
+            if _reference_file == _target_file:
+                o_utilities.set_status_of_this_row_to_message(row=_row, message='Reference and target MUST be different files!')
+                continue
+
             if _target_file in list_target_file:
                 o_utilities.set_status_of_this_row_to_message(row=_row, message="Already used!")
             list_target_file.add(_target_file)

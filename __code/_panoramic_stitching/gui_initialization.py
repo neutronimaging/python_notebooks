@@ -1,8 +1,6 @@
 from collections import OrderedDict
 import pyqtgraph as pg
-import os
 import copy
-import numpy as np
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -12,8 +10,6 @@ except ImportError:
     from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
-
-from __code._panoramic_stitching.utilities import Utilities
 
 DEFAULT_ROI = [0, 50, 75, 250]  # x0, y0, width, height for reference only
 
@@ -72,7 +68,7 @@ class GuiInitialization:
     def table(self):
         master_dict = self.parent.master_dict
         self.parent.ui.tableWidget.blockSignals(True)
-        for _row, _file_name in enumerate(self.parent.list_reference['files']):
+        for _row, _file_name in enumerate(self.parent.list_reference['files'][:-1]):
 
             self.parent.ui.tableWidget.insertRow(_row)
 
@@ -92,13 +88,14 @@ class GuiInitialization:
             _combobox.blockSignals(True)
             _combobox.currentIndexChanged.connect(self.parent.table_widget_target_image_changed)
             _combobox.addItems(self.parent.list_target['basename_files'])
-            _combobox.setCurrentIndex(_row)
+            _combobox.setCurrentIndex(_row+1)
             _combobox.blockSignals(False)
             self.parent.ui.tableWidget.setCellWidget(_row, 1, _combobox)
 
             # status
             _item = QtGui.QTableWidgetItem(_dict_of_this_row['status'])
             self.parent.ui.tableWidget.setItem(_row, 2, _item)
+
         self.parent.ui.tableWidget.blockSignals(False)
 
         for _column_index, _width in enumerate(self.parent.tableWidget_columns_size):
