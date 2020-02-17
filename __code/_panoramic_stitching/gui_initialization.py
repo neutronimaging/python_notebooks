@@ -78,9 +78,14 @@ class GuiInitialization:
 
             _dict_of_this_row = master_dict[_file_name]
 
-            # file name
-            _item = QtGui.QTableWidgetItem(os.path.basename(_file_name))
-            self.parent.ui.tableWidget.setItem(_row, 0, _item)
+            # reference image
+            _combobox_ref = QtGui.QComboBox()
+            _combobox_ref.blockSignals(True)
+            _combobox_ref.currentIndexChanged.connect(self.parent.table_widget_reference_image_changed)
+            _combobox_ref.addItems(self.parent.list_reference['basename_files'])
+            _combobox_ref.setCurrentIndex(_row)
+            _combobox_ref.blockSignals(False)
+            self.parent.ui.tableWidget.setCellWidget(_row, 0, _combobox_ref)
 
             # target image
             _combobox = QtGui.QComboBox()

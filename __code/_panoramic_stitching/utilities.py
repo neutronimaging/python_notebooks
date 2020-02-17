@@ -39,10 +39,11 @@ class Utilities:
             return self.get_target_selected(key='data')
 
     def get_reference_selected(self, key='files'):
-        _row_selected = self.__get_reference_index_selected()
+        row = self.__get_reference_index_selected()
         if key == 'index':
-            return _row_selected
-        return self.parent.list_reference[key][_row_selected]
+            return row
+        combobox_index_selected = self.get_reference_index_selected_from_row(row=row)
+        return self.parent.list_reference[key][combobox_index_selected]
 
     def get_target_selected(self, key='files'):
         row = self.get_reference_selected(key='index')
@@ -60,6 +61,10 @@ class Utilities:
 
     def get_target_index_selected_from_row(self, row=0):
         _widget = self.parent.ui.tableWidget.cellWidget(row, 1)
+        return _widget.currentIndex()
+
+    def get_reference_index_selected_from_row(self, row=0):
+        _widget = self.parent.ui.tableWidget.cellWidget(row, 0)
         return _widget.currentIndex()
 
     def get_target_file_selected_for_this_row(self, row=0):

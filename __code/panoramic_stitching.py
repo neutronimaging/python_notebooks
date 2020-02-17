@@ -238,6 +238,10 @@ class Interface(QMainWindow):
         self.ui.statusbar.showMessage(statusbar_message)
         self.ui.run_stitching_button.setEnabled(enabled_button)
 
+    def table_widget_reference_image_changed(self, index):
+        self.table_widget_selection_changed()
+        self.check_status_of_stitching_button()
+
     def table_widget_target_image_changed(self, index):
         self.table_widget_selection_changed()
         self.check_status_of_stitching_button()
