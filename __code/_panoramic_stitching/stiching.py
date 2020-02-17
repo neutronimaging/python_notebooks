@@ -40,7 +40,7 @@ class Stitching:
 			moving_target_x1 = moving_target_x0 + moving_target_width
 			moving_target_y1 = moving_target_y0 + moving_target_height
 
-			print("Reference:")
+			print("References:")
 			print("x0:{}, y0:{}, width:{}, height:{}".format(ref_x0, ref_y0, ref_width, ref_height))
 			print("target:")
 			print("x0:{}, y0:{}, width:{}, height:{}".format(starting_target_x0, starting_target_y0,
@@ -48,8 +48,7 @@ class Stitching:
 
 			counts_and_x0_position_dict = defaultdict(list)
 			counts_and_y0_position_dict = defaultdict(list)
-			while ((moving_target_x0 <= final_target_x0) and (moving_target_y0 <= final_target_y0)):
-
+			while moving_target_y0 <= final_target_y0:
 
 				# print("x0: {}, y0: {}".format(moving_target_x0, moving_target_y0), end=" -> ")
 
@@ -68,13 +67,16 @@ class Stitching:
 					moving_target_x0 = starting_target_x0
 
 					moving_target_y0 += 1
-					if moving_target_y0 > final_target_y0:
-						break
 
-			import pprint
-			pprint.pprint(counts_and_x0_position_dict)
-			pprint.pprint(counts_and_y0_position_dict)
+			list_of_counts_x0 = np.array(list(counts_and_x0_position_dict.keys()))
+			list_of_counts_y0 = np.array(list(counts_and_y0_position_dict.keys()))
+			optimum_counts_for_x0 = list_of_counts_x0.min()
+			optimum_counts_for_y0 = list_of_counts_y0.min()
 
+			optimum_x0 = counts_and_x0_position_dict[optimum_counts_for_x0]
+			optimum_y0 = counts_and_y0_position_dict[optimum_counts_for_y0]
+
+			print("optimum x0:{} and optimum y0:{}".format(optimum_x0, optimum_y0))
 
 
 	def retrieve_roi_parameters(roi_dict={}):
