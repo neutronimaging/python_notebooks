@@ -56,13 +56,12 @@ class Interface(QMainWindow):
     target_box_size_coefficient = {'x': 1.5,
                                    'y': 1.5}
 
-    def __init__(self, parent=None, o_norm=None, configuration_roi={}):
+    def __init__(self, parent=None, o_norm=None, configuration=''):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
         self.o_norm = o_norm
-        self.configuration_roi = configuration_roi
 
         self.list_files = self.o_norm.data['sample']['file_name']
         self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
@@ -81,7 +80,8 @@ class Interface(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Panoramic Stitching")
 
-        o_initialization = GuiInitialization(parent=self)
+        o_initialization = GuiInitialization(parent=self,
+                                             configuration=configuration)
         o_initialization.all()
         self.check_status_of_stitching_button()
 
@@ -108,12 +108,10 @@ class Interface(QMainWindow):
         o_utilities = Utilities(parent=self)
         view = o_utilities.get_view(data_type=data_type)
         image = o_utilities.get_image(data_type=data_type)
-        # master_dict_key = o_utilities.get_reference_selected(key='files')
         row_selected = o_utilities.get_row_selected()
 
         region = roi_id.getArraySlice(np.transpose(image),
                                       view.imageItem)
-
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
@@ -134,7 +132,6 @@ class Interface(QMainWindow):
 
         # we need to make sure the target roi has the proper size
         if data_type == 'reference':
-            master_dict_key = o_utilities.get_reference_selected(key='files')
             o_utilities.set_roi_to_master_dict(row=row_selected,
                                                data_type='target',
                                                width=self.target_box_size_coefficient['x']*width,
@@ -234,11 +231,13 @@ class Interface(QMainWindow):
             _target_file = o_utilities.get_target_file_selected_for_this_row(_row)
 
             if _reference_file == _target_file:
-                o_utilities.set_status_of_this_row_to_message(row=_row, message='Reference and target MUST be different files!')
+                o_utilities.set_status_of_this_row_to_message(row=_row,
+                                                              message='Reference and target MUST be different files!')
                 continue
 
             if _target_file in list_target_file:
-                o_utilities.set_status_of_this_row_to_message(row=_row, message="Already used!")
+                o_utilities.set_status_of_this_row_to_message(row=_row,
+                                                              message="Already used!")
             list_target_file.add(_target_file)
 
         if len(list_target_file) == len(self.list_target['files'])-1:

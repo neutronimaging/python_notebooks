@@ -17,12 +17,13 @@ DEFAULT_ROI = [0, 50, 75, 250]  # x0, y0, width, height for reference only
 
 class GuiInitialization:
 
-    def __init__(self, parent=None, configuration_roi={}):
+    def __init__(self, parent=None, configuration=''):
         self.parent = parent
-        self.configuration_roi = configuration_roi
+        self.configuration = configuration
 
     def all(self):
         self.master_dict()
+        self.load_configuration_roi()
         self.pyqtgraph()
         self.widgets()
         self.table()
@@ -122,3 +123,28 @@ class GuiInitialization:
         nbr_column = self.parent.ui.tableWidget.columnCount()
         _selection = QtGui.QTableWidgetSelectionRange(0, 0, 0, nbr_column-1)
         self.parent.ui.tableWidget.setRangeSelected(_selection, True)
+
+    def load_configuration_roi(self):
+        master_dict = self.parent.master_dict
+        configuration = self.configuration
+
+        import json
+        with open(configuration) as json_file:
+            configuration_roi = json.load(json_file)
+            for _row in master_dict.keys():
+                configuration_roi_row = configuration_roi[str(_row)]
+                master_dict_row = master_dict[_row]
+
+                roi_row_reference = configuration_roi_row['reference']
+                master_dict_row['reference_roi'] = {'x0': np.int(roi_row_reference['x0']),
+                                                    'y0': np.int(roi_row_reference['y0']),
+                                                    'width': np.int(roi_row_reference['width']),
+                                                    'height': np.int(roi_row_reference['height'])}
+
+                roi_row_target = configuration_roi_row['target']
+                master_dict_row['target_roi'] = {'x0': np.int(roi_row_target['x0']),
+                                                 'y0': np.int(roi_row_target['y0']),
+                                                 'width': np.int(roi_row_target['width']),
+                                                 'height': np.int(roi_row_target['height'])}
+
+
