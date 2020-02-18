@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1495, 1052)
+        MainWindow.resize(982, 811)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -52,7 +52,6 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.tableWidget = QtWidgets.QTableWidget(self.splitter_between_previews_and_table)
         self.tableWidget.setMaximumSize(QtCore.QSize(16777215, 200))
-        self.tableWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -97,12 +96,16 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1495, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 982, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionImport_ROIs = QtWidgets.QAction(MainWindow)
+        self.actionImport_ROIs.setObjectName("actionImport_ROIs")
+        self.actionExport_ROIs = QtWidgets.QAction(MainWindow)
+        self.actionExport_ROIs.setObjectName("actionExport_ROIs")
 
         self.retranslateUi(MainWindow)
         self.cancel_button.clicked.connect(MainWindow.cancel_clicked)
@@ -126,4 +129,6 @@ class Ui_MainWindow(object):
         self.groupBox_3.setTitle(_translate("MainWindow", "Stiched Image"))
         self.cancel_button.setText(_translate("MainWindow", "Close"))
         self.export_button.setText(_translate("MainWindow", "Export ..."))
+        self.actionImport_ROIs.setText(_translate("MainWindow", "Import ..."))
+        self.actionExport_ROIs.setText(_translate("MainWindow", "Export ..."))
 

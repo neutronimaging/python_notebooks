@@ -16,8 +16,9 @@ DEFAULT_ROI = [0, 50, 75, 250]  # x0, y0, width, height for reference only
 
 class GuiInitialization:
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, configuration_roi={}):
         self.parent = parent
+        self.configuration_roi = configuration_roi
 
     def all(self):
         self.master_dict()

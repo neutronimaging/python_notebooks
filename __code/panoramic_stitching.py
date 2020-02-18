@@ -5,11 +5,11 @@ import numpy as np
 import os
 
 try:
-    from PyQt4.QtGui import QFileDialog
+    # from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
     from PyQt4.QtGui import QMainWindow
 except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
+    # from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
@@ -56,12 +56,13 @@ class Interface(QMainWindow):
     target_box_size_coefficient = {'x': 1.5,
                                    'y': 1.5}
 
-    def __init__(self, parent=None, o_norm=None):
+    def __init__(self, parent=None, o_norm=None, configuration_roi={}):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
         self.o_norm = o_norm
+        self.configuration_roi = configuration_roi
 
         self.list_files = self.o_norm.data['sample']['file_name']
         self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
@@ -73,6 +74,7 @@ class Interface(QMainWindow):
         # self.list_target = self.get_list_files(start_index=1)
         self.list_reference = self.get_list_files()
         self.list_target = self.get_list_files()
+        self.working_dir = os.path.dirname(self.list_files[0])
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
@@ -94,6 +96,7 @@ class Interface(QMainWindow):
         return _list
 
     # event handler
+
     def reference_roi_changed(self):
         self.save_roi_changed(data_type='reference')
 
@@ -237,7 +240,7 @@ class Interface(QMainWindow):
                 o_utilities.set_status_of_this_row_to_message(row=_row, message="Already used!")
             list_target_file.add(_target_file)
 
-        if len(list_target_file) == len(self.list_target['files']):
+        if len(list_target_file) == len(self.list_target['files'])-1:
             enabled_button = True
             statusbar_message = ""
         else:
