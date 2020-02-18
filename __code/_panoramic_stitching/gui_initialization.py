@@ -23,7 +23,7 @@ class GuiInitialization:
 
     def all(self):
         self.master_dict()
-        self.load_configuration_roi()
+        self.load_configuration()
         self.pyqtgraph()
         self.widgets()
         self.table()
@@ -52,10 +52,12 @@ class GuiInitialization:
     def master_dict(self):
         master_dict = OrderedDict()
         _each_file_dict = {'associated_with_file_index': 0,
+                           'reference_combobox_file_index': 0,
                            'reference_roi': {'x0': DEFAULT_ROI[0],
                                              'y0': DEFAULT_ROI[1],
                                              'width': DEFAULT_ROI[2],
                                              'height': DEFAULT_ROI[3]},
+                           'target_combobox_file_index': 0,
                            'target_roi':  {'x0': DEFAULT_ROI[0],
                                            'y0': DEFAULT_ROI[1],
                                            'width': DEFAULT_ROI[2]*self.parent.target_box_size_coefficient['x'],
@@ -82,7 +84,7 @@ class GuiInitialization:
             _combobox_ref.blockSignals(True)
             _combobox_ref.currentIndexChanged.connect(self.parent.table_widget_reference_image_changed)
             _combobox_ref.addItems(self.parent.list_reference['basename_files'])
-            _combobox_ref.setCurrentIndex(_row)
+            _combobox_ref.setCurrentIndex(_dict_of_this_row['reference_combobox_file_index'])
             _combobox_ref.blockSignals(False)
             self.parent.ui.tableWidget.setCellWidget(_row, 0, _combobox_ref)
 
@@ -91,7 +93,7 @@ class GuiInitialization:
             _combobox.blockSignals(True)
             _combobox.currentIndexChanged.connect(self.parent.table_widget_target_image_changed)
             _combobox.addItems(self.parent.list_target['basename_files'])
-            _combobox.setCurrentIndex(_row+1)
+            _combobox.setCurrentIndex(_dict_of_this_row['target_combobox_file_index'])
             _combobox.blockSignals(False)
             self.parent.ui.tableWidget.setCellWidget(_row, 1, _combobox)
 
@@ -124,7 +126,7 @@ class GuiInitialization:
         _selection = QtGui.QTableWidgetSelectionRange(0, 0, 0, nbr_column-1)
         self.parent.ui.tableWidget.setRangeSelected(_selection, True)
 
-    def load_configuration_roi(self):
+    def load_configuration(self):
         master_dict = self.parent.master_dict
         configuration = self.configuration
 
@@ -140,11 +142,11 @@ class GuiInitialization:
                                                     'y0': np.int(roi_row_reference['y0']),
                                                     'width': np.int(roi_row_reference['width']),
                                                     'height': np.int(roi_row_reference['height'])}
+                master_dict['reference_combobox_file_index'] = np.int(roi_row_reference['file_index'])
 
                 roi_row_target = configuration_roi_row['target']
+                master_dict['target_combobox_file_index'] = np.int(roi_row_target['file_index'])
                 master_dict_row['target_roi'] = {'x0': np.int(roi_row_target['x0']),
                                                  'y0': np.int(roi_row_target['y0']),
                                                  'width': np.int(roi_row_target['width']),
                                                  'height': np.int(roi_row_target['height'])}
-
-

@@ -1,6 +1,10 @@
 import numpy as np
 from collections import defaultdict
 
+from __code._panoramic_stitching.utilities import Utilities
+
+DEBUG_JSON = False
+
 
 class Stitching:
 
@@ -11,11 +15,12 @@ class Stitching:
 		master_dict = self.parent.master_dict
 		list_target_file = self.parent.list_target
 
-		# roi_to_export = {}
+		if DEBUG_JSON: roi_to_export = {}
 		for _row in master_dict.keys():
 
 			_data_reference = self.parent.list_reference['data'][_row]
 			_target_file_index = master_dict[_row]['associated_with_file_index']
+
 			_target_file = list_target_file['files'][_target_file_index]
 			_data_target = list_target_file['data'][_target_file_index]
 
@@ -48,14 +53,20 @@ class Stitching:
 			print("x0:{}, y0:{}, width:{}, height:{}".format(starting_target_x0, starting_target_y0,
 			                                                 target_width, target_height))
 
-			# roi_to_export[str(_row)] = {'reference': {'x0': str(ref_x0),
-			#                                      'y0': str(ref_y0),
-			#                                      'width': str(np.int(ref_width)),
-			#                                      'height': str(np.int(ref_height))},
-			#                        'target': {'x0': str(starting_target_x0),
-			#                                   'y0': str(starting_target_y0),
-			#                                   'width': str(np.int(target_width)),
-			#                                   'height': str(np.int(target_height))}}
+			if DEBUG_JSON:
+				o_utilities = Utilities(parent=self.parent)
+				_reference_file_index = o_utilities.get_reference_index_selected_from_row(row=_row)
+
+				roi_to_export[str(_row)] = {'reference': {'x0': str(ref_x0),
+														  'y0': str(ref_y0),
+														  'width': str(np.int(ref_width)),
+														  'height': str(np.int(ref_height)),
+														  'file_index': str(_target_file_index)},
+											'target': {'x0': str(starting_target_x0),
+													   'y0': str(starting_target_y0),
+													   'width': str(np.int(target_width)),
+													   'height': str(np.int(target_height)),
+													   'file_index': str(_reference_file_index)}}
 
 			counts_and_x0_position_dict = defaultdict(list)
 			counts_and_y0_position_dict = defaultdict(list)
@@ -85,10 +96,10 @@ class Stitching:
 
 			print("optimum x0:{} and optimum y0:{}".format(optimum_x0, optimum_y0))
 
-			# # DEBUG ONLY
-			# import json
-			# with open('/Users/j35/Desktop/roi.txt', 'w') as outfile:
-			# 	json.dump(roi_to_export, outfile)
+			if DEBUG_JSON:
+				import json
+				with open('/Users/j35/Desktop/roi.txt', 'w') as outfile:
+					json.dump(roi_to_export, outfile)
 
 	@staticmethod
 	def retrieve_roi_parameters(roi_dict={}):
