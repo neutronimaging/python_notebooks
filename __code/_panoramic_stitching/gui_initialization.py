@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import pyqtgraph as pg
+import numpy as np
 import copy
 
 try:
@@ -61,8 +62,8 @@ class GuiInitialization:
                            'status': ""}
 
         list_files = self.parent.list_files
-        for _file in list_files:
-            master_dict[_file] = copy.deepcopy(_each_file_dict)
+        for _row in np.arange(len(list_files)):
+            master_dict[_row] = copy.deepcopy(_each_file_dict)
 
         self.parent.master_dict = master_dict
 
@@ -73,7 +74,7 @@ class GuiInitialization:
 
             self.parent.ui.tableWidget.insertRow(_row)
 
-            _dict_of_this_row = master_dict[_file_name]
+            _dict_of_this_row = master_dict[_row]
 
             # reference image
             _combobox_ref = QtGui.QComboBox()

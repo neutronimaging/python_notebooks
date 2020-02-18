@@ -108,7 +108,8 @@ class Interface(QMainWindow):
         o_utilities = Utilities(parent=self)
         view = o_utilities.get_view(data_type=data_type)
         image = o_utilities.get_image(data_type=data_type)
-        master_dict_key = o_utilities.get_reference_selected(key='files')
+        # master_dict_key = o_utilities.get_reference_selected(key='files')
+        row_selected = o_utilities.get_row_selected()
 
         region = roi_id.getArraySlice(np.transpose(image),
                                       view.imageItem)
@@ -124,7 +125,7 @@ class Interface(QMainWindow):
         width = np.max([x0, x1]) - x0
         height = np.max([y0, y1]) - y0
 
-        o_utilities.set_roi_to_master_dict(master_dict_key=master_dict_key,
+        o_utilities.set_roi_to_master_dict(row=row_selected,
                                            data_type=data_type,
                                            x0=x0,
                                            y0=y0,
@@ -134,7 +135,7 @@ class Interface(QMainWindow):
         # we need to make sure the target roi has the proper size
         if data_type == 'reference':
             master_dict_key = o_utilities.get_reference_selected(key='files')
-            o_utilities.set_roi_to_master_dict(master_dict_key=master_dict_key,
+            o_utilities.set_roi_to_master_dict(row=row_selected,
                                                data_type='target',
                                                width=self.target_box_size_coefficient['x']*width,
                                                height=self.target_box_size_coefficient['y']*height)
@@ -195,8 +196,8 @@ class Interface(QMainWindow):
 
     def display_roi(self, data_type='reference'):
         o_utilities = Utilities(parent=self)
-        _file_key = o_utilities.get_reference_selected(key='files')
-        file_dict = self.master_dict[_file_key]
+        _row = o_utilities.get_row_selected()
+        file_dict = self.master_dict[_row]
 
         _roi_key = "{}_roi".format(data_type)
         x0 = file_dict[_roi_key]['x0']
