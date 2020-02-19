@@ -19,7 +19,7 @@ class Stitching:
 		for _row in master_dict.keys():
 
 			_data_reference = self.parent.list_reference['data'][_row]
-			_target_file_index = master_dict[_row]['associated_with_file_index']
+			_target_file_index = master_dict[_row]['target_combobox_file_index']
 
 			_target_file = list_target_file['files'][_target_file_index]
 			_data_target = list_target_file['data'][_target_file_index]
@@ -70,6 +70,11 @@ class Stitching:
 
 			counts_and_x0_position_dict = defaultdict(list)
 			counts_and_y0_position_dict = defaultdict(list)
+
+			counts_3d = np.zeros((final_target_y0 - moving_target_y0+1, final_target_x0 - moving_target_x0+1))
+
+			x = 0
+			y = 0
 			while moving_target_y0 <= final_target_y0:
 
 				_data_target_of_roi = _data_target[moving_target_y0:moving_target_y0+ref_height,
@@ -80,11 +85,16 @@ class Stitching:
 				counts_and_x0_position_dict[_sum_diff_array].append(moving_target_x0)
 				counts_and_y0_position_dict[_sum_diff_array].append(moving_target_y0)
 
+				counts_3d[y,x] = _sum_diff_array
+
 				moving_target_x0 += 1
+				x += 1
 				if moving_target_x0 > final_target_x0:
 					moving_target_x0 = starting_target_x0
+					x = 0
 
 					moving_target_y0 += 1
+					y += 1
 
 			list_of_counts_x0 = np.array(list(counts_and_x0_position_dict.keys()))
 			list_of_counts_y0 = np.array(list(counts_and_y0_position_dict.keys()))
@@ -93,6 +103,7 @@ class Stitching:
 
 			self.parent.debug_list_of_counts_x0 = list_of_counts_x0
 			self.parent.debug_list_of_counts_y0 = list_of_counts_y0
+			self.parent.debug_counts_3d = counts_3d
 
 			optimum_x0 = counts_and_x0_position_dict[optimum_counts_for_x0]
 			optimum_y0 = counts_and_y0_position_dict[optimum_counts_for_y0]
