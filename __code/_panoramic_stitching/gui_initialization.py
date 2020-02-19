@@ -134,7 +134,7 @@ class GuiInitialization:
         with open(configuration) as json_file:
             configuration_roi = json.load(json_file)
             for _row in master_dict.keys():
-                configuration_roi_row = configuration_roi[str(_row)]
+                configuration_roi_row = configuration_roi[str(_row)].copy()
                 master_dict_row = master_dict[_row]
 
                 roi_row_reference = configuration_roi_row['reference']
@@ -150,3 +150,5 @@ class GuiInitialization:
                                                  'y0': np.int(roi_row_target['y0']),
                                                  'width': np.int(roi_row_target['width']),
                                                  'height': np.int(roi_row_target['height'])}
+
+                configuration_roi[str(_row)] = configuration_roi_row
