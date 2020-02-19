@@ -65,7 +65,7 @@ class GuiInitialization:
                            'status': ""}
 
         list_files = self.parent.list_files
-        for _row in np.arange(len(list_files)):
+        for _row in np.arange(len(list_files)-1):
             master_dict[_row] = copy.deepcopy(_each_file_dict)
 
         self.parent.master_dict = master_dict
@@ -134,7 +134,7 @@ class GuiInitialization:
         with open(configuration) as json_file:
             configuration_roi = json.load(json_file)
 
-        for _row in list(master_dict.keys())[:-1]:
+        for _row in list(master_dict.keys()):
             configuration_roi_row = configuration_roi[str(_row)]
             master_dict_row = master_dict[_row]
 

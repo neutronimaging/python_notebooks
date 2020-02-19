@@ -91,6 +91,9 @@ class Stitching:
 			optimum_counts_for_x0 = list_of_counts_x0.min()
 			optimum_counts_for_y0 = list_of_counts_y0.min()
 
+			self.parent.debug_list_of_counts_x0 = list_of_counts_x0
+			self.parent.debug_list_of_counts_y0 = list_of_counts_y0
+
 			optimum_x0 = counts_and_x0_position_dict[optimum_counts_for_x0]
 			optimum_y0 = counts_and_y0_position_dict[optimum_counts_for_y0]
 
