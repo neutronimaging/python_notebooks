@@ -127,28 +127,29 @@ class GuiInitialization:
         self.parent.ui.tableWidget.setRangeSelected(_selection, True)
 
     def load_configuration(self):
-        master_dict = self.parent.master_dict
+        master_dict = self.parent.master_dict.copy()
         configuration = self.configuration
 
         import json
         with open(configuration) as json_file:
             configuration_roi = json.load(json_file)
-            for _row in master_dict.keys():
-                configuration_roi_row = configuration_roi[str(_row)].copy()
-                master_dict_row = master_dict[_row]
 
-                roi_row_reference = configuration_roi_row['reference']
-                master_dict_row['reference_roi'] = {'x0': np.int(roi_row_reference['x0']),
-                                                    'y0': np.int(roi_row_reference['y0']),
-                                                    'width': np.int(roi_row_reference['width']),
-                                                    'height': np.int(roi_row_reference['height'])}
-                master_dict['reference_combobox_file_index'] = np.int(roi_row_reference['file_index'])
+        for _row in list(master_dict.keys())[:-1]:
+            configuration_roi_row = configuration_roi[str(_row)]
+            master_dict_row = master_dict[_row]
 
-                roi_row_target = configuration_roi_row['target']
-                master_dict['target_combobox_file_index'] = np.int(roi_row_target['file_index'])
-                master_dict_row['target_roi'] = {'x0': np.int(roi_row_target['x0']),
-                                                 'y0': np.int(roi_row_target['y0']),
-                                                 'width': np.int(roi_row_target['width']),
-                                                 'height': np.int(roi_row_target['height'])}
+            roi_row_reference = configuration_roi_row['reference']
+            master_dict_row['reference_roi'] = {'x0': np.int(roi_row_reference['x0']),
+                                                'y0': np.int(roi_row_reference['y0']),
+                                                'width': np.int(roi_row_reference['width']),
+                                                'height': np.int(roi_row_reference['height'])}
+            master_dict_row['reference_combobox_file_index'] = np.int(roi_row_reference['file_index'])
 
-                configuration_roi[str(_row)] = configuration_roi_row
+            roi_row_target = configuration_roi_row['target']
+            master_dict_row['target_combobox_file_index'] = np.int(roi_row_target['file_index'])
+            master_dict_row['target_roi'] = {'x0': np.int(roi_row_target['x0']),
+                                             'y0': np.int(roi_row_target['y0']),
+                                             'width': np.int(roi_row_target['width']),
+                                             'height': np.int(roi_row_target['height'])}
+
+            configuration_roi[str(_row)] = configuration_roi_row
