@@ -25,10 +25,10 @@ class Stitching:
 			reference_roi = master_dict[_row]['reference_roi']
 			[ref_x0, ref_y0, ref_width, ref_height] = Stitching.retrieve_roi_parameters(roi_dict=reference_roi)
 			target_roi = master_dict[_row]['target_roi']
-			[target_x0, target_y0, target_width, target_height] = Stitching.retrieve_roi_parameters(roi_dict=target_roi)
+			[target_x0, target_y0, _, _] = Stitching.retrieve_roi_parameters(roi_dict=target_roi)
 
 			_data_reference_roi = _data_reference[ref_y0:ref_y0+ref_height, ref_x0:ref_x0+ref_width]
-			_data_target_roi = _data_target[target_y0:target_y0+target_height, target_x0:target_x0+target_width]
+			_data_target_roi = _data_target[target_y0:target_y0+ref_height, target_x0:target_x0+ref_width]
 
 			f_reference = np.fft.fft2(_data_reference_roi)
 			f_target = np.fft.fft2(_data_target_roi)
@@ -37,12 +37,26 @@ class Stitching:
 			co = np.abs(np.fft.ifft2(f_ref_target))
 
 			pos = np.where(co == np.amax(co))
+			optimum_x0 = pos[1][0]
+			optimum_y0 = pos[0][0]
 
-			print("optimum x0:{} and optimum y0:{}".format(pos[0][0], pos[1][0]))
+			print("debugging")
+			print("reference ROI: x0:{}, y0:{}, width:{}, height:{}".format(
+					ref_x0, ref_y0, ref_width, ref_height
+			))
+			print("target ROI: x0:{}, y0:{}, width:{}, height:{}".format(
+					target_x0, target_y0, ref_width, ref_height
+			))
 
 
 
+			print("optimum_position: x:{} and y:{}".format(optimum_x0, optimum_y0))
 
+			displacement = {'x': target_x0 - ref_x0 + optimum_x0,
+			                'y': target_y0 - ref_y0 + optimum_y0}
+
+			import pprint
+			pprint.pprint("displacement: {}".format(displacement))
 
 	def run(self):
 		master_dict = self.parent.master_dict
