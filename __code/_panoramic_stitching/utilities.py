@@ -91,11 +91,13 @@ class Utilities:
         for _row in np.arange(nbr_row):
             self.set_status_of_this_row_to_message(row=_row, message="")
 
-    def button_pressed(self, ui=None, name='left'):
+    @staticmethod
+    def button_pressed(ui=None, name='left'):
         full_file = Utilities.__make_full_file_name_to_static_folder_of(config.button[name]['pressed'])
         ui.setIcon(QtGui.QIcon(full_file))
 
-    def button_released(self, ui=None, name='left'):
+    @staticmethod
+    def button_released(ui=None, name='left'):
         full_file = Utilities.__make_full_file_name_to_static_folder_of(config.button[name]['released'])
         ui.setIcon(QtGui.QIcon(full_file))
 

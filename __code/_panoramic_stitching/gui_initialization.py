@@ -20,6 +20,8 @@ BUTTON_SIZE = {'single_arrow': {'width': 50,
                                 'height': 50},
                'double_arrow': {'width': 65,
                                 'height': 50},
+               'single_vertical_arrow': {'width': 50,
+                                         'height': 50}
                }
 
 
@@ -118,6 +120,9 @@ class GuiInitialization:
         self.parent.ui.run_stitching_button.setEnabled(False)
         self.parent.ui.export_button.setEnabled(False)
 
+        up_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button['up']
+                                                                                                  ['released'])
+        self.parent.ui.up_button.setIcon(QtGui.QIcon(up_arrow_file))
         left_left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button['left_left']
                                                                                       ['released'])
         self.parent.ui.left_left_button.setIcon(QtGui.QIcon(left_left_arrow_file))
@@ -131,6 +136,10 @@ class GuiInitialization:
                                                                                        ['released'])
         self.parent.ui.right_right_button.setIcon(QtGui.QIcon(right_right_arrow_file))
 
+        down_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button['down']
+                                                                                                  ['released'])
+        self.parent.ui.down_button.setIcon(QtGui.QIcon(down_arrow_file))
+
         list_ui = [self.parent.ui.left_button,
                    self.parent.ui.right_button]
         GuiInitialization.__set_widgets_size(widgets=list_ui,
@@ -142,6 +151,12 @@ class GuiInitialization:
         GuiInitialization.__set_widgets_size(widgets=list_ui,
                                              width=BUTTON_SIZE['double_arrow']['width'],
                                              height=BUTTON_SIZE['double_arrow']['height'])
+
+        list_ui = [self.parent.ui.up_button,
+                   self.parent.ui.down_button]
+        GuiInitialization.__set_widgets_size(widgets=list_ui,
+                                             width=BUTTON_SIZE['single_vertical_arrow']['width'],
+                                             height=BUTTON_SIZE['single_vertical_arrow']['height'])
 
     def statusbar(self):
         self.parent.eventProgress = QtGui.QProgressBar(self.parent.ui.statusbar)

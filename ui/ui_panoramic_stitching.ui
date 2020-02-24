@@ -146,6 +146,9 @@
              <layout class="QGridLayout" name="gridLayout">
               <item row="0" column="3">
                <widget class="QPushButton" name="up_up_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -156,6 +159,9 @@
               </item>
               <item row="1" column="3">
                <widget class="QPushButton" name="up_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -269,6 +275,9 @@
               </item>
               <item row="3" column="3">
                <widget class="QPushButton" name="down_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -279,6 +288,9 @@
               </item>
               <item row="4" column="3">
                <widget class="QPushButton" name="down_down_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -524,7 +536,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>357</x>
-     <y>328</y>
+     <y>366</y>
     </hint>
     <hint type="destinationlabel">
      <x>490</x>
@@ -540,7 +552,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>357</x>
-     <y>328</y>
+     <y>366</y>
     </hint>
     <hint type="destinationlabel">
      <x>490</x>
@@ -555,8 +567,8 @@
    <slot>left_left_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>328</y>
+     <x>318</x>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -571,8 +583,8 @@
    <slot>left_left_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>299</x>
-     <y>330</y>
+     <x>318</x>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -587,8 +599,8 @@
    <slot>right_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>585</x>
-     <y>324</y>
+     <x>627</x>
+     <y>370</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -603,8 +615,8 @@
    <slot>right_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>603</x>
-     <y>334</y>
+     <x>645</x>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -619,8 +631,8 @@
    <slot>right_right_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>708</x>
-     <y>328</y>
+     <x>697</x>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
      <x>971</x>
@@ -635,12 +647,76 @@
    <slot>right_right_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>730</x>
-     <y>329</y>
+     <x>697</x>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
      <x>976</x>
      <y>386</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>11</x>
+     <y>652</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>11</x>
+     <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
     </hint>
    </hints>
   </connection>
@@ -665,5 +741,9 @@
   <slot>left_left_button_released()</slot>
   <slot>right_right_button_pressed()</slot>
   <slot>right_right_button_released()</slot>
+  <slot>up_button_pressed()</slot>
+  <slot>up_button_released()</slot>
+  <slot>down_button_pressed()</slot>
+  <slot>down_button_released()</slot>
  </slots>
 </ui>
