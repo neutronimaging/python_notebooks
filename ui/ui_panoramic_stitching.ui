@@ -226,6 +226,9 @@
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Minimum</enum>
+                </property>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
@@ -322,19 +325,12 @@
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>&gt;</string>
+              <string>-&gt;</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox">
+            <widget class="QSpinBox" name="single_arrow_motion_value">
              <property name="minimum">
               <number>1</number>
              </property>
@@ -353,19 +349,12 @@
            <item>
             <widget class="QLabel" name="label_5">
              <property name="text">
-              <string>&gt;&gt;</string>
+              <string>-&gt;&gt;</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_2">
+            <widget class="QSpinBox" name="double_arrow_motion_value">
              <property name="minimum">
               <number>5</number>
              </property>

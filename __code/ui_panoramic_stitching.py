@@ -124,7 +124,7 @@ class Ui_MainWindow(object):
         self.left_button.setFlat(True)
         self.left_button.setObjectName("left_button")
         self.gridLayout.addWidget(self.left_button, 2, 2, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 2, 3, 1, 1)
         self.right_button = QtWidgets.QPushButton(self.groupBox_4)
         self.right_button.setStyleSheet("border: None")
