@@ -255,13 +255,21 @@ class Interface(QMainWindow):
         self.check_status_of_stitching_button()
 
     def table_widget_target_image_changed(self, index):
-        self.table_widget_selection_changed()
+        self.table_widget_selection_changed() 
         self.check_status_of_stitching_button()
 
     def run_stitching_button_clicked(self):
         self.eventProgress.setVisible(True)
         o_stitch = Stitching(parent=self)
         o_stitch.run()
+
+    def up_up_button_pressed(self):
+        Utilities.button_pressed(ui=self.ui.up_up_button,
+                                 name='up_up')
+
+    def up_up_button_released(self):
+        Utilities.button_released(ui=self.ui.up_up_button,
+                                  name='up_up')
 
     def up_button_pressed(self):
         Utilities.button_pressed(ui=self.ui.up_button,
@@ -311,6 +319,14 @@ class Interface(QMainWindow):
         Utilities.button_released(ui=self.ui.down_button,
                                   name='down')
         
+    def down_down_button_pressed(self):
+        Utilities.button_pressed(ui=self.ui.down_down_button,
+                                 name='down_down')
+
+    def down_down_button_released(self):
+        Utilities.button_released(ui=self.ui.down_down_button,
+                                  name='down_down')
+
     def apply_clicked(self):
         # do stuff
         self.close()

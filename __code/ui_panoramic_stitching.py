@@ -244,6 +244,10 @@ class Ui_MainWindow(object):
         self.up_button.released.connect(MainWindow.up_button_released)
         self.down_button.pressed.connect(MainWindow.down_button_pressed)
         self.down_button.released.connect(MainWindow.down_button_released)
+        self.up_up_button.pressed.connect(MainWindow.up_up_button_pressed)
+        self.up_up_button.released.connect(MainWindow.up_up_button_released)
+        self.down_down_button.pressed.connect(MainWindow.down_down_button_pressed)
+        self.down_down_button.released.connect(MainWindow.down_down_button_released)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

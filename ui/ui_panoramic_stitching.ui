@@ -720,6 +720,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>309</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>309</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -745,5 +809,9 @@
   <slot>up_button_released()</slot>
   <slot>down_button_pressed()</slot>
   <slot>down_button_released()</slot>
+  <slot>up_up_button_pressed()</slot>
+  <slot>up_up_button_released()</slot>
+  <slot>down_down_button_pressed()</slot>
+  <slot>down_down_button_released()</slot>
  </slots>
 </ui>
