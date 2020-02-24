@@ -227,6 +227,9 @@
               </item>
               <item row="2" column="4">
                <widget class="QPushButton" name="right_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -456,8 +459,8 @@
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>59</x>
-     <y>602</y>
+     <x>71</x>
+     <y>799</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -472,8 +475,8 @@
    <slot>apply_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>886</x>
-     <y>602</y>
+     <x>969</x>
+     <y>799</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -488,8 +491,8 @@
    <slot>table_widget_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>506</x>
-     <y>231</y>
+     <x>541</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>506</x>
@@ -504,8 +507,8 @@
    <slot>run_stitching_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>490</x>
-     <y>377</y>
+     <x>519</x>
+     <y>502</y>
     </hint>
     <hint type="destinationlabel">
      <x>490</x>
@@ -545,6 +548,102 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>278</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>502</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>299</x>
+     <y>330</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>438</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>585</x>
+     <y>324</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>553</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>603</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>610</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>708</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>971</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>730</x>
+     <y>329</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>976</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -560,5 +659,11 @@
   <slot>export_roi_clicked()</slot>
   <slot>left_button_pressed()</slot>
   <slot>left_button_released()</slot>
+  <slot>right_button_pressed()</slot>
+  <slot>right_button_released()</slot>
+  <slot>left_left_button_pressed()</slot>
+  <slot>left_left_button_released()</slot>
+  <slot>right_right_button_pressed()</slot>
+  <slot>right_right_button_released()</slot>
  </slots>
 </ui>

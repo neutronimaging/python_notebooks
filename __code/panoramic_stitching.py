@@ -265,11 +265,43 @@ class Interface(QMainWindow):
 
     def left_button_pressed(self):
         o_utilities = Utilities(parent=self)
-        o_utilities.button_pressed(button_ui=self.ui.left_button)
+        o_utilities.button_pressed(ui=self.ui.left_button,
+                                   name='left')
 
     def left_button_released(self):
         o_utilities = Utilities(parent=self)
-        o_utilities.button_released(button_ui=self.ui.left_button)
+        o_utilities.button_released(ui=self.ui.left_button,
+                                    name='left')
+
+    def right_button_pressed(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_pressed(ui=self.ui.right_button,
+                                   name='right')
+
+    def right_button_released(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_released(ui=self.ui.right_button,
+                                    name='right')
+
+    def left_left_button_pressed(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_pressed(ui=self.ui.left_left_button,
+                                   name='left_left')
+
+    def left_left_button_released(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_released(ui=self.ui.left_left_button,
+                                    name='left_left')
+
+    def right_right_button_pressed(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_pressed(ui=self.ui.right_right_button,
+                                   name='right_right')
+
+    def right_right_button_released(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_released(ui=self.ui.right_right_button,
+                                    name='right_right')
 
     def apply_clicked(self):
         # do stuff

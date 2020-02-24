@@ -124,6 +124,7 @@ class Ui_MainWindow(object):
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 2, 3, 1, 1)
         self.right_button = QtWidgets.QPushButton(self.groupBox_4)
+        self.right_button.setStyleSheet("border: None")
         self.right_button.setText("")
         self.right_button.setFlat(True)
         self.right_button.setObjectName("right_button")
@@ -224,6 +225,12 @@ class Ui_MainWindow(object):
         self.run_stitching_button.clicked.connect(MainWindow.run_stitching_button_clicked)
         self.left_button.pressed.connect(MainWindow.left_button_pressed)
         self.left_button.released.connect(MainWindow.left_button_released)
+        self.left_left_button.pressed.connect(MainWindow.left_left_button_pressed)
+        self.left_left_button.released.connect(MainWindow.left_left_button_released)
+        self.right_button.pressed.connect(MainWindow.right_button_pressed)
+        self.right_button.released.connect(MainWindow.right_button_released)
+        self.right_right_button.pressed.connect(MainWindow.right_right_button_pressed)
+        self.right_right_button.released.connect(MainWindow.right_right_button_released)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

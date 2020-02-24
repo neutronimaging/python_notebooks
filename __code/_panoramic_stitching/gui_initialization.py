@@ -116,13 +116,16 @@ class GuiInitialization:
         self.parent.ui.run_stitching_button.setEnabled(False)
         self.parent.ui.export_button.setEnabled(False)
 
-        left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.left_button_released)
+        left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button['left']
+                                                                                      ['released'])
         self.parent.ui.left_button.setIcon(QtGui.QIcon(left_arrow_file))
+        right_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button['right']
+                                                                                       ['released'])
+        self.parent.ui.right_button.setIcon(QtGui.QIcon(right_arrow_file))
 
-        # left_left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of('left_left_arrow_v2.png')
-        # self.parent.ui.left_left_button.setIcon(QtGui.QIcon(left_left_arrow_file))
-
-        GuiInitialization.__set_widgets_size(widgets=[self.parent.ui.left_button],
+        list_ui = [self.parent.ui.left_button,
+                   self.parent.ui.right_button]
+        GuiInitialization.__set_widgets_size(widgets=list_ui,
                                              width=BUTTON_SIZE['arrow']['width'],
                                              height=BUTTON_SIZE['arrow']['height'])
 
