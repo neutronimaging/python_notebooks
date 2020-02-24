@@ -53,8 +53,8 @@ class Interface(QMainWindow):
     list_target = []
 
     # the target box will be x and y times the size of the reference box
-    target_box_size_coefficient = {'x': 1.5,
-                                   'y': 1.5}
+    target_box_size_coefficient = {'x': 1,
+                                   'y': 1}
 
     def __init__(self, parent=None, o_norm=None, configuration=''):
 
@@ -261,7 +261,8 @@ class Interface(QMainWindow):
     def run_stitching_button_clicked(self):
         self.eventProgress.setVisible(True)
         o_stitch = Stitching(parent=self)
-        o_stitch.run()
+        # o_stitch.run() # my method using diff
+        o_stitch.run_fft()
 
     def up_up_button_pressed(self):
         Utilities.button_pressed(ui=self.ui.up_up_button,

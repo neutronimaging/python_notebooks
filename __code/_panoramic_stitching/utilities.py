@@ -53,6 +53,13 @@ class Utilities:
         combobox_index_selected = self.get_reference_index_selected_from_row(row=row)
         return self.parent.list_reference[key][combobox_index_selected]
 
+    def get_image_for_this_row(self, data_type='reference', row=0):
+        if data_type == 'reference':
+            combobox_index_selected = self.get_reference_index_selected_from_row(row=row)
+        else:
+            combobox_index_selected = self.get_target_index_selected_from_row(row=row)
+        return self.parent.list_reference['data'][combobox_index_selected]
+
     def get_target_selected(self, key='files'):
         row = self.get_reference_selected(key='index')
         combobox_index_selected = self.get_target_index_selected_from_row(row=row)

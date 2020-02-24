@@ -11,6 +11,39 @@ class Stitching:
 	def __init__(self, parent=None):
 		self.parent = parent
 
+	def run_fft(self):
+		master_dict = self.parent.master_dict
+		o_utilities = Utilities(parent=self.parent)
+
+		for _row in master_dict.keys():
+
+			_data_reference =  o_utilities.get_image_for_this_row(data_type='reference',
+			                                                      row=_row)
+			_data_target = o_utilities.get_image_for_this_row(data_type='target',
+			                                                  row=_row)
+
+			reference_roi = master_dict[_row]['reference_roi']
+			[ref_x0, ref_y0, ref_width, ref_height] = Stitching.retrieve_roi_parameters(roi_dict=reference_roi)
+			target_roi = master_dict[_row]['target_roi']
+			[target_x0, target_y0, target_width, target_height] = Stitching.retrieve_roi_parameters(roi_dict=target_roi)
+
+			_data_reference_roi = _data_reference[ref_y0:ref_y0+ref_height, ref_x0:ref_x0+ref_width]
+			_data_target_roi = _data_target[target_y0:target_y0+target_height, target_x0:target_x0+target_width]
+
+			f_reference = np.fft.fft2(_data_reference_roi)
+			f_target = np.fft.fft2(_data_target_roi)
+
+			f_ref_target = f_reference * np.conjugate(f_target)
+			co = np.abs(np.fft.ifft2(f_ref_target))
+
+			pos = np.where(co == np.amax(co))
+
+			print("optimum x0:{} and optimum y0:{}".format(pos[0][0], pos[1][0]))
+
+
+
+
+
 	def run(self):
 		master_dict = self.parent.master_dict
 		list_target_file = self.parent.list_target
