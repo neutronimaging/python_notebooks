@@ -263,6 +263,14 @@ class Interface(QMainWindow):
         o_stitch = Stitching(parent=self)
         o_stitch.run()
 
+    def left_button_pressed(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_pressed(button_ui=self.ui.left_button)
+
+    def left_button_released(self):
+        o_utilities = Utilities(parent=self)
+        o_utilities.button_released(button_ui=self.ui.left_button)
+
     def apply_clicked(self):
         # do stuff
         self.close()

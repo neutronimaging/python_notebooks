@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>790</width>
-    <height>914</height>
+    <width>982</width>
+    <height>833</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,13 +16,13 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_8">
     <item>
-     <widget class="QSplitter" name="splitter">
+     <widget class="QSplitter" name="main_vertical_splitter">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -149,12 +149,18 @@
                 <property name="text">
                  <string/>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="1" column="3">
                <widget class="QPushButton" name="up_button">
                 <property name="text">
                  <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -176,12 +182,33 @@
                 <property name="text">
                  <string/>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="2" column="2">
                <widget class="QPushButton" name="left_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
                 <property name="text">
                  <string/>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>150</width>
+                  <height>150</height>
+                 </size>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <property name="default">
+                 <bool>false</bool>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -203,12 +230,18 @@
                 <property name="text">
                  <string/>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="2" column="5">
                <widget class="QPushButton" name="right_right_button">
                 <property name="text">
                  <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -230,12 +263,18 @@
                 <property name="text">
                  <string/>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="4" column="3">
                <widget class="QPushButton" name="down_down_button">
                 <property name="text">
                  <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -335,10 +374,7 @@
        <property name="title">
         <string>Stiched Image</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QWidget" name="stitched_widget" native="true"/>
-        </item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
          <widget class="QTableWidget" name="stitched_table">
           <property name="baseSize">
@@ -348,6 +384,9 @@
            </size>
           </property>
          </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="stitched_widget" native="true"/>
         </item>
        </layout>
       </widget>
@@ -391,7 +430,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>790</width>
+     <width>982</width>
      <height>22</height>
     </rect>
    </property>
@@ -474,6 +513,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>357</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>357</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -487,5 +558,7 @@
   <slot>run_stitching_button_clicked()</slot>
   <slot>import_roi_clicked()</slot>
   <slot>export_roi_clicked()</slot>
+  <slot>left_button_pressed()</slot>
+  <slot>left_button_released()</slot>
  </slots>
 </ui>

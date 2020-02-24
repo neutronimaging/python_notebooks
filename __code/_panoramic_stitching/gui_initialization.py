@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import pyqtgraph as pg
 import numpy as np
+import os
 import copy
 
 try:
@@ -12,7 +13,12 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
+from __code._panoramic_stitching import config
+
 DEFAULT_ROI = [0, 50, 75, 250]  # x0, y0, width, height for reference only
+BUTTON_SIZE = {'arrow': {'width': 50,
+                         'height': 50},
+               }
 
 
 class GuiInitialization:
@@ -110,6 +116,16 @@ class GuiInitialization:
         self.parent.ui.run_stitching_button.setEnabled(False)
         self.parent.ui.export_button.setEnabled(False)
 
+        left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.left_button_released)
+        self.parent.ui.left_button.setIcon(QtGui.QIcon(left_arrow_file))
+
+        # left_left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of('left_left_arrow_v2.png')
+        # self.parent.ui.left_left_button.setIcon(QtGui.QIcon(left_left_arrow_file))
+
+        GuiInitialization.__set_widgets_size(widgets=[self.parent.ui.left_button],
+                                             width=BUTTON_SIZE['arrow']['width'],
+                                             height=BUTTON_SIZE['arrow']['height'])
+
     def statusbar(self):
         self.parent.eventProgress = QtGui.QProgressBar(self.parent.ui.statusbar)
         self.parent.eventProgress.setMinimumSize(20, 14)
@@ -153,3 +169,14 @@ class GuiInitialization:
                                              'height': np.int(roi_row_target['height'])}
 
             configuration_roi[str(_row)] = configuration_roi_row
+
+    @staticmethod
+    def __make_full_file_name_to_static_folder_of(file_name):
+        _file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+        full_path_file = os.path.abspath(os.path.join(_file_path, file_name))
+        return full_path_file
+
+    @staticmethod
+    def __set_widgets_size(widgets=[], width=10, height=10):
+        for _widget in widgets:
+            _widget.setIconSize(QtCore.QSize(width, height))

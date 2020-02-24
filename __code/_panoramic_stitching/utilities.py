@@ -1,4 +1,12 @@
 import numpy as np
+import os
+
+try:
+    from PyQt4 import QtGui
+except ImportError:
+    from PyQt5 import QtGui
+
+from __code._panoramic_stitching import config
 
 
 class Utilities:
@@ -82,3 +90,18 @@ class Utilities:
         nbr_row = self.parent.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
             self.set_status_of_this_row_to_message(row=_row, message="")
+
+    def button_pressed(self, button_ui=None):
+        full_file = Utilities.__make_full_file_name_to_static_folder_of(config.left_button_pressed)
+        button_ui.setIcon(QtGui.QIcon(full_file))
+
+    def button_released(self, button_ui=None):
+        full_file = Utilities.__make_full_file_name_to_static_folder_of(config.left_button_released)
+        button_ui.setIcon(QtGui.QIcon(full_file))
+
+
+    @staticmethod
+    def __make_full_file_name_to_static_folder_of(file_name):
+        _file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+        full_path_file = os.path.abspath(os.path.join(_file_path, file_name))
+        return full_path_file
