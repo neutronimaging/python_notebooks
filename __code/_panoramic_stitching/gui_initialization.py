@@ -74,7 +74,10 @@ class GuiInitialization:
                                            'y0': DEFAULT_ROI[1],
                                            'width': DEFAULT_ROI[2]*self.parent.target_box_size_coefficient['x'],
                                            'height': DEFAULT_ROI[3]*self.parent.target_box_size_coefficient['y']},
-                           'status': ""}
+                           'status': "",
+                           'displacement': {'x': np.NaN,
+                                            'y': np.NaN},
+                           }
 
         list_files = self.parent.list_files
         for _row in np.arange(len(list_files)-1):

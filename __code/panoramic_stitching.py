@@ -161,7 +161,6 @@ class Interface(QMainWindow):
         self.display_data(data_type='target', data=data)
 
     def display_data(self, data_type='reference', data=[]):
-
         ui = self.pyqtgraph_image_view[data_type]
 
         roi_id = self.live_rois_id[data_type]
