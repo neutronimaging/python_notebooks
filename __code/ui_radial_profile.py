@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_radial_profile.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/ui/ui_radial_profile.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -21,7 +21,6 @@ class Ui_MainWindow(object):
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.tab_2)
-        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -214,7 +213,6 @@ class Ui_MainWindow(object):
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.tab)
-        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.calculate_profiles_button = QtWidgets.QPushButton(self.tab)
         self.calculate_profiles_button.setObjectName("calculate_profiles_button")
