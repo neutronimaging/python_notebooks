@@ -3,6 +3,7 @@ neutronbraggedge
 sectorizedradialprofile
 changepy
 nbstripout
+h5py
 
 anaconda-client==1.6.0
 appdirs==1.4.3
