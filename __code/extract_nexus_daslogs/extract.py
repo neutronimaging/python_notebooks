@@ -1,3 +1,7 @@
+import h5py
+from pathlib import Path
+from ipywidgets import widgets
+
 from __code.file_folder_browser import FileFolderBrowser
 
 
@@ -18,5 +22,11 @@ class Extract(FileFolderBrowser):
 			return
 
 		first_nexus_selected = list_nexus[0]
-	
+
+		dict_daslogs_keys = {}
+		with h5py.File(first_nexus_selected, 'r') as nxs:
+			for key in nxs['entry']['DASlogs'].keys():
+				dict_daslogs_keys[key] = list(nxs['entry']['DASlogs'][key].keys())
+
+
 
