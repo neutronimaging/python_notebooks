@@ -28,6 +28,8 @@ class Extract(FileFolderBrowser):
 		if list_nexus is None:
 			return
 
+		self.list_nexus = list_nexus
+
 		self.first_nexus_selected = list_nexus[0]
 		self.dict_daslogs_keys = get_list_entries(nexus_file_name=self.first_nexus_selected,
 		                             starting_entries=STARTING_ENTRIES)
@@ -124,30 +126,46 @@ class Extract(FileFolderBrowser):
 				self.top_keys_widgets.value = key
 				return
 
-	def extract(self, top_key_widget_value=None, x_axis_key=None, y_axis_key=None):
+	def extract_all(self):
+		list_nexus = self.list_nexus
+		final_dict = {}
+		for _nexus in list_nexus:
+			final_dict[_nexus] = self.extract(nexus_file_name=_nexus)
+
+	def extract(self, nexus_file_name='', top_key_widget_value=None, x_axis_key=None, y_axis_key=None):
 
 		top_key_widget_value = top_key_widget_value if top_key_widget_value else self.top_keys_widget_value
 		x_axis_key = x_axis_key if x_axis_key else self.x_axis_intermediate_key_widget.value
 		y_axis_key = y_axis_key if y_axis_key else self.y_axis_intermediate_key_widget.value
 
+		metadata = ['# nexus file name: ' + nexus_file_name]
+		metadata.append("# PV name: " + top_key_widget_value)
+
 		if (x_axis_key == 'time') or (y_axis_key == 'time'):
 			use_absolute_time_offset = True
 
-		top_entry_path = STARTING_ENTRIES
+		top_entry_path = copy.deepcopy(STARTING_ENTRIES)
 		top_entry_path.append(top_key_widget_value)
 
 		x_axis_entry_path = copy.deepcopy(top_entry_path)
 		x_axis_entry_path.append(x_axis_key)
-		x_axis_array = get_entry_value(nexus_file_name=self.first_nexus_selected,
+
+		x_axis_array = get_entry_value(nexus_file_name=nexus_file_name,
 		                               entry_path=x_axis_entry_path)
 		y_axis_entry_path = copy.deepcopy(top_entry_path)
 		y_axis_entry_path.append(y_axis_key)
-		y_axis_array = get_entry_value(nexus_file_name=self.first_nexus_selected,
+		y_axis_array = get_entry_value(nexus_file_name=nexus_file_name,
 		                               entry_path=y_axis_entry_path)
 
+		col3 = {'data': None,
+		        'name': None}
+		col_legend = "# {}, {}".format(x_axis_key, y_axis_key)
 		if use_absolute_time_offset:
-			starting_time = get_entry_value(nexus_file_name=self.first_nexus_selected,
+			starting_time = get_entry_value(nexus_file_name=nexus_file_name,
 		                                    entry_path=['entry','start_time'])
+			starting_time = starting_time[0].decode('UTF-8')
+			metadata.append("# starting time: {}".format(starting_time))
+
 			if x_axis_key == 'time':
 				time_axis = x_axis_array
 			else:
@@ -157,4 +175,16 @@ class Extract(FileFolderBrowser):
 
 			absolute_time_axis = o_absolute.get_absolute_time_for_this_delta_time_array(delta_time_array=time_axis)
 
-	
+			col3['data'] = absolute_time_axis
+			col3['name'] = 'absolute time'
+			col_legend += ", {}".format('absolute time')
+
+		metadata.append("#")
+		metadata.append("# {}".format(col_legend))
+
+		return {'col1': {'data': x_axis_array,
+		                 'name': x_axis_key},
+		        'col2': {'data': y_axis_array,
+		                 'name': y_axis_key},
+		        'col3': copy.deepcopy(col3),
+		        'metadata': metadata}
