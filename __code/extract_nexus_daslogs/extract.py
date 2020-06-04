@@ -1,10 +1,12 @@
+import copy
 import h5py
 from pathlib import Path
 from ipywidgets import widgets
 from IPython.core.display import display
-from __code.nexus_handler import get_list_entries
+from __code.nexus_handler import get_list_entries, get_entry_value
 from __code.file_folder_browser import FileFolderBrowser
 
+STARTING_ENTRIES = ['entry', 'DASlogs']
 
 class Extract(FileFolderBrowser):
 
@@ -27,7 +29,7 @@ class Extract(FileFolderBrowser):
 
 		self.first_nexus_selected = list_nexus[0]
 		self.dict_daslogs_keys = get_list_entries(nexus_file_name=self.first_nexus_selected,
-		                             starting_entries=['entry','DASlogs'])
+		                             starting_entries=STARTING_ENTRIES)
 
 		self.display_widgets()
 
@@ -62,7 +64,7 @@ class Extract(FileFolderBrowser):
 		                            )
 
 		self.use_absolute_time_offset = widgets.Checkbox(value=True,
-		                                                 description='Use absolute time.')
+		                                                 description='Add absolute time.')
 
 		hori_box = widgets.HBox([widgets.Select(options=self.list_daslogs_keys,
 		                                        value=first_daslogs_key,
@@ -125,15 +127,36 @@ class Extract(FileFolderBrowser):
 				self.top_keys_widgets.value = key
 				return
 
-	def extract(self):
-		top_key_widget_value = self.top_keys_widget_value
-		x_axis_key = self.x_axis_intermediate_key_widget.value
-		y_axis_key = self.y_axis_intermediate_key_widget.value
-		use_absolute_time_offset = True if self.use_absolute_time_offset.value \
-		                                   and (x_axis_key == 'time' or y_axis_key == 'time') else False
+	def extract(self, top_key_widget_value=None, x_axis_key=None, y_axis_key=None, use_absolute_time_offset=None):
 
-		print(f"top_key_widget_value: {top_key_widget_value}")
-		print(f"x_axis_key: {x_axis_key}")
-		print(f"y_axis_key: {y_axis_key}")
-		print(use_absolute_time_offset)
+		top_key_widget_value = top_key_widget_value if top_key_widget_value else self.top_keys_widget_value
+		x_axis_key = x_axis_key if x_axis_key else self.x_axis_intermediate_key_widget.value
+		y_axis_key = y_axis_key if y_axis_key else self.y_axis_intermediate_key_widget.value
 
+		if use_absolute_time_offset:
+			use_absolute_time_offset = use_absolute_time_offset
+		else:
+			use_absolute_time_offset = True if self.use_absolute_time_offset.value \
+			                                   and (x_axis_key == 'time' or y_axis_key == 'time') else False
+
+		top_entry_path = STARTING_ENTRIES
+		top_entry_path.append(top_key_widget_value)
+
+		x_axis_entry_path = copy.deepcopy(top_entry_path)
+		x_axis_entry_path.append(x_axis_key)
+		x_axis_array = get_entry_value(nexus_file_name=self.first_nexus_selected,
+		                               entry_path=x_axis_entry_path)
+		y_axis_entry_path = copy.deepcopy(top_entry_path)
+		y_axis_entry_path.append(y_axis_key)
+		y_axis_array = get_entry_value(nexus_file_name=self.first_nexus_selected,
+		                               entry_path=y_axis_entry_path)
+
+		if use_absolute_time_offset:
+			starting_time = get_entry_value(nexus_file_name=self.first_nexus_selected,
+		                                    entry_path=['entry','start_time'])
+			if x_axis_key == 'time':
+				time_axis = x_axis_array
+			else:
+				time_axis = y_axis_array
+
+			absolute_time_axis =

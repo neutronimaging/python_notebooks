@@ -2,6 +2,8 @@ import os
 from PIL import Image
 import numpy as np
 import time
+from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
 import datetime
 from collections import OrderedDict
 from ipywidgets import widgets
@@ -234,3 +236,33 @@ class TimestampFormatter:
         d = datetime.datetime.strptime(timestamp_value, timestamp_format)
         return time.mktime(d.timetuple())
 
+
+class AbsoluteTimeHandler:
+
+    def __init__(self, initial_absolute_time=None):
+        if initial_absolute_time is None:
+            raise ValueError("Please provide an initial absolute time format as 'YYYY-MM-DDTHH:MM:SS.SSSSSS-05:00")
+
+        self.formatted_initial_absolute_time = parse(initial_absolute_time)
+
+    def get_absolute_time_for_this_delta_time_array(self, delta_time_array=None, units='seconds'):
+        '''
+
+        :param delta_time_array: list of time offset
+        :param units: seconds by default ['seconds', 'minutes', 'hours']
+        :return:
+        list of time in absolute scale
+        '''
+        if delta_time_array is None:
+            raise ValueError("Empty delta time array!")
+
+        if units == 'seconds':
+            delta_time_formated = [relativedelta(seconds=t) for t in delta_time_array]
+        elif units == 'minutes':
+            delta_time_formated = [relativedelta(minutes=m) for m in delta_time_array]
+        elif units == 'hours':
+            delta_time_formated = [relativedelta(hours=h) for h in delta_time_array]
+        else:
+            raise NotImplementedError("time units not implemented!")
+
+        self.delta_time_formated = delta_time_formated
