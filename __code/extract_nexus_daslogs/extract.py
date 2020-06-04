@@ -5,6 +5,7 @@ from ipywidgets import widgets
 from IPython.core.display import display
 from __code.nexus_handler import get_list_entries, get_entry_value
 from __code.file_folder_browser import FileFolderBrowser
+from __code.time_utility import AbsoluteTimeHandler
 
 STARTING_ENTRIES = ['entry', 'DASlogs']
 
@@ -63,9 +64,6 @@ class Extract(FileFolderBrowser):
 		                             widgets.Select(options=value_of_first_selected_element)],
 		                            )
 
-		self.use_absolute_time_offset = widgets.Checkbox(value=True,
-		                                                 description='Add absolute time.')
-
 		hori_box = widgets.HBox([widgets.Select(options=self.list_daslogs_keys,
 		                                        value=first_daslogs_key,
 		                                        layout=widgets.Layout(width="400px",
@@ -76,7 +74,6 @@ class Extract(FileFolderBrowser):
 
 		display(search_box)
 		display(hori_box)
-		display(self.use_absolute_time_offset)
 
 		self.top_keys_widgets = hori_box.children[0]
 
@@ -127,17 +124,14 @@ class Extract(FileFolderBrowser):
 				self.top_keys_widgets.value = key
 				return
 
-	def extract(self, top_key_widget_value=None, x_axis_key=None, y_axis_key=None, use_absolute_time_offset=None):
+	def extract(self, top_key_widget_value=None, x_axis_key=None, y_axis_key=None):
 
 		top_key_widget_value = top_key_widget_value if top_key_widget_value else self.top_keys_widget_value
 		x_axis_key = x_axis_key if x_axis_key else self.x_axis_intermediate_key_widget.value
 		y_axis_key = y_axis_key if y_axis_key else self.y_axis_intermediate_key_widget.value
 
-		if use_absolute_time_offset:
-			use_absolute_time_offset = use_absolute_time_offset
-		else:
-			use_absolute_time_offset = True if self.use_absolute_time_offset.value \
-			                                   and (x_axis_key == 'time' or y_axis_key == 'time') else False
+		if (x_axis_key == 'time') or (y_axis_key == 'time'):
+			use_absolute_time_offset = True
 
 		top_entry_path = STARTING_ENTRIES
 		top_entry_path.append(top_key_widget_value)
@@ -159,4 +153,8 @@ class Extract(FileFolderBrowser):
 			else:
 				time_axis = y_axis_array
 
-			absolute_time_axis =
+			o_absolute = AbsoluteTimeHandler(initial_absolute_time=starting_time[0])
+
+			absolute_time_axis = o_absolute.get_absolute_time_for_this_delta_time_array(delta_time_array=time_axis)
+
+	

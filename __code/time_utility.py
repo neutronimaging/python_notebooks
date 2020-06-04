@@ -266,3 +266,6 @@ class AbsoluteTimeHandler:
             raise NotImplementedError("time units not implemented!")
 
         self.delta_time_formated = delta_time_formated
+
+        absolute_time = [delta_time + self.formatted_initial_absolute_time for delta_time in delta_time_formated]
+        return absolute_time

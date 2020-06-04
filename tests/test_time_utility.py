@@ -79,6 +79,13 @@ class TestAbsoluteTimeHandler:
 			list_seconds_calculated.append(time_formated.seconds)
 		assert list_seconds_calculated == [1, 2, 3, 4]
 
+	def test_absolute_time_array_correctly_calculated(self):
+		o_time = time_utility.AbsoluteTimeHandler(initial_absolute_time=self.starting_time)
+		delta_time_array = [1, 2, 3, 4]
+		units = 'seconds'
+		absolute_time_array = o_time.get_absolute_time_for_this_delta_time_array(delta_time_array=delta_time_array,
+		                                                                         units=units)
 
-
-
+		expected_seconds_array = [34, 35, 36, 37]
+		for index, d in enumerate(absolute_time_array):
+			assert d.second == expected_seconds_array[index]
