@@ -269,3 +269,24 @@ class AbsoluteTimeHandler:
 
         absolute_time = [delta_time + self.formatted_initial_absolute_time for delta_time in delta_time_formated]
         return absolute_time
+
+
+class RelativeTimeHandler:
+    '''the main goal of this class is to produce a relative time array using another starting time as a start.
+     In other words, let suppose some metadata got recorded in a nexus that started at time t0, another file recorded
+     another set of those same metadata but this file started at time t1. We want to calculate the time of this
+     set of metadata relative to the first file recorded. To do so we simply need to add (t1-t0) to the second
+     set of time array
+     '''
+
+    def __init__(self, master_initial_time=None, local_initial_time=None):
+        if (master_initial_time is None) or (local_initial_time is None):
+            raise ValueError("Please provide an initial absolute time format as 'YYYY-MM-DDTHH:MM:SS.SSSSSS-05:00")
+
+        formatted_master_initial_time = parse(master_initial_time)
+        formatted_local_initial_time = parse(local_initial_time)
+
+        if formatted_local_initial_time < formatted_master_initial_time:
+            raise ValueError("Master time should be before local time!")
+
+        self.time_offset_calculated_s = formatted_local_initial_time - formatted_master_initial_time

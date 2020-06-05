@@ -1,5 +1,4 @@
 import pytest
-from dateutil.parser import *
 
 from __code import time_utility
 
@@ -89,3 +88,31 @@ class TestAbsoluteTimeHandler:
 		expected_seconds_array = [34, 35, 36, 37]
 		for index, d in enumerate(absolute_time_array):
 			assert d.second == expected_seconds_array[index]
+
+class TestRelativeTimeHandler:
+
+	def setup_method(self):
+		self.first_file_starting_time = b'2020-01-10T10:15:33.303238667-05:00'
+		self.second_file_staring_time = b'2020-01-10T10:20:33.303238667-05:00'  # 5mn later
+
+	def test_minimum_arguments_provided(self):
+		with pytest.raises(ValueError):
+			time_utility.RelativeTimeHandler()
+
+	def test_arguments_have_right_format(self):
+		wrong_master_format_time = '2020-01-10Twrong_format'
+		wrong_local_format_time = '2020-01-10Tbad_format_as_well'
+		with pytest.raises(ValueError):
+			time_utility.RelativeTimeHandler(master_initial_time=wrong_master_format_time,
+			                                 local_initial_time=wrong_local_format_time)
+
+	def test_make_sure_local_is_after_master(self):
+		with pytest.raises(ValueError):
+			time_utility.RelativeTimeHandler(master_initial_time=self.second_file_staring_time,
+		                                     local_initial_time=self.first_file_starting_time)
+
+	def test_time_offset_calculated_is_right(self):
+		o_time = time_utility.RelativeTimeHandler(master_initial_time=self.first_file_starting_time,
+		                                          local_initial_time=self.second_file_staring_time)
+		time_offset_calculated = o_time.time_offset_calculated_s
+		assert 300 == time_offset_calculated.seconds

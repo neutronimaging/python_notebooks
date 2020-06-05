@@ -1,13 +1,18 @@
+import os
 import copy
 import h5py
 from pathlib import Path
 from ipywidgets import widgets
 from IPython.core.display import display
+from collections import OrderedDict
+
+from __code import fileselector
 from __code.nexus_handler import get_list_entries, get_entry_value
 from __code.file_folder_browser import FileFolderBrowser
 from __code.time_utility import AbsoluteTimeHandler
 
 STARTING_ENTRIES = ['entry', 'DASlogs']
+
 
 class Extract(FileFolderBrowser):
 
@@ -126,17 +131,47 @@ class Extract(FileFolderBrowser):
 				self.top_keys_widgets.value = key
 				return
 
-	def extract_all(self):
+	def extract_all(self, output_folder):
 		list_nexus = self.list_nexus
-		final_dict = {}
+		final_dict = OrderedDict()
 		for _nexus in list_nexus:
 			final_dict[_nexus] = self.extract(nexus_file_name=_nexus)
 
-	def extract(self, nexus_file_name='', top_key_widget_value=None, x_axis_key=None, y_axis_key=None):
+		self.final_dict = final_dict
+		self.output_folder = os.path.abspath(output_folder)
 
+		output_file_name = self.makeup_output_file_name()
+		self.create_output_file(file_name=output_file_name,
+		                        dictionary=final_dict)
+
+	def create_output_file(self, file_name=None, dictionary=None):
+
+
+
+
+
+
+
+	def makeup_output_file_name(self):
+		output_folder = self.output_folder
+		nbr_nexus = len(self.list_nexus)
+		top_key = self.top_key_widget_value
+		x_axis_key = self.x_axis_key
+		y_axis_key = self.y_axis_key
+
+		return str(Path(output_folder) / "{}_nexus_metadata_".format(nbr_nexus) +
+		           "{}_{}_{}".format(top_key,
+		            x_axis_key,
+		            y_axis_key) + ".txt")
+
+	def extract(self, nexus_file_name='', top_key_widget_value=None, x_axis_key=None, y_axis_key=None):
 		top_key_widget_value = top_key_widget_value if top_key_widget_value else self.top_keys_widget_value
 		x_axis_key = x_axis_key if x_axis_key else self.x_axis_intermediate_key_widget.value
 		y_axis_key = y_axis_key if y_axis_key else self.y_axis_intermediate_key_widget.value
+
+		self.top_key_widget_value = top_key_widget_value
+		self.x_axis_key = x_axis_key
+		self.y_axis_key = y_axis_key
 
 		metadata = ['# nexus file name: ' + nexus_file_name]
 		metadata.append("# PV name: " + top_key_widget_value)
@@ -188,3 +223,13 @@ class Extract(FileFolderBrowser):
 		                 'name': y_axis_key},
 		        'col3': copy.deepcopy(col3),
 		        'metadata': metadata}
+
+	def export(self):
+
+		self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(
+				instruction='select where to create the ' + \
+				            'ascii file',
+				start_dir=self.working_dir,
+				next=self.extract_all,
+				type='directory',
+				newdir_toolbar_button=True)
