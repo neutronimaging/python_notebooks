@@ -11,6 +11,7 @@ from __code import fileselector
 from __code.nexus_handler import get_list_entries, get_entry_value
 from __code.file_folder_browser import FileFolderBrowser
 from __code.time_utility import AbsoluteTimeHandler, RelativeTimeHandler
+from __code.interpolation_utilities import Interpolation
 
 STARTING_ENTRIES = ['entry', 'DASlogs']
 
@@ -180,6 +181,8 @@ class Extract(FileFolderBrowser):
 		top_key_widget_value = top_key_widget_value if top_key_widget_value else self.top_keys_widget_value
 		x_axis_key = x_axis_key if x_axis_key else self.x_axis_intermediate_key_widget.value
 		y_axis_key = y_axis_key if y_axis_key else self.y_axis_intermediate_key_widget.value
+		interpolate_flag = self.interpolate_checkbox.value
+		interpolate_increment_value = self.interpolate_value.value if interpolate_flag else None
 
 		self.top_key_widget_value = top_key_widget_value
 		self.x_axis_key = x_axis_key
@@ -187,6 +190,9 @@ class Extract(FileFolderBrowser):
 
 		metadata = ['# nexus file name: ' + nexus_file_name]
 		metadata.append("# PV name: " + top_key_widget_value)
+		metadata.append("# interpolated y_axis: {}".format(interpolate_flag))
+		if interpolate_flag:
+			metadata.append("# x-axis increment value: {}".format(interpolate_increment_value))
 
 		if (x_axis_key == 'time') or (y_axis_key == 'time'):
 			use_absolute_time_offset = True
@@ -203,6 +209,11 @@ class Extract(FileFolderBrowser):
 		y_axis_entry_path.append(y_axis_key)
 		y_axis_array = get_entry_value(nexus_file_name=nexus_file_name,
 		                               entry_path=y_axis_entry_path)
+
+		if interpolate_flag:
+			o_interpolation = Interpolation(x_axis=x_axis_array,
+			                                y_axis=y_axis_array)
+			x_axis_array, y_axis_array =o_interpolation.get_new_arrays(x_axis_increment=interpolate_increment_value)
 
 		col3 = {'data': None,
 		        'name': 'absolute time'}
