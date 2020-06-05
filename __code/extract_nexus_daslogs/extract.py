@@ -5,6 +5,7 @@ from pathlib import Path
 from ipywidgets import widgets
 from IPython.core.display import display
 from collections import OrderedDict
+import numpy as np
 
 from __code import fileselector
 from __code.nexus_handler import get_list_entries, get_entry_value
@@ -146,19 +147,29 @@ class Extract(FileFolderBrowser):
 
 	def create_output_file(self, file_name=None, dictionary=None):
 
-		for _key in dictionary.keys():
-			item = dictionary[_key]
+		with open(file_name, 'w') as f:
 
-			print(f"keys are: {item.keys()}")
-			print(f"metadata: {item['metadata']}")
+			for _key in dictionary.keys():
+				item = dictionary[_key]
 
+				_metadata = item['metadata']
+				for _line in _metadata:
+					_line += "\n"
+					f.write(_line)
 
+				item_col1 = item['col1']['data']
+				item_col2 = item['col2']['data']
+				item_col3 = item['col3']['data']
+				item_col4 = item['col4']['data']
 
+				for _index in np.arange(len(item['col1']['data'])):
+					_line = "{}, {}".format(item_col1[_index], item_col2[_index])
+					if item_col3:
+						_line += ", {}, {}".format(item_col3[_index], item_col4[_index])
+					_line += "\n"
+					f.write(_line)
 
-
-
-
-
+				f.write("\n")
 
 	def makeup_output_file_name(self):
 		output_folder = self.output_folder
