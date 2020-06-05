@@ -80,8 +80,15 @@ class Extract(FileFolderBrowser):
 		                         value_layout],
 		                        layout=widgets.Layout())
 
+		extrapolate_hbox = widgets.HBox([widgets.Checkbox(value=False,
+		                                                  description='Interpolate y-axis'),
+		                                 widgets.Label(value="using x-axis increment values of"),
+		                                 widgets.FloatText(value=10,
+		                                                   layout=widgets.Layout(width="20%"))])
+
 		display(search_box)
 		display(hori_box)
+		display(extrapolate_hbox)
 
 		self.top_keys_widgets = hori_box.children[0]
 
@@ -96,6 +103,18 @@ class Extract(FileFolderBrowser):
 		self.y_axis_intermediate_key_widget.observe(self.y_axis_intermediate_value_changed, names='value')
 
 		self.top_keys_widget_value = self.top_keys_widgets.value
+
+		self.extrapolate_checkbox = extrapolate_hbox.children[0]
+		self.extrapolate_label = extrapolate_hbox.children[1]
+		self.extrapolate_label.disabled = True
+		self.extrapolate_value = extrapolate_hbox.children[2]
+		self.extrapolate_value.disabled = True
+		self.extrapolate_checkbox.observe(self.extrapolate_checkbox_changed, names='value')
+
+	def extrapolate_checkbox_changed(self, value):
+		old_state = value['old']
+		self.extrapolate_value.disabled = old_state
+		self.extrapolate_label.disabled = old_state
 
 	def top_keys_changed(self, value):
 		new_top_key = value['new']
@@ -142,34 +161,8 @@ class Extract(FileFolderBrowser):
 		self.output_folder = os.path.abspath(output_folder)
 
 		output_file_name = self.makeup_output_file_name()
-		self.create_output_file(file_name=output_file_name,
-		                        dictionary=final_dict)
-
-	def create_output_file(self, file_name=None, dictionary=None):
-
-		with open(file_name, 'w') as f:
-
-			for _key in dictionary.keys():
-				item = dictionary[_key]
-
-				_metadata = item['metadata']
-				for _line in _metadata:
-					_line += "\n"
-					f.write(_line)
-
-				item_col1 = item['col1']['data']
-				item_col2 = item['col2']['data']
-				item_col3 = item['col3']['data']
-				item_col4 = item['col4']['data']
-
-				for _index in np.arange(len(item['col1']['data'])):
-					_line = "{}, {}".format(item_col1[_index], item_col2[_index])
-					if item_col3:
-						_line += ", {}, {}".format(item_col3[_index], item_col4[_index])
-					_line += "\n"
-					f.write(_line)
-
-				f.write("\n")
+		Extract.create_output_file(file_name=output_file_name,
+		                           dictionary=final_dict)
 
 	def makeup_output_file_name(self):
 		output_folder = self.output_folder
@@ -255,7 +248,6 @@ class Extract(FileFolderBrowser):
 		        'metadata': metadata}
 
 	def export(self):
-
 		self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(
 				instruction='select where to create the ' + \
 				            'ascii file',
@@ -263,3 +255,30 @@ class Extract(FileFolderBrowser):
 				next=self.extract_all,
 				type='directory',
 				newdir_toolbar_button=True)
+
+	@staticmethod
+	def create_output_file(file_name=None, dictionary=None):
+		with open(file_name, 'w') as f:
+
+			for _key in dictionary.keys():
+				item = dictionary[_key]
+
+				_metadata = item['metadata']
+				for _line in _metadata:
+					_line += "\n"
+					f.write(_line)
+
+				item_col1 = item['col1']['data']
+				item_col2 = item['col2']['data']
+				item_col3 = item['col3']['data']
+				item_col4 = item['col4']['data']
+
+				for _index in np.arange(len(item['col1']['data'])):
+					_line = "{}, {}".format(item_col1[_index], item_col2[_index])
+					if item_col3:
+						_line += ", {}, {}".format(item_col3[_index], item_col4[_index])
+					_line += "\n"
+					f.write(_line)
+
+				f.write("\n")
+
