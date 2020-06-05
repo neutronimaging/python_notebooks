@@ -205,7 +205,6 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','
 def make_ascii_file_from_string(text="", filename=''):
     with open(filename, 'w') as f:
         f.write(text)
-    f.close()
 
 
 def read_ascii(filename=''):

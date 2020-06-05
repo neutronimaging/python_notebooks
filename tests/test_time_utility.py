@@ -115,4 +115,18 @@ class TestRelativeTimeHandler:
 		o_time = time_utility.RelativeTimeHandler(master_initial_time=self.first_file_starting_time,
 		                                          local_initial_time=self.second_file_staring_time)
 		time_offset_calculated = o_time.time_offset_calculated_s
-		assert 300 == time_offset_calculated.seconds
+		assert 300 == time_offset_calculated
+
+	def test_minimum_arguments_to_get_relative_time_method(self):
+		o_time = time_utility.RelativeTimeHandler(master_initial_time=self.first_file_starting_time,
+		                                          local_initial_time=self.second_file_staring_time)
+		with pytest.raises(ValueError):
+			o_time.get_relative_time_for_this_time_array()
+
+	def test_relative_time_array_correctly_calculated(self):
+		o_time = time_utility.RelativeTimeHandler(master_initial_time=self.first_file_starting_time,
+		                                          local_initial_time=self.second_file_staring_time)
+		time_array = [0, 10, 20, 30, 40]
+		relative_time_calculated = o_time.get_relative_time_for_this_time_array(time_array=time_array)
+		relative_time_expected = [300, 310, 320, 330, 340]
+		assert relative_time_calculated == relative_time_expected

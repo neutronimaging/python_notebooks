@@ -289,4 +289,13 @@ class RelativeTimeHandler:
         if formatted_local_initial_time < formatted_master_initial_time:
             raise ValueError("Master time should be before local time!")
 
-        self.time_offset_calculated_s = formatted_local_initial_time - formatted_master_initial_time
+        time_offset_calculated = formatted_local_initial_time - formatted_master_initial_time
+        self.time_offset_calculated_s = time_offset_calculated.seconds
+
+    def get_relative_time_for_this_time_array(self, time_array=None):
+
+        if time_array is None:
+            raise ValueError("Empty time array!")
+
+        relative_time = [(t + self.time_offset_calculated_s) for t in time_array]
+        return relative_time

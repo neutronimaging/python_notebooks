@@ -9,7 +9,7 @@ from collections import OrderedDict
 from __code import fileselector
 from __code.nexus_handler import get_list_entries, get_entry_value
 from __code.file_folder_browser import FileFolderBrowser
-from __code.time_utility import AbsoluteTimeHandler
+from __code.time_utility import AbsoluteTimeHandler, RelativeTimeHandler
 
 STARTING_ENTRIES = ['entry', 'DASlogs']
 
@@ -146,6 +146,14 @@ class Extract(FileFolderBrowser):
 
 	def create_output_file(self, file_name=None, dictionary=None):
 
+		for _key in dictionary.keys():
+			item = dictionary[_key]
+
+			print(f"keys are: {item.keys()}")
+			print(f"metadata: {item['metadata']}")
+
+
+
 
 
 
@@ -159,10 +167,10 @@ class Extract(FileFolderBrowser):
 		x_axis_key = self.x_axis_key
 		y_axis_key = self.y_axis_key
 
-		return str(Path(output_folder) / "{}_nexus_metadata_".format(nbr_nexus) +
+		return str(Path(output_folder) / ("{}_nexus_metadata_".format(nbr_nexus) +
 		           "{}_{}_{}".format(top_key,
 		            x_axis_key,
-		            y_axis_key) + ".txt")
+		            y_axis_key) + ".txt"))
 
 	def extract(self, nexus_file_name='', top_key_widget_value=None, x_axis_key=None, y_axis_key=None):
 		top_key_widget_value = top_key_widget_value if top_key_widget_value else self.top_keys_widget_value
@@ -193,13 +201,20 @@ class Extract(FileFolderBrowser):
 		                               entry_path=y_axis_entry_path)
 
 		col3 = {'data': None,
-		        'name': None}
-		col_legend = "# {}, {}".format(x_axis_key, y_axis_key)
+		        'name': 'absolute time'}
+		col4 = {'data': None,
+		        'name': 'master relative time (s)'}
+		col_legend = "{}, {}".format(x_axis_key, y_axis_key)
 		if use_absolute_time_offset:
 			starting_time = get_entry_value(nexus_file_name=nexus_file_name,
 		                                    entry_path=['entry','start_time'])
 			starting_time = starting_time[0].decode('UTF-8')
-			metadata.append("# starting time: {}".format(starting_time))
+			metadata.append("# starting time of this file: {}".format(starting_time))
+
+			master_starting_time = get_entry_value(nexus_file_name=self.first_nexus_selected,
+			                                entry_path=['entry', 'start_time'])
+			master_starting_time = master_starting_time[0].decode('UTF-8')
+			metadata.append("# starting time of first file: {}".format(master_starting_time))
 
 			if x_axis_key == 'time':
 				time_axis = x_axis_array
@@ -207,12 +222,15 @@ class Extract(FileFolderBrowser):
 				time_axis = y_axis_array
 
 			o_absolute = AbsoluteTimeHandler(initial_absolute_time=starting_time[0])
-
 			absolute_time_axis = o_absolute.get_absolute_time_for_this_delta_time_array(delta_time_array=time_axis)
-
 			col3['data'] = absolute_time_axis
-			col3['name'] = 'absolute time'
 			col_legend += ", {}".format('absolute time')
+
+			o_relative = RelativeTimeHandler(master_initial_time=master_starting_time,
+			                                 local_initial_time=starting_time)
+			master_relative_time_axis = o_relative.get_relative_time_for_this_time_array(time_array=time_axis)
+			col4['data'] = master_relative_time_axis
+			col_legend += ", {}".format('master relative time (s)')
 
 		metadata.append("#")
 		metadata.append("# {}".format(col_legend))
@@ -222,6 +240,7 @@ class Extract(FileFolderBrowser):
 		        'col2': {'data': y_axis_array,
 		                 'name': y_axis_key},
 		        'col3': copy.deepcopy(col3),
+		        'col4': copy.deepcopy(col4), 
 		        'metadata': metadata}
 
 	def export(self):
