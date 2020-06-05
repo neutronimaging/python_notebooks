@@ -80,7 +80,7 @@ class Extract(FileFolderBrowser):
 		                         value_layout],
 		                        layout=widgets.Layout())
 
-		extrapolate_hbox = widgets.HBox([widgets.Checkbox(value=False,
+		interpolate_hbox = widgets.HBox([widgets.Checkbox(value=False,
 		                                                  description='Interpolate y-axis'),
 		                                 widgets.Label(value="using x-axis increment values of"),
 		                                 widgets.FloatText(value=10,
@@ -88,7 +88,7 @@ class Extract(FileFolderBrowser):
 
 		display(search_box)
 		display(hori_box)
-		display(extrapolate_hbox)
+		display(interpolate_hbox)
 
 		self.top_keys_widgets = hori_box.children[0]
 
@@ -104,17 +104,17 @@ class Extract(FileFolderBrowser):
 
 		self.top_keys_widget_value = self.top_keys_widgets.value
 
-		self.extrapolate_checkbox = extrapolate_hbox.children[0]
-		self.extrapolate_label = extrapolate_hbox.children[1]
-		self.extrapolate_label.disabled = True
-		self.extrapolate_value = extrapolate_hbox.children[2]
-		self.extrapolate_value.disabled = True
-		self.extrapolate_checkbox.observe(self.extrapolate_checkbox_changed, names='value')
+		self.interpolate_checkbox = interpolate_hbox.children[0]
+		self.interpolate_label = interpolate_hbox.children[1]
+		self.interpolate_label.disabled = True
+		self.interpolate_value = interpolate_hbox.children[2]
+		self.interpolate_value.disabled = True
+		self.interpolate_checkbox.observe(self.interpolate_checkbox_changed, names='value')
 
-	def extrapolate_checkbox_changed(self, value):
+	def interpolate_checkbox_changed(self, value):
 		old_state = value['old']
-		self.extrapolate_value.disabled = old_state
-		self.extrapolate_label.disabled = old_state
+		self.interpolate_value.disabled = old_state
+		self.interpolate_label.disabled = old_state
 
 	def top_keys_changed(self, value):
 		new_top_key = value['new']
