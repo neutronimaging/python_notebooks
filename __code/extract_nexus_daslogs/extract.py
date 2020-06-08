@@ -4,6 +4,7 @@ import h5py
 from pathlib import Path
 from ipywidgets import widgets
 from IPython.core.display import display
+from IPython.core.display import HTML
 from collections import OrderedDict
 import numpy as np
 
@@ -211,9 +212,11 @@ class Extract(FileFolderBrowser):
 		                               entry_path=y_axis_entry_path)
 
 		if interpolate_flag:
+			new_x_axis_array = np.arange(x_axis_array[0], x_axis_array[-1], interpolate_increment_value)
 			o_interpolation = Interpolation(x_axis=x_axis_array,
 			                                y_axis=y_axis_array)
-			x_axis_array, y_axis_array =o_interpolation.get_new_arrays(x_axis_increment=interpolate_increment_value)
+			y_axis_array = o_interpolation.get_new_y_array(new_x_axis=new_x_axis_array)
+			x_axis_array = new_x_axis_array
 
 		col3 = {'data': None,
 		        'name': 'absolute time'}
@@ -293,3 +296,5 @@ class Extract(FileFolderBrowser):
 
 				f.write("\n")
 
+		display(HTML('<span style="font-size: 20px; color:blue">The following ASCII file has been created: ' +
+		             '</span><span style="font-size: 20px; color:green">' + file_name + '</span>'))
