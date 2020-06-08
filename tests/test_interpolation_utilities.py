@@ -30,7 +30,11 @@ class TestInterpolation:
 	                         [(np.arange(10), np.arange(10)+5, np.arange(0, 10, 2), np.arange(0, 10, 2)+5),
 	                          (np.arange(10), np.arange(10)+5, np.arange(0.3, 9, 0.6), [5.3, 5.9, 6.5, 7.1, 7.7,
 	                                                                                    8.3, 8.9, 9.5, 10.1, 10.7,
-	                                                                                    11.3, 11.9, 12.5, 13.1])])
+	                                                                                    11.3, 11.9, 12.5, 13.1]),
+	                          (np.arange(10)+0.1, np.arange(10)+5, np.arange(0.2, 9, 0.5), [5.1, 5.6, 6.1, 6.6,
+	                                                                                        7.1, 7.6, 8.1, 8.6,
+	                                                                                        9.1, 9.6, 10.1, 10.6,
+	                                                                                        11.1, 11.6])])
 	def test_right_new_x_axis_generated(self, x_axis, y_axis, new_x_axis, new_y_axis):
 		o_interpolation = Interpolation(x_axis=x_axis, y_axis=y_axis)
 		y_axis_calculated = o_interpolation.get_new_y_array(new_x_axis=new_x_axis)

@@ -212,7 +212,11 @@ class Extract(FileFolderBrowser):
 		                               entry_path=y_axis_entry_path)
 
 		if interpolate_flag:
-			new_x_axis_array = np.arange(x_axis_array[0], x_axis_array[-1], interpolate_increment_value)
+			x_min = int(x_axis_array[0]/interpolate_increment_value)
+			if x_min != x_axis_array[0]:
+				x_min += interpolate_increment_value
+
+			new_x_axis_array = np.arange(x_min, x_axis_array[-1], interpolate_increment_value)
 			o_interpolation = Interpolation(x_axis=x_axis_array,
 			                                y_axis=y_axis_array)
 			y_axis_array = o_interpolation.get_new_y_array(new_x_axis=new_x_axis_array)
