@@ -53,7 +53,6 @@ class Extract(FileFolderBrowser):
 		first_daslogs_key = self.list_daslogs_keys[0]
 		list_keys_of_first_daslogs_key = list(dict_daslogs_keys[first_daslogs_key])
 		first_key = list_keys_of_first_daslogs_key[0]
-		value_of_first_selected_element = None
 		with h5py.File(nexus_path, 'r') as nxs:
 			value_of_first_selected_element = (list(nxs['entry']['DASlogs'][first_daslogs_key][first_key]))
 

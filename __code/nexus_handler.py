@@ -29,9 +29,9 @@ def get_list_entries(nexus_file_name=None, starting_entries=None):
 			raise KeyError("entries not found!")
 
 		for key in nxs_path.keys():
-			dict_daslogs_keys[key] = list(nxs_path.get(key).keys())
-
-	dict_daslogs_keys.sort()
+			list_keys = list(nxs_path.get(key).keys())
+			list_keys.sort()
+			dict_daslogs_keys[key] = list_keys
 
 	return dict_daslogs_keys
 
