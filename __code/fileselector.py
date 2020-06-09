@@ -115,7 +115,7 @@ class MyFileSelectorPanel:
 
         if self.filters:
             self.createFilterWidget()
-            entries_files = self.getFilteredEntries()
+            entries_files = sorted(self.getFilteredEntries())
         else:
             entries_files = sorted(os.listdir(curdir))
 

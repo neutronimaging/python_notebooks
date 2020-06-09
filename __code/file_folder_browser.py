@@ -1,5 +1,5 @@
-import ipywe.fileselector
-
+#import ipywe.fileselector
+from __code import fileselector
 
 class FileFolderBrowser(object):
 
@@ -12,7 +12,7 @@ class FileFolderBrowser(object):
                       multiple_flag=True,
                       filters={"All": "*.*"},
                       default_filter="All"):
-        self.list_images_ui = ipywe.fileselector.FileSelectorPanel(instruction=instruction,
+        self.list_images_ui = fileselector.MyFileSelectorPanel(instruction=instruction,
                                                                    start_dir=self.working_dir,
                                                                    multiple=multiple_flag,
                                                                    filters=filters,
@@ -21,7 +21,7 @@ class FileFolderBrowser(object):
         self.list_images_ui.show()
 
     def select_input_folder(self, instruction='Select Input Folder ...', multiple_flag=False):
-        self.list_input_folders_ui = ipywe.fileselector.FileSelectorPanel(instruction=instruction,
+        self.list_input_folders_ui = fileselector.MyFileSelectorPanel(instruction=instruction,
                                                                           start_dir=self.working_dir,
                                                                           type='directory',
                                                                           multiple=multiple_flag,
@@ -29,7 +29,7 @@ class FileFolderBrowser(object):
         self.list_input_folders_ui.show()
 
     def select_output_folder(self, instruction='Select Output Folder ...', multiple_flag=False):
-        self.list_output_folders_ui = ipywe.fileselector.FileSelectorPanel(instruction=instruction,
+        self.list_output_folders_ui = fileselector.MyFileSelectorPanel(instruction=instruction,
                                                                            start_dir=self.working_dir,
                                                                            type='directory',
                                                                            multiple=multiple_flag,
