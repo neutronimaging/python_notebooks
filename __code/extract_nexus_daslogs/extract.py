@@ -156,7 +156,10 @@ class Extract(FileFolderBrowser):
 		list_nexus = self.list_nexus
 		final_dict = OrderedDict()
 		for _nexus in list_nexus:
-			final_dict[_nexus] = self.extract(nexus_file_name=_nexus)
+			result_dict = self.extract(nexus_file_name=_nexus)
+			if result_dict is None:
+				continue
+			final_dict[_nexus] = result_dict
 
 		self.final_dict = final_dict
 		self.output_folder = os.path.abspath(output_folder)
@@ -211,6 +214,10 @@ class Extract(FileFolderBrowser):
 		                               entry_path=y_axis_entry_path)
 
 		if interpolate_flag:
+
+			if len(x_axis_array) == 1:
+				return None
+
 			x_min = int(x_axis_array[0]/interpolate_increment_value)
 			if x_min != x_axis_array[0]:
 				x_min += interpolate_increment_value

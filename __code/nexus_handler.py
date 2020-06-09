@@ -1,6 +1,6 @@
 from pathlib import Path
 import h5py
-
+from collections import OrderedDict
 
 def get_list_entries(nexus_file_name=None, starting_entries=None):
 	'''
@@ -18,7 +18,7 @@ def get_list_entries(nexus_file_name=None, starting_entries=None):
 	if not Path(nexus_file_name).exists():
 		raise ValueError("File do not exist!")
 
-	dict_daslogs_keys = {}
+	dict_daslogs_keys = OrderedDict()
 	with h5py.File(nexus_file_name, 'r') as nxs:
 
 		nxs_path = nxs
