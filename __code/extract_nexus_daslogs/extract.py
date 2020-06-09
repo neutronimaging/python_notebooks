@@ -224,8 +224,13 @@ class Extract(FileFolderBrowser):
 
 			new_x_axis_array = np.arange(x_min, x_axis_array[-1], interpolate_increment_value)
 			o_interpolation = Interpolation(x_axis=x_axis_array,
-			                                y_axis=y_axis_array)
-			y_axis_array = o_interpolation.get_new_y_array(new_x_axis=new_x_axis_array)
+		                                    y_axis=y_axis_array)
+
+			try:
+				y_axis_array = o_interpolation.get_new_y_array(new_x_axis=new_x_axis_array)
+			except TypeError:
+				return None
+
 			x_axis_array = new_x_axis_array
 
 		col3 = {'data': None,
@@ -282,6 +287,11 @@ class Extract(FileFolderBrowser):
 
 	@staticmethod
 	def create_output_file(file_name=None, dictionary=None):
+
+		if len(dictionary) == 0:
+			display(HTML('<span style="font-size: 20px; color:red">No ASCII file has been created!</span>'))
+			return
+
 		with open(file_name, 'w') as f:
 
 			for _key in dictionary.keys():
