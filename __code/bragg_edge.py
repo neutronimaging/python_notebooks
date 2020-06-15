@@ -1,30 +1,15 @@
-from ipywidgets import widgets
-from IPython.core.display import display
-import numpy as np
 import ipywe.fileselector
 import random
 import os
 import glob
-
-import neutronbraggedge
-from neutronbraggedge.experiment_handler import *
-from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
-from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
-from __code.fileselector import FileSelection
-from __code import file_handler
-
 from IPython.core.display import HTML
 from IPython.display import display
 import numpy as np
 from collections import OrderedDict
-
 from plotly.offline import iplot
 import plotly.graph_objs as go
-
 from ipywidgets import widgets
-
 import pyqtgraph as pg
-
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
@@ -34,8 +19,13 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
-from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
+from neutronbraggedge.experiment_handler import *
+from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
+from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
 from NeuNorm.normalization import Normalization
+
+from __code import file_handler
+from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
 
 
 class BraggEdge:
