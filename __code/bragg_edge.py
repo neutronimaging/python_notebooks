@@ -186,7 +186,6 @@ class BraggEdge:
     def select_just_time_spectra_file(self):
         self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
                                                                     start_dir=self.working_dir,
-                                                                    # next=self.load_time_spectra,
                                                                     filters={'spectra_file': "*_Spectra.txt"},
                                                                     multiple=False)
         self.time_spectra_ui.show()
