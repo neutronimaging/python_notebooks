@@ -15,8 +15,8 @@ parser.add_argument('-d', '--use_debugging_mode', action="store_true", help='Cha
 def run():
 
     args = parser.parse_args()
+    _top_path = os.path.dirname(__file__)
     if args.before_push:
-        _top_path = os.path.dirname(__file__)
         list_notebooks = glob.glob('*.ipynb')
         list_notebooks.sort()
 
