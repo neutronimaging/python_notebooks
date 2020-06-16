@@ -158,8 +158,18 @@ class BraggEdge(BraggEdgeParent):
         self.list_roi = list_roi
         normalized_data = self.o_norm.get_normalized_data()
 
+        nbr_data = len(normalized_data)
+        box_ui = widgets.HBox([widgets.Label("Calculate Counts vs lambda",
+                                             layout=widgets.Layout(width='20%')),
+                               widgets.IntProgress(min=0,
+                                                   max=nbr_data,
+                                                   value=0,
+                                                   layout=widgets.Layout(width='50%'))])
+        progress_bar = box_ui.children[1]
+        display(box_ui)
+
         counts_vs_file_index = []
-        for _data in normalized_data:
+        for _index, _data in enumerate(normalized_data):
 
             if len(list_roi) == 0:
                 _array_data = _data
@@ -177,7 +187,10 @@ class BraggEdge(BraggEdgeParent):
 
             counts_vs_file_index.append(np.nanmean(_array_data))
 
+            progress_bar.value = _index+1
+
         self.counts_vs_file_index = counts_vs_file_index
+        box_ui.close()
 
     def plot(self):
 
@@ -201,7 +214,7 @@ class BraggEdge(BraggEdgeParent):
 
         layout = go.Layout(
             height=500,
-            title="Counts vs TOF (of entire images, or of selected region if any",
+            title="Counts vs TOF (of entire images, or of selected region if any)",
             xaxis=dict(
                 title="Lambda (Angstroms)"
             ),

@@ -27,7 +27,7 @@ class DisplayFileNamesVsTimeStamp(object):
         self.folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Raw Images ...',
                                                               start_dir=self.working_dir,
                                                               multiple=True,
-                                                              next = self.retrieve_time_stamp)
+                                                              next=self.retrieve_time_stamp)
         self.folder_ui.show()
 
         display(HTML(
@@ -46,7 +46,7 @@ class DisplayFileNamesVsTimeStamp(object):
             raise ValueError
 
         box = widgets.HBox([widgets.Label("Retrieving Time Stamp",
-                                          layout = widgets.Layout(width='20%')),
+                                          layout=widgets.Layout(width='20%')),
                             widgets.IntProgress(min=0,
                                                 max=len(self.list_files),
                                                 value=0,
