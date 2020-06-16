@@ -84,13 +84,20 @@ o_bragg.list_powder_bragg_edges()
 
 # + run_control={"frozen": false, "read_only": false}
 o_bragg.exp_setup()
+# -
+
+# # Calculate Bragg Edges Data 
+
+o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
+o_bragg.load_time_spectra()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Display Bragg Edges vs Signal
+# -
+
+# Run the next cell **only if** you want to display the signal Counts vs lambda 
 
 # + run_control={"frozen": false, "read_only": false}
-o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
-o_bragg.load_time_spectra()
 o_bragg.plot()
 # -
 # # Export Data 
