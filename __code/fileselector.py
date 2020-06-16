@@ -438,6 +438,8 @@ class FileSelectorPanelWithJumpFolders:
             filters=dict(), default_filter=None,
             stay_alive=False,
             ipts_folder='./',
+            show_jump_to_share=True,
+            show_jump_to_home=True,
     ):
         self.type = type
         self.next = next
@@ -477,17 +479,36 @@ class FileSelectorPanelWithJumpFolders:
         button_layout = widgets.Layout(width='30%',
                                        border='1px solid gray')
 
-        hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
-                                            button_style='success',
-                                            layout=button_layout),
-                             widgets.Button(description="Jump to My Home Folder",
-                                            button_style='success',
-                                            layout=button_layout)])
-        go_to_shared_button_ui = hbox.children[0]
-        go_to_home_button_ui = hbox.children[1]
+        list_buttons = []
+        if show_jump_to_share:
+            share_button = widgets.Button(description="Jump to {} Shared Folder".format(ipts),
+                                          button_style='success',
+                                          layout=button_layout)
+            share_button.on_click(display_file_selector_from_shared)
+            list_buttons.append(share_button)
 
-        go_to_shared_button_ui.on_click(display_file_selector_from_shared)
-        go_to_home_button_ui.on_click(display_file_selector_from_home)
+        if show_jump_to_home:
+            home_button = widgets.Button(description="Jump to My Home Folder",
+                                         button_style='success',
+                                         layout=button_layout)
+            home_button.on_click(display_file_selector_from_home)
+            list_buttons.append(home_button)
+
+        hbox = widgets.HBox(list_buttons)
+
+        # if show_jump_to_home and show_jump_to_share:
+        #
+        #     hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
+        #                                         button_style='success',
+        #                                         layout=button_layout),
+        #                          widgets.Button(description="Jump to My Home Folder",
+        #                                         button_style='success',
+        #                                         layout=button_layout)])
+        #     go_to_shared_button_ui = hbox.children[0]
+        #     go_to_home_button_ui = hbox.children[1]
+        #
+        #     go_to_shared_button_ui.on_click(display_file_selector_from_shared)
+        #     go_to_home_button_ui.on_click(display_file_selector_from_home)
 
         display(hbox)
         self.shortcut_buttons = hbox
