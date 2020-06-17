@@ -169,6 +169,35 @@ class Extract(FileFolderBrowser):
 		new_name = str(Path(output_folder) / "{}_extracted.txt".format(base_name))
 		return new_name
 
+	def get_entry_value(self, nexus_file_name=None, entry_path=None):
+		'''
+
+		:param nexus_file_name: hdf5 full file path
+		:param entry_path: full path through the file to retrieve the information
+			example: ['entry', 'DASlogs', 'PV1', 'value']
+		:return: value at the given path in the hdf5 file
+		'''
+		if nexus_file_name is None:
+			raise ValueError("Please provide a full path to a nexus file name!")
+
+		if not Path(nexus_file_name).exists():
+			raise ValueError("File do not exist!")
+
+		with h5py.File(nexus_file_name, 'r') as nxs:
+
+			try:
+				nxs_path = nxs
+				for _item in entry_path:
+					nxs_path = nxs_path.get(_item)
+			except AttributeError:
+				raise AttributeError("Path specify in the HDF5 is wrong!")
+
+			if nxs_path is None:
+				return None
+
+			return nxs_path[()]
+
+
 	def extract(self, nexus_file_name='', output_folder='./'):
 
 		full_list_selected = self.full_list_selected
@@ -184,15 +213,15 @@ class Extract(FileFolderBrowser):
 				entry_path = copy.deepcopy(top_path)
 				entry_path.append(internal_key)
 
-				print(f"top_key: {top_key}")
-				print(f"top_path: {top_path}")
-				print(f"metadata: {metadata}")
+				# print(f"top_key: {top_key}")
+				# print(f"top_path: {top_path}")
+				# print(f"metadata: {metadata}")
 				print(f"entry_path: {entry_path}")
 
-				# value = get_entry_value(nexus_file_name=nexus_file_name,
-			    #                         entry_path=top_path.append(metadata))
+				value = self.get_entry_value(nexus_file_name=nexus_file_name,
+			                            entry_path=entry_path)
 
-
+				print(f"value: {value}")
 
 
 
