@@ -80,9 +80,10 @@ class Extract(FileFolderBrowser):
 		                                                            default_filter='reductionLog',
 		                                                            show_jump_to_share=False)
 
-	def display_metadata(self, list_of_file_selected):
+	def display_metadata(self, list_nexus):
 
 		self.o_file.shortcut_buttons.close()
+		self.list_nexus = list_nexus
 
 		self.list_keys = self.retrieve_left_widget_list_keys()
 		self.list_values = self.retrieve_right_widget_list_keys(left_widget_key_selected=list(self.list_keys)[0])
@@ -144,8 +145,6 @@ class Extract(FileFolderBrowser):
 		# 		self.top_keys_widgets.value = key
 		# 		return
 
-
-
 	def select_metadata(self, list_nexus=None):
 		if list_nexus is None:
 			return
@@ -158,151 +157,53 @@ class Extract(FileFolderBrowser):
 
 		self.display_widgets()
 
-	def display_widgets(self):
-
-		dict_daslogs_keys = self.dict_daslogs_keys
-		nexus_path = self.first_nexus_selected
-
-		self.list_daslogs_keys = list(dict_daslogs_keys.keys())
-		first_daslogs_key = self.list_daslogs_keys[0]
-		list_keys_of_first_daslogs_key = list(dict_daslogs_keys[first_daslogs_key])
-		first_key = list_keys_of_first_daslogs_key[0]
-		with h5py.File(nexus_path, 'r') as nxs:
-			value_of_first_selected_element = (list(nxs['entry']['DASlogs'][first_daslogs_key][first_key]))
-
-		search_box = widgets.HBox([widgets.Label("Search:"),
-		                           widgets.Text("",
-		                                        layout=widgets.Layout(width="30%"))])
-		search_text_widget = search_box.children[1]
-		search_text_widget.observe(self.search_text_changed, names='value')
-
-		key_layout = widgets.VBox([widgets.Label("X-axis"),
-		                           widgets.Select(options=list_keys_of_first_daslogs_key),
-		                           widgets.Label("Y-axis"),
-		                           widgets.Select(options=list_keys_of_first_daslogs_key),
-		                           ])
-		value_layout = widgets.VBox([widgets.Label("Value"),
-		                             widgets.Select(options=value_of_first_selected_element),
-		                             widgets.Label("Value"),
-		                             widgets.Select(options=value_of_first_selected_element)],
-		                            )
-
-		hori_box = widgets.HBox([widgets.Select(options=self.list_daslogs_keys,
-		                                        value=first_daslogs_key,
-		                                        layout=widgets.Layout(width="400px",
-		                                                              height=self.widget_height)),
-		                         key_layout,
-		                         value_layout],
-		                        layout=widgets.Layout())
-
-		interpolate_hbox = widgets.HBox([widgets.Checkbox(value=False,
-		                                                  description='Interpolate y-axis'),
-		                                 widgets.Label(value="using x-axis increment values of"),
-		                                 widgets.FloatText(value=10,
-		                                                   layout=widgets.Layout(width="20%"))])
-
-		display(search_box)
-		display(hori_box)
-		display(interpolate_hbox)
-
-		self.top_keys_widgets = hori_box.children[0]
-
-		self.x_axis_intermediate_key_widget = key_layout.children[1]
-		self.y_axis_intermediate_key_widget = key_layout.children[3]
-
-		self.x_axis_intermediate_value_widget = value_layout.children[1]
-		self.y_axis_intermediate_value_widget = value_layout.children[3]
-
-		self.top_keys_widgets.observe(self.top_keys_changed, names='value')
-		self.x_axis_intermediate_key_widget.observe(self.x_axis_intermediate_value_changed, names='value')
-		self.y_axis_intermediate_key_widget.observe(self.y_axis_intermediate_value_changed, names='value')
-
-		self.top_keys_widget_value = self.top_keys_widgets.value
-
-		self.interpolate_checkbox = interpolate_hbox.children[0]
-		self.interpolate_label = interpolate_hbox.children[1]
-		self.interpolate_label.disabled = True
-		self.interpolate_value = interpolate_hbox.children[2]
-		self.interpolate_value.disabled = True
-		self.interpolate_checkbox.observe(self.interpolate_checkbox_changed, names='value')
-
-	def interpolate_checkbox_changed(self, value):
-		old_state = value['old']
-		self.interpolate_value.disabled = old_state
-		self.interpolate_label.disabled = old_state
-
-	def top_keys_changed(self, value):
-		new_top_key = value['new']
-		self.top_keys_widget_value = new_top_key
-		list_intermediate_keys = list(self.dict_daslogs_keys[new_top_key])
-		self.x_axis_intermediate_key_widget.options = list_intermediate_keys
-		self.x_axis_intermediate_key_widget.value = list_intermediate_keys[0]
-		self.y_axis_intermediate_key_widget.options = list_intermediate_keys
-		self.y_axis_intermediate_key_widget.value = list_intermediate_keys[0]
-
-	def x_axis_intermediate_value_changed(self, value=None):
-		new_intermediate_key = value['new']
-		first_daslogs_key =self.top_keys_widget_value
-		with h5py.File(self.first_nexus_selected, 'r') as nxs:
-			value_of_first_selected_element = (list(nxs['entry']['DASlogs'][first_daslogs_key][new_intermediate_key]))
-		self.x_axis_intermediate_value_widget.options = value_of_first_selected_element
-
-	def y_axis_intermediate_value_changed(self, value=None):
-		new_intermediate_key = value['new']
-		# value_of_first_selected_element = None
-		first_daslogs_key = self.top_keys_widget_value
-		with h5py.File(self.first_nexus_selected, 'r') as nxs:
-			value_of_first_selected_element = (list(nxs['entry']['DASlogs'][first_daslogs_key][new_intermediate_key]))
-		self.y_axis_intermediate_value_widget.options = value_of_first_selected_element
-
-
 	def extract_all(self, output_folder):
 		list_nexus = self.list_nexus
-		final_dict = OrderedDict()
 		for _nexus in list_nexus:
-			result_dict = self.extract(nexus_file_name=_nexus)
-			if result_dict is None:
-				continue
-			final_dict[_nexus] = result_dict
+			self.extract(nexus_file_name=_nexus,
+			             output_folder=output_folder)
 
-		self.final_dict = final_dict
-		self.output_folder = os.path.abspath(output_folder)
+	def makeup_output_file_name(self, nexus_file_name='', output_folder='./'):
+		short_nexus_file_name = os.path.basename(nexus_file_name)
+		base_name, ext = os.path.splitext(short_nexus_file_name)
+		new_name = str(Path(output_folder) / "{}_extracted.txt".format(base_name))
+		return new_name
 
-		output_file_name = self.makeup_output_file_name()
-		Extract.create_output_file(file_name=output_file_name,
-		                           dictionary=final_dict)
+	def extract(self, nexus_file_name='', output_folder='./'):
 
-	def makeup_output_file_name(self):
-		output_folder = self.output_folder
-		nbr_nexus = len(self.list_nexus)
-		top_key = self.top_key_widget_value
-		x_axis_key = self.x_axis_key
-		y_axis_key = self.y_axis_key
-
-		return str(Path(output_folder) / ("{}_nexus_metadata_".format(nbr_nexus) +
-		           "{}_{}_{}".format(top_key,
-		            x_axis_key,
-		            y_axis_key) + ".txt"))
-
-	def extract(self, nexus_file_name='', top_key_widget_value=None, x_axis_key=None, y_axis_key=None):
-		top_key_widget_value = top_key_widget_value if top_key_widget_value else self.top_keys_widget_value
-		x_axis_key = x_axis_key if x_axis_key else self.x_axis_intermediate_key_widget.value
-		y_axis_key = y_axis_key if y_axis_key else self.y_axis_intermediate_key_widget.value
-		interpolate_flag = self.interpolate_checkbox.value
-		interpolate_increment_value = self.interpolate_value.value if interpolate_flag else None
-
-		self.top_key_widget_value = top_key_widget_value
-		self.x_axis_key = x_axis_key
-		self.y_axis_key = y_axis_key
+		full_list_selected = self.full_list_selected
 
 		metadata = ['# nexus file name: ' + nexus_file_name]
-		metadata.append("# PV name: " + top_key_widget_value)
-		metadata.append("# interpolated y_axis: {}".format(interpolate_flag))
-		if interpolate_flag:
-			metadata.append("# x-axis increment value: {}".format(interpolate_increment_value))
+		metadata = ['#']
 
-		if (x_axis_key == 'time') or (y_axis_key == 'time'):
-			use_absolute_time_offset = True
+		for top_key in full_list_selected.keys():
+			top_path = self.list_parameters[top_key]['path']
+			for internal_key in full_list_selected[top_key]:
+				metadata = [f'# {top_key} -> {internal_key}']
+
+				print(f"top_key: {top_key}")
+				print(f"top_path: {top_path}")
+				print(f"metadata: {metadata}")
+
+
+
+
+
+
+
+		output_file_name = self.makeup_output_file_name(nexus_file_name=nexus_file_name,
+		                                                output_folder=output_folder)
+		print(f"output file will be {output_file_name}")
+		# # Extract.create_output_file(file_name=output_file_name,
+		# #                            dictionary=final_dict)
+
+		return
+
+
+
+
+
+
 
 		top_entry_path = copy.deepcopy(STARTING_ENTRIES)
 		top_entry_path.append(top_key_widget_value)
@@ -372,13 +273,6 @@ class Extract(FileFolderBrowser):
 		metadata.append("#")
 		metadata.append("# {}".format(col_legend))
 
-		return {'col1': {'data': x_axis_array,
-		                 'name': x_axis_key},
-		        'col2': {'data': y_axis_array,
-		                 'name': y_axis_key},
-		        'col3': copy.deepcopy(col3),
-		        'col4': copy.deepcopy(col4), 
-		        'metadata': metadata}
 
 	def export(self):
 		self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(
@@ -387,7 +281,8 @@ class Extract(FileFolderBrowser):
 				start_dir=self.working_dir,
 				next=self.extract_all,
 				type='directory',
-				newdir_toolbar_button=True)
+				newdir_toolbar_button=True,
+				show_jump_to_share=False)
 
 	@staticmethod
 	def create_output_file(file_name=None, dictionary=None):
