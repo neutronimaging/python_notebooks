@@ -13,17 +13,19 @@ from __code.nexus_handler import get_list_entries, get_entry_value
 from __code.file_folder_browser import FileFolderBrowser
 from __code.time_utility import AbsoluteTimeHandler, RelativeTimeHandler
 from __code.interpolation_utilities import Interpolation
+from __code.sans.sans_config import gpsans_parameters, biosans_parameters
 
 STARTING_ENTRIES = ['entry', 'DASlogs']
 LIST_SANS_INSTRUMENTS = {'GP-SANS (CG2)': {'unix_name': 'CG2'},
                          'BIO-SANS (CG3)': {'unix_name': 'CG3'}}
+
 
 class Initializer:
 
 	def select_instrument(self):
 		list_instruments = list(LIST_SANS_INSTRUMENTS.keys())
 		instrument_ui = widgets.HBox([widgets.Label("Select your instrument",
-		                                            layout=widgets.Layout(width='15%')),
+			                                        layout=widgets.Layout(width='15%')),
 		                              widgets.Select(options=list_instruments,
 		                                             layout=widgets.Layout(width='30%',
 		                                                                   height='50px'))])
@@ -36,14 +38,37 @@ class Initializer:
 		full_path = f'/HFIR/{short_name}/'
 		return full_path
 
+	def get_instrument(self):
+		return self.instrument_list_ui.value
+
 
 class Extract(FileFolderBrowser):
 
 	first_nexus_selected = ''
 	widget_height = "400px"
+	full_list_selected = {}
 
-	def __init__(self, working_dir="./"):
+	def __init__(self, working_dir="./", instrument='GP-SANS (CG2)'):
+		self.instrument = Extract.get_short_version_instrument(instrument)
 		super(Extract, self).__init__(working_dir=working_dir)
+
+		if self.instrument == 'CG2':
+			self.list_parameters = gpsans_parameters
+		else:
+			self.list_parameters = biosans_parameters
+
+		self.init_full_list_selected()
+
+	def init_full_list_selected(self):
+		for para in self.list_parameters.keys():
+			self.full_list_selected[para] = []
+
+	@staticmethod
+	def get_short_version_instrument(instrument):
+		if 'CG2' in instrument:
+			return 'CG2'
+		else:
+			return 'CG3'
 
 	def select_reductionlog(self):
 		self.o_file = fileselector.FileSelectorPanelWithJumpFolders(start_dir=self.working_dir,
@@ -51,12 +76,73 @@ class Extract(FileFolderBrowser):
 		                                                            type='file',
 		                                                            multiple=True,
 		                                                            next=self.display_metadata,
-		                                                            filters={'reductionLog': "*.hdf"},
+		                                                            filters={'reductionLog': "*_reduction_log.hdf"},
 		                                                            default_filter='reductionLog',
 		                                                            show_jump_to_share=False)
 
 	def display_metadata(self, list_of_file_selected):
+
 		self.o_file.shortcut_buttons.close()
+
+		self.list_keys = self.retrieve_left_widget_list_keys()
+		self.list_values = self.retrieve_right_widget_list_keys(left_widget_key_selected=list(self.list_keys)[0])
+
+		# search box
+		search_box = widgets.HBox([widgets.Label("Search:"),
+		                           widgets.Text("",
+		                                        layout=widgets.Layout(width="30%"))])
+		# search_text_widget = search_box.children[1]
+		# search_text_widget.observe(self.search_text_changed, names='value')
+
+		# list of keys
+		hori_box = widgets.HBox([widgets.Select(options=self.list_keys,
+	                                            layout=widgets.Layout(width="400px",
+	                                                                  height=self.widget_height)),
+		                         widgets.SelectMultiple(options=self.list_values,
+		                                        layout=widgets.Layout(width="400px",
+		                                                              height=self.widget_height))],
+	                             )
+		display(hori_box)
+		[self.left_widget_ui, self.right_widget_ui] = hori_box.children
+		self.left_widget_ui.observe(self.left_widget_changed, names='value')
+		self.right_widget_ui.observe(self.right_widget_changed, names='value')
+
+		display(widgets.Label("Command + Click: to select more than 1 element in the right widget"))
+
+	def left_widget_changed(self, new_value):
+		value_selected = new_value['new']
+		right_value = self.list_parameters[value_selected]['list']
+		self.right_widget_ui.options = right_value
+		self.right_widget_ui.value = self.full_list_selected[value_selected]
+
+	def get_left_widget_selected(self):
+		value_selected = self.left_widget_ui.value
+		return value_selected
+
+	def right_widget_changed(self, new_value):
+		list_new_value_selected = new_value['new']
+		left_widget_value = self.get_left_widget_selected()
+		self.full_list_selected[left_widget_value] = list_new_value_selected
+
+	def retrieve_left_widget_list_keys(self):
+		return self.list_parameters.keys()
+
+	def retrieve_right_widget_list_keys(self, left_widget_key_selected=None):
+		if left_widget_key_selected is None:
+			left_widget_key_selected = self.left_widget_ui.value
+		return self.list_parameters[left_widget_key_selected]['list']
+
+	def search_text_changed(self, value):
+		pass
+		# new_text = value['new']
+		# if new_text == "":
+		# 	self.top_keys_widgets.value = self.list_daslogs_keys[0]
+		# 	return
+		#
+		# for key in self.list_daslogs_keys:
+		# 	if new_text in key:
+		# 		self.top_keys_widgets.value = key
+		# 		return
 
 
 
@@ -169,16 +255,6 @@ class Extract(FileFolderBrowser):
 			value_of_first_selected_element = (list(nxs['entry']['DASlogs'][first_daslogs_key][new_intermediate_key]))
 		self.y_axis_intermediate_value_widget.options = value_of_first_selected_element
 
-	def search_text_changed(self, value):
-		new_text = value['new']
-		if new_text == "":
-			self.top_keys_widgets.value = self.list_daslogs_keys[0]
-			return
-
-		for key in self.list_daslogs_keys:
-			if new_text in key:
-				self.top_keys_widgets.value = key
-				return
 
 	def extract_all(self, output_folder):
 		list_nexus = self.list_nexus
