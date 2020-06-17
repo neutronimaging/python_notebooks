@@ -175,17 +175,22 @@ class Extract(FileFolderBrowser):
 
 		metadata = ['# nexus file name: ' + nexus_file_name]
 		metadata = ['#']
+		data = []
 
 		for top_key in full_list_selected.keys():
 			top_path = self.list_parameters[top_key]['path']
 			for internal_key in full_list_selected[top_key]:
 				metadata = [f'# {top_key} -> {internal_key}']
+				entry_path = copy.deepcopy(top_path)
+				entry_path.append(internal_key)
 
 				print(f"top_key: {top_key}")
 				print(f"top_path: {top_path}")
 				print(f"metadata: {metadata}")
+				print(f"entry_path: {entry_path}")
 
-
+				# value = get_entry_value(nexus_file_name=nexus_file_name,
+			    #                         entry_path=top_path.append(metadata))
 
 
 
