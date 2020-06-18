@@ -14,6 +14,7 @@ from __code.file_folder_browser import FileFolderBrowser
 from __code.time_utility import AbsoluteTimeHandler, RelativeTimeHandler
 from __code.interpolation_utilities import Interpolation
 from __code.sans.sans_config import gpsans_parameters, biosans_parameters
+from __code.file_handler import make_ascii_file
 
 STARTING_ENTRIES = ['entry', 'DASlogs']
 LIST_SANS_INSTRUMENTS = {'GP-SANS (CG2)': {'unix_name': 'CG2'},
@@ -158,6 +159,8 @@ class Extract(FileFolderBrowser):
 		self.display_widgets()
 
 	def extract_all(self, output_folder):
+		self.output_folder_ui.shortcut_buttons.close()
+
 		list_nexus = self.list_nexus
 		for _nexus in list_nexus:
 			self.extract(nexus_file_name=_nexus,
@@ -189,13 +192,28 @@ class Extract(FileFolderBrowser):
 				nxs_path = nxs
 				for _item in entry_path:
 					nxs_path = nxs_path.get(_item)
+
 			except AttributeError:
 				raise AttributeError("Path specify in the HDF5 is wrong!")
 
 			if nxs_path is None:
 				return None
 
-			return nxs_path[()]
+			if type(nxs_path) == h5py._hl.group.Group:
+				result = {}
+				for _key in nxs_path.keys():
+					value = nxs_path.get(_key)
+					if type(value) == h5py._hl.dataset.Dataset:
+						result[_key] = value[()]
+					else:
+						result[_key] = value
+
+				return result
+
+			if type(nxs_path) == h5py._hl.dataset.Dataset:
+				return nxs_path[()]
+
+			return None
 
 
 	def extract(self, nexus_file_name='', output_folder='./'):
@@ -203,110 +221,22 @@ class Extract(FileFolderBrowser):
 		full_list_selected = self.full_list_selected
 
 		metadata = ['# nexus file name: ' + nexus_file_name]
-		metadata = ['#']
-		data = []
 
 		for top_key in full_list_selected.keys():
 			top_path = self.list_parameters[top_key]['path']
 			for internal_key in full_list_selected[top_key]:
-				metadata = [f'# {top_key} -> {internal_key}']
 				entry_path = copy.deepcopy(top_path)
 				entry_path.append(internal_key)
-
-				# print(f"top_key: {top_key}")
-				# print(f"top_path: {top_path}")
-				# print(f"metadata: {metadata}")
-				print(f"entry_path: {entry_path}")
 
 				value = self.get_entry_value(nexus_file_name=nexus_file_name,
 			                            entry_path=entry_path)
 
-				print(f"value: {value}")
-
-
+				metadata.append('# {} -> {}: {}'.format(top_key, internal_key, value))
 
 		output_file_name = self.makeup_output_file_name(nexus_file_name=nexus_file_name,
 		                                                output_folder=output_folder)
-		print(f"output file will be {output_file_name}")
-		# # Extract.create_output_file(file_name=output_file_name,
-		# #                            dictionary=final_dict)
-
-		return
-
-
-
-
-
-
-
-		top_entry_path = copy.deepcopy(STARTING_ENTRIES)
-		top_entry_path.append(top_key_widget_value)
-
-		x_axis_entry_path = copy.deepcopy(top_entry_path)
-		x_axis_entry_path.append(x_axis_key)
-
-		x_axis_array = get_entry_value(nexus_file_name=nexus_file_name,
-		                               entry_path=x_axis_entry_path)
-		y_axis_entry_path = copy.deepcopy(top_entry_path)
-		y_axis_entry_path.append(y_axis_key)
-		y_axis_array = get_entry_value(nexus_file_name=nexus_file_name,
-		                               entry_path=y_axis_entry_path)
-
-		if interpolate_flag:
-
-			if len(x_axis_array) == 1:
-				return None
-
-			x_min = int(x_axis_array[0]/interpolate_increment_value)
-			if x_min != x_axis_array[0]:
-				x_min += interpolate_increment_value
-
-			new_x_axis_array = np.arange(x_min, x_axis_array[-1], interpolate_increment_value)
-			o_interpolation = Interpolation(x_axis=x_axis_array,
-		                                    y_axis=y_axis_array)
-
-			try:
-				y_axis_array = o_interpolation.get_new_y_array(new_x_axis=new_x_axis_array)
-			except TypeError:
-				return None
-
-			x_axis_array = new_x_axis_array
-
-		col3 = {'data': None,
-		        'name': 'absolute time'}
-		col4 = {'data': None,
-		        'name': 'master relative time (s)'}
-		col_legend = "{}, {}".format(x_axis_key, y_axis_key)
-		if use_absolute_time_offset:
-			starting_time = get_entry_value(nexus_file_name=nexus_file_name,
-		                                    entry_path=['entry','start_time'])
-			starting_time = starting_time[0].decode('UTF-8')
-			metadata.append("# starting time of this file: {}".format(starting_time))
-
-			master_starting_time = get_entry_value(nexus_file_name=self.first_nexus_selected,
-			                                entry_path=['entry', 'start_time'])
-			master_starting_time = master_starting_time[0].decode('UTF-8')
-			metadata.append("# starting time of first file: {}".format(master_starting_time))
-
-			if x_axis_key == 'time':
-				time_axis = x_axis_array
-			else:
-				time_axis = y_axis_array
-
-			o_absolute = AbsoluteTimeHandler(initial_absolute_time=starting_time[0])
-			absolute_time_axis = o_absolute.get_absolute_time_for_this_delta_time_array(delta_time_array=time_axis)
-			col3['data'] = absolute_time_axis
-			col_legend += ", {}".format('absolute time')
-
-			o_relative = RelativeTimeHandler(master_initial_time=master_starting_time,
-			                                 local_initial_time=starting_time)
-			master_relative_time_axis = o_relative.get_relative_time_for_this_time_array(time_array=time_axis)
-			col4['data'] = master_relative_time_axis
-			col_legend += ", {}".format('master relative time (s)')
-
-		metadata.append("#")
-		metadata.append("# {}".format(col_legend))
-
+		make_ascii_file(metadata=metadata,
+		                output_file_name=output_file_name)
 
 	def export(self):
 		self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(
