@@ -209,9 +209,6 @@ class Extract(FileFolderBrowser):
 
 		full_dict_with_path_as_key = Extract.reformat_dict(full_dict)
 
-		import pprint
-		pprint.pprint(full_dict_with_path_as_key)
-
 		metadata.append("#")
 		for _metadata_path in full_dict_with_path_as_key.keys():
 			metadata.append("# metadata:  {}".format(_metadata_path))
@@ -220,14 +217,12 @@ class Extract(FileFolderBrowser):
 				collect_metadata_values.append(full_dict_with_path_as_key[_metadata_path][_nexus])
 
 			self.collect_metadata_values = collect_metadata_values
-			self.metadata = metadata
 
-			metadata = Extract.update_metadata(collect_metadata_values,
-			                                   metadata=metadata)
-			self.debug = metadata
+			Extract.update_metadata(collect_metadata_values,
+			                        metadata=metadata)
 
-
-
+		make_ascii_file(metadata=metadata,
+		                output_file_name=output_file_name)
 
 	@staticmethod
 	def update_metadata(list_metadata, metadata):
@@ -244,12 +239,12 @@ class Extract(FileFolderBrowser):
 				line_formatted = ", ".join(line)
 				metadata.append(line_formatted)
 				index += 1
-			return metadata
+			# return metadata
 
 		if type(list_metadata[0]) == str:
 			line = ", ".join(list_metadata)
 			metadata.append(line)
-			return metadata
+			# return metadata
 
 		if type(list_metadata[0]) == dict:
 
@@ -260,24 +255,9 @@ class Extract(FileFolderBrowser):
 				for _array in list_metadata:
 					each_key_line.append(_array[_key])
 				each_key_line = [str(val) for val in each_key_line]
-				line_formated = ", ".join(each_key_line)
-				metadata.append(line_formated)
-			return metadata
-
-
-
-		# metadata = ['# nexus file name: ' + nexus_file_name]
-		#
-		# for top_key in full_list_selected.keys():
-		# 	top_path = self.list_parameters[top_key]['path']
-		# 	for internal_key in full_list_selected[top_key]:
-		# 		entry_path = copy.deepcopy(top_path)
-		# 		entry_path.append(internal_key)
-		#
-		# 		value = self.get_entry_value(nexus_file_name=nexus_file_name,
-		# 		                             entry_path=entry_path)
-		#
-		# 		metadata.append('# {} -> {}: {}'.format(top_key, internal_key, value))
+				line_formatted = ", ".join(each_key_line)
+				metadata.append(line_formatted)
+			# return metadata
 
 	def extract_all(self, output_folder):
 		self.output_folder_ui.shortcut_buttons.close()
@@ -296,7 +276,6 @@ class Extract(FileFolderBrowser):
 	def extract(self, nexus_file_name='', output_folder='./'):
 
 		full_list_selected = self.full_list_selected
-
 		metadata = ['# nexus file name: ' + nexus_file_name]
 
 		for top_key in full_list_selected.keys():
@@ -418,6 +397,9 @@ class Extract(FileFolderBrowser):
 	@staticmethod
 	def format_array(str_array):
 
+		if type(str_array) == np.float64:
+			return str_array
+
 		if str_array[0] == '[':
 			# it's supposed to be an array
 
@@ -426,7 +408,13 @@ class Extract(FileFolderBrowser):
 			# split by space
 			format2 = format1.split(" ")
 			# remove \n
-			format3 = [np.float(val.rstrip()) for val in format2]
+			format3 = []
+			for val in format2:
+				try:
+					new_val = np.float(val.strip())
+				except ValueError:
+					new_val = str(val.strip())
+				format3.append(new_val)
 			return format3
 
 		else:
