@@ -205,23 +205,64 @@ class Extract(FileFolderBrowser):
 			value = Extract.get_entry_value(nexus_file_name=_nexus,
 			                                list_entry_path=list_entry_path)
 			full_dict[_nexus] = value
-			metadata.append("# column #{}: {}".format(_index, _nexus))
+			metadata.append("# column {}: {}".format(_index, _nexus))
 
 		full_dict_with_path_as_key = Extract.reformat_dict(full_dict)
 
+		import pprint
+		pprint.pprint(full_dict_with_path_as_key)
+
 		metadata.append("#")
-		for nexus_key in full_dict.keys():
+		for _metadata_path in full_dict_with_path_as_key.keys():
+			metadata.append("# metadata:  {}".format(_metadata_path))
+			collect_metadata_values = []
+			for _nexus in full_dict_with_path_as_key[_metadata_path].keys():
+				collect_metadata_values.append(full_dict_with_path_as_key[_metadata_path][_nexus])
 
-			_nexus_entry = full_dict[nexus_key]
-			for _path in _nexus_entry.keys():
-				pass
+			self.collect_metadata_values = collect_metadata_values
+			self.metadata = metadata
+
+			metadata = Extract.update_metadata(collect_metadata_values,
+			                                   metadata=metadata)
+			self.debug = metadata
 
 
 
 
+	@staticmethod
+	def update_metadata(list_metadata, metadata):
 
+		if type(list_metadata[0]) == list:
 
+			# get the first element of each array, then the second of each array ...
+			index = 0
+			while index < len(list_metadata[0]):
+				line = []
+				for _array in list_metadata:
+					line.append(_array[index])
+				line = [str(val) for val in line]
+				line_formatted = ", ".join(line)
+				metadata.append(line_formatted)
+				index += 1
+			return metadata
 
+		if type(list_metadata[0]) == str:
+			line = ", ".join(list_metadata)
+			metadata.append(line)
+			return metadata
+
+		if type(list_metadata[0]) == dict:
+
+			# work with each dictionary key, one at a time
+			for _key in list_metadata[0].keys():
+				each_key_line = []
+				metadata.append("# {}".format(_key))
+				for _array in list_metadata:
+					each_key_line.append(_array[_key])
+				each_key_line = [str(val) for val in each_key_line]
+				line_formated = ", ".join(each_key_line)
+				metadata.append(line_formated)
+			return metadata
 
 
 
@@ -330,6 +371,7 @@ class Extract(FileFolderBrowser):
 			example: ['entry', 'DASlogs', 'PV1', 'value']
 		:return: value at the given path in the hdf5 file
 		'''
+
 		if nexus_file_name is None:
 			raise ValueError("Please provide a full path to a nexus file name!")
 
@@ -368,6 +410,29 @@ class Extract(FileFolderBrowser):
 					result_dict[id] = result
 
 				elif type(nxs_path) == h5py._hl.dataset.Dataset:
-					result_dict[id] = np.array(nxs_path[()])
+					formated_data = Extract.format_array(nxs_path[()])
+					result_dict[id] = formated_data
 
 		return result_dict
+
+	@staticmethod
+	def format_array(str_array):
+
+		if str_array[0] == '[':
+			# it's supposed to be an array
+
+			# remove '[' and ']'
+			format1 = str_array[1:-1]
+			# split by space
+			format2 = format1.split(" ")
+			# remove \n
+			format3 = [np.float(val.rstrip()) for val in format2]
+			return format3
+
+		else:
+			# it's just a string
+			return str_array
+
+
+
+
