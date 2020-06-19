@@ -36,7 +36,7 @@ class Initializer:
 	def get_working_dir(self):
 		instrument_name = self.instrument_list_ui.value
 		short_name = LIST_SANS_INSTRUMENTS[instrument_name]['unix_name']
-		full_path = f'/HFIR/{short_name}/'
+		full_path = '/HFIR/{}/'.format(short_name)
 		return full_path
 
 	def get_instrument(self):
