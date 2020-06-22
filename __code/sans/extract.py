@@ -224,6 +224,9 @@ class Extract(FileFolderBrowser):
 		make_ascii_file(metadata=metadata,
 		                output_file_name=output_file_name)
 
+		display(HTML('<span style="font-size: 20px; color:blue">The following ASCII file has been created: ' +
+		             '</span><span style="font-size: 20px; color:green">' + output_file_name + '</span>'))
+
 	@staticmethod
 	def update_metadata(list_metadata, metadata):
 
@@ -259,13 +262,13 @@ class Extract(FileFolderBrowser):
 				metadata.append(line_formatted)
 			# return metadata
 
-	def extract_all(self, output_folder):
-		self.output_folder_ui.shortcut_buttons.close()
-
-		list_nexus = self.list_nexus
-		for _nexus in list_nexus:
-			self.extract(nexus_file_name=_nexus,
-						 output_folder=output_folder)
+	# def extract_all(self, output_folder):
+	# 	self.output_folder_ui.shortcut_buttons.close()
+	#
+	# 	list_nexus = self.list_nexus
+	# 	for _nexus in list_nexus:
+	# 		self.extract(nexus_file_name=_nexus,
+	# 					 output_folder=output_folder)
 
 	def makeup_output_file_name(self, nexus_file_name='', output_folder='./'):
 		short_nexus_file_name = os.path.basename(nexus_file_name)
@@ -273,60 +276,60 @@ class Extract(FileFolderBrowser):
 		new_name = str(Path(output_folder) / "{}_extracted.txt".format(base_name))
 		return new_name
 
-	def extract(self, nexus_file_name='', output_folder='./'):
+	# def extract(self, nexus_file_name='', output_folder='./'):
+	#
+	# 	full_list_selected = self.full_list_selected
+	# 	metadata = ['# nexus file name: ' + nexus_file_name]
+	#
+	# 	for top_key in full_list_selected.keys():
+	# 		top_path = self.list_parameters[top_key]['path']
+	# 		for internal_key in full_list_selected[top_key]:
+	# 			entry_path = copy.deepcopy(top_path)
+	# 			entry_path.append(internal_key)
+	#
+	# 			value = self.get_entry_value(nexus_file_name=nexus_file_name,
+	# 			                             entry_path=entry_path)
+	#
+	# 			metadata.append('# {} -> {}: {}'.format(top_key, internal_key, value))
+	#
+	# 	output_file_name = self.makeup_output_file_name(nexus_file_name=nexus_file_name,
+	# 	                                                output_folder=output_folder)
+	# 	make_ascii_file(metadata=metadata,
+	# 	                output_file_name=output_file_name)
 
-		full_list_selected = self.full_list_selected
-		metadata = ['# nexus file name: ' + nexus_file_name]
-
-		for top_key in full_list_selected.keys():
-			top_path = self.list_parameters[top_key]['path']
-			for internal_key in full_list_selected[top_key]:
-				entry_path = copy.deepcopy(top_path)
-				entry_path.append(internal_key)
-
-				value = self.get_entry_value(nexus_file_name=nexus_file_name,
-				                             entry_path=entry_path)
-
-				metadata.append('# {} -> {}: {}'.format(top_key, internal_key, value))
-
-		output_file_name = self.makeup_output_file_name(nexus_file_name=nexus_file_name,
-		                                                output_folder=output_folder)
-		make_ascii_file(metadata=metadata,
-		                output_file_name=output_file_name)
-
-	@staticmethod
-	def create_output_file(file_name=None, dictionary=None):
-
-		if len(dictionary) == 0:
-			display(HTML('<span style="font-size: 20px; color:red">No ASCII file has been created!</span>'))
-			return
-
-		with open(file_name, 'w') as f:
-
-			for _key in dictionary.keys():
-				item = dictionary[_key]
-
-				_metadata = item['metadata']
-				for _line in _metadata:
-					_line += "\n"
-					f.write(_line)
-
-				item_col1 = item['col1']['data']
-				item_col2 = item['col2']['data']
-				item_col3 = item['col3']['data']
-				item_col4 = item['col4']['data']
-
-				for _index in np.arange(len(item['col1']['data'])):
-					_line = "{}, {}".format(item_col1[_index], item_col2[_index])
-					if item_col3:
-						_line += ", {}, {}".format(item_col3[_index], item_col4[_index])
-					_line += "\n"
-					f.write(_line)
-
-				f.write("\n")
-
-		display(HTML('<span style="font-size: 20px; color:blue">The following ASCII file has been created: ' +
-		             '</span><span style="font-size: 20px; color:green">' + file_name + '</span>'))
+	# @staticmethod
+	# def create_output_file(file_name=None, dictionary=None):
+	#
+	# 	if len(dictionary) == 0:
+	# 		display(HTML('<span style="font-size: 20px; color:red">No ASCII file has been created!</span>'))
+	# 		return
+	#
+	# 	with open(file_name, 'w') as f:
+	#
+	# 		for _key in dictionary.keys():
+	# 			item = dictionary[_key]
+	#
+	# 			_metadata = item['metadata']
+	# 			for _line in _metadata:
+	# 				_line += "\n"
+	# 				f.write(_line)
+	#
+	# 			item_col1 = item['col1']['data']
+	# 			item_col2 = item['col2']['data']
+	# 			item_col3 = item['col3']['data']
+	# 			item_col4 = item['col4']['data']
+	#
+	# 			for _index in np.arange(len(item['col1']['data'])):
+	# 				_line = "{}, {}".format(item_col1[_index], item_col2[_index])
+	# 				if item_col3:
+	# 					_line += ", {}, {}".format(item_col3[_index], item_col4[_index])
+	# 				_line += "\n"
+	# 				f.write(_line)
+	#
+	# 			f.write("\n")
+	#
+	# 	display(HTML('<span style="font-size: 20px; color:blue">The following ASCII file has been created: ' +
+	# 	             '</span><span style="font-size: 20px; color:green">' + file_name + '</span>'))
 
 	@staticmethod
 	def create_output_file_name(output_folder='./', nbr_nexus=0):
