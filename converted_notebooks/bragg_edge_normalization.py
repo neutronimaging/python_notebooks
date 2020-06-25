@@ -20,14 +20,15 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.bragg_edge_normalization import BraggEdge
+from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 from __code.bragg_edge import Interface
 
 system.System.select_working_dir(facility='SNS', instrument='SNAP')
 from __code.__all import custom_style
 custom_style.style()
 
-from plotly.offline import plot, init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode
+
 init_notebook_mode()
 # -
 

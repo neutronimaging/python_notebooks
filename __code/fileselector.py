@@ -80,14 +80,12 @@ class MyFileSelectorPanel:
         self.createPanel(os.path.abspath(start_dir))
         self.next = next
         self.stay_alive = stay_alive
-        return
 
     def createPanel(self, curdir):
         self.header = ipyw.Label(self.instruction, layout=self.label_layout)
         self.footer = ipyw.HTML("")
         self.body = self.createBody(curdir)
         self.panel = ipyw.VBox(children=[self.header, self.body, self.footer])
-        return
 
     def createBody(self, curdir):
         self.curdir = curdir
@@ -511,7 +509,7 @@ class FileSelectorPanelWithJumpFolders:
         #     go_to_home_button_ui.on_click(display_file_selector_from_home)
 
         display(hbox)
-        self.shortcut_buttons = hbox
+        self.shortcut_buttons = hbox # use this reference to hide those buttons
 
         self.display_file_selector(instruction=instruction,
                                    start_dir=start_dir,

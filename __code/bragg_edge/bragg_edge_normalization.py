@@ -22,7 +22,7 @@ from NeuNorm.normalization import Normalization
 from NeuNorm.roi import ROI
 
 from __code import file_handler
-from __code.bragg_edge import BraggEdge as BraggEdgeParent
+from __code.bragg_edge.bragg_edge import BraggEdge as BraggEdgeParent
 from __code.file_folder_browser import FileFolderBrowser
 
 
@@ -121,7 +121,7 @@ class BraggEdge(BraggEdgeParent):
         display(vbox)
         self.number_of_data_to_use_ui = box1.children[1]
 
-    def define_sample_roi(self):
+    def get_image_to_use_for_display(self):
         nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
         _data = self.o_norm.data['sample']['data']
 
@@ -133,6 +133,7 @@ class BraggEdge(BraggEdgeParent):
             final_array.append(_data[_index])
         final_image = np.mean(final_array, axis=0)
         self.final_image = final_image
+        return final_image
 
     def normalization(self, list_rois=None):
         if list_rois is None:
@@ -152,6 +153,18 @@ class BraggEdge(BraggEdgeParent):
                                       y1=_y1))
 
             self.o_norm.normalization(roi=list_o_roi, notebook=True)
+        display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
+
+    def export_normalized_data(self):
+        self.o_folder = FileFolderBrowser(working_dir=self.working_dir,
+                                        next_function=self.export_normalized_data_step2)
+        self.o_folder.select_output_folder_with_new(instruction="Select where to create the normalized data ...")
+
+    def export_normalized_data_step2(self, output_folder):
+        self.o_folder.list_output_folders_ui.shortcut_buttons.close()
+        self.o_norm.export(folder=output_folder)
+        display(HTML('<span style="font-size: 15px; color:green"> Created the normalized data in the folder ' +
+                     output_folder + '</span>'))
 
     def calculate_counts_vs_file_index_of_regions_selected(self, list_roi=None):
 
@@ -194,18 +207,18 @@ class BraggEdge(BraggEdgeParent):
 
     def plot(self):
 
-        bragg_edges = self.bragg_edges
-        hkl = self.hkl
+        # bragg_edges = self.bragg_edges
+        # hkl = self.hkl
 
-        # format hkl labels
-        _hkl_formated = {}
-        for _material in hkl:
-            _hkl_string = []
-            for _hkl in hkl[_material]:
-                _hkl_s = ",".join(str(x) for x in _hkl)
-                _hkl_s = _material + "\n" + _hkl_s
-                _hkl_string.append(_hkl_s)
-            _hkl_formated[_material] = _hkl_string
+        # # format hkl labels
+        # _hkl_formated = {}
+        # for _material in hkl:
+        #     _hkl_string = []
+        #     for _hkl in hkl[_material]:
+        #         _hkl_s = ",".join(str(x) for x in _hkl)
+        #         _hkl_s = _material + "\n" + _hkl_s
+        #         _hkl_string.append(_hkl_s)
+        #     _hkl_formated[_material] = _hkl_string
 
         trace = go.Scatter(
             x=self.lambda_array,
@@ -223,44 +236,43 @@ class BraggEdge(BraggEdgeParent):
             ),
         )
 
-        max_x = 6
+        # max_x = 6
         data = [trace]
-
         figure = go.Figure(data=data, layout=layout)
 
-        for y_index, _material in enumerate(bragg_edges):
-            for _index, _value in enumerate(bragg_edges[_material]):
-                if _value > max_x:
-                    continue
-                bragg_line = {"type": "line",
-                              'x0': _value,
-                              'x1': _value,
-                              'yref': "paper",
-                              'y0': 0,
-                              'y1': 1,
-                              'line': {
-                                  'color': 'rgb(255, 0, 0)',
-                                  'width': 1
-                              }}
-                figure.add_shape(bragg_line)
-                y_off = 1 - 0.25 * y_index
-
-                # add labels to plots
-                _annot = dict(
-                    x=_value,
-                    y=y_off,
-                    text=_hkl_formated[_material][_index],
-                    yref="paper",
-                    font=dict(
-                        family="Arial",
-                        size=16,
-                        color="rgb(150,50,50)"
-                    ),
-                    showarrow=True,
-                    arrowhead=3,
-                    ax=0,
-                    ay=-25)
-                figure.add_annotation(_annot)
+        # for y_index, _material in enumerate(bragg_edges):
+        #     for _index, _value in enumerate(bragg_edges[_material]):
+        #         if _value > max_x:
+        #             continue
+        #         bragg_line = {"type": "line",
+        #                       'x0': _value,
+        #                       'x1': _value,
+        #                       'yref': "paper",
+        #                       'y0': 0,
+        #                       'y1': 1,
+        #                       'line': {
+        #                           'color': 'rgb(255, 0, 0)',
+        #                           'width': 1
+        #                       }}
+        #         figure.add_shape(bragg_line)
+        #         y_off = 1 - 0.25 * y_index
+        #
+        #         # add labels to plots
+        #         _annot = dict(
+        #             x=_value,
+        #             y=y_off,
+        #             text=_hkl_formated[_material][_index],
+        #             yref="paper",
+        #             font=dict(
+        #                 family="Arial",
+        #                 size=16,
+        #                 color="rgb(150,50,50)"
+        #             ),
+        #             showarrow=True,
+        #             arrowhead=3,
+        #             ax=0,
+        #             ay=-25)
+        #         figure.add_annotation(_annot)
 
         iplot(figure)
 
