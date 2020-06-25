@@ -32,6 +32,7 @@ class BraggEdge:
 
     list_of_elements = ['Fe']
     data = []
+    spectra_file = None
 
     label_width = '15%'
 

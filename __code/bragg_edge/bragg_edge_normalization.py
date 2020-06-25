@@ -2,12 +2,14 @@ import ipywe.fileselector
 import random
 import os
 import glob
+from pathlib import Path
 from IPython.core.display import HTML
 from IPython.display import display
 import numpy as np
 from plotly.offline import iplot
 import plotly.graph_objs as go
 from ipywidgets import widgets
+from shutil import copyfile
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
@@ -34,6 +36,7 @@ class BraggEdge(BraggEdgeParent):
 
         # define time spectra file
         folder = os.path.dirname(self.o_norm.data['sample']['file_name'][0])
+        self.list_files = self.o_norm.data['sample']['file_name']
         spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
         if spectra_file:
             self.spectra_file = spectra_file[0]
@@ -43,6 +46,27 @@ class BraggEdge(BraggEdgeParent):
         else:
             #ask for spectra file
             self.select_time_spectra_file()
+
+    def select_time_spectra_file(self):
+        self.working_dir = os.path.dirname(self.list_files[0])
+
+        self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
+                                                                    start_dir=self.working_dir,
+                                                                    next=self.save_time_spectra,
+                                                                    filters={'spectra_file': "_Spectra.txt"},
+                                                                    multiple=False)
+
+        self.time_spectra_ui.show()
+        self.cancel_button = widgets.Button(description="or Do Not Select any Time Spectra",
+                                            button_style="info",
+                                            layout=widgets.Layout(width='100%'))
+        display(self.cancel_button)
+        self.cancel_button.on_click(self.cancel_time_spectra_selection)
+
+    def cancel_time_spectra_selection(self, value):
+        self.time_spectra_ui.remove()
+        self.cancel_button.close()
+        display(HTML('<span style="font-size: 20px; color:blue">NO Spectra File loaded! </span>'))
 
     def load_files(self, data_type='sample', folder=None):
 
@@ -157,14 +181,22 @@ class BraggEdge(BraggEdgeParent):
 
     def export_normalized_data(self):
         self.o_folder = FileFolderBrowser(working_dir=self.working_dir,
-                                        next_function=self.export_normalized_data_step2)
+                                          next_function=self.export_normalized_data_step2)
         self.o_folder.select_output_folder_with_new(instruction="Select where to create the normalized data ...")
 
     def export_normalized_data_step2(self, output_folder):
         self.o_folder.list_output_folders_ui.shortcut_buttons.close()
-        self.o_norm.export(folder=output_folder)
+
+        normalized_export_folder = str(Path(output_folder) / (self.starting_dir + '_normalized'))
+        file_handler.make_or_reset_folder(normalized_export_folder)
+
+        self.o_norm.export(folder=normalized_export_folder)
         display(HTML('<span style="font-size: 15px; color:green"> Created the normalized data in the folder ' +
-                     output_folder + '</span>'))
+                     normalized_export_folder + '</span>'))
+        if self.spectra_file:
+            file_handler.copy_files_to_folder(list_files=[self.spectra_file],
+                                              output_folder=normalized_export_folder)
+            display(HTML('<span style="font-size: 15px; color:green"> Copied time spectra file to same folder </span>'))
 
     def calculate_counts_vs_file_index_of_regions_selected(self, list_roi=None):
 
@@ -207,19 +239,6 @@ class BraggEdge(BraggEdgeParent):
 
     def plot(self):
 
-        # bragg_edges = self.bragg_edges
-        # hkl = self.hkl
-
-        # # format hkl labels
-        # _hkl_formated = {}
-        # for _material in hkl:
-        #     _hkl_string = []
-        #     for _hkl in hkl[_material]:
-        #         _hkl_s = ",".join(str(x) for x in _hkl)
-        #         _hkl_s = _material + "\n" + _hkl_s
-        #         _hkl_string.append(_hkl_s)
-        #     _hkl_formated[_material] = _hkl_string
-
         trace = go.Scatter(
             x=self.lambda_array,
             y=self.counts_vs_file_index,
@@ -236,43 +255,8 @@ class BraggEdge(BraggEdgeParent):
             ),
         )
 
-        # max_x = 6
         data = [trace]
         figure = go.Figure(data=data, layout=layout)
-
-        # for y_index, _material in enumerate(bragg_edges):
-        #     for _index, _value in enumerate(bragg_edges[_material]):
-        #         if _value > max_x:
-        #             continue
-        #         bragg_line = {"type": "line",
-        #                       'x0': _value,
-        #                       'x1': _value,
-        #                       'yref': "paper",
-        #                       'y0': 0,
-        #                       'y1': 1,
-        #                       'line': {
-        #                           'color': 'rgb(255, 0, 0)',
-        #                           'width': 1
-        #                       }}
-        #         figure.add_shape(bragg_line)
-        #         y_off = 1 - 0.25 * y_index
-        #
-        #         # add labels to plots
-        #         _annot = dict(
-        #             x=_value,
-        #             y=y_off,
-        #             text=_hkl_formated[_material][_index],
-        #             yref="paper",
-        #             font=dict(
-        #                 family="Arial",
-        #                 size=16,
-        #                 color="rgb(150,50,50)"
-        #             ),
-        #             showarrow=True,
-        #             arrowhead=3,
-        #             ax=0,
-        #             ay=-25)
-        #         figure.add_annotation(_annot)
 
         iplot(figure)
 
