@@ -13,7 +13,7 @@
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bragg_edge_normalization/#activate-search)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bragg_edge_profile/#activate-search)
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -38,8 +38,9 @@ init_notebook_mode()
 # %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Raw Data Input Folder
-# time spectra files will be loaded
+# # Select Normalized Data Input Folder
+#
+# Data and time spectra files will be loaded
 
 # + run_control={"frozen": false, "read_only": false}
 o_bragg = BraggEdge(working_dir=system.System.get_working_dir())
@@ -73,8 +74,44 @@ o_interface.show()
 
 o_bragg.normalization(list_rois=o_interface.roi_selected)
 
-# ## Export normalized data and time spectra file
+# ## Export normalized data 
 
 o_bragg.export_normalized_data()
+
+# # Calculate Bragg edge profile
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# ## Define Experiment Setup
+
+# + run_control={"frozen": false, "read_only": false}
+o_bragg.exp_setup()
+# -
+
+# ## Define the position of your sample 
+
+o_interface_sample = Interface(data=o_bragg.final_image)
+o_interface_sample.show()
+
+# ## Calculate signal of sample region
+
+# o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
+o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface_sample.roi_selected)
+o_bragg.load_time_spectra()
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # Display Bragg Edges vs Signal
+# -
+
+# Run the next cell **only if** you want to display the signal Counts vs lambda 
+
+plt.figure()
+plt.plot(o_bragg.counts_vs_file_index[100:1200])
+
+# + run_control={"frozen": false, "read_only": false}
+o_bragg.plot()
+# -
+# # Export ASCII Data 
+
+o_bragg.select_output_data_folder()
 
 
