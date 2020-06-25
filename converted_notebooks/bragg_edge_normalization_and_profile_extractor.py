@@ -13,6 +13,7 @@
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bragg_edge_normalization_and_profile_extractor/#activate-search)
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -20,8 +21,8 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.bragg_edge_normalization import BraggEdge
-from __code.bragg_edge import Interface
+from __code.bragg_edge.bragg_edge_normalization import BraggEdge
+from __code.bragg_edge.bragg_edge import Interface
 
 system.System.select_working_dir(facility='SNS', instrument='SNAP')
 from __code.__all import custom_style
@@ -50,7 +51,7 @@ o_bragg.select_working_folder()
 
 o_bragg.select_ob_folder()
 
-# # Select ROI of sample 
+# # Normalization
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # ### Select how many random files to use to select sample position
@@ -59,36 +60,42 @@ o_bragg.select_ob_folder()
 o_bragg.how_many_data_to_use_to_select_sample_roi()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# ### Select location of sample on integrated image
+# ### Select background region
+# -
+
+# In order to improve the normalization you have the option to select a region in your images that **you know for sure is away from the sample**. The algorithm will use that **background** region to match it with the same region of the open beam (OB) images.
 
 # + run_control={"frozen": false, "read_only": false}
-o_bragg.define_sample_roi()
-o_interface = Interface(data=o_bragg.final_image)
+o_interface = Interface(data=o_bragg.get_image_to_use_for_display())
 o_interface.show()
 # -
 
-# # Normalize Data 
+# ## Perform normalization 
 
 o_bragg.normalization(list_rois=o_interface.roi_selected)
 
-# # Powder element(s) to use to compare data  
+# ## Export normalized data 
 
-o_bragg.list_elements()
+o_bragg.export_normalized_data()
 
-# ## List Bragg Edges 
-
-o_bragg.list_powder_bragg_edges()
+# # Calculate Bragg edge profile
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Define Experiment Setup
+# ## Define Experiment Setup
 
 # + run_control={"frozen": false, "read_only": false}
 o_bragg.exp_setup()
 # -
 
-# # Calculate Bragg Edges Data 
+# ## Define the position of your sample 
 
-o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
+o_interface_sample = Interface(data=o_bragg.final_image)
+o_interface_sample.show()
+
+# ## Calculate signal of sample region
+
+# o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
+o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface_sample.roi_selected)
 o_bragg.load_time_spectra()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -100,7 +107,7 @@ o_bragg.load_time_spectra()
 # + run_control={"frozen": false, "read_only": false}
 o_bragg.plot()
 # -
-# # Export Data 
+# # Export ASCII Data 
 
 o_bragg.select_output_data_folder()
 
