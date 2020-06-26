@@ -194,7 +194,6 @@ class BraggEdge(BraggEdgeParent):
         output_folder = os.path.abspath(output_folder)
         self.o_folder.list_output_folders_ui.shortcut_buttons.close()
         normalized_export_folder = str(Path(output_folder) / (self.data_folder_name + '_normalized'))
-        print(f"normalized_export_folder: {normalized_export_folder}")
         file_handler.make_or_reset_folder(normalized_export_folder)
 
         self.o_norm.export(folder=normalized_export_folder)
