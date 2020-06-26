@@ -24,7 +24,7 @@ from __code import system
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 from __code.bragg_edge.bragg_edge import Interface
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP')
+system.System.select_working_dir(facility='SNS', instrument='VENUS')
 from __code.__all import custom_style
 custom_style.style()
 
@@ -47,37 +47,6 @@ o_bragg = BraggEdge(working_dir=system.System.get_working_dir())
 o_bragg.select_working_folder()
 # -
 
-# # Select Open Beam Input Folder 
-
-o_bragg.select_ob_folder()
-
-# # Normalization
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# ### Select how many random files to use to select sample position
-
-# + run_control={"frozen": false, "read_only": false}
-o_bragg.how_many_data_to_use_to_select_sample_roi()
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# ### Select background region
-# -
-
-# In order to improve the normalization you have the option to select a region in your images that **you know for sure is away from the sample**. The algorithm will use that **background** region to match it with the same region of the open beam (OB) images.
-
-# + run_control={"frozen": false, "read_only": false}
-o_interface = Interface(data=o_bragg.get_image_to_use_for_display())
-o_interface.show()
-# -
-
-# ## Perform normalization 
-
-o_bragg.normalization(list_rois=o_interface.roi_selected)
-
-# ## Export normalized data 
-
-o_bragg.export_normalized_data()
-
 # # Calculate Bragg edge profile
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -87,12 +56,18 @@ o_bragg.export_normalized_data()
 o_bragg.exp_setup()
 # -
 
-# ## Define the position of your sample 
+# ## Calculate signal of sample region
 
-o_interface_sample = Interface(data=o_bragg.final_image)
+# ### Select how many random files to use to select sample position
+
+o_bragg.how_many_data_to_use_to_select_sample_roi()
+
+# ### Select the sample position 
+
+o_interface_sample = Interface(data=o_bragg.get_image_to_use_for_display())
 o_interface_sample.show()
 
-# ## Calculate signal of sample region
+# ## Calculate
 
 # o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
 o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface_sample.roi_selected)
@@ -103,9 +78,6 @@ o_bragg.load_time_spectra()
 # -
 
 # Run the next cell **only if** you want to display the signal Counts vs lambda 
-
-plt.figure()
-plt.plot(o_bragg.counts_vs_file_index[100:1200])
 
 # + run_control={"frozen": false, "read_only": false}
 o_bragg.plot()
