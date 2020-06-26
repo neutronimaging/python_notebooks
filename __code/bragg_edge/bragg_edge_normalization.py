@@ -37,6 +37,7 @@ class BraggEdge(BraggEdgeParent):
         # define time spectra file
         folder = os.path.dirname(self.o_norm.data['sample']['file_name'][0])
         self.list_files = self.o_norm.data['sample']['file_name']
+        self.data_folder_name = os.path.basename(folder)
         spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
         if spectra_file:
             self.spectra_file = spectra_file[0]
@@ -190,9 +191,10 @@ class BraggEdge(BraggEdgeParent):
         self.o_folder.select_output_folder_with_new(instruction="Select where to create the normalized data ...")
 
     def export_normalized_data_step2(self, output_folder):
+        output_folder = os.path.abspath(output_folder)
         self.o_folder.list_output_folders_ui.shortcut_buttons.close()
-
-        normalized_export_folder = str(Path(output_folder) / (self.starting_dir + '_normalized'))
+        normalized_export_folder = str(Path(output_folder) / (self.data_folder_name + '_normalized'))
+        print(f"normalized_export_folder: {normalized_export_folder}")
         file_handler.make_or_reset_folder(normalized_export_folder)
 
         self.o_norm.export(folder=normalized_export_folder)
