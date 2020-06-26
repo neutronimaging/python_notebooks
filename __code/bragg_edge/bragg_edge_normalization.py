@@ -207,9 +207,9 @@ class BraggEdge(BraggEdgeParent):
     def calculate_counts_vs_file_index_of_regions_selected(self, list_roi=None):
 
         self.list_roi = list_roi
-        normalized_data = self.o_norm.get_normalized_data()
+        data = self.o_norm.get_sample_data()
 
-        nbr_data = len(normalized_data)
+        nbr_data = len(data)
         box_ui = widgets.HBox([widgets.Label("Calculate Counts vs lambda",
                                              layout=widgets.Layout(width='20%')),
                                widgets.IntProgress(min=0,
@@ -220,7 +220,7 @@ class BraggEdge(BraggEdgeParent):
         display(box_ui)
 
         counts_vs_file_index = []
-        for _index, _data in enumerate(normalized_data):
+        for _index, _data in enumerate(data):
 
             if len(list_roi) == 0:
                 _array_data = _data
@@ -279,7 +279,6 @@ class BraggEdge(BraggEdgeParent):
 
     def export_data(self, output_folder):
         input_folder = os.path.dirname(self.o_norm.data['sample']['file_name'][0])
-        ob_folder = os.path.dirname(self.o_norm.data['ob']['file_name'][0])
         output_file_name = self.make_output_file_name(output_folder=output_folder,
                                                       input_folder=input_folder)
 
@@ -288,7 +287,6 @@ class BraggEdge(BraggEdgeParent):
         tof_array = self.tof_array
 
         metadata = ["# input folder: {}".format(input_folder)]
-        metadata.append("# ob folder: {}".format(ob_folder))
 
         list_roi = self.list_roi
         if len(list_roi) == 0:
