@@ -63,6 +63,10 @@ class BraggEdge(BraggEdgeParent):
         display(self.cancel_button)
         self.cancel_button.on_click(self.cancel_time_spectra_selection)
 
+    def save_time_spectra(self, file):
+        BraggEdgeParent.save_time_spectra(self, file)
+        self.cancel_button.close()
+
     def cancel_time_spectra_selection(self, value):
         self.time_spectra_ui.remove()
         self.cancel_button.close()
