@@ -9,7 +9,7 @@ import numpy as np
 from plotly.offline import iplot
 import plotly.graph_objs as go
 from ipywidgets import widgets
-from shutil import copyfile
+
 try:
     from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
@@ -185,7 +185,8 @@ class BraggEdge(BraggEdgeParent):
 
     def export_normalized_data(self):
         self.o_folder = FileFolderBrowser(working_dir=self.working_dir,
-                                          next_function=self.export_normalized_data_step2)
+                                          next_function=self.export_normalized_data_step2,
+                                          ipts_folder=self.ipts_folder)
         self.o_folder.select_output_folder_with_new(instruction="Select where to create the normalized data ...")
 
     def export_normalized_data_step2(self, output_folder):

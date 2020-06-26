@@ -4,9 +4,11 @@ from __code import fileselector
 class FileFolderBrowser(object):
 
     def __init__(self, working_dir='',
-                 next_function=None):
+                 next_function=None,
+                 ipts_folder=None):
         self.working_dir = working_dir
         self.next_function = next_function
+        self.ipts_folder = ipts_folder
 
     def select_images(self, instruction='Select Images ...',
                       multiple_flag=True,
@@ -40,6 +42,6 @@ class FileFolderBrowser(object):
         self.list_output_folders_ui = fileselector.FileSelectorPanelWithJumpFolders(instruction=instruction,
                                                                                     start_dir=self.working_dir,
                                                                                     type='directory',
+                                                                                    ipts_folder=self.ipts_folder,
                                                                                     next=self.next_function,
                                                                                     newdir_toolbar_button=True)
-

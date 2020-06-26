@@ -38,6 +38,7 @@ class BraggEdge:
 
     def __init__(self, working_dir='./'):
         self.working_dir = working_dir
+        self.ipts_folder = working_dir
 
     def full_list_elements(self):
         retrieve_material = RetrieveMaterialMetadata(material='all')

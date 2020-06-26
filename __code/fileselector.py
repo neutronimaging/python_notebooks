@@ -472,7 +472,7 @@ class FileSelectorPanelWithJumpFolders:
                                        stay_alive=stay_alive,
                                        )
 
-        ipts = os.path.basename(start_dir)
+        ipts = os.path.basename(ipts_folder)
 
         button_layout = widgets.Layout(width='30%',
                                        border='1px solid gray')
