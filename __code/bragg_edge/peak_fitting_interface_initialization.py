@@ -21,6 +21,9 @@ class Initialization:
 		   'width': 0.01,
 	       'position': [10, 10, 20, 30]}
 
+	distance_detector_sample = 1300  # m
+	detector_offset = 6500  # micros
+
 	def __init__(self, parent=None):
 		self.parent = parent
 
@@ -59,6 +62,8 @@ class Initialization:
 
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])
+		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
+		self.parent.ui.detector_offset.setText(str(self.detector_offset))
 
 	def roi_setup(self):
 		[x0, y0, width, height] = self.roi['position']
