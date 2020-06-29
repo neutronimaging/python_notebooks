@@ -167,7 +167,7 @@ class BraggEdge:
         _exp = Experiment(tof=_tof_handler.tof_array,
                           distance_source_detector_m=np.float(self.dSD_ui.value),
                           detector_offset_micros=np.float(self.detector_offset_ui.value))
-        self.lambda_array = _exp.lambda_array * 1e10 # to be in Angstroms
+        self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
         self.tof_array = _tof_handler.tof_array
 
     def save_time_spectra(self, file):

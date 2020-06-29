@@ -85,11 +85,20 @@ class Interface(QMainWindow):
         self.final_image = final_image
         return final_image
 
+    @staticmethod
+    def check_size(x_axis=None, y_axis=None):
+        size_x = len(x_axis)
+        size_y = len(y_axis)
+        min_len = np.min([size_x, size_y])
+        return x_axis[:min_len], y_axis[:min_len]
+
     def roi_moved(self):
         profile = self.get_profile_of_roi()
         tof_array = self.tof_array * 1e6  # to be in microS
+        x_axis, y_axis = Interface.check_size(x_axis=tof_array,
+                                              y_axis=profile)
         self.ui.profile.clear()
-        self.ui.profile.plot(tof_array, profile)
+        self.ui.profile.plot(x_axis, y_axis)
         self.ui.profile.setLabel("bottom", u"TOF (\u00B5s)")
         self.ui.profile.setLabel("left", 'Mean counts')
 
