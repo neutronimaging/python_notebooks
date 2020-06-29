@@ -42,6 +42,7 @@ class Interface(QMainWindow):
         o_init = Initialization(parent=self)
         o_init.init_statusbar()
         o_init.init_pyqtgraph()
+        o_init.init_widgets()
 
     # event handler
     def cancel_clicked(self):

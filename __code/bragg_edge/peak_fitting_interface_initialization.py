@@ -42,3 +42,6 @@ class Initialization:
 		fitting_layout = QtGui.QVBoxLayout()
 		fitting_layout.addWidget(self.parent.ui.fitting)
 		self.parent.ui.fitting_widget.setLayout(fitting_layout)
+
+	def init_widgets(self):
+		self.parent.ui.splitter.setSizes([500, 400])
