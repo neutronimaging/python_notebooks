@@ -380,9 +380,6 @@ class Interface(QMainWindow):
 
         self.live_data = data
 
-        #self.list_files = self.o_norm.data['sample']['file_name']
-        #self.list_data = self.o_norm.data['sample']['data']
-
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
