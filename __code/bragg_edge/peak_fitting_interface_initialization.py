@@ -9,6 +9,7 @@ except ImportError:
 import pyqtgraph as pg
 
 
+
 class Initialization:
 
 	def __init__(self, parent=None):
@@ -36,4 +37,8 @@ class Initialization:
 		profile_layout.addWidget(self.parent.ui.profile)
 		self.parent.ui.profile_widget.setLayout(profile_layout)
 
-		
+		# fitting view
+		self.parent.ui.fitting = pg.PlotWidget(title="Fitting")
+		fitting_layout = QtGui.QVBoxLayout()
+		fitting_layout.addWidget(self.parent.ui.fitting)
+		self.parent.ui.fitting_widget.setLayout(fitting_layout)

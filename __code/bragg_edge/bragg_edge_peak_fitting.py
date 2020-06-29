@@ -1,4 +1,5 @@
 from IPython.core.display import HTML
+import os
 from IPython.display import display
 try:
     from PyQt4.QtGui import QFileDialog
@@ -11,7 +12,8 @@ except ImportError:
 
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge as BraggEdgeParent
 from __code.bragg_edge.peak_fitting_interface_initialization import Initialization
-from __code.ui_bragg_edge_peak_fitting import Ui_MainWindow as UiMainWindow
+from __code import load_ui
+
 
 class BraggEdge(BraggEdgeParent):
 
@@ -28,9 +30,12 @@ class Interface(QMainWindow):
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+        super(Interface, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_bragg_edge_peak_fitting.ui'))
+
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Peak Fitting Tool")
 
         # initialization
