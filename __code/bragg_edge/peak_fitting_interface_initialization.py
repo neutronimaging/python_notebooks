@@ -65,6 +65,13 @@ class Initialization:
 		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
 		self.parent.ui.detector_offset.setText(str(self.detector_offset))
 
+		# labels
+		self.parent.ui.detector_offset_units.setText(u"\u03BCs")
+		self.parent.ui.selection_tof_radiobutton.setText(u"TOF (\u03BCs)")
+		self.parent.ui.fitting_tof_radiobutton.setText(u"TOF (\u03BCs)")
+		self.parent.ui.selection_lambda_radiobutton.setText(u"\u03BB (\u212B)")
+		self.parent.ui.fitting_lambda_radiobutton.setText(u"\u03BB (\u212B)")
+
 	def roi_setup(self):
 		[x0, y0, width, height] = self.roi['position']
 		_color = QtGui.QColor(self.roi['color'][0], self.roi['color'][1], self.roi['color'][2])
