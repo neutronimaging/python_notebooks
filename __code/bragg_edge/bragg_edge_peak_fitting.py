@@ -27,9 +27,7 @@ DEBUGGING = True
 
 
 class BraggEdge(BraggEdgeParent):
-
    pass
-
 
 
 class Interface(QMainWindow):
@@ -93,13 +91,36 @@ class Interface(QMainWindow):
         return x_axis[:min_len], y_axis[:min_len]
 
     def roi_moved(self):
+        self.update_selection_profile_plot()
+
+    def get_x_axis(self, tab='selection'):
+        x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
+                                          'tof': self.ui.selection_tof_radiobutton,
+                                          'lambda': self.ui.selection_lambda_radiobutton},
+                            'fitting': {'index': self.ui.fitting_index_radiobutton,
+                                        'tof': self.ui.fitting_tof_radiobutton,
+                                        'lambda': self.ui.fitting_lambda_radiobutton},
+                            }
+
+        list_ui = x_axis_choice_ui[tab]
+
+        if list_ui['index'].isChecked():
+            return np.arange(len(self.o_norm.data['sample']['file_name'])), "File index"
+        elif list_ui['tof'].isChecked():
+            return self.tof_array * 1e6, u"TOF (\u00B5s)"   # microS
+        else:
+            return self.lambda_array, u"\u03BB (\u212B)"
+
+    def update_selection_profile_plot(self):
         profile = self.get_profile_of_roi()
-        tof_array = self.tof_array * 1e6  # to be in microS
-        x_axis, y_axis = Interface.check_size(x_axis=tof_array,
+
+        x_axis, x_axis_label = self.get_x_axis(tab='selection')
+        
+        x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                               y_axis=profile)
         self.ui.profile.clear()
         self.ui.profile.plot(x_axis, y_axis)
-        self.ui.profile.setLabel("bottom", u"TOF (\u00B5s)")
+        self.ui.profile.setLabel("bottom", x_axis_label)
         self.ui.profile.setLabel("left", 'Mean counts')
 
         bragg_edge_range = pg.LinearRegionItem(values=self.bragg_edge_range,
