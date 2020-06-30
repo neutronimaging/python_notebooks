@@ -28,10 +28,13 @@ class Interface(QMainWindow):
     bragg_edge_range = [5, 20]
     roi_settings = {'color': [62, 13, 244],
                     'width': 0.01,
-                    'position': [10, 10, 20]}
+                    'position': [10, 10]}
     _color = QtGui.QColor(roi_settings['color'][0],
                           roi_settings['color'][1],
                           roi_settings['color'][2])
+    image_size = {'width': None,
+                  'height': None}
+    roi_id = None
 
     def __init__(self, parent=None, o_norm=None, spectra_file=None):
 
@@ -167,6 +170,36 @@ class Interface(QMainWindow):
         return profile_value
 
     # event handler
+    def selection_roi_size_changed(self, new_value):
+        if self.roi_id is None:
+            return
+        self.ui.roi_size_value.setText(str(new_value))
+
+        region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        # x1 = region[0][0].stop
+        y0 = region[0][1].start
+        # y1 = region[0][1].stop
+
+        # remove old one
+        self.ui.image_view.removeItem(self.roi_id)
+
+        _color = QtGui.QColor(self.roi_settings['color'][0],
+                              self.roi_settings['color'][1],
+                              self.roi_settings['color'][2])
+
+        _pen = QtGui.QPen()
+        _pen.setColor(_color)
+        _pen.setWidth(self.roi_settings['width'])
+        self.roi_id = pg.ROI([x0, y0],
+                             [new_value, new_value],
+                             pen=_pen,
+                             scaleSnap=True)
+        self.ui.image_view.addItem(self.roi_id)
+        self.roi_id.sigRegionChanged.connect(self.roi_moved)
+        self.update_selection_profile_plot()
+
     def distance_detector_sample_changed(self):
         self.update_time_spectra()
         self.update_selection_profile_plot()

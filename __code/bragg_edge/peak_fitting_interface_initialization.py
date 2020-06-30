@@ -23,10 +23,17 @@ class Initialization:
 	def __init__(self, parent=None):
 		self.parent = parent
 
+		self.save_image_size()
 		self.statusbar()
 		self.pyqtgraph()
 		self.widgets()
 		self.roi_setup()
+
+	def save_image_size(self):
+		_image = self.parent.get_live_image()
+		[height, width] = np.shape(_image)
+		self.parent.image_size['width'] = width
+		self.parent.image_size['height'] = height
 
 	def statusbar(self):
 		self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
@@ -68,8 +75,15 @@ class Initialization:
 		self.parent.ui.selection_lambda_radiobutton.setText(u"\u03BB (\u212B)")
 		self.parent.ui.fitting_lambda_radiobutton.setText(u"\u03BB (\u212B)")
 
+		self.parent.ui.roi_size_slider.setMinimum(1)
+		max_value = np.min([self.parent.image_size['width'], self.parent.image_size['height']])
+		self.parent.ui.roi_size_slider.setMaximum(max_value)
+		self.parent.ui.roi_size_slider.setValue(np.int(max_value/3))
+		self.parent.ui.roi_size_value.setText(str(np.int(max_value/3)))
+
 	def roi_setup(self):
-		[x0, y0, width_height] = self.parent.roi_settings['position']
+		[x0, y0] = self.parent.roi_settings['position']
+		width = self.parent.ui.roi_size_slider.value()
 		_color = QtGui.QColor(self.parent.roi_settings['color'][0],
 		                      self.parent.roi_settings['color'][1],
 		                      self.parent.roi_settings['color'][2])
@@ -78,11 +92,9 @@ class Initialization:
 		_pen.setColor(_color)
 		_pen.setWidth(self.parent.roi_settings['width'])
 		self.parent.roi_id = pg.ROI([x0, y0],
-		                            [width_height, width_height],
+		                            [width, width],
 		                            pen=_pen,
 		                            scaleSnap=True)
-		# self.parent.roi_id.addScaleHandle([1, 1], [0, 0])
-		# self.parent.roi_id.addScaleHandle([0, 0], [1, 1])
 		self.parent.ui.image_view.addItem(self.parent.roi_id)
 		self.parent.roi_id.sigRegionChanged.connect(self.parent.roi_moved)
 
