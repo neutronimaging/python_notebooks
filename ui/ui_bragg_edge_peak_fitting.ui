@@ -539,7 +539,7 @@
       <item>
        <widget class="QPushButton" name="apply_button">
         <property name="text">
-         <string>Use this peak</string>
+         <string>OK</string>
         </property>
        </widget>
       </item>
