@@ -5,6 +5,7 @@ import numpy as np
 from IPython.display import display
 import pyqtgraph as pg
 from qtpy.QtWidgets import QMainWindow
+from qtpy import QtGui, QtCore
 
 from neutronbraggedge.experiment_handler import *
 
@@ -25,6 +26,12 @@ class BraggEdge(BraggEdgeParent):
 class Interface(QMainWindow):
 
     bragg_edge_range = [5, 20]
+    roi_settings = {'color': [62, 13, 244],
+                    'width': 0.01,
+                    'position': [10, 10, 20]}
+    _color = QtGui.QColor(roi_settings['color'][0],
+                          roi_settings['color'][1],
+                          roi_settings['color'][2])
 
     def __init__(self, parent=None, o_norm=None, spectra_file=None):
 
@@ -126,10 +133,10 @@ class Interface(QMainWindow):
                             x_axis[self.bragg_edge_range[1]]]
 
         self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
-                                               orientation=None,
-                                               brush=None,
-                                               movable=True,
-                                               bounds=None)
+                                                       orientation=None,
+                                                       brush=None,
+                                                       movable=True,
+                                                       bounds=None)
         self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
         self.bragg_edge_range_ui.setZValue(-10)
         self.ui.profile.addItem(self.bragg_edge_range_ui)
@@ -147,7 +154,6 @@ class Interface(QMainWindow):
         roi_id = self.roi_id
         region = roi_id.getArraySlice(self.final_image,
                                       self.ui.image_view.imageItem)
-
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start

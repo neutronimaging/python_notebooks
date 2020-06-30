@@ -3,23 +3,19 @@ import numpy as np
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 from qtpy import QtGui
 
-try:
-	from PyQt4.QtGui import QFileDialog
-	from PyQt4 import QtCore, QtGui
-	from PyQt4.QtGui import QMainWindow
-except ImportError:
-	from PyQt5.QtWidgets import QFileDialog
-	from PyQt5 import QtCore, QtGui
-	from PyQt5.QtWidgets import QApplication, QMainWindow
+# try:
+# 	from PyQt4.QtGui import QFileDialog
+# 	from PyQt4 import QtCore, QtGui
+# 	from PyQt4.QtGui import QMainWindow
+# except ImportError:
+# 	from PyQt5.QtWidgets import QFileDialog
+# 	from PyQt5 import QtCore, QtGui
+# 	from PyQt5.QtWidgets import QApplication, QMainWindow
 import pyqtgraph as pg
 
 
 
 class Initialization:
-
-	roi = {'color': [62, 13, 244],
-		   'width': 0.01,
-	       'position': [10, 10, 20, 30]}
 
 	distance_detector_sample = 1300  # m
 	detector_offset = 6500  # micros
@@ -73,15 +69,20 @@ class Initialization:
 		self.parent.ui.fitting_lambda_radiobutton.setText(u"\u03BB (\u212B)")
 
 	def roi_setup(self):
-		[x0, y0, width, height] = self.roi['position']
-		_color = QtGui.QColor(self.roi['color'][0], self.roi['color'][1], self.roi['color'][2])
+		[x0, y0, width_height] = self.parent.roi_settings['position']
+		_color = QtGui.QColor(self.parent.roi_settings['color'][0],
+		                      self.parent.roi_settings['color'][1],
+		                      self.parent.roi_settings['color'][2])
 
 		_pen = QtGui.QPen()
 		_pen.setColor(_color)
-		_pen.setWidth(self.roi['width'])
-		self.parent.roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
-		self.parent.roi_id.addScaleHandle([1, 1], [0, 0])
-		self.parent.roi_id.addScaleHandle([0, 0], [1, 1])
+		_pen.setWidth(self.parent.roi_settings['width'])
+		self.parent.roi_id = pg.ROI([x0, y0],
+		                            [width_height, width_height],
+		                            pen=_pen,
+		                            scaleSnap=True)
+		# self.parent.roi_id.addScaleHandle([1, 1], [0, 0])
+		# self.parent.roi_id.addScaleHandle([0, 0], [1, 1])
 		self.parent.ui.image_view.addItem(self.parent.roi_id)
 		self.parent.roi_id.sigRegionChanged.connect(self.parent.roi_moved)
 
