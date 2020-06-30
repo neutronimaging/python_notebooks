@@ -260,6 +260,10 @@ def display_html_message(*, title_message='', message='', message_type='info'):
                  '<span style="color:{}"> '.format(message_color) +
                  message + '</span>'))
 
+def find_nearest_index(array, value):
+    idx = (np.abs(np.array(array) - value)).argmin()
+    return idx
+
 
 class ListRunsParser(object):
     """
@@ -381,21 +385,3 @@ class ListRunsParser(object):
         str_runs = ",".join(list_runs)
         # print(str_runs)
         return str_runs
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

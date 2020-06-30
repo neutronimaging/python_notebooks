@@ -5,22 +5,14 @@ import numpy as np
 from IPython.display import display
 import pyqtgraph as pg
 from qtpy.QtWidgets import QMainWindow
-from qtpy import QtGui
-
-# try:
-#     from PyQt4.QtGui import QFileDialog
-#     from PyQt4 import QtCore, QtGui
-#     from PyQt4.QtGui import QMainWindow
-# except ImportError:
-#     from PyQt5.QtWidgets import QFileDialog
-#     from PyQt5 import QtCore, QtGui
-#     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from neutronbraggedge.experiment_handler import *
 
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge as BraggEdgeParent
 from __code.bragg_edge.peak_fitting_interface_initialization import Initialization
+from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code import load_ui
+from __code.utilities import find_nearest_index
 
 
 DEBUGGING = True
@@ -57,12 +49,15 @@ class Interface(QMainWindow):
         self.roi_moved()
 
     def load_time_spectra(self):
-        _tof_handler = TOF(filename=self.spectra_file)
-        _exp = Experiment(tof=_tof_handler.tof_array,
+        self.tof_handler = TOF(filename=self.spectra_file)
+        self.update_time_spectra()
+
+    def update_time_spectra(self):
+        _exp = Experiment(tof=self.tof_handler.tof_array,
                           distance_source_detector_m=np.float(self.ui.distance_detector_sample.text()),
                           detector_offset_micros=np.float(self.ui.detector_offset.text()))
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
-        self.tof_array = _tof_handler.tof_array
+        self.tof_array = self.tof_handler.tof_array
 
     def get_live_image(self):
         if DEBUGGING:
@@ -93,7 +88,10 @@ class Interface(QMainWindow):
     def roi_moved(self):
         self.update_selection_profile_plot()
 
-    def get_x_axis(self, tab='selection'):
+    def get_x_axis(self):
+        o_gui = GuiUtility(parent=self)
+        tab_selected = o_gui.get_tab_selected().lower()
+
         x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
                                           'tof': self.ui.selection_tof_radiobutton,
                                           'lambda': self.ui.selection_lambda_radiobutton},
@@ -102,7 +100,7 @@ class Interface(QMainWindow):
                                         'lambda': self.ui.fitting_lambda_radiobutton},
                             }
 
-        list_ui = x_axis_choice_ui[tab]
+        list_ui = x_axis_choice_ui[tab_selected]
 
         if list_ui['index'].isChecked():
             return np.arange(len(self.o_norm.data['sample']['file_name'])), "File index"
@@ -114,26 +112,36 @@ class Interface(QMainWindow):
     def update_selection_profile_plot(self):
         profile = self.get_profile_of_roi()
 
-        x_axis, x_axis_label = self.get_x_axis(tab='selection')
+        x_axis, x_axis_label = self.get_x_axis()
         
         x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                               y_axis=profile)
+
         self.ui.profile.clear()
         self.ui.profile.plot(x_axis, y_axis)
         self.ui.profile.setLabel("bottom", x_axis_label)
         self.ui.profile.setLabel("left", 'Mean counts')
 
-        bragg_edge_range = pg.LinearRegionItem(values=self.bragg_edge_range,
+        bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
+                            x_axis[self.bragg_edge_range[1]]]
+
+        self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
                                                orientation=None,
                                                brush=None,
                                                movable=True,
                                                bounds=None)
-        bragg_edge_range.sigRegionChanged.connect(self.bragg_edge_range_changed)
-        bragg_edge_range.setZValue(-10)
-        self.ui.profile.addItem(bragg_edge_range)
+        self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
+        self.bragg_edge_range_ui.setZValue(-10)
+        self.ui.profile.addItem(self.bragg_edge_range_ui)
 
     def bragg_edge_range_changed(self):
-        pass
+        [left_range, right_range] = list(self.bragg_edge_range_ui.getRegion())
+        x_axis, _ = self.get_x_axis()
+
+        left_index = find_nearest_index(array=x_axis, value=left_range)
+        right_index = find_nearest_index(array=x_axis, value=right_range)
+
+        self.bragg_edge_range = [left_index, right_index]
 
     def get_profile_of_roi(self):
         roi_id = self.roi_id
@@ -154,28 +162,18 @@ class Interface(QMainWindow):
 
     # event handler
     def distance_detector_sample_changed(self):
-        pass
+        self.update_time_spectra()
+        self.update_selection_profile_plot()
 
     def detector_offset_changed(self):
-        pass
+        self.update_time_spectra()
+        self.update_selection_profile_plot()
 
-    def selection_axis_index_changed(self):
-        pass
-    
-    def selection_axis_tof_changed(self):
-        pass
-    
-    def selection_axis_lambda_changed(self):
-        pass
+    def selection_axis_changed(self):
+        self.update_selection_profile_plot()
 
-    def fitting_axis_index_changed(self):
-        pass
-
-    def fitting_axis_tof_changed(self):
-        pass
-
-    def fitting_axis_lambda_changed(self):
-        pass
+    def fitting_axis_changed(self):
+        self.update_selection_profile_plot()
 
     def cancel_clicked(self):
         self.close()
@@ -183,5 +181,3 @@ class Interface(QMainWindow):
     def apply_clicked(self):
         # FIXME
         self.close()
-        
-        

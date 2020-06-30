@@ -512,7 +512,7 @@
    <sender>selection_index_radiobutton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>selection_axis_index_changed()</slot>
+   <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>950</x>
@@ -528,7 +528,7 @@
    <sender>selection_lambda_radiobutton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>selection_axis_lambda_changed()</slot>
+   <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1181</x>
@@ -544,7 +544,7 @@
    <sender>selection_tof_radiobutton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>selection_axis_tof_changed()</slot>
+   <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1042</x>
@@ -560,7 +560,7 @@
    <sender>fitting_index_radiobutton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>fitting_axis_index_changed()</slot>
+   <slot>fitting_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>809</x>
@@ -576,7 +576,7 @@
    <sender>fitting_lambda_radiobutton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>fitting_axis_lambda_changed()</slot>
+   <slot>fitting_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1040</x>
@@ -592,7 +592,7 @@
    <sender>fitting_tof_radiobutton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>fitting_axis_tof_changed()</slot>
+   <slot>fitting_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>901</x>
@@ -610,11 +610,7 @@
   <slot>apply_clicked()</slot>
   <slot>distance_detector_sample_changed()</slot>
   <slot>detector_offset_changed()</slot>
-  <slot>selection_axis_index_changed()</slot>
-  <slot>fitting_axis_index_changed()</slot>
-  <slot>selection_axis_tof_changed()</slot>
-  <slot>selection_axis_lambda_changed()</slot>
-  <slot>fitting_axis_tof_changed()</slot>
-  <slot>fitting_axis_lambda_changed()</slot>
+  <slot>selection_axis_changed()</slot>
+  <slot>fitting_axis_changed()</slot>
  </slots>
 </ui>
