@@ -132,9 +132,35 @@ class Interface(QMainWindow):
         return profile_value
 
     # event handler
+    def distance_detector_sample_changed(self):
+        pass
+
+    def detector_offset_changed(self):
+        pass
+
+    def selection_axis_index_changed(self):
+        pass
+    
+    def selection_axis_tof_changed(self):
+        pass
+    
+    def selection_axis_lambda_changed(self):
+        pass
+
+    def fitting_axis_index_changed(self):
+        pass
+
+    def fitting_axis_tof_changed(self):
+        pass
+
+    def fitting_axis_lambda_changed(self):
+        pass
+
     def cancel_clicked(self):
         self.close()
 
     def apply_clicked(self):
         # FIXME
         self.close()
+        
+        

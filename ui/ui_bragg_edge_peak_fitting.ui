@@ -24,7 +24,7 @@
        <attribute name="title">
         <string>Selection</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QSplitter" name="splitter">
           <property name="sizePolicy">
@@ -37,7 +37,74 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QWidget" name="image_widget" native="true"/>
-          <widget class="QWidget" name="profile_widget" native="true"/>
+          <widget class="QWidget" name="">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QWidget" name="profile_widget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="selection_index_radiobutton">
+                <property name="text">
+                 <string>Index</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="selection_tof_radiobutton">
+                <property name="text">
+                 <string>TOF (micros)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="selection_lambda_radiobutton">
+                <property name="text">
+                 <string>Lambda (Angstroms)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
         <item>
@@ -184,7 +251,7 @@
        <attribute name="title">
         <string>Fitting</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <widget class="QSplitter" name="splitter_2">
           <property name="orientation">
@@ -256,7 +323,74 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="fitting_widget" native="true"/>
+          <widget class="QWidget" name="">
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QWidget" name="fitting_widget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="fitting_index_radiobutton">
+                <property name="text">
+                 <string>Index</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="fitting_tof_radiobutton">
+                <property name="text">
+                 <string>TOF (micros)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="fitting_lambda_radiobutton">
+                <property name="text">
+                 <string>Lambda (Angstroms)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -342,17 +476,145 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>distance_detector_sample</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>distance_detector_sample_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>424</x>
+     <y>706</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>detector_offset</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>detector_offset_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>424</x>
+     <y>737</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>selection_index_radiobutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selection_axis_index_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>950</x>
+     <y>669</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>selection_lambda_radiobutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selection_axis_lambda_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1181</x>
+     <y>669</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>selection_tof_radiobutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selection_axis_tof_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1042</x>
+     <y>669</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitting_index_radiobutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>fitting_axis_index_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>809</x>
+     <y>735</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitting_lambda_radiobutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>fitting_axis_lambda_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1040</x>
+     <y>735</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitting_tof_radiobutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>fitting_axis_tof_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>901</x>
+     <y>735</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
   <slot>apply_clicked()</slot>
-  <slot>circle_center_changed()</slot>
-  <slot>sector_radio_button_changed()</slot>
-  <slot>sector_changed()</slot>
-  <slot>guide_color_changed()</slot>
-  <slot>grid_size_changed()</slot>
-  <slot>remove_roi_button_clicked()</slot>
-  <slot>add_roi_button_clicked()</slot>
-  <slot>update_table_roi()</slot>
+  <slot>distance_detector_sample_changed()</slot>
+  <slot>detector_offset_changed()</slot>
+  <slot>selection_axis_index_changed()</slot>
+  <slot>fitting_axis_index_changed()</slot>
+  <slot>selection_axis_tof_changed()</slot>
+  <slot>selection_axis_lambda_changed()</slot>
+  <slot>fitting_axis_tof_changed()</slot>
+  <slot>fitting_axis_lambda_changed()</slot>
  </slots>
 </ui>
