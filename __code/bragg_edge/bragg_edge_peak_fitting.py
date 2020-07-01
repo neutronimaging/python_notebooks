@@ -235,8 +235,8 @@ class Interface(QMainWindow):
         yaxis = profile[left_range: right_range]
 
         all_x_axis = self.get_all_x_axis()
-        index_array  = all_x_axis['index'][0]
-        tof_array    = all_x_axis['tof'][0]
+        index_array = all_x_axis['index'][0]
+        tof_array = all_x_axis['tof'][0]
         lambda_array = all_x_axis['lambda'][0]
 
         index_selected = index_array[left_range: right_range]
@@ -248,12 +248,7 @@ class Interface(QMainWindow):
                                     'tof': tof_selected,
                                     'lambda': lambda_selected},
                           }
-
-        import pprint
-        pprint.pprint(profile_to_fit)
-
-
-
+        self.dict_profile_to_fit = profile_to_fit
 
     def cancel_clicked(self):
         self.close()
