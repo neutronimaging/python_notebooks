@@ -4,7 +4,7 @@ import os
 import time
 from IPython.core.display import HTML
 from IPython.display import display
-import ipywe.fileselector
+from __code.ipywe import fileselector
 
 from NeuNorm.normalization import Normalization
 from ipywidgets import widgets
@@ -409,13 +409,13 @@ class FileSelection(object):
         display(help_ui)
 
         if self.filter:
-            self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
+            self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
                                                                  start_dir=self.working_dir,
                                                                  next=self.load_files,
                                                                  filters=self.filter,
                                                                  multiple=True)
         else:
-             self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
+             self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
                                                                  start_dir=self.working_dir,
                                                                  next=self.load_files,
                                                                  multiple=True)
@@ -533,7 +533,7 @@ class FileSelectorPanelWithJumpFolders:
                                     filters=None,
                                     stay_alive=False):
 
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction=instruction,
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction=instruction,
                                                                      start_dir=start_dir,
                                                                      multiple=multiple,
                                                                      next=next,
