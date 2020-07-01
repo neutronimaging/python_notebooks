@@ -35,6 +35,9 @@ class Interface(QMainWindow):
     image_size = {'width': None,
                   'height': None}
     roi_id = None
+    xaxis_label = {'index': "File index",
+                  'tof': u"TOF (\u00B5s)",
+                  'lambda': u"\u03BB (\u212B)"}
 
     def __init__(self, parent=None, o_norm=None, spectra_file=None):
 
@@ -120,12 +123,13 @@ class Interface(QMainWindow):
             return self.get_specified_x_axis(xaxis='lambda')
 
     def get_specified_x_axis(self, xaxis='index'):
+        label = self.xaxis_label[xaxis]
         if xaxis == 'index':
-            return np.arange(len(self.o_norm.data['sample']['file_name'])), "File index"
+            return np.arange(len(self.o_norm.data['sample']['file_name'])), label
         elif xaxis == 'tof':
-            return self.tof_array * 1e6, u"TOF (\u00B5s)"   # microS
+            return self.tof_array * 1e6, label
         elif xaxis == 'lambda':
-            return self.lambda_array, u"\u03BB (\u212B)"
+            return self.lambda_array, label
         else:
             raise NotImplementedError
 
@@ -249,6 +253,37 @@ class Interface(QMainWindow):
                                     'lambda': lambda_selected},
                           }
         self.dict_profile_to_fit = profile_to_fit
+        self.update_fitting_plot()
+
+    def update_fitting_plot(self):
+        x_axis, x_axis_label = self.get_fitting_profile_xaxis()
+        profile = self.dict_profile_to_fit['yaxis']
+        x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+                                              y_axis=profile)
+        self.ui.fitting.clear()
+        self.ui.fitting.plot(x_axis, y_axis)
+        self.ui.fitting.setLabel("bottom", x_axis_label)
+        self.ui.fitting.setLabel("left", 'Mean counts')
+
+        # bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
+        #                     x_axis[self.bragg_edge_range[1]]]
+        #
+        # self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
+        #                                                orientation=None,
+        #                                                brush=None,
+        #                                                movable=True,
+        #                                                bounds=None)
+        # self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
+        # self.bragg_edge_range_ui.setZValue(-10)
+        # self.ui.profile.addItem(self.bragg_edge_range_ui)
+
+    def get_fitting_profile_xaxis(self):
+        if self.ui.fitting_tof_radiobutton.isChecked():
+            return self.dict_profile_to_fit['xaxis']['tof'], self.xaxis_label['tof']
+        elif self.ui.fitting_index_radiobutton.isChecked():
+            return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
+        else:
+            return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
 
     def cancel_clicked(self):
         self.close()
