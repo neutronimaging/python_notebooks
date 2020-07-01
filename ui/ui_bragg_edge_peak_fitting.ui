@@ -220,6 +220,13 @@
               </item>
              </layout>
             </item>
+            <item>
+             <widget class="QPushButton" name="fit_that_selection_button">
+              <property name="text">
+               <string>Use that selection in fitting tab</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -407,6 +414,13 @@
                 </widget>
                </item>
               </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="text">
+               <string>Fit</string>
+              </property>
              </widget>
             </item>
             <item>
@@ -737,6 +751,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>fit_that_selection_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>fit_that_selection_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>831</x>
+     <y>386</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -746,5 +776,6 @@
   <slot>selection_axis_changed()</slot>
   <slot>fitting_axis_changed()</slot>
   <slot>selection_roi_size_changed()</slot>
+  <slot>fit_that_selection_pushed()</slot>
  </slots>
 </ui>

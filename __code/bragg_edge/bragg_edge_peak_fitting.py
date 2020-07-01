@@ -113,11 +113,27 @@ class Interface(QMainWindow):
         list_ui = x_axis_choice_ui[tab_selected]
 
         if list_ui['index'].isChecked():
-            return np.arange(len(self.o_norm.data['sample']['file_name'])), "File index"
+            return self.get_specified_x_axis(xaxis='index')
         elif list_ui['tof'].isChecked():
-            return self.tof_array * 1e6, u"TOF (\u00B5s)"   # microS
+            return self.get_specified_x_axis(xaxis='tof')
         else:
+            return self.get_specified_x_axis(xaxis='lambda')
+
+    def get_specified_x_axis(self, xaxis='index'):
+        if xaxis == 'index':
+            return np.arange(len(self.o_norm.data['sample']['file_name'])), "File index"
+        elif xaxis == 'tof':
+            return self.tof_array * 1e6, u"TOF (\u00B5s)"   # microS
+        elif xaxis == 'lambda':
             return self.lambda_array, u"\u03BB (\u212B)"
+        else:
+            raise NotImplementedError
+
+    def get_all_x_axis(self):
+        all_x_axis = {'index': self.get_specified_x_axis(xaxis='index'),
+                      'tof': self.get_specified_x_axis(xaxis='tof'),
+                      'lambda': self.get_specified_x_axis(xaxis='lambda')}
+        return all_x_axis
 
     def update_selection_profile_plot(self):
         profile = self.get_profile_of_roi()
@@ -178,9 +194,7 @@ class Interface(QMainWindow):
         region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
 
         x0 = region[0][0].start
-        # x1 = region[0][0].stop
         y0 = region[0][1].start
-        # y1 = region[0][1].stop
 
         # remove old one
         self.ui.image_view.removeItem(self.roi_id)
@@ -213,6 +227,33 @@ class Interface(QMainWindow):
 
     def fitting_axis_changed(self):
         self.update_selection_profile_plot()
+
+    def fit_that_selection_pushed(self):
+        [left_range, right_range] = self.bragg_edge_range
+        profile = self.get_profile_of_roi()
+
+        yaxis = profile[left_range: right_range]
+
+        all_x_axis = self.get_all_x_axis()
+        index_array  = all_x_axis['index'][0]
+        tof_array    = all_x_axis['tof'][0]
+        lambda_array = all_x_axis['lambda'][0]
+
+        index_selected = index_array[left_range: right_range]
+        tof_selected = tof_array[left_range: right_range]
+        lambda_selected = lambda_array[left_range: right_range]
+
+        profile_to_fit = {'yaxis': yaxis,
+                          'xaxis': {'index': index_selected,
+                                    'tof': tof_selected,
+                                    'lambda': lambda_selected},
+                          }
+
+        import pprint
+        pprint.pprint(profile_to_fit)
+
+
+
 
     def cancel_clicked(self):
         self.close()
