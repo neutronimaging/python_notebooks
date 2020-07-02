@@ -198,9 +198,38 @@ class Interface(QMainWindow):
     def roi_radiobuttons_changed(self):
         if self.ui.square_roi_radiobutton.isChecked():
             slider_visible = True
+            self.selection_roi_slider_changed(self.ui.roi_size_slider.value())
         else:
             slider_visible = False
+            self.update_2d_free_roi()
         self.ui.roi_size_slider.setVisible(slider_visible)
+
+    def update_2d_free_roi(self):
+
+        _color = QtGui.QColor(self.roi_settings['color'][0],
+                              self.roi_settings['color'][1],
+                              self.roi_settings['color'][2])
+
+        region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        y0 = region[0][1].start
+        new_value = self.ui.roi_size_slider.value()
+
+        # remove old one
+        self.ui.image_view.removeItem(self.roi_id)
+
+        _pen = QtGui.QPen()
+        _pen.setColor(_color)
+        _pen.setWidth(self.roi_settings['width'])
+        self.roi_id = pg.ROI([x0, y0],
+                             [new_value, new_value],
+                             pen=_pen,
+                             scaleSnap=True)
+        self.ui.image_view.addItem(self.roi_id)
+        self.roi_id.addScaleHandle([1, 1], [0, 0])
+        self.roi_id.sigRegionChanged.connect(self.roi_moved)
+        self.update_selection_profile_plot()
 
     def selection_roi_slider_changed(self, new_value):
         if self.roi_id is None:
