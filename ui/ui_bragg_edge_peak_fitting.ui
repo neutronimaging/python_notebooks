@@ -176,6 +176,9 @@
                 <property name="minimum">
                  <number>1</number>
                 </property>
+                <property name="singleStep">
+                 <number>2</number>
+                </property>
                 <property name="value">
                  <number>99</number>
                 </property>

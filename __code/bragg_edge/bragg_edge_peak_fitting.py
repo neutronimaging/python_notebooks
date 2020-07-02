@@ -29,9 +29,12 @@ class Interface(QMainWindow):
     roi_settings = {'color': [62, 13, 244],
                     'width': 0.01,
                     'position': [10, 10]}
+    shrinking_roi_settings = {'color': [13, 214, 244],
+                              'width': 0.01}
     _color = QtGui.QColor(roi_settings['color'][0],
                           roi_settings['color'][1],
                           roi_settings['color'][2])
+    _color_shrinking_roi = QtGui.QColor()
     image_size = {'width': None,
                   'height': None}
     roi_id = None
@@ -166,8 +169,20 @@ class Interface(QMainWindow):
                       'lambda': self.get_specified_x_axis(xaxis='lambda')}
         return all_x_axis
 
+    def get_selection_roi_dimension(self):
+        roi_id = self.roi_id
+        region = roi_id.getArraySlice(self.final_image,
+                                      self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        return [x0, y0, x1, y1]
+
     def update_selection_profile_plot(self):
-        profile = self.get_profile_of_roi()
+        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        profile = self.get_profile_of_roi(x0, y0, x1, y1)
 
         x_axis, x_axis_label = self.get_x_axis()
         
@@ -200,14 +215,7 @@ class Interface(QMainWindow):
 
         self.bragg_edge_range = [left_index, right_index]
 
-    def get_profile_of_roi(self):
-        roi_id = self.roi_id
-        region = roi_id.getArraySlice(self.final_image,
-                                      self.ui.image_view.imageItem)
-        x0 = region[0][0].start
-        x1 = region[0][0].stop
-        y0 = region[0][1].start
-        y1 = region[0][1].stop
+    def get_profile_of_roi(self, x0, y0, x1, y1):
 
         profile_value = []
         for _image in self.o_norm.data['sample']['data']:
@@ -220,32 +228,38 @@ class Interface(QMainWindow):
     def roi_radiobuttons_changed(self):
         if self.ui.square_roi_radiobutton.isChecked():
             slider_visible = True
-            self.selection_roi_slider_changed(self.ui.roi_size_slider.value())
+            new_width = np.min([np.int(str(self.ui.roi_width.text())),
+                                np.int(str(self.ui.roi_height.text()))])
+            self.selection_roi_slider_changed(new_width)
         else:
             slider_visible = False
-            self.update_2d_free_roi()
+            new_value = np.int(str(self.ui.roi_width.text()))
+            self.update_2d_free_roi(new_value)
         self.ui.roi_size_slider.setVisible(slider_visible)
 
-        # reset profile of bin size slider
-        roi_id = self.roi_id
-        region = roi_id.getArraySlice(self.final_image,
-                                      self.ui.image_view.imageItem)
-        # x0 = region[0][0].start
-        # x1 = region[0][0].stop
-        # y0 = region[0][1].start
-        # y1 = region[0][1].stop
-        #
-        # new_width = x1 - x0 - 1
-        # new_height = y1 - y0 - 1
-        #
-        # self.ui.profile_of_bin_size_width.setText(str(new_width))
-        # self.ui.profile_of_bin_size_height.setText(str(new_height))
-        #
-        # max_value = np.min([new_width, new_height])
-        # self.ui.profile_of_bin_size_slider.setValue(max_value)
-        # self.ui.profile_of_bin_size_slider.setMaximum(max_value)
+        self.reset_profile_of_bin_size_slider()
 
-    def update_2d_free_roi(self):
+        # # reset profile of bin size slider
+        # [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        # width = np.int(x1-x0)
+        # height = np.int(y1-y0)
+        # _pen = QtGui.QPen()
+        # _pen.setColor(self._color_shrinking_roi)
+        # _pen.setWidth(self.shrinking_roi_settings['width'])
+        # self.shrinking_roi_id = pg.ROI([x0, y0],
+        #                                [width, height],
+        #                                pen=_pen,
+        #                                scaleSnap=True)
+        # self.ui.image_view.addItem(self.shrinking_roi_id)
+
+
+    def reset_profile_of_bin_size_slider(self):
+        max_value = np.min([np.int(str(self.ui.profile_of_bin_size_width.text())),
+                            np.int(str(self.ui.profile_of_bin_size_height.text()))])
+        self.ui.profile_of_bin_size_slider.setMaximum(max_value)
+        self.ui.profile_of_bin_size_slider.setValue(max_value)
+
+    def update_2d_free_roi(self, new_value):
 
         _color = QtGui.QColor(self.roi_settings['color'][0],
                               self.roi_settings['color'][1],
@@ -255,10 +269,10 @@ class Interface(QMainWindow):
 
         x0 = region[0][0].start
         y0 = region[0][1].start
-        new_value = self.ui.roi_size_slider.value()
 
         # remove old one
         self.ui.image_view.removeItem(self.roi_id)
+        # self.ui.image_view.removeItem(self.shrinking_roi_id)
 
         _pen = QtGui.QPen()
         _pen.setColor(_color)
@@ -326,7 +340,9 @@ class Interface(QMainWindow):
 
     def fit_that_selection_pushed(self):
         [left_range, right_range] = self.bragg_edge_range
-        profile = self.get_profile_of_roi()
+
+        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        profile = self.get_profile_of_roi(x0, y0, x1, y1)
 
         yaxis = profile[left_range: right_range]
 
@@ -384,7 +400,29 @@ class Interface(QMainWindow):
             return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
 
     def profile_of_bin_size_slider_changed(self, new_value):
-        print("new_value")
+        if self.ui.square_roi_radiobutton.isChecked():
+            new_width = new_value
+            new_height = new_value
+        else:
+            initial_roi_width = np.int(str(self.ui.roi_width.value()))
+            initial_roi_height = np.int(str(self.ui.roi_height.value()))
+            if initial_roi_width == initial_roi_height:
+                new_width = new_value
+                new_height = new_value
+            elif initial_roi_width < initial_roi_height:
+                new_width = new_value
+                delta = initial_roi_width - new_width
+                new_height = initial_roi_height - delta
+            else:
+                new_height = new_value
+                delta = initial_roi_height - new_height
+                new_width = initial_roi_width - delta
+
+
+
+
+
+
 
     def export_all_profiles_button_clicked(self):
         pass
