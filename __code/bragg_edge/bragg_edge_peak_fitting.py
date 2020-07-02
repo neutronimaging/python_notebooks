@@ -256,6 +256,7 @@ class Interface(QMainWindow):
     def reset_profile_of_bin_size_slider(self):
         max_value = np.min([np.int(str(self.ui.profile_of_bin_size_width.text())),
                             np.int(str(self.ui.profile_of_bin_size_height.text()))])
+        print(max_value)
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
         self.ui.profile_of_bin_size_slider.setValue(max_value)
 
@@ -317,10 +318,10 @@ class Interface(QMainWindow):
         self.update_profile_of_bin_size_infos()
 
     def update_profile_of_bin_size_infos(self):
-        _width = self.ui.roi_width.text()
-        _height = self.ui.roi_height.text()
-        self.ui.profile_of_bin_size_width.setText(_width)
-        self.ui.profile_of_bin_size_height.setText(_height)
+        _width = np.int(self.ui.roi_width.text())
+        _height = np.int(self.ui.roi_height.text())
+        self.ui.profile_of_bin_size_width.setText(str(_width))
+        self.ui.profile_of_bin_size_height.setText(str(_height))
         self.ui.profile_of_bin_size_slider.setValue(np.min([_width, _height]))
 
 
@@ -404,8 +405,8 @@ class Interface(QMainWindow):
             new_width = new_value
             new_height = new_value
         else:
-            initial_roi_width = np.int(str(self.ui.roi_width.value()))
-            initial_roi_height = np.int(str(self.ui.roi_height.value()))
+            initial_roi_width = np.int(str(self.ui.roi_width.text()))
+            initial_roi_height = np.int(str(self.ui.roi_height.text()))
             if initial_roi_width == initial_roi_height:
                 new_width = new_value
                 new_height = new_value
@@ -418,8 +419,8 @@ class Interface(QMainWindow):
                 delta = initial_roi_height - new_height
                 new_width = initial_roi_width - delta
 
-
-
+        self.ui.profile_of_bin_size_width.setText(str(new_width))
+        self.ui.profile_of_bin_size_height.setText(str(new_height))
 
 
 
