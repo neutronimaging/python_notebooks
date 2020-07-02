@@ -36,8 +36,13 @@ class Interface(QMainWindow):
                   'height': None}
     roi_id = None
     xaxis_label = {'index': "File index",
-                  'tof': u"TOF (\u00B5s)",
-                  'lambda': u"\u03BB (\u212B)"}
+                   'tof': u"TOF (\u00B5s)",
+                   'lambda': u"\u03BB (\u212B)"}
+    fitting_rois = {'kropff': {'step1': None,
+                               'step2': None,
+                               'step3': None,
+                               },
+                    }
 
     def __init__(self, parent=None, o_norm=None, spectra_file=None):
 
@@ -190,10 +195,18 @@ class Interface(QMainWindow):
         return profile_value
 
     # event handler
-    def selection_roi_size_changed(self, new_value):
+    def roi_radiobuttons_changed(self):
+        if self.ui.square_roi_radiobutton.isChecked():
+            slider_visible = True
+        else:
+            slider_visible = False
+        self.ui.roi_size_slider.setVisible(slider_visible)
+
+    def selection_roi_slider_changed(self, new_value):
         if self.roi_id is None:
             return
-        self.ui.roi_size_value.setText(str(new_value))
+        self.ui.roi_width.setText(str(new_value))
+        self.ui.roi_height.setText(str(new_value))
 
         region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
 
@@ -254,6 +267,12 @@ class Interface(QMainWindow):
                           }
         self.dict_profile_to_fit = profile_to_fit
         self.update_fitting_plot()
+
+        self.reset_fitting_rois = {'kropff': {'step1': None,
+                                              'step2': None,
+                                              'step3': None,
+                                             },
+                                  }
 
     def update_fitting_plot(self):
         x_axis, x_axis_label = self.get_fitting_profile_xaxis()
