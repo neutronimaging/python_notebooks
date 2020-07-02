@@ -82,6 +82,10 @@ class Initialization:
 		self.parent.ui.roi_size_slider.setValue(default_roi_size)
 		self.parent.ui.roi_width.setText(str(default_roi_size))
 		self.parent.ui.roi_height.setText(str(default_roi_size))
+		self.parent.ui.profile_of_bin_size_width.setText(str(default_roi_size))
+		self.parent.ui.profile_of_bin_size_height.setText(str(default_roi_size))
+		self.parent.ui.profile_of_bin_size_slider.setMaximum(default_roi_size)
+		self.parent.ui.profile_of_bin_size_slider.setValue(default_roi_size)
 
 	def roi_setup(self):
 		[x0, y0] = self.parent.roi_settings['position']

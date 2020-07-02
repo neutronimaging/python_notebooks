@@ -105,6 +105,28 @@ class Interface(QMainWindow):
 
     def roi_moved(self):
         self.update_selection_profile_plot()
+        self.update_all_size_widgets_infos()
+
+    def update_all_size_widgets_infos(self):
+        roi_id = self.roi_id
+        region = roi_id.getArraySlice(self.final_image,
+                                      self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        new_width = x1-x0-1
+        new_height = y1-y0-1
+
+        self.ui.roi_width.setText(str(new_width))
+        self.ui.roi_height.setText(str(new_height))
+        self.ui.profile_of_bin_size_width.setText(str(new_width))
+        self.ui.profile_of_bin_size_height.setText(str(new_height))
+
+        max_value = np.min([new_width, new_height])
+        self.ui.profile_of_bin_size_slider.setValue(max_value)
+        self.ui.profile_of_bin_size_slider.setMaximum(max_value)
 
     def get_x_axis(self):
         o_gui = GuiUtility(parent=self)
@@ -204,6 +226,25 @@ class Interface(QMainWindow):
             self.update_2d_free_roi()
         self.ui.roi_size_slider.setVisible(slider_visible)
 
+        # reset profile of bin size slider
+        roi_id = self.roi_id
+        region = roi_id.getArraySlice(self.final_image,
+                                      self.ui.image_view.imageItem)
+        # x0 = region[0][0].start
+        # x1 = region[0][0].stop
+        # y0 = region[0][1].start
+        # y1 = region[0][1].stop
+        #
+        # new_width = x1 - x0 - 1
+        # new_height = y1 - y0 - 1
+        #
+        # self.ui.profile_of_bin_size_width.setText(str(new_width))
+        # self.ui.profile_of_bin_size_height.setText(str(new_height))
+        #
+        # max_value = np.min([new_width, new_height])
+        # self.ui.profile_of_bin_size_slider.setValue(max_value)
+        # self.ui.profile_of_bin_size_slider.setMaximum(max_value)
+
     def update_2d_free_roi(self):
 
         _color = QtGui.QColor(self.roi_settings['color'][0],
@@ -259,6 +300,15 @@ class Interface(QMainWindow):
         self.ui.image_view.addItem(self.roi_id)
         self.roi_id.sigRegionChanged.connect(self.roi_moved)
         self.update_selection_profile_plot()
+        self.update_profile_of_bin_size_infos()
+
+    def update_profile_of_bin_size_infos(self):
+        _width = self.ui.roi_width.text()
+        _height = self.ui.roi_height.text()
+        self.ui.profile_of_bin_size_width.setText(_width)
+        self.ui.profile_of_bin_size_height.setText(_height)
+        self.ui.profile_of_bin_size_slider.setValue(np.min([_width, _height]))
+
 
     def distance_detector_sample_changed(self):
         self.update_time_spectra()
@@ -332,6 +382,12 @@ class Interface(QMainWindow):
             return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
         else:
             return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
+
+    def profile_of_bin_size_slider_changed(self, new_value):
+        print("new_value")
+
+    def export_all_profiles_button_clicked(self):
+        pass
 
     def cancel_clicked(self):
         self.close()
