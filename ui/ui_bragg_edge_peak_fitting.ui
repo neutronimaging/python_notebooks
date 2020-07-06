@@ -36,7 +36,7 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
              <widget class="QGroupBox" name="groupBox">
@@ -160,7 +160,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -238,6 +238,80 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="label_12">
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>27</red>
+                    <green>199</green>
+                    <blue>179</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>34</red>
+                    <green>217</green>
+                    <blue>221</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>27</red>
+                    <green>199</green>
+                    <blue>179</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>34</red>
+                    <green>217</green>
+                    <blue>221</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>127</red>
+                    <green>127</green>
+                    <blue>127</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>127</red>
+                    <green>127</green>
+                    <blue>127</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
+              </property>
+              <property name="text">
+               <string>Average counts of cyan box defined by a dash line on the left display</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
                <spacer name="horizontalSpacer_4">
@@ -293,25 +367,6 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <item>
-               <widget class="QPushButton" name="export_all_profiles_button">
-                <property name="minimumSize">
-                 <size>
-                  <width>250</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>250</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Export all profiles ...</string>
-                </property>
-               </widget>
-              </item>
               <item>
                <spacer name="horizontalSpacer_7">
                 <property name="orientation">
@@ -515,7 +570,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>738</width>
+                  <width>677</width>
                   <height>521</height>
                  </rect>
                 </property>
@@ -563,8 +618,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>738</width>
-                  <height>521</height>
+                  <width>530</width>
+                  <height>145</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -607,6 +662,14 @@
                 </layout>
                </widget>
                <widget class="QWidget" name="page_3">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>531</width>
+                  <height>145</height>
+                 </rect>
+                </property>
                 <attribute name="label">
                  <string>Step3: Bragg Peak</string>
                 </attribute>
@@ -656,7 +719,7 @@
             </attribute>
            </widget>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <widget class="QWidget" name="fitting_widget" native="true">
@@ -772,8 +835,26 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuImport_Export">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionImport"/>
+    <addaction name="actionExport"/>
+   </widget>
+   <addaction name="menuImport_Export"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import ...</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export ...</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -1018,8 +1099,8 @@
    </hints>
   </connection>
   <connection>
-   <sender>export_all_profiles_button</sender>
-   <signal>clicked()</signal>
+   <sender>actionExport</sender>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>export_all_profiles_button_clicked()</slot>
    <hints>

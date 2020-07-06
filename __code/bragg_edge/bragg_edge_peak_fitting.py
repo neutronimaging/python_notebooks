@@ -1,10 +1,11 @@
 from IPython.core.display import HTML
 import os
+from pathlib import Path
 import random
 import numpy as np
 from IPython.display import display
 import pyqtgraph as pg
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QFileDialog
 from qtpy import QtGui, QtCore
 
 from neutronbraggedge.experiment_handler import *
@@ -51,9 +52,10 @@ class Interface(QMainWindow):
                                },
                     }
 
-    def __init__(self, parent=None, o_norm=None, spectra_file=None):
+    def __init__(self, parent=None, o_bragg=None, spectra_file=None):
 
-        self.o_norm = o_norm
+        self.o_norm = o_bragg.o_norm
+        self.o_bragg = o_bragg
         self.spectra_file = spectra_file
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
@@ -506,7 +508,21 @@ class Interface(QMainWindow):
                 'width': width_requested, 'height': height_requested}
 
     def export_all_profiles_button_clicked(self):
-        pass
+
+        # bring file dialog to locate where the file will be saved
+        directory = str(Path(self.o_bragg.working_dir).parent)
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=directory,
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+            print(_export_folder)
+
+        # collect initial selection size (x0, y0, width, height)
+
+        # create profile for all the fitting region inside that first box
+
+
 
     def cancel_clicked(self):
         self.close()
