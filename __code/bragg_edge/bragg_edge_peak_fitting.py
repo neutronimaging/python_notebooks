@@ -304,6 +304,7 @@ class Interface(QMainWindow):
                              scaleSnap=True)
         self.ui.image_view.addItem(self.roi_id)
         self.roi_id.sigRegionChanged.connect(self.roi_moved)
+        self.reset_profile_of_bin_size_slider()
         self.update_selection_profile_plot()
         self.update_profile_of_bin_size_infos()
         self.update_roi_defined_by_profile_of_bin_size_slider()
