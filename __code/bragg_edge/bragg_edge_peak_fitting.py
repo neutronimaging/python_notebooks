@@ -37,6 +37,8 @@ class Interface(QMainWindow):
                      'y0': None,
                      'width': None,
                      'height': None}
+    previous_roi_selection = {'width': None,
+                              'height': None}
     image_size = {'width': None,
                   'height': None}
     roi_id = None
@@ -113,7 +115,11 @@ class Interface(QMainWindow):
         self.update_all_size_widgets_infos()
         self.update_roi_defined_by_profile_of_bin_size_slider()
 
-    def update_all_size_widgets_infos(self):
+    def new_dimensions_within_error_range(self):
+        """this method is used to check if the ROI sizes changed. We need an error uncertainties as sometimes
+        the region varies by + or - 1 pixel when moving it around"""
+        error = 1    # # of pixel
+
         roi_id = self.roi_id
         region = roi_id.getArraySlice(self.final_image,
                                       self.ui.image_view.imageItem)
@@ -124,6 +130,32 @@ class Interface(QMainWindow):
 
         new_width = x1-x0-1
         new_height = y1-y0-1
+
+        if ((np.abs(new_width - np.int(self.ui.roi_width.text())) <= error) and
+            (np.abs(new_height) - np.int(self.ui.roi_height.text())) <= error):
+            return True
+
+        return False
+
+    def update_all_size_widgets_infos(self):
+
+        if self.ui.square_roi_radiobutton.isChecked():
+            return
+
+        roi_id = self.roi_id
+        region = roi_id.getArraySlice(self.final_image,
+                                      self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        new_width = x1-x0-1
+        new_height = y1-y0-1
+
+        # if new width and height is the same as before, just skip that step
+        if self.new_dimensions_within_error_range():
+            return
 
         self.ui.roi_width.setText(str(new_width))
         self.ui.roi_height.setText(str(new_height))

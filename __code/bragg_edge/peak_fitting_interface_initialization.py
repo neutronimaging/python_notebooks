@@ -91,6 +91,8 @@ class Initialization:
 		[x0, y0] = self.parent.roi_settings['position']
 		self.parent.selection_x0y0 = [x0, y0]
 		width = self.parent.ui.roi_size_slider.value()
+		self.parent.previous_roi_selection['width'] = width
+		self.parent.previous_roi_selection['height'] = width
 		_pen = QtGui.QPen()
 		_pen.setColor(self.parent.roi_settings['color'])
 		_pen.setWidth(self.parent.roi_settings['width'])
