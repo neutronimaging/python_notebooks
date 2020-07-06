@@ -26,15 +26,12 @@ class BraggEdge(BraggEdgeParent):
 class Interface(QMainWindow):
 
     bragg_edge_range = [5, 20]
-    roi_settings = {'color': [62, 13, 244],
+    roi_settings = {'color': QtGui.QColor(62, 13, 244),
                     'width': 0.01,
                     'position': [10, 10]}
-    shrinking_roi_settings = {'color': [13, 214, 244],
-                              'width': 0.01}
-    _color = QtGui.QColor(roi_settings['color'][0],
-                          roi_settings['color'][1],
-                          roi_settings['color'][2])
-    _color_shrinking_roi = QtGui.QColor()
+    shrinking_roi_settings = {'color': QtGui.QColor(13, 214, 244),
+                              'width': 0.01,
+                              'dashes_pattern': [4, 2]}
     image_size = {'width': None,
                   'height': None}
     roi_id = None
@@ -109,6 +106,7 @@ class Interface(QMainWindow):
     def roi_moved(self):
         self.update_selection_profile_plot()
         self.update_all_size_widgets_infos()
+        self.update_roi_defined_by_profile_of_bin_size_slider()
 
     def update_all_size_widgets_infos(self):
         roi_id = self.roi_id
@@ -238,6 +236,7 @@ class Interface(QMainWindow):
         self.ui.roi_size_slider.setVisible(slider_visible)
 
         self.reset_profile_of_bin_size_slider()
+        self.update_roi_defined_by_profile_of_bin_size_slider()
 
         # # reset profile of bin size slider
         # [x0, y0, x1, y1] = self.get_selection_roi_dimension()
@@ -256,16 +255,10 @@ class Interface(QMainWindow):
     def reset_profile_of_bin_size_slider(self):
         max_value = np.min([np.int(str(self.ui.profile_of_bin_size_width.text())),
                             np.int(str(self.ui.profile_of_bin_size_height.text()))])
-        print(max_value)
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
         self.ui.profile_of_bin_size_slider.setValue(max_value)
 
     def update_2d_free_roi(self, new_value):
-
-        _color = QtGui.QColor(self.roi_settings['color'][0],
-                              self.roi_settings['color'][1],
-                              self.roi_settings['color'][2])
-
         region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
 
         x0 = region[0][0].start
@@ -276,7 +269,7 @@ class Interface(QMainWindow):
         # self.ui.image_view.removeItem(self.shrinking_roi_id)
 
         _pen = QtGui.QPen()
-        _pen.setColor(_color)
+        _pen.setColor(self.roi_settings['color'])
         _pen.setWidth(self.roi_settings['width'])
         self.roi_id = pg.ROI([x0, y0],
                              [new_value, new_value],
@@ -297,16 +290,13 @@ class Interface(QMainWindow):
 
         x0 = region[0][0].start
         y0 = region[0][1].start
+        self.selection_x0y0 = [x0, y0]
 
         # remove old one
         self.ui.image_view.removeItem(self.roi_id)
 
-        _color = QtGui.QColor(self.roi_settings['color'][0],
-                              self.roi_settings['color'][1],
-                              self.roi_settings['color'][2])
-
         _pen = QtGui.QPen()
-        _pen.setColor(_color)
+        _pen.setColor(self.roi_settings['color'])
         _pen.setWidth(self.roi_settings['width'])
         self.roi_id = pg.ROI([x0, y0],
                              [new_value, new_value],
@@ -316,6 +306,7 @@ class Interface(QMainWindow):
         self.roi_id.sigRegionChanged.connect(self.roi_moved)
         self.update_selection_profile_plot()
         self.update_profile_of_bin_size_infos()
+        self.update_roi_defined_by_profile_of_bin_size_slider()
 
     def update_profile_of_bin_size_infos(self):
         _width = np.int(self.ui.roi_width.text())
@@ -323,7 +314,6 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_width.setText(str(_width))
         self.ui.profile_of_bin_size_height.setText(str(_height))
         self.ui.profile_of_bin_size_slider.setValue(np.min([_width, _height]))
-
 
     def distance_detector_sample_changed(self):
         self.update_time_spectra()
@@ -421,9 +411,40 @@ class Interface(QMainWindow):
 
         self.ui.profile_of_bin_size_width.setText(str(new_width))
         self.ui.profile_of_bin_size_height.setText(str(new_height))
+        self.update_roi_defined_by_profile_of_bin_size_slider()
+
+    def update_roi_defined_by_profile_of_bin_size_slider(self):
+        coordinates_new_selection = self.get_coordinates_of_new_inside_selection_box()
+        x0 = coordinates_new_selection['x0']
+        y0 = coordinates_new_selection['y0']
+        width = coordinates_new_selection['width']
+        height = coordinates_new_selection['height']
+
+        # remove old selection
+
+        # plot new box
+        _pen = QtGui.QPen()
+        _pen.setDashPattern(self.shrinking_roi_settings['dashes_pattern'])
+        _pen.setColor(self.shrinking_roi_settings['color'])
 
 
+    def get_coordinates_of_new_inside_selection_box(self):
+        # get width and height defined in fitting labels (top right)
+        width_requested = np.int(str(self.ui.profile_of_bin_size_width.text()))
+        height_requested = np.int(str(self.ui.profile_of_bin_size_height.text()))
 
+        # retrieve x0, y0, width and height of full selection
+        [x0, y0] = self.selection_x0y0
+        width_full_selection = np.int(str(self.ui.roi_width.text()))
+        height_full_selection = np.int(str(self.ui.roi_height.text()))
+
+        delta_width = width_full_selection - width_requested
+        delta_height = height_full_selection - height_requested
+
+        new_x0 = x0 + np.int(delta_width / 2)
+        new_y0 = y0 + np.int(delta_height / 2)
+
+        return {'x0': new_x0, 'y0': new_y0, 'width': width_requested, 'height': height_requested}
 
     def export_all_profiles_button_clicked(self):
         pass

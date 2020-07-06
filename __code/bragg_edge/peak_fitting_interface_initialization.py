@@ -89,13 +89,10 @@ class Initialization:
 
 	def roi_setup(self):
 		[x0, y0] = self.parent.roi_settings['position']
+		self.parent.selection_x0y0 = [x0, y0]
 		width = self.parent.ui.roi_size_slider.value()
-		_color = QtGui.QColor(self.parent.roi_settings['color'][0],
-		                      self.parent.roi_settings['color'][1],
-		                      self.parent.roi_settings['color'][2])
-
 		_pen = QtGui.QPen()
-		_pen.setColor(_color)
+		_pen.setColor(self.parent.roi_settings['color'])
 		_pen.setWidth(self.parent.roi_settings['width'])
 		self.parent.roi_id = pg.ROI([x0, y0],
 		                            [width, width],
