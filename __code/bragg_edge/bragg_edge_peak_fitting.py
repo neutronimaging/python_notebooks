@@ -32,6 +32,7 @@ class Interface(QMainWindow):
     shrinking_roi_settings = {'color': QtGui.QColor(13, 214, 244),
                               'width': 0.01,
                               'dashes_pattern': [4, 2]}
+    shrinking_roi_id = None
     image_size = {'width': None,
                   'height': None}
     roi_id = None
@@ -180,6 +181,8 @@ class Interface(QMainWindow):
 
     def update_selection_profile_plot(self):
         [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        self.selection_x0y0 = [x0, y0]
+
         profile = self.get_profile_of_roi(x0, y0, x1, y1)
 
         x_axis, x_axis_label = self.get_x_axis()
@@ -415,19 +418,33 @@ class Interface(QMainWindow):
         self.update_roi_defined_by_profile_of_bin_size_slider()
 
     def update_roi_defined_by_profile_of_bin_size_slider(self):
+
+        print("updating roi defined by profile of bin size slider")
+
         coordinates_new_selection = self.get_coordinates_of_new_inside_selection_box()
+        import pprint
+        pprint.pprint(f"coordinates is now {coordinates_new_selection}")
         x0 = coordinates_new_selection['x0']
         y0 = coordinates_new_selection['y0']
         width = coordinates_new_selection['width']
         height = coordinates_new_selection['height']
 
         # remove old selection
+        if self.shrinking_roi_id:
+            self.ui.image_view.removeItem(self.shrinking_roi_id)
 
         # plot new box
         _pen = QtGui.QPen()
         _pen.setDashPattern(self.shrinking_roi_settings['dashes_pattern'])
         _pen.setColor(self.shrinking_roi_settings['color'])
+        _pen.setWidth(self.shrinking_roi_settings['width'])
 
+        self.shrinking_roi_id = pg.ROI([x0, y0],
+                                       [width, height],
+                                       pen=_pen,
+                                       scaleSnap=True,
+                                       movable=False)
+        self.ui.image_view.addItem(self.shrinking_roi_id)
 
     def get_coordinates_of_new_inside_selection_box(self):
         # get width and height defined in fitting labels (top right)
