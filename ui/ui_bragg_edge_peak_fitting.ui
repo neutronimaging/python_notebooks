@@ -366,40 +366,29 @@
              </layout>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <item>
-               <spacer name="horizontalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="fit_that_selection_button">
-                <property name="minimumSize">
-                 <size>
-                  <width>250</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>250</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Use this selection in the fitting tab</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QPushButton" name="fit_that_selection_button">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Use this selection in the fitting tab</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1114,6 +1103,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionImport</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>import_all_profiles_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1127,5 +1132,6 @@
   <slot>roi_radiobuttons_changed()</slot>
   <slot>profile_of_bin_size_slider_changed()</slot>
   <slot>export_all_profiles_button_clicked()</slot>
+  <slot>import_all_profiles_button_clicked()</slot>
  </slots>
 </ui>

@@ -20,14 +20,17 @@ class Initialization:
 	distance_detector_sample = 1300  # m
 	detector_offset = 6500  # micros
 
-	def __init__(self, parent=None):
+	def __init__(self, parent=None, tab='all'):
 		self.parent = parent
 
-		self.save_image_size()
+		if tab == 'all':
+			self.save_image_size()
+			self.pyqtgraph_profile()
+			self.widgets()
+			self.roi_setup()
+
 		self.statusbar()
-		self.pyqtgraph()
-		self.widgets()
-		self.roi_setup()
+		self.pyqtgraph_fitting()
 
 	def save_image_size(self):
 		_image = self.parent.get_live_image()
@@ -42,7 +45,7 @@ class Initialization:
 		self.parent.eventProgress.setVisible(False)
 		self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
-	def pyqtgraph(self):
+	def pyqtgraph_profile(self):
 		# image view
 		self.parent.ui.image_view = pg.ImageView()
 		self.parent.ui.image_view.ui.roiBtn.hide()
@@ -57,6 +60,7 @@ class Initialization:
 		profile_layout.addWidget(self.parent.ui.profile)
 		self.parent.ui.profile_widget.setLayout(profile_layout)
 
+	def pyqtgraph_fitting(self):
 		# fitting view
 		self.parent.ui.fitting = pg.PlotWidget(title="Fitting")
 		fitting_layout = QVBoxLayout()
