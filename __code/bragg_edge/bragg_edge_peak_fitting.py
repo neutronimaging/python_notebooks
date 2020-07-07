@@ -27,10 +27,16 @@ class BraggEdge(BraggEdgeParent):
 class Interface(QMainWindow):
 
     bragg_edge_range = [5, 20]
-    roi_settings = {'color': QtGui.QColor(62, 13, 244),
+    selection_roi_rgb = (62, 13, 244)
+    roi_settings = {'color': QtGui.QColor(selection_roi_rgb[0],
+                                          selection_roi_rgb[1],
+                                          selection_roi_rgb[2]),
                     'width': 0.01,
                     'position': [10, 10]}
-    shrinking_roi_settings = {'color': QtGui.QColor(13, 214, 244),
+    shrinking_roi_rgb = (13, 214, 244)
+    shrinking_roi_settings = {'color': QtGui.QColor(shrinking_roi_rgb[0],
+                                                    shrinking_roi_rgb[1],
+                                                    shrinking_roi_rgb[2]),
                               'width': 0.01,
                               'dashes_pattern': [4, 2]}
     shrinking_roi_id = None
@@ -226,7 +232,18 @@ class Interface(QMainWindow):
 
     def update_selection_profile_plot(self):
 
+        x_axis, x_axis_label = self.get_x_axis()
+        self.ui.profile.clear()
+
         # large selection region
+        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        print(f"selection: x0:{x0}, y0:{y0}, x1:{x1}, y1:{y1}")
+        profile = self.get_profile_of_roi(x0, y0, x1, y1)
+        x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+                                              y_axis=profile)
+        self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
+                                                  self.selection_roi_rgb[1],
+                                                  self.selection_roi_rgb[2]))
 
         # shrinkable region
         shrinking_roi = self.get_coordinates_of_new_inside_selection_box()
@@ -234,19 +251,18 @@ class Interface(QMainWindow):
         y0 = shrinking_roi['y0']
         x1 = shrinking_roi['x1']
         y1 = shrinking_roi['y1']
-
+        print(f"shrinkable: x0:{x0}, y0:{y0}, x1:{x1}, y1:{y1}")
+        print("")
         profile = self.get_profile_of_roi(x0, y0, x1, y1)
-
-        x_axis, x_axis_label = self.get_x_axis()
         x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                               y_axis=profile)
-        # _pen = QtGui.QPen()
-        # _pen.setColor(self.shrinking_roi_settings['color'])
-        self.ui.profile.clear()
-        self.ui.profile.plot(x_axis, y_axis, pen=(0, 255, 255))
+        self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
+                                                  self.shrinking_roi_rgb[1],
+                                                  self.shrinking_roi_rgb[2]))
         self.ui.profile.setLabel("bottom", x_axis_label)
         self.ui.profile.setLabel("left", 'Mean counts')
 
+        # vertical line showing peak to fit
         bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
                             x_axis[self.bragg_edge_range[1]]]
 
@@ -509,7 +525,7 @@ class Interface(QMainWindow):
         new_y0 = y0 + np.int(delta_height / 2)
 
         return {'x0': new_x0, 'y0': new_y0,
-                'x1': new_x0 + width_requested, 'y1': new_y0 + height_requested,
+                'x1': new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
                 'width': width_requested, 'height': height_requested}
 
     def makeup_name_of_profile_ascii_file(self, base_name="default",
