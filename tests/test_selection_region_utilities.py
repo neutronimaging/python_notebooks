@@ -39,3 +39,17 @@ class TestSelectionRegionUtilities:
 		assert len(dict_regions) == 2
 		assert dict_regions[0] == {'x0': 5, 'y0': 10, 'width': 1, 'height': 3}
 		assert dict_regions[1] == {'x0': 5, 'y0': 11, 'width': 1, 'height': 1}
+
+	def test_all_russian_doll_regions_for_1_square_dolls(self):
+		o_region = SelectionRegionUtilities(x0=5, y0=10, width=1, height=1)
+		dict_regions = o_region.get_all_russian_doll_regions()
+		assert len(dict_regions) == 1
+		assert dict_regions[0] == {'x0': 5, 'y0': 10, 'width': 1, 'height': 1}
+
+	def test_all_russian_doll_regions_for_3_free_dolls(self):
+		o_region = SelectionRegionUtilities(x0=5, y0=10, width=5, height=3)
+		dict_regions = o_region.get_all_russian_doll_regions()
+		assert len(dict_regions) == 3
+		assert dict_regions[0] == {'x0': 5, 'y0': 10, 'width': 5, 'height': 3}
+		assert dict_regions[1] == {'x0': 6, 'y0': 11, 'width': 3, 'height': 1}
+		assert dict_regions[2] == {'x0': 7, 'y0': 11, 'width': 1, 'height': 1}
