@@ -237,7 +237,6 @@ class Interface(QMainWindow):
 
         # large selection region
         [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-        print(f"selection: x0:{x0}, y0:{y0}, x1:{x1}, y1:{y1}")
         profile = self.get_profile_of_roi(x0, y0, x1, y1)
         x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                               y_axis=profile)
@@ -251,8 +250,6 @@ class Interface(QMainWindow):
         y0 = shrinking_roi['y0']
         x1 = shrinking_roi['x1']
         y1 = shrinking_roi['y1']
-        print(f"shrinkable: x0:{x0}, y0:{y0}, x1:{x1}, y1:{y1}")
-        print("")
         profile = self.get_profile_of_roi(x0, y0, x1, y1)
         x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                               y_axis=profile)
@@ -285,7 +282,6 @@ class Interface(QMainWindow):
         self.bragg_edge_range = [left_index, right_index]
 
     def get_profile_of_roi(self, x0=None, y0=None, x1=None, y1=None, width=None, height=None):
-
         profile_value = []
 
         if width:
@@ -423,17 +419,19 @@ class Interface(QMainWindow):
                                   }
 
     def update_fitting_plot(self):
-        x_axis, x_axis_label = self.get_fitting_profile_xaxis()
+	    pass
 
-        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-        profile = self.get_profile_of_roi(x0=x0, y0=y0,
-                                          x1=x1, y1=y1)
-        x_axis, y_axis = Interface.check_size(x_axis=x_axis,
-                                              y_axis=profile)
-        self.ui.fitting.clear()
-        self.ui.fitting.plot(x_axis, y_axis)
-        self.ui.fitting.setLabel("bottom", x_axis_label)
-        self.ui.fitting.setLabel("left", 'Mean counts')
+        # x_axis, x_axis_label = self.get_fitting_profile_xaxis()
+		#
+        # [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        # profile = self.get_profile_of_roi(x0=x0, y0=y0,
+        #                                   x1=x1, y1=y1)
+        # x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+        #                                       y_axis=profile)
+        # self.ui.fitting.clear()
+        # self.ui.fitting.plot(x_axis, y_axis)
+        # self.ui.fitting.setLabel("bottom", x_axis_label)
+        # self.ui.fitting.setLabel("left", 'Mean counts')
 
         # bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
         #                     x_axis[self.bragg_edge_range[1]]]
@@ -447,13 +445,21 @@ class Interface(QMainWindow):
         # self.bragg_edge_range_ui.setZValue(-10)
         # self.ui.profile.addItem(self.bragg_edge_range_ui)
 
+    def get_requested_xaxis(self, xaxis_label='index'):
+        if xaxis_label == 'index':
+            return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
+        elif xaxis_label == 'tof':
+            return self.dict_profile_to_fit['xaxis']['tof'], self.xaxis_label['tof']
+        elif xaxis_label == 'lambda':
+            return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
+
     def get_fitting_profile_xaxis(self):
         if self.ui.fitting_tof_radiobutton.isChecked():
-            return self.dict_profile_to_fit['xaxis']['tof'], self.xaxis_label['tof']
+            return self.get_requested_xaxis(xaxis_label='tof')
         elif self.ui.fitting_index_radiobutton.isChecked():
-            return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
+            return self.get_requested_xaxis(xaxis_label='index')
         else:
-            return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
+            return self.get_requested_xaxis(xaxis_label='lambda')
 
     def profile_of_bin_size_slider_changed(self, new_value):
         self.update_dict_profile_to_fit()
@@ -528,7 +534,8 @@ class Interface(QMainWindow):
                 'x1': new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
                 'width': width_requested, 'height': height_requested}
 
-    def makeup_name_of_profile_ascii_file(self, base_name="default",
+    @staticmethod
+    def makeup_name_of_profile_ascii_file(base_name="default",
                                           export_folder="./",
                                           x0=None, y0=None, width=None, height=None):
         """this will return the full path name of the ascii file to create that will contain all the profiles
@@ -556,14 +563,14 @@ class Interface(QMainWindow):
             height -= 2
             index += 1
 
-        # make sure we have a region with 1 pixel width or height, or both
-        if width == 1:
-            return dict_regions
-
-        if height == 1:
-            return dict_regions
-
-        if width == np.min([width, height]):
+        if width == 0 and height == 0:
+            width = 1
+            height = 1
+        elif width == 0:
+            width = 1
+        elif height == 0:
+            height = 1
+        elif width == np.min([width, height]):
             width = 1
             height = height if height > 0 else 1
         else:
@@ -574,7 +581,8 @@ class Interface(QMainWindow):
         dict_regions[index] = {'x0': x0, 'y0': y0, 'width': width, 'height': height, 'profile': profile}
         return dict_regions
 
-    def make_metadata(self, base_folder=None, dict_regions=None):
+    @staticmethod
+    def make_metadata(base_folder=None, dict_regions=None):
         metadata = ["# base folder: {}".format(base_folder)]
         for _key in dict_regions.keys():
             _entry = dict_regions[_key]
@@ -588,15 +596,22 @@ class Interface(QMainWindow):
         metadata.append("#")
         return metadata
 
-    def format_data(self, dict_regions=None):
+    @staticmethod
+    def format_data(col1=None, col2=None, col3=None, dict_regions=None):
+        if col1 is None:
+            return []
+
         data = []
         profile_length = len(dict_regions[0]['profile'])
         for _row_index in np.arange(profile_length):
             list_profile_for_this_row = []
             for _key in dict_regions.keys():
                 _profile = dict_regions[_key]['profile']
-                list_profile_for_this_row.append(_profile[_row_index])
-            data.append(", ".join(list_profile_for_this_row))
+                list_profile_for_this_row.append(str(_profile[_row_index]))
+            _col1 = col1[_row_index]
+            _col2 = col2[_row_index]
+            _col3 = col3[_row_index]
+            data.append("{}, {}, {}, ".format(_col1, _col2, _col3) + ", ".join(list_profile_for_this_row))
         return data
 
     def export_all_profiles_button_clicked(self):
@@ -608,17 +623,27 @@ class Interface(QMainWindow):
                                                           directory=directory,
                                                           caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
+
         if _export_folder:
+
+            index_axis, _ = self.get_specified_x_axis(xaxis='index')
+            tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
+            lambda_axis, _ = self.get_specified_x_axis('lambda')
+
+            print(f"len(index_axis)= {len(index_axis)}")
+            print(f"len(tof_axis)= {len(tof_axis)}")
+            print(f"len(lambda_axis)= {len(lambda_axis)}")
+
             # collect initial selection size (x0, y0, width, height)
             [x0, y0, x1, y1] = self.get_selection_roi_dimension()
             width = np.int(x1-x0)
             height = np.int(y1-y0)
 
-            name_of_ascii_file = self.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
-                                                                        export_folder=_export_folder,
-                                                                        x0=x0, y0=y0,
-                                                                        width=width,
-                                                                        height=height)
+            name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
+                                                                             export_folder=_export_folder,
+                                                                             x0=x0, y0=y0,
+                                                                             width=width,
+                                                                             height=height)
 
             # create profile for all the fitting region inside that first box
             dict_regions = self.make_dict_of_all_shrinkable_regions(x0=x0,
@@ -626,13 +651,17 @@ class Interface(QMainWindow):
                                                                     width=width,
                                                                     height=height)
 
-            metadata = self.make_metadata(base_folder=base_folder,
-                                          dict_regions=dict_regions)
+            metadata = Interface.make_metadata(base_folder=base_folder,
+                                               dict_regions=dict_regions)
             metadata.append("Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
-            data = self.format_data(dict_regions=dict_regions)
+            data = Interface.format_data(col1=index_axis,
+                                         col2=tof_axis,
+                                         col3=lambda_axis,
+                                         dict_regions=dict_regions)
 
-
-
+            import pprint
+            pprint.pprint(metadata)
+            pprint.pprint(data)
 
     def cancel_clicked(self):
         self.close()
