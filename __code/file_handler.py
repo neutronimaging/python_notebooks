@@ -1,11 +1,12 @@
 import os
+from pathlib import Path
 from astropy.io import fits
 import numpy as np
 import pickle
 import shutil
 from PIL import Image
 import glob
-from collections import Counter, namedtuple
+from collections import Counter, namedtuple, OrderedDict
 import re
 import datetime
 
@@ -381,6 +382,35 @@ def get_list_of_all_files_in_subfolders(folder="", extensions=['tiff','tif']):
     return list_files
 
 
+def read_bragg_edge_fitting_ascii_format(full_file_name):
+    if not Path(full_file_name).exists():
+        raise FileNotFoundError
+
+    metadata = {}
+    metadata_column = OrderedDict()
+    data = {}
+    with open(full_file_name, 'r') as f:
+        for line in f:
+            if "#base folder: " in line:
+                metadata['base_folder'] = line.split("#base folder: ")[1].strip()
+                continue
+            if "#column " in line:
+                regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
+                          r"height:(?P<height>\d+)$"
+                m = re.search(regular, line.strip())
+                if m:
+                    metadata_column[m.group('column_index').strip()] = {'x0': m.group('x0'),
+                                                                'y0': m.group('y0'),
+                                                                'width': m.group('width'),
+                                                                'height': m.group('height')}
+                continue
+            if "#" not in line:
+                data.append(line)
+        metadata['columns'] = metadata_column
+
+    return {'data': data, 'metadata': metadata}
+
+
 class ListMostDominantExtension(object):
     Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))
 
@@ -462,8 +492,3 @@ class ListMostDominantExtension(object):
             return self.Result(list_files=list_of_input_files,
                                ext=self.dominant_extension,
                                uniqueness=True)
-
-
-
-
-   

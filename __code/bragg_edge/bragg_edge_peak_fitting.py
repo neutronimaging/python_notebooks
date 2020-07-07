@@ -574,16 +574,16 @@ class Interface(QMainWindow):
 
     @staticmethod
     def make_metadata(base_folder=None, dict_regions=None):
-        metadata = ["# base folder: {}".format(base_folder)]
+        metadata = ["#base folder: {}".format(base_folder)]
         for _key in dict_regions.keys():
             _entry = dict_regions[_key]
             x0 = _entry['x0']
             y0 = _entry['y0']
             width = _entry['width']
             height = _entry['height']
-            metadata.append("#column {} ->  x0:{}, y0:{}, width:{}, height:{}".format(_key+3,
-                                                                                      x0, y0,
-                                                                                      width, height))
+            metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{}".format(_key+3,
+                                                                                     x0, y0,
+                                                                                     width, height))
         metadata.append("#")
         return metadata
 
@@ -656,7 +656,7 @@ class Interface(QMainWindow):
 
         metadata = Interface.make_metadata(base_folder=base_folder,
                                            dict_regions=dict_regions)
-        metadata.append("Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
+        metadata.append("#Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
         data = Interface.format_data(col1=index_axis,
                                      col2=tof_axis,
                                      col3=lambda_axis,
@@ -670,7 +670,16 @@ class Interface(QMainWindow):
 
 
     def import_all_profiles_button_clicked(self):
-        working_dir = self.working_dir
+        working_dir = str(Path(self.working_dir).parent)
+        ascii_file = QFileDialog.getOpenFileName(self,
+                                                 caption="Select ASCII file",
+                                                 directory=working_dir,
+                                                 filter="ASCII (*.txt)")
+
+        if ascii_file:
+            print(ascii_file[0])
+
+
 
 
 
