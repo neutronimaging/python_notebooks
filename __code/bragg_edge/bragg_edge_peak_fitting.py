@@ -16,7 +16,7 @@ from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.selection_region_utilities import SelectionRegionUtilities
 from __code import load_ui
 from __code.utilities import find_nearest_index
-from __code.file_handler import make_ascii_file
+from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
 
 
 DEBUGGING = True
@@ -433,7 +433,18 @@ class Interface(QMainWindow):
         self.dict_profile_to_fit = profile_to_fit
 
     def fit_that_selection_pushed(self):
-        data, metadata = self.get_data_metadata_from_selection_tab()
+        """this will create the fitting_input_dictionary"""
+        fitting_input_dictionary = {}
+        x_axis = self.get_all_x_axis()
+        fitting_input_dictionary['x_axis'] = x_axis
+
+        dict_regions = self.get_all_russian_doll_region_full_infos()
+
+        import pprint
+        pprint.pprint(dict_regions)
+
+
+
 
     def update_fitting_plot(self):
         pass
@@ -644,16 +655,7 @@ class Interface(QMainWindow):
         tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
         lambda_axis, _ = self.get_specified_x_axis('lambda')
 
-        # collect initial selection size (x0, y0, width, height)
-        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-        width = np.int(x1 - x0)
-        height = np.int(y1 - y0)
-
-        # create profile for all the fitting region inside that first box
-        o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
-        dict_regions = o_regions.get_all_russian_doll_regions()
-        self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
-
+        dict_regions = self.get_all_russian_doll_region_full_infos()
         metadata = Interface.make_metadata(base_folder=base_folder,
                                            dict_regions=dict_regions)
         metadata.append("#Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
@@ -664,10 +666,16 @@ class Interface(QMainWindow):
 
         return data, metadata
 
-
-
-
-
+    def get_all_russian_doll_region_full_infos(self):
+        # collect initial selection size (x0, y0, width, height)
+        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        width = np.int(x1 - x0)
+        height = np.int(y1 - y0)
+        # create profile for all the fitting region inside that first box
+        o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
+        dict_regions = o_regions.get_all_russian_doll_regions()
+        self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
+        return dict_regions
 
     def import_all_profiles_button_clicked(self):
         working_dir = str(Path(self.working_dir).parent)
@@ -677,7 +685,8 @@ class Interface(QMainWindow):
                                                  filter="ASCII (*.txt)")
 
         if ascii_file:
-            print(ascii_file[0])
+            result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=ascii_file)
+
 
 
 
