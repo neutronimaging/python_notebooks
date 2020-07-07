@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import pandas as pd
 from astropy.io import fits
 import numpy as np
 import pickle
@@ -388,11 +389,13 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
 
     metadata = {}
     metadata_column = OrderedDict()
-    data = {}
+    line_number = 1
+    col_label = ['index', 'tof', 'lambda']
     with open(full_file_name, 'r') as f:
         for line in f:
             if "#base folder: " in line:
                 metadata['base_folder'] = line.split("#base folder: ")[1].strip()
+                line_number += 1
                 continue
             if "#column " in line:
                 regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
@@ -400,16 +403,16 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 m = re.search(regular, line.strip())
                 if m:
                     metadata_column[m.group('column_index').strip()] = {'x0': m.group('x0'),
-                                                                'y0': m.group('y0'),
-                                                                'width': m.group('width'),
-                                                                'height': m.group('height')}
+                                                                        'y0': m.group('y0'),
+                                                                        'width': m.group('width'),
+                                                                        'height': m.group('height')}
+                    col_label.append(m.group("column_index"))
+                line_number += 1
                 continue
-            if "#" not in line:
-                data.append(line)
         metadata['columns'] = metadata_column
 
-    return {'data': data, 'metadata': metadata}
-
+    pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
+    return {'data': pd_data, 'metadata': metadata}
 
 class ListMostDominantExtension(object):
     Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))
