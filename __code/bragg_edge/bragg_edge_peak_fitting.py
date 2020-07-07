@@ -225,6 +225,10 @@ class Interface(QMainWindow):
         return [x0, y0, x1, y1]
 
     def update_selection_profile_plot(self):
+
+        # large selection region
+
+        # shrinkable region
         shrinking_roi = self.get_coordinates_of_new_inside_selection_box()
         x0 = shrinking_roi['x0']
         y0 = shrinking_roi['y0']
@@ -236,9 +240,10 @@ class Interface(QMainWindow):
         x_axis, x_axis_label = self.get_x_axis()
         x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                               y_axis=profile)
-
+        # _pen = QtGui.QPen()
+        # _pen.setColor(self.shrinking_roi_settings['color'])
         self.ui.profile.clear()
-        self.ui.profile.plot(x_axis, y_axis)
+        self.ui.profile.plot(x_axis, y_axis, pen=(0, 255, 255))
         self.ui.profile.setLabel("bottom", x_axis_label)
         self.ui.profile.setLabel("left", 'Mean counts')
 
@@ -507,20 +512,109 @@ class Interface(QMainWindow):
                 'x1': new_x0 + width_requested, 'y1': new_y0 + height_requested,
                 'width': width_requested, 'height': height_requested}
 
+    def makeup_name_of_profile_ascii_file(self, base_name="default",
+                                          export_folder="./",
+                                          x0=None, y0=None, width=None, height=None):
+        """this will return the full path name of the ascii file to create that will contain all the profiles
+        starting with the selection box and all the way to the minimal size"""
+        full_base_name = "full_set_of_shrinkable_region_profiles_from_" + \
+                         "x{}_y{}_w{}_h{}_for_folder_{}.txt".format(x0, y0, width, height, base_name)
+        return str(Path(export_folder) / full_base_name)
+
+    def make_dict_of_all_shrinkable_regions(self, x0=None, y0=None, width=None, height=None):
+        """create a dictionary of all the shrinkable regions starting with the full selection box and going
+        all the way until the smallest dimension (width or height) reaches 1 or 2 pixels"""
+        dict_regions = {}
+        index = 0
+        while width >= 1 and height >= 1:
+
+            x1 = x0 + width
+            y1 = y0 + height
+            profile = self.get_profile_of_roi(x0=x0, y0=y0,
+                                              x1=x1, y1=y1)
+
+            dict_regions[index] = {'x0': x0, 'y0': y0, 'width': width, 'height': height, 'profile': profile}
+            x0 += 1
+            y0 += 1
+            width -= 2
+            height -= 2
+            index += 1
+
+        # make sure we have a region with 1 pixel width or height, or both
+        if width == 1:
+            return dict_regions
+
+        if height == 1:
+            return dict_regions
+
+        if width == np.min([width, height]):
+            width = 1
+            height = height if height > 0 else 1
+        else:
+            height = 1
+            width = width if width > 0 else 1
+        profile = self.get_profile_of_roi(x0=x0, y0=y0,
+                                          x1=x0 + width, y1=y0 + height)
+        dict_regions[index] = {'x0': x0, 'y0': y0, 'width': width, 'height': height, 'profile': profile}
+        return dict_regions
+
+    def make_metadata(self, base_folder=None, dict_regions=None):
+        metadata = ["# base folder: {}".format(base_folder)]
+        for _key in dict_regions.keys():
+            _entry = dict_regions[_key]
+            x0 = _entry['x0']
+            y0 = _entry['y0']
+            width = _entry['width']
+            height = _entry['height']
+            metadata.append("#column {} ->  x0:{}, y0:{}, width:{}, height:{}".format(_key+3,
+                                                                                      x0, y0,
+                                                                                      width, height))
+        metadata.append("#")
+        return metadata
+
+    def format_data(self, dict_regions=None):
+        data = []
+        profile_length = len(dict_regions[0]['profile'])
+        for _row_index in np.arange(profile_length):
+            list_profile_for_this_row = []
+            for _key in dict_regions.keys():
+                _profile = dict_regions[_key]['profile']
+                list_profile_for_this_row.append(_profile[_row_index])
+            data.append(", ".join(list_profile_for_this_row))
+        return data
+
     def export_all_profiles_button_clicked(self):
 
         # bring file dialog to locate where the file will be saved
-        directory = str(Path(self.o_bragg.working_dir).parent)
+        base_folder = Path(self.o_bragg.working_dir)
+        directory = str(base_folder.parent)
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=directory,
                                                           caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
         if _export_folder:
-            print(_export_folder)
+            # collect initial selection size (x0, y0, width, height)
+            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+            width = np.int(x1-x0)
+            height = np.int(y1-y0)
 
-        # collect initial selection size (x0, y0, width, height)
+            name_of_ascii_file = self.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
+                                                                        export_folder=_export_folder,
+                                                                        x0=x0, y0=y0,
+                                                                        width=width,
+                                                                        height=height)
 
-        # create profile for all the fitting region inside that first box
+            # create profile for all the fitting region inside that first box
+            dict_regions = self.make_dict_of_all_shrinkable_regions(x0=x0,
+                                                                    y0=y0,
+                                                                    width=width,
+                                                                    height=height)
+
+            metadata = self.make_metadata(base_folder=base_folder,
+                                          dict_regions=dict_regions)
+            metadata.append("Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
+            data = self.format_data(dict_regions=dict_regions)
+
 
 
 
