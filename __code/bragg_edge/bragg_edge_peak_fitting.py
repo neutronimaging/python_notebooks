@@ -13,8 +13,10 @@ from neutronbraggedge.experiment_handler import *
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge as BraggEdgeParent
 from __code.bragg_edge.peak_fitting_interface_initialization import Initialization
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
+from __code.selection_region_utilities import SelectionRegionUtilities
 from __code import load_ui
 from __code.utilities import find_nearest_index
+from __code.file_handler import make_ascii_file
 
 
 DEBUGGING = True
@@ -544,42 +546,53 @@ class Interface(QMainWindow):
                          "x{}_y{}_w{}_h{}_for_folder_{}.txt".format(x0, y0, width, height, base_name)
         return str(Path(export_folder) / full_base_name)
 
-    def make_dict_of_all_shrinkable_regions(self, x0=None, y0=None, width=None, height=None):
-        """create a dictionary of all the shrinkable regions starting with the full selection box and going
-        all the way until the smallest dimension (width or height) reaches 1 or 2 pixels"""
-        dict_regions = {}
-        index = 0
-        while width >= 1 and height >= 1:
+    # def make_dict_of_all_shrinkable_regions(self, x0=None, y0=None, width=None, height=None):
+    #     """create a dictionary of all the shrinkable regions starting with the full selection box and going
+    #     all the way until the smallest dimension (width or height) reaches 1 or 2 pixels"""
+    #     dict_regions = {}
+    #     index = 0
+    #     while width >= 1 and height >= 1:
+    #
+    #         x1 = x0 + width
+    #         y1 = y0 + height
+    #         profile = self.get_profile_of_roi(x0=x0, y0=y0,
+    #                                           x1=x1, y1=y1)
+    #
+    #         dict_regions[index] = {'x0': x0, 'y0': y0, 'width': width, 'height': height, 'profile': profile}
+    #         x0 += 1
+    #         y0 += 1
+    #         width -= 2
+    #         height -= 2
+    #         index += 1
+    #
+    #     if width == 0 and height == 0:
+    #         width = 1
+    #         height = 1
+    #     elif width == 0:
+    #         width = 1
+    #     elif height == 0:
+    #         height = 1
+    #     elif width == np.min([width, height]):
+    #         width = 1
+    #         height = height if height > 0 else 1
+    #     else:
+    #         height = 1
+    #         width = width if width > 0 else 1
+    #     profile = self.get_profile_of_roi(x0=x0, y0=y0,
+    #                                       x1=x0 + width, y1=y0 + height)
+    #     dict_regions[index] = {'x0': x0, 'y0': y0, 'width': width, 'height': height, 'profile': profile}
+    #     return dict_regions
 
-            x1 = x0 + width
-            y1 = y0 + height
+    def add_profile_to_dict_of_all_regions(self, dict_regions=None):
+        for _key in dict_regions.keys():
+            current_region = dict_regions[_key]
+            x0 = current_region['x0']
+            y0 = current_region['y0']
+            width = current_region['width']
+            height = current_region['height']
             profile = self.get_profile_of_roi(x0=x0, y0=y0,
-                                              x1=x1, y1=y1)
-
-            dict_regions[index] = {'x0': x0, 'y0': y0, 'width': width, 'height': height, 'profile': profile}
-            x0 += 1
-            y0 += 1
-            width -= 2
-            height -= 2
-            index += 1
-
-        if width == 0 and height == 0:
-            width = 1
-            height = 1
-        elif width == 0:
-            width = 1
-        elif height == 0:
-            height = 1
-        elif width == np.min([width, height]):
-            width = 1
-            height = height if height > 0 else 1
-        else:
-            height = 1
-            width = width if width > 0 else 1
-        profile = self.get_profile_of_roi(x0=x0, y0=y0,
                                           x1=x0 + width, y1=y0 + height)
-        dict_regions[index] = {'x0': x0, 'y0': y0, 'width': width, 'height': height, 'profile': profile}
-        return dict_regions
+            current_region['profile'] = profile
 
     @staticmethod
     def make_metadata(base_folder=None, dict_regions=None):
@@ -630,10 +643,6 @@ class Interface(QMainWindow):
             tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
             lambda_axis, _ = self.get_specified_x_axis('lambda')
 
-            print(f"len(index_axis)= {len(index_axis)}")
-            print(f"len(tof_axis)= {len(tof_axis)}")
-            print(f"len(lambda_axis)= {len(lambda_axis)}")
-
             # collect initial selection size (x0, y0, width, height)
             [x0, y0, x1, y1] = self.get_selection_roi_dimension()
             width = np.int(x1-x0)
@@ -646,10 +655,9 @@ class Interface(QMainWindow):
                                                                              height=height)
 
             # create profile for all the fitting region inside that first box
-            dict_regions = self.make_dict_of_all_shrinkable_regions(x0=x0,
-                                                                    y0=y0,
-                                                                    width=width,
-                                                                    height=height)
+            o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
+            dict_regions = o_regions.get_all_russian_doll_regions()
+            self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
 
             metadata = Interface.make_metadata(base_folder=base_folder,
                                                dict_regions=dict_regions)
@@ -659,9 +667,14 @@ class Interface(QMainWindow):
                                          col3=lambda_axis,
                                          dict_regions=dict_regions)
 
-            import pprint
-            pprint.pprint(metadata)
-            pprint.pprint(data)
+            make_ascii_file(metadata=metadata,
+                            data=data,
+                            output_file_name=name_of_ascii_file,
+                            dim='1d')
+
+            self.ui.statusbar.showMessage("{} has been created!".format(name_of_ascii_file), 10000)  # 10s
+            self.ui.statusbar.setStyleSheet("color: green")
+
 
     def cancel_clicked(self):
         self.close()
