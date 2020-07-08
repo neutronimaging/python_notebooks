@@ -60,6 +60,24 @@ class Interface(QMainWindow):
                                },
                     }
 
+    # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
+    #                                       'lambda': ([], 'lambda (Angstroms)'),
+    #                                       'tof': ([], 'TOF (micros)')},
+    #                             'rois': {'0': {'x0': None,
+    #                                            'y0': None,
+    #                                            'width': None,
+    #                                            'height': None,
+    #                                            'profile': [],
+    #                                            },
+    #                                      '1': {'x0': None,
+    #                                            'y0': None,
+    #                                            'width': None,
+    #                                            'height': None,
+    #                                            'profile': [],
+    #                                            },
+    #                                      },
+    #                             }
+
     def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
 
         if o_bragg:
@@ -439,12 +457,9 @@ class Interface(QMainWindow):
         fitting_input_dictionary['x_axis'] = x_axis
 
         dict_regions = self.get_all_russian_doll_region_full_infos()
+        fitting_input_dictionary['rois'] = dict_regions
 
-        import pprint
-        pprint.pprint(dict_regions)
-
-
-
+        self.fitting_input_dictionary = fitting_input_dictionary
 
     def update_fitting_plot(self):
         pass
@@ -685,12 +700,14 @@ class Interface(QMainWindow):
                                                  filter="ASCII (*.txt)")
 
         if ascii_file:
-            result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=ascii_file)
+            result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
+            self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
 
+    def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
+        self.fitting_input_dictionary = {}
 
-
-
-
+        import pprint
+        pprint.pprint(result_of_import)
 
     def cancel_clicked(self):
         self.close()
