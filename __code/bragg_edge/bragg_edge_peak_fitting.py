@@ -710,6 +710,7 @@ class Interface(QMainWindow):
             self.ui.statusbar.setStyleSheet("color: green")
 
             self.reset_all_fitting_table()
+            self.ui.working_folder_value.setText(self.working_dir)
 
     def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
         self.fitting_input_dictionary = {}
@@ -742,23 +743,36 @@ class Interface(QMainWindow):
             self.ui.working_folder_value.setText(self.working_dir)
 
     def reset_all_fitting_table(self):
-        self.clear_table(is_all=True)
+        # self.clear_table(is_all=True)
         self.reset_high_lambda_table()
         self.reset_low_lambda_table()
         self.reset_bragg_peak_table()
 
     def reset_high_lambda_table(self):
+        self.clear_table(table_name='high_lambda')
+        self.fill_table_with_minimum_contain(table_ui=self.ui.high_lambda_tableWidget)
+
+    def reset_low_lambda_table(self):
+        self.clear_table(table_name='low_lambda')
+        self.fill_table_with_minimum_contain(table_ui=self.ui.low_lambda_tableWidget)
+
+    def reset_bragg_peak_table(self):
+        self.clear_table(table_name='bragg_edge')
+        self.fill_table_with_minimum_contain(table_ui=self.ui.bragg_edge_tableWidget)
+
+    def fill_table_with_minimum_contain(self, table_ui=None):
         fitting_input_dictionary = self.fitting_input_dictionary
         rois = fitting_input_dictionary['rois']
 
-        o_table = TableHandler(table_ui=self.ui.high_lambda_tableWidget)
+        o_table = TableHandler(table_ui=table_ui)
+        nbr_column = o_table.table_ui.columnCount()
+        other_column_name = ["N/A" for _ in np.arange(nbr_column)]
         for _row, _roi in enumerate(rois.keys()):
             _roi_key = rois[_roi]
-            col1_name = "{};{};{};{}".format(_roi_key['x0'], _roi_key['y0'],
+            list_col_name = "{};{};{};{}".format(_roi_key['x0'], _roi_key['y0'],
                                              _roi_key['width'], _roi_key['height'])
-            col2_name = "N/A"
-
-            o_table.insert_row(_row, col1_name, col2_name)
+            col_name = [list_col_name] + other_column_name
+            o_table.insert_row(_row, col_name)
 
     def clear_table(self, table_name='high_lambda', is_all=False):
         """remove all the rows of the table name specified, or all if is_all is True"""
@@ -771,12 +785,6 @@ class Interface(QMainWindow):
         else:
             o_table = TableHandler(table_ui=table_ui[table_name])
             o_table.remove_all_rows()
-
-    def reset_low_lambda_table(self):
-        pass
-
-    def reset_bragg_peak_table(self):
-        pass
 
     def cancel_clicked(self):
         self.close()

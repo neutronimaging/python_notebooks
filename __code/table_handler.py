@@ -18,13 +18,12 @@ class TableHandler:
 		for _col, _size in enumerate(column_sizes):
 			self.table_ui.setColumnWidth(_col, _size)
 
-	def insert_row(self, row=0, *args):
+	def insert_row(self, row=0, list_col_name=None):
 		"""row is the row number
 		*wargs are the contain of each column
 		"""
 		self.table_ui.insertRow(row)
-
-		for column, _text in enumerate(args):
+		for column, _text in enumerate(list_col_name):
 			_item = QtGui.QTableWidgetItem(_text)
 			self.table_ui.setItem(row, column, _item)
 

@@ -661,7 +661,17 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="high_lambda_tableWidget"/>
+                  <widget class="QTableWidget" name="high_lambda_tableWidget">
+                   <property name="alternatingRowColors">
+                    <bool>true</bool>
+                   </property>
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::SingleSelection</enum>
+                   </property>
+                   <property name="selectionBehavior">
+                    <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -709,7 +719,17 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="low_lambda_tableWidget"/>
+                  <widget class="QTableWidget" name="low_lambda_tableWidget">
+                   <property name="alternatingRowColors">
+                    <bool>true</bool>
+                   </property>
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::SingleSelection</enum>
+                   </property>
+                   <property name="selectionBehavior">
+                    <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -757,7 +777,17 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="bragg_edge_tableWidget"/>
+                  <widget class="QTableWidget" name="bragg_edge_tableWidget">
+                   <property name="alternatingRowColors">
+                    <bool>true</bool>
+                   </property>
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::SingleSelection</enum>
+                   </property>
+                   <property name="selectionBehavior">
+                    <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -916,7 +946,7 @@
     <string>Export profiles of all shrinkable ROIs of peak selected</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+E</string>
+    <string/>
    </property>
   </action>
  </widget>
