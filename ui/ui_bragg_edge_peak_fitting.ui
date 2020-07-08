@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -661,7 +661,7 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="tableWidget_2"/>
+                  <widget class="QTableWidget" name="high_lambda_tableWidget"/>
                  </item>
                 </layout>
                </widget>
@@ -670,8 +670,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>530</width>
-                  <height>145</height>
+                  <width>677</width>
+                  <height>479</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -709,7 +709,7 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="tableWidget_3"/>
+                  <widget class="QTableWidget" name="low_lambda_tableWidget"/>
                  </item>
                 </layout>
                </widget>
@@ -718,8 +718,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>531</width>
-                  <height>145</height>
+                  <width>677</width>
+                  <height>479</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -757,7 +757,7 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="tableWidget_4"/>
+                  <widget class="QTableWidget" name="bragg_edge_tableWidget"/>
                  </item>
                 </layout>
                </widget>
