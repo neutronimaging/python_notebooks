@@ -711,7 +711,7 @@ class Interface(QMainWindow):
         self.fitting_input_dictionary = {}
 
         metadata = result_of_import['metadata']
-        base_folder = metadata['base_folder']
+        self.working_dir = metadata['base_folder']
         columns_roi = metadata['columns']
 
         data = result_of_import['data']
@@ -732,6 +732,10 @@ class Interface(QMainWindow):
                             'tof': (tof_array, self.xaxis_label('tof'))}
         self.fitting_input_dictionary = {'xaxis': xaxis_dictionary,
                                          'rois': rois_dictionary}
+
+    def switching_master_tab_clicked(self, tab_index):
+        if tab_index == 1:
+            self.ui.working_folder_value.setText(self.working_dir)
 
     def cancel_clicked(self):
         self.close()

@@ -536,7 +536,70 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetFixedSize</enum>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_13">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>90</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>90</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Working with: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="working_folder_value">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QSplitter" name="splitter_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -560,7 +623,7 @@
                   <x>0</x>
                   <y>0</y>
                   <width>677</width>
-                  <height>521</height>
+                  <height>479</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -838,10 +901,16 @@
    <property name="text">
     <string>Import ...</string>
    </property>
+   <property name="toolTip">
+    <string>Import all profiles of shrinkable ROIs to fit</string>
+   </property>
   </action>
   <action name="actionExport">
    <property name="text">
     <string>Export ...</string>
+   </property>
+   <property name="toolTip">
+    <string>Export profiles of all shrinkable ROIs of peak selected</string>
    </property>
   </action>
  </widget>
@@ -1119,6 +1188,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>switching_master_tab_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>672</x>
+     <y>400</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1133,5 +1218,6 @@
   <slot>profile_of_bin_size_slider_changed()</slot>
   <slot>export_all_profiles_button_clicked()</slot>
   <slot>import_all_profiles_button_clicked()</slot>
+  <slot>switching_master_tab_clicked()</slot>
  </slots>
 </ui>
