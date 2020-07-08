@@ -6,7 +6,8 @@ import numpy as np
 from IPython.display import display
 import pyqtgraph as pg
 from qtpy.QtWidgets import QMainWindow, QFileDialog
-from qtpy import QtGui, QtCore
+from qtpy import QtGui
+from collections import OrderedDict
 
 from neutronbraggedge.experiment_handler import *
 
@@ -703,11 +704,34 @@ class Interface(QMainWindow):
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
             self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
 
+            self.ui.statusbar.showMessage("{} has been imported!".format(ascii_file), 10000)  # 10s
+            self.ui.statusbar.setStyleSheet("color: green")
+
     def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
         self.fitting_input_dictionary = {}
 
-        import pprint
-        pprint.pprint(result_of_import)
+        metadata = result_of_import['metadata']
+        base_folder = metadata['base_folder']
+        columns_roi = metadata['columns']
+
+        data = result_of_import['data']
+        tof_array = np.array(data['tof'])
+        index_array = np.array(data['index'])
+        lambda_array = np.array(data['lambda'])
+        rois_dictionary = OrderedDict()
+        for col in np.arange(3, len(columns_roi)+3):
+            str_col = str(col)
+            rois_dictionary[str_col] = {'profile': np.array(data[str_col]),
+                                        'x0': columns_roi[str_col]['x0'],
+                                        'y0': columns_roi[str_col]['y0'],
+                                        'width': columns_roi[str_col]['width'],
+                                        'height': columns_roi[str_col]['height'],
+                                       }
+        xaxis_dictionary = {'index': (index_array, self.xaxis_label['index']),
+                            'lambda': (lambda_array, self.xaxis_label['lambda']),
+                            'tof': (tof_array, self.xaxis_label('tof'))}
+        self.fitting_input_dictionary = {'xaxis': xaxis_dictionary,
+                                         'rois': rois_dictionary}
 
     def cancel_clicked(self):
         self.close()
