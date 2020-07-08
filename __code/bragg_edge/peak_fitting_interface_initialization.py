@@ -2,17 +2,9 @@ import numpy as np
 
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 from qtpy import QtGui
-
-# try:
-# 	from PyQt4.QtGui import QFileDialog
-# 	from PyQt4 import QtCore, QtGui
-# 	from PyQt4.QtGui import QMainWindow
-# except ImportError:
-# 	from PyQt5.QtWidgets import QFileDialog
-# 	from PyQt5 import QtCore, QtGui
-# 	from PyQt5.QtWidgets import QApplication, QMainWindow
 import pyqtgraph as pg
 
+from __code.table_handler import TableHandler
 
 
 class Initialization:
@@ -31,6 +23,7 @@ class Initialization:
 
 		self.statusbar()
 		self.pyqtgraph_fitting()
+		self.fitting_table()
 
 	def save_image_size(self):
 		_image = self.parent.get_live_image()
@@ -66,6 +59,35 @@ class Initialization:
 		fitting_layout = QVBoxLayout()
 		fitting_layout.addWidget(self.parent.ui.fitting)
 		self.parent.ui.fitting_widget.setLayout(fitting_layout)
+
+	def fitting_table(self):
+		## Kropff
+		# high lambda
+		column_names = ['x0; y0; width; height', 'param1', 'param2', 'error1', 'error2']
+		column_sizes = [150, 100, 100, 100, 100]
+		o_high = TableHandler(table_ui=self.parent.ui.high_lambda_tableWidget)
+		for _col_index, _col_name in enumerate(column_names):
+			o_high.insert_column(_col_index)
+		o_high.set_column_names(column_names=column_names)
+		o_high.set_column_sizes(column_sizes=column_sizes)
+
+		# low lambda
+		column_names = ['x0; y0; width; height', 'param1', 'error1']
+		column_sizes = [150, 100, 100]
+		o_low = TableHandler(table_ui=self.parent.ui.low_lambda_tableWidget)
+		for _col_index, _col_name in enumerate(column_names):
+			o_low.insert_column(_col_index)
+		o_low.set_column_names(column_names=column_names)
+		o_low.set_column_sizes(column_sizes=column_sizes)
+
+		# bragg edge
+		column_names = ['x0; y0; width; height', 'param1', 'error1']
+		column_sizes = [150, 100, 100]
+		o_bragg = TableHandler(table_ui=self.parent.ui.bragg_edge_tableWidget)
+		for _col_index, _col_name in enumerate(column_names):
+			o_bragg.insert_column(_col_index)
+		o_bragg.set_column_names(column_names=column_names)
+		o_bragg.set_column_sizes(column_sizes=column_sizes)
 
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])

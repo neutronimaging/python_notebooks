@@ -904,6 +904,9 @@
    <property name="toolTip">
     <string>Import all profiles of shrinkable ROIs to fit</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
   </action>
   <action name="actionExport">
    <property name="text">
@@ -911,6 +914,9 @@
    </property>
    <property name="toolTip">
     <string>Export profiles of all shrinkable ROIs of peak selected</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>

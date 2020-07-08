@@ -754,7 +754,6 @@ class Interface(QMainWindow):
         o_table = TableHandler(table_ui=self.ui.high_lambda_tableWidget)
         for _row, _roi in enumerate(rois.keys()):
             _roi_key = rois[_roi]
-            print(f"for row {_row} _roi is: {_roi_key}")
             col1_name = "{};{};{};{}".format(_roi_key['x0'], _roi_key['y0'],
                                              _roi_key['width'], _roi_key['height'])
             col2_name = "N/A"
