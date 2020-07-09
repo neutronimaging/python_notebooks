@@ -750,6 +750,9 @@ class Interface(QMainWindow):
         # self.bragg_edge_range_ui.setZValue(-10)
         # self.ui.profile.addItem(self.bragg_edge_range_ui)
 
+    def high_lambda_table_clicked(self):
+        self.update_fitting_plot()
+
 
     def update_fitting_plot(self):
         self.ui.fitting.clear()

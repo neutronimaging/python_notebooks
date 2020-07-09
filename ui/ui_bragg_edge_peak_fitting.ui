@@ -1240,6 +1240,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>high_lambda_tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>high_lambda_table_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>440</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1255,5 +1271,6 @@
   <slot>export_all_profiles_button_clicked()</slot>
   <slot>import_all_profiles_button_clicked()</slot>
   <slot>switching_master_tab_clicked()</slot>
+  <slot>high_lambda_table_clicked()</slot>
  </slots>
 </ui>
