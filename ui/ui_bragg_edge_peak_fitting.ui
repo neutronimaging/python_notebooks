@@ -613,11 +613,11 @@
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout_10">
              <item>
-              <widget class="QToolBox" name="toolBox">
+              <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
                 <number>0</number>
                </property>
-               <widget class="QWidget" name="page">
+               <widget class="QWidget" name="high_lambda_page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
@@ -675,7 +675,7 @@
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="page_2">
+               <widget class="QWidget" name="low_lambda_page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
@@ -733,7 +733,7 @@
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="page_3">
+               <widget class="QWidget" name="bragg_peak_page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>

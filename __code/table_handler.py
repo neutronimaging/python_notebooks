@@ -11,6 +11,14 @@ class TableHandler:
 		for _ in np.arange(nbr_row):
 			self.table_ui.removeRow(0)
 
+	def get_row_selected(self):
+		list_selection = self.table_ui.selectedRanges()
+		first_selection = list_selection[0]
+		return first_selection.topRow()
+
+	def select_row(self, row=0):
+		self.table_ui.selectRow(row)
+
 	def set_column_names(self, column_names=None):
 		self.table_ui.setHorizontalHeaderLabels(column_names)
 

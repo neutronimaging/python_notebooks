@@ -215,6 +215,27 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_slider.setValue(max_value)
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
 
+    def get_x_axis_checked(self):
+        o_gui = GuiUtility(parent=self)
+        tab_selected = o_gui.get_tab_selected().lower()
+
+        x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
+                                          'tof': self.ui.selection_tof_radiobutton,
+                                          'lambda': self.ui.selection_lambda_radiobutton},
+                            'fitting': {'index': self.ui.fitting_index_radiobutton,
+                                        'tof': self.ui.fitting_tof_radiobutton,
+                                        'lambda': self.ui.fitting_lambda_radiobutton},
+                            }
+
+        list_ui = x_axis_choice_ui[tab_selected]
+
+        if list_ui['index'].isChecked():
+            return 'index'
+        elif list_ui['tof'].isChecked():
+            return 'tof'
+        else:
+            return 'lambda'
+
     def get_x_axis(self):
         o_gui = GuiUtility(parent=self)
         tab_selected = o_gui.get_tab_selected().lower()
@@ -421,10 +442,6 @@ class Interface(QMainWindow):
     def selection_axis_changed(self):
         self.update_selection_profile_plot()
 
-    def fitting_axis_changed(self):
-        pass
-        # self.update_selection_profile_plot()
-
     def update_dict_profile_to_fit(self):
         [left_range, right_range] = self.bragg_edge_range
 
@@ -463,33 +480,6 @@ class Interface(QMainWindow):
         self.fitting_input_dictionary = fitting_input_dictionary
 
         self.reset_all_fitting_table()
-
-    def update_fitting_plot(self):
-        pass
-
-        # x_axis, x_axis_label = self.get_fitting_profile_xaxis()
-        #
-        # [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-        # profile = self.get_profile_of_roi(x0=x0, y0=y0,
-        #                                   x1=x1, y1=y1)
-        # x_axis, y_axis = Interface.check_size(x_axis=x_axis,
-        #                                       y_axis=profile)
-        # self.ui.fitting.clear()
-        # self.ui.fitting.plot(x_axis, y_axis)
-        # self.ui.fitting.setLabel("bottom", x_axis_label)
-        # self.ui.fitting.setLabel("left", 'Mean counts')
-
-        # bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
-        #                     x_axis[self.bragg_edge_range[1]]]
-        #
-        # self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
-        #                                                orientation=None,
-        #                                                brush=None,
-        #                                                movable=True,
-        #                                                bounds=None)
-        # self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
-        # self.bragg_edge_range_ui.setZValue(-10)
-        # self.ui.profile.addItem(self.bragg_edge_range_ui)
 
     def get_requested_xaxis(self, xaxis_label='index'):
         if xaxis_label == 'index':
@@ -702,7 +692,7 @@ class Interface(QMainWindow):
                                                  directory=working_dir,
                                                  filter="ASCII (*.txt)")
 
-        if ascii_file:
+        if ascii_file[0]:
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
             self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
 
@@ -711,6 +701,77 @@ class Interface(QMainWindow):
 
             self.reset_all_fitting_table()
             self.ui.working_folder_value.setText(self.working_dir)
+            self.select_first_row_of_all_fitting_table()
+            self.update_fitting_plot()
+
+    def select_first_row_of_all_fitting_table(self):
+        self.ui.high_lambda_tableWidget.selectRow(0)
+        self.ui.low_lambda_tableWidget.selectRow(0)
+        self.ui.bragg_edge_tableWidget.selectRow(0)
+
+    def get_part_of_fitting_selected(self):
+        """high, low or bragg_peak"""
+        list_pages = ["hight", "low", "bragg_peak"]
+        list_table_ui = [self.ui.high_lambda_tableWidget,
+                         self.ui.low_lambda_tableWidget,
+                         self.ui.bragg_edge_tableWidget]
+
+        page_index = self.ui.kropff_toolBox.currentIndex()
+
+        return {'name_of_page': list_pages[page_index],
+                'table_ui': list_table_ui[page_index]}
+
+    def fitting_axis_changed(self):
+        self.update_fitting_plot()
+
+    # def update_fitting_plot(self):
+    #
+        # x_axis, x_axis_label = self.get_fitting_profile_xaxis()
+        #
+        # [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+        # profile = self.get_profile_of_roi(x0=x0, y0=y0,
+        #                                   x1=x1, y1=y1)
+        # x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+        #                                       y_axis=profile)
+        # self.ui.fitting.clear()
+        # self.ui.fitting.plot(x_axis, y_axis)
+        # self.ui.fitting.setLabel("bottom", x_axis_label)
+        # self.ui.fitting.setLabel("left", 'Mean counts')
+
+        # bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
+        #                     x_axis[self.bragg_edge_range[1]]]
+        #
+        # self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
+        #                                                orientation=None,
+        #                                                brush=None,
+        #                                                movable=True,
+        #                                                bounds=None)
+        # self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
+        # self.bragg_edge_range_ui.setZValue(-10)
+        # self.ui.profile.addItem(self.bragg_edge_range_ui)
+
+
+    def update_fitting_plot(self):
+        self.ui.fitting.clear()
+        part_of_fitting_dict = self.get_part_of_fitting_selected()
+        name_of_page = part_of_fitting_dict['name_of_page']
+        table_ui = part_of_fitting_dict['table_ui']
+
+        o_table = TableHandler(table_ui=table_ui)
+        row_selected = o_table.get_row_selected()
+
+        x_axis_selected = self.get_x_axis_checked()
+
+        selected_roi = self.fitting_input_dictionary['rois'][str(row_selected+3)]
+        xaxis_dict = self.fitting_input_dictionary['xaxis']
+
+        yaxis = selected_roi['profile']
+        xaxis, xaxis_label = xaxis_dict[x_axis_selected]
+        self.ui.fitting.setLabel("bottom", xaxis_label)
+        self.ui.fitting.setLabel("left", 'Mean counts')
+        self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
+                                                self.selection_roi_rgb[1],
+                                                self.selection_roi_rgb[2]))
 
     def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
         self.fitting_input_dictionary = {}
@@ -769,7 +830,7 @@ class Interface(QMainWindow):
         other_column_name = ["N/A" for _ in np.arange(nbr_column)]
         for _row, _roi in enumerate(rois.keys()):
             _roi_key = rois[_roi]
-            list_col_name = "{};{};{};{}".format(_roi_key['x0'], _roi_key['y0'],
+            list_col_name = "{}; {}; {}; {}".format(_roi_key['x0'], _roi_key['y0'],
                                              _roi_key['width'], _roi_key['height'])
             col_name = [list_col_name] + other_column_name
             o_table.insert_row(_row, col_name)
