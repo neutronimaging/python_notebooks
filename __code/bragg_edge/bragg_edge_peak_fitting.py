@@ -485,7 +485,11 @@ class Interface(QMainWindow):
             return self.get_requested_xaxis(xaxis_label='lambda')
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
-        print("new value is: {}".format(new_value))
+        dict_rois_imported = self.dict_rois_imported
+        new_width = dict_rois_imported[new_value]['width']
+        new_height = dict_rois_imported[new_value]['height']
+        self.ui.profile_of_bin_size_height.setText(new_height)
+        self.ui.profile_of_bin_size_width.setText(new_width)
 
     def profile_of_bin_size_slider_changed(self, new_value):
         self.update_dict_profile_to_fit()
@@ -838,27 +842,32 @@ class Interface(QMainWindow):
         self.ui.profile.clear()
         x_axis_selected = self.get_x_axis_checked()
         x_axis = fitting_input_dictionary['xaxis'][x_axis_selected]
-        y_axis = fitting_input_dictionary['rois']['3']['profile']
+
+        roi_selected = self.ui.profile_of_bin_size_slider.value()
+        y_axis = self.fitting_input_dictionary['rois'][str(roi_selected)]['profile']
+
+        self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
+                                                  self.selection_roi_rgb[1],
+                                                  self.selection_roi_rgb[2]))
+
 
     def update_profile_of_bin_slider_widget(self):
         self.change_profile_of_bin_slider_signal()
         fitting_input_dictionary = self.fitting_input_dictionary
         dict_rois_imported = OrderedDict()
+        nbr_key = len(fitting_input_dictionary['rois'].keys())
         for _index, _key in enumerate(fitting_input_dictionary['rois'].keys()):
-            dict_rois_imported [_index] = {'width': fitting_input_dictionary['rois'][_key]['width'],
-                                           'height': fitting_input_dictionary['rois'][_key]['height']}
+            dict_rois_imported[nbr_key - 1 - _index] = {'width': fitting_input_dictionary['rois'][_key]['width'],
+                                                        'height': fitting_input_dictionary['rois'][_key]['height']}
         self.dict_rois_imported = dict_rois_imported
-        self.ui.profile_of_bin_size_slider.setMininum(0)
+        self.ui.profile_of_bin_size_slider.setMinimum(0)
         self.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
         self.ui.profile_of_bin_size_slider.setValue(len(dict_rois_imported)-1)
         self.update_profile_of_bin_slider_labels()
 
     def update_profile_of_bin_slider_labels(self):
         slider_value = self.ui.profile_of_bin_size_slider.value()
-        _dict_selected = self.dict_rois_imported[slider_value]
-        self.ui.profile_of_bin_size_width = _dict_selected['width']
-        self.ui.profile_of_bin_size_height = _dict_selected['height']
-
+        self.profile_of_bin_size_slider_changed_after_import(slider_value)
 
     def change_profile_of_bin_slider_signal(self):
         self.ui.profile_of_bin_size_slider.sliderMoved.disconnect()
