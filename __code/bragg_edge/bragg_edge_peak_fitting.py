@@ -771,10 +771,11 @@ class Interface(QMainWindow):
 
         metadata = result_of_import['metadata']
         self.working_dir = metadata['base_folder']
+        self.bragg_edge_range = metadata['bragg_edge_range']
+
         columns_roi = metadata['columns']
 
         data = result_of_import['data']
-
         tof_array = np.array(data['tof'])
         index_array = np.array(data['index'])
         lambda_array = np.array(data['lambda'])
@@ -844,23 +845,12 @@ class Interface(QMainWindow):
     def update_selection_plot(self):
         fitting_input_dictionary = self.fitting_input_dictionary
 
-        import pprint
-        pprint.pprint(fitting_input_dictionary['rois'].keys())
-
         self.ui.profile.clear()
         x_axis_selected = self.get_x_axis_checked()
         x_axis, x_axis_label = fitting_input_dictionary['xaxis'][x_axis_selected]
 
         max_value = self.ui.profile_of_bin_size_slider.maximum()
         roi_selected = max_value - self.ui.profile_of_bin_size_slider.value()
-
-        print("in update_selection_plot")
-        print(f"roi_selected: {roi_selected}")
-        print(f"max_value: {max_value}")
-        print(f"min_value: {self.ui.profile_of_bin_size_slider.minimum()}")
-        print(f"slider value: {self.ui.profile_of_bin_size_slider.value()}")
-        print(f"slider step: {self.ui.profile_of_bin_size_slider.singleStep()}")
-        print(f"---------")
 
         y_axis = self.fitting_input_dictionary['rois'][str(roi_selected)]['profile']
 
@@ -895,8 +885,24 @@ class Interface(QMainWindow):
         self.profile_of_bin_size_slider_changed_after_import(slider_value)
 
     def change_profile_of_bin_slider_signal(self):
-        self.ui.profile_of_bin_size_slider.sliderMoved.disconnect()
-        self.ui.profile_of_bin_size_slider.sliderMoved.connect(self.profile_of_bin_size_slider_changed_after_import)
+        self.ui.profile_of_bin_size_slider.valueChanged.disconnect()
+        self.ui.profile_of_bin_size_slider.valueChanged.connect(self.profile_of_bin_size_slider_changed_after_import)
+
+    def update_vertical_line_in_profile_plot(self):
+        x_axis, x_axis_label = self.get_x_axis()
+
+        bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
+                            x_axis[self.bragg_edge_range[1]]]
+
+        self.ui.profile.removeItem(self.bragg_edge_range_ui)
+        self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
+                                                       orientation=None,
+                                                       brush=None,
+                                                       movable=True,
+                                                       bounds=None)
+        self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
+        self.bragg_edge_range_ui.setZValue(-10)
+        self.ui.profile.addItem(self.bragg_edge_range_ui)
 
     # event handler
     def import_button_clicked(self):
@@ -917,6 +923,7 @@ class Interface(QMainWindow):
             self.disable_left_part_of_selection_tab()
             self.update_profile_of_bin_slider_widget()
             self.update_selection_plot()
+            self.update_vertical_line_in_profile_plot()
 
             # self.reset_all_fitting_table()
             # self.ui.working_folder_value.setText(self.working_dir)
