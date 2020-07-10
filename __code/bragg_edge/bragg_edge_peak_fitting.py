@@ -81,6 +81,10 @@ class Interface(QMainWindow):
     #                                            'profile': [],
     #                                            },
     #                                      },
+    #                             'fit_infos': {'high_lambda': {},
+    #                                           'low_lambda': {},
+    #                                           'bragg_peak': {},
+    #                                           },
     #                             }
 
     ## list of width and height after importing a file (will be used in the profile slider (top right))
@@ -95,12 +99,12 @@ class Interface(QMainWindow):
             self.o_norm = o_bragg.o_norm
             self.o_bragg = o_bragg
             show_selection_tab = True
-            default_tab = 0
+            # default_tab = 0
             enabled_export_button = True
         else:
             self.working_dir = working_dir
             show_selection_tab = False
-            default_tab = 1
+            # default_tab = 1
             enabled_export_button = False
 
         if spectra_file:
@@ -125,9 +129,10 @@ class Interface(QMainWindow):
             self.roi_moved()
         else:
             o_init = Initialization(parent=self, tab='2')
+            self.disable_left_part_of_selection_tab()
 
-        # self.ui.tabWidget.setTabEnabled(0, show_selection_tab)
-        self.ui.tabWidget.setCurrentIndex(default_tab)
+        self.ui.tabWidget.setTabEnabled(1, False)
+        # self.ui.tabWidget.setCurrentIndex(default_tab)
         self.ui.actionExport.setEnabled(enabled_export_button)
 
     def load_time_spectra(self):
@@ -478,6 +483,7 @@ class Interface(QMainWindow):
         self.fitting_input_dictionary = fitting_input_dictionary
 
         self.reset_all_fitting_table()
+        self.ui.tabWidget.setTabEnabled(1, True)
 
     def get_requested_xaxis(self, xaxis_label='index'):
         if xaxis_label == 'index':
@@ -502,6 +508,7 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_height.setText(new_height)
         self.ui.profile_of_bin_size_width.setText(new_width)
         self.update_selection_plot()
+        self.update_vertical_line_in_profile_plot()
 
     def profile_of_bin_size_slider_changed(self, new_value):
         try:
@@ -688,14 +695,17 @@ class Interface(QMainWindow):
         return data, metadata
 
     def get_all_russian_doll_region_full_infos(self):
-        # collect initial selection size (x0, y0, width, height)
-        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-        width = np.int(x1 - x0)
-        height = np.int(y1 - y0)
-        # create profile for all the fitting region inside that first box
-        o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
-        dict_regions = o_regions.get_all_russian_doll_regions()
-        self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
+        if self.is_file_imported:
+            dict_regions = self.fitting_input_dictionary['rois']
+        else:
+            # collect initial selection size (x0, y0, width, height)
+            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+            width = np.int(x1 - x0)
+            height = np.int(y1 - y0)
+            # create profile for all the fitting region inside that first box
+            o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
+            dict_regions = o_regions.get_all_russian_doll_regions()
+            self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
         return dict_regions
 
 
@@ -938,10 +948,17 @@ class Interface(QMainWindow):
             self.update_selection_plot()
             self.update_vertical_line_in_profile_plot()
 
+            self.ui.tabWidget.setTabEnabled(1, self.is_fit_infos_loaded())
+
             # self.reset_all_fitting_table()
             # self.ui.working_folder_value.setText(self.working_dir)
             # self.select_first_row_of_all_fitting_table()
             # self.update_fitting_plot()
+
+    def is_fit_infos_loaded(self):
+        if 'fit_infos' in self.fitting_input_dictionary.keys():
+            return True
+        return False
 
     def disable_left_part_of_selection_tab(self):
         self.ui.groupBox.setEnabled(False)

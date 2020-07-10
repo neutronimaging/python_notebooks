@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="high_lambda_page">
                 <property name="geometry">
