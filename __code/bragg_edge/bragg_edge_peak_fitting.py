@@ -62,6 +62,8 @@ class Interface(QMainWindow):
                                },
                     }
 
+    is_file_imported = False # True only when the import button has been used
+
     # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
     #                                       'lambda': ([], 'lambda (Angstroms)'),
     #                                       'tof': ([], 'TOF (micros)')},
@@ -299,45 +301,50 @@ class Interface(QMainWindow):
 
     def update_selection_profile_plot(self):
 
-        x_axis, x_axis_label = self.get_x_axis()
-        self.ui.profile.clear()
+        if self.is_file_imported:
+            self.update_selection_plot()
+            self.update_vertical_line_in_profile_plot()
 
-        # large selection region
-        [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-        profile = self.get_profile_of_roi(x0, y0, x1, y1)
-        x_axis, y_axis = Interface.check_size(x_axis=x_axis,
-                                              y_axis=profile)
-        self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
-                                                  self.selection_roi_rgb[1],
-                                                  self.selection_roi_rgb[2]))
+        else:
+            x_axis, x_axis_label = self.get_x_axis()
+            self.ui.profile.clear()
 
-        # shrinkable region
-        shrinking_roi = self.get_coordinates_of_new_inside_selection_box()
-        x0 = shrinking_roi['x0']
-        y0 = shrinking_roi['y0']
-        x1 = shrinking_roi['x1']
-        y1 = shrinking_roi['y1']
-        profile = self.get_profile_of_roi(x0, y0, x1, y1)
-        x_axis, y_axis = Interface.check_size(x_axis=x_axis,
-                                              y_axis=profile)
-        self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
-                                                  self.shrinking_roi_rgb[1],
-                                                  self.shrinking_roi_rgb[2]))
-        self.ui.profile.setLabel("bottom", x_axis_label)
-        self.ui.profile.setLabel("left", 'Mean counts')
+            # large selection region
+            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+            profile = self.get_profile_of_roi(x0, y0, x1, y1)
+            x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+                                                  y_axis=profile)
+            self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
+                                                      self.selection_roi_rgb[1],
+                                                      self.selection_roi_rgb[2]))
 
-        # vertical line showing peak to fit
-        bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
-                            x_axis[self.bragg_edge_range[1]]]
+            # shrinkable region
+            shrinking_roi = self.get_coordinates_of_new_inside_selection_box()
+            x0 = shrinking_roi['x0']
+            y0 = shrinking_roi['y0']
+            x1 = shrinking_roi['x1']
+            y1 = shrinking_roi['y1']
+            profile = self.get_profile_of_roi(x0, y0, x1, y1)
+            x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+                                                  y_axis=profile)
+            self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
+                                                      self.shrinking_roi_rgb[1],
+                                                      self.shrinking_roi_rgb[2]))
+            self.ui.profile.setLabel("bottom", x_axis_label)
+            self.ui.profile.setLabel("left", 'Mean counts')
 
-        self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
-                                                       orientation=None,
-                                                       brush=None,
-                                                       movable=True,
-                                                       bounds=None)
-        self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
-        self.bragg_edge_range_ui.setZValue(-10)
-        self.ui.profile.addItem(self.bragg_edge_range_ui)
+            # vertical line showing peak to fit
+            bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
+                                x_axis[self.bragg_edge_range[1]]]
+
+            self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
+                                                           orientation=None,
+                                                           brush=None,
+                                                           movable=True,
+                                                           bounds=None)
+            self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
+            self.bragg_edge_range_ui.setZValue(-10)
+            self.ui.profile.addItem(self.bragg_edge_range_ui)
 
     def bragg_edge_range_changed(self):
         [left_range, right_range] = list(self.bragg_edge_range_ui.getRegion())
@@ -913,6 +920,7 @@ class Interface(QMainWindow):
                                                  filter="ASCII (*.txt)")
 
         if ascii_file[0]:
+            self.is_file_imported = True
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
             self.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
             self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
