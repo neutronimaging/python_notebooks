@@ -490,31 +490,35 @@ class Interface(QMainWindow):
         new_height = dict_rois_imported[new_value]['height']
         self.ui.profile_of_bin_size_height.setText(new_height)
         self.ui.profile_of_bin_size_width.setText(new_width)
+        self.update_selection_plot()
 
     def profile_of_bin_size_slider_changed(self, new_value):
-        self.update_dict_profile_to_fit()
-        if self.ui.square_roi_radiobutton.isChecked():
-            new_width = new_value
-            new_height = new_value
-        else:
-            initial_roi_width = np.int(str(self.ui.roi_width.text()))
-            initial_roi_height = np.int(str(self.ui.roi_height.text()))
-            if initial_roi_width == initial_roi_height:
+        try:
+            self.update_dict_profile_to_fit()
+            if self.ui.square_roi_radiobutton.isChecked():
                 new_width = new_value
                 new_height = new_value
-            elif initial_roi_width < initial_roi_height:
-                new_width = new_value
-                delta = initial_roi_width - new_width
-                new_height = initial_roi_height - delta
             else:
-                new_height = new_value
-                delta = initial_roi_height - new_height
-                new_width = initial_roi_width - delta
+                initial_roi_width = np.int(str(self.ui.roi_width.text()))
+                initial_roi_height = np.int(str(self.ui.roi_height.text()))
+                if initial_roi_width == initial_roi_height:
+                    new_width = new_value
+                    new_height = new_value
+                elif initial_roi_width < initial_roi_height:
+                    new_width = new_value
+                    delta = initial_roi_width - new_width
+                    new_height = initial_roi_height - delta
+                else:
+                    new_height = new_value
+                    delta = initial_roi_height - new_height
+                    new_width = initial_roi_width - delta
 
-        self.ui.profile_of_bin_size_width.setText(str(new_width))
-        self.ui.profile_of_bin_size_height.setText(str(new_height))
-        self.update_roi_defined_by_profile_of_bin_size_slider()
-        self.update_selection_profile_plot()
+            self.ui.profile_of_bin_size_width.setText(str(new_width))
+            self.ui.profile_of_bin_size_height.setText(str(new_height))
+            self.update_roi_defined_by_profile_of_bin_size_slider()
+            self.update_selection_profile_plot()
+        except AttributeError:
+            pass
 
     def update_roi_defined_by_profile_of_bin_size_slider(self):
         coordinates_new_selection = self.get_coordinates_of_new_inside_selection_box()
@@ -770,18 +774,19 @@ class Interface(QMainWindow):
         columns_roi = metadata['columns']
 
         data = result_of_import['data']
+
         tof_array = np.array(data['tof'])
         index_array = np.array(data['index'])
         lambda_array = np.array(data['lambda'])
         rois_dictionary = OrderedDict()
         for col in np.arange(3, len(columns_roi)+3):
             str_col = str(col)
-            rois_dictionary[str_col] = {'profile': np.array(data[str_col]),
-                                        'x0': columns_roi[str_col]['x0'],
-                                        'y0': columns_roi[str_col]['y0'],
-                                        'width': columns_roi[str_col]['width'],
-                                        'height': columns_roi[str_col]['height'],
-                                       }
+            rois_dictionary[str(col-3)] = {'profile': np.array(data[str_col]),
+                                           'x0': columns_roi[str_col]['x0'],
+                                           'y0': columns_roi[str_col]['y0'],
+                                           'width': columns_roi[str_col]['width'],
+                                           'height': columns_roi[str_col]['height'],
+                                           }
         xaxis_dictionary = {'index': (index_array, self.xaxis_label['index']),
                             'lambda': (lambda_array, self.xaxis_label['lambda']),
                             'tof': (tof_array, self.xaxis_label['tof'])}
@@ -839,17 +844,35 @@ class Interface(QMainWindow):
     def update_selection_plot(self):
         fitting_input_dictionary = self.fitting_input_dictionary
 
+        import pprint
+        pprint.pprint(fitting_input_dictionary['rois'].keys())
+
         self.ui.profile.clear()
         x_axis_selected = self.get_x_axis_checked()
-        x_axis = fitting_input_dictionary['xaxis'][x_axis_selected]
+        x_axis, x_axis_label = fitting_input_dictionary['xaxis'][x_axis_selected]
 
-        roi_selected = self.ui.profile_of_bin_size_slider.value()
+        max_value = self.ui.profile_of_bin_size_slider.maximum()
+        roi_selected = max_value - self.ui.profile_of_bin_size_slider.value()
+
+        print("in update_selection_plot")
+        print(f"roi_selected: {roi_selected}")
+        print(f"max_value: {max_value}")
+        print(f"min_value: {self.ui.profile_of_bin_size_slider.minimum()}")
+        print(f"slider value: {self.ui.profile_of_bin_size_slider.value()}")
+        print(f"slider step: {self.ui.profile_of_bin_size_slider.singleStep()}")
+        print(f"---------")
+
         y_axis = self.fitting_input_dictionary['rois'][str(roi_selected)]['profile']
 
+        self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
+                                                  self.shrinking_roi_rgb[1],
+                                                  self.shrinking_roi_rgb[2]))
+
+        # full region
+        y_axis = self.fitting_input_dictionary['rois'][str(0)]['profile']
         self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
                                                   self.selection_roi_rgb[1],
                                                   self.selection_roi_rgb[2]))
-
 
     def update_profile_of_bin_slider_widget(self):
         self.change_profile_of_bin_slider_signal()
@@ -860,8 +883,10 @@ class Interface(QMainWindow):
             dict_rois_imported[nbr_key - 1 - _index] = {'width': fitting_input_dictionary['rois'][_key]['width'],
                                                         'height': fitting_input_dictionary['rois'][_key]['height']}
         self.dict_rois_imported = dict_rois_imported
-        self.ui.profile_of_bin_size_slider.setMinimum(0)
-        self.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
+        self.ui.profile_of_bin_size_slider.setRange(0, len(dict_rois_imported)-1)
+        # self.ui.profile_of_bin_size_slider.setMinimum(0)
+        # self.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
+        self.ui.profile_of_bin_size_slider.setSingleStep(1)
         self.ui.profile_of_bin_size_slider.setValue(len(dict_rois_imported)-1)
         self.update_profile_of_bin_slider_labels()
 
@@ -890,9 +915,8 @@ class Interface(QMainWindow):
             self.ui.statusbar.setStyleSheet("color: green")
 
             self.disable_left_part_of_selection_tab()
-            self.update_selection_plot()
-
             self.update_profile_of_bin_slider_widget()
+            self.update_selection_plot()
 
             # self.reset_all_fitting_table()
             # self.ui.working_folder_value.setText(self.working_dir)

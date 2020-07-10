@@ -1191,7 +1191,7 @@
   </connection>
   <connection>
    <sender>profile_of_bin_size_slider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>profile_of_bin_size_slider_changed()</slot>
    <hints>
