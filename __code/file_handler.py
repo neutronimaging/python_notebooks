@@ -397,6 +397,16 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 metadata['base_folder'] = line.split("#base folder: ")[1].strip()
                 line_number += 1
                 continue
+            if "#fitting peak range in file index:" in line:
+                regular = r"^#fitting peak range in file index: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
+                m = re.search(regular, line.strip())
+                if m:
+                    metadata['bragg_edge_range'] = [np.int(m.group('left_index')),
+                                                    np.int(m.group('right_index'))]
+                else:
+                    metadata['bragg_edge_range'] = [None, None]
+                line_number += 1
+                continue
             if "#column " in line:
                 regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
                           r"height:(?P<height>\d+)$"

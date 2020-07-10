@@ -80,6 +80,11 @@ class Interface(QMainWindow):
     #                                      },
     #                             }
 
+    ## list of width and height after importing a file (will be used in the profile slider (top right))
+    # dict_rois_imported = {0: {'width': None, 'height': None},
+    #                       1: {'width': None, 'height': None},
+    #                       }
+
     def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
 
         if o_bragg:
@@ -357,24 +362,6 @@ class Interface(QMainWindow):
 
         return profile_value
 
-    # event handler
-    def roi_radiobuttons_changed(self):
-        if self.ui.square_roi_radiobutton.isChecked():
-            slider_visible = True
-            new_width = np.min([np.int(str(self.ui.roi_width.text())),
-                                np.int(str(self.ui.roi_height.text()))])
-            mode = 'square'
-        else:
-            slider_visible = False
-            new_width = np.int(str(self.ui.roi_width.text()))
-            self.selection_roi_slider_changed(new_width)
-            mode = 'free'
-
-        self.update_selection(new_value=new_width,
-                              mode=mode)
-
-        self.ui.roi_size_slider.setVisible(slider_visible)
-
     def reset_profile_of_bin_size_slider(self):
         max_value = np.min([np.int(str(self.ui.profile_of_bin_size_width.text())),
                             np.int(str(self.ui.profile_of_bin_size_height.text()))])
@@ -497,6 +484,9 @@ class Interface(QMainWindow):
         else:
             return self.get_requested_xaxis(xaxis_label='lambda')
 
+    def profile_of_bin_size_slider_changed_after_import(self, new_value):
+        print("new value is: {}".format(new_value))
+
     def profile_of_bin_size_slider_changed(self, new_value):
         self.update_dict_profile_to_fit()
         if self.ui.square_roi_radiobutton.isChecked():
@@ -592,8 +582,10 @@ class Interface(QMainWindow):
             current_region['profile'] = profile
 
     @staticmethod
-    def make_metadata(base_folder=None, dict_regions=None):
+    def make_metadata(base_folder=None, fitting_peak_range=None, dict_regions=None):
         metadata = ["#base folder: {}".format(base_folder)]
+        metadata.append("#fitting peak range in file index: [{}, {}]".format(fitting_peak_range[0],
+                                                                              fitting_peak_range[1]))
         for _key in dict_regions.keys():
             _entry = dict_regions[_key]
             x0 = _entry['x0']
@@ -624,7 +616,7 @@ class Interface(QMainWindow):
             data.append("{}, {}, {}, ".format(_col1, _col2, _col3) + ", ".join(list_profile_for_this_row))
         return data
 
-    def export_all_profiles_button_clicked(self):
+    def export_button_clicked(self):
 
         # bring file dialog to locate where the file will be saved
         base_folder = Path(self.o_bragg.working_dir)
@@ -662,11 +654,13 @@ class Interface(QMainWindow):
         index_axis, _ = self.get_specified_x_axis(xaxis='index')
         tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
         lambda_axis, _ = self.get_specified_x_axis('lambda')
+        fitting_peak_range = self.bragg_edge_range
 
         dict_regions = self.get_all_russian_doll_region_full_infos()
         metadata = Interface.make_metadata(base_folder=base_folder,
+                                           fitting_peak_range=fitting_peak_range,
                                            dict_regions=dict_regions)
-        metadata.append("#Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
+        metadata.append("#File Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
         data = Interface.format_data(col1=index_axis,
                                      col2=tof_axis,
                                      col3=lambda_axis,
@@ -685,24 +679,7 @@ class Interface(QMainWindow):
         self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
         return dict_regions
 
-    def import_all_profiles_button_clicked(self):
-        working_dir = str(Path(self.working_dir).parent)
-        ascii_file = QFileDialog.getOpenFileName(self,
-                                                 caption="Select ASCII file",
-                                                 directory=working_dir,
-                                                 filter="ASCII (*.txt)")
 
-        if ascii_file[0]:
-            result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
-            self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
-
-            self.ui.statusbar.showMessage("{} has been imported!".format(ascii_file), 10000)  # 10s
-            self.ui.statusbar.setStyleSheet("color: green")
-
-            self.reset_all_fitting_table()
-            self.ui.working_folder_value.setText(self.working_dir)
-            self.select_first_row_of_all_fitting_table()
-            self.update_fitting_plot()
 
     def select_first_row_of_all_fitting_table(self):
         self.ui.high_lambda_tableWidget.selectRow(0)
@@ -711,7 +688,7 @@ class Interface(QMainWindow):
 
     def get_part_of_fitting_selected(self):
         """high, low or bragg_peak"""
-        list_pages = ["hight", "low", "bragg_peak"]
+        list_pages = ["high", "low", "bragg_peak"]
         list_table_ui = [self.ui.high_lambda_tableWidget,
                          self.ui.low_lambda_tableWidget,
                          self.ui.bragg_edge_tableWidget]
@@ -753,6 +730,11 @@ class Interface(QMainWindow):
     def high_lambda_table_clicked(self):
         self.update_fitting_plot()
 
+    def low_lambda_table_clicked(self):
+        self.update_fitting_plot()
+
+    def bragg_peak_table_clicked(self):
+        self.update_fitting_plot()
 
     def update_fitting_plot(self):
         self.ui.fitting.clear()
@@ -849,6 +831,118 @@ class Interface(QMainWindow):
         else:
             o_table = TableHandler(table_ui=table_ui[table_name])
             o_table.remove_all_rows()
+
+    def update_selection_plot(self):
+        fitting_input_dictionary = self.fitting_input_dictionary
+
+        self.ui.profile.clear()
+        x_axis_selected = self.get_x_axis_checked()
+        x_axis = fitting_input_dictionary['xaxis'][x_axis_selected]
+        y_axis = fitting_input_dictionary['rois']['3']['profile']
+
+    def update_profile_of_bin_slider_widget(self):
+        self.change_profile_of_bin_slider_signal()
+        fitting_input_dictionary = self.fitting_input_dictionary
+        dict_rois_imported = OrderedDict()
+        for _index, _key in enumerate(fitting_input_dictionary['rois'].keys()):
+            dict_rois_imported [_index] = {'width': fitting_input_dictionary['rois'][_key]['width'],
+                                           'height': fitting_input_dictionary['rois'][_key]['height']}
+        self.dict_rois_imported = dict_rois_imported
+        self.ui.profile_of_bin_size_slider.setMininum(0)
+        self.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
+        self.ui.profile_of_bin_size_slider.setValue(len(dict_rois_imported)-1)
+        self.update_profile_of_bin_slider_labels()
+
+    def update_profile_of_bin_slider_labels(self):
+        slider_value = self.ui.profile_of_bin_size_slider.value()
+        _dict_selected = self.dict_rois_imported[slider_value]
+        self.ui.profile_of_bin_size_width = _dict_selected['width']
+        self.ui.profile_of_bin_size_height = _dict_selected['height']
+
+
+    def change_profile_of_bin_slider_signal(self):
+        self.ui.profile_of_bin_size_slider.sliderMoved.disconnect()
+        self.ui.profile_of_bin_size_slider.sliderMoved.connect(self.profile_of_bin_size_slider_changed_after_import)
+
+    # event handler
+    def import_button_clicked(self):
+        working_dir = str(Path(self.working_dir).parent)
+        ascii_file = QFileDialog.getOpenFileName(self,
+                                                 caption="Select ASCII file",
+                                                 directory=working_dir,
+                                                 filter="ASCII (*.txt)")
+
+        if ascii_file[0]:
+            result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
+            self.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
+            self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
+
+            self.ui.statusbar.showMessage("{} has been imported!".format(ascii_file), 10000)  # 10s
+            self.ui.statusbar.setStyleSheet("color: green")
+
+            self.disable_left_part_of_selection_tab()
+            self.update_selection_plot()
+
+            self.update_profile_of_bin_slider_widget()
+
+            # self.reset_all_fitting_table()
+            # self.ui.working_folder_value.setText(self.working_dir)
+            # self.select_first_row_of_all_fitting_table()
+            # self.update_fitting_plot()
+
+    def disable_left_part_of_selection_tab(self):
+        self.ui.groupBox.setEnabled(False)
+        self.ui.image_view.setEnabled(False)
+        self.ui.splitter.setSizes([0, 400])
+
+    def export_button_clicked(self):
+
+        # bring file dialog to locate where the file will be saved
+        base_folder = Path(self.o_bragg.working_dir)
+        directory = str(base_folder.parent)
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=directory,
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+
+        if _export_folder:
+            data, metadata = self.get_data_metadata_from_selection_tab()
+
+            # collect initial selection size (x0, y0, width, height)
+            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+            width = np.int(x1 - x0)
+            height = np.int(y1 - y0)
+
+            name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
+                                                                             export_folder=_export_folder,
+                                                                             x0=x0, y0=y0,
+                                                                             width=width,
+                                                                             height=height)
+
+            make_ascii_file(metadata=metadata,
+                            data=data,
+                            output_file_name=name_of_ascii_file,
+                            dim='1d')
+
+            self.ui.statusbar.showMessage("{} has been created!".format(name_of_ascii_file), 10000)  # 10s
+            self.ui.statusbar.setStyleSheet("color: green")
+
+    def roi_radiobuttons_changed(self):
+        if self.ui.square_roi_radiobutton.isChecked():
+            slider_visible = True
+            new_width = np.min([np.int(str(self.ui.roi_width.text())),
+                                np.int(str(self.ui.roi_height.text()))])
+            mode = 'square'
+        else:
+            slider_visible = False
+            new_width = np.int(str(self.ui.roi_width.text()))
+            self.selection_roi_slider_changed(new_width)
+            mode = 'free'
+
+        self.update_selection(new_value=new_width,
+                              mode=mode)
+
+        self.ui.roi_size_slider.setVisible(slider_visible)
 
     def cancel_clicked(self):
         self.close()

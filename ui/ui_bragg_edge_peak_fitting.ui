@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="high_lambda_page">
                 <property name="geometry">
@@ -927,9 +927,9 @@
    <addaction name="menuImport_Export"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionImport">
+  <action name="actionImport_full_profiles">
    <property name="text">
-    <string>Import ...</string>
+    <string>Import Full Profiles ...</string>
    </property>
    <property name="toolTip">
     <string>Import all profiles of shrinkable ROIs to fit</string>
@@ -947,6 +947,19 @@
    </property>
    <property name="shortcut">
     <string/>
+   </property>
+  </action>
+  <action name="actionExport_fitting_profiles">
+   <property name="text">
+    <string>Export Fitting Profiles ...</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>
@@ -1196,7 +1209,7 @@
    <sender>actionExport</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>export_all_profiles_button_clicked()</slot>
+   <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>602</x>
@@ -1212,7 +1225,7 @@
    <sender>actionImport</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>import_all_profiles_button_clicked()</slot>
+   <slot>import_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -1256,6 +1269,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>low_lambda_tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>low_lambda_table_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>474</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bragg_edge_tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>bragg_peak_table_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>508</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1268,9 +1313,13 @@
   <slot>fit_that_selection_pushed()</slot>
   <slot>roi_radiobuttons_changed()</slot>
   <slot>profile_of_bin_size_slider_changed()</slot>
-  <slot>export_all_profiles_button_clicked()</slot>
-  <slot>import_all_profiles_button_clicked()</slot>
+  <slot>export_full_profiles_button_clicked()</slot>
+  <slot>import_full_profiles_button_clicked()</slot>
   <slot>switching_master_tab_clicked()</slot>
   <slot>high_lambda_table_clicked()</slot>
+  <slot>low_lambda_table_clicked()</slot>
+  <slot>bragg_peak_table_clicked()</slot>
+  <slot>export_button_clicked()</slot>
+  <slot>import_button_clicked()</slot>
  </slots>
 </ui>
