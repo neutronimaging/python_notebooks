@@ -63,6 +63,7 @@ class Interface(QMainWindow):
                     }
 
     is_file_imported = False # True only when the import button has been used
+    bragg_edge_range_ui = None
 
     # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
     #                                       'lambda': ([], 'lambda (Angstroms)'),
@@ -125,7 +126,7 @@ class Interface(QMainWindow):
         else:
             o_init = Initialization(parent=self, tab='2')
 
-        self.ui.tabWidget.setTabEnabled(0, show_selection_tab)
+        # self.ui.tabWidget.setTabEnabled(0, show_selection_tab)
         self.ui.tabWidget.setCurrentIndex(default_tab)
         self.ui.actionExport.setEnabled(enabled_export_button)
 
@@ -265,15 +266,18 @@ class Interface(QMainWindow):
             return self.get_specified_x_axis(xaxis='lambda')
 
     def get_specified_x_axis(self, xaxis='index'):
-        label = self.xaxis_label[xaxis]
-        if xaxis == 'index':
-            return np.arange(len(self.o_norm.data['sample']['file_name'])), label
-        elif xaxis == 'tof':
-            return self.tof_array * 1e6, label
-        elif xaxis == 'lambda':
-            return self.lambda_array, label
+        if self.is_file_imported:
+            return self.fitting_input_dictionary['xaxis'][xaxis]
         else:
-            raise NotImplementedError
+            label = self.xaxis_label[xaxis]
+            if xaxis == 'index':
+                return np.arange(len(self.o_norm.data['sample']['file_name'])), label
+            elif xaxis == 'tof':
+                return self.tof_array * 1e6, label
+            elif xaxis == 'lambda':
+                return self.lambda_array, label
+            else:
+                raise NotImplementedError
 
     def get_all_x_axis(self):
         all_x_axis = {'index': self.get_specified_x_axis(xaxis='index'),
@@ -901,7 +905,8 @@ class Interface(QMainWindow):
         bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
                             x_axis[self.bragg_edge_range[1]]]
 
-        self.ui.profile.removeItem(self.bragg_edge_range_ui)
+        if self.bragg_edge_range_ui:
+            self.ui.profile.removeItem(self.bragg_edge_range_ui)
         self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
                                                        orientation=None,
                                                        brush=None,

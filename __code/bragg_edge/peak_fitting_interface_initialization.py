@@ -15,9 +15,11 @@ class Initialization:
 	def __init__(self, parent=None, tab='all'):
 		self.parent = parent
 
+		self.pyqtgraph_image_view()
+		self.pyqtgraph_profile()
+
 		if tab == 'all':
 			self.save_image_size()
-			self.pyqtgraph_profile()
 			self.widgets()
 			self.roi_setup()
 
@@ -38,7 +40,7 @@ class Initialization:
 		self.parent.eventProgress.setVisible(False)
 		self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
-	def pyqtgraph_profile(self):
+	def pyqtgraph_image_view(self):
 		# image view
 		self.parent.ui.image_view = pg.ImageView()
 		self.parent.ui.image_view.ui.roiBtn.hide()
@@ -47,6 +49,7 @@ class Initialization:
 		image_layout.addWidget(self.parent.ui.image_view)
 		self.parent.ui.image_widget.setLayout(image_layout)
 
+	def pyqtgraph_profile(self):
 		# profile view
 		self.parent.ui.profile = pg.PlotWidget(title="Profile of ROI selected")
 		profile_layout = QVBoxLayout()
