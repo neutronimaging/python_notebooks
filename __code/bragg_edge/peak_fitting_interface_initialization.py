@@ -16,17 +16,27 @@ class Initialization:
 	def __init__(self, parent=None, tab='all'):
 		self.parent = parent
 
+		self.block_signals(True)
 		self.pyqtgraph_image_view()
 		self.pyqtgraph_profile()
 
 		if tab == 'all':
 			self.save_image_size()
-			self.widgets()
 			self.roi_setup()
+			self.widgets()
 
+		self.labels()
+		self.text_fields()
 		self.statusbar()
 		self.pyqtgraph_fitting()
 		self.fitting_table()
+
+		self.block_signals(False)
+
+	def block_signals(self, flag):
+		list_ui = [self.parent.ui.profile_of_bin_size_slider]
+		for _ui in list_ui:
+			_ui.blockSignals(flag)
 
 	def save_image_size(self):
 		_image = self.parent.get_live_image()
@@ -94,17 +104,20 @@ class Initialization:
 		o_bragg.set_column_names(column_names=column_names)
 		o_bragg.set_column_sizes(column_sizes=column_sizes)
 
-	def widgets(self):
-		self.parent.ui.splitter.setSizes([500, 400])
-		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
-		self.parent.ui.detector_offset.setText(str(self.detector_offset))
-
+	def labels(self):
 		# labels
 		self.parent.ui.detector_offset_units.setText(u"\u03BCs")
 		self.parent.ui.selection_tof_radiobutton.setText(u"TOF (\u03BCs)")
 		self.parent.ui.fitting_tof_radiobutton.setText(u"TOF (\u03BCs)")
 		self.parent.ui.selection_lambda_radiobutton.setText(u"\u03BB (\u212B)")
 		self.parent.ui.fitting_lambda_radiobutton.setText(u"\u03BB (\u212B)")
+
+	def text_fields(self):
+		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
+		self.parent.ui.detector_offset.setText(str(self.detector_offset))
+
+	def widgets(self):
+		self.parent.ui.splitter.setSizes([500, 400])
 
 		self.parent.ui.roi_size_slider.setMinimum(1)
 		max_value = np.min([self.parent.image_size['width'], self.parent.image_size['height']])

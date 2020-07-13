@@ -139,6 +139,7 @@ class Interface(QMainWindow):
         self.ui.tabWidget.setTabEnabled(1, False)
         # self.ui.tabWidget.setCurrentIndex(default_tab)
         self.ui.actionExport.setEnabled(enabled_export_button)
+        self.update_selection_roi_slider_changed()
 
     def load_time_spectra(self):
         self.tof_handler = TOF(filename=self.spectra_file)
@@ -393,7 +394,10 @@ class Interface(QMainWindow):
         if self.roi_id is None:
             return
 
-        region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
+        try:
+            region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
+        except TypeError:
+            return
 
         x0 = region[0][0].start
         y0 = region[0][1].start
@@ -423,6 +427,10 @@ class Interface(QMainWindow):
 
         self.update_selection_profile_plot()
         self.update_roi_defined_by_profile_of_bin_size_slider()
+
+    def update_selection_roi_slider_changed(self):
+        value = self.ui.roi_size_slider.value()
+        self.selection_roi_slider_changed(value)
 
     def selection_roi_slider_changed(self, new_value):
         if self.ui.square_roi_radiobutton.isChecked():
@@ -615,10 +623,13 @@ class Interface(QMainWindow):
             current_region['profile'] = profile
 
     @staticmethod
-    def make_metadata(base_folder=None, fitting_peak_range=None, dict_regions=None):
+    def make_metadata(base_folder=None, fitting_peak_range=None, dict_regions=None,
+                      distance_detector_sample="", detector_offset=""):
         metadata = ["#base folder: {}".format(base_folder)]
         metadata.append("#fitting peak range in file index: [{}, {}]".format(fitting_peak_range[0],
                                                                               fitting_peak_range[1]))
+        metadata.append("#distance detector-sample: {}".format(distance_detector_sample))
+        metadata.append("#detector offset: {}".format(detector_offset))
         for _key in dict_regions.keys():
             _entry = dict_regions[_key]
             x0 = _entry['x0']
@@ -688,11 +699,15 @@ class Interface(QMainWindow):
         tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
         lambda_axis, _ = self.get_specified_x_axis('lambda')
         fitting_peak_range = self.bragg_edge_range
+        distance_detector_sample = str(self.ui.distance_detector_sample.text())
+        detector_offset = str(self.ui.detector_offset.set())
 
         dict_regions = self.get_all_russian_doll_region_full_infos()
         metadata = Interface.make_metadata(base_folder=base_folder,
                                            fitting_peak_range=fitting_peak_range,
-                                           dict_regions=dict_regions)
+                                           dict_regions=dict_regions,
+                                           distance_detector_sample=distance_detector_sample,
+                                           detector_offset=detector_offset)
         metadata.append("#File Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
         data = Interface.format_data(col1=index_axis,
                                      col2=tof_axis,
@@ -848,12 +863,12 @@ class Interface(QMainWindow):
         rois_dictionary = OrderedDict()
         for col in np.arange(3, len(columns_roi)+3):
             str_col = str(col)
-            rois_dictionary[str(col-3)] = {'profile': np.array(data[str_col]),
-                                           'x0': columns_roi[str_col]['x0'],
-                                           'y0': columns_roi[str_col]['y0'],
-                                           'width': columns_roi[str_col]['width'],
-                                           'height': columns_roi[str_col]['height'],
-                                           }
+            rois_dictionary[col-3] = {'profile': np.array(data[str_col]),
+                                      'x0': columns_roi[str_col]['x0'],
+                                      'y0': columns_roi[str_col]['y0'],
+                                      'width': columns_roi[str_col]['width'],
+                                      'height': columns_roi[str_col]['height'],
+                                      }
         xaxis_dictionary = {'index': (index_array, self.xaxis_label['index']),
                             'lambda': (lambda_array, self.xaxis_label['lambda']),
                             'tof': (tof_array, self.xaxis_label['tof'])}
@@ -918,14 +933,14 @@ class Interface(QMainWindow):
         max_value = self.ui.profile_of_bin_size_slider.maximum()
         roi_selected = max_value - self.ui.profile_of_bin_size_slider.value()
 
-        y_axis = self.fitting_input_dictionary['rois'][str(roi_selected)]['profile']
+        y_axis = self.fitting_input_dictionary['rois'][roi_selected]['profile']
 
         self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
                                                   self.shrinking_roi_rgb[1],
                                                   self.shrinking_roi_rgb[2]))
 
         # full region
-        y_axis = self.fitting_input_dictionary['rois'][str(0)]['profile']
+        y_axis = self.fitting_input_dictionary['rois'][0]['profile']
         self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
                                                   self.selection_roi_rgb[1],
                                                   self.selection_roi_rgb[2]))
@@ -983,6 +998,8 @@ class Interface(QMainWindow):
             self.is_file_imported = True
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
             self.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
+            self.ui.distance_detector_sample.setText(result_of_import['metadata']['distance_detector_sample'])
+            self.ui.detector_offset.setText(result_of_import['metadata']['detector_offset'])
             self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
 
             self.ui.statusbar.showMessage("{} has been imported!".format(ascii_file), 10000)  # 10s
@@ -994,11 +1011,6 @@ class Interface(QMainWindow):
             self.update_vertical_line_in_profile_plot()
 
             self.ui.tabWidget.setTabEnabled(1, self.is_fit_infos_loaded())
-
-            # self.reset_all_fitting_table()
-            # self.ui.working_folder_value.setText(self.working_dir)
-            # self.select_first_row_of_all_fitting_table()
-            # self.update_fitting_plot()
 
     def is_fit_infos_loaded(self):
         if 'fit_infos' in self.fitting_input_dictionary.keys():

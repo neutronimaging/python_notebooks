@@ -387,7 +387,9 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
     if not Path(full_file_name).exists():
         raise FileNotFoundError
 
-    metadata = {}
+    metadata = {'detector_offset': '',
+                'distance_detector_sample': '',
+                }
     metadata_column = OrderedDict()
     line_number = 1
     col_label = ['index', 'tof', 'lambda']
@@ -407,6 +409,12 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                     metadata['bragg_edge_range'] = [None, None]
                 line_number += 1
                 continue
+            if "#distance detector-sample: " in line:
+                metadata['distance_detector_sample'] = line.split("#distance detector-sample: ")[1].strip()
+                line_number += 1
+            if "#detector offset: " in line:
+                metadata['detector_offset'] = line.split("#detector offset: ")[1].strip()
+                line_number += 1
             if "#column " in line:
                 regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
                           r"height:(?P<height>\d+)$"
