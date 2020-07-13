@@ -750,32 +750,6 @@ class Interface(QMainWindow):
     def fitting_axis_changed(self):
         self.update_fitting_plot()
 
-    # def update_fitting_plot(self):
-    #
-        # x_axis, x_axis_label = self.get_fitting_profile_xaxis()
-        #
-        # [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-        # profile = self.get_profile_of_roi(x0=x0, y0=y0,
-        #                                   x1=x1, y1=y1)
-        # x_axis, y_axis = Interface.check_size(x_axis=x_axis,
-        #                                       y_axis=profile)
-        # self.ui.fitting.clear()
-        # self.ui.fitting.plot(x_axis, y_axis)
-        # self.ui.fitting.setLabel("bottom", x_axis_label)
-        # self.ui.fitting.setLabel("left", 'Mean counts')
-
-        # bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
-        #                     x_axis[self.bragg_edge_range[1]]]
-        #
-        # self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
-        #                                                orientation=None,
-        #                                                brush=None,
-        #                                                movable=True,
-        #                                                bounds=None)
-        # self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
-        # self.bragg_edge_range_ui.setZValue(-10)
-        # self.ui.profile.addItem(self.bragg_edge_range_ui)
-
     def high_lambda_table_clicked(self):
         self.update_fitting_plot()
 
@@ -829,6 +803,9 @@ class Interface(QMainWindow):
         self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
         self.fitting_peak_ui.setZValue(-10)
         self.ui.fitting.addItem(self.fitting_peak_ui)
+
+        if peak_range_index[0] is None:
+            self.fitting_range_changed()
 
     def fitting_range_changed(self):
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
