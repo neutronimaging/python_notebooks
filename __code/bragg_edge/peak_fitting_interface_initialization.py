@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 from qtpy import QtGui
@@ -66,7 +67,8 @@ class Initialization:
 	def fitting_table(self):
 		## Kropff
 		# high lambda
-		column_names = ['x0; y0; width; height', 'param1', 'param2', 'error1', 'error2']
+		column_names = [u'x\u2080; y\u2080; width; height', u'a\u2080', u'b\u2080', u'a\u2080_error',
+		                u'b\u2080_error']
 		column_sizes = [150, 100, 100, 100, 100]
 		o_high = TableHandler(table_ui=self.parent.ui.high_lambda_tableWidget)
 		for _col_index, _col_name in enumerate(column_names):
