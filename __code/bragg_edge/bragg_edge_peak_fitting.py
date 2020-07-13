@@ -65,6 +65,11 @@ class Interface(QMainWindow):
     is_file_imported = False # True only when the import button has been used
     bragg_edge_range_ui = None
 
+    kropff_fitting_range = {'high': [None, None],
+                            'low': [None, None],
+                            'bragg_peak': [None, None]}
+    fitting_peak_ui = None  # vertical line in fitting view (tab 2)
+
     # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
     #                                       'lambda': ([], 'lambda (Angstroms)'),
     #                                       'tof': ([], 'TOF (micros)')},
@@ -782,9 +787,9 @@ class Interface(QMainWindow):
         [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
 
         yaxis = selected_roi['profile']
-        xaxis, xaxis_label = xaxis_dict[x_axis_selected]
+        xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
 
-        xaxis = xaxis[left_xaxis_index: right_xaxis_index]
+        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
         yaxis = yaxis[left_xaxis_index: right_xaxis_index]
 
         self.ui.fitting.setLabel("bottom", xaxis_label)
@@ -792,6 +797,36 @@ class Interface(QMainWindow):
         self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
                                                 self.selection_roi_rgb[1],
                                                 self.selection_roi_rgb[2]))
+
+        peak_range = self.kropff_fitting_range[name_of_page]
+        if peak_range[0] is None:
+            peak_range = [left_xaxis_index, right_xaxis_index]
+
+        if self.fitting_peak_ui:
+            self.ui.fitting.removeItem(self.fitting_peak_ui)
+        self.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
+                                                   orientation=None,
+                                                   brush=None,
+                                                   movable=True,
+                                                   bounds=None)
+        self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
+        self.fitting_peak_ui.setZValue(-10)
+        self.ui.fitting.addItem(self.fitting_peak_ui)
+
+    def fitting_range_changed(self):
+        [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
+        xaxis_dict = self.fitting_input_dictionary['x_axis']
+        x_axis_selected = self.get_x_axis_checked()
+        xaxis_index, _ = xaxis_dict[x_axis_selected]
+
+        [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
+        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+
+        left_index = find_nearest_index(array=xaxis, value=left_range)
+        right_index = find_nearest_index(array=xaxis, value=right_range)
+
+        print(f"fitting range changed")
+        print(f"left_index:{left_index}, right_index:{right_index}")
 
     def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
         self.fitting_input_dictionary = {}
