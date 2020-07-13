@@ -1020,6 +1020,9 @@ class Interface(QMainWindow):
 
         self.ui.roi_size_slider.setVisible(slider_visible)
 
+    def kropff_toolbox_changed(self, new_index):
+        self.update_fitting_plot()
+
     def cancel_clicked(self):
         self.close()
 

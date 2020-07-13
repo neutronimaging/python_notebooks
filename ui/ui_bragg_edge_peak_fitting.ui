@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -919,7 +919,7 @@
    </property>
    <widget class="QMenu" name="menuImport_Export">
     <property name="title">
-     <string>File</string>
+     <string>Project</string>
     </property>
     <addaction name="actionImport"/>
     <addaction name="actionExport"/>
@@ -1301,6 +1301,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>kropff_toolBox</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_toolbox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>436</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1321,5 +1337,6 @@
   <slot>bragg_peak_table_clicked()</slot>
   <slot>export_button_clicked()</slot>
   <slot>import_button_clicked()</slot>
+  <slot>kropff_toolbox_changed()</slot>
  </slots>
 </ui>
