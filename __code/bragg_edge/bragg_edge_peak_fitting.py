@@ -798,9 +798,11 @@ class Interface(QMainWindow):
                                                 self.selection_roi_rgb[1],
                                                 self.selection_roi_rgb[2]))
 
-        peak_range = self.kropff_fitting_range[name_of_page]
-        if peak_range[0] is None:
-            peak_range = [left_xaxis_index, right_xaxis_index]
+        peak_range_index = self.kropff_fitting_range[name_of_page]
+        if peak_range_index[0] is None:
+            peak_range = self.bragg_edge_range
+        else:
+            peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
 
         if self.fitting_peak_ui:
             self.ui.fitting.removeItem(self.fitting_peak_ui)
@@ -825,8 +827,10 @@ class Interface(QMainWindow):
         left_index = find_nearest_index(array=xaxis, value=left_range)
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
-        print(f"fitting range changed")
-        print(f"left_index:{left_index}, right_index:{right_index}")
+        part_of_fitting_dict = self.get_part_of_fitting_selected()
+        name_of_page = part_of_fitting_dict['name_of_page']
+
+        self.kropff_fitting_range[name_of_page] = [left_index, right_index]
 
     def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
         self.fitting_input_dictionary = {}
