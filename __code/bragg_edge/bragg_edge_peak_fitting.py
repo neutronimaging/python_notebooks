@@ -485,6 +485,8 @@ class Interface(QMainWindow):
         self.reset_all_fitting_table()
         self.ui.tabWidget.setTabEnabled(1, True)
 
+        self.select_first_row_of_all_fitting_table()
+
     def get_requested_xaxis(self, xaxis_label='index'):
         if xaxis_label == 'index':
             return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
@@ -708,8 +710,6 @@ class Interface(QMainWindow):
             self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
         return dict_regions
 
-
-
     def select_first_row_of_all_fitting_table(self):
         self.ui.high_lambda_tableWidget.selectRow(0)
         self.ui.low_lambda_tableWidget.selectRow(0)
@@ -776,11 +776,17 @@ class Interface(QMainWindow):
 
         x_axis_selected = self.get_x_axis_checked()
 
-        selected_roi = self.fitting_input_dictionary['rois'][str(row_selected+3)]
-        xaxis_dict = self.fitting_input_dictionary['xaxis']
+        selected_roi = self.fitting_input_dictionary['rois'][row_selected]
+        xaxis_dict = self.fitting_input_dictionary['x_axis']
+
+        [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
 
         yaxis = selected_roi['profile']
         xaxis, xaxis_label = xaxis_dict[x_axis_selected]
+
+        xaxis = xaxis[left_xaxis_index: right_xaxis_index]
+        yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+
         self.ui.fitting.setLabel("bottom", xaxis_label)
         self.ui.fitting.setLabel("left", 'Mean counts')
         self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
