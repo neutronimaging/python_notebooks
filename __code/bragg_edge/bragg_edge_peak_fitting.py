@@ -135,6 +135,7 @@ class Interface(QMainWindow):
         else:
             o_init = Initialization(parent=self, tab='2')
             self.disable_left_part_of_selection_tab()
+            self.ui.tabWidget.setEnabled(False)
 
         self.ui.tabWidget.setTabEnabled(1, False)
         # self.ui.tabWidget.setCurrentIndex(default_tab)
@@ -236,7 +237,7 @@ class Interface(QMainWindow):
 
     def get_x_axis_checked(self):
         o_gui = GuiUtility(parent=self)
-        tab_selected = o_gui.get_tab_selected().lower()
+        tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tabWidget).lower()
 
         x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
                                           'tof': self.ui.selection_tof_radiobutton,
@@ -257,7 +258,7 @@ class Interface(QMainWindow):
 
     def get_x_axis(self):
         o_gui = GuiUtility(parent=self)
-        tab_selected = o_gui.get_tab_selected().lower()
+        tab_selected = o_gui.get_tab_selected(self.ui.tabWidget).lower()
 
         x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
                                           'tof': self.ui.selection_tof_radiobutton,
@@ -639,7 +640,6 @@ class Interface(QMainWindow):
             metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{}".format(_key+3,
                                                                                      x0, y0,
                                                                                      width, height))
-        metadata.append("#")
         return metadata
 
     @staticmethod
@@ -700,7 +700,7 @@ class Interface(QMainWindow):
         lambda_axis, _ = self.get_specified_x_axis('lambda')
         fitting_peak_range = self.bragg_edge_range
         distance_detector_sample = str(self.ui.distance_detector_sample.text())
-        detector_offset = str(self.ui.detector_offset.set())
+        detector_offset = str(self.ui.detector_offset.text())
 
         dict_regions = self.get_all_russian_doll_region_full_infos()
         metadata = Interface.make_metadata(base_folder=base_folder,
@@ -708,6 +708,9 @@ class Interface(QMainWindow):
                                            dict_regions=dict_regions,
                                            distance_detector_sample=distance_detector_sample,
                                            detector_offset=detector_offset)
+        self.add_fitting_infos_to_metadata(metadata)
+
+        metadata.append("#")
         metadata.append("#File Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
         data = Interface.format_data(col1=index_axis,
                                      col2=tof_axis,
@@ -715,6 +718,17 @@ class Interface(QMainWindow):
                                      dict_regions=dict_regions)
 
         return data, metadata
+
+    def add_fitting_infos_to_metadata(self, metadata):
+        o_tab = GuiUtility(parent=self)
+        fitting_algorithm_used = o_tab.get_tab_selected(tab_ui=self.ui.tab_algorithm)
+        fitting_rois = self.fitting_rois
+        metadata.append("#fitting algorithm selected: {}".format(fitting_algorithm_used))
+        # kropff
+        for _key in self.kropff_fitting_range.keys():
+            metadata.append("#kropff {} selection range: [{}, {}]".format(_key,
+                                                                          self.kropff_fitting_range[_key][0],
+                                                                          self.kropff_fitting_range[_key][1]))
 
     def get_all_russian_doll_region_full_infos(self):
         if self.is_file_imported:
@@ -988,6 +1002,7 @@ class Interface(QMainWindow):
             self.update_vertical_line_in_profile_plot()
 
             self.ui.tabWidget.setTabEnabled(1, self.is_fit_infos_loaded())
+            self.ui.tabWidget.setEnabled(True)
 
     def is_fit_infos_loaded(self):
         if 'fit_infos' in self.fitting_input_dictionary.keys():

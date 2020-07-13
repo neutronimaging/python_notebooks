@@ -415,6 +415,13 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
             if "#detector offset: " in line:
                 metadata['detector_offset'] = line.split("#detector offset: ")[1].strip()
                 line_number += 1
+            if "#kropff " in line:
+                regular = r"^#kropff (?P<type>\w+) selection range: \[(?P<left_index>\d+), " \
+                          r"(?P<right_index>\d+)\]$"
+                m = re.search(regular, line.strip())
+                if m:
+                    metadata['kropff_{}'.format(m.group('type'))] = [np.int(m.group('left_index')),
+                                                                     np.int(m.group('right_index'))]
             if "#column " in line:
                 regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
                           r"height:(?P<height>\d+)$"
@@ -430,6 +437,13 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
         metadata['columns'] = metadata_column
 
     pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
+
+
+    print("*metadata*")
+    import pprint
+    pprint.pprint(metadata)
+    print('=================')
+
     return {'data': pd_data, 'metadata': metadata}
 
 class ListMostDominantExtension(object):

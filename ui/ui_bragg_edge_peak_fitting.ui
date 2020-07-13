@@ -603,7 +603,7 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QTabWidget" name="tabWidget_2">
+          <widget class="QTabWidget" name="tab_algorithm">
            <property name="currentIndex">
             <number>0</number>
            </property>
