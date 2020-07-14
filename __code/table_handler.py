@@ -13,7 +13,10 @@ class TableHandler:
 
 	def get_row_selected(self):
 		list_selection = self.table_ui.selectedRanges()
-		first_selection = list_selection[0]
+		try:
+			first_selection = list_selection[0]
+		except IndexError:
+			return 0
 		return first_selection.topRow()
 
 	def select_row(self, row=0):

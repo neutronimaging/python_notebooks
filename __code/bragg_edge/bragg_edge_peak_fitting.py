@@ -100,8 +100,9 @@ class Interface(QMainWindow):
     def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
 
         if o_bragg:
-            self.working_dir = o_bragg.working_dir
+            # self.working_dir = o_bragg.working_dir
             self.o_norm = o_bragg.o_norm
+            self.working_dir = self.retrieve_working_dir()
             self.o_bragg = o_bragg
             show_selection_tab = True
             # default_tab = 0
@@ -141,6 +142,11 @@ class Interface(QMainWindow):
         # self.ui.tabWidget.setCurrentIndex(default_tab)
         self.ui.actionExport.setEnabled(enabled_export_button)
         self.update_selection_roi_slider_changed()
+
+    def retrieve_working_dir(self):
+        o_norm = self.o_norm
+        file_path = o_norm.data['sample']['file_name'][0]
+        return os.path.dirname(file_path)
 
     def load_time_spectra(self):
         self.tof_handler = TOF(filename=self.spectra_file)
@@ -490,8 +496,7 @@ class Interface(QMainWindow):
                           }
         self.dict_profile_to_fit = profile_to_fit
 
-    def fit_that_selection_pushed(self, initialize_region=True):
-        """this will create the fitting_input_dictionary and initialize the table"""
+    def fit_that_selection_pushed_by_program(self, initialize_region=True):
         fitting_input_dictionary = {}
         x_axis = self.get_all_x_axis()
         fitting_input_dictionary['xaxis'] = x_axis
@@ -501,10 +506,15 @@ class Interface(QMainWindow):
 
         self.fitting_input_dictionary = fitting_input_dictionary
         self.reset_all_fitting_table()
+
         if initialize_region:
             self.initialize_default_peak_regions()
         self.ui.tabWidget.setTabEnabled(1, True)
         self.select_first_row_of_all_fitting_table()
+
+    def fit_that_selection_pushed(self):
+        """this will create the fitting_input_dictionary and initialize the table"""
+        self.fit_that_selection_pushed_by_program(initialize_region=True)
 
     def initialize_default_peak_regions(self):
         [left_range, right_range] = self.bragg_edge_range
@@ -751,11 +761,6 @@ class Interface(QMainWindow):
                                                                           self.kropff_fitting_range[_key][0],
                                                                           self.kropff_fitting_range[_key][1]))
 
-        import pprint
-        pprint.pprint("in add_fitting_infos_to_metadata")
-        pprint.pprint(f"{self.kropff_fitting_range}")
-
-
     def get_all_russian_doll_region_full_infos(self):
         if self.is_file_imported:
             dict_regions = self.fitting_input_dictionary['rois']
@@ -798,56 +803,52 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def update_fitting_plot(self):
-        try:
-            self.ui.fitting.clear()
-            part_of_fitting_dict = self.get_part_of_fitting_selected()
-            name_of_page = part_of_fitting_dict['name_of_page']
-            table_ui = part_of_fitting_dict['table_ui']
+        self.ui.fitting.clear()
+        part_of_fitting_dict = self.get_part_of_fitting_selected()
+        name_of_page = part_of_fitting_dict['name_of_page']
+        table_ui = part_of_fitting_dict['table_ui']
 
-            o_table = TableHandler(table_ui=table_ui)
-            row_selected = o_table.get_row_selected()
+        o_table = TableHandler(table_ui=table_ui)
+        row_selected = o_table.get_row_selected()
 
-            x_axis_selected = self.get_x_axis_checked()
+        x_axis_selected = self.get_x_axis_checked()
 
-            selected_roi = self.fitting_input_dictionary['rois'][row_selected]
-            xaxis_dict = self.fitting_input_dictionary['xaxis']
+        selected_roi = self.fitting_input_dictionary['rois'][row_selected]
+        xaxis_dict = self.fitting_input_dictionary['xaxis']
 
-            [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
+        [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
 
-            yaxis = selected_roi['profile']
-            xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
+        yaxis = selected_roi['profile']
+        xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
 
-            xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
-            yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+        yaxis = yaxis[left_xaxis_index: right_xaxis_index]
 
-            self.ui.fitting.setLabel("bottom", xaxis_label)
-            self.ui.fitting.setLabel("left", 'Mean counts')
-            self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
-                                                    self.selection_roi_rgb[1],
-                                                    self.selection_roi_rgb[2]))
+        self.ui.fitting.setLabel("bottom", xaxis_label)
+        self.ui.fitting.setLabel("left", 'Mean counts')
+        self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
+                                                self.selection_roi_rgb[1],
+                                                self.selection_roi_rgb[2]))
 
-            peak_range_index = self.kropff_fitting_range[name_of_page]
-            if peak_range_index[0] is None:
-                peak_range = self.bragg_edge_range
-            else:
-                peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
+        peak_range_index = self.kropff_fitting_range[name_of_page]
+        if peak_range_index[0] is None:
+            peak_range = self.bragg_edge_range
+        else:
+            peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
 
-            if self.fitting_peak_ui:
-                self.ui.fitting.removeItem(self.fitting_peak_ui)
-            self.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
-                                                       orientation=None,
-                                                       brush=None,
-                                                       movable=True,
-                                                       bounds=None)
-            self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
-            self.fitting_peak_ui.setZValue(-10)
-            self.ui.fitting.addItem(self.fitting_peak_ui)
+        if self.fitting_peak_ui:
+            self.ui.fitting.removeItem(self.fitting_peak_ui)
+        self.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
+                                                   orientation=None,
+                                                   brush=None,
+                                                   movable=True,
+                                                   bounds=None)
+        self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
+        self.fitting_peak_ui.setZValue(-10)
+        self.ui.fitting.addItem(self.fitting_peak_ui)
 
-            if peak_range_index[0] is None:
-                self.fitting_range_changed()
-
-        except IndexError:
-            return
+        if peak_range_index[0] is None:
+            self.fitting_range_changed()
 
     def fitting_range_changed(self):
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
@@ -1042,7 +1043,7 @@ class Interface(QMainWindow):
             self.ui.actionExport.setEnabled(True)
 
             if result_of_import.get('metadata').get('fitting_procedure_started', False):
-                self.fit_that_selection_pushed(initialize_region=False)
+                self.fit_that_selection_pushed_by_program(initialize_region=False)
 
             self.block_table_ui(False)
             self.update_fitting_plot()
