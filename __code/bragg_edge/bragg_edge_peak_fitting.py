@@ -19,7 +19,7 @@ from __code import load_ui
 from __code.utilities import find_nearest_index
 from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
 from __code.table_handler import TableHandler
-
+from __code.bragg_edge.fitting_job_handler import FittingJobHandler
 
 DEBUGGING = True
 
@@ -43,6 +43,8 @@ class Interface(QMainWindow):
                                                     shrinking_roi_rgb[2]),
                               'width': 0.01,
                               'dashes_pattern': [4, 2]}
+    fit_rgb = (0, 255, 0)
+
     shrinking_roi_id = None
     shrinking_roi = {'x0': None,
                      'y0': None,
@@ -1124,6 +1126,19 @@ class Interface(QMainWindow):
 
     def kropff_toolbox_changed(self, new_index):
         self.update_fitting_plot()
+
+    def kropff_fit_high_lambda_region_clicked(self):
+
+        self.switch_fitting_axis_to_lambda()
+
+        o_fit = FittingJobHandler(parent=self)
+        o_fit.prepare()
+        o_fit.run()
+        o_fit.display_result()
+
+    def switch_fitting_axis_to_lambda(self):
+        self.ui.fitting_lambda_radiobutton.setChecked(True)
+        self.fitting_axis_changed()
 
     def cancel_clicked(self):
         self.close()
