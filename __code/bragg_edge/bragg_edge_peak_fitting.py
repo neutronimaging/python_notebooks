@@ -504,18 +504,26 @@ class Interface(QMainWindow):
 
         self.fitting_input_dictionary = fitting_input_dictionary
         self.reset_all_fitting_table()
-        self.initialize_default_peak_regions()
+        # self.initialize_default_peak_regions()
         self.ui.tabWidget.setTabEnabled(1, True)
         self.select_first_row_of_all_fitting_table()
 
     def initialize_default_peak_regions(self):
+        [left_range, right_range] = self.bragg_edge_range
+        xaxis_dict = self.fitting_input_dictionary['xaxis']
+        xaxis_index, _ = xaxis_dict['index']
+        [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
+        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+        left_index = find_nearest_index(array=xaxis, value=left_range)
+        right_index = find_nearest_index(array=xaxis, value=right_range)
+
         # kropff tab
         for _key in self.kropff_fitting_range.keys():
-            self.kropff_fitting_range[_key] = self.bragg_edge_range
+            self.kropff_fitting_range[_key] = [left_index, right_index]
 
         # TBD tab
         pass
-    
+
     def get_requested_xaxis(self, xaxis_label='index'):
         if xaxis_label == 'index':
             return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
