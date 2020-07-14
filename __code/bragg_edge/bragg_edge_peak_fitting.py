@@ -492,6 +492,8 @@ class Interface(QMainWindow):
 
     def fit_that_selection_pushed(self):
         """this will create the fitting_input_dictionary and initialize the table"""
+        import pprint
+        print('in fit_that_selection_pushed')
 
         fitting_input_dictionary = {}
         x_axis = self.get_all_x_axis()
@@ -501,12 +503,19 @@ class Interface(QMainWindow):
         fitting_input_dictionary['rois'] = dict_regions
 
         self.fitting_input_dictionary = fitting_input_dictionary
-
         self.reset_all_fitting_table()
+        self.initialize_default_peak_regions()
         self.ui.tabWidget.setTabEnabled(1, True)
-
         self.select_first_row_of_all_fitting_table()
 
+    def initialize_default_peak_regions(self):
+        # kropff tab
+        for _key in self.kropff_fitting_range.keys():
+            self.kropff_fitting_range[_key] = self.bragg_edge_range
+
+        # TBD tab
+        pass
+    
     def get_requested_xaxis(self, xaxis_label='index'):
         if xaxis_label == 'index':
             return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
