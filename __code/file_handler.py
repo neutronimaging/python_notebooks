@@ -418,7 +418,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 line_number += 1
                 continue
             if "#fitting procedure started: " in line:
-                metadata['fitting_procedure_started'] = line.split("#fitting procedure started: ")[1].strip()
+                result = True if line.split("#fitting procedure started: ")[1].strip() == 'True' else False
+                metadata['fitting_procedure_started'] = result
                 line_number += 1
                 continue
             if "#kropff " in line:

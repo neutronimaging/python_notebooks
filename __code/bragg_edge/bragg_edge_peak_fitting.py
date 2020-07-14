@@ -490,11 +490,8 @@ class Interface(QMainWindow):
                           }
         self.dict_profile_to_fit = profile_to_fit
 
-    def fit_that_selection_pushed(self):
+    def fit_that_selection_pushed(self, initialize_region=True):
         """this will create the fitting_input_dictionary and initialize the table"""
-        import pprint
-        print('in fit_that_selection_pushed')
-
         fitting_input_dictionary = {}
         x_axis = self.get_all_x_axis()
         fitting_input_dictionary['xaxis'] = x_axis
@@ -504,7 +501,8 @@ class Interface(QMainWindow):
 
         self.fitting_input_dictionary = fitting_input_dictionary
         self.reset_all_fitting_table()
-        # self.initialize_default_peak_regions()
+        if initialize_region:
+            self.initialize_default_peak_regions()
         self.ui.tabWidget.setTabEnabled(1, True)
         self.select_first_row_of_all_fitting_table()
 
@@ -753,6 +751,11 @@ class Interface(QMainWindow):
                                                                           self.kropff_fitting_range[_key][0],
                                                                           self.kropff_fitting_range[_key][1]))
 
+        import pprint
+        pprint.pprint("in add_fitting_infos_to_metadata")
+        pprint.pprint(f"{self.kropff_fitting_range}")
+
+
     def get_all_russian_doll_region_full_infos(self):
         if self.is_file_imported:
             dict_regions = self.fitting_input_dictionary['rois']
@@ -890,6 +893,10 @@ class Interface(QMainWindow):
                             'tof': (tof_array, self.xaxis_label['tof'])}
         self.fitting_input_dictionary = {'xaxis': xaxis_dictionary,
                                          'rois': rois_dictionary}
+
+        self.kropff_fitting_range['high'] = metadata['kropff_high']
+        self.kropff_fitting_range['low'] = metadata['kropff_low']
+        self.kropff_fitting_range['bragg_peak'] = metadata['kropff_bragg_peak']
 
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:
@@ -1035,7 +1042,7 @@ class Interface(QMainWindow):
             self.ui.actionExport.setEnabled(True)
 
             if result_of_import.get('metadata').get('fitting_procedure_started', False):
-                self.fit_that_selection_pushed()
+                self.fit_that_selection_pushed(initialize_region=False)
 
             self.block_table_ui(False)
             self.update_fitting_plot()
