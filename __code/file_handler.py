@@ -417,6 +417,10 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 metadata['detector_offset'] = line.split("#detector offset: ")[1].strip()
                 line_number += 1
                 continue
+            if "#fitting procedure started: " in line:
+                metadata['fitting_procedure_started'] = line.split("#fitting procedure started: ")[1].strip()
+                line_number += 1
+                continue
             if "#kropff " in line:
                 regular = r"^#kropff (?P<type>\w+) selection range: \[(?P<left_index>\d+), " \
                           r"(?P<right_index>\d+)\]$"

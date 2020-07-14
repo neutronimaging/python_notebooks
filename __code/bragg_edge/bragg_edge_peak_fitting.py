@@ -306,14 +306,20 @@ class Interface(QMainWindow):
 
     def get_selection_roi_dimension(self):
         roi_id = self.roi_id
-        region = roi_id.getArraySlice(self.final_image,
-                                      self.ui.image_view.imageItem)
-        x0 = region[0][0].start
-        x1 = region[0][0].stop
-        y0 = region[0][1].start
-        y1 = region[0][1].stop
 
-        return [x0, y0, x1, y1]
+        x0, y0, x1, y1, width, height = None, None, None, None, None, None
+
+        if roi_id:
+            region = roi_id.getArraySlice(self.final_image,
+                                          self.ui.image_view.imageItem)
+            x0 = region[0][0].start
+            x1 = region[0][0].stop
+            y0 = region[0][1].start
+            y1 = region[0][1].stop
+            width = np.int(x1-x0)
+            height = np.int(y1-y0)
+
+        return [x0, y0, x1, y1, width, height]
 
     def update_selection_profile_plot(self):
 
@@ -326,7 +332,7 @@ class Interface(QMainWindow):
             self.ui.profile.clear()
 
             # large selection region
-            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
+            [x0, y0, x1, y1, _, _] = self.get_selection_roi_dimension()
             profile = self.get_profile_of_roi(x0, y0, x1, y1)
             x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                                   y_axis=profile)
@@ -462,7 +468,6 @@ class Interface(QMainWindow):
     def update_dict_profile_to_fit(self):
         [left_range, right_range] = self.bragg_edge_range
 
-        # [x0, y0, x1, y1] = self.get_selection_roi_dimension()
         [x0, y0, x1, y1] = self.get_shrinking_roi_dimension()
         profile = self.get_profile_of_roi(x0=x0, y0=y0,
                                           x1=x1, y1=y1)
@@ -487,9 +492,10 @@ class Interface(QMainWindow):
 
     def fit_that_selection_pushed(self):
         """this will create the fitting_input_dictionary and initialize the table"""
+
         fitting_input_dictionary = {}
         x_axis = self.get_all_x_axis()
-        fitting_input_dictionary['x_axis'] = x_axis
+        fitting_input_dictionary['xaxis'] = x_axis
 
         dict_regions = self.get_all_russian_doll_region_full_infos()
         fitting_input_dictionary['rois'] = dict_regions
@@ -675,9 +681,7 @@ class Interface(QMainWindow):
             data, metadata = self.get_data_metadata_from_selection_tab()
 
             # collect initial selection size (x0, y0, width, height)
-            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-            width = np.int(x1-x0)
-            height = np.int(y1-y0)
+            [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
 
             name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
                                                                              export_folder=_export_folder,
@@ -694,7 +698,7 @@ class Interface(QMainWindow):
             self.ui.statusbar.setStyleSheet("color: green")
 
     def get_data_metadata_from_selection_tab(self):
-        base_folder = Path(self.o_bragg.working_dir)
+        base_folder = Path(self.working_dir)
         index_axis, _ = self.get_specified_x_axis(xaxis='index')
         tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
         lambda_axis, _ = self.get_specified_x_axis('lambda')
@@ -723,6 +727,8 @@ class Interface(QMainWindow):
         o_tab = GuiUtility(parent=self)
         fitting_algorithm_used = o_tab.get_tab_selected(tab_ui=self.ui.tab_algorithm)
         fitting_rois = self.fitting_rois
+        fitting_flag = True if self.fitting_peak_ui else False
+        metadata.append("#fitting procedure started: {}".format(fitting_flag))
         metadata.append("#fitting algorithm selected: {}".format(fitting_algorithm_used))
         # kropff
         for _key in self.kropff_fitting_range.keys():
@@ -735,9 +741,7 @@ class Interface(QMainWindow):
             dict_regions = self.fitting_input_dictionary['rois']
         else:
             # collect initial selection size (x0, y0, width, height)
-            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-            width = np.int(x1 - x0)
-            height = np.int(y1 - y0)
+            [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
             # create profile for all the fitting region inside that first box
             o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
             dict_regions = o_regions.get_all_russian_doll_regions()
@@ -774,56 +778,60 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def update_fitting_plot(self):
-        self.ui.fitting.clear()
-        part_of_fitting_dict = self.get_part_of_fitting_selected()
-        name_of_page = part_of_fitting_dict['name_of_page']
-        table_ui = part_of_fitting_dict['table_ui']
+        try:
+            self.ui.fitting.clear()
+            part_of_fitting_dict = self.get_part_of_fitting_selected()
+            name_of_page = part_of_fitting_dict['name_of_page']
+            table_ui = part_of_fitting_dict['table_ui']
 
-        o_table = TableHandler(table_ui=table_ui)
-        row_selected = o_table.get_row_selected()
+            o_table = TableHandler(table_ui=table_ui)
+            row_selected = o_table.get_row_selected()
 
-        x_axis_selected = self.get_x_axis_checked()
+            x_axis_selected = self.get_x_axis_checked()
 
-        selected_roi = self.fitting_input_dictionary['rois'][row_selected]
-        xaxis_dict = self.fitting_input_dictionary['x_axis']
+            selected_roi = self.fitting_input_dictionary['rois'][row_selected]
+            xaxis_dict = self.fitting_input_dictionary['xaxis']
 
-        [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
+            [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
 
-        yaxis = selected_roi['profile']
-        xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
+            yaxis = selected_roi['profile']
+            xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
 
-        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
-        yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+            xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+            yaxis = yaxis[left_xaxis_index: right_xaxis_index]
 
-        self.ui.fitting.setLabel("bottom", xaxis_label)
-        self.ui.fitting.setLabel("left", 'Mean counts')
-        self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
-                                                self.selection_roi_rgb[1],
-                                                self.selection_roi_rgb[2]))
+            self.ui.fitting.setLabel("bottom", xaxis_label)
+            self.ui.fitting.setLabel("left", 'Mean counts')
+            self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
+                                                    self.selection_roi_rgb[1],
+                                                    self.selection_roi_rgb[2]))
 
-        peak_range_index = self.kropff_fitting_range[name_of_page]
-        if peak_range_index[0] is None:
-            peak_range = self.bragg_edge_range
-        else:
-            peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
+            peak_range_index = self.kropff_fitting_range[name_of_page]
+            if peak_range_index[0] is None:
+                peak_range = self.bragg_edge_range
+            else:
+                peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
 
-        if self.fitting_peak_ui:
-            self.ui.fitting.removeItem(self.fitting_peak_ui)
-        self.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
-                                                   orientation=None,
-                                                   brush=None,
-                                                   movable=True,
-                                                   bounds=None)
-        self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
-        self.fitting_peak_ui.setZValue(-10)
-        self.ui.fitting.addItem(self.fitting_peak_ui)
+            if self.fitting_peak_ui:
+                self.ui.fitting.removeItem(self.fitting_peak_ui)
+            self.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
+                                                       orientation=None,
+                                                       brush=None,
+                                                       movable=True,
+                                                       bounds=None)
+            self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
+            self.fitting_peak_ui.setZValue(-10)
+            self.ui.fitting.addItem(self.fitting_peak_ui)
 
-        if peak_range_index[0] is None:
-            self.fitting_range_changed()
+            if peak_range_index[0] is None:
+                self.fitting_range_changed()
+
+        except IndexError:
+            return
 
     def fitting_range_changed(self):
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
-        xaxis_dict = self.fitting_input_dictionary['x_axis']
+        xaxis_dict = self.fitting_input_dictionary['xaxis']
         x_axis_selected = self.get_x_axis_checked()
         xaxis_index, _ = xaxis_dict[x_axis_selected]
 
@@ -919,6 +927,7 @@ class Interface(QMainWindow):
 
         self.ui.profile.clear()
         x_axis_selected = self.get_x_axis_checked()
+
         x_axis, x_axis_label = fitting_input_dictionary['xaxis'][x_axis_selected]
 
         max_value = self.ui.profile_of_bin_size_slider.maximum()
@@ -986,6 +995,9 @@ class Interface(QMainWindow):
                                                  filter="ASCII (*.txt)")
 
         if ascii_file[0]:
+            self.full_reset_of_ui()
+            self.block_table_ui(True)
+
             self.is_file_imported = True
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
             self.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
@@ -1003,6 +1015,30 @@ class Interface(QMainWindow):
 
             self.ui.tabWidget.setTabEnabled(1, self.is_fit_infos_loaded())
             self.ui.tabWidget.setEnabled(True)
+            self.ui.actionExport.setEnabled(True)
+
+            if result_of_import.get('metadata').get('fitting_procedure_started', False):
+                self.fit_that_selection_pushed()
+
+            self.block_table_ui(False)
+            self.update_fitting_plot()
+
+    def full_reset_of_ui(self):
+        o_table = TableHandler(table_ui=self.ui.high_lambda_tableWidget)
+        o_table.remove_all_rows()
+
+        o_table = TableHandler(table_ui=self.ui.low_lambda_tableWidget)
+        o_table.remove_all_rows()
+
+        o_table = TableHandler(table_ui=self.ui.bragg_edge_tableWidget)
+        o_table.remove_all_rows()
+
+    def block_table_ui(self, flag):
+        list_ui = [self.ui.high_lambda_tableWidget,
+                   self.ui.low_lambda_tableWidget,
+                   self.ui.bragg_edge_tableWidget]
+        for _ui in list_ui:
+            _ui.blockSignals(flag)
 
     def is_fit_infos_loaded(self):
         if 'fit_infos' in self.fitting_input_dictionary.keys():
@@ -1017,7 +1053,7 @@ class Interface(QMainWindow):
     def export_button_clicked(self):
 
         # bring file dialog to locate where the file will be saved
-        base_folder = Path(self.o_bragg.working_dir)
+        base_folder = Path(self.working_dir)
         directory = str(base_folder.parent)
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=directory,
@@ -1028,9 +1064,7 @@ class Interface(QMainWindow):
             data, metadata = self.get_data_metadata_from_selection_tab()
 
             # collect initial selection size (x0, y0, width, height)
-            [x0, y0, x1, y1] = self.get_selection_roi_dimension()
-            width = np.int(x1 - x0)
-            height = np.int(y1 - y0)
+            [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
 
             name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
                                                                              export_folder=_export_folder,
