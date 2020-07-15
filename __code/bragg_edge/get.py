@@ -72,7 +72,7 @@ class Get:
 			# create profile for all the fitting region inside that first box
 			o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
 			dict_regions = o_regions.get_all_russian_doll_regions()
-			self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
+			self.parent.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
 		return dict_regions
 
 	def selection_roi_dimension(self):

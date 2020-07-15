@@ -447,7 +447,7 @@ class Interface(QMainWindow):
 
         fitting_input_dictionary['xaxis'] = x_axis
 
-        dict_regions = self.get_all_russian_doll_region_full_infos()
+        dict_regions = o_get.all_russian_doll_region_full_infos()
         fitting_input_dictionary['rois'] = dict_regions
 
         self.fitting_input_dictionary = fitting_input_dictionary
@@ -479,22 +479,6 @@ class Interface(QMainWindow):
 
         # TBD tab
         pass
-
-    # def get_requested_xaxis(self, xaxis_label='index'):
-    #     if xaxis_label == 'index':
-    #         return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
-    #     elif xaxis_label == 'tof':
-    #         return self.dict_profile_to_fit['xaxis']['tof'], self.xaxis_label['tof']
-    #     elif xaxis_label == 'lambda':
-    #         return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
-
-    # def get_fitting_profile_xaxis(self):
-    #     if self.ui.fitting_tof_radiobutton.isChecked():
-    #         return self.get_requested_xaxis(xaxis_label='tof')
-    #     elif self.ui.fitting_index_radiobutton.isChecked():
-    #         return self.get_requested_xaxis(xaxis_label='index')
-    #     else:
-    #         return self.get_requested_xaxis(xaxis_label='lambda')
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
         dict_rois_imported = self.dict_rois_imported
@@ -581,16 +565,6 @@ class Interface(QMainWindow):
                 'x1': new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
                 'width': width_requested, 'height': height_requested}
 
-    # @staticmethod
-    # def makeup_name_of_profile_ascii_file(base_name="default",
-    #                                       export_folder="./",
-    #                                       x0=None, y0=None, width=None, height=None):
-    #     """this will return the full path name of the ascii file to create that will contain all the profiles
-    #     starting with the selection box and all the way to the minimal size"""
-    #     full_base_name = "full_set_of_shrinkable_region_profiles_from_" + \
-    #                      "x{}_y{}_w{}_h{}_for_folder_{}.txt".format(x0, y0, width, height, base_name)
-    #     return str(Path(export_folder) / full_base_name)
-
     def add_profile_to_dict_of_all_regions(self, dict_regions=None):
         for _key in dict_regions.keys():
             current_region = dict_regions[_key]
@@ -603,89 +577,6 @@ class Interface(QMainWindow):
                                            x1=x0 + width,
                                            y1=y0 + height)
             current_region['profile'] = profile
-
-    # def export_button_clicked(self):
-    #
-    #     # bring file dialog to locate where the file will be saved
-    #     base_folder = Path(self.o_bragg.working_dir)
-    #     directory = str(base_folder.parent)
-    #     _export_folder = QFileDialog.getExistingDirectory(self,
-    #                                                       directory=directory,
-    #                                                       caption="Select Output Folder",
-    #                                                       options=QFileDialog.ShowDirsOnly)
-    #
-    #     if _export_folder:
-    #
-    #         data, metadata = self.get_data_metadata_from_selection_tab()
-    #
-    #         # collect initial selection size (x0, y0, width, height)
-    #         [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
-    #
-    #         name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
-    #                                                                          export_folder=_export_folder,
-    #                                                                          x0=x0, y0=y0,
-    #                                                                          width=width,
-    #                                                                          height=height)
-    #
-    #         make_ascii_file(metadata=metadata,
-    #                         data=data,
-    #                         output_file_name=name_of_ascii_file,
-    #                         dim='1d')
-    #
-    #         self.ui.statusbar.showMessage("{} has been created!".format(name_of_ascii_file), 10000)  # 10s
-    #         self.ui.statusbar.setStyleSheet("color: green")
-
-    # def get_data_metadata_from_selection_tab(self):
-    #     base_folder = Path(self.working_dir)
-    #     index_axis, _ = self.get_specified_x_axis(xaxis='index')
-    #     tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
-    #     lambda_axis, _ = self.get_specified_x_axis('lambda')
-    #     fitting_peak_range = self.bragg_edge_range
-    #     distance_detector_sample = str(self.ui.distance_detector_sample.text())
-    #     detector_offset = str(self.ui.detector_offset.text())
-    #
-    #     dict_regions = self.get_all_russian_doll_region_full_infos()
-    #     metadata = Interface.make_metadata(base_folder=base_folder,
-    #                                        fitting_peak_range=fitting_peak_range,
-    #                                        dict_regions=dict_regions,
-    #                                        distance_detector_sample=distance_detector_sample,
-    #                                        detector_offset=detector_offset)
-    #     self.add_fitting_infos_to_metadata(metadata)
-    #
-    #     metadata.append("#")
-    #     metadata.append("#File Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
-    #     data = Interface.format_data(col1=index_axis,
-    #                                  col2=tof_axis,
-    #                                  col3=lambda_axis,
-    #                                  dict_regions=dict_regions)
-    #
-    #     return data, metadata
-
-    # def add_fitting_infos_to_metadata(self, metadata):
-    #     o_tab = GuiUtility(parent=self)
-    #     fitting_algorithm_used = o_tab.get_tab_selected(tab_ui=self.ui.tab_algorithm)
-    #     fitting_rois = self.fitting_rois
-    #     fitting_flag = True if self.fitting_peak_ui else False
-    #     metadata.append("#fitting procedure started: {}".format(fitting_flag))
-    #     metadata.append("#fitting algorithm selected: {}".format(fitting_algorithm_used))
-    #     # kropff
-    #     for _key in self.kropff_fitting_range.keys():
-    #         metadata.append("#kropff {} selection range: [{}, {}]".format(_key,
-    #                                                                       self.kropff_fitting_range[_key][0],
-    #                                                                       self.kropff_fitting_range[_key][1]))
-
-    def get_all_russian_doll_region_full_infos(self):
-        if self.is_file_imported:
-            dict_regions = self.fitting_input_dictionary['rois']
-        else:
-            # collect initial selection size (x0, y0, width, height)
-            o_get = Get(parent=self)
-            [x0, y0, x1, y1, width, height] = o_get.selection_roi_dimension()
-            # create profile for all the fitting region inside that first box
-            o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
-            dict_regions = o_regions.get_all_russian_doll_regions()
-            self.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
-        return dict_regions
 
     def select_first_row_of_all_fitting_table(self):
         self.ui.high_lambda_tableWidget.selectRow(0)
@@ -770,39 +661,6 @@ class Interface(QMainWindow):
         name_of_page = part_of_fitting_dict['name_of_page']
 
         self.kropff_fitting_range[name_of_page] = [left_index, right_index]
-
-    # def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
-    #     self.fitting_input_dictionary = {}
-    #
-    #     metadata = result_of_import['metadata']
-    #     self.working_dir = metadata['base_folder']
-    #     self.bragg_edge_range = metadata['bragg_edge_range']
-    #
-    #     columns_roi = metadata['columns']
-    #
-    #     data = result_of_import['data']
-    #     tof_array = np.array(data['tof'])
-    #     # self.tof_array = tof_array
-    #     index_array = np.array(data['index'])
-    #     lambda_array = np.array(data['lambda'])
-    #     rois_dictionary = OrderedDict()
-    #     for col in np.arange(3, len(columns_roi)+3):
-    #         str_col = str(col)
-    #         rois_dictionary[col-3] = {'profile': np.array(data[str_col]),
-    #                                   'x0': columns_roi[str_col]['x0'],
-    #                                   'y0': columns_roi[str_col]['y0'],
-    #                                   'width': columns_roi[str_col]['width'],
-    #                                   'height': columns_roi[str_col]['height'],
-    #                                   }
-    #     xaxis_dictionary = {'index': (index_array, self.xaxis_label['index']),
-    #                         'lambda': (lambda_array, self.xaxis_label['lambda']),
-    #                         'tof': (tof_array, self.xaxis_label['tof'])}
-    #     self.fitting_input_dictionary = {'xaxis': xaxis_dictionary,
-    #                                      'rois': rois_dictionary}
-    #
-    #     self.kropff_fitting_range['high'] = metadata['kropff_high']
-    #     self.kropff_fitting_range['low'] = metadata['kropff_low']
-    #     self.kropff_fitting_range['bragg_peak'] = metadata['kropff_bragg_peak']
 
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:
