@@ -1,11 +1,10 @@
 from IPython.core.display import HTML
 import os
-from pathlib import Path
 import random
 import numpy as np
 from IPython.display import display
 import pyqtgraph as pg
-from qtpy.QtWidgets import QMainWindow, QFileDialog
+from qtpy.QtWidgets import QMainWindow
 from qtpy import QtGui
 from collections import OrderedDict
 
@@ -17,11 +16,11 @@ from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.selection_region_utilities import SelectionRegionUtilities
 from __code import load_ui
 from __code.utilities import find_nearest_index
-from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
 from __code.table_handler import TableHandler
 from __code.bragg_edge.fitting_job_handler import FittingJobHandler
 from __code.bragg_edge.kropff import Kropff
-from __code.bragg_edge.export import Export
+from __code.bragg_edge.export_handler import ExportHandler
+from __code.bragg_edge.import_handler import ImportHandler
 from __code.bragg_edge.get import Get
 
 DEBUGGING = True
@@ -605,73 +604,36 @@ class Interface(QMainWindow):
                                            y1=y0 + height)
             current_region['profile'] = profile
 
-    @staticmethod
-    def make_metadata(base_folder=None, fitting_peak_range=None, dict_regions=None,
-                      distance_detector_sample="", detector_offset=""):
-        metadata = ["#base folder: {}".format(base_folder)]
-        metadata.append("#fitting peak range in file index: [{}, {}]".format(fitting_peak_range[0],
-                                                                              fitting_peak_range[1]))
-        metadata.append("#distance detector-sample: {}".format(distance_detector_sample))
-        metadata.append("#detector offset: {}".format(detector_offset))
-        for _key in dict_regions.keys():
-            _entry = dict_regions[_key]
-            x0 = _entry['x0']
-            y0 = _entry['y0']
-            width = _entry['width']
-            height = _entry['height']
-            metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{}".format(_key+3,
-                                                                                     x0, y0,
-                                                                                     width, height))
-        return metadata
-
-    @staticmethod
-    def format_data(col1=None, col2=None, col3=None, dict_regions=None):
-        if col1 is None:
-            return []
-
-        data = []
-        profile_length = len(dict_regions[0]['profile'])
-        for _row_index in np.arange(profile_length):
-            list_profile_for_this_row = []
-            for _key in dict_regions.keys():
-                _profile = dict_regions[_key]['profile']
-                list_profile_for_this_row.append(str(_profile[_row_index]))
-            _col1 = col1[_row_index]
-            _col2 = col2[_row_index]
-            _col3 = col3[_row_index]
-            data.append("{}, {}, {}, ".format(_col1, _col2, _col3) + ", ".join(list_profile_for_this_row))
-        return data
-
-    def export_button_clicked(self):
-
-        # bring file dialog to locate where the file will be saved
-        base_folder = Path(self.o_bragg.working_dir)
-        directory = str(base_folder.parent)
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=directory,
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
-
-        if _export_folder:
-
-            data, metadata = self.get_data_metadata_from_selection_tab()
-
-            # collect initial selection size (x0, y0, width, height)
-            [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
-
-            name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
-                                                                             export_folder=_export_folder,
-                                                                             x0=x0, y0=y0,
-                                                                             width=width,
-                                                                             height=height)
-
-            make_ascii_file(metadata=metadata,
-                            data=data,
-                            output_file_name=name_of_ascii_file,
-                            dim='1d')
-
-            self.ui.statusbar.showMessage("{} has been created!".format(name_of_ascii_file), 10000)  # 10s
-            self.ui.statusbar.setStyleSheet("color: green")
+    # def export_button_clicked(self):
+    #
+    #     # bring file dialog to locate where the file will be saved
+    #     base_folder = Path(self.o_bragg.working_dir)
+    #     directory = str(base_folder.parent)
+    #     _export_folder = QFileDialog.getExistingDirectory(self,
+    #                                                       directory=directory,
+    #                                                       caption="Select Output Folder",
+    #                                                       options=QFileDialog.ShowDirsOnly)
+    #
+    #     if _export_folder:
+    #
+    #         data, metadata = self.get_data_metadata_from_selection_tab()
+    #
+    #         # collect initial selection size (x0, y0, width, height)
+    #         [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
+    #
+    #         name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
+    #                                                                          export_folder=_export_folder,
+    #                                                                          x0=x0, y0=y0,
+    #                                                                          width=width,
+    #                                                                          height=height)
+    #
+    #         make_ascii_file(metadata=metadata,
+    #                         data=data,
+    #                         output_file_name=name_of_ascii_file,
+    #                         dim='1d')
+    #
+    #         self.ui.statusbar.showMessage("{} has been created!".format(name_of_ascii_file), 10000)  # 10s
+    #         self.ui.statusbar.setStyleSheet("color: green")
 
     # def get_data_metadata_from_selection_tab(self):
     #     base_folder = Path(self.working_dir)
@@ -699,18 +661,18 @@ class Interface(QMainWindow):
     #
     #     return data, metadata
 
-    def add_fitting_infos_to_metadata(self, metadata):
-        o_tab = GuiUtility(parent=self)
-        fitting_algorithm_used = o_tab.get_tab_selected(tab_ui=self.ui.tab_algorithm)
-        fitting_rois = self.fitting_rois
-        fitting_flag = True if self.fitting_peak_ui else False
-        metadata.append("#fitting procedure started: {}".format(fitting_flag))
-        metadata.append("#fitting algorithm selected: {}".format(fitting_algorithm_used))
-        # kropff
-        for _key in self.kropff_fitting_range.keys():
-            metadata.append("#kropff {} selection range: [{}, {}]".format(_key,
-                                                                          self.kropff_fitting_range[_key][0],
-                                                                          self.kropff_fitting_range[_key][1]))
+    # def add_fitting_infos_to_metadata(self, metadata):
+    #     o_tab = GuiUtility(parent=self)
+    #     fitting_algorithm_used = o_tab.get_tab_selected(tab_ui=self.ui.tab_algorithm)
+    #     fitting_rois = self.fitting_rois
+    #     fitting_flag = True if self.fitting_peak_ui else False
+    #     metadata.append("#fitting procedure started: {}".format(fitting_flag))
+    #     metadata.append("#fitting algorithm selected: {}".format(fitting_algorithm_used))
+    #     # kropff
+    #     for _key in self.kropff_fitting_range.keys():
+    #         metadata.append("#kropff {} selection range: [{}, {}]".format(_key,
+    #                                                                       self.kropff_fitting_range[_key][0],
+    #                                                                       self.kropff_fitting_range[_key][1]))
 
     def get_all_russian_doll_region_full_infos(self):
         if self.is_file_imported:
@@ -809,38 +771,38 @@ class Interface(QMainWindow):
 
         self.kropff_fitting_range[name_of_page] = [left_index, right_index]
 
-    def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
-        self.fitting_input_dictionary = {}
-
-        metadata = result_of_import['metadata']
-        self.working_dir = metadata['base_folder']
-        self.bragg_edge_range = metadata['bragg_edge_range']
-
-        columns_roi = metadata['columns']
-
-        data = result_of_import['data']
-        tof_array = np.array(data['tof'])
-        # self.tof_array = tof_array
-        index_array = np.array(data['index'])
-        lambda_array = np.array(data['lambda'])
-        rois_dictionary = OrderedDict()
-        for col in np.arange(3, len(columns_roi)+3):
-            str_col = str(col)
-            rois_dictionary[col-3] = {'profile': np.array(data[str_col]),
-                                      'x0': columns_roi[str_col]['x0'],
-                                      'y0': columns_roi[str_col]['y0'],
-                                      'width': columns_roi[str_col]['width'],
-                                      'height': columns_roi[str_col]['height'],
-                                      }
-        xaxis_dictionary = {'index': (index_array, self.xaxis_label['index']),
-                            'lambda': (lambda_array, self.xaxis_label['lambda']),
-                            'tof': (tof_array, self.xaxis_label['tof'])}
-        self.fitting_input_dictionary = {'xaxis': xaxis_dictionary,
-                                         'rois': rois_dictionary}
-
-        self.kropff_fitting_range['high'] = metadata['kropff_high']
-        self.kropff_fitting_range['low'] = metadata['kropff_low']
-        self.kropff_fitting_range['bragg_peak'] = metadata['kropff_bragg_peak']
+    # def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
+    #     self.fitting_input_dictionary = {}
+    #
+    #     metadata = result_of_import['metadata']
+    #     self.working_dir = metadata['base_folder']
+    #     self.bragg_edge_range = metadata['bragg_edge_range']
+    #
+    #     columns_roi = metadata['columns']
+    #
+    #     data = result_of_import['data']
+    #     tof_array = np.array(data['tof'])
+    #     # self.tof_array = tof_array
+    #     index_array = np.array(data['index'])
+    #     lambda_array = np.array(data['lambda'])
+    #     rois_dictionary = OrderedDict()
+    #     for col in np.arange(3, len(columns_roi)+3):
+    #         str_col = str(col)
+    #         rois_dictionary[col-3] = {'profile': np.array(data[str_col]),
+    #                                   'x0': columns_roi[str_col]['x0'],
+    #                                   'y0': columns_roi[str_col]['y0'],
+    #                                   'width': columns_roi[str_col]['width'],
+    #                                   'height': columns_roi[str_col]['height'],
+    #                                   }
+    #     xaxis_dictionary = {'index': (index_array, self.xaxis_label['index']),
+    #                         'lambda': (lambda_array, self.xaxis_label['lambda']),
+    #                         'tof': (tof_array, self.xaxis_label['tof'])}
+    #     self.fitting_input_dictionary = {'xaxis': xaxis_dictionary,
+    #                                      'rois': rois_dictionary}
+    #
+    #     self.kropff_fitting_range['high'] = metadata['kropff_high']
+    #     self.kropff_fitting_range['low'] = metadata['kropff_low']
+    #     self.kropff_fitting_range['bragg_peak'] = metadata['kropff_bragg_peak']
 
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:
@@ -851,14 +813,7 @@ class Interface(QMainWindow):
 
         self.ui.profile.clear()
         o_get = Get(parent=self)
-        #x_axis_selected = o_get.x_axis_checked()
         x_axis, x_axis_label = o_get.x_axis()
-        print("in update selection plot")
-        import pprint
-        pprint.pprint(x_axis)
-
-        #x_axis, x_axis_label = fitting_input_dictionary['xaxis'][x_axis_selected]
-
         max_value = self.ui.profile_of_bin_size_slider.maximum()
         roi_selected = max_value - self.ui.profile_of_bin_size_slider.value()
 
@@ -920,44 +875,8 @@ class Interface(QMainWindow):
 
     # event handler
     def import_button_clicked(self):
-        working_dir = str(Path(self.working_dir).parent)
-        ascii_file = QFileDialog.getOpenFileName(self,
-                                                 caption="Select ASCII file",
-                                                 directory=working_dir,
-                                                 filter="ASCII (*.txt)")
-
-        if ascii_file[0]:
-            self.full_reset_of_ui()
-            self.block_table_ui(True)
-
-            self.is_file_imported = True
-            result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
-            self.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
-            self.ui.distance_detector_sample.setText(result_of_import['metadata']['distance_detector_sample'])
-            self.ui.detector_offset.setText(result_of_import['metadata']['detector_offset'])
-            self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
-            self.tof_array_s = self.fitting_input_dictionary['xaxis']['tof'][0] * 1e-6
-            self.lambda_array = self.fitting_input_dictionary['xaxis']['lambda'][0]
-            self.index_array = self.fitting_input_dictionary['xaxis']['index'][0]
-
-            self.ui.statusbar.showMessage("{} has been imported!".format(ascii_file), 10000)  # 10s
-            self.ui.statusbar.setStyleSheet("color: green")
-
-            self.disable_left_part_of_selection_tab()
-            self.ui.info_message_about_cyan.setVisible(False)
-            self.update_profile_of_bin_slider_widget()
-            self.update_selection_plot()
-            self.update_vertical_line_in_profile_plot()
-
-            self.ui.tabWidget.setTabEnabled(1, self.is_fit_infos_loaded())
-            self.ui.tabWidget.setEnabled(True)
-            self.ui.actionExport.setEnabled(True)
-
-            if result_of_import.get('metadata').get('fitting_procedure_started', False):
-                self.fit_that_selection_pushed_by_program(initialize_region=False)
-
-            self.block_table_ui(False)
-            self.update_fitting_plot()
+        o_import = ImportHandler(parent=self)
+        o_import.run()
 
     def full_reset_of_ui(self):
         o_table = TableHandler(table_ui=self.ui.high_lambda_tableWidget)
@@ -987,7 +906,7 @@ class Interface(QMainWindow):
         self.ui.splitter.setSizes([0, 400])
 
     def export_button_clicked(self):
-        o_export = Export(parent=self)
+        o_export = ExportHandler(parent=self)
         o_export.configuration()
 
     def roi_radiobuttons_changed(self):
