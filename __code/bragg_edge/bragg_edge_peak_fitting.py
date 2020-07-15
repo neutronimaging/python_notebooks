@@ -171,9 +171,25 @@ class Interface(QMainWindow):
         self.update_time_spectra()
 
     def update_time_spectra(self):
+        try:
+            distance_source_detector_m = np.float(self.ui.distance_detector_sample.text())
+            self.ui.statusbar.showMessage("", 100)  # 10s
+        except ValueError:
+            self.ui.statusbar.showMessage("distance source detector input is WRONG", 120000)  # 2mn
+            self.ui.statusbar.setStyleSheet("color: red")
+            return
+
+        try:
+            detector_offset_micros = np.float(self.ui.detector_offset.text())
+            self.ui.statusbar.showMessage("", 100)  # 10s
+        except ValueError:
+            self.ui.statusbar.showMessage("detector offset input is WRONG", 120000)  # 2mn
+            self.ui.statusbar.setStyleSheet("color: red")
+            return
+
         _exp = Experiment(tof=self.tof_array,
-                          distance_source_detector_m=np.float(self.ui.distance_detector_sample.text()),
-                          detector_offset_micros=np.float(self.ui.detector_offset.text()))
+                          distance_source_detector_m=distance_source_detector_m,
+                          detector_offset_micros=detector_offset_micros)
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
 
     def get_live_image(self):
