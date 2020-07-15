@@ -18,18 +18,18 @@ class Get:
 		                        }
 
 	def specified_x_axis(self, xaxis='index'):
-		if self.parent.is_file_imported:
-			return self.parent.fitting_input_dictionary['xaxis'][xaxis]
+		# if self.parent.is_file_imported:
+		# 	return self.parent.fitting_input_dictionary['xaxis'][xaxis]
+		# else:
+		label = self.parent.xaxis_label[xaxis]
+		if xaxis == 'index':
+			return self.parent.index_array, label
+		elif xaxis == 'tof':
+			return self.parent.tof_array_s * 1e6, label
+		elif xaxis == 'lambda':
+			return self.parent.lambda_array, label
 		else:
-			label = self.parent.xaxis_label[xaxis]
-			if xaxis == 'index':
-				return np.arange(len(self.parent.o_norm.data['sample']['file_name'])), label
-			elif xaxis == 'tof':
-				return self.parent.tof_array * 1e6, label
-			elif xaxis == 'lambda':
-				return self.parent.lambda_array, label
-			else:
-				raise NotImplementedError
+			raise NotImplementedError
 
 	def x_axis_checked(self):
 		o_gui = GuiUtility(parent=self)

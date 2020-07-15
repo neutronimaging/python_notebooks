@@ -124,6 +124,7 @@ class Interface(QMainWindow):
             show_selection_tab = True
             # default_tab = 0
             enabled_export_button = True
+            self.index_array = np.arange(len(self.o_norm.data['sample']['file_name']))
         else:
             self.working_dir = working_dir
             show_selection_tab = False
@@ -167,7 +168,7 @@ class Interface(QMainWindow):
 
     def load_time_spectra(self):
         self.tof_handler = TOF(filename=self.spectra_file)
-        self.tof_array = self.tof_handler.tof_array
+        self.tof_array_s = self.tof_handler.tof_array
         self.update_time_spectra()
 
     def update_time_spectra(self):
@@ -187,7 +188,7 @@ class Interface(QMainWindow):
             self.ui.statusbar.setStyleSheet("color: red")
             return
 
-        _exp = Experiment(tof=self.tof_array,
+        _exp = Experiment(tof=self.tof_array_s,
                           distance_source_detector_m=distance_source_detector_m,
                           detector_offset_micros=detector_offset_micros)
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
@@ -274,70 +275,12 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_slider.setValue(max_value)
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
 
-    # def get_x_axis(self):
-    #     o_gui = GuiUtility(parent=self)
-    #     tab_selected = o_gui.get_tab_selected(self.ui.tabWidget).lower()
-    #
-    #     x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
-    #                                       'tof': self.ui.selection_tof_radiobutton,
-    #                                       'lambda': self.ui.selection_lambda_radiobutton},
-    #                         'fitting': {'index': self.ui.fitting_index_radiobutton,
-    #                                     'tof': self.ui.fitting_tof_radiobutton,
-    #                                     'lambda': self.ui.fitting_lambda_radiobutton},
-    #                         }
-    #
-    #     list_ui = x_axis_choice_ui[tab_selected]
-    #
-    #     if list_ui['index'].isChecked():
-    #         return self.get_specified_x_axis(xaxis='index')
-    #     elif list_ui['tof'].isChecked():
-    #         return self.get_specified_x_axis(xaxis='tof')
-    #     else:
-    #         return self.get_specified_x_axis(xaxis='lambda')
-
-    # def get_specified_x_axis(self, xaxis='index'):
-    #     if self.is_file_imported:
-    #         return self.fitting_input_dictionary['xaxis'][xaxis]
-    #     else:
-    #         label = self.xaxis_label[xaxis]
-    #         if xaxis == 'index':
-    #             return np.arange(len(self.o_norm.data['sample']['file_name'])), label
-    #         elif xaxis == 'tof':
-    #             return self.tof_array * 1e6, label
-    #         elif xaxis == 'lambda':
-    #             return self.lambda_array, label
-    #         else:
-    #             raise NotImplementedError
-
-    # def get_all_x_axis(self):
-    #     all_x_axis = {'index': self.get_specified_x_axis(xaxis='index'),
-    #                   'tof': self.get_specified_x_axis(xaxis='tof'),
-    #                   'lambda': self.get_specified_x_axis(xaxis='lambda')}
-    #     return all_x_axis
-
     def get_shrinking_roi_dimension(self):
         coordinates = self.get_coordinates_of_new_inside_selection_box()
         return [coordinates['x0'],
                 coordinates['y0'],
                 coordinates['x0'] + coordinates['width'],
                 coordinates['y0'] + coordinates['height']]
-
-    # def get_selection_roi_dimension(self):
-    #     roi_id = self.roi_id
-    #
-    #     x0, y0, x1, y1, width, height = None, None, None, None, None, None
-    #
-    #     if roi_id:
-    #         region = roi_id.getArraySlice(self.final_image,
-    #                                       self.ui.image_view.imageItem)
-    #         x0 = region[0][0].start
-    #         x1 = region[0][0].stop
-    #         y0 = region[0][1].start
-    #         y1 = region[0][1].stop
-    #         width = np.int(x1-x0)
-    #         height = np.int(y1-y0)
-    #
-    #     return [x0, y0, x1, y1, width, height]
 
     def update_selection_profile_plot(self):
 
@@ -877,7 +820,7 @@ class Interface(QMainWindow):
 
         data = result_of_import['data']
         tof_array = np.array(data['tof'])
-        self.tof_array = tof_array
+        # self.tof_array = tof_array
         index_array = np.array(data['index'])
         lambda_array = np.array(data['lambda'])
         rois_dictionary = OrderedDict()
@@ -908,9 +851,13 @@ class Interface(QMainWindow):
 
         self.ui.profile.clear()
         o_get = Get(parent=self)
-        x_axis_selected = o_get.x_axis_checked()
+        #x_axis_selected = o_get.x_axis_checked()
+        x_axis, x_axis_label = o_get.x_axis()
+        print("in update selection plot")
+        import pprint
+        pprint.pprint(x_axis)
 
-        x_axis, x_axis_label = fitting_input_dictionary['xaxis'][x_axis_selected]
+        #x_axis, x_axis_label = fitting_input_dictionary['xaxis'][x_axis_selected]
 
         max_value = self.ui.profile_of_bin_size_slider.maximum()
         roi_selected = max_value - self.ui.profile_of_bin_size_slider.value()
@@ -920,6 +867,8 @@ class Interface(QMainWindow):
         self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
                                                   self.shrinking_roi_rgb[1],
                                                   self.shrinking_roi_rgb[2]))
+        self.ui.profile.setLabel("bottom", x_axis_label)
+        self.ui.profile.setLabel("left", 'Mean counts')
 
         # full region
         y_axis = self.fitting_input_dictionary['rois'][0]['profile']
@@ -987,11 +936,15 @@ class Interface(QMainWindow):
             self.ui.distance_detector_sample.setText(result_of_import['metadata']['distance_detector_sample'])
             self.ui.detector_offset.setText(result_of_import['metadata']['detector_offset'])
             self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
+            self.tof_array_s = self.fitting_input_dictionary['xaxis']['tof'][0] * 1e-6
+            self.lambda_array = self.fitting_input_dictionary['xaxis']['lambda'][0]
+            self.index_array = self.fitting_input_dictionary['xaxis']['index'][0]
 
             self.ui.statusbar.showMessage("{} has been imported!".format(ascii_file), 10000)  # 10s
             self.ui.statusbar.setStyleSheet("color: green")
 
             self.disable_left_part_of_selection_tab()
+            self.ui.info_message_about_cyan.setVisible(False)
             self.update_profile_of_bin_slider_widget()
             self.update_selection_plot()
             self.update_vertical_line_in_profile_plot()
