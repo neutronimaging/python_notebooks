@@ -4,6 +4,7 @@ import numpy as np
 from collections import OrderedDict
 
 from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
+from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 
 
 class ImportHandler:
@@ -52,13 +53,14 @@ class ImportHandler:
 			self.parent.update_fitting_plot()
 
 	def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
-		self.parent.fitting_input_dictionary = {}
-
 		metadata = result_of_import['metadata']
 		self.parent.working_dir = metadata['base_folder']
 		self.parent.bragg_edge_range = metadata['bragg_edge_range']
 
 		columns_roi = metadata['columns']
+
+		o_init = PeakFittingInitialization(parent=self.parent)
+		self.parent.fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(columns_roi))
 
 		data = result_of_import['data']
 		tof_array = np.array(data['tof'])

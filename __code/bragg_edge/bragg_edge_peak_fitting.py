@@ -22,6 +22,7 @@ from __code.bragg_edge.kropff import Kropff
 from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
 from __code.bragg_edge.get import Get
+from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 
 DEBUGGING = True
 
@@ -77,30 +78,24 @@ class Interface(QMainWindow):
     # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
     #                                       'lambda': ([], 'lambda (Angstroms)'),
     #                                       'tof': ([], 'TOF (micros)')},
-    #                             'rois': {'0': {'x0': None,
-    #                                            'y0': None,
-    #                                            'width': None,
-    #                                            'height': None,
-    #                                            'profile': [],
-    #                                            'fitting': {'kropff': {'a0': None,
-    #                                                                   'b0': None,
-    #                                                                   'a0_error': None,
-    #                                                                   'b0_error': None,
-    #                                                                   'y_fit': [],
-    #                                                                   },
-    #                                            },
-    #                                      '1': {'x0': None,
-    #                                            'y0': None,
-    #                                            'width': None,
-    #                                            'height': None,
-    #                                            'profile': [],
-    #                                            'fitting': {'kropff': {'a0': None,
-    #                                                                   'b0': None,
-    #                                                                   'a0_error': None,
-    #                                                                   'b0_error': None,
-    #                                                                   'y_fit': [],
-    #                                                                   },
-    #                                            },
+    #                             'rois': {0: {'x0': None,
+    #                                          'y0': None,
+    #                                          'width': None,
+    #                                          'height': None,
+    #                                          'profile': [],
+    #                                          'fitting': {'kropff': {'high': {'a0': None,
+    #                                                                          'b0': None,
+    #                                                                          'a0_error': None,
+    #                                                                          'b0_error': None,
+    #                                                                          'yaxis_fitted': [],
+    #                                                                          'xaxis_to_fit': [],
+    #                                                                          },
+    #                                                                  'low': {},
+    #                                                                  'bragg_peak: {},
+    #                                                                 },
+    #                                                      'TBD' : {},
+    #                                                     },
+    #                                          },
     #                                      },
     #                             'fit_infos': {'high_lambda': {},         # do we have a range selected
     #                                           'low_lambda': {},
@@ -440,14 +435,14 @@ class Interface(QMainWindow):
         self.dict_profile_to_fit = profile_to_fit
 
     def fit_that_selection_pushed_by_program(self, initialize_region=True):
-        fitting_input_dictionary = {}
-
         o_get = Get(parent=self)
         x_axis = o_get.all_x_axis()
+        dict_regions = o_get.all_russian_doll_region_full_infos()
+
+        o_init = PeakFittingInitialization(parent=self)
+        fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(dict_regions))
 
         fitting_input_dictionary['xaxis'] = x_axis
-
-        dict_regions = o_get.all_russian_doll_region_full_infos()
         fitting_input_dictionary['rois'] = dict_regions
 
         self.fitting_input_dictionary = fitting_input_dictionary
@@ -641,8 +636,30 @@ class Interface(QMainWindow):
         self.fitting_peak_ui.setZValue(-10)
         self.ui.fitting.addItem(self.fitting_peak_ui)
 
+        o_gui = GuiUtility(parent=self)
+        algo_name = o_gui.get_tab_selected(self.ui.tab_algorithm).lower()
+
+        print(self.fitting_input_dictionary['rois'][row_selected])
+
+        if Interface.key_path_exists_in_dictionary(dictionary=self.fitting_input_dictionary,
+                tree_key = ['rois', row_selected, 'fitting', 'algo_name', name_of_page]):
+            _entry = self.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
+            xaxis = _entry['xaxis_to_fit']
+            yaxis = _entry['yaxis_fitted']
+            self.ui.fitting.plot(xaxis, yaxis, pen=(self.fit_rgb[0], self.fit_rgb[1], self.fit_rgb[2]))
+
         if peak_range_index[0] is None:
             self.fitting_range_changed()
+
+    @staticmethod
+    def key_path_exists_in_dictionary(dictionary=None, tree_key=None):
+        """this method checks if full key path in the dictionary exists"""
+        top_dictionary = dictionary
+        for _key in tree_key:
+            if top_dictionary.get(_key, None):
+                return False
+            top_dictionary = top_dictionary.get(_key)
+        return True
 
     def fitting_range_changed(self):
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
@@ -667,7 +684,8 @@ class Interface(QMainWindow):
             self.ui.working_folder_value.setText(self.working_dir)
 
     def update_selection_plot(self):
-        fitting_input_dictionary = self.fitting_input_dictionary
+        # o_init = PeakFittingInitialization(parent=self)
+        # self.fitting_input_dictionary = o_init.fitting_input_dictionary()
 
         self.ui.profile.clear()
         o_get = Get(parent=self)
@@ -788,13 +806,11 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def kropff_fit_high_lambda_region_clicked(self):
-
         self.switch_fitting_axis_to_lambda()
-
         o_fit = FittingJobHandler(parent=self)
         o_fit.prepare()
-        o_fit.run()
-        o_fit.display_result()
+        o_fit.run_kropff_high_lambda()
+        self.update_fitting_plot()
 
     def switch_fitting_axis_to_lambda(self):
         self.ui.fitting_lambda_radiobutton.setChecked(True)
