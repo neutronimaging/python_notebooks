@@ -758,7 +758,8 @@ class Interface(QMainWindow):
             dict_regions = self.fitting_input_dictionary['rois']
         else:
             # collect initial selection size (x0, y0, width, height)
-            [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
+            o_get = Get(parent=self)
+            [x0, y0, x1, y1, width, height] = o_get.selection_roi_dimension()
             # create profile for all the fitting region inside that first box
             o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
             dict_regions = o_regions.get_all_russian_doll_regions()
