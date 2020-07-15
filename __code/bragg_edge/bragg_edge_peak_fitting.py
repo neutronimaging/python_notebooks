@@ -20,6 +20,9 @@ from __code.utilities import find_nearest_index
 from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
 from __code.table_handler import TableHandler
 from __code.bragg_edge.fitting_job_handler import FittingJobHandler
+from __code.bragg_edge.kropff import Kropff
+from __code.bragg_edge.export import Export
+from __code.bragg_edge.get import Get
 
 DEBUGGING = True
 
@@ -80,15 +83,27 @@ class Interface(QMainWindow):
     #                                            'width': None,
     #                                            'height': None,
     #                                            'profile': [],
+    #                                            'fitting': {'kropff': {'a0': None,
+    #                                                                   'b0': None,
+    #                                                                   'a0_error': None,
+    #                                                                   'b0_error': None,
+    #                                                                   'y_fit': [],
+    #                                                                   },
     #                                            },
     #                                      '1': {'x0': None,
     #                                            'y0': None,
     #                                            'width': None,
     #                                            'height': None,
     #                                            'profile': [],
+    #                                            'fitting': {'kropff': {'a0': None,
+    #                                                                   'b0': None,
+    #                                                                   'a0_error': None,
+    #                                                                   'b0_error': None,
+    #                                                                   'y_fit': [],
+    #                                                                   },
     #                                            },
     #                                      },
-    #                             'fit_infos': {'high_lambda': {},
+    #                             'fit_infos': {'high_lambda': {},         # do we have a range selected
     #                                           'low_lambda': {},
     #                                           'bragg_peak': {},
     #                                           },
@@ -152,14 +167,14 @@ class Interface(QMainWindow):
 
     def load_time_spectra(self):
         self.tof_handler = TOF(filename=self.spectra_file)
+        self.tof_array = self.tof_handler.tof_array
         self.update_time_spectra()
 
     def update_time_spectra(self):
-        _exp = Experiment(tof=self.tof_handler.tof_array,
+        _exp = Experiment(tof=self.tof_array,
                           distance_source_detector_m=np.float(self.ui.distance_detector_sample.text()),
                           detector_offset_micros=np.float(self.ui.detector_offset.text()))
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
-        self.tof_array = self.tof_handler.tof_array
 
     def get_live_image(self):
         if DEBUGGING:
@@ -243,67 +258,46 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_slider.setValue(max_value)
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
 
-    def get_x_axis_checked(self):
-        o_gui = GuiUtility(parent=self)
-        tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tabWidget).lower()
+    # def get_x_axis(self):
+    #     o_gui = GuiUtility(parent=self)
+    #     tab_selected = o_gui.get_tab_selected(self.ui.tabWidget).lower()
+    #
+    #     x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
+    #                                       'tof': self.ui.selection_tof_radiobutton,
+    #                                       'lambda': self.ui.selection_lambda_radiobutton},
+    #                         'fitting': {'index': self.ui.fitting_index_radiobutton,
+    #                                     'tof': self.ui.fitting_tof_radiobutton,
+    #                                     'lambda': self.ui.fitting_lambda_radiobutton},
+    #                         }
+    #
+    #     list_ui = x_axis_choice_ui[tab_selected]
+    #
+    #     if list_ui['index'].isChecked():
+    #         return self.get_specified_x_axis(xaxis='index')
+    #     elif list_ui['tof'].isChecked():
+    #         return self.get_specified_x_axis(xaxis='tof')
+    #     else:
+    #         return self.get_specified_x_axis(xaxis='lambda')
 
-        x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
-                                          'tof': self.ui.selection_tof_radiobutton,
-                                          'lambda': self.ui.selection_lambda_radiobutton},
-                            'fitting': {'index': self.ui.fitting_index_radiobutton,
-                                        'tof': self.ui.fitting_tof_radiobutton,
-                                        'lambda': self.ui.fitting_lambda_radiobutton},
-                            }
+    # def get_specified_x_axis(self, xaxis='index'):
+    #     if self.is_file_imported:
+    #         return self.fitting_input_dictionary['xaxis'][xaxis]
+    #     else:
+    #         label = self.xaxis_label[xaxis]
+    #         if xaxis == 'index':
+    #             return np.arange(len(self.o_norm.data['sample']['file_name'])), label
+    #         elif xaxis == 'tof':
+    #             return self.tof_array * 1e6, label
+    #         elif xaxis == 'lambda':
+    #             return self.lambda_array, label
+    #         else:
+    #             raise NotImplementedError
 
-        list_ui = x_axis_choice_ui[tab_selected]
-
-        if list_ui['index'].isChecked():
-            return 'index'
-        elif list_ui['tof'].isChecked():
-            return 'tof'
-        else:
-            return 'lambda'
-
-    def get_x_axis(self):
-        o_gui = GuiUtility(parent=self)
-        tab_selected = o_gui.get_tab_selected(self.ui.tabWidget).lower()
-
-        x_axis_choice_ui = {'selection': {'index': self.ui.selection_index_radiobutton,
-                                          'tof': self.ui.selection_tof_radiobutton,
-                                          'lambda': self.ui.selection_lambda_radiobutton},
-                            'fitting': {'index': self.ui.fitting_index_radiobutton,
-                                        'tof': self.ui.fitting_tof_radiobutton,
-                                        'lambda': self.ui.fitting_lambda_radiobutton},
-                            }
-
-        list_ui = x_axis_choice_ui[tab_selected]
-
-        if list_ui['index'].isChecked():
-            return self.get_specified_x_axis(xaxis='index')
-        elif list_ui['tof'].isChecked():
-            return self.get_specified_x_axis(xaxis='tof')
-        else:
-            return self.get_specified_x_axis(xaxis='lambda')
-
-    def get_specified_x_axis(self, xaxis='index'):
-        if self.is_file_imported:
-            return self.fitting_input_dictionary['xaxis'][xaxis]
-        else:
-            label = self.xaxis_label[xaxis]
-            if xaxis == 'index':
-                return np.arange(len(self.o_norm.data['sample']['file_name'])), label
-            elif xaxis == 'tof':
-                return self.tof_array * 1e6, label
-            elif xaxis == 'lambda':
-                return self.lambda_array, label
-            else:
-                raise NotImplementedError
-
-    def get_all_x_axis(self):
-        all_x_axis = {'index': self.get_specified_x_axis(xaxis='index'),
-                      'tof': self.get_specified_x_axis(xaxis='tof'),
-                      'lambda': self.get_specified_x_axis(xaxis='lambda')}
-        return all_x_axis
+    # def get_all_x_axis(self):
+    #     all_x_axis = {'index': self.get_specified_x_axis(xaxis='index'),
+    #                   'tof': self.get_specified_x_axis(xaxis='tof'),
+    #                   'lambda': self.get_specified_x_axis(xaxis='lambda')}
+    #     return all_x_axis
 
     def get_shrinking_roi_dimension(self):
         coordinates = self.get_coordinates_of_new_inside_selection_box()
@@ -312,22 +306,22 @@ class Interface(QMainWindow):
                 coordinates['x0'] + coordinates['width'],
                 coordinates['y0'] + coordinates['height']]
 
-    def get_selection_roi_dimension(self):
-        roi_id = self.roi_id
-
-        x0, y0, x1, y1, width, height = None, None, None, None, None, None
-
-        if roi_id:
-            region = roi_id.getArraySlice(self.final_image,
-                                          self.ui.image_view.imageItem)
-            x0 = region[0][0].start
-            x1 = region[0][0].stop
-            y0 = region[0][1].start
-            y1 = region[0][1].stop
-            width = np.int(x1-x0)
-            height = np.int(y1-y0)
-
-        return [x0, y0, x1, y1, width, height]
+    # def get_selection_roi_dimension(self):
+    #     roi_id = self.roi_id
+    #
+    #     x0, y0, x1, y1, width, height = None, None, None, None, None, None
+    #
+    #     if roi_id:
+    #         region = roi_id.getArraySlice(self.final_image,
+    #                                       self.ui.image_view.imageItem)
+    #         x0 = region[0][0].start
+    #         x1 = region[0][0].stop
+    #         y0 = region[0][1].start
+    #         y1 = region[0][1].stop
+    #         width = np.int(x1-x0)
+    #         height = np.int(y1-y0)
+    #
+    #     return [x0, y0, x1, y1, width, height]
 
     def update_selection_profile_plot(self):
 
@@ -336,12 +330,13 @@ class Interface(QMainWindow):
             self.update_vertical_line_in_profile_plot()
 
         else:
-            x_axis, x_axis_label = self.get_x_axis()
+            o_get = Get(parent=self)
+            x_axis, x_axis_label = o_get.x_axis()
             self.ui.profile.clear()
 
             # large selection region
-            [x0, y0, x1, y1, _, _] = self.get_selection_roi_dimension()
-            profile = self.get_profile_of_roi(x0, y0, x1, y1)
+            [x0, y0, x1, y1, _, _] = o_get.selection_roi_dimension()
+            profile = o_get.profile_of_roi(x0, y0, x1, y1)
             x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                                   y_axis=profile)
             self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
@@ -354,7 +349,7 @@ class Interface(QMainWindow):
             y0 = shrinking_roi['y0']
             x1 = shrinking_roi['x1']
             y1 = shrinking_roi['y1']
-            profile = self.get_profile_of_roi(x0, y0, x1, y1)
+            profile = o_get.profile_of_roi(x0, y0, x1, y1)
             x_axis, y_axis = Interface.check_size(x_axis=x_axis,
                                                   y_axis=profile)
             self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
@@ -378,26 +373,13 @@ class Interface(QMainWindow):
 
     def bragg_edge_range_changed(self):
         [left_range, right_range] = list(self.bragg_edge_range_ui.getRegion())
-        x_axis, _ = self.get_x_axis()
+        o_get = Get(parent=self)
+        x_axis, _ = o_get.x_axis()
 
         left_index = find_nearest_index(array=x_axis, value=left_range)
         right_index = find_nearest_index(array=x_axis, value=right_range)
 
         self.bragg_edge_range = [left_index, right_index]
-
-    def get_profile_of_roi(self, x0=None, y0=None, x1=None, y1=None, width=None, height=None):
-        profile_value = []
-
-        if width:
-            x1 = x0 + width
-        if height:
-            y1 = y0 + height
-
-        for _image in self.o_norm.data['sample']['data']:
-            _value = np.mean(_image[y0:y1, x0:x1])
-            profile_value.append(_value)
-
-        return profile_value
 
     def reset_profile_of_bin_size_slider(self):
         max_value = np.min([np.int(str(self.ui.profile_of_bin_size_width.text())),
@@ -477,12 +459,13 @@ class Interface(QMainWindow):
         [left_range, right_range] = self.bragg_edge_range
 
         [x0, y0, x1, y1] = self.get_shrinking_roi_dimension()
-        profile = self.get_profile_of_roi(x0=x0, y0=y0,
-                                          x1=x1, y1=y1)
+        o_get = Get(parent=self)
+        profile = o_get.profile_of_roi(x0=x0, y0=y0,
+                                       x1=x1, y1=y1)
 
         yaxis = profile[left_range: right_range]
 
-        all_x_axis = self.get_all_x_axis()
+        all_x_axis = o_get.all_x_axis()
         index_array = all_x_axis['index'][0]
         tof_array = all_x_axis['tof'][0]
         lambda_array = all_x_axis['lambda'][0]
@@ -500,14 +483,19 @@ class Interface(QMainWindow):
 
     def fit_that_selection_pushed_by_program(self, initialize_region=True):
         fitting_input_dictionary = {}
-        x_axis = self.get_all_x_axis()
+
+        o_get = Get(parent=self)
+        x_axis = o_get.all_x_axis()
+
         fitting_input_dictionary['xaxis'] = x_axis
 
         dict_regions = self.get_all_russian_doll_region_full_infos()
         fitting_input_dictionary['rois'] = dict_regions
 
         self.fitting_input_dictionary = fitting_input_dictionary
-        self.reset_all_fitting_table()
+        o_kropff = Kropff(parent=self)
+        o_kropff.reset_all_table()
+        # self.reset_all_kropff_fitting_table()
 
         if initialize_region:
             self.initialize_default_peak_regions()
@@ -534,21 +522,21 @@ class Interface(QMainWindow):
         # TBD tab
         pass
 
-    def get_requested_xaxis(self, xaxis_label='index'):
-        if xaxis_label == 'index':
-            return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
-        elif xaxis_label == 'tof':
-            return self.dict_profile_to_fit['xaxis']['tof'], self.xaxis_label['tof']
-        elif xaxis_label == 'lambda':
-            return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
+    # def get_requested_xaxis(self, xaxis_label='index'):
+    #     if xaxis_label == 'index':
+    #         return self.dict_profile_to_fit['xaxis']['index'], self.xaxis_label['index']
+    #     elif xaxis_label == 'tof':
+    #         return self.dict_profile_to_fit['xaxis']['tof'], self.xaxis_label['tof']
+    #     elif xaxis_label == 'lambda':
+    #         return self.dict_profile_to_fit['xaxis']['lambda'], self.xaxis_label['lambda']
 
-    def get_fitting_profile_xaxis(self):
-        if self.ui.fitting_tof_radiobutton.isChecked():
-            return self.get_requested_xaxis(xaxis_label='tof')
-        elif self.ui.fitting_index_radiobutton.isChecked():
-            return self.get_requested_xaxis(xaxis_label='index')
-        else:
-            return self.get_requested_xaxis(xaxis_label='lambda')
+    # def get_fitting_profile_xaxis(self):
+    #     if self.ui.fitting_tof_radiobutton.isChecked():
+    #         return self.get_requested_xaxis(xaxis_label='tof')
+    #     elif self.ui.fitting_index_radiobutton.isChecked():
+    #         return self.get_requested_xaxis(xaxis_label='index')
+    #     else:
+    #         return self.get_requested_xaxis(xaxis_label='lambda')
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
         dict_rois_imported = self.dict_rois_imported
@@ -635,15 +623,15 @@ class Interface(QMainWindow):
                 'x1': new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
                 'width': width_requested, 'height': height_requested}
 
-    @staticmethod
-    def makeup_name_of_profile_ascii_file(base_name="default",
-                                          export_folder="./",
-                                          x0=None, y0=None, width=None, height=None):
-        """this will return the full path name of the ascii file to create that will contain all the profiles
-        starting with the selection box and all the way to the minimal size"""
-        full_base_name = "full_set_of_shrinkable_region_profiles_from_" + \
-                         "x{}_y{}_w{}_h{}_for_folder_{}.txt".format(x0, y0, width, height, base_name)
-        return str(Path(export_folder) / full_base_name)
+    # @staticmethod
+    # def makeup_name_of_profile_ascii_file(base_name="default",
+    #                                       export_folder="./",
+    #                                       x0=None, y0=None, width=None, height=None):
+    #     """this will return the full path name of the ascii file to create that will contain all the profiles
+    #     starting with the selection box and all the way to the minimal size"""
+    #     full_base_name = "full_set_of_shrinkable_region_profiles_from_" + \
+    #                      "x{}_y{}_w{}_h{}_for_folder_{}.txt".format(x0, y0, width, height, base_name)
+    #     return str(Path(export_folder) / full_base_name)
 
     def add_profile_to_dict_of_all_regions(self, dict_regions=None):
         for _key in dict_regions.keys():
@@ -652,8 +640,10 @@ class Interface(QMainWindow):
             y0 = current_region['y0']
             width = current_region['width']
             height = current_region['height']
-            profile = self.get_profile_of_roi(x0=x0, y0=y0,
-                                          x1=x0 + width, y1=y0 + height)
+            o_get = Get(parent=self)
+            profile = o_get.profile_of_roi(x0=x0, y0=y0,
+                                           x1=x0 + width,
+                                           y1=y0 + height)
             current_region['profile'] = profile
 
     @staticmethod
@@ -724,31 +714,31 @@ class Interface(QMainWindow):
             self.ui.statusbar.showMessage("{} has been created!".format(name_of_ascii_file), 10000)  # 10s
             self.ui.statusbar.setStyleSheet("color: green")
 
-    def get_data_metadata_from_selection_tab(self):
-        base_folder = Path(self.working_dir)
-        index_axis, _ = self.get_specified_x_axis(xaxis='index')
-        tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
-        lambda_axis, _ = self.get_specified_x_axis('lambda')
-        fitting_peak_range = self.bragg_edge_range
-        distance_detector_sample = str(self.ui.distance_detector_sample.text())
-        detector_offset = str(self.ui.detector_offset.text())
-
-        dict_regions = self.get_all_russian_doll_region_full_infos()
-        metadata = Interface.make_metadata(base_folder=base_folder,
-                                           fitting_peak_range=fitting_peak_range,
-                                           dict_regions=dict_regions,
-                                           distance_detector_sample=distance_detector_sample,
-                                           detector_offset=detector_offset)
-        self.add_fitting_infos_to_metadata(metadata)
-
-        metadata.append("#")
-        metadata.append("#File Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
-        data = Interface.format_data(col1=index_axis,
-                                     col2=tof_axis,
-                                     col3=lambda_axis,
-                                     dict_regions=dict_regions)
-
-        return data, metadata
+    # def get_data_metadata_from_selection_tab(self):
+    #     base_folder = Path(self.working_dir)
+    #     index_axis, _ = self.get_specified_x_axis(xaxis='index')
+    #     tof_axis, _ = self.get_specified_x_axis(xaxis='tof')
+    #     lambda_axis, _ = self.get_specified_x_axis('lambda')
+    #     fitting_peak_range = self.bragg_edge_range
+    #     distance_detector_sample = str(self.ui.distance_detector_sample.text())
+    #     detector_offset = str(self.ui.detector_offset.text())
+    #
+    #     dict_regions = self.get_all_russian_doll_region_full_infos()
+    #     metadata = Interface.make_metadata(base_folder=base_folder,
+    #                                        fitting_peak_range=fitting_peak_range,
+    #                                        dict_regions=dict_regions,
+    #                                        distance_detector_sample=distance_detector_sample,
+    #                                        detector_offset=detector_offset)
+    #     self.add_fitting_infos_to_metadata(metadata)
+    #
+    #     metadata.append("#")
+    #     metadata.append("#File Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
+    #     data = Interface.format_data(col1=index_axis,
+    #                                  col2=tof_axis,
+    #                                  col3=lambda_axis,
+    #                                  dict_regions=dict_regions)
+    #
+    #     return data, metadata
 
     def add_fitting_infos_to_metadata(self, metadata):
         o_tab = GuiUtility(parent=self)
@@ -780,18 +770,6 @@ class Interface(QMainWindow):
         self.ui.low_lambda_tableWidget.selectRow(0)
         self.ui.bragg_edge_tableWidget.selectRow(0)
 
-    def get_part_of_fitting_selected(self):
-        """high, low or bragg_peak"""
-        list_pages = ["high", "low", "bragg_peak"]
-        list_table_ui = [self.ui.high_lambda_tableWidget,
-                         self.ui.low_lambda_tableWidget,
-                         self.ui.bragg_edge_tableWidget]
-
-        page_index = self.ui.kropff_toolBox.currentIndex()
-
-        return {'name_of_page': list_pages[page_index],
-                'table_ui': list_table_ui[page_index]}
-
     def fitting_axis_changed(self):
         self.update_fitting_plot()
 
@@ -806,14 +784,15 @@ class Interface(QMainWindow):
 
     def update_fitting_plot(self):
         self.ui.fitting.clear()
-        part_of_fitting_dict = self.get_part_of_fitting_selected()
+        o_get = Get(parent=self)
+        part_of_fitting_dict = o_get.part_of_fitting_selected()
         name_of_page = part_of_fitting_dict['name_of_page']
         table_ui = part_of_fitting_dict['table_ui']
 
         o_table = TableHandler(table_ui=table_ui)
         row_selected = o_table.get_row_selected()
 
-        x_axis_selected = self.get_x_axis_checked()
+        x_axis_selected = o_get.x_axis_checked()
 
         selected_roi = self.fitting_input_dictionary['rois'][row_selected]
         xaxis_dict = self.fitting_input_dictionary['xaxis']
@@ -855,7 +834,8 @@ class Interface(QMainWindow):
     def fitting_range_changed(self):
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
         xaxis_dict = self.fitting_input_dictionary['xaxis']
-        x_axis_selected = self.get_x_axis_checked()
+        o_get = Get(parent=self)
+        x_axis_selected = o_get.x_axis_checked()
         xaxis_index, _ = xaxis_dict[x_axis_selected]
 
         [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
@@ -864,7 +844,7 @@ class Interface(QMainWindow):
         left_index = find_nearest_index(array=xaxis, value=left_range)
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
-        part_of_fitting_dict = self.get_part_of_fitting_selected()
+        part_of_fitting_dict = o_get.part_of_fitting_selected()
         name_of_page = part_of_fitting_dict['name_of_page']
 
         self.kropff_fitting_range[name_of_page] = [left_index, right_index]
@@ -880,6 +860,7 @@ class Interface(QMainWindow):
 
         data = result_of_import['data']
         tof_array = np.array(data['tof'])
+        self.tof_array = tof_array
         index_array = np.array(data['index'])
         lambda_array = np.array(data['lambda'])
         rois_dictionary = OrderedDict()
@@ -905,55 +886,12 @@ class Interface(QMainWindow):
         if tab_index == 1:
             self.ui.working_folder_value.setText(self.working_dir)
 
-    def reset_all_fitting_table(self):
-        # self.clear_table(is_all=True)
-        self.reset_high_lambda_table()
-        self.reset_low_lambda_table()
-        self.reset_bragg_peak_table()
-
-    def reset_high_lambda_table(self):
-        self.clear_table(table_name='high_lambda')
-        self.fill_table_with_minimum_contain(table_ui=self.ui.high_lambda_tableWidget)
-
-    def reset_low_lambda_table(self):
-        self.clear_table(table_name='low_lambda')
-        self.fill_table_with_minimum_contain(table_ui=self.ui.low_lambda_tableWidget)
-
-    def reset_bragg_peak_table(self):
-        self.clear_table(table_name='bragg_edge')
-        self.fill_table_with_minimum_contain(table_ui=self.ui.bragg_edge_tableWidget)
-
-    def fill_table_with_minimum_contain(self, table_ui=None):
-        fitting_input_dictionary = self.fitting_input_dictionary
-        rois = fitting_input_dictionary['rois']
-
-        o_table = TableHandler(table_ui=table_ui)
-        nbr_column = o_table.table_ui.columnCount()
-        other_column_name = ["N/A" for _ in np.arange(nbr_column)]
-        for _row, _roi in enumerate(rois.keys()):
-            _roi_key = rois[_roi]
-            list_col_name = "{}; {}; {}; {}".format(_roi_key['x0'], _roi_key['y0'],
-                                             _roi_key['width'], _roi_key['height'])
-            col_name = [list_col_name] + other_column_name
-            o_table.insert_row(_row, col_name)
-
-    def clear_table(self, table_name='high_lambda', is_all=False):
-        """remove all the rows of the table name specified, or all if is_all is True"""
-        table_ui = {'high_lambda': self.ui.high_lambda_tableWidget,
-                    'low_lambda': self.ui.low_lambda_tableWidget,
-                    'bragg_edge': self.ui.bragg_edge_tableWidget}
-        if is_all:
-            for _key in table_ui.keys():
-                self.clear_table(table_name=_key)
-        else:
-            o_table = TableHandler(table_ui=table_ui[table_name])
-            o_table.remove_all_rows()
-
     def update_selection_plot(self):
         fitting_input_dictionary = self.fitting_input_dictionary
 
         self.ui.profile.clear()
-        x_axis_selected = self.get_x_axis_checked()
+        o_get = Get(parent=self)
+        x_axis_selected = o_get.x_axis_checked()
 
         x_axis, x_axis_label = fitting_input_dictionary['xaxis'][x_axis_selected]
 
@@ -997,7 +935,8 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_slider.valueChanged.connect(self.profile_of_bin_size_slider_changed_after_import)
 
     def update_vertical_line_in_profile_plot(self):
-        x_axis, x_axis_label = self.get_x_axis()
+        o_get = Get(parent=self)
+        x_axis, x_axis_label = o_get.x_axis()
 
         bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
                             x_axis[self.bragg_edge_range[1]]]
@@ -1078,34 +1017,8 @@ class Interface(QMainWindow):
         self.ui.splitter.setSizes([0, 400])
 
     def export_button_clicked(self):
-
-        # bring file dialog to locate where the file will be saved
-        base_folder = Path(self.working_dir)
-        directory = str(base_folder.parent)
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=directory,
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
-
-        if _export_folder:
-            data, metadata = self.get_data_metadata_from_selection_tab()
-
-            # collect initial selection size (x0, y0, width, height)
-            [x0, y0, x1, y1, width, height] = self.get_selection_roi_dimension()
-
-            name_of_ascii_file = Interface.makeup_name_of_profile_ascii_file(base_name=str(base_folder.name),
-                                                                             export_folder=_export_folder,
-                                                                             x0=x0, y0=y0,
-                                                                             width=width,
-                                                                             height=height)
-
-            make_ascii_file(metadata=metadata,
-                            data=data,
-                            output_file_name=name_of_ascii_file,
-                            dim='1d')
-
-            self.ui.statusbar.showMessage("{} has been created!".format(name_of_ascii_file), 10000)  # 10s
-            self.ui.statusbar.setStyleSheet("color: green")
+        o_export = Export(parent=self)
+        o_export.configuration()
 
     def roi_radiobuttons_changed(self):
         if self.ui.square_roi_radiobutton.isChecked():
