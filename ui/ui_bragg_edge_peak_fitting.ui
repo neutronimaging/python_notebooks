@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -698,7 +698,10 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="pushButton_3">
+                    <widget class="QPushButton" name="fit_low_lambda_region">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>200</width>
@@ -756,7 +759,10 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="pushButton_4">
+                    <widget class="QPushButton" name="fit_bragg_peak_region">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>200</width>
@@ -1333,6 +1339,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>fit_low_lambda_region</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_fit_low_lambda_region_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>622</x>
+     <y>241</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1355,5 +1377,6 @@
   <slot>import_button_clicked()</slot>
   <slot>kropff_toolbox_changed()</slot>
   <slot>kropff_fit_high_lambda_region_clicked()</slot>
+  <slot>kropff_fit_low_lambda_region_clicked()</slot>
  </slots>
 </ui>

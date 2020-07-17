@@ -87,8 +87,10 @@ class Initialization:
 		o_high.set_column_sizes(column_sizes=column_sizes)
 
 		# low lambda
-		column_names = ['x0; y0; width; height', 'param1', 'error1']
-		column_sizes = [150, 100, 100]
+		column_names = [u'x\u2080; y\u2080; width; height', u'a\u2095\u2096\u2097', u'b\u2095\u2096\u2097',
+		                u'a\u2095\u2096\u2097_error',
+		                u'b\u2095\u2096\u2097_error']
+		column_sizes = [150, 100, 100, 100, 100]
 		o_low = TableHandler(table_ui=self.parent.ui.low_lambda_tableWidget)
 		for _col_index, _col_name in enumerate(column_names):
 			o_low.insert_column(_col_index)

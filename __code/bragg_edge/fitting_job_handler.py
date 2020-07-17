@@ -1,8 +1,8 @@
-from lmfit import Model
+from lmfit import Model, Parameter
 from copy import deepcopy
 import numpy as np
 
-from __code.bragg_edge.fitting_functions import kropff_high_lambda
+from __code.bragg_edge.fitting_functions import kropff_high_lambda, kropff_low_lambda
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
@@ -12,8 +12,12 @@ class FittingJobHandler:
 	def __init__(self, parent=None):
 		self.parent = parent
 
-	def prepare(self):
-		fitting_range = self.parent.kropff_fitting_range['high']
+		self.xaxis_to_fit = None
+		self.list_yaxis_to_fit = None
+
+	def prepare(self, kropff_tooldbox='high'):
+		fitting_range = self.parent.kropff_fitting_range[kropff_tooldbox]
+
 		xaxis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
 		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
 		full_fitting_xaxis = xaxis[left_xaxis_index: right_xaxis_index]
@@ -43,13 +47,14 @@ class FittingJobHandler:
 			yaxis_fitted = kropff_high_lambda(self.xaxis_to_fit,
 			                                  a0, b0)
 
-			result_dict = {'a0'          : a0, 'b0': b0,
-			               'a0_error'    : a0_error,
-			               'b0_error'    : b0_error,
+			result_dict = {'a0': a0,
+			               'b0': b0,
+			               'a0_error': a0_error,
+			               'b0_error': b0_error,
 			               'xaxis_to_fit': self.xaxis_to_fit,
 			               'yaxis_fitted': yaxis_fitted}
 
-			self.parent.fitting_input_dictionary['rois'][_index]['fitting']['kropff'] = {'high': deepcopy(result_dict)}
+			self.parent.fitting_input_dictionary['rois'][_index]['fitting']['kropff']['high'] = deepcopy(result_dict)
 
 			if update_table_ui:
 				o_gui.update_kropff_high_lambda_table_ui(row=_index,
@@ -57,3 +62,47 @@ class FittingJobHandler:
 				                                         b0=b0,
 				                                         a0_error=a0_error,
 				                                         b0_error=b0_error)
+
+	def run_kropff_low_lambda(self, update_table_ui=False):
+
+		gmodel = Model(kropff_low_lambda, missing='drop', independent_vars=['wavelength'])
+
+		wavelength = self.xaxis_to_fit
+		o_gui = GuiUtility(parent=self.parent)
+
+		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
+
+			_entry = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
+
+			a0 = _entry['a0']
+			b0 = _entry['b0']
+
+			_result = gmodel.fit(yaxis, wavelength=wavelength,
+			                     a0=Parameter('a0', value=a0, vary=False),
+			                     b0=Parameter('b0', value=b0, vary=False),
+			                     ahkl=1,
+			                     bhkl=1)
+
+			ahkl = _result.params['ahkl'].value
+			ahkl_error = _result.params['ahkl'].stderr
+			bhkl = _result.params['bhkl'].value
+			bhkl_error = _result.params['bhkl'].stderr
+
+			yaxis_fitted = kropff_low_lambda(self.xaxis_to_fit,
+			                                 a0, b0, ahkl, bhkl)
+
+			result_dict = {'ahkl': ahkl,
+			               'bhkl': bhkl,
+			               'ahkl_error': ahkl_error,
+			               'bhkl_error': bhkl_error,
+			               'xaxis_to_fit': self.xaxis_to_fit,
+			               'yaxis_fitted': yaxis_fitted}
+
+			self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['low'] = deepcopy(result_dict)
+
+			if update_table_ui:
+				o_gui.update_kropff_low_lambda_table_ui(row=_row,
+				                                        ahkl=ahkl,
+				                                        bhkl=bhkl,
+				                                        ahkl_error=ahkl_error,
+				                                        bhkl_error=bhkl_error)

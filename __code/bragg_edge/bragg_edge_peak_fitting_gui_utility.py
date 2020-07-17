@@ -19,3 +19,25 @@ class GuiUtility:
 		table_ui.item(row, 2).setText(self.cell_str_format.format(b0))
 		table_ui.item(row, 3).setText(self.cell_str_format.format(a0_error))
 		table_ui.item(row, 4).setText(self.cell_str_format.format(b0_error))
+
+	def update_kropff_low_lambda_table_ui(self, row=0, ahkl=None, bhkl=None, ahkl_error=None, bhkl_error=None):
+		table_ui = self.parent.ui.low_lambda_tableWidget
+		table_ui.item(row, 1).setText(self.cell_str_format.format(ahkl))
+		table_ui.item(row, 2).setText(self.cell_str_format.format(bhkl))
+		table_ui.item(row, 3).setText(self.cell_str_format.format(ahkl_error))
+		table_ui.item(row, 4).setText(self.cell_str_format.format(bhkl_error))
+
+	def check_status_of_kropff_fitting_buttons(self):
+
+		enabled_low_lambda_button = False
+		enabled_bragg_preak_button = False
+
+		# can we enabled the low lambda button
+		if self.parent.fitting_input_dictionary['rois'][0]['fitting']['kropff']['high']['a0']:
+			enabled_low_lambda_button = True
+
+		if self.parent.fitting_input_dictionary['rois'][0]['fitting']['kropff']['low']['ahkl']:
+			enabled_bragg_preak_button = True
+
+		self.parent.ui.fit_low_lambda_region.setEnabled(enabled_low_lambda_button)
+		self.parent.ui.fit_bragg_peak_region.setEnabled(enabled_bragg_preak_button)

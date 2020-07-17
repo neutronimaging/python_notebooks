@@ -441,11 +441,13 @@ class Interface(QMainWindow):
 
         o_init = PeakFittingInitialization(parent=self)
         fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(dict_regions))
+        self.append_dict_regions_to_fitting_input_dictionary(dict_regions, fitting_input_dictionary)
 
         fitting_input_dictionary['xaxis'] = x_axis
-        fitting_input_dictionary['rois'] = dict_regions
+        # fitting_input_dictionary['rois'] = dict_regions
 
         self.fitting_input_dictionary = fitting_input_dictionary
+
         o_kropff = Kropff(parent=self)
         o_kropff.reset_all_table()
         # self.reset_all_kropff_fitting_table()
@@ -454,6 +456,12 @@ class Interface(QMainWindow):
             self.initialize_default_peak_regions()
         self.ui.tabWidget.setTabEnabled(1, True)
         self.select_first_row_of_all_fitting_table()
+
+    def append_dict_regions_to_fitting_input_dictionary(self, dict_regions, fitting_input_dictionary):
+        for _row in dict_regions.keys():
+            _entry = dict_regions[_row]
+            for _key in _entry.keys():
+                fitting_input_dictionary['rois'][_row][_key] = _entry[_key]
 
     def fit_that_selection_pushed(self):
         """this will create the fitting_input_dictionary and initialize the table"""
@@ -809,9 +817,20 @@ class Interface(QMainWindow):
     def kropff_fit_high_lambda_region_clicked(self):
         self.switch_fitting_axis_to_lambda()
         o_fit = FittingJobHandler(parent=self)
-        o_fit.prepare()
+        o_fit.prepare(kropff_tooldbox='high')
         o_fit.run_kropff_high_lambda(update_table_ui=True)
         self.update_fitting_plot()
+        o_gui = GuiUtility(parent=self)
+        o_gui.check_status_of_kropff_fitting_buttons()
+
+    def kropff_fit_low_lambda_region_clicked(self):
+        self.switch_fitting_axis_to_lambda()
+        o_fit = FittingJobHandler(parent=self)
+        o_fit.prepare(kropff_tooldbox='low')
+        o_fit.run_kropff_low_lambda(update_table_ui=True)
+        self.update_fitting_plot()
+        o_gui = GuiUtility(parent=self)
+        o_gui.check_status_of_kropff_fitting_buttons()
 
     def switch_fitting_axis_to_lambda(self):
         self.ui.fitting_lambda_radiobutton.setChecked(True)
