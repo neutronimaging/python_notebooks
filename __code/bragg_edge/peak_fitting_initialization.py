@@ -4,7 +4,7 @@ from copy import deepcopy
 KROPFF_HIGH = {'a0': None, 'b0': None,
                'a0_error': None, 'b0_error': None,
                'xaxis_to_fit': None,
-               'yaxis_to_fit': None}
+               'yaxis_fitted': None}
 
 class PeakFittingInitialization:
 

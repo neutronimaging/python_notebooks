@@ -642,7 +642,7 @@ class Interface(QMainWindow):
         print(self.fitting_input_dictionary['rois'][row_selected])
 
         if Interface.key_path_exists_in_dictionary(dictionary=self.fitting_input_dictionary,
-                tree_key = ['rois', row_selected, 'fitting', 'algo_name', name_of_page]):
+                tree_key = ['rois', row_selected, 'fitting', algo_name, name_of_page, 'xaxis_to_fit']):
             _entry = self.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
             xaxis = _entry['xaxis_to_fit']
             yaxis = _entry['yaxis_fitted']
@@ -656,7 +656,7 @@ class Interface(QMainWindow):
         """this method checks if full key path in the dictionary exists"""
         top_dictionary = dictionary
         for _key in tree_key:
-            if top_dictionary.get(_key, None):
+            if top_dictionary.get(_key, None) is None:
                 return False
             top_dictionary = top_dictionary.get(_key)
         return True
