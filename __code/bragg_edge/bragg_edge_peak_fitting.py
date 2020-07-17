@@ -809,7 +809,7 @@ class Interface(QMainWindow):
         self.switch_fitting_axis_to_lambda()
         o_fit = FittingJobHandler(parent=self)
         o_fit.prepare()
-        o_fit.run_kropff_high_lambda()
+        o_fit.run_kropff_high_lambda(update_table_ui=True)
         self.update_fitting_plot()
 
     def switch_fitting_axis_to_lambda(self):

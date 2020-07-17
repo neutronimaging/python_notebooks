@@ -3,6 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 from __code.bragg_edge.fitting_functions import kropff_high_lambda
+from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
 class FittingJobHandler:
@@ -25,13 +26,15 @@ class FittingJobHandler:
 			list_yaxis_to_fit.append(full_fitting_yaxis[fitting_range[0]: fitting_range[1]])
 		self.list_yaxis_to_fit = list_yaxis_to_fit
 
-	def run_kropff_high_lambda(self):
+	def run_kropff_high_lambda(self, update_table_ui=False):
 		gmodel = Model(kropff_high_lambda, missing='drop', independent_vars=['wavelength'])
 
 		wavelength = self.xaxis_to_fit
+		o_gui = GuiUtility(parent=self.parent)
+
 		for _index, yaxis in enumerate(self.list_yaxis_to_fit):
 			_result = gmodel.fit(yaxis, wavelength=wavelength,
-		                                a0=1, b0=1)
+			                     a0=1, b0=1)
 			a0 = _result.params['a0'].value
 			a0_error = _result.params['a0'].stderr
 			b0 = _result.params['b0'].value
@@ -40,10 +43,17 @@ class FittingJobHandler:
 			yaxis_fitted = kropff_high_lambda(self.xaxis_to_fit,
 			                                  a0, b0)
 
-			result_dict = {'a0': a0, 'b0': b0,
-			               'a0_error': a0_error,
-			               'b0_error': b0_error,
+			result_dict = {'a0'          : a0, 'b0': b0,
+			               'a0_error'    : a0_error,
+			               'b0_error'    : b0_error,
 			               'xaxis_to_fit': self.xaxis_to_fit,
 			               'yaxis_fitted': yaxis_fitted}
 
 			self.parent.fitting_input_dictionary['rois'][_index]['fitting']['kropff'] = {'high': deepcopy(result_dict)}
+
+			if update_table_ui:
+				o_gui.update_kropff_high_lambda_table_ui(row=_index,
+				                                         a0=a0,
+				                                         b0=b0,
+				                                         a0_error=a0_error,
+				                                         b0_error=b0_error)
