@@ -639,14 +639,15 @@ class Interface(QMainWindow):
         o_gui = GuiUtility(parent=self)
         algo_name = o_gui.get_tab_selected(self.ui.tab_algorithm).lower()
 
-        print(self.fitting_input_dictionary['rois'][row_selected])
-
         if Interface.key_path_exists_in_dictionary(dictionary=self.fitting_input_dictionary,
                 tree_key = ['rois', row_selected, 'fitting', algo_name, name_of_page, 'xaxis_to_fit']):
-            _entry = self.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
-            xaxis = _entry['xaxis_to_fit']
-            yaxis = _entry['yaxis_fitted']
-            self.ui.fitting.plot(xaxis, yaxis, pen=(self.fit_rgb[0], self.fit_rgb[1], self.fit_rgb[2]))
+
+            # show fit only if lambda scale selected
+            if x_axis_selected == 'lambda':
+                _entry = self.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
+                xaxis = _entry['xaxis_to_fit']
+                yaxis = _entry['yaxis_fitted']
+                self.ui.fitting.plot(xaxis, yaxis, pen=(self.fit_rgb[0], self.fit_rgb[1], self.fit_rgb[2]))
 
         if peak_range_index[0] is None:
             self.fitting_range_changed()
