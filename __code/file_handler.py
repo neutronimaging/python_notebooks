@@ -35,7 +35,7 @@ def force_file_extension(filename, ext='.txt'):
 
 
 def test_image(file_name, threshold=5000):
-    # check size of image and return False if size is below threshold 
+    # check size of image and return False if size is below threshold
     statinfo = os.stat(file_name)
     if statinfo.st_size < threshold:
         return False
@@ -78,11 +78,11 @@ def load_data(filenames='', folder='', showing_progress=False):
             return np.array(_image)
         else:
             return []
-        
+
     else: # list of filenames
-        
+
         list_files = filenames
-    
+
         stack = []
 
         if showing_progress:
@@ -100,7 +100,7 @@ def load_data(filenames='', folder='', showing_progress=False):
 
         return stack
 
-    
+
 def save_data(data=[], filename=''):
     data_type = get_data_type(filename)
     if data_type == '.fits':
@@ -119,10 +119,10 @@ def get_file_extension(filename):
 def get_data_type(file_name):
     '''
     using the file name extension, will return the type of the data
-    
+
     Arguments:
         full file name
-        
+
     Returns:
         file extension    ex:.tif, .fits
     '''
@@ -133,10 +133,10 @@ def get_data_type(file_name):
 def save_file(folder='', base_file_name='', suffix='', dictionary={}):
     if folder == '':
         return
-    
+
     output_file = folder + base_file_name + '_time_dictionary.dat'
     pickle.dump(dictionary, open(output_file, "wb"))
-    
+
     return output_file
 
 
@@ -157,7 +157,7 @@ def make_folder(folder_name):
 def make_or_reset_folder(folder_name):
     if os.path.exists(folder_name):
          shutil.rmtree(folder_name)
-    os.makedirs(folder_name)         
+    os.makedirs(folder_name)
 
 
 def copy_files_to_folder(list_files=[], output_folder=""):
@@ -192,7 +192,7 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','
     for _meta in metadata:
         _line = _meta + "\n"
         f.write(_line)
-        
+
     for _data in data:
         if dim == '2d':
             _str_data = [str(_value) for _value in _data]
@@ -200,7 +200,7 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','
         else:
             _line = str(_data) + '\n'
         f.write(_line)
-       
+
     f.close()
 
 
@@ -449,20 +449,21 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                                                                         'y0': m.group('y0'),
                                                                         'width': m.group('width'),
                                                                         'height': m.group('height'),
-                                                                        'a0': m.group('a0'),
-                                                                        'b0': m.group('b0'),
-                                                                        'a0_error': m.group('a0_error'),
-                                                                        'b0_error': m.group('b0_error'),
-                                                                        'ahkl': m.group('ahkl'),
-                                                                        'bhkl': m.group('bhkl'),
-                                                                        'ahkl_error': m.group('ahkl_error'),
-                                                                        'bhkl_error': m.group('bhkl_error'),
-                                                                        'lambdahkl': m.group('lambdahkl'),
-                                                                        'tau': m.group('tau'),
-                                                                        'sigma': m.group('sigma'),
-                                                                        'lambdahkl_error': m.group('lambdahkl_error'),
-                                                                        'tau_error': m.group('tau_error'),
-                                                                        'sigma_error': m.group('sigma_error')}
+                                                                        'kropff': {'a0': m.group('a0'),
+                                                                                   'b0': m.group('b0'),
+                                                                                   'a0_error': m.group('a0_error'),
+                                                                                   'b0_error': m.group('b0_error'),
+                                                                                   'ahkl': m.group('ahkl'),
+                                                                                   'bhkl': m.group('bhkl'),
+                                                                                   'ahkl_error': m.group('ahkl_error'),
+                                                                                   'bhkl_error': m.group('bhkl_error'),
+                                                                                   'lambdahkl': m.group('lambdahkl'),
+                                                                                   'tau': m.group('tau'),
+                                                                                   'sigma': m.group('sigma'),
+                                                                                   'lambdahkl_error': m.group('lambdahkl_error'),
+                                                                                   'tau_error': m.group('tau_error'),
+                                                                                   'sigma_error': m.group('sigma_error')},
+                                                                        }
                     col_label.append(m.group("column_index"))
                 line_number += 1
                 continue

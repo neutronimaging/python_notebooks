@@ -70,11 +70,41 @@ class ImportHandler:
         rois_dictionary = OrderedDict()
         for col in np.arange(3, len(columns_roi) + 3):
             str_col = str(col)
-            self.parent.fitting_input_dictionary['rois'][col-3]['profile'] = np.array(data[str_col])
-            self.parent.fitting_input_dictionary['rois'][col-3]['x0'] = columns_roi[str_col]['x0']
-            self.parent.fitting_input_dictionary['rois'][col-3]['y0'] = columns_roi[str_col]['y0']
-            self.parent.fitting_input_dictionary['rois'][col-3]['width'] = columns_roi[str_col]['width']
-            self.parent.fitting_input_dictionary['rois'][col-3]['height'] = columns_roi[str_col]['height']
+            col_index = col-3
+            self.parent.fitting_input_dictionary['rois'][col_index]['profile'] = np.array(data[str_col])
+            self.parent.fitting_input_dictionary['rois'][col_index]['x0'] = columns_roi[str_col]['x0']
+            self.parent.fitting_input_dictionary['rois'][col_index]['y0'] = columns_roi[str_col]['y0']
+            self.parent.fitting_input_dictionary['rois'][col_index]['width'] = columns_roi[str_col]['width']
+            self.parent.fitting_input_dictionary['rois'][col_index]['height'] = columns_roi[str_col]['height']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['a0'] = \
+                columns_roi[str_col]['kropff']['a0']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['b0'] = \
+                columns_roi[str_col]['kropff']['b0']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['a0_error'] = \
+                columns_roi[str_col]['kropff']['a0_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['b0_error'] = \
+                columns_roi[str_col]['kropff']['b0_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['ahkl'] = \
+                columns_roi[str_col]['kropff']['ahkl']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['bhkl'] = \
+                columns_roi[str_col]['kropff']['bhkl']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['ahkl_error'] = \
+                columns_roi[str_col]['kropff']['ahkl_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['bhkl_error'] = \
+                columns_roi[str_col]['kropff']['bhkl_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl'] = \
+                columns_roi[str_col]['kropff']['lambdahkl']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau'] = \
+                columns_roi[str_col]['kropff']['tau']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma'] = \
+                columns_roi[str_col]['kropff']['sigma']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl_error'] = \
+                columns_roi[str_col]['kropff']['lambdahkl_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau_error'] = \
+                columns_roi[str_col]['kropff']['tau_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma_error']\
+                = \
+                columns_roi[str_col]['kropff']['sigma_error']
 
         xaxis_dictionary = {'index': (index_array, self.parent.xaxis_label['index']),
                             'lambda': (lambda_array, self.parent.xaxis_label['lambda']),
