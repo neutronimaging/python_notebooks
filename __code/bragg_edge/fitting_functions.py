@@ -50,4 +50,5 @@ def kropff_bragg_peak_lambda(wavelength, a0, b0, ahkl, bhkl, lambdahkl, sigma, t
 	exp_expression_1 = np.exp(-(a0 + b0 * wavelength))
 	exp_expression_2 = np.exp(-(ahkl + bhkl * wavelength))
 	expression_3 = (1 - np.exp(-(ahkl + bhkl * wavelength)) * B(lambdahkl, sigma, tau, wavelength))
-	return exp_expression_1 * exp_expression_2 + expression_3
+	# return exp_expression_1 * exp_expression_2 + expression_3
+	return exp_expression_1 * exp_expression_2

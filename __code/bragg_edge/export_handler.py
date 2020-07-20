@@ -1,6 +1,7 @@
 from pathlib import Path
 from qtpy.QtWidgets import QFileDialog
 import numpy as np
+from collections import OrderedDict
 
 from __code.bragg_edge.get import Get
 from __code.file_handler import make_ascii_file
@@ -62,13 +63,15 @@ class ExportHandler:
 		fitting_peak_range = self.parent.bragg_edge_range
 		distance_detector_sample = str(self.parent.ui.distance_detector_sample.text())
 		detector_offset = str(self.parent.ui.detector_offset.text())
+		kropff_fitting_values = self.collect_all_kropff_fitting_values()
 
 		dict_regions = o_get.all_russian_doll_region_full_infos()
 		metadata = ExportHandler.make_metadata(base_folder=base_folder,
 		                                       fitting_peak_range=fitting_peak_range,
 		                                       dict_regions=dict_regions,
 		                                       distance_detector_sample=distance_detector_sample,
-		                                       detector_offset=detector_offset)
+		                                       detector_offset=detector_offset,
+		                                       kropff_fitting_values=kropff_fitting_values)
 		self.add_fitting_infos_to_metadata(metadata)
 
 		metadata.append("#")
@@ -93,23 +96,80 @@ class ExportHandler:
 			                                                              self.parent.kropff_fitting_range[_key][0],
 			                                                              self.parent.kropff_fitting_range[_key][1]))
 
+	def collect_all_kropff_fitting_values(self):
+		kropff_fitting_values = OrderedDict()
+
+		fitting_input_dictionary = self.parent.fitting_input_dictionary
+
+		for _row in fitting_input_dictionary['rois'].keys():
+			_entry = fitting_input_dictionary['rois'][_row]['fitting']['kropff']
+
+			_entry_high = _entry['high']
+			_entry_low = _entry['low']
+			_entry_bragg_peak = _entry['bragg_peak']
+			kropff_fitting_values[_row] = {'a0': _entry_high['a0'],
+			                               'b0': _entry_high['b0'],
+			                               'a0_error': _entry_high['a0_error'],
+			                               'b0_error': _entry_high['b0_error'],
+			                               'ahkl': _entry_low['ahkl'],
+			                               'bhkl': _entry_low['bhkl'],
+			                               'ahkl_error': _entry_low['ahkl_error'],
+			                               'bhkl_error': _entry_low['bhkl_error'],
+			                               'lambdahkl': _entry_bragg_peak['lambdahkl'],
+			                               'tau': _entry_bragg_peak['tau'],
+			                               'sigma': _entry_bragg_peak['sigma'],
+			                               'lambdahkl_error': _entry_bragg_peak['lambdahkl_error'],
+			                               'tau_error'       : _entry_bragg_peak['tau_error'],
+			                               'sigma_error'     : _entry_bragg_peak['sigma_error'],
+			                               }
+		return kropff_fitting_values
+
 	@staticmethod
 	def make_metadata(base_folder=None, fitting_peak_range=None, dict_regions=None,
-	                  distance_detector_sample="", detector_offset=""):
+	                  distance_detector_sample="", detector_offset="",
+	                  kropff_fitting_values=None):
 		metadata = ["#base folder: {}".format(base_folder)]
 		metadata.append("#fitting peak range in file index: [{}, {}]".format(fitting_peak_range[0],
 		                                                                     fitting_peak_range[1]))
 		metadata.append("#distance detector-sample: {}".format(distance_detector_sample))
 		metadata.append("#detector offset: {}".format(detector_offset))
-		for _key in dict_regions.keys():
+		for _row, _key in enumerate(dict_regions.keys()):
 			_entry = dict_regions[_key]
 			x0 = _entry['x0']
 			y0 = _entry['y0']
 			width = _entry['width']
 			height = _entry['height']
-			metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{}".format(_key + 3,
-			                                                                         x0, y0,
-			                                                                         width, height))
+			_entry_kropff = kropff_fitting_values[_row]
+			a0 = _entry_kropff['a0']
+			b0 = _entry_kropff['b0']
+			a0_error = _entry_kropff['a0_error']
+			b0_error = _entry_kropff['b0_error']
+			ahkl = _entry_kropff['ahkl']
+			bhkl = _entry_kropff['bhkl']
+			ahkl_error = _entry_kropff['ahkl_error']
+			bhkl_error = _entry_kropff['bhkl_error']
+			lambdahkl = _entry_kropff['lambdahkl']
+			tau = _entry_kropff['tau']
+			sigma = _entry_kropff['sigma']
+			lambdahkl_error = _entry_kropff['lambdahkl_error']
+			tau_error = _entry_kropff['tau_error']
+			sigma_error = _entry_kropff['sigma_error']
+
+			metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{},"
+			                "kropff: a0:{}, b0:{}, a0_error:{}, b0_error:{},"
+			                " ahkl:{}, bhkl:{}, ahkl_error:{}, bhkl_error:{},"
+			                " lambda_hkl:{}, tau:{}, sigma:{},"
+			                " lambda_hkl_error:{}, tau_error:{}, sigma_error:{}".format(_key + 3,
+			                                                                           x0, y0,
+			                                                                           width, height,
+			                                                                           a0, b0, a0_error, b0_error,
+			                                                                           ahkl, bhkl,
+			                                                                           ahkl_error,
+			                                                                           bhkl_error,
+			                                                                           lambdahkl, tau, sigma,
+			                                                                           lambdahkl_error,
+			                                                                           tau_error,
+			                                                                           sigma_error))
 		return metadata
 
 	@staticmethod

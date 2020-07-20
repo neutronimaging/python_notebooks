@@ -101,7 +101,7 @@ class Initialization:
 		# bragg edge
 		column_names = ['x0; y0; width; height', u'\u03BB_hkl', 'tau', 'sigma',
 		                u'\u03BB_hkl_error', 'tau_error', 'sigma_error']
-		column_sizes = [150, 100, 100, 300, 300, 300, 300]
+		column_sizes = [150, 100, 100, 100, 100, 100, 100]
 		o_bragg = TableHandler(table_ui=self.parent.ui.bragg_edge_tableWidget)
 		for _col_index, _col_name in enumerate(column_names):
 			o_bragg.insert_column(_col_index)
