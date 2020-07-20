@@ -98,8 +98,6 @@ class ImportHandler:
 
             xaxis_to_fit = lambda_array_of_peak_selected[self.parent.kropff_fitting_range['high'][0]:
                                                          self.parent.kropff_fitting_range['high'][1]]
-            print("xaxis_to_fit")
-            print(f"{xaxis_to_fit}")
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['xaxis_to_fit'] = \
             xaxis_to_fit
             yaxis_fitted = kropff_high_lambda(xaxis_to_fit,
