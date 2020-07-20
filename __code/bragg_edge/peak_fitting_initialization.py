@@ -9,6 +9,13 @@ KROPFF_LOW = {'ahkl': None, 'bhkl': None,
               'ahkl_error': None, 'bhkl_error': None,
               'xaxis_to_fit': None,
               'yaxis_fitted': None}
+KROPFF_BRAGG_PEAK = {'lambdahkl': None,
+                     'lambdahkl_error': None,
+                     'tau': None,
+                     'tau_error': None,
+                     'sigma': None,
+                     'sigma_error': None}
+
 
 class PeakFittingInitialization:
 
@@ -27,7 +34,7 @@ class PeakFittingInitialization:
 			             'profile': None,
 			             'fitting': {'kropff': {'high': deepcopy(KROPFF_HIGH),
 			                                    'low': deepcopy(KROPFF_LOW),
-			                                    'bragg_peak': None,
+			                                    'bragg_peak': deepcopy(KROPFF_BRAGG_PEAK),
 			                                    },
 			                        },
 			             }

@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>2</number>
                </property>
                <widget class="QWidget" name="high_lambda_page">
                 <property name="geometry">
@@ -1355,6 +1355,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>fit_bragg_peak_region</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_fit_bragg_peak_region_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>622</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>672</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1378,5 +1394,6 @@
   <slot>kropff_toolbox_changed()</slot>
   <slot>kropff_fit_high_lambda_region_clicked()</slot>
   <slot>kropff_fit_low_lambda_region_clicked()</slot>
+  <slot>kropff_fit_bragg_peak_region_clicked()</slot>
  </slots>
 </ui>

@@ -832,6 +832,13 @@ class Interface(QMainWindow):
         o_gui = GuiUtility(parent=self)
         o_gui.check_status_of_kropff_fitting_buttons()
 
+    def kropff_fit_bragg_peak_region_clicked(self):
+        self.switch_fitting_axis_to_lambda()
+        o_fit = FittingJobHandler(parent=self)
+        o_fit.prepare(kropff_tooldbox='bragg_peak')
+        o_fit.run_bragg_peak_lambda(update_table_ui=True)
+        self.update_fitting_plot()
+
     def switch_fitting_axis_to_lambda(self):
         self.ui.fitting_lambda_radiobutton.setChecked(True)
         self.fitting_axis_changed()

@@ -2,7 +2,7 @@ from lmfit import Model, Parameter
 from copy import deepcopy
 import numpy as np
 
-from __code.bragg_edge.fitting_functions import kropff_high_lambda, kropff_low_lambda
+from __code.bragg_edge.fitting_functions import kropff_high_lambda, kropff_low_lambda, kropff_bragg_peak_lambda
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
@@ -16,6 +16,12 @@ class FittingJobHandler:
 		self.list_yaxis_to_fit = None
 
 	def prepare(self, kropff_tooldbox='high'):
+		"""
+
+		:param kropff_tooldbox: 'high', 'low', 'bragg_peak'
+		:return:
+		"""
+
 		fitting_range = self.parent.kropff_fitting_range[kropff_tooldbox]
 
 		xaxis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
@@ -64,7 +70,6 @@ class FittingJobHandler:
 				                                         b0_error=b0_error)
 
 	def run_kropff_low_lambda(self, update_table_ui=False):
-
 		gmodel = Model(kropff_low_lambda, missing='drop', independent_vars=['wavelength'])
 
 		wavelength = self.xaxis_to_fit
@@ -73,7 +78,6 @@ class FittingJobHandler:
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
 			_entry = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
-
 			a0 = _entry['a0']
 			b0 = _entry['b0']
 
@@ -106,3 +110,57 @@ class FittingJobHandler:
 				                                        bhkl=bhkl,
 				                                        ahkl_error=ahkl_error,
 				                                        bhkl_error=bhkl_error)
+
+	def run_bragg_peak_lambda(self, update_table_ui=False):
+		gmodel = Model(kropff_bragg_peak_lambda, missing='drop', independent_vars=['wavelength'])
+
+		wavelength = self.xaxis_to_fit
+		o_gui = GuiUtility(parent=self.parent)
+
+		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
+
+			_entry_high = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
+			a0 = _entry_high['a0']
+			b0 = _entry_high['b0']
+
+			_entry_low = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['low']
+			ahkl = _entry_low['ahkl']
+			bhkl = _entry_low['bhkl']
+
+			_result = gmodel.fit(yaxis, wavelength=wavelength,
+			                     a0=Parameter('a0', value=a0, vary=False),
+			                     b0=Parameter('b0', value=b0, vary=False),
+			                     ahkl=Parameter('ahkl', value=ahkl, vary=False),
+			                     bhkl=Parameter('bhkl', value=bhkl, vary=False),
+			                     lambdahkl=1,
+			                     sigma=1,
+			                     tau=10)
+
+			lambdahkl = _result.params['lambdahkl'].value
+			lambdahkl_error = _result.params['lambdahkl'].stderr
+			sigma = _result.params['sigma'].value
+			sigma_error = _result.params['sigma'].stderr
+			tau = _result.params['tau'].value
+			tau_error = _result.params['tau'].stderr
+
+			yaxis_fitted = kropff_bragg_peak_lambda((self.xaxis_to_fit,
+			                                         a0, b0, ahkl, bhkl, lambdahkl, sigma, tau))
+
+			result_dict = {'lambdahkl': lambdahkl,
+			               'lambdahkl_error': lambdahkl_error,
+			               'sigma': sigma,
+			               'sigma_error': sigma_error,
+			               'tau': tau,
+			               'tau_error': tau_error}
+
+			self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['bragg_peak'] = deepcopy(
+					result_dict)
+
+			if update_table_ui:
+				o_gui.update_kropff_bragg_edge_table_ui(row=_row,
+				                                        lambdahkl=lambdahkl,
+				                                        lambdahkl_error=lambdahkl_error,
+				                                        tau=tau,
+				                                        tau_error=tau_error,
+				                                        sigma=sigma,
+				                                        sigma_error=sigma_error)
