@@ -156,10 +156,10 @@ class ExportHandler:
 			sigma_error = _entry_kropff['sigma_error']
 
 			metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{},"
-			                "kropff: a0:{}, b0:{}, a0_error:{}, b0_error:{},"
+			                " kropff: a0:{}, b0:{}, a0_error:{}, b0_error:{},"
 			                " ahkl:{}, bhkl:{}, ahkl_error:{}, bhkl_error:{},"
-			                " lambda_hkl:{}, tau:{}, sigma:{},"
-			                " lambda_hkl_error:{}, tau_error:{}, sigma_error:{}".format(_key + 3,
+			                " lambdahkl:{}, tau:{}, sigma:{},"
+			                " lambdahkl_error:{}, tau_error:{}, sigma_error:{}".format(_key + 3,
 			                                                                           x0, y0,
 			                                                                           width, height,
 			                                                                           a0, b0, a0_error, b0_error,

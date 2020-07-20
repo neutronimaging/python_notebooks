@@ -437,13 +437,32 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 continue
             if "#column " in line:
                 regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
-                          r"height:(?P<height>\d+)$"
+                          r"height:(?P<height>\d+), kropff: a0:(?P<a0>-{0,1}\d+.\d+|None), b0:(?P<b0>-{0,1}\d+.\d+|None), a0_error:(" \
+                          r"?P<a0_error>\d+.\d+|None), b0_error:(?P<b0_error>\d+.\d+|None), ahkl:(?P<ahkl>-{0,1}\d+.\d+|None), bhkl:(?P<bhkl>-{0,1}\d+.\d+|None), " \
+                          r"ahkl_error:(?P<ahkl_error>\d+.\d+|None), bhkl_error:(?P<bhkl_error>\d+.\d+|None), lambdahkl:(" \
+                          r"?P<lambdahkl>-{0,1}\d+.\d+|None), tau:(?P<tau>-{0,1}\d+.\d+|None), sigma:(?P<sigma>-{0,1}\d+.\d+|None), lambdahkl_error:(" \
+                          r"?P<lambdahkl_error>\d+.\d+|None), tau_error:(?P<tau_error>\d+.\d+|None), sigma_error:(?P<sigma_error>\d+.\d+|None)$"
+
                 m = re.search(regular, line.strip())
                 if m:
                     metadata_column[m.group('column_index').strip()] = {'x0': m.group('x0'),
                                                                         'y0': m.group('y0'),
                                                                         'width': m.group('width'),
-                                                                        'height': m.group('height')}
+                                                                        'height': m.group('height'),
+                                                                        'a0': m.group('a0'),
+                                                                        'b0': m.group('b0'),
+                                                                        'a0_error': m.group('a0_error'),
+                                                                        'b0_error': m.group('b0_error'),
+                                                                        'ahkl': m.group('ahkl'),
+                                                                        'bhkl': m.group('bhkl'),
+                                                                        'ahkl_error': m.group('ahkl_error'),
+                                                                        'bhkl_error': m.group('bhkl_error'),
+                                                                        'lambdahkl': m.group('lambdahkl'),
+                                                                        'tau': m.group('tau'),
+                                                                        'sigma': m.group('sigma'),
+                                                                        'lambdahkl_error': m.group('lambdahkl_error'),
+                                                                        'tau_error': m.group('tau_error'),
+                                                                        'sigma_error': m.group('sigma_error')}
                     col_label.append(m.group("column_index"))
                 line_number += 1
                 continue
