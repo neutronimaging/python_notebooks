@@ -3,6 +3,8 @@ from qtpy import QtGui
 
 class TableHandler:
 
+	cell_str_format = "{:.3f}"
+
 	def __init__(self, table_ui=None):
 		self.table_ui = table_ui
 
@@ -40,3 +42,10 @@ class TableHandler:
 
 	def insert_column(self, row):
 		self.table_ui.insertColumn(row)
+
+	def set_item_with_float(self, row=0, column=0, float_value=""):
+		if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
+			_str_value = "N/A"
+		else:
+			_str_value = self.cell_str_format.format(np.float(float_value))
+		self.table_ui.item(row, column).setText(_str_value)

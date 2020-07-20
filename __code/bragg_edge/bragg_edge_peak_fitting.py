@@ -94,10 +94,10 @@ class Interface(QMainWindow):
     #                                                                          'bhkl': None,
     #                                                                          'ahkl_error': None,
     #                                                                          'bhkl_error': None},
-    #                                                                  'bragg_peak: {'lambda_hkl': None,
+    #                                                                  'bragg_peak: {'lambdahkl': None,
     #                                                                                'tau': None,
     #                                                                                'sigma': None,
-    #                                                                                'lambda_hkl_error': None,
+    #                                                                                'lambdahkl_error': None,
     #                                                                                'tau_error': None,
     #                                                                                'sigma_error': None},
     #                                                                 },
@@ -462,6 +462,8 @@ class Interface(QMainWindow):
 
         if initialize_region:
             self.initialize_default_peak_regions()
+        else:
+            o_kropff.fill_table_with_fitting_information()
         self.ui.tabWidget.setTabEnabled(1, True)
         self.select_first_row_of_all_fitting_table()
 
