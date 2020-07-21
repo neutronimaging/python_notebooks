@@ -115,10 +115,10 @@ class ExportHandler:
 			                               'bhkl': _entry_low['bhkl'],
 			                               'ahkl_error': _entry_low['ahkl_error'],
 			                               'bhkl_error': _entry_low['bhkl_error'],
-			                               'lambdahkl': _entry_bragg_peak['lambdahkl'],
+			                               'tofhkl': _entry_bragg_peak['tofhkl'],
 			                               'tau': _entry_bragg_peak['tau'],
 			                               'sigma': _entry_bragg_peak['sigma'],
-			                               'lambdahkl_error': _entry_bragg_peak['lambdahkl_error'],
+			                               'tofhkl_error': _entry_bragg_peak['tofhkl_error'],
 			                               'tau_error'       : _entry_bragg_peak['tau_error'],
 			                               'sigma_error'     : _entry_bragg_peak['sigma_error'],
 			                               }
@@ -148,26 +148,26 @@ class ExportHandler:
 			bhkl = _entry_kropff['bhkl']
 			ahkl_error = _entry_kropff['ahkl_error']
 			bhkl_error = _entry_kropff['bhkl_error']
-			lambdahkl = _entry_kropff['lambdahkl']
+			tofhkl = _entry_kropff['tofhkl']
 			tau = _entry_kropff['tau']
 			sigma = _entry_kropff['sigma']
-			lambdahkl_error = _entry_kropff['lambdahkl_error']
+			tofhkl_error = _entry_kropff['tofhkl_error']
 			tau_error = _entry_kropff['tau_error']
 			sigma_error = _entry_kropff['sigma_error']
 
 			metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{},"
 			                " kropff: a0:{}, b0:{}, a0_error:{}, b0_error:{},"
 			                " ahkl:{}, bhkl:{}, ahkl_error:{}, bhkl_error:{},"
-			                " lambdahkl:{}, tau:{}, sigma:{},"
-			                " lambdahkl_error:{}, tau_error:{}, sigma_error:{}".format(_key + 3,
+			                " tofhkl:{}, tau:{}, sigma:{},"
+			                " tofhkl_error:{}, tau_error:{}, sigma_error:{}".format(_key + 3,
 			                                                                           x0, y0,
 			                                                                           width, height,
 			                                                                           a0, b0, a0_error, b0_error,
 			                                                                           ahkl, bhkl,
 			                                                                           ahkl_error,
 			                                                                           bhkl_error,
-			                                                                           lambdahkl, tau, sigma,
-			                                                                           lambdahkl_error,
+			                                                                           tofhkl, tau, sigma,
+			                                                                           tofhkl_error,
 			                                                                           tau_error,
 			                                                                           sigma_error))
 		return metadata

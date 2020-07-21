@@ -617,7 +617,7 @@
                <property name="currentIndex">
                 <number>0</number>
                </property>
-               <widget class="QWidget" name="high_lambda_page">
+               <widget class="QWidget" name="high_tof_page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
@@ -627,7 +627,7 @@
                  </rect>
                 </property>
                 <attribute name="label">
-                 <string>Step1: High Lambda</string>
+                 <string>Step1: High TOF</string>
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_6">
                  <item>
@@ -640,7 +640,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="fit_high_lambda_region">
+                    <widget class="QPushButton" name="fit_high_tof_region">
                      <property name="minimumSize">
                       <size>
                        <width>200</width>
@@ -654,14 +654,14 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Fit high lambda region</string>
+                      <string>Fit high tof region</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="high_lambda_tableWidget">
+                  <widget class="QTableWidget" name="high_tof_tableWidget">
                    <property name="alternatingRowColors">
                     <bool>true</bool>
                    </property>
@@ -675,7 +675,7 @@
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="low_lambda_page">
+               <widget class="QWidget" name="low_tof_page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
@@ -685,7 +685,7 @@
                  </rect>
                 </property>
                 <attribute name="label">
-                 <string>Step2: Low Lambda</string>
+                 <string>Step2: Low TOF</string>
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_9">
                  <item>
@@ -698,7 +698,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="fit_low_lambda_region">
+                    <widget class="QPushButton" name="fit_low_tof_region">
                      <property name="enabled">
                       <bool>false</bool>
                      </property>
@@ -715,14 +715,14 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Fit low lambda region</string>
+                      <string>Fit low tof region</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="low_lambda_tableWidget">
+                  <widget class="QTableWidget" name="low_tof_tableWidget">
                    <property name="alternatingRowColors">
                     <bool>true</bool>
                    </property>
@@ -1260,7 +1260,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>high_lambda_tableWidget</sender>
+   <sender>high_tof_tableWidget</sender>
    <signal>itemSelectionChanged()</signal>
    <receiver>MainWindow</receiver>
    <slot>high_lambda_table_clicked()</slot>
@@ -1276,7 +1276,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>low_lambda_tableWidget</sender>
+   <sender>low_tof_tableWidget</sender>
    <signal>itemSelectionChanged()</signal>
    <receiver>MainWindow</receiver>
    <slot>low_lambda_table_clicked()</slot>
@@ -1324,7 +1324,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>fit_high_lambda_region</sender>
+   <sender>fit_high_tof_region</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>kropff_fit_high_lambda_region_clicked()</slot>
@@ -1340,7 +1340,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>fit_low_lambda_region</sender>
+   <sender>fit_low_tof_region</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>kropff_fit_low_lambda_region_clicked()</slot>

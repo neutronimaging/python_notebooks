@@ -132,14 +132,14 @@ class ImportHandler:
                 yaxis_fitted
 
             # # Bragg peak
-            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl'] = \
-            #     columns_roi[str_col]['kropff']['lambdahkl']
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tofhkl'] = \
+            #     columns_roi[str_col]['kropff']['tofhkl']
             # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau'] = \
             #     columns_roi[str_col]['kropff']['tau']
             # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma'] = \
             #     columns_roi[str_col]['kropff']['sigma']
-            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl_error'] = \
-            #     columns_roi[str_col]['kropff']['lambdahkl_error']
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tofhkl_error'] = \
+            #     columns_roi[str_col]['kropff']['tofhkl_error']
             # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau_error'] = \
             #     columns_roi[str_col]['kropff']['tau_error']
             # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma_error']\
@@ -156,7 +156,7 @@ class ImportHandler:
             #                                  columns_roi[str_col]['kropff']['b0'],
             #                                  columns_roi[str_col]['kropff']['ahkl'],
             #                                  columns_roi[str_col]['kropff']['bhkl'],
-            #                                  columns_roi[str_col]['kropff']['lambdahkl'],
+            #                                  columns_roi[str_col]['kropff']['tofhkl'],
             #                                  columns_roi[str_col]['kropff']['sigma'],
             #                                  columns_roi[str_col]['kropff']['tau'])
             # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['yaxis_fitted']\

@@ -439,9 +439,12 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
                           r"height:(?P<height>\d+), kropff: a0:(?P<a0>-{0,1}\d+.\d+|None), b0:(?P<b0>-{0,1}\d+.\d+|None), a0_error:(" \
                           r"?P<a0_error>\d+.\d+|None), b0_error:(?P<b0_error>\d+.\d+|None), ahkl:(?P<ahkl>-{0,1}\d+.\d+|None), bhkl:(?P<bhkl>-{0,1}\d+.\d+|None), " \
-                          r"ahkl_error:(?P<ahkl_error>\d+.\d+|None), bhkl_error:(?P<bhkl_error>\d+.\d+|None), lambdahkl:(" \
-                          r"?P<lambdahkl>-{0,1}\d+.\d+|None), tau:(?P<tau>-{0,1}\d+.\d+|None), sigma:(?P<sigma>-{0,1}\d+.\d+|None), lambdahkl_error:(" \
-                          r"?P<lambdahkl_error>\d+.\d+|None), tau_error:(?P<tau_error>\d+.\d+|None), sigma_error:(?P<sigma_error>\d+.\d+|None)$"
+                          r"ahkl_error:(?P<ahkl_error>\d+.\d+|None), bhkl_error:(?P<bhkl_error>\d+.\d+|None), " \
+                          r"tofhkl:(" \
+                          r"?P<tofhkl>-{0,1}\d+.\d+|None), tau:(?P<tau>-{0,1}\d+.\d+|None), sigma:(?P<sigma>-{0," \
+                          r"1}\d+.\d+|None), tofhkl_error:(" \
+                          r"?P<tofhkl_error>\d+.\d+|None), tau_error:(?P<tau_error>\d+.\d+|None), sigma_error:(" \
+                          r"?P<sigma_error>\d+.\d+|None)$"
 
                 m = re.search(regular, line.strip())
                 if m:
@@ -457,10 +460,11 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                                                                                    'bhkl': m.group('bhkl'),
                                                                                    'ahkl_error': m.group('ahkl_error'),
                                                                                    'bhkl_error': m.group('bhkl_error'),
-                                                                                   'lambdahkl': m.group('lambdahkl'),
+                                                                                   'tofhkl': m.group('tofhkl'),
                                                                                    'tau': m.group('tau'),
                                                                                    'sigma': m.group('sigma'),
-                                                                                   'lambdahkl_error': m.group('lambdahkl_error'),
+                                                                                   'tofhkl_error': m.group(
+                                                                                           'tofhkl_error'),
                                                                                    'tau_error': m.group('tau_error'),
                                                                                    'sigma_error': m.group('sigma_error')},
                                                                         }

@@ -8,8 +8,8 @@ class Kropff:
 	def __init__(self, parent=None):
 		self.parent = parent
 
-		self.table_ui = {'high_lambda': self.parent.ui.high_lambda_tableWidget,
-		                 'low_lambda' : self.parent.ui.low_lambda_tableWidget,
+		self.table_ui = {'high_tof': self.parent.ui.high_tof_tableWidget,
+		                 'low_tof' : self.parent.ui.low_tof_tableWidget,
 		                 'bragg_peak' : self.parent.ui.bragg_edge_tableWidget}
 
 	def reset_all_table(self):
@@ -18,12 +18,12 @@ class Kropff:
 		self.reset_bragg_peak_table()
 
 	def reset_high_lambda_table(self):
-		self.clear_table(table_name='high_lambda')
-		self.fill_table_with_minimum_contain(table_ui=self.parent.ui.high_lambda_tableWidget)
+		self.clear_table(table_name='high_tof')
+		self.fill_table_with_minimum_contain(table_ui=self.table_ui['high_tof'])
 
 	def reset_low_lambda_table(self):
-		self.clear_table(table_name='low_lambda')
-		self.fill_table_with_minimum_contain(table_ui=self.parent.ui.low_lambda_tableWidget)
+		self.clear_table(table_name='low_tof')
+		self.fill_table_with_minimum_contain(table_ui=self.table_ui['low_tof'])
 
 	def reset_bragg_peak_table(self):
 		self.clear_table(table_name='bragg_peak')
@@ -57,7 +57,7 @@ class Kropff:
 	def fill_table_with_fitting_information(self):
 		fitting_input_dictionary = self.parent.fitting_input_dictionary
 
-		o_table = TableHandler(table_ui=self.table_ui['high_lambda'])
+		o_table = TableHandler(table_ui=self.table_ui['high_tof'])
 		_col = 1
 		for _row in fitting_input_dictionary['rois'].keys():
 			_entry = fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
@@ -79,9 +79,9 @@ class Kropff:
 		_col = 1
 		for _row in fitting_input_dictionary['rois'].keys():
 			_entry = fitting_input_dictionary['rois'][_row]['fitting']['kropff']['bragg_peak']
-			o_table.set_item_with_float(_row, _col, _entry['lambdahkl'])
+			o_table.set_item_with_float(_row, _col, _entry['tofhkl'])
 			o_table.set_item_with_float(_row, _col+1, _entry['tau'])
 			o_table.set_item_with_float(_row, _col+2, _entry['sigma'])
-			o_table.set_item_with_float(_row, _col+3, _entry['lambdahkl_error'])
+			o_table.set_item_with_float(_row, _col+3, _entry['tofhkl_error'])
 			o_table.set_item_with_float(_row, _col+4, _entry['tau_error'])
 			o_table.set_item_with_float(_row, _col+5, _entry['sigma_error'])

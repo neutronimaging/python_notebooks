@@ -80,7 +80,7 @@ class Initialization:
 		column_names = [u'x\u2080; y\u2080; width; height', u'a\u2080', u'b\u2080', u'a\u2080_error',
 		                u'b\u2080_error']
 		column_sizes = [150, 100, 100, 100, 100]
-		o_high = TableHandler(table_ui=self.parent.ui.high_lambda_tableWidget)
+		o_high = TableHandler(table_ui=self.parent.ui.high_tof_tableWidget)
 		for _col_index, _col_name in enumerate(column_names):
 			o_high.insert_column(_col_index)
 		o_high.set_column_names(column_names=column_names)
@@ -92,7 +92,7 @@ class Initialization:
 		                u'a_hkl_error',
 		                u'b_hkl_error']
 		column_sizes = [150, 100, 100, 100, 100]
-		o_low = TableHandler(table_ui=self.parent.ui.low_lambda_tableWidget)
+		o_low = TableHandler(table_ui=self.parent.ui.low_tof_tableWidget)
 		for _col_index, _col_name in enumerate(column_names):
 			o_low.insert_column(_col_index)
 		o_low.set_column_names(column_names=column_names)

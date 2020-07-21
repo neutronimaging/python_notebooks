@@ -94,10 +94,10 @@ class Interface(QMainWindow):
     #                                                                          'bhkl': None,
     #                                                                          'ahkl_error': None,
     #                                                                          'bhkl_error': None},
-    #                                                                  'bragg_peak: {'lambdahkl': None,
+    #                                                                  'bragg_peak: {'tofhkl': None,
     #                                                                                'tau': None,
     #                                                                                'sigma': None,
-    #                                                                                'lambdahkl_error': None,
+    #                                                                                'tofhkl_error': None,
     #                                                                                'tau_error': None,
     #                                                                                'sigma_error': None},
     #                                                                 },
@@ -495,6 +495,10 @@ class Interface(QMainWindow):
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
         dict_rois_imported = self.dict_rois_imported
+
+        print("in profile of bin size slider changed")
+        print(f"{dict_rois_imported}")
+
         new_width = dict_rois_imported[new_value]['width']
         new_height = dict_rois_imported[new_value]['height']
         self.ui.profile_of_bin_size_height.setText(new_height)
@@ -592,8 +596,8 @@ class Interface(QMainWindow):
             current_region['profile'] = profile
 
     def select_first_row_of_all_fitting_table(self):
-        self.ui.high_lambda_tableWidget.selectRow(0)
-        self.ui.low_lambda_tableWidget.selectRow(0)
+        self.ui.high_tof_tableWidget.selectRow(0)
+        self.ui.low_tof_tableWidget.selectRow(0)
         self.ui.bragg_edge_tableWidget.selectRow(0)
 
     def fitting_axis_changed(self):
@@ -632,8 +636,8 @@ class Interface(QMainWindow):
         yaxis = yaxis[left_xaxis_index: right_xaxis_index]
 
         self.ui.fitting.setLabel("bottom", xaxis_label)
-        self.ui.fitting.setLabel("left", 'Mean counts')
-        self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
+        self.ui.fitting.setLabel("left", 'Cross Section (arbitrary units)')
+        self.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.selection_roi_rgb[0],
                                                 self.selection_roi_rgb[1],
                                                 self.selection_roi_rgb[2]))
 
@@ -660,8 +664,8 @@ class Interface(QMainWindow):
         if Interface.key_path_exists_in_dictionary(dictionary=self.fitting_input_dictionary,
                 tree_key = ['rois', row_selected, 'fitting', algo_name, name_of_page, 'xaxis_to_fit']):
 
-            # show fit only if lambda scale selected
-            if x_axis_selected == 'lambda':
+            # show fit only if tof scale selected
+            if x_axis_selected == 'tof':
                 _entry = self.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
                 xaxis = _entry['xaxis_to_fit']
                 yaxis = _entry['yaxis_fitted']
@@ -774,18 +778,18 @@ class Interface(QMainWindow):
         o_import.run()
 
     def full_reset_of_ui(self):
-        o_table = TableHandler(table_ui=self.ui.high_lambda_tableWidget)
+        o_table = TableHandler(table_ui=self.ui.high_tof_tableWidget)
         o_table.remove_all_rows()
 
-        o_table = TableHandler(table_ui=self.ui.low_lambda_tableWidget)
+        o_table = TableHandler(table_ui=self.ui.low_tof_tableWidget)
         o_table.remove_all_rows()
 
         o_table = TableHandler(table_ui=self.ui.bragg_edge_tableWidget)
         o_table.remove_all_rows()
 
     def block_table_ui(self, flag):
-        list_ui = [self.ui.high_lambda_tableWidget,
-                   self.ui.low_lambda_tableWidget,
+        list_ui = [self.ui.high_tof_tableWidget,
+                   self.ui.low_tof_tableWidget,
                    self.ui.bragg_edge_tableWidget]
         for _ui in list_ui:
             _ui.blockSignals(flag)
@@ -825,32 +829,37 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def kropff_fit_high_lambda_region_clicked(self):
-        self.switch_fitting_axis_to_lambda()
+        self.switch_fitting_axis_to('tof')
         o_fit = FittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='high')
-        o_fit.run_kropff_high_lambda(update_table_ui=True)
+        o_fit.run_kropff_high_tof(update_table_ui=True)
         self.update_fitting_plot()
         o_gui = GuiUtility(parent=self)
         o_gui.check_status_of_kropff_fitting_buttons()
 
     def kropff_fit_low_lambda_region_clicked(self):
-        self.switch_fitting_axis_to_lambda()
+        self.switch_fitting_axis_to('tof')
         o_fit = FittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='low')
-        o_fit.run_kropff_low_lambda(update_table_ui=True)
+        o_fit.run_kropff_low_tof(update_table_ui=True)
         self.update_fitting_plot()
         o_gui = GuiUtility(parent=self)
         o_gui.check_status_of_kropff_fitting_buttons()
 
     def kropff_fit_bragg_peak_region_clicked(self):
-        self.switch_fitting_axis_to_lambda()
+        self.switch_fitting_axis_to('tof')
         o_fit = FittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='bragg_peak')
-        o_fit.run_bragg_peak_lambda(update_table_ui=True)
+        o_fit.run_bragg_peak(update_table_ui=True)
         self.update_fitting_plot()
 
-    def switch_fitting_axis_to_lambda(self):
-        self.ui.fitting_lambda_radiobutton.setChecked(True)
+    def switch_fitting_axis_to(self, button_name='tof'):
+        if button_name == 'tof':
+            self.ui.fitting_tof_radiobutton.setChecked(True)
+        elif button_name == 'lambda':
+            self.ui.fitting_lambda_radiobutton.setChecked(True)
+        else:
+            self.ui.fitting_index_radiobutton.setChecked(True)
         self.fitting_axis_changed()
 
     def cancel_clicked(self):

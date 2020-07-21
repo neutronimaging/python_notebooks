@@ -125,8 +125,8 @@ class Get:
 	def part_of_fitting_selected(self):
 		"""high, low or bragg_peak"""
 		list_pages = ["high", "low", "bragg_peak"]
-		list_table_ui = [self.parent.ui.high_lambda_tableWidget,
-		                 self.parent.ui.low_lambda_tableWidget,
+		list_table_ui = [self.parent.ui.high_tof_tableWidget,
+		                 self.parent.ui.low_tof_tableWidget,
 		                 self.parent.ui.bragg_edge_tableWidget]
 
 		page_index = self.parent.ui.kropff_toolBox.currentIndex()
