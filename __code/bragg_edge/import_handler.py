@@ -132,21 +132,21 @@ class ImportHandler:
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['yaxis_fitted'] = \
                 yaxis_fitted
 
-            # Bragg peak
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl'] = \
-                columns_roi[str_col]['kropff']['lambdahkl']
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau'] = \
-                columns_roi[str_col]['kropff']['tau']
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma'] = \
-                columns_roi[str_col]['kropff']['sigma']
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl_error'] = \
-                columns_roi[str_col]['kropff']['lambdahkl_error']
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau_error'] = \
-                columns_roi[str_col]['kropff']['tau_error']
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma_error']\
-                = \
-                columns_roi[str_col]['kropff']['sigma_error']
-
+            # # Bragg peak
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl'] = \
+            #     columns_roi[str_col]['kropff']['lambdahkl']
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau'] = \
+            #     columns_roi[str_col]['kropff']['tau']
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma'] = \
+            #     columns_roi[str_col]['kropff']['sigma']
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['lambdahkl_error'] = \
+            #     columns_roi[str_col]['kropff']['lambdahkl_error']
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau_error'] = \
+            #     columns_roi[str_col]['kropff']['tau_error']
+            # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma_error']\
+            #     = \
+            #     columns_roi[str_col]['kropff']['sigma_error']
+            #
             # xaxis_to_fit = lambda_array_of_peak_selected[self.parent.kropff_fitting_range['bragg_peak'][0]:
             #                                              self.parent.kropff_fitting_range['bragg_peak'][1]]
             # self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['xaxis_to_fit']\

@@ -42,13 +42,16 @@ def kropff_bragg_peak_lambda(wavelength, a0, b0, ahkl, bhkl, lambdahkl, sigma, t
 	sigma parameter to fit
 	"""
 	def B(lambdahkl, sigma, tau, wavelength):
+		const1 = (sigma*sigma) / (2 * tau*tau)
+		const2 = sigma / tau
+
 		part1 = special.erfc(-(wavelength - lambdahkl) / (np.sqrt(2) * sigma))
-		part2 = np.exp([-(wavelength - lambdahkl) / tau] + [(sigma^2)/(2*tau^2)])
-		part3 = special.erfc([-(wavelength - lambdahkl)/(np.sqrt(2) * sigma)] + sigma/tau)
+		part2 = np.exp((-(wavelength - lambdahkl) / tau) + const1)
+		part3 = special.erfc((-(wavelength - lambdahkl)/(np.sqrt(2) * sigma)) + const2)
 		return 0.5 * (part1 - part2 * part3)
 
 	exp_expression_1 = np.exp(-(a0 + b0 * wavelength))
 	exp_expression_2 = np.exp(-(ahkl + bhkl * wavelength))
 	expression_3 = (1 - np.exp(-(ahkl + bhkl * wavelength)) * B(lambdahkl, sigma, tau, wavelength))
-	# return exp_expression_1 * exp_expression_2 + expression_3
-	return exp_expression_1 * exp_expression_2
+
+	return exp_expression_1 * (exp_expression_2 + expression_3)

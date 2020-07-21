@@ -29,6 +29,10 @@ class FittingJobHandler:
 		full_fitting_xaxis = xaxis[left_xaxis_index: right_xaxis_index]
 		self.xaxis_to_fit = full_fitting_xaxis[fitting_range[0]: fitting_range[1]]
 
+		xaxis_tof = self.parent.fitting_input_dictionary['xaxis']['tof'][0]
+		full_fitting_xaxis_tof = xaxis_tof[left_xaxis_index: right_xaxis_index]
+		self.parent.debug_xaxis_to_fit_in_time = full_fitting_xaxis_tof[fitting_range[0]: fitting_range[1]]
+
 		list_yaxis_to_fit = []
 		for _key in self.parent.fitting_input_dictionary['rois'].keys():
 			_yaxis = self.parent.fitting_input_dictionary['rois'][_key]['profile']
@@ -78,8 +82,8 @@ class FittingJobHandler:
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
 			_entry = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
-			a0 = _entry['a0']
-			b0 = _entry['b0']
+			a0 = np.float(_entry['a0'])
+			b0 = np.float(_entry['b0'])
 
 			_result = gmodel.fit(yaxis, wavelength=wavelength,
 			                     a0=Parameter('a0', value=a0, vary=False),
@@ -112,7 +116,7 @@ class FittingJobHandler:
 				                                        bhkl_error=bhkl_error)
 
 	def run_bragg_peak_lambda(self, update_table_ui=False):
-		gmodel = Model(kropff_bragg_peak_lambda, missing='drop', independent_vars=['wavelength'])
+		gmodel = Model(kropff_bragg_peak_lambda, nan_policy='propagate', independent_vars=['wavelength'])
 
 		wavelength = self.xaxis_to_fit
 		o_gui = GuiUtility(parent=self.parent)
@@ -120,21 +124,30 @@ class FittingJobHandler:
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
 			_entry_high = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
-			a0 = _entry_high['a0']
-			b0 = _entry_high['b0']
+			a0 = np.float(_entry_high['a0'])
+			b0 = np.float(_entry_high['b0'])
 
 			_entry_low = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['low']
-			ahkl = _entry_low['ahkl']
-			bhkl = _entry_low['bhkl']
+			ahkl = np.float(_entry_low['ahkl'])
+			bhkl = np.float(_entry_low['bhkl'])
+
+
+			if _row == 0:
+				self.parent.debug_yaxis = yaxis
+				self.parent.debug_wavelength = wavelength
+				self.parent.debug_a0 = a0
+				self.parent.debug_b0 = b0
+				self.parent.debug_ahkl = ahkl
+				self.parent.debug_bhkl = bhkl
 
 			_result = gmodel.fit(yaxis, wavelength=wavelength,
 			                     a0=Parameter('a0', value=a0, vary=False),
 			                     b0=Parameter('b0', value=b0, vary=False),
 			                     ahkl=Parameter('ahkl', value=ahkl, vary=False),
 			                     bhkl=Parameter('bhkl', value=bhkl, vary=False),
-			                     lambdahkl=1,
-			                     sigma=1,
-			                     tau=10)
+			                     lambdahkl=0.037,
+			                     sigma=1e-6,
+			                     tau=1e-6)
 
 			lambdahkl = _result.params['lambdahkl'].value
 			lambdahkl_error = _result.params['lambdahkl'].stderr
@@ -143,8 +156,8 @@ class FittingJobHandler:
 			tau = _result.params['tau'].value
 			tau_error = _result.params['tau'].stderr
 
-			yaxis_fitted = kropff_bragg_peak_lambda((self.xaxis_to_fit,
-			                                         a0, b0, ahkl, bhkl, lambdahkl, sigma, tau))
+			yaxis_fitted = kropff_bragg_peak_lambda(self.xaxis_to_fit,
+			                                         a0, b0, ahkl, bhkl, lambdahkl, sigma, tau)
 
 			result_dict = {'lambdahkl': lambdahkl,
 			               'lambdahkl_error': lambdahkl_error,
