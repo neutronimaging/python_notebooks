@@ -41,14 +41,14 @@ class GuiUtility:
 	def check_status_of_kropff_fitting_buttons(self):
 
 		enabled_low_lambda_button = False
-		enabled_bragg_preak_button = False
+		enabled_bragg_peak_button = False
 
 		# can we enabled the low lambda button
 		if self.parent.fitting_input_dictionary['rois'][0]['fitting']['kropff']['high']['a0']:
 			enabled_low_lambda_button = True
 
 		if self.parent.fitting_input_dictionary['rois'][0]['fitting']['kropff']['low']['ahkl']:
-			enabled_bragg_preak_button = True
+			enabled_bragg_peak_button = True
 
 		self.parent.ui.fit_low_lambda_region.setEnabled(enabled_low_lambda_button)
-		self.parent.ui.fit_bragg_peak_region.setEnabled(enabled_bragg_preak_button)
+		self.parent.ui.fit_bragg_peak_region.setEnabled(enabled_bragg_peak_button)

@@ -6,6 +6,7 @@ from collections import OrderedDict
 from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 from __code.bragg_edge.fitting_functions import kropff_high_lambda, kropff_low_lambda, kropff_bragg_peak_lambda
+from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
 class ImportHandler:
@@ -52,6 +53,9 @@ class ImportHandler:
 
             self.parent.block_table_ui(False)
             self.parent.update_fitting_plot()
+
+            o_gui = GuiUtility(parent=self.parent)
+            o_gui.check_status_of_kropff_fitting_buttons()
 
     def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
         metadata = result_of_import['metadata']
