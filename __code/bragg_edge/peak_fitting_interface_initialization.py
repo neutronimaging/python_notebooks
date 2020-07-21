@@ -120,6 +120,16 @@ class Initialization:
 		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
 		self.parent.ui.detector_offset.setText(str(self.detector_offset))
 
+		self.parent.ui.kropff_high_tof_a0_init.setText(str(self.parent.fitting_parameters_init['kropff']['a0']))
+		self.parent.ui.kropff_high_tof_b0_init.setText(str(self.parent.fitting_parameters_init['kropff']['b0']))
+		self.parent.ui.kropff_low_tof_ahkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['ahkl']))
+		self.parent.ui.kropff_low_tof_bhkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['bhkl']))
+		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
+			                                                         'tofhkl']))
+		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['tau']))
+		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
+			                                                         'sigma']))
+
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])
 

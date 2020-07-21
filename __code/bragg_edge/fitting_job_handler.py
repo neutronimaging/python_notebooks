@@ -39,10 +39,13 @@ class FittingJobHandler:
 		tof = self.xaxis_to_fit
 		o_gui = GuiUtility(parent=self.parent)
 
+		a0_init = np.float(str(self.parent.kropff_high_tof_a0_init.text()))
+		b0_init = np.float(str(self.parent.kropff_high_tof_b0_init.text()))
+
 		for _index, yaxis in enumerate(self.list_yaxis_to_fit):
 
 			yaxis = -np.log(yaxis)
-			_result = gmodel.fit(yaxis, tof=tof, a0=1, b0=1)
+			_result = gmodel.fit(yaxis, tof=tof, a0=a0_init, b0=b0_init)
 			a0 = _result.params['a0'].value
 			a0_error = _result.params['a0'].stderr
 			b0 = _result.params['b0'].value
@@ -72,6 +75,9 @@ class FittingJobHandler:
 		tof = self.xaxis_to_fit
 		o_gui = GuiUtility(parent=self.parent)
 
+		ahkl_init = np.float(str(self.parent.kropff_high_tof_ahkl_init.text()))
+		bhkl_init = np.float(str(self.parent.kropff_high_tof_bhkl_init.text()))
+
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
 			_entry = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
@@ -82,8 +88,8 @@ class FittingJobHandler:
 			_result = gmodel.fit(yaxis, tof=tof,
 			                     a0=Parameter('a0', value=a0, vary=False),
 			                     b0=Parameter('b0', value=b0, vary=False),
-			                     ahkl=1,
-			                     bhkl=1)
+			                     ahkl=ahkl_init,
+			                     bhkl=bhkl_init)
 
 			ahkl = _result.params['ahkl'].value
 			ahkl_error = _result.params['ahkl'].stderr
@@ -115,6 +121,10 @@ class FittingJobHandler:
 		tof = self.xaxis_to_fit
 		o_gui = GuiUtility(parent=self.parent)
 
+		tofhkl_init = np.float(str(self.parent.kropff_bragg_peak_tofhkl_init.text()))
+		tau_init = np.float(str(self.parent.kropff_bragg_peak_tau_init.text()))
+		sigma_init = np.float(str(self.parent.kropff_bragg_peak_sigma_init.text()))
+
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
 			_entry_high = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
@@ -140,9 +150,9 @@ class FittingJobHandler:
 			                     b0=Parameter('b0', value=b0, vary=False),
 			                     ahkl=Parameter('ahkl', value=ahkl, vary=False),
 			                     bhkl=Parameter('bhkl', value=bhkl, vary=False),
-			                     tofhkl=6000e-6,
-			                     sigma=1e-6,
-			                     tau=1e-6)
+			                     tofhkl=tofhkl_init,
+			                     sigma=tau_init,
+			                     tau=sigma_init)
 
 			tofhkl = _result.params['tofhkl'].value
 			tofhkl_error = _result.params['tofhkl'].stderr

@@ -33,6 +33,14 @@ class BraggEdge(BraggEdgeParent):
 
 class Interface(QMainWindow):
 
+    fitting_parameters_init = {'kropff': {'a0': 1,
+                                          'b0': 1,
+                                          'ahkl': 1,
+                                          'bhkl': 1,
+                                          'tofhkl': 1e-6,
+                                          'tau': 1e-6,
+                                          'sigma': 1e-6}}
+
     bragg_edge_range = [5, 20]
     selection_roi_rgb = (62, 13, 244)
     roi_settings = {'color': QtGui.QColor(selection_roi_rgb[0],
