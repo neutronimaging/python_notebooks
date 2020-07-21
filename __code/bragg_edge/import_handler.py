@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
-from __code.bragg_edge.fitting_functions import kropff_high_lambda, kropff_low_lambda, kropff_bragg_peak_lambda
+from __code.bragg_edge.fitting_functions import kropff_high_tof, kropff_low_tof, kropff_bragg_peak_tof
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
@@ -73,13 +73,12 @@ class ImportHandler:
 
         data = result_of_import['data']
         tof_array = np.array(data['tof'])
-        # self.tof_array = tof_array
         index_array = np.array(data['index'])
         lambda_array = np.array(data['lambda'])
         rois_dictionary = OrderedDict()
 
-        lambda_array_of_peak_selected = lambda_array[self.parent.bragg_edge_range[0]:
-                                                     self.parent.bragg_edge_range[1]]
+        tof_array_of_peak_selected = tof_array[self.parent.bragg_edge_range[0]:
+                                               self.parent.bragg_edge_range[1]]
 
         for col in np.arange(3, len(columns_roi) + 3):
             str_col = str(col)
@@ -100,13 +99,13 @@ class ImportHandler:
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['b0_error'] = \
                 columns_roi[str_col]['kropff']['b0_error']
 
-            xaxis_to_fit = lambda_array_of_peak_selected[self.parent.kropff_fitting_range['high'][0]:
-                                                         self.parent.kropff_fitting_range['high'][1]]
+            xaxis_to_fit = tof_array_of_peak_selected[self.parent.kropff_fitting_range['high'][0]:
+                                                      self.parent.kropff_fitting_range['high'][1]]
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['xaxis_to_fit'] = \
             xaxis_to_fit
-            yaxis_fitted = kropff_high_lambda(xaxis_to_fit,
-                                              np.float(columns_roi[str_col]['kropff']['a0']),
-                                              np.float(columns_roi[str_col]['kropff']['b0']))
+            yaxis_fitted = kropff_high_tof(xaxis_to_fit,
+                                           np.float(columns_roi[str_col]['kropff']['a0']),
+                                           np.float(columns_roi[str_col]['kropff']['b0']))
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['yaxis_fitted'] = \
                 yaxis_fitted
 
@@ -120,11 +119,11 @@ class ImportHandler:
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['bhkl_error'] = \
                 columns_roi[str_col]['kropff']['bhkl_error']
 
-            xaxis_to_fit = lambda_array_of_peak_selected[self.parent.kropff_fitting_range['low'][0]:
-                                                         self.parent.kropff_fitting_range['low'][1]]
+            xaxis_to_fit = tof_array_of_peak_selected[self.parent.kropff_fitting_range['low'][0]:
+                                                      self.parent.kropff_fitting_range['low'][1]]
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['xaxis_to_fit'] = \
             xaxis_to_fit
-            yaxis_fitted = kropff_low_lambda(xaxis_to_fit,
+            yaxis_fitted = kropff_low_tof(xaxis_to_fit,
                                              np.float(columns_roi[str_col]['kropff']['a0']),
                                              np.float(columns_roi[str_col]['kropff']['b0']),
                                              np.float(columns_roi[str_col]['kropff']['ahkl']),

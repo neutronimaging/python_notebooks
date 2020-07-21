@@ -27,14 +27,14 @@ class GuiUtility:
 		table_ui.item(row, 3).setText(self.cell_str_format.format(ahkl_error))
 		table_ui.item(row, 4).setText(self.cell_str_format.format(bhkl_error))
 
-	def update_kropff_bragg_edge_table_ui(self, row=0, lambdahkl=None, lambdahkl_error=None,
+	def update_kropff_bragg_edge_table_ui(self, row=0, tofhkl=None, tofhkl_error=None,
 	                                      tau=None, tau_error=None,
 	                                      sigma=None, sigma_error=None):
 		table_ui = self.parent.ui.bragg_edge_tableWidget
-		table_ui.item(row, 1).setText(self.cell_str_format.format(lambdahkl))
+		table_ui.item(row, 1).setText(self.cell_str_format.format(tofhkl))
 		table_ui.item(row, 2).setText(self.cell_str_format.format(tau))
 		table_ui.item(row, 3).setText(self.cell_str_format.format(sigma))
-		table_ui.item(row, 4).setText(self.cell_str_format.format(lambdahkl_error))
+		table_ui.item(row, 4).setText(self.cell_str_format.format(tofhkl_error))
 		table_ui.item(row, 5).setText(self.cell_str_format.format(tau_error))
 		table_ui.item(row, 6).setText(self.cell_str_format.format(sigma_error))
 
