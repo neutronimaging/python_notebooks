@@ -44,7 +44,7 @@ class FittingJobHandler:
 
 		for _index, yaxis in enumerate(self.list_yaxis_to_fit):
 
-			yaxis = -np.log(yaxis)
+			# yaxis = -np.log(yaxis)
 			_result = gmodel.fit(yaxis, tof=tof, a0=a0_init, b0=b0_init)
 			a0 = _result.params['a0'].value
 			a0_error = _result.params['a0'].stderr
@@ -75,8 +75,8 @@ class FittingJobHandler:
 		tof = self.xaxis_to_fit
 		o_gui = GuiUtility(parent=self.parent)
 
-		ahkl_init = np.float(str(self.parent.kropff_high_tof_ahkl_init.text()))
-		bhkl_init = np.float(str(self.parent.kropff_high_tof_bhkl_init.text()))
+		ahkl_init = np.float(str(self.parent.kropff_low_tof_ahkl_init.text()))
+		bhkl_init = np.float(str(self.parent.kropff_low_tof_bhkl_init.text()))
 
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
@@ -84,7 +84,7 @@ class FittingJobHandler:
 			a0 = np.float(_entry['a0'])
 			b0 = np.float(_entry['b0'])
 
-			yaxis = -np.log(yaxis)
+			# yaxis = -np.log(yaxis)
 			_result = gmodel.fit(yaxis, tof=tof,
 			                     a0=Parameter('a0', value=a0, vary=False),
 			                     b0=Parameter('b0', value=b0, vary=False),
@@ -96,14 +96,14 @@ class FittingJobHandler:
 			bhkl = _result.params['bhkl'].value
 			bhkl_error = _result.params['bhkl'].stderr
 
-			yaxis_fitted = kropff_low_tof(self.xaxis_to_fit,
-			                                 a0, b0, ahkl, bhkl)
+			yaxis_fitted = kropff_low_tof(tof,
+			                              a0, b0, ahkl, bhkl)
 
 			result_dict = {'ahkl': ahkl,
 			               'bhkl': bhkl,
 			               'ahkl_error': ahkl_error,
 			               'bhkl_error': bhkl_error,
-			               'xaxis_to_fit': self.xaxis_to_fit * 1e6,
+			               'xaxis_to_fit': tof * 1e6,
 			               'yaxis_fitted': yaxis_fitted}
 
 			self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['low'] = deepcopy(result_dict)
@@ -144,7 +144,7 @@ class FittingJobHandler:
 				self.parent.debug_ahkl = ahkl
 				self.parent.debug_bhkl = bhkl
 
-			yaxis = -np.log(yaxis)
+			# yaxis = -np.log(yaxis)
 			_result = gmodel.fit(yaxis, tof=tof,
 			                     a0=Parameter('a0', value=a0, vary=False),
 			                     b0=Parameter('b0', value=b0, vary=False),

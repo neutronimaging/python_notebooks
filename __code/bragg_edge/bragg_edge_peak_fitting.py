@@ -39,7 +39,7 @@ class Interface(QMainWindow):
                                           'bhkl': 1,
                                           'tofhkl': 1e-6,
                                           'tau': 1e-6,
-                                          'sigma': 1e-6}}
+                                          'sigma': 1}}
 
     bragg_edge_range = [5, 20]
     selection_roi_rgb = (62, 13, 244)
@@ -503,10 +503,6 @@ class Interface(QMainWindow):
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
         dict_rois_imported = self.dict_rois_imported
-
-        print("in profile of bin size slider changed")
-        print(f"{dict_rois_imported}")
-
         new_width = dict_rois_imported[new_value]['width']
         new_height = dict_rois_imported[new_value]['height']
         self.ui.profile_of_bin_size_height.setText(new_height)
@@ -645,7 +641,10 @@ class Interface(QMainWindow):
 
         self.ui.fitting.setLabel("bottom", xaxis_label)
         self.ui.fitting.setLabel("left", 'Cross Section (arbitrary units)')
-        self.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.selection_roi_rgb[0],
+        # self.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.selection_roi_rgb[0],
+        #                                         self.selection_roi_rgb[1],
+        #                                         self.selection_roi_rgb[2]))
+        self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
                                                 self.selection_roi_rgb[1],
                                                 self.selection_roi_rgb[2]))
 
@@ -670,7 +669,7 @@ class Interface(QMainWindow):
         algo_name = o_gui.get_tab_selected(self.ui.tab_algorithm).lower()
 
         if Interface.key_path_exists_in_dictionary(dictionary=self.fitting_input_dictionary,
-                tree_key = ['rois', row_selected, 'fitting', algo_name, name_of_page, 'xaxis_to_fit']):
+                tree_key=['rois', row_selected, 'fitting', algo_name, name_of_page, 'xaxis_to_fit']):
 
             # show fit only if tof scale selected
             if x_axis_selected == 'tof':

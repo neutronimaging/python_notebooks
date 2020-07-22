@@ -66,7 +66,7 @@ class Kropff:
 			o_table.set_item_with_float(_row, _col+2, _entry['a0_error'])
 			o_table.set_item_with_float(_row, _col+3, _entry['b0_error'])
 
-		o_table = TableHandler(table_ui=self.table_ui['low_lambda'])
+		o_table = TableHandler(table_ui=self.table_ui['low_tof'])
 		_col = 1
 		for _row in fitting_input_dictionary['rois'].keys():
 			_entry = fitting_input_dictionary['rois'][_row]['fitting']['kropff']['low']

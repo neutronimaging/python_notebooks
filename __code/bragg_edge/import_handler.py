@@ -84,7 +84,7 @@ class ImportHandler:
             str_col = str(col)
             col_index = col-3
 
-            # high lambda
+            # high tof
             self.parent.fitting_input_dictionary['rois'][col_index]['profile'] = np.array(data[str_col])
             self.parent.fitting_input_dictionary['rois'][col_index]['x0'] = columns_roi[str_col]['x0']
             self.parent.fitting_input_dictionary['rois'][col_index]['y0'] = columns_roi[str_col]['y0']
@@ -109,7 +109,7 @@ class ImportHandler:
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['yaxis_fitted'] = \
                 yaxis_fitted
 
-            # low lambda
+            # low tof
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['ahkl'] = \
                 columns_roi[str_col]['kropff']['ahkl']
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['bhkl'] = \

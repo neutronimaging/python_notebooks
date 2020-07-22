@@ -126,8 +126,8 @@ class Initialization:
 		self.parent.ui.kropff_low_tof_bhkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['bhkl']))
 		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
 			                                                         'tofhkl']))
-		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['tau']))
-		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
+		self.parent.ui.kropff_bragg_peak_tau_init.setText(str(self.parent.fitting_parameters_init['kropff']['tau']))
+		self.parent.ui.kropff_bragg_peak_sigma_init.setText(str(self.parent.fitting_parameters_init['kropff'][
 			                                                         'sigma']))
 
 	def widgets(self):
