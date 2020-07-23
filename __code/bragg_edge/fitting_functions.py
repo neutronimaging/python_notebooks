@@ -10,6 +10,8 @@ def kropff_high_tof(tof, a0, b0):
 	a0 parameter to fit
 	b0 parameter to fit
 	"""
+	if (a0 == np.NaN) or (b0 == np.NaN):
+		return None
 	exp_expression = np.exp(-(a0 + b0 * tof))
 	return exp_expression
 
@@ -24,6 +26,8 @@ def kropff_low_tof(tof, a0, b0, ahkl, bhkl):
 	ahkl parameter to fit
 	bhkl parameter to fit
 	"""
+	if (a0 == np.NaN) or (b0 == np.NaN) or (ahkl == np.NaN) or (bhkl == np.NaN):
+		return None
 	exp_expression_1 = np.exp(-(a0 + b0 * tof))
 	exp_expression_2 = np.exp(-(ahkl + bhkl * tof))
 	return exp_expression_1 * exp_expression_2

@@ -103,9 +103,14 @@ class ImportHandler:
                                                       self.parent.kropff_fitting_range['high'][1]]
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['xaxis_to_fit'] = \
             xaxis_to_fit
+
+            kropff_a0 = np.NaN if columns_roi[str_col]['kropff']['a0'] == 'None' else np.float(columns_roi[str_col][
+                                                                                                'kropff']['a0'])
+            kropff_b0 = np.NaN if columns_roi[str_col]['kropff']['b0'] == 'None' else np.float(columns_roi[str_col][
+                                                                                                'kropff']['b0'])
             yaxis_fitted = kropff_high_tof(xaxis_to_fit,
-                                           np.float(columns_roi[str_col]['kropff']['a0']),
-                                           np.float(columns_roi[str_col]['kropff']['b0']))
+                                           kropff_a0,
+                                           kropff_b0)
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['yaxis_fitted'] = \
                 yaxis_fitted
 
@@ -123,11 +128,17 @@ class ImportHandler:
                                                       self.parent.kropff_fitting_range['low'][1]]
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['xaxis_to_fit'] = \
             xaxis_to_fit
+
+            kropff_ahkl = np.NaN if columns_roi[str_col]['kropff']['ahkl'] == 'None' else np.float(columns_roi[str_col][
+                                                                                                'kropff']['ahkl'])
+            kropff_bhkl = np.NaN if columns_roi[str_col]['kropff']['bhkl'] == 'None' else np.float(columns_roi[str_col][
+                                                                                                'kropff']['bhkl'])
+
             yaxis_fitted = kropff_low_tof(xaxis_to_fit,
-                                             np.float(columns_roi[str_col]['kropff']['a0']),
-                                             np.float(columns_roi[str_col]['kropff']['b0']),
-                                             np.float(columns_roi[str_col]['kropff']['ahkl']),
-                                             np.float(columns_roi[str_col]['kropff']['bhkl']))
+                                             kropff_a0,
+                                             kropff_b0,
+                                             kropff_ahkl,
+                                             kropff_bhkl)
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['yaxis_fitted'] = \
                 yaxis_fitted
 

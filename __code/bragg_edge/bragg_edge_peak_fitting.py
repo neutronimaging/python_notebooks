@@ -676,6 +676,7 @@ class Interface(QMainWindow):
                 _entry = self.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
                 xaxis = _entry['xaxis_to_fit']
                 yaxis = _entry['yaxis_fitted']
+                # yaxis = -np.log(yaxis)
                 self.ui.fitting.plot(xaxis, yaxis, pen=(self.fit_rgb[0], self.fit_rgb[1], self.fit_rgb[2]))
 
         if peak_range_index[0] is None:

@@ -143,8 +143,8 @@ class BraggEdge(BraggEdgeParent):
                                            layout=widgets.Layout(width='15')),
                              widgets.IntSlider(value=init_value,
                                                max=nbr_images,
-                                               min=1,
-                                               layout=widgets.Layout(width='50%'))])
+                                               min=1)])
+                                               # layout=widgets.Layout(width='50%'))])
         box2 = widgets.Label("(The more you select, the longer it will take to display the preview!)")
         vbox = widgets.VBox([box1, box2])
         display(vbox)
