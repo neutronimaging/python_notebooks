@@ -641,12 +641,14 @@ class Interface(QMainWindow):
 
         self.ui.fitting.setLabel("bottom", xaxis_label)
         self.ui.fitting.setLabel("left", 'Cross Section (arbitrary units)')
-        # self.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.selection_roi_rgb[0],
-        #                                         self.selection_roi_rgb[1],
-        #                                         self.selection_roi_rgb[2]))
-        self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
+        self.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.selection_roi_rgb[0],
                                                 self.selection_roi_rgb[1],
-                                                self.selection_roi_rgb[2]))
+                                                self.selection_roi_rgb[2]),
+                             symbol='o')
+        # self.ui.fitting.plot(xaxis, yaxis, pen=(self.selection_roi_rgb[0],
+        #                                         self.selection_roi_rgb[1],
+        #                                         self.selection_roi_rgb[2]),
+        #                      symbol='o')
 
         peak_range_index = self.kropff_fitting_range[name_of_page]
         if peak_range_index[0] is None:

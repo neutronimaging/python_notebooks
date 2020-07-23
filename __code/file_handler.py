@@ -436,15 +436,26 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 line_number += 1
                 continue
             if "#column " in line:
-                regular = r"^#column (?P<column_index>\d+) -> x0:(?P<x0>\d+), y0:(?P<y0>\d+), width:(?P<width>\d+), " \
-                          r"height:(?P<height>\d+), kropff: a0:(?P<a0>-{0,1}\d+.\d+|None), b0:(?P<b0>-{0,1}\d+.\d+|None), a0_error:(" \
-                          r"?P<a0_error>\d+.\d+|None), b0_error:(?P<b0_error>\d+.\d+|None), ahkl:(?P<ahkl>-{0,1}\d+.\d+|None), bhkl:(?P<bhkl>-{0,1}\d+.\d+|None), " \
-                          r"ahkl_error:(?P<ahkl_error>\d+.\d+|None), bhkl_error:(?P<bhkl_error>\d+.\d+|None), " \
-                          r"tofhkl:(" \
-                          r"?P<tofhkl>-{0,1}\d+.\d+|None), tau:(?P<tau>-{0,1}\d+.\d+|None), sigma:(?P<sigma>-{0," \
-                          r"1}\d+.\d+|None), tofhkl_error:(" \
-                          r"?P<tofhkl_error>\d+.\d+|None), tau_error:(?P<tau_error>\d+.\d+|None), sigma_error:(" \
-                          r"?P<sigma_error>\d+.\d+|None)$"
+                regular = r"^#column (?P<column_index>\d+) -> " \
+                          r"x0:(?P<x0>\d+), " \
+                          r"y0:(?P<y0>\d+), " \
+                          r"width:(?P<width>\d+), " \
+                          r"height:(?P<height>\d+), " \
+                          r"kropff: " \
+                          r"a0:(?P<a0>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"b0:(?P<b0>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a0_error:(?P<a0_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"b0_error:(?P<b0_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"ahkl:(?P<ahkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"bhkl:(?P<bhkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"ahkl_error:(?P<ahkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"bhkl_error:(?P<bhkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"tofhkl:(?P<tofhkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"tau:(?P<tau>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"sigma:(?P<sigma>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"tofhkl_error:(?P<tofhkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"tau_error:(?P<tau_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"sigma_error:(?P<sigma_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+)$"
 
                 m = re.search(regular, line.strip())
                 if m:

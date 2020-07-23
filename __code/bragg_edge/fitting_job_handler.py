@@ -41,10 +41,11 @@ class FittingJobHandler:
 
 		a0_init = np.float(str(self.parent.kropff_high_tof_a0_init.text()))
 		b0_init = np.float(str(self.parent.kropff_high_tof_b0_init.text()))
-
 		for _index, yaxis in enumerate(self.list_yaxis_to_fit):
 
-			# yaxis = -np.log(yaxis)
+
+
+			yaxis = -np.log(yaxis)
 			_result = gmodel.fit(yaxis, tof=tof, a0=a0_init, b0=b0_init)
 			a0 = _result.params['a0'].value
 			a0_error = _result.params['a0'].stderr
@@ -84,7 +85,7 @@ class FittingJobHandler:
 			a0 = np.float(_entry['a0'])
 			b0 = np.float(_entry['b0'])
 
-			# yaxis = -np.log(yaxis)
+			yaxis = -np.log(yaxis)
 			_result = gmodel.fit(yaxis, tof=tof,
 			                     a0=Parameter('a0', value=a0, vary=False),
 			                     b0=Parameter('b0', value=b0, vary=False),
@@ -135,16 +136,7 @@ class FittingJobHandler:
 			ahkl = np.float(_entry_low['ahkl'])
 			bhkl = np.float(_entry_low['bhkl'])
 
-			# debug
-			if _row == 0:
-				self.parent.debug_yaxis = yaxis
-				self.parent.debug_xaxis = tof
-				self.parent.debug_a0 = a0
-				self.parent.debug_b0 = b0
-				self.parent.debug_ahkl = ahkl
-				self.parent.debug_bhkl = bhkl
-
-			# yaxis = -np.log(yaxis)
+			yaxis = -np.log(yaxis)
 			_result = gmodel.fit(yaxis, tof=tof,
 			                     a0=Parameter('a0', value=a0, vary=False),
 			                     b0=Parameter('b0', value=b0, vary=False),
