@@ -76,6 +76,8 @@ class BraggEdge(BraggEdgeParent):
     def load_files(self, data_type='sample', folder=None):
 
         self.starting_dir = os.path.dirname(folder)
+        if data_type == 'sample':
+            self.data_folder_name = os.path.basename(folder)
         list_files = glob.glob(os.path.join(folder, '*.fits'))
 
         if list_files == []:
