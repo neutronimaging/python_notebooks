@@ -174,6 +174,7 @@ class FileSelectorPanel:
     
     def createSelectWidget(self):
         entries = self.getEntries()
+        entries.sort()
         self._entries = entries = [' .', ' ..', ] + entries
         if self.multiple:
             value = []
