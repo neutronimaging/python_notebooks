@@ -21,7 +21,7 @@
 # # Import code
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.bragg_edge import BraggEdge, Interface
+from __code.bragg_edge.bragg_edge import BraggEdge, Interface
 from __code.__all import custom_style
 custom_style.style()
 
@@ -40,3 +40,5 @@ o_bragg.list_powder_bragg_edges()
 # ## Export Table as CSV 
 
 o_bragg.select_output_folder()
+
+
