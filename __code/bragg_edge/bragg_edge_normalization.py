@@ -1,4 +1,3 @@
-import ipywe.fileselector
 import random
 import os
 import glob
@@ -26,6 +25,7 @@ from NeuNorm.roi import ROI
 from __code import file_handler
 from __code.bragg_edge.bragg_edge import BraggEdge as BraggEdgeParent
 from __code.file_folder_browser import FileFolderBrowser
+from __code import ipywe
 
 
 class BraggEdge(BraggEdgeParent):
@@ -50,7 +50,6 @@ class BraggEdge(BraggEdgeParent):
 
     def select_time_spectra_file(self):
         self.working_dir = os.path.dirname(self.list_files[0])
-
         self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
                                                                     start_dir=self.working_dir,
                                                                     next=self.save_time_spectra,

@@ -121,10 +121,10 @@ class BraggEdge:
 
     def select_working_folder(self):
         select_data = ipywe.fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
-                                                            start_dir=self.working_dir,
-                                                            next=self.load_data,
-                                                            type='directory',
-                                                            multiple=False)
+                                                           start_dir=self.working_dir,
+                                                           next=self.load_data,
+                                                           type='directory',
+                                                           multiple=False)
         select_data.show()
 
     def load_data(self, folder_selected):
