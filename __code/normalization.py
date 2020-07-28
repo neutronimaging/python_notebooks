@@ -215,12 +215,18 @@ class SampleSelectionPanel(Panel):
     files = None
     o_norm = None
     
-    def __init__(self, prev_button=False, next_button=True, working_dir='', top_object=None, gamma_coefficient=None):
+    def __init__(self, prev_button=False, next_button=True, working_dir='', top_object=None):
         super(SampleSelectionPanel, self).__init__(prev_button=prev_button,
                                                    next_button=next_button,
                                                    working_dir=working_dir,
-                                                   top_object=top_object,
-                                                   gamma_coefficient=gamma_coefficient)
+                                                   top_object=top_object)
+
+    # def __init__(self, prev_button=False, next_button=True, working_dir='', top_object=None, gamma_coefficient=None):
+    #     super(SampleSelectionPanel, self).__init__(prev_button=prev_button,
+    #                                                next_button=next_button,
+    #                                                working_dir=working_dir,
+    #                                                top_object=top_object,
+    #                                                gamma_coefficient=gamma_coefficient)
 
     def next_button_clicked(self, event):
         self.remove()
@@ -293,22 +299,25 @@ class NormalizationHandler(object):
         
         # sample
         list_sample = self.files.sample
-        self.o_norm.load(file=list_sample, notebook=True, auto_gamma_filter=False,
-                         manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
+        # self.o_norm.load(file=list_sample, notebook=True, auto_gamma_filter=False,
+        #                  manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
+        self.o_norm.load(file=list_sample, notebook=True)
         self.data.sample = self.o_norm.data['sample']['data']
         self.list_file_names = list_sample
 
         # ob
         list_ob = self.files.ob
-        self.o_norm.load(file=list_ob, data_type='ob', notebook=True, auto_gamma_filter=False,
-                         manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
+        # self.o_norm.load(file=list_ob, data_type='ob', notebook=True, auto_gamma_filter=False,
+        #                  manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
+        self.o_norm.load(file=list_ob, data_type='ob', notebook=True)
         self.data.ob = self.o_norm.data['ob']['data']
 
         # df
         list_df = self.files.df
         if list_df:
-            self.o_norm.load(file=list_df, data_type='df', notebook=True, auto_gamma_filter=False,
-                             manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
+            # self.o_norm.load(file=list_df, data_type='df', notebook=True, auto_gamma_filter=False,
+            #                  manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
+            self.o_norm.load(file=list_df, data_type='df', notebook=True)
             self.data.df = self.o_norm.data['df']['data']
 
 
@@ -445,9 +454,11 @@ class NormalizationHandler(object):
                 _roi = ROI(x0=x_left, y0=y_top, width=width_roi, height=height_roi)
                 _list_roi.append(_roi)
 
+            self.debugging_roi = _list_roi
+
             # try:
             self.o_norm.df_correction()
-            self.o_norm.normalization(roi=_list_roi, notebook=True)
+            self.o_norm.normalization(roi=_list_roi[0], notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
