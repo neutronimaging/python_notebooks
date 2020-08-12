@@ -14,6 +14,8 @@ class TableHandler:
 			self.table_ui.removeRow(0)
 
 	def get_row_selected(self):
+		if self.table_ui is None:
+			return -1
 		list_selection = self.table_ui.selectedRanges()
 		try:
 			first_selection = list_selection[0]

@@ -124,8 +124,9 @@ class Get:
 
 	def part_of_fitting_selected(self):
 		"""high, low or bragg_peak"""
-		list_pages = ["high", "low", "bragg_peak"]
-		list_table_ui = [self.parent.ui.high_tof_tableWidget,
+		list_pages = ["Bragg peak selection", "high", "low", "bragg_peak"]
+		list_table_ui = [None,
+		                 self.parent.ui.high_tof_tableWidget,
 		                 self.parent.ui.low_tof_tableWidget,
 		                 self.parent.ui.bragg_edge_tableWidget]
 

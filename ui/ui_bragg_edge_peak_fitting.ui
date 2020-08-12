@@ -619,7 +619,7 @@
                </property>
                <widget class="QWidget" name="page">
                 <attribute name="label">
-                 <string>Step0: Select Bragg Peak Range</string>
+                 <string>Step0: Graphically Select Bragg Peak Range</string>
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
                  <item>
