@@ -11,8 +11,6 @@ import numpy as np
 from __code import fileselector
 from __code.nexus_handler import get_list_entries
 from __code.file_folder_browser import FileFolderBrowser
-from __code.time_utility import AbsoluteTimeHandler, RelativeTimeHandler
-from __code.interpolation_utilities import Interpolation
 from __code.sans.sans_config import gpsans_parameters, biosans_parameters
 from __code.file_handler import make_ascii_file
 
@@ -171,7 +169,6 @@ class Extract(FileFolderBrowser):
 
 		return new_full_dict
 
-
 	def extract_all_in_one(self, output_folder):
 
 		display(HTML('<span style="font-size: 20px; color:blue">Work in progress ... </span>'))
@@ -192,29 +189,44 @@ class Extract(FileFolderBrowser):
 				list_entry_path.append(full_path)
 
 		list_nexus = self.list_nexus
-		full_dict = OrderedDict()
 		metadata = []
+		label_of_columns = []
 		for _index, _nexus in enumerate(list_nexus):
-			value = Extract.get_entry_value(nexus_file_name=_nexus,
-			                                list_entry_path=list_entry_path)
-			full_dict[_nexus] = value
-			metadata.append("# column {}: {}".format(_index, _nexus))
+			_line = [_nexus]
 
-		full_dict_with_path_as_key = Extract.reformat_dict(full_dict)
+			if _index == 0:
+				label_of_columns.append("nexus name")
+			reduction_log_dict = Extract.get_entry_value(nexus_file_name=_nexus,
+			                                             list_entry_path=list_entry_path)
+			for _key in reduction_log_dict.keys():
+				_value = reduction_log_dict[_key]
+				# print(f"-> _key:{_key}: {_value}")
+				# print(f"--> type(_value): {type(_value)}")
 
-		metadata.append("#")
-		for _metadata_path in full_dict_with_path_as_key.keys():
-			metadata.append("# metadata:  {}".format(_metadata_path))
-			collect_metadata_values = []
-			for _nexus in full_dict_with_path_as_key[_metadata_path].keys():
-				collect_metadata_values.append(full_dict_with_path_as_key[_metadata_path][_nexus])
+				if type(_value) is str:
+					if _index == 0:
+						label_of_columns.append(_key)
+					_line.append(_value)
+				elif type(_value) is list:
+					if _index == 0:
+						label_of_columns.append(_key)
+					array_value = np.array(_value)
+					_line.append("{}".format(np.mean(array_value)))
+				elif type(_value) is dict:
+					for _inside_key in _value.keys():
+						if _index == 0:
+							label_of_columns.append("{}/{}".format(_key, _inside_key))
+						_line.append("{}".format(np.mean(_value[_inside_key])))
 
-			self.collect_metadata_values = collect_metadata_values
+			metadata.append(", ".join(_line))
 
-			Extract.update_metadata(collect_metadata_values,
-			                        metadata=metadata)
+		label_of_columns = ", ".join(label_of_columns)
 
-		make_ascii_file(metadata=metadata,
+		final_metadata = [label_of_columns]
+		for _meta in metadata:
+			final_metadata.append(_meta)
+
+		make_ascii_file(metadata=final_metadata,
 		                output_file_name=output_file_name)
 
 		clear_output(wait=False)
