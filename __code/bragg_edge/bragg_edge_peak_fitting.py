@@ -874,6 +874,28 @@ class Interface(QMainWindow):
     def kropff_toolbox_changed(self, new_index):
         self.update_fitting_plot()
 
+    def fit_kropff_button_pushed(self):
+        self.ui.eventProgress.setMaximum(4)
+        self.ui.eventProgress.setValue(1)
+        self.ui.eventProgress.setVisible(True)
+        QtGui.QGuiApplication.processEvents()
+
+        self.kropff_fit_high_lambda_region_clicked()
+        self.ui.eventProgress.setValue(2)
+        QtGui.QGuiApplication.processEvents()
+
+        self.kropff_fit_low_lambda_region_clicked()
+        self.ui.eventProgress.setValue(3)
+        QtGui.QGuiApplication.processEvents()
+
+        self.kropff_fit_bragg_peak_region_clicked()
+        self.ui.eventProgress.setValue(4)
+        QtGui.QGuiApplication.processEvents()
+
+        self.ui.eventProgress.setVisible(False)
+        self.ui.statusbar.setStyleSheet("color: blue")
+        self.ui.statusbar.showMessage("Fitting Done!", 1000)  # 10s
+
     def kropff_fit_high_lambda_region_clicked(self):
         self.switch_fitting_axis_to('tof')
         o_fit = FittingJobHandler(parent=self)

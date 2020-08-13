@@ -619,67 +619,109 @@
                </property>
                <widget class="QWidget" name="page">
                 <attribute name="label">
-                 <string>Step0: Graphically Select Bragg Peak Range</string>
+                 <string>USER INPUT</string>
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_13">
-                   <item>
-                    <widget class="QLabel" name="label_16">
-                     <property name="text">
-                      <string>From</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="bragg_peak_range_from_value">
-                     <property name="text">
-                      <string>N/A</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="from_bragg_peak_range_units">
-                     <property name="text">
-                      <string>units</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="label_24">
-                     <property name="text">
-                      <string>to</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="to_bragg_peak_range_value">
-                     <property name="text">
-                      <string>N/A</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="to_bragg_peak_range_units">
-                     <property name="text">
-                      <string>units</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_12">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
+                  <widget class="QGroupBox" name="groupBox_5">
+                   <property name="font">
+                    <font>
+                     <pointsize>14</pointsize>
+                    </font>
+                   </property>
+                   <property name="title">
+                    <string>Step 1</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_13">
+                    <item>
+                     <widget class="QLabel" name="label_17">
+                      <property name="text">
+                       <string>Graphically select Bragg peak range !</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_13">
+                      <item>
+                       <widget class="QLabel" name="label_16">
+                        <property name="text">
+                         <string>From</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="bragg_peak_range_from_value">
+                        <property name="text">
+                         <string>N/A</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="from_bragg_peak_range_units">
+                        <property name="text">
+                         <string>units</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_24">
+                        <property name="text">
+                         <string>to</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="to_bragg_peak_range_value">
+                        <property name="text">
+                         <string>N/A</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="to_bragg_peak_range_units">
+                        <property name="text">
+                         <string>units</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_12">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGroupBox" name="groupBox_6">
+                   <property name="font">
+                    <font>
+                     <pointsize>14</pointsize>
+                    </font>
+                   </property>
+                   <property name="title">
+                    <string>Step 2</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_14">
+                    <item>
+                     <widget class="QPushButton" name="fit_kropff_button">
+                      <property name="text">
+                       <string>FIT</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
                  </item>
                  <item>
                   <spacer name="verticalSpacer">
@@ -689,7 +731,7 @@
                    <property name="sizeHint" stdset="0">
                     <size>
                      <width>20</width>
-                     <height>706</height>
+                     <height>546</height>
                     </size>
                    </property>
                   </spacer>
@@ -706,7 +748,7 @@
                  </rect>
                 </property>
                 <attribute name="label">
-                 <string>Step1: High TOF</string>
+                 <string>High TOF fitting table</string>
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_6">
                  <item>
@@ -806,7 +848,7 @@
                  </rect>
                 </property>
                 <attribute name="label">
-                 <string>Step2: Low TOF</string>
+                 <string>Low TOF fitting table</string>
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_9">
                  <item>
@@ -909,7 +951,7 @@
                  </rect>
                 </property>
                 <attribute name="label">
-                 <string>Step3: Bragg Peak</string>
+                 <string>Bragg peak fitting table</string>
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_8">
                  <item>
@@ -1586,6 +1628,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>fit_kropff_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>fit_kropff_button_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>416</x>
+     <y>343</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>708</x>
+     <y>586</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1610,5 +1668,6 @@
   <slot>kropff_fit_high_lambda_region_clicked()</slot>
   <slot>kropff_fit_low_lambda_region_clicked()</slot>
   <slot>kropff_fit_bragg_peak_region_clicked()</slot>
+  <slot>fit_kropff_button_pushed()</slot>
  </slots>
 </ui>
