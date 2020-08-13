@@ -725,6 +725,7 @@ class Interface(QMainWindow):
         return True
 
     def fitting_range_changed(self):
+        [global_left_range, global_right_range] = self.bragg_edge_range
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
         xaxis_dict = self.fitting_input_dictionary['xaxis']
         o_get = Get(parent=self)
@@ -737,10 +738,15 @@ class Interface(QMainWindow):
         left_index = find_nearest_index(array=xaxis, value=left_range)
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
+        global_left_index = find_nearest_index(array=xaxis, value=global_left_range)
+        global_right_index = find_nearest_index(array=xaxis, value=global_right_range)
+
         part_of_fitting_dict = o_get.part_of_fitting_selected()
         name_of_page = part_of_fitting_dict['name_of_page']
 
-        self.kropff_fitting_range[name_of_page] = [left_index, right_index]
+        self.kropff_fitting_range['high'] = [right_index, global_right_index]
+        self.kropff_fitting_range['low'] = [global_left_index, left_index]
+        self.kropff_fitting_range['bragg_peak'] = [left_index, right_index]
 
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:
