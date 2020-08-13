@@ -494,9 +494,7 @@ class Interface(QMainWindow):
 
         # kropff tab
         for _key in self.kropff_fitting_range.keys():
-            print(f"_key is {_key}")
             self.kropff_fitting_range[_key] = [left_index, right_index]
-            print(f"-> left_index:{left_index} and right_index:{right_index}")
 
         # TBD tab
         pass

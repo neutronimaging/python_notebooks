@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -794,36 +794,6 @@
                   </widget>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_8">
-                   <item>
-                    <widget class="QLabel" name="label_6">
-                     <property name="text">
-                      <string>Select high lambda region in right plot and run FIT</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="fit_high_tof_region">
-                     <property name="minimumSize">
-                      <size>
-                       <width>200</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>200</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Fit high tof region</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
                   <widget class="QTableWidget" name="high_tof_tableWidget">
                    <property name="alternatingRowColors">
                     <bool>true</bool>
@@ -892,39 +862,6 @@
                     </item>
                    </layout>
                   </widget>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_9">
-                   <item>
-                    <widget class="QLabel" name="label_7">
-                     <property name="text">
-                      <string>Select low lambda region in right plot and run FIT</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="fit_low_tof_region">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>200</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>200</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Fit low tof region</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
                  </item>
                  <item>
                   <widget class="QTableWidget" name="low_tof_tableWidget">
@@ -1005,39 +942,6 @@
                     </item>
                    </layout>
                   </widget>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_10">
-                   <item>
-                    <widget class="QLabel" name="label_8">
-                     <property name="text">
-                      <string>Select Bragg peak region in right plot and run FIT</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="fit_bragg_peak_region">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>200</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>200</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Fit Bragg peak region</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
                  </item>
                  <item>
                   <widget class="QTableWidget" name="bragg_edge_tableWidget">
@@ -1573,54 +1477,6 @@
     <hint type="sourcelabel">
      <x>396</x>
      <y>436</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>672</x>
-     <y>426</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fit_high_tof_region</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>kropff_fit_high_lambda_region_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>622</x>
-     <y>207</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>672</x>
-     <y>426</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fit_low_tof_region</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>kropff_fit_low_lambda_region_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>622</x>
-     <y>241</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>672</x>
-     <y>426</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fit_bragg_peak_region</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>kropff_fit_bragg_peak_region_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>622</x>
-     <y>275</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
