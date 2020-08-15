@@ -1,11 +1,16 @@
 import numpy as np
-import os
+import matplotlib
+matplotlib.use('Qt5Agg')
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
-from qtpy import QtGui
+from qtpy import QtGui, QtCore
 import pyqtgraph as pg
 
 from __code.table_handler import TableHandler
+from __code.bragg_edge.mplcanvas import MplCanvas
 
 
 class Initialization:
@@ -19,6 +24,7 @@ class Initialization:
 		self.block_signals(True)
 		self.pyqtgraph_image_view()
 		self.pyqtgraph_profile()
+		self.matplotlib()
 
 		if tab == 'all':
 			self.save_image_size()
@@ -66,6 +72,13 @@ class Initialization:
 		profile_layout = QVBoxLayout()
 		profile_layout.addWidget(self.parent.ui.profile)
 		self.parent.ui.profile_widget.setLayout(profile_layout)
+
+	def matplotlib(self):
+		sc = MplCanvas(self.parent, width=5, height=4, dpi=100)
+		sc.axes.plot([0,1,2,3,4,5], [10, 1, 20 ,3, 40, 50])
+		layout = QVBoxLayout()
+		layout.addWidget(sc)
+		self.parent.ui.high_widget.setLayout(layout)
 
 	def pyqtgraph_fitting(self):
 		# fitting view

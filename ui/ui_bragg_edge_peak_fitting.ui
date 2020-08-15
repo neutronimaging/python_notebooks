@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -615,9 +615,17 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>281</width>
+                  <height>199</height>
+                 </rect>
+                </property>
                 <attribute name="label">
                  <string>USER INPUT</string>
                 </attribute>
@@ -743,7 +751,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>718</width>
+                  <width>639</width>
                   <height>765</height>
                  </rect>
                 </property>
@@ -794,16 +802,40 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="high_tof_tableWidget">
-                   <property name="alternatingRowColors">
-                    <bool>true</bool>
+                  <widget class="QTabWidget" name="tabWidget_2">
+                   <property name="currentIndex">
+                    <number>0</number>
                    </property>
-                   <property name="selectionMode">
-                    <enum>QAbstractItemView::SingleSelection</enum>
-                   </property>
-                   <property name="selectionBehavior">
-                    <enum>QAbstractItemView::SelectRows</enum>
-                   </property>
+                   <widget class="QWidget" name="tab_5">
+                    <attribute name="title">
+                     <string>Table</string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_15">
+                     <item>
+                      <widget class="QTableWidget" name="high_tof_tableWidget">
+                       <property name="alternatingRowColors">
+                        <bool>true</bool>
+                       </property>
+                       <property name="selectionMode">
+                        <enum>QAbstractItemView::SingleSelection</enum>
+                       </property>
+                       <property name="selectionBehavior">
+                        <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="tab_6">
+                    <attribute name="title">
+                     <string>Graph </string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_16">
+                     <item>
+                      <widget class="QWidget" name="high_widget" native="true"/>
+                     </item>
+                    </layout>
+                   </widget>
                   </widget>
                  </item>
                 </layout>
@@ -813,7 +845,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>718</width>
+                  <width>639</width>
                   <height>765</height>
                  </rect>
                 </property>
@@ -864,16 +896,40 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="low_tof_tableWidget">
-                   <property name="alternatingRowColors">
-                    <bool>true</bool>
+                  <widget class="QTabWidget" name="tabWidget_3">
+                   <property name="currentIndex">
+                    <number>0</number>
                    </property>
-                   <property name="selectionMode">
-                    <enum>QAbstractItemView::SingleSelection</enum>
-                   </property>
-                   <property name="selectionBehavior">
-                    <enum>QAbstractItemView::SelectRows</enum>
-                   </property>
+                   <widget class="QWidget" name="tab_7">
+                    <attribute name="title">
+                     <string>Table</string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_17">
+                     <item>
+                      <widget class="QTableWidget" name="low_tof_tableWidget">
+                       <property name="alternatingRowColors">
+                        <bool>true</bool>
+                       </property>
+                       <property name="selectionMode">
+                        <enum>QAbstractItemView::SingleSelection</enum>
+                       </property>
+                       <property name="selectionBehavior">
+                        <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="tab_8">
+                    <attribute name="title">
+                     <string>Graph</string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_18">
+                     <item>
+                      <widget class="QWidget" name="low_widget" native="true"/>
+                     </item>
+                    </layout>
+                   </widget>
                   </widget>
                  </item>
                 </layout>
@@ -883,7 +939,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>718</width>
+                  <width>639</width>
                   <height>765</height>
                  </rect>
                 </property>
@@ -944,16 +1000,40 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QTableWidget" name="bragg_edge_tableWidget">
-                   <property name="alternatingRowColors">
-                    <bool>true</bool>
+                  <widget class="QTabWidget" name="tabWidget_4">
+                   <property name="currentIndex">
+                    <number>0</number>
                    </property>
-                   <property name="selectionMode">
-                    <enum>QAbstractItemView::SingleSelection</enum>
-                   </property>
-                   <property name="selectionBehavior">
-                    <enum>QAbstractItemView::SelectRows</enum>
-                   </property>
+                   <widget class="QWidget" name="tab_9">
+                    <attribute name="title">
+                     <string>Table</string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_19">
+                     <item>
+                      <widget class="QTableWidget" name="bragg_edge_tableWidget">
+                       <property name="alternatingRowColors">
+                        <bool>true</bool>
+                       </property>
+                       <property name="selectionMode">
+                        <enum>QAbstractItemView::SingleSelection</enum>
+                       </property>
+                       <property name="selectionBehavior">
+                        <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="tab_10">
+                    <attribute name="title">
+                     <string>Graph</string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_20">
+                     <item>
+                      <widget class="QWidget" name="bragg_peak_widget" native="true"/>
+                     </item>
+                    </layout>
+                   </widget>
                   </widget>
                  </item>
                 </layout>
