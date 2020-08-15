@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Qt5Agg')
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 from qtpy import QtGui, QtCore
@@ -74,11 +73,24 @@ class Initialization:
 		self.parent.ui.profile_widget.setLayout(profile_layout)
 
 	def matplotlib(self):
-		sc = MplCanvas(self.parent, width=5, height=4, dpi=100)
-		sc.axes.plot([0,1,2,3,4,5], [10, 1, 20 ,3, 40, 50])
-		layout = QVBoxLayout()
-		layout.addWidget(sc)
-		self.parent.ui.high_widget.setLayout(layout)
+
+		def _matplotlib(parent=None, widget=None):
+			sc = MplCanvas(parent, width=5, height=4, dpi=100)
+			# sc.axes.plot([0,1,2,3,4,5], [10, 1, 20 ,3, 40, 50])
+			toolbar = NavigationToolbar(sc, parent)
+			layout = QVBoxLayout()
+			layout.addWidget(toolbar)
+			layout.addWidget(sc)
+			widget.setLayout(layout)
+			return sc
+
+		self.parent.kropff_high_plot = _matplotlib(parent=self.parent,
+		                                           widget=self.parent.ui.high_widget)
+		self.parent.kropff_low_plot = _matplotlib(parent=self.parent,
+		                                           widget=self.parent.ui.low_widget)
+		self.parent.kropff_bragg_peak_plot = _matplotlib(parent=self.parent,
+		                                           widget=self.parent.ui.bragg_peak_widget)
+
 
 	def pyqtgraph_fitting(self):
 		# fitting view
