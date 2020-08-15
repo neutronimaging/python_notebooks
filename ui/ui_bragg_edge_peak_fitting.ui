@@ -615,15 +615,15 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>281</width>
-                  <height>199</height>
+                  <width>639</width>
+                  <height>765</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -832,7 +832,48 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_16">
                      <item>
-                      <widget class="QWidget" name="high_widget" native="true"/>
+                      <layout class="QHBoxLayout" name="horizontalLayout_8">
+                       <item>
+                        <widget class="QRadioButton" name="kropff_a0_radioButton">
+                         <property name="text">
+                          <string>a0</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton">
+                         <property name="text">
+                          <string>b0</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_13">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="high_widget" native="true">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -926,7 +967,48 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_18">
                      <item>
-                      <widget class="QWidget" name="low_widget" native="true"/>
+                      <layout class="QHBoxLayout" name="horizontalLayout_16">
+                       <item>
+                        <widget class="QRadioButton" name="kropff_ahkl_radioButton">
+                         <property name="text">
+                          <string>ahkl</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_bhkl_radioButton">
+                         <property name="text">
+                          <string>bhkl</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_16">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="low_widget" native="true">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -1030,7 +1112,55 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_20">
                      <item>
-                      <widget class="QWidget" name="bragg_peak_widget" native="true"/>
+                      <layout class="QHBoxLayout" name="horizontalLayout_17">
+                       <item>
+                        <widget class="QRadioButton" name="kropff_a0_radioButton_4">
+                         <property name="text">
+                          <string>tof_hkl</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_4">
+                         <property name="text">
+                          <string>tau</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_5">
+                         <property name="text">
+                          <string>sigma</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_17">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="bragg_peak_widget" native="true">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -1219,8 +1349,8 @@
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>71</x>
-     <y>512</y>
+     <x>83</x>
+     <y>1140</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -1235,8 +1365,8 @@
    <slot>apply_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1214</x>
-     <y>512</y>
+     <x>1405</x>
+     <y>1140</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -1251,8 +1381,8 @@
    <slot>distance_detector_sample_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>424</x>
-     <y>706</y>
+     <x>343</x>
+     <y>1068</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1267,8 +1397,8 @@
    <slot>detector_offset_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>424</x>
-     <y>737</y>
+     <x>719</x>
+     <y>1068</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1283,8 +1413,8 @@
    <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>950</x>
-     <y>669</y>
+     <x>836</x>
+     <y>995</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1299,8 +1429,8 @@
    <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1181</x>
-     <y>669</y>
+     <x>1114</x>
+     <y>995</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1315,8 +1445,8 @@
    <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1042</x>
-     <y>669</y>
+     <x>951</x>
+     <y>995</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1331,8 +1461,8 @@
    <slot>fitting_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>809</x>
-     <y>735</y>
+     <x>944</x>
+     <y>1065</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1347,8 +1477,8 @@
    <slot>fitting_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1040</x>
-     <y>735</y>
+     <x>1222</x>
+     <y>1065</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1363,8 +1493,8 @@
    <slot>fitting_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>901</x>
-     <y>735</y>
+     <x>1059</x>
+     <y>1065</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1379,8 +1509,8 @@
    <slot>selection_roi_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>258</y>
+     <x>87</x>
+     <y>150</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1395,8 +1525,8 @@
    <slot>fit_that_selection_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>831</x>
-     <y>386</y>
+     <x>1322</x>
+     <y>1036</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1411,8 +1541,8 @@
    <slot>roi_radiobuttons_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>354</x>
-     <y>108</y>
+     <x>184</x>
+     <y>121</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1427,8 +1557,8 @@
    <slot>roi_radiobuttons_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>148</x>
-     <y>108</y>
+     <x>118</x>
+     <y>121</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -1571,12 +1701,124 @@
    <slot>fit_kropff_button_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>416</x>
-     <y>343</y>
+     <x>317</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
      <y>586</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_a0_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_kropff_high_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>115</x>
+     <y>343</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>382</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_b0_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_kropff_high_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>155</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>429</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_ahkl_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_kropff_low_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>115</x>
+     <y>381</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>414</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_bhkl_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_kropff_low_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>177</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>501</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_a0_radioButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_kropff_bragg_peak_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>119</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>468</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_b0_radioButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_kropff_bragg_peak_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>414</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>551</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_b0_radioButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_kropff_bragg_peak_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>246</x>
+     <y>414</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>636</y>
     </hint>
    </hints>
   </connection>
@@ -1605,5 +1847,8 @@
   <slot>kropff_fit_low_lambda_region_clicked()</slot>
   <slot>kropff_fit_bragg_peak_region_clicked()</slot>
   <slot>fit_kropff_button_pushed()</slot>
+  <slot>update_kropff_high_plot()</slot>
+  <slot>update_kropff_low_plot()</slot>
+  <slot>update_kropff_bragg_peak_plot()</slot>
  </slots>
 </ui>

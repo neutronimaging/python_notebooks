@@ -928,6 +928,16 @@ class Interface(QMainWindow):
             self.ui.fitting_index_radiobutton.setChecked(True)
         self.fitting_axis_changed()
 
+
+    def update_kropff_high_plot(self):
+        pass
+
+    def update_kropff_low_plot(self):
+        pass
+
+    def update_kropff_bragg_peak_plot(self):
+        pass
+
     def cancel_clicked(self):
         self.close()
 
