@@ -75,7 +75,7 @@ class GuiUtility:
 		                                    'bragg_peak': {'ui': [self.parent.ui.kropff_tof_hkl_radioButton,
 		                                                          self.parent.ui.kropff_tau_radioButton,
 		                                                          self.parent.ui.kropff_sigma_radioButton],
-		                                                   'name': ['tof_hkl', 'tau', 'sigma'],
+		                                                   'name': ['tofhkl', 'tau', 'sigma'],
 		                                                   },
 		                                    }
 
