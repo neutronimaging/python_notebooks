@@ -932,10 +932,12 @@ class Interface(QMainWindow):
             _error = fitting_input_dictionary['rois'][_index]['fitting']['kropff'][fit_region]["{}_error".format(fit_parameter_selected)]
             parameter_array.append(_parameter)
             parameter_error_array.append(_error)
-        plot_ui = o_gui.get_kropff_fit_graph_ui(fit_region=fit_region)
-
-
-
+        plot_ui = o_gui.get_kropff_fit_graph_ui(fit_region=fit_region).axes
+        x_array = np.arange(len(parameter_array))
+        plot_ui.errorbar(x_array,
+                         parameter_array,
+                         parameter_error_array,
+                         marker='s')
 
     def switch_fitting_axis_to(self, button_name='tof'):
         if button_name == 'tof':
@@ -947,13 +949,13 @@ class Interface(QMainWindow):
         self.fitting_axis_changed()
 
     def update_kropff_high_plot(self):
-        pass
+        self.update_kropff_fit_table_graph(fit_region='high')
 
     def update_kropff_low_plot(self):
-        pass
+        self.update_kropff_fit_table_graph(fit_region='low')
 
     def update_kropff_bragg_peak_plot(self):
-        pass
+        self.update_kropff_fit_table_graph(fit_region='bragg_peak')
 
     def cancel_clicked(self):
         self.close()
