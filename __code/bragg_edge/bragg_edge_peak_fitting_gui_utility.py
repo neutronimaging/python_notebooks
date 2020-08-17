@@ -58,3 +58,35 @@ class GuiUtility:
 		#
 		# if self.parent.fitting_input_dictionary['rois'][0]['fitting']['kropff']['low']['ahkl']:
 		# 	enabled_bragg_peak_button = True
+
+	def get_kropff_fit_parameter_selected(self, fit_region='high'):
+		"""
+		return the name of the button checked in the requested tab (kropff fit)
+		for example: a0 if high lambda and first radioButton checked
+		:param fit_region: name of the region ('high', 'low' or 'bragg_peak')
+		:return:
+		"""
+		list_fit_parameters_radio_button = {'high': {'ui': [self.parent.ui.kropff_a0_radioButton,
+		                                                    self.parent.ui.kropff_b0_radioButton],
+		                                             'name': ['a0', 'b0']},
+		                                    'low': {'ui': [self.parent.ui.kropff_ahkl_radioButton,
+		                                                   self.parent.ui.kropff_bhkl_radioButton],
+		                                            'name': ['ahkl', 'bhkl']},
+		                                    'bragg_peak': {'ui': [self.parent.ui.kropff_tof_hkl_radioButton,
+		                                                          self.parent.ui.kropff_tau_radioButton,
+		                                                          self.parent.ui.kropff_sigma_radioButton],
+		                                                   'name': ['tof_hkl', 'tau', 'sigma'],
+		                                                   },
+		                                    }
+
+		for _index, _ui in enumerate(list_fit_parameters_radio_button[fit_region]['ui']):
+			if _ui.isChecked():
+				return list_fit_parameters_radio_button[fit_region]['name'][_index]
+
+		return None
+
+	def get_kropff_fit_graph_ui(self, fit_region='high'):
+		list_ui = {'high': self.parent.kropff_high_plot,
+		           'low': self.parent.kropff_low_plot,
+		           'bragg_peak': self.parent.kropff_bragg_peak_plot}
+		return list_ui[fit_region]

@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>3</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
@@ -804,7 +804,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_2">
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="tab_5">
                     <attribute name="title">
@@ -939,7 +939,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_3">
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="tab_7">
                     <attribute name="title">
@@ -1084,7 +1084,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_4">
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="tab_9">
                     <attribute name="title">
@@ -1114,7 +1114,7 @@
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_17">
                        <item>
-                        <widget class="QRadioButton" name="kropff_a0_radioButton_4">
+                        <widget class="QRadioButton" name="kropff_tof_hkl_radioButton">
                          <property name="text">
                           <string>tof_hkl</string>
                          </property>
@@ -1124,14 +1124,14 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_4">
+                        <widget class="QRadioButton" name="kropff_tau_radioButton">
                          <property name="text">
                           <string>tau</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_5">
+                        <widget class="QRadioButton" name="kropff_sigma_radioButton">
                          <property name="text">
                           <string>sigma</string>
                          </property>
@@ -1775,7 +1775,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>kropff_a0_radioButton_4</sender>
+   <sender>kropff_tof_hkl_radioButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>update_kropff_bragg_peak_plot()</slot>
@@ -1791,7 +1791,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>kropff_b0_radioButton_4</sender>
+   <sender>kropff_tau_radioButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>update_kropff_bragg_peak_plot()</slot>
@@ -1807,7 +1807,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>kropff_b0_radioButton_5</sender>
+   <sender>kropff_sigma_radioButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>update_kropff_bragg_peak_plot()</slot>

@@ -43,8 +43,6 @@ class FittingJobHandler:
 		b0_init = np.float(str(self.parent.kropff_high_tof_b0_init.text()))
 		for _index, yaxis in enumerate(self.list_yaxis_to_fit):
 
-
-
 			yaxis = -np.log(yaxis)
 			_result = gmodel.fit(yaxis, tof=tof, a0=a0_init, b0=b0_init)
 			a0 = _result.params['a0'].value

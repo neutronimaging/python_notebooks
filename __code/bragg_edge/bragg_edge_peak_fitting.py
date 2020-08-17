@@ -623,7 +623,6 @@ class Interface(QMainWindow):
 
         o_table = TableHandler(table_ui=table_ui)
         row_selected = o_table.get_row_selected()
-
         x_axis_selected = o_get.x_axis_checked()
 
         if row_selected == -1:
@@ -739,8 +738,8 @@ class Interface(QMainWindow):
         global_left_index = find_nearest_index(array=xaxis, value=global_left_range)
         global_right_index = find_nearest_index(array=xaxis, value=global_right_range)
 
-        part_of_fitting_dict = o_get.part_of_fitting_selected()
-        name_of_page = part_of_fitting_dict['name_of_page']
+        # part_of_fitting_dict = o_get.part_of_fitting_selected()
+        # name_of_page = part_of_fitting_dict['name_of_page']
 
         self.kropff_fitting_range['high'] = [right_index, global_right_index]
         self.kropff_fitting_range['low'] = [global_left_index, left_index]
@@ -900,8 +899,7 @@ class Interface(QMainWindow):
         o_fit.prepare(kropff_tooldbox='high')
         o_fit.run_kropff_high_tof(update_table_ui=True)
         self.update_fitting_plot()
-        o_gui = GuiUtility(parent=self)
-        o_gui.check_status_of_kropff_fitting_buttons()
+        self.update_kropff_fit_table_graph(fit_region='high')
 
     def kropff_fit_low_lambda_region_clicked(self):
         self.switch_fitting_axis_to('tof')
@@ -909,8 +907,7 @@ class Interface(QMainWindow):
         o_fit.prepare(kropff_tooldbox='low')
         o_fit.run_kropff_low_tof(update_table_ui=True)
         self.update_fitting_plot()
-        o_gui = GuiUtility(parent=self)
-        o_gui.check_status_of_kropff_fitting_buttons()
+        self.update_kropff_fit_table_graph(fit_region='low')
 
     def kropff_fit_bragg_peak_region_clicked(self):
         self.switch_fitting_axis_to('tof')
@@ -918,6 +915,27 @@ class Interface(QMainWindow):
         o_fit.prepare(kropff_tooldbox='bragg_peak')
         o_fit.run_bragg_peak(update_table_ui=True)
         self.update_fitting_plot()
+        self.update_kropff_fit_table_graph(fit_region='bragg_peak')
+
+    def update_kropff_fit_table_graph(self, fit_region='high'):
+        """
+        update the plot of the fit parameters selected
+        :param fit_region: 'high', 'low' or 'bragg_peak'
+        """
+        o_gui = GuiUtility(parent=self)
+        fit_parameter_selected = o_gui.get_kropff_fit_parameter_selected(fit_region=fit_region)
+        parameter_array = []
+        parameter_error_array = []
+        fitting_input_dictionary = self.fitting_input_dictionary
+        for _index in fitting_input_dictionary['rois'].keys():
+            _parameter = fitting_input_dictionary['rois'][_index]['fitting']['kropff'][fit_region][fit_parameter_selected]
+            _error = fitting_input_dictionary['rois'][_index]['fitting']['kropff'][fit_region]["{}_error".format(fit_parameter_selected)]
+            parameter_array.append(_parameter)
+            parameter_error_array.append(_error)
+        plot_ui = o_gui.get_kropff_fit_graph_ui(fit_region=fit_region)
+
+
+
 
     def switch_fitting_axis_to(self, button_name='tof'):
         if button_name == 'tof':
@@ -927,7 +945,6 @@ class Interface(QMainWindow):
         else:
             self.ui.fitting_index_radiobutton.setChecked(True)
         self.fitting_axis_changed()
-
 
     def update_kropff_high_plot(self):
         pass
