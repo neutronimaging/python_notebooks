@@ -13,6 +13,13 @@ class GuiUtility:
 		tab_index = tab_ui.currentIndex()
 		return tab_ui.tabText(tab_index)
 
+	def get_row_of_table_selected(self, table_ui=None):
+		selected_ranges = table_ui.selectedRanges()
+		if selected_ranges == []:
+			return -1
+		first_selection = selected_ranges[0]
+		return first_selection.topRow()
+
 	def get_toolbox_selected(self, toolbox_ui=None):
 		toolbox_index = toolbox_ui.currentIndex()
 		return toolbox_ui.itemText(toolbox_index)
@@ -90,3 +97,10 @@ class GuiUtility:
 		           'low': self.parent.kropff_low_plot,
 		           'bragg_peak': self.parent.kropff_bragg_peak_plot}
 		return list_ui[fit_region]
+
+	def get_table_str_item(self, table_ui=None, row=0, column=0):
+		item = table_ui.item(row, column)
+		if item:
+			return str(item.text())
+		else:
+			return ""

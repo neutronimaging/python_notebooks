@@ -1,7 +1,11 @@
 import numpy as np
 from qtpy import QtGui
+from qtpy.QtWidgets import QFileDialog
+from pathlib import Path
 
 from __code.table_handler import TableHandler
+from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
+from __code.bragg_edge.fitting_job_handler import FittingJobHandler
 
 
 class Kropff:
@@ -90,11 +94,40 @@ class Kropff:
 	def bragg_peak_right_click(self, position=None):
 		menu = QtGui.QMenu(self.parent)
 
-		_export = menu.AddAction("Export selected profile (x and y axis) ...")
+		_export = menu.addAction("Export profile of selected row ...")
 		action = menu.exec_(QtGui.QCursor.pos())
 
 		if action == _export:
 			self.export_bragg_peak_profile()
 
 	def export_bragg_peak_profile(self):
-		print("exporting bragg peak profile")
+		_export_folder = QFileDialog.getExistingDirectory(self.parent,
+		                                                  directory=self.parent.working_dir,
+		                                                  caption="Select Output Folder")
+		# QtGui.QGuiApplication.processEvents()
+		if _export_folder:
+
+			o_gui = GuiUtility(parent=self.parent)
+
+			row_selected = o_gui.get_row_of_table_selected(table_ui=self.parent.ui.bragg_edge_tableWidget)
+
+			# make up output file name
+			name_of_row = o_gui.get_table_str_item(table_ui=self.parent.ui.bragg_edge_tableWidget,
+			                                       row=row_selected,
+			                                       column=0)
+			file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row)
+			full_file_name = str(Path(_export_folder) / Path(file_name))
+
+			print(f"full_file_name: {full_file_name}")
+
+			o_fit = FittingJobHandler(parent=self.parent)
+			o_fit.prepare(kropff_tooldbox='bragg_peak')
+
+			x_axis = o_fit.xaxis_to_fit
+			y_axis = o_fit.list_yaxis_to_fit[row_selected]
+
+			print(f"x_axis: {x_axis}")
+			print(f"y_axis: {y_axis}")
+
+
+

@@ -971,6 +971,7 @@ class Interface(QMainWindow):
         self.update_kropff_fit_table_graph(fit_region='bragg_peak')
 
     def kropff_bragg_peak_right_click(self, position):
+        print("in right click")
         o_kropff = Kropff(parent=self)
         o_kropff.bragg_peak_right_click(position=position)
 
