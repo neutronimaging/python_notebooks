@@ -508,6 +508,9 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_width.setText(new_width)
         self.update_selection_plot()
         self.update_vertical_line_in_profile_plot()
+        self.update_kropff_fit_table_graph(fit_region='high')
+        self.update_kropff_fit_table_graph(fit_region='low')
+        self.update_kropff_fit_table_graph(fit_region='bragg_peak')
 
     def profile_of_bin_size_slider_changed(self, new_value):
         try:
@@ -941,6 +944,8 @@ class Interface(QMainWindow):
                                               parameter_error_array)
 
         plot_ui.axes.cla()
+        if fit_region == 'bragg_peak':
+            plot_ui.axes.set_yscale("log")
         plot_ui.axes.errorbar(x_array,
                               cleaned_parameter_array,
                               cleaned_parameter_error_array,
