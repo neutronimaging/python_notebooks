@@ -933,17 +933,19 @@ class Interface(QMainWindow):
             _error = fitting_input_dictionary['rois'][_index]['fitting']['kropff'][fit_region]["{}_error".format(fit_parameter_selected)]
             parameter_array.append(_parameter)
             parameter_error_array.append(_error)
-        plot_ui = o_gui.get_kropff_fit_graph_ui(fit_region=fit_region).axes
+        plot_ui = o_gui.get_kropff_fit_graph_ui(fit_region=fit_region)
         x_array = np.arange(len(parameter_array))
 
         cleaned_parameter_array, cleaned_parameter_error_array = \
             exclude_y_value_when_error_is_nan(parameter_array,
                                               parameter_error_array)
 
-        plot_ui.errorbar(x_array,
-                         cleaned_parameter_array,
-                         cleaned_parameter_error_array,
-                         marker='s')
+        plot_ui.axes.cla()
+        plot_ui.axes.errorbar(x_array,
+                              cleaned_parameter_array,
+                              cleaned_parameter_error_array,
+                              marker='s')
+        plot_ui.draw()
 
     def switch_fitting_axis_to(self, button_name='tof'):
         if button_name == 'tof':
