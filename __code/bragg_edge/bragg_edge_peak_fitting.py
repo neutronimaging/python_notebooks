@@ -23,6 +23,7 @@ from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
 from __code.bragg_edge.get import Get
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
+from __code._utilities.array import exclude_y_value_when_error_is_nan
 
 DEBUGGING = True
 
@@ -934,9 +935,14 @@ class Interface(QMainWindow):
             parameter_error_array.append(_error)
         plot_ui = o_gui.get_kropff_fit_graph_ui(fit_region=fit_region).axes
         x_array = np.arange(len(parameter_array))
+
+        cleaned_parameter_array, cleaned_parameter_error_array = \
+            exclude_y_value_when_error_is_nan(parameter_array,
+                                              parameter_error_array)
+
         plot_ui.errorbar(x_array,
-                         parameter_array,
-                         parameter_error_array,
+                         cleaned_parameter_array,
+                         cleaned_parameter_error_array,
                          marker='s')
 
     def switch_fitting_axis_to(self, button_name='tof'):
