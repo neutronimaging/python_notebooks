@@ -804,7 +804,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_2">
                    <property name="currentIndex">
-                    <number>1</number>
+                    <number>0</number>
                    </property>
                    <widget class="QWidget" name="tab_5">
                     <attribute name="title">
@@ -939,7 +939,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_3">
                    <property name="currentIndex">
-                    <number>1</number>
+                    <number>0</number>
                    </property>
                    <widget class="QWidget" name="tab_7">
                     <attribute name="title">
@@ -1084,7 +1084,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_4">
                    <property name="currentIndex">
-                    <number>1</number>
+                    <number>0</number>
                    </property>
                    <widget class="QWidget" name="tab_9">
                     <attribute name="title">
@@ -1093,6 +1093,9 @@
                     <layout class="QVBoxLayout" name="verticalLayout_19">
                      <item>
                       <widget class="QTableWidget" name="bragg_edge_tableWidget">
+                       <property name="contextMenuPolicy">
+                        <enum>Qt::CustomContextMenu</enum>
+                       </property>
                        <property name="alternatingRowColors">
                         <bool>true</bool>
                        </property>
@@ -1702,7 +1705,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>317</x>
-     <y>309</y>
+     <y>343</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
@@ -1822,6 +1825,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>bragg_edge_tableWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_bragg_peak_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>371</x>
+     <y>712</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>751</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1850,5 +1869,6 @@
   <slot>update_kropff_high_plot()</slot>
   <slot>update_kropff_low_plot()</slot>
   <slot>update_kropff_bragg_peak_plot()</slot>
+  <slot>kropff_bragg_peak_right_click()</slot>
  </slots>
 </ui>

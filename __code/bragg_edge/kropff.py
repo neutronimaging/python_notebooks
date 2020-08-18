@@ -1,4 +1,5 @@
 import numpy as np
+from qtpy import QtGui
 
 from __code.table_handler import TableHandler
 
@@ -85,3 +86,15 @@ class Kropff:
 			o_table.set_item_with_float(_row, _col+3, _entry['tofhkl_error'])
 			o_table.set_item_with_float(_row, _col+4, _entry['tau_error'])
 			o_table.set_item_with_float(_row, _col+5, _entry['sigma_error'])
+
+	def bragg_peak_right_click(self, position=None):
+		menu = QtGui.QMenu(self.parent)
+
+		_export = menu.AddAction("Export selected profile (x and y axis) ...")
+		action = menu.exec_(QtGui.QCursor.pos())
+
+		if action == _export:
+			self.export_bragg_peak_profile()
+
+	def export_bragg_peak_profile(self):
+		print("exporting bragg peak profile")
