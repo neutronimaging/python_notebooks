@@ -203,6 +203,15 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','
 
     f.close()
 
+def make_ascii_file_from_2dim_array(metadata=None, col1=None, col2=None, output_file_name=None, sep=', '):
+    with open(output_file_name, 'w') as f:
+        for _meta in metadata:
+            _line = _meta + "\n"
+            f.write(_line)
+
+        for _x, _y in zip(col1, col2):
+            _line = "{}".format(_x) + sep + "{}".format(_y) + "\n"
+            f.write(_line)
 
 def make_ascii_file_from_string(text="", filename=''):
     with open(filename, 'w') as f:

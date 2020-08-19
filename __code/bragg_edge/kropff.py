@@ -6,6 +6,7 @@ from pathlib import Path
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.fitting_job_handler import FittingJobHandler
+from __code.file_handler import make_ascii_file_from_2dim_array
 
 
 class Kropff:
@@ -109,7 +110,6 @@ class Kropff:
 		if _export_folder:
 
 			o_gui = GuiUtility(parent=self.parent)
-
 			row_selected = o_gui.get_row_of_table_selected(table_ui=self.parent.ui.bragg_edge_tableWidget)
 
 			# make up output file name
@@ -120,8 +120,6 @@ class Kropff:
 			name_of_row_formatted = "x0{}_y0{}_width{}_height{}".format(x0,y0, width, height)
 			file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row_formatted)
 			full_file_name = str(Path(_export_folder) / Path(file_name))
-
-			print(f"full_file_name: {full_file_name}")
 
 			o_fit = FittingJobHandler(parent=self.parent)
 			o_fit.prepare(kropff_tooldbox='bragg_peak')
@@ -141,10 +139,16 @@ class Kropff:
 			metadata.append("# height: {}".format(height))
 			metadata.append("# a0: {}".format(a0))
 			metadata.append("# b0: {}".format(b0))
-			metadata.append("# width: {}".format(width))
-			metadata.append("# height: {}".format(height))
-			metadata.append("# tof (micros), cross_section (arbitrary units)")
+			metadata.append("# ahkl: {}".format(ahkl))
+			metadata.append("# bhkl: {}".format(bhkl))
 			metadata.append("#")
-			print(f"x_axis: {x_axis}")
-			print(f"y_axis: {y_axis}")
+			metadata.append("# tof (micros), cross_section (arbitrary units)")
 
+			make_ascii_file_from_2dim_array(metadata=metadata,
+			                                col1=x_axis,
+			                                col2=y_axis,
+			                                output_file_name=full_file_name)
+
+			message = "Output file {}".format(full_file_name)
+			self.parent.ui.statusbar.showMessage(message, 1500)   # 15s
+			self.parent.ui.statusbar.setStyleSheet("color: green")
