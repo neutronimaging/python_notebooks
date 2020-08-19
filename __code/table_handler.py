@@ -4,6 +4,7 @@ from qtpy import QtGui
 class TableHandler:
 
 	cell_str_format = "{:.3f}"
+	cell_str_format = "{}"
 
 	def __init__(self, table_ui=None):
 		self.table_ui = table_ui

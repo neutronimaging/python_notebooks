@@ -116,11 +116,8 @@ class Kropff:
 			name_of_row = o_gui.get_table_str_item(table_ui=self.parent.ui.bragg_edge_tableWidget,
 			                                       row=row_selected,
 			                                       column=0)
-			name_of_row_split = name_of_row.split("; ")
-			name_of_row_formatted = "x0{}_y0{}_width{}_height{}".format(name_of_row_split[0],
-			                                                            name_of_row_split[1],
-			                                                            name_of_row_split[2],
-			                                                            name_of_row_split[3])
+			[x0, y0, width, height] = name_of_row.split("; ")
+			name_of_row_formatted = "x0{}_y0{}_width{}_height{}".format(x0,y0, width, height)
 			file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row_formatted)
 			full_file_name = str(Path(_export_folder) / Path(file_name))
 
@@ -137,9 +134,17 @@ class Kropff:
 			ahkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['ahkl']
 			bhkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['bhkl']
 
+			metadata = ["# Bragg peak fitting of row {}".format(row_selected)]
+			metadata.append("# x0: {}".format(x0))
+			metadata.append("# y0: {}".format(y0))
+			metadata.append("# width: {}".format(width))
+			metadata.append("# height: {}".format(height))
+			metadata.append("# a0: {}".format(a0))
+			metadata.append("# b0: {}".format(b0))
+			metadata.append("# width: {}".format(width))
+			metadata.append("# height: {}".format(height))
+			metadata.append("# tof (micros), cross_section (arbitrary units)")
+			metadata.append("#")
 			print(f"x_axis: {x_axis}")
 			print(f"y_axis: {y_axis}")
-			print(f"a0: {a0}")
-			print(f"b0: {b0}")
-			print(f"ahkl: {ahkl}")
-			print(f"bhkl: {bhkl}")
+
