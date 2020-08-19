@@ -24,13 +24,13 @@ class FittingJobHandler:
 		xaxis = self.parent.fitting_input_dictionary['xaxis']['tof'][0]
 		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
 		full_fitting_xaxis = xaxis[left_xaxis_index: right_xaxis_index]
-		self.xaxis_to_fit = full_fitting_xaxis[fitting_range[0]: fitting_range[1]] * 1e-6  # to convert in s
+		self.xaxis_to_fit = full_fitting_xaxis[fitting_range[0]: fitting_range[1] + 1] * 1e-6  # to convert in s
 
 		list_yaxis_to_fit = []
 		for _key in self.parent.fitting_input_dictionary['rois'].keys():
 			_yaxis = self.parent.fitting_input_dictionary['rois'][_key]['profile']
 			full_fitting_yaxis = _yaxis[left_xaxis_index: right_xaxis_index]
-			list_yaxis_to_fit.append(full_fitting_yaxis[fitting_range[0]: fitting_range[1]])
+			list_yaxis_to_fit.append(full_fitting_yaxis[fitting_range[0]: fitting_range[1] + 1])
 		self.list_yaxis_to_fit = list_yaxis_to_fit
 
 	def run_kropff_high_tof(self, update_table_ui=False):
