@@ -101,8 +101,9 @@ class Kropff:
 			self.export_bragg_peak_profile()
 
 	def export_bragg_peak_profile(self):
+		working_dir = str(Path(self.parent.working_dir).parent)
 		_export_folder = QFileDialog.getExistingDirectory(self.parent,
-		                                                  directory=self.parent.working_dir,
+		                                                  directory=working_dir,
 		                                                  caption="Select Output Folder")
 		# QtGui.QGuiApplication.processEvents()
 		if _export_folder:
@@ -115,7 +116,12 @@ class Kropff:
 			name_of_row = o_gui.get_table_str_item(table_ui=self.parent.ui.bragg_edge_tableWidget,
 			                                       row=row_selected,
 			                                       column=0)
-			file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row)
+			name_of_row_split = name_of_row.split("; ")
+			name_of_row_formatted = "x0{}_y0{}_width{}_height{}".format(name_of_row_split[0],
+			                                                            name_of_row_split[1],
+			                                                            name_of_row_split[2],
+			                                                            name_of_row_split[3])
+			file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row_formatted)
 			full_file_name = str(Path(_export_folder) / Path(file_name))
 
 			print(f"full_file_name: {full_file_name}")
@@ -126,8 +132,14 @@ class Kropff:
 			x_axis = o_fit.xaxis_to_fit
 			y_axis = o_fit.list_yaxis_to_fit[row_selected]
 
+			a0 = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['high']['a0']
+			b0 = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['high']['b0']
+			ahkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['ahkl']
+			bhkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['bhkl']
+
 			print(f"x_axis: {x_axis}")
 			print(f"y_axis: {y_axis}")
-
-
-
+			print(f"a0: {a0}")
+			print(f"b0: {b0}")
+			print(f"ahkl: {ahkl}")
+			print(f"bhkl: {bhkl}")

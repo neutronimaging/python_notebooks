@@ -950,6 +950,7 @@ class Interface(QMainWindow):
                               cleaned_parameter_array,
                               cleaned_parameter_error_array,
                               marker='s')
+        plot_ui.axes.set_xlabel("Row # (see Table tab)")
         plot_ui.draw()
 
     def switch_fitting_axis_to(self, button_name='tof'):
