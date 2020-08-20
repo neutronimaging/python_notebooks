@@ -1120,6 +1120,45 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_19">
                      <item>
+                      <widget class="QGroupBox" name="groupBox_7">
+                       <property name="title">
+                        <string>Selection</string>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_18">
+                        <item>
+                         <widget class="QRadioButton" name="kropff_bragg_peak_single_selection">
+                          <property name="text">
+                           <string>Single</string>
+                          </property>
+                          <property name="checked">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QRadioButton" name="kropff_bragg_peak_multi_selection">
+                          <property name="text">
+                           <string>Multi</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="horizontalSpacer_18">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QTableWidget" name="bragg_edge_tableWidget">
                        <property name="contextMenuPolicy">
                         <enum>Qt::CustomContextMenu</enum>
@@ -1128,7 +1167,7 @@
                         <bool>true</bool>
                        </property>
                        <property name="selectionMode">
-                        <enum>QAbstractItemView::MultiSelection</enum>
+                        <enum>QAbstractItemView::SingleSelection</enum>
                        </property>
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
@@ -1917,6 +1956,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>kropff_bragg_peak_single_selection</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_bragg_peak_selection_mode_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>466</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>298</x>
+     <y>22</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_bragg_peak_multi_selection</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_bragg_peak_selection_mode_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>212</x>
+     <y>462</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>640</x>
+     <y>24</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1946,5 +2017,6 @@
   <slot>update_kropff_low_plot()</slot>
   <slot>update_kropff_bragg_peak_plot()</slot>
   <slot>kropff_bragg_peak_right_click()</slot>
+  <slot>kropff_bragg_peak_selection_mode_changed()</slot>
  </slots>
 </ui>

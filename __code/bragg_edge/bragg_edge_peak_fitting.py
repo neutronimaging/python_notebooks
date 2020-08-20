@@ -955,6 +955,13 @@ class Interface(QMainWindow):
         plot_ui.axes.set_xlabel("Row # (see Table tab)")
         plot_ui.draw()
 
+    def kropff_bragg_peak_selection_mode_changed(self):
+        if self.ui.kropff_bragg_peak_single_selection.isChecked():
+            self.ui.bragg_edge_tableWidget.setSelectionMode(1)
+        else:
+            self.ui.bragg_edge_tableWidget.setSelectionMode(2)
+        self.update_fitting_plot()
+
     def switch_fitting_axis_to(self, button_name='tof'):
         if button_name == 'tof':
             self.ui.fitting_tof_radiobutton.setChecked(True)
