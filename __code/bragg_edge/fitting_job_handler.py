@@ -122,7 +122,9 @@ class FittingJobHandler:
 
 		tofhkl_init = np.float(str(self.parent.kropff_bragg_peak_tofhkl_init.text()))
 		tau_init = np.float(str(self.parent.kropff_bragg_peak_tau_init.text()))
-		sigma_init = np.float(str(self.parent.kropff_bragg_peak_sigma_init.text()))
+		sigma_init = str(self.parent.kropff_bragg_peak_sigma_init.text())
+		sigma_init = sigma_init.split(", ")
+		sigma_init = [np.float(_sigma) for _sigma in sigma_init]
 
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
@@ -135,16 +137,26 @@ class FittingJobHandler:
 			bhkl = np.float(_entry_low['bhkl'])
 
 			yaxis = -np.log(yaxis)
-			_result = gmodel.fit(yaxis, tof=tof,
-			                     a0=Parameter('a0', value=a0, vary=False),
-			                     b0=Parameter('b0', value=b0, vary=False),
-			                     ahkl=Parameter('ahkl', value=ahkl, vary=False),
-			                     bhkl=Parameter('bhkl', value=bhkl, vary=False),
-			                     tofhkl=tofhkl_init,
-			                     sigma=tau_init,
-			                     tau=sigma_init)
 
-			tofhkl = _result.params['tofhkl'].value
+			index_sigma = 0
+			while True:
+
+				_result = gmodel.fit(yaxis, tof=tof,
+				                     a0=Parameter('a0', value=a0, vary=False),
+				                     b0=Parameter('b0', value=b0, vary=False),
+				                     ahkl=Parameter('ahkl', value=ahkl, vary=False),
+				                     bhkl=Parameter('bhkl', value=bhkl, vary=False),
+				                     tofhkl=tofhkl_init,
+				                     sigma=sigma_init[index_sigma],
+				                     tau=tau_init)
+
+				tofhkl = _result.params['tofhkl'].value
+				if tofhkl > 0:
+					break
+				index_sigma += 1
+				if index_sigma >= len(sigma_init):
+					break
+
 			tofhkl_error = _result.params['tofhkl'].stderr
 			sigma = _result.params['sigma'].value
 			sigma_error = _result.params['sigma'].stderr

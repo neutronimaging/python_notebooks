@@ -106,7 +106,8 @@ class Kropff:
 		_export_folder = QFileDialog.getExistingDirectory(self.parent,
 		                                                  directory=working_dir,
 		                                                  caption="Select Output Folder")
-		# QtGui.QGuiApplication.processEvents()
+		QtGui.QGuiApplication.processEvents()  # to close QFileDialog
+
 		if _export_folder:
 
 			o_gui = GuiUtility(parent=self.parent)
@@ -132,7 +133,7 @@ class Kropff:
 			ahkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['ahkl']
 			bhkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['bhkl']
 
-			metadata = ["# Bragg peak fitting of row {}".format(row_selected)]
+			metadata = ["# Bragg peak fitting of row {}".format(row_selected+1)]
 			metadata.append("# x0: {}".format(x0))
 			metadata.append("# y0: {}".format(y0))
 			metadata.append("# width: {}".format(width))
@@ -142,7 +143,7 @@ class Kropff:
 			metadata.append("# ahkl: {}".format(ahkl))
 			metadata.append("# bhkl: {}".format(bhkl))
 			metadata.append("#")
-			metadata.append("# tof (micros), average counts")
+			metadata.append("# tof (micros), average transimission")
 
 			make_ascii_file_from_2dim_array(metadata=metadata,
 			                                col1=x_axis,
