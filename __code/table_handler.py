@@ -17,7 +17,7 @@ class TableHandler:
 	def get_rows_of_table_selected(self):
 		selected_ranges = self.table_ui.selectedRanges()
 		if selected_ranges == []:
-			return -1
+			return None
 
 		list_row_selected = []
 		for _selection in selected_ranges:
