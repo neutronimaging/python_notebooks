@@ -40,7 +40,7 @@ class Interface(QMainWindow):
                                           'bhkl': 1,
                                           'tofhkl': 1e-6,
                                           'tau': 1,
-                                          'sigma': "1e-7, 1e-6, 1e-5"}}
+                                          'sigma': [1e-7, 1e-6, 1e-5]}}
 
     bragg_edge_range = [5, 20]
     selection_roi_rgb = (62, 13, 244)

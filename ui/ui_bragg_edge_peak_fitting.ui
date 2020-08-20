@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>3</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
@@ -724,7 +724,7 @@
                     <item>
                      <widget class="QPushButton" name="fit_kropff_button">
                       <property name="text">
-                       <string>FIT</string>
+                       <string>FIT ALL REGIONS  (High - Low - Bragg Peak)</string>
                       </property>
                      </widget>
                     </item>
@@ -799,6 +799,13 @@
                      </spacer>
                     </item>
                    </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="kropff_fit_high_lambda_button">
+                   <property name="text">
+                    <string>Fit High Lambda</string>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -937,6 +944,13 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QPushButton" name="kropff_fit_low_lambda_button">
+                   <property name="text">
+                    <string>Fit Low Lambda</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QTabWidget" name="tabWidget_3">
                    <property name="currentIndex">
                     <number>0</number>
@@ -1063,6 +1077,13 @@
                      </widget>
                     </item>
                     <item>
+                     <widget class="QComboBox" name="kropff_bragg_peak_sigma_comboBox">
+                      <property name="editable">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
                      <widget class="QLineEdit" name="kropff_bragg_peak_sigma_init"/>
                     </item>
                     <item>
@@ -1079,6 +1100,13 @@
                      </spacer>
                     </item>
                    </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="kropff_fit_bragg_peak_button">
+                   <property name="text">
+                    <string>Fit Bragg Peak</string>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -1721,7 +1749,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>115</x>
-     <y>343</y>
+     <y>375</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -1737,7 +1765,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>155</x>
-     <y>352</y>
+     <y>384</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1753,7 +1781,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>115</x>
-     <y>381</y>
+     <y>413</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -1769,7 +1797,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>177</x>
-     <y>383</y>
+     <y>415</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1785,7 +1813,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>119</x>
-     <y>413</y>
+     <y>445</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1801,7 +1829,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>193</x>
-     <y>414</y>
+     <y>446</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1817,7 +1845,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>246</x>
-     <y>414</y>
+     <y>446</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1838,6 +1866,54 @@
     <hint type="destinationlabel">
      <x>7</x>
      <y>751</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_fit_bragg_peak_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_fit_bragg_peak_region_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>413</x>
+     <y>376</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>457</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_fit_low_lambda_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_fit_low_lambda_region_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>363</x>
+     <y>342</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>389</x>
+     <y>23</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kropff_fit_high_lambda_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>kropff_fit_high_lambda_region_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>343</x>
+     <y>310</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>351</y>
     </hint>
    </hints>
   </connection>

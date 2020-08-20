@@ -151,8 +151,14 @@ class Initialization:
 		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
 			                                                         'tofhkl']))
 		self.parent.ui.kropff_bragg_peak_tau_init.setText(str(self.parent.fitting_parameters_init['kropff']['tau']))
-		self.parent.ui.kropff_bragg_peak_sigma_init.setText(str(self.parent.fitting_parameters_init['kropff'][
-			                                                         'sigma']))
+		list_sigma = self.parent.fitting_parameters_init['kropff']['sigma']
+		list_sigma = [str(_value) for _value in list_sigma]
+		str_list_sigma = ", ".join(list_sigma)
+		self.parent.ui.kropff_bragg_peak_sigma_init.setText(str_list_sigma)
+
+		kropff_list_sigma = self.parent.fitting_parameters_init['kropff']['sigma']
+		str_kropff_list_sigma = [str(value) for value in kropff_list_sigma]
+		self.parent.ui.kropff_bragg_peak_sigma_comboBox.addItems(str_kropff_list_sigma)
 
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])
