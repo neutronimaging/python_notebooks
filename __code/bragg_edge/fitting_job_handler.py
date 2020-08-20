@@ -114,7 +114,7 @@ class FittingJobHandler:
 				                                     ahkl_error=ahkl_error,
 				                                     bhkl_error=bhkl_error)
 
-	def run_bragg_peak(self, update_table_ui=False):
+	def run_bragg_peak(self, update_table_ui=False, list_row_to_fit=None):
 		gmodel = Model(kropff_bragg_peak_tof, nan_policy='propagate', independent_vars=['tof'])
 
 		tof = self.xaxis_to_fit
@@ -127,6 +127,10 @@ class FittingJobHandler:
 		sigma_init = [np.float(_sigma) for _sigma in sigma_init]
 
 		for _row, yaxis in enumerate(self.list_yaxis_to_fit):
+
+			if not list_row_to_fit is None:
+				if _row not in list_row_to_fit:
+					continue
 
 			_entry_high = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
 			a0 = np.float(_entry_high['a0'])

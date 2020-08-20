@@ -15,6 +15,9 @@ class TableHandler:
 			self.table_ui.removeRow(0)
 
 	def get_rows_of_table_selected(self):
+		if self.table_ui is None:
+			return None
+
 		selected_ranges = self.table_ui.selectedRanges()
 		if selected_ranges == []:
 			return None
