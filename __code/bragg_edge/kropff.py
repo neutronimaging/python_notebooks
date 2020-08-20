@@ -95,11 +95,17 @@ class Kropff:
 	def bragg_peak_right_click(self, position=None):
 		menu = QtGui.QMenu(self.parent)
 
-		_export = menu.addAction("Export profile of selected row ...")
+		_fit = menu.addAction("Fit selected rows")
+		_export = menu.addAction("Export selected rows ...")
 		action = menu.exec_(QtGui.QCursor.pos())
 
-		if action == _export:
+		if action == _fit:
+			self.fit_bragg_peak_selected_rows()
+		elif action == _export:
 			self.export_bragg_peak_profile()
+
+	def fit_bragg_peak_selected_rows(self):
+		pass
 
 	def export_bragg_peak_profile(self):
 		working_dir = str(Path(self.parent.working_dir).parent)
@@ -111,45 +117,47 @@ class Kropff:
 		if _export_folder:
 
 			o_gui = GuiUtility(parent=self.parent)
-			row_selected = o_gui.get_row_of_table_selected(table_ui=self.parent.ui.bragg_edge_tableWidget)
+			list_row_selected = o_gui.get_rows_of_table_selected(table_ui=self.parent.ui.bragg_edge_tableWidget)
 
-			# make up output file name
-			name_of_row = o_gui.get_table_str_item(table_ui=self.parent.ui.bragg_edge_tableWidget,
-			                                       row=row_selected,
-			                                       column=0)
-			[x0, y0, width, height] = name_of_row.split("; ")
-			name_of_row_formatted = "x0{}_y0{}_width{}_height{}".format(x0,y0, width, height)
-			file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row_formatted)
-			full_file_name = str(Path(_export_folder) / Path(file_name))
+			for row_selected in list_row_selected:
 
-			o_fit = FittingJobHandler(parent=self.parent)
-			o_fit.prepare(kropff_tooldbox='bragg_peak')
+				# make up output file name
+				name_of_row = o_gui.get_table_str_item(table_ui=self.parent.ui.bragg_edge_tableWidget,
+				                                       row=row_selected,
+				                                       column=0)
+				[x0, y0, width, height] = name_of_row.split("; ")
+				name_of_row_formatted = "x0{}_y0{}_width{}_height{}".format(x0,y0, width, height)
+				file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row_formatted)
+				full_file_name = str(Path(_export_folder) / Path(file_name))
 
-			x_axis = o_fit.xaxis_to_fit
-			y_axis = o_fit.list_yaxis_to_fit[row_selected]
+				o_fit = FittingJobHandler(parent=self.parent)
+				o_fit.prepare(kropff_tooldbox='bragg_peak')
 
-			a0 = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['high']['a0']
-			b0 = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['high']['b0']
-			ahkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['ahkl']
-			bhkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['bhkl']
+				x_axis = o_fit.xaxis_to_fit
+				y_axis = o_fit.list_yaxis_to_fit[row_selected]
 
-			metadata = ["# Bragg peak fitting of row {}".format(row_selected+1)]
-			metadata.append("# x0: {}".format(x0))
-			metadata.append("# y0: {}".format(y0))
-			metadata.append("# width: {}".format(width))
-			metadata.append("# height: {}".format(height))
-			metadata.append("# a0: {}".format(a0))
-			metadata.append("# b0: {}".format(b0))
-			metadata.append("# ahkl: {}".format(ahkl))
-			metadata.append("# bhkl: {}".format(bhkl))
-			metadata.append("#")
-			metadata.append("# tof (micros), average transimission")
+				a0 = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['high']['a0']
+				b0 = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['high']['b0']
+				ahkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['ahkl']
+				bhkl = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting']['kropff']['low']['bhkl']
 
-			make_ascii_file_from_2dim_array(metadata=metadata,
-			                                col1=x_axis,
-			                                col2=y_axis,
-			                                output_file_name=full_file_name)
+				metadata = ["# Bragg peak fitting of row {}".format(row_selected+1)]
+				metadata.append("# x0: {}".format(x0))
+				metadata.append("# y0: {}".format(y0))
+				metadata.append("# width: {}".format(width))
+				metadata.append("# height: {}".format(height))
+				metadata.append("# a0: {}".format(a0))
+				metadata.append("# b0: {}".format(b0))
+				metadata.append("# ahkl: {}".format(ahkl))
+				metadata.append("# bhkl: {}".format(bhkl))
+				metadata.append("#")
+				metadata.append("# tof (micros), average transimission")
 
-			message = "Output file {}".format(full_file_name)
+				make_ascii_file_from_2dim_array(metadata=metadata,
+				                                col1=x_axis,
+				                                col2=y_axis,
+				                                output_file_name=full_file_name)
+
+			message = "Exported {} file(s) in {}".format(len(list_row_selected), _export_folder)
 			self.parent.ui.statusbar.showMessage(message, 15000)   # 15s
 			self.parent.ui.statusbar.setStyleSheet("color: green")
