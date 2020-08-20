@@ -1,5 +1,7 @@
 import numpy as np
 
+from __code.table_handler import TableHandler
+
 
 class GuiUtility:
 
@@ -14,22 +16,8 @@ class GuiUtility:
 		return tab_ui.tabText(tab_index)
 
 	def get_rows_of_table_selected(self, table_ui=None):
-		selected_ranges = table_ui.selectedRanges()
-		if selected_ranges == []:
-			return -1
-
-		list_row_selected = []
-		for _selection in selected_ranges:
-			top_row = _selection.topRow()
-			bottom_row = _selection.bottomRow()
-			if top_row == bottom_row:
-				list_row_selected.append(top_row)
-			else:
-				_range = np.arange(top_row, bottom_row + 1)
-				for _row in _range:
-					list_row_selected.append(_row)
-
-		return list_row_selected
+		o_table = TableHandler(table_ui=table_ui)
+		return o_table.get_rows_of_table_selected()
 
 	def get_toolbox_selected(self, toolbox_ui=None):
 		toolbox_index = toolbox_ui.currentIndex()

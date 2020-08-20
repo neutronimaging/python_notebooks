@@ -626,8 +626,12 @@ class Interface(QMainWindow):
         table_ui = part_of_fitting_dict['table_ui']
 
         o_table = TableHandler(table_ui=table_ui)
-        row_selected = o_table.get_row_selected()
+        list_row_selected = o_table.get_rows_of_table_selected()
         x_axis_selected = o_get.x_axis_checked()
+        if len(list_row_selected) > 1:
+            return
+        else:
+            row_selected = list_row_selected[0]
 
         if row_selected == -1:
             # first fitting tab where we only display the full data with bragg peak selection

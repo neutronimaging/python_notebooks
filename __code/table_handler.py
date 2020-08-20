@@ -14,6 +14,24 @@ class TableHandler:
 		for _ in np.arange(nbr_row):
 			self.table_ui.removeRow(0)
 
+	def get_rows_of_table_selected(self):
+		selected_ranges = self.table_ui.selectedRanges()
+		if selected_ranges == []:
+			return -1
+
+		list_row_selected = []
+		for _selection in selected_ranges:
+			top_row = _selection.topRow()
+			bottom_row = _selection.bottomRow()
+			if top_row == bottom_row:
+				list_row_selected.append(top_row)
+			else:
+				_range = np.arange(top_row, bottom_row + 1)
+				for _row in _range:
+					list_row_selected.append(_row)
+
+		return list_row_selected
+
 	def get_row_selected(self):
 		if self.table_ui is None:
 			return -1
@@ -21,7 +39,7 @@ class TableHandler:
 		try:
 			first_selection = list_selection[0]
 		except IndexError:
-			return 0
+			return -1
 		return first_selection.topRow()
 
 	def select_row(self, row=0):

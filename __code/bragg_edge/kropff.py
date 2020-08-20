@@ -112,6 +112,7 @@ class Kropff:
 		_export_folder = QFileDialog.getExistingDirectory(self.parent,
 		                                                  directory=working_dir,
 		                                                  caption="Select Output Folder")
+
 		QtGui.QGuiApplication.processEvents()  # to close QFileDialog
 
 		if _export_folder:
