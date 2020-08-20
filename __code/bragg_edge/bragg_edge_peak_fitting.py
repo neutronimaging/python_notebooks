@@ -326,7 +326,7 @@ class Interface(QMainWindow):
                                                       self.shrinking_roi_rgb[1],
                                                       self.shrinking_roi_rgb[2]))
             self.ui.profile.setLabel("bottom", x_axis_label)
-            self.ui.profile.setLabel("left", 'Mean counts')
+            self.ui.profile.setLabel("left", 'Mean transmission')
 
             # vertical line showing peak to fit
             bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
@@ -769,7 +769,7 @@ class Interface(QMainWindow):
                                                   self.shrinking_roi_rgb[1],
                                                   self.shrinking_roi_rgb[2]))
         self.ui.profile.setLabel("bottom", x_axis_label)
-        self.ui.profile.setLabel("left", 'Mean counts')
+        self.ui.profile.setLabel("left", 'Mean transmission')
 
         # full region
         y_axis = self.fitting_input_dictionary['rois'][0]['profile']

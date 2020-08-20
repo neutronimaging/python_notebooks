@@ -253,12 +253,12 @@ class BraggEdge(BraggEdgeParent):
 
         layout = go.Layout(
             height=500,
-            title="Counts vs TOF (of entire images, or of selected region if any)",
+            title="Average transmission vs TOF (of entire images, or of selected region if any)",
             xaxis=dict(
                 title="Lambda (Angstroms)"
             ),
             yaxis=dict(
-                title="Average Counts"
+                title="Average Transmission"
             ),
         )
 
@@ -305,7 +305,7 @@ class BraggEdge(BraggEdgeParent):
                                                                               _x1,
                                                                               _y1))
         metadata.append("#")
-        metadata.append("# tof (micros), lambda (Angstroms), Average counts")
+        metadata.append("# tof (micros), lambda (Angstroms), Average transmission")
 
         data = []
         for _t, _l, _c in zip(tof_array, lambda_array, counts_vs_file_index):

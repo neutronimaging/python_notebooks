@@ -142,7 +142,7 @@ class Kropff:
 			metadata.append("# ahkl: {}".format(ahkl))
 			metadata.append("# bhkl: {}".format(bhkl))
 			metadata.append("#")
-			metadata.append("# tof (micros), cross_section (arbitrary units)")
+			metadata.append("# tof (micros), average counts")
 
 			make_ascii_file_from_2dim_array(metadata=metadata,
 			                                col1=x_axis,
@@ -150,5 +150,5 @@ class Kropff:
 			                                output_file_name=full_file_name)
 
 			message = "Output file {}".format(full_file_name)
-			self.parent.ui.statusbar.showMessage(message, 1500)   # 15s
+			self.parent.ui.statusbar.showMessage(message, 15000)   # 15s
 			self.parent.ui.statusbar.setStyleSheet("color: green")
