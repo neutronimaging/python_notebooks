@@ -104,8 +104,12 @@ class Kropff:
 		elif action == _export:
 			self.export_bragg_peak_profile()
 
+		QtGui.QGuiApplication.processEvents()  # to close QFileDialog
+
 	def fit_bragg_peak_selected_rows(self):
-		pass
+		o_gui = GuiUtility(parent=self.parent)
+		list_rows_selected = o_gui.get_rows_of_table_selected(table_ui=self.parent.ui.bragg_edge_tableWidget)
+		self.parent.kropff_fit_bragg_peak_region_of_selected_rows(list_row_to_fit=list_rows_selected)
 
 	def export_bragg_peak_profile(self):
 		working_dir = str(Path(self.parent.working_dir).parent)

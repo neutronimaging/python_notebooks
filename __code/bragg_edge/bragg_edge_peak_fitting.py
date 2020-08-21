@@ -916,10 +916,13 @@ class Interface(QMainWindow):
         self.update_kropff_fit_table_graph(fit_region='low')
 
     def kropff_fit_bragg_peak_region_clicked(self):
+        self.kropff_fit_bragg_peak_region_of_selected_rows()
+
+    def kropff_fit_bragg_peak_region_of_selected_rows(self, list_row_to_fit=None):
         self.switch_fitting_axis_to('tof')
         o_fit = FittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='bragg_peak')
-        o_fit.run_bragg_peak(update_table_ui=True)
+        o_fit.run_bragg_peak(update_table_ui=True, list_row_to_fit=list_row_to_fit)
         self.update_fitting_plot()
         self.update_kropff_fit_table_graph(fit_region='bragg_peak')
 
