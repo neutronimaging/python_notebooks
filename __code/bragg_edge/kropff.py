@@ -95,14 +95,23 @@ class Kropff:
 	def bragg_peak_right_click(self, position=None):
 		menu = QtGui.QMenu(self.parent)
 
-		_fit = menu.addAction("Fit selected rows")
-		_export = menu.addAction("Export selected rows ...")
+		selected_rows_submenu = QtGui.QMenu("Selected Rows")
+		menu.addMenu(selected_rows_submenu)
+		_fit = selected_rows_submenu.addAction("Fit")
+		_export = selected_rows_submenu.addAction("Export ...")
+
+		advanced_selection_submenu = QtGui.QMenu("Advanced Rows Selection")
+		menu.addMenu(advanced_selection_submenu)
+		_negative_thkl = advanced_selection_submenu.addAction("Where t_hkl < 0")
+
 		action = menu.exec_(QtGui.QCursor.pos())
 
 		if action == _fit:
 			self.fit_bragg_peak_selected_rows()
 		elif action == _export:
 			self.export_bragg_peak_profile()
+		elif action == _negative_thkl:
+			self.select_all_rows_with_negative_thkl()
 
 		QtGui.QGuiApplication.processEvents()  # to close QFileDialog
 
@@ -166,3 +175,26 @@ class Kropff:
 			message = "Exported {} file(s) in {}".format(len(list_row_selected), _export_folder)
 			self.parent.ui.statusbar.showMessage(message, 15000)   # 15s
 			self.parent.ui.statusbar.setStyleSheet("color: green")
+
+	def select_all_rows_with_negative_thkl(self):
+		# activate table
+		self.parent.ui.bragg_edge_tableWidget.setFocus()
+
+		# switch to multi selection mode
+		self.parent.ui.kropff_bragg_peak_multi_selection.setChecked(True)
+		self.parent.ui.bragg_edge_tableWidget.setSelectionMode(2)
+
+		list_of_rows_to_select = []
+		fitting_input_dictionary_rois = self.parent.fitting_input_dictionary['rois']
+		for _row in fitting_input_dictionary_rois.keys():
+			_thkl = np.float(fitting_input_dictionary_rois[_row]['fitting']['kropff']['bragg_peak']['tofhkl'])
+			if _thkl < 0:
+				list_of_rows_to_select.append(_row)
+
+		o_gui = GuiUtility(parent=self.parent)
+		o_gui.select_rows_of_table(table_ui=self.parent.ui.bragg_edge_tableWidget,
+		                           list_of_rows=list_of_rows_to_select)
+
+
+
+

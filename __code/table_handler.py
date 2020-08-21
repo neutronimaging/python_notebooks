@@ -9,6 +9,21 @@ class TableHandler:
 	def __init__(self, table_ui=None):
 		self.table_ui = table_ui
 
+	def select_everything(self, state):
+		nbr_row = self.table_ui.rowCount()
+		nbr_column = self.table_ui.columnCount()
+		selection_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_column-1)
+		self.table_ui.setRangeSelected(selection_range, state)
+
+	def select_rows(self, list_of_rows=None):
+		self.select_everything(False)
+		nbr_row = self.table_ui.rowCount()
+		nbr_column = self.table_ui.columnCount()
+
+		for _row in list_of_rows:
+			selection_range = QtGui.QTableWidgetSelectionRange(_row, 0, _row, nbr_column - 1)
+			self.table_ui.setRangeSelected(selection_range, True)
+
 	def remove_all_rows(self):
 		nbr_row = self.table_ui.rowCount()
 		for _ in np.arange(nbr_row):

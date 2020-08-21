@@ -19,6 +19,12 @@ class GuiUtility:
 		o_table = TableHandler(table_ui=table_ui)
 		return o_table.get_rows_of_table_selected()
 
+	def select_rows_of_table(self, table_ui=None, list_of_rows=None):
+		if list_of_rows is None:
+			return
+		o_table = TableHandler(table_ui=table_ui)
+		o_table.select_rows(list_of_rows=list_of_rows)
+
 	def get_toolbox_selected(self, toolbox_ui=None):
 		toolbox_index = toolbox_ui.currentIndex()
 		return toolbox_ui.itemText(toolbox_index)
