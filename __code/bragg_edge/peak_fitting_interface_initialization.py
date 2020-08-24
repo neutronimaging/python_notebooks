@@ -160,10 +160,10 @@ class Initialization:
 		march_dollase_history = self.march_dollase_history
 		nbr_column = len(march_dollase_history[0]['state'])
 		for _row in march_dollase_history.keys():
-			self.parent.ui.marche_dollase_user_input_table.insertRow(_row)
+			self.parent.ui.march_dollase_user_input_table.insertRow(_row)
 
 			row_height = self.march_dollase_row_height[0] if _row == 0 else self.march_dollase_row_height['other']
-			self.parent.ui.marche_dollase_user_input_table.setRowHeight(_row, row_height)
+			self.parent.ui.march_dollase_user_input_table.setRowHeight(_row, row_height)
 
 			for _col in np.arange(nbr_column):
 				_state_col = march_dollase_history[_row]['state'][_col]
@@ -173,6 +173,10 @@ class Initialization:
 				hori_layout = QHBoxLayout()
 				_checkbox = QCheckBox()
 				_checkbox.setChecked(_state_col)
+				_checkbox.stateChanged.connect(lambda state=0, row=_row, column=_col:
+				                               self.parent.march_dollase_table_state_changed(state=state,
+				                                                                             row=row,
+				                                                                             column=column))
 				hori_layout.addStretch()
 				hori_layout.addWidget(_checkbox)
 				hori_layout.addStretch()
@@ -180,13 +184,14 @@ class Initialization:
 				new_widget.setLayout(hori_layout)
 				verti_layout.addWidget(new_widget)
 
-				if (_row == 0) and (not _state_col):  # add init value if working with first row and state is
-					# False
+				if _row == 0:
 					_input = QTextEdit()
 					_input.setText(str(march_dollase_history[_row]['value'][_col]))
 					verti_layout.addWidget(_input)
+					_input.setVisible(not _state_col)
+
 				_widget.setLayout(verti_layout)
-				self.parent.ui.marche_dollase_user_input_table.setCellWidget(_row, _col, _widget)
+				self.parent.ui.march_dollase_user_input_table.setCellWidget(_row, _col, _widget)
 
 	def labels(self):
 		# labels

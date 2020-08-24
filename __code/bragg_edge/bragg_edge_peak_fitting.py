@@ -987,6 +987,11 @@ class Interface(QMainWindow):
         o_kropff = Kropff(parent=self)
         o_kropff.bragg_peak_right_click(position=position)
 
+    def march_dollase_table_state_changed(self, state=None, row=None, column=None):
+        if row == 0:
+            _textedit = self.ui.march_dollase_user_input_table.cellWidget(row, column).children()[-1]
+            _textedit.setVisible(not state)
+
     def cancel_clicked(self):
         self.close()
 

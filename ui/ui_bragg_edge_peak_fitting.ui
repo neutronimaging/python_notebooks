@@ -1308,7 +1308,7 @@
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_21">
                      <item>
-                      <widget class="QTableWidget" name="marche_dollase_user_input_table">
+                      <widget class="QTableWidget" name="march_dollase_user_input_table">
                        <property name="dragDropMode">
                         <enum>QAbstractItemView::InternalMove</enum>
                        </property>
