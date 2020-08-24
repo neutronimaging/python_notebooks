@@ -13,7 +13,6 @@ from neutronbraggedge.experiment_handler import *
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge as BraggEdgeParent
 from __code.bragg_edge.peak_fitting_interface_initialization import Initialization
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
-from __code.selection_region_utilities import SelectionRegionUtilities
 from __code import load_ui
 from __code.utilities import find_nearest_index
 from __code.table_handler import TableHandler
@@ -23,6 +22,7 @@ from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
 from __code.bragg_edge.get import Get
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
+from __code.bragg_edge.march_dollase import MarchDollase
 from __code._utilities.array import exclude_y_value_when_error_is_nan
 
 DEBUGGING = True
@@ -124,6 +124,8 @@ class Interface(QMainWindow):
     # dict_rois_imported = {0: {'width': None, 'height': None},
     #                       1: {'width': None, 'height': None},
     #                       }
+
+    march_dollase_fitting_history_table = None
 
     def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
 
@@ -991,6 +993,18 @@ class Interface(QMainWindow):
         if row == 0:
             _textedit = self.ui.march_dollase_user_input_table.cellWidget(row, column).children()[-1]
             _textedit.setVisible(not state)
+
+    def march_dollase_table_clicked(self, row, column):
+        o_march = MarchDollase(parent=self)
+        o_march.table_clicked(row=row, column=column)
+
+    def march_dollase_move_row_up_clicked(self):
+        o_march = MarchDollase(parent=self)
+        o_march.move_row_up()
+
+    def march_dollase_move_row_down_clicked(self):
+        o_march = MarchDollase(parent=self)
+        o_march.move_row_down()
 
     def cancel_clicked(self):
         self.close()

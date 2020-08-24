@@ -5,11 +5,9 @@ matplotlib.use('Qt5Agg')
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from qtpy.QtWidgets import QProgressBar, QVBoxLayout, QHBoxLayout
+from qtpy.QtWidgets import QProgressBar, QHBoxLayout,  QCheckBox, QLineEdit, QVBoxLayout, QWidget
 from qtpy import QtGui, QtCore
-from qtpy.QtWidgets import QCheckBox, QTextEdit, QVBoxLayout, QWidget
 import pyqtgraph as pg
-from collections import OrderedDict
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.mplcanvas import MplCanvas
@@ -20,14 +18,14 @@ class Initialization:
 	distance_detector_sample = 1300  # m
 	detector_offset = 6500  # micros
 
-	march_dollase_history = OrderedDict()
-	march_dollase_history[0] = {'state': [False, False, False, True, False, False, True],
-	                            'value': [np.NaN, 3.5, 4.5, np.NaN, np.NaN, np.NaN, np.NaN]}
-	march_dollase_history[1] = {'state': [False, False, False, False, True, True, False]}
-	march_dollase_history[2] = {'state': [True, True, True, False, False, False, False]}
-	march_dollase_history[3] = {'state': [False, False, False, True, True, True, True]}
-	march_dollase_history[4] = {'state': [True, True, True, False, False, False, False]}
-	march_dollase_history[5] = {'state': [True, True, True, True, True, True, True]}
+	march_dollase_history_state = list()
+	march_dollase_history_init = [np.NaN, 3.5, 4.5, np.NaN, np.NaN, np.NaN, np.NaN]
+	march_dollase_history_state.append([False, False, False, True, False, False, True])
+	march_dollase_history_state.append([False, False, False, False, True, True, False])
+	march_dollase_history_state.append([True, True, True, False, False, False, False])
+	march_dollase_history_state.append([False, False, False, True, True, True, True])
+	march_dollase_history_state.append([True, True, True, False, False, False, False])
+	march_dollase_history_state.append([True, True, True, True, True, True, True])
 	march_dollase_row_height = {0: 110,
 	                            'other': 60}
 
@@ -157,16 +155,16 @@ class Initialization:
 		self.parent.ui.march_dollase_user_input_down.setIcon(QtGui.QIcon(down_arrow_file))
 
 		# init history table
-		march_dollase_history = self.march_dollase_history
-		nbr_column = len(march_dollase_history[0]['state'])
-		for _row in march_dollase_history.keys():
+		march_dollase_history_state = self.march_dollase_history_state
+		nbr_column = len(march_dollase_history_state[0])
+		for _row in np.arange(len(march_dollase_history_state)):
 			self.parent.ui.march_dollase_user_input_table.insertRow(_row)
 
 			row_height = self.march_dollase_row_height[0] if _row == 0 else self.march_dollase_row_height['other']
 			self.parent.ui.march_dollase_user_input_table.setRowHeight(_row, row_height)
 
 			for _col in np.arange(nbr_column):
-				_state_col = march_dollase_history[_row]['state'][_col]
+				_state_col = march_dollase_history_state[_row][_col]
 				_widget = QWidget()
 				verti_layout = QVBoxLayout()
 
@@ -185,8 +183,8 @@ class Initialization:
 				verti_layout.addWidget(new_widget)
 
 				if _row == 0:
-					_input = QTextEdit()
-					_input.setText(str(march_dollase_history[_row]['value'][_col]))
+					_input = QLineEdit()
+					_input.setText(str(self.march_dollase_history_init[_col]))
 					verti_layout.addWidget(_input)
 					_input.setVisible(not _state_col)
 
