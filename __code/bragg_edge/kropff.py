@@ -194,7 +194,3 @@ class Kropff:
 		o_gui = GuiUtility(parent=self.parent)
 		o_gui.select_rows_of_table(table_ui=self.parent.ui.bragg_edge_tableWidget,
 		                           list_of_rows=list_of_rows_to_select)
-
-
-
-

@@ -615,15 +615,15 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>739</width>
-                  <height>765</height>
+                  <width>356</width>
+                  <height>199</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -751,8 +751,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>739</width>
-                  <height>765</height>
+                  <width>174</width>
+                  <height>265</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1035,8 +1035,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>739</width>
-                  <height>765</height>
+                  <width>359</width>
+                  <height>338</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1257,7 +1257,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>739</width>
+                  <width>611</width>
                   <height>833</height>
                  </rect>
                 </property>
@@ -1267,6 +1267,13 @@
                 <layout class="QVBoxLayout" name="verticalLayout_26">
                  <item>
                   <layout class="QVBoxLayout" name="verticalLayout_24">
+                   <item>
+                    <widget class="QLabel" name="label_7">
+                     <property name="text">
+                      <string>Create your fitting history.</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_20">
                      <item>
@@ -1289,12 +1296,34 @@
                        </property>
                       </spacer>
                      </item>
+                     <item>
+                      <widget class="QLabel" name="label_6">
+                       <property name="text">
+                        <string>Check box to define parameter(s) to fit</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </item>
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_21">
                      <item>
                       <widget class="QTableWidget" name="marche_dollase_user_input_table">
+                       <property name="dragDropMode">
+                        <enum>QAbstractItemView::InternalMove</enum>
+                       </property>
+                       <property name="alternatingRowColors">
+                        <bool>true</bool>
+                       </property>
+                       <property name="selectionBehavior">
+                        <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                       <attribute name="horizontalHeaderCascadingSectionResizes">
+                        <bool>false</bool>
+                       </attribute>
+                       <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+                        <bool>false</bool>
+                       </attribute>
                        <column>
                         <property name="text">
                          <string>d-spacing</string>
@@ -1335,9 +1364,21 @@
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_25">
                        <item>
-                        <widget class="QPushButton" name="marche_dollase_user_input_up">
+                        <widget class="QPushButton" name="march_dollase_user_input_up">
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
                          <property name="text">
-                          <string>up</string>
+                          <string/>
                          </property>
                         </widget>
                        </item>
@@ -1356,8 +1397,20 @@
                        </item>
                        <item>
                         <widget class="QPushButton" name="march_dollase_user_input_down">
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
                          <property name="text">
-                          <string>down</string>
+                          <string/>
                          </property>
                         </widget>
                        </item>
@@ -1369,15 +1422,25 @@
                     <layout class="QHBoxLayout" name="horizontalLayout_22">
                      <item>
                       <widget class="QPushButton" name="march_dollase_user_input_remove_row">
+                       <property name="font">
+                        <font>
+                         <pointsize>18</pointsize>
+                        </font>
+                       </property>
                        <property name="text">
-                        <string>remove row</string>
+                        <string>-</string>
                        </property>
                       </widget>
                      </item>
                      <item>
                       <widget class="QPushButton" name="march_dollase_user_input_add_row">
+                       <property name="font">
+                        <font>
+                         <pointsize>18</pointsize>
+                        </font>
+                       </property>
                        <property name="text">
-                        <string>add row</string>
+                        <string>+</string>
                        </property>
                       </widget>
                      </item>
@@ -1412,8 +1475,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>739</width>
-                  <height>833</height>
+                  <width>513</width>
+                  <height>160</height>
                  </rect>
                 </property>
                 <attribute name="label">

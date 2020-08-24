@@ -1,12 +1,15 @@
 import numpy as np
 import matplotlib
+import os
 matplotlib.use('Qt5Agg')
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from qtpy.QtWidgets import QProgressBar, QVBoxLayout
+from qtpy.QtWidgets import QProgressBar, QVBoxLayout, QHBoxLayout
 from qtpy import QtGui, QtCore
+from qtpy.QtWidgets import QCheckBox, QTextEdit, QVBoxLayout, QWidget
 import pyqtgraph as pg
+from collections import OrderedDict
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.mplcanvas import MplCanvas
@@ -16,6 +19,17 @@ class Initialization:
 
 	distance_detector_sample = 1300  # m
 	detector_offset = 6500  # micros
+
+	march_dollase_history = OrderedDict()
+	march_dollase_history[0] = {'state': [False, False, False, True, False, False, True],
+	                            'value': [np.NaN, 3.5, 4.5, np.NaN, np.NaN, np.NaN, np.NaN]}
+	march_dollase_history[1] = {'state': [False, False, False, False, True, True, False]}
+	march_dollase_history[2] = {'state': [True, True, True, False, False, False, False]}
+	march_dollase_history[3] = {'state': [False, False, False, True, True, True, True]}
+	march_dollase_history[4] = {'state': [True, True, True, False, False, False, False]}
+	march_dollase_history[5] = {'state': [True, True, True, True, True, True, True]}
+	march_dollase_row_height = {0: 110,
+	                            'other': 60}
 
 	def __init__(self, parent=None, tab='all'):
 		self.parent = parent
@@ -34,7 +48,8 @@ class Initialization:
 		self.text_fields()
 		self.statusbar()
 		self.pyqtgraph_fitting()
-		self.fitting_table()
+		self.kropff_fitting_table()
+		self.march_dollase()
 
 		self.block_signals(False)
 
@@ -98,7 +113,7 @@ class Initialization:
 		fitting_layout.addWidget(self.parent.ui.fitting)
 		self.parent.ui.fitting_widget.setLayout(fitting_layout)
 
-	def fitting_table(self):
+	def kropff_fitting_table(self):
 		## Kropff
 		# high lambda
 		column_names = [u'x\u2080; y\u2080; width; height', u'a\u2080', u'b\u2080', u'a\u2080_error',
@@ -131,6 +146,47 @@ class Initialization:
 			o_bragg.insert_column(_col_index)
 		o_bragg.set_column_names(column_names=column_names)
 		o_bragg.set_column_sizes(column_sizes=column_sizes)
+
+	def march_dollase(self):
+		# init widgets
+		_file_path = os.path.dirname(__file__)
+		up_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/up_arrow_black.png'))
+		self.parent.ui.march_dollase_user_input_up.setIcon(QtGui.QIcon(up_arrow_file))
+
+		down_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/down_arrow_black.png'))
+		self.parent.ui.march_dollase_user_input_down.setIcon(QtGui.QIcon(down_arrow_file))
+
+		# init history table
+		march_dollase_history = self.march_dollase_history
+		nbr_column = len(march_dollase_history[0]['state'])
+		for _row in march_dollase_history.keys():
+			self.parent.ui.marche_dollase_user_input_table.insertRow(_row)
+
+			row_height = self.march_dollase_row_height[0] if _row == 0 else self.march_dollase_row_height['other']
+			self.parent.ui.marche_dollase_user_input_table.setRowHeight(_row, row_height)
+
+			for _col in np.arange(nbr_column):
+				_state_col = march_dollase_history[_row]['state'][_col]
+				_widget = QWidget()
+				verti_layout = QVBoxLayout()
+
+				hori_layout = QHBoxLayout()
+				_checkbox = QCheckBox()
+				_checkbox.setChecked(_state_col)
+				hori_layout.addStretch()
+				hori_layout.addWidget(_checkbox)
+				hori_layout.addStretch()
+				new_widget = QWidget()
+				new_widget.setLayout(hori_layout)
+				verti_layout.addWidget(new_widget)
+
+				if (_row == 0) and (not _state_col):  # add init value if working with first row and state is
+					# False
+					_input = QTextEdit()
+					_input.setText(str(march_dollase_history[_row]['value'][_col]))
+					verti_layout.addWidget(_input)
+				_widget.setLayout(verti_layout)
+				self.parent.ui.marche_dollase_user_input_table.setCellWidget(_row, _col, _widget)
 
 	def labels(self):
 		# labels
