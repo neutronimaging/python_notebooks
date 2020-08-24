@@ -605,7 +605,7 @@
           </property>
           <widget class="QTabWidget" name="tab_algorithm">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tab_3">
             <attribute name="title">
@@ -615,14 +615,14 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>3</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>639</width>
+                  <width>739</width>
                   <height>765</height>
                  </rect>
                 </property>
@@ -751,7 +751,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>639</width>
+                  <width>739</width>
                   <height>765</height>
                  </rect>
                 </property>
@@ -893,8 +893,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>639</width>
-                  <height>765</height>
+                  <width>192</width>
+                  <height>265</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1035,7 +1035,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>639</width>
+                  <width>739</width>
                   <height>765</height>
                  </rect>
                 </property>
@@ -1244,8 +1244,335 @@
            </widget>
            <widget class="QWidget" name="tab_4">
             <attribute name="title">
-             <string>TBD</string>
+             <string>March-Dollase</string>
             </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_23">
+             <item>
+              <widget class="QToolBox" name="toolBox">
+               <property name="currentIndex">
+                <number>0</number>
+               </property>
+               <widget class="QWidget" name="page_2">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>739</width>
+                  <height>833</height>
+                 </rect>
+                </property>
+                <attribute name="label">
+                 <string>USER INPUT</string>
+                </attribute>
+                <layout class="QVBoxLayout" name="verticalLayout_26">
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_24">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_20">
+                     <item>
+                      <widget class="QCheckBox" name="march_dollase_advanced_mode_checkBox">
+                       <property name="text">
+                        <string>Advanced mode</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_19">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_21">
+                     <item>
+                      <widget class="QTableWidget" name="marche_dollase_user_input_table">
+                       <column>
+                        <property name="text">
+                         <string>d-spacing</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>sigma</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>alpha</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A1</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A2</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A5</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A6</string>
+                        </property>
+                       </column>
+                      </widget>
+                     </item>
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_25">
+                       <item>
+                        <widget class="QPushButton" name="marche_dollase_user_input_up">
+                         <property name="text">
+                          <string>up</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacer_3">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="march_dollase_user_input_down">
+                         <property name="text">
+                          <string>down</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_22">
+                     <item>
+                      <widget class="QPushButton" name="march_dollase_user_input_remove_row">
+                       <property name="text">
+                        <string>remove row</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="march_dollase_user_input_add_row">
+                       <property name="text">
+                        <string>add row</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_20">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="march_dollase_user_input_fit_button">
+                       <property name="text">
+                        <string>FIT by running scenario</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_3">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>739</width>
+                  <height>833</height>
+                 </rect>
+                </property>
+                <attribute name="label">
+                 <string>RESULT</string>
+                </attribute>
+                <layout class="QVBoxLayout" name="verticalLayout_29">
+                 <item>
+                  <widget class="QTabWidget" name="tabWidget_5">
+                   <property name="currentIndex">
+                    <number>1</number>
+                   </property>
+                   <widget class="QWidget" name="tab_11">
+                    <attribute name="title">
+                     <string>Table</string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_27">
+                     <item>
+                      <widget class="QTableWidget" name="high_tof_tableWidget_2">
+                       <property name="alternatingRowColors">
+                        <bool>true</bool>
+                       </property>
+                       <property name="selectionMode">
+                        <enum>QAbstractItemView::SingleSelection</enum>
+                       </property>
+                       <property name="selectionBehavior">
+                        <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                       <column>
+                        <property name="text">
+                         <string>d-spacing</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>sigma</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>alpha</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A1</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A2</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A5</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>A6</string>
+                        </property>
+                       </column>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="tab_12">
+                    <attribute name="title">
+                     <string>Graph </string>
+                    </attribute>
+                    <layout class="QVBoxLayout" name="verticalLayout_28">
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_23">
+                       <item>
+                        <widget class="QRadioButton" name="kropff_a0_radioButton_2">
+                         <property name="text">
+                          <string>d-spacing</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_2">
+                         <property name="text">
+                          <string>sigma</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_3">
+                         <property name="text">
+                          <string>alpha</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_4">
+                         <property name="text">
+                          <string>A1</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_5">
+                         <property name="text">
+                          <string>A2</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_7">
+                         <property name="text">
+                          <string>A5</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="kropff_b0_radioButton_6">
+                         <property name="text">
+                          <string>A6</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_21">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="high_widget_2" native="true">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </widget>
           <widget class="QWidget" name="layoutWidget">
