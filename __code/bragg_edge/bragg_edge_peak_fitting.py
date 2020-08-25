@@ -181,7 +181,9 @@ class Interface(QMainWindow):
         self.ui.tabWidget.setTabEnabled(1, False)
         # self.ui.tabWidget.setCurrentIndex(default_tab)
         self.ui.actionExport.setEnabled(enabled_export_button)
-        self.update_selection_roi_slider_changed()
+
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection_roi_slider_changed()
 
     def retrieve_working_dir(self):
         o_norm = self.o_norm
@@ -242,9 +244,10 @@ class Interface(QMainWindow):
     #     return x_axis[:min_len], y_axis[:min_len]
 
     def roi_moved(self):
-        self.update_selection_profile_plot()
-        self.update_all_size_widgets_infos()
-        self.update_roi_defined_by_profile_of_bin_size_slider()
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection_profile_plot()
+        o_selection.update_all_size_widgets_infos()
+        o_selection.update_roi_defined_by_profile_of_bin_size_slider()
 
     def new_dimensions_within_error_range(self):
         """this method is used to check if the ROI sizes changed. We need an error uncertainties as sometimes
@@ -268,9 +271,9 @@ class Interface(QMainWindow):
 
         return False
 
-    def update_all_size_widgets_infos(self):
-        o_selection = BraggEdgeSelectionTab(parent=self)
-        o_selection.update_all_size_widgets_infos()
+    # def update_all_size_widgets_infos(self):
+    #     o_selection = BraggEdgeSelectionTab(parent=self)
+    #     o_selection.update_all_size_widgets_infos()
 
         # if self.ui.square_roi_radiobutton.isChecked():
         #     return
@@ -408,9 +411,9 @@ class Interface(QMainWindow):
     #     self.update_selection_profile_plot()
     #     self.update_roi_defined_by_profile_of_bin_size_slider()
 
-    def update_selection_roi_slider_changed(self):
-        value = self.ui.roi_size_slider.value()
-        self.selection_roi_slider_changed(value)
+    # def update_selection_roi_slider_changed(self):
+    #     value = self.ui.roi_size_slider.value()
+    #     self.selection_roi_slider_changed(value)
 
     def selection_roi_slider_changed(self, new_value):
         if self.ui.square_roi_radiobutton.isChecked():
@@ -445,7 +448,8 @@ class Interface(QMainWindow):
     def update_dict_profile_to_fit(self):
         [left_range, right_range] = self.bragg_edge_range
 
-        [x0, y0, x1, y1] = self.get_shrinking_roi_dimension()
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        [x0, y0, x1, y1] = o_selection.get_shrinking_roi_dimension()
         o_get = Get(parent=self)
         profile = o_get.profile_of_roi(x0=x0, y0=y0,
                                        x1=x1, y1=y1)
@@ -526,7 +530,6 @@ class Interface(QMainWindow):
 
         o_selection = BraggEdgeSelectionTab(parent=self)
         o_selection.update_selection_plot()
-
 
         self.update_vertical_line_in_profile_plot()
         self.update_kropff_fit_table_graph(fit_region='high')
@@ -748,8 +751,9 @@ class Interface(QMainWindow):
             self.selection_roi_slider_changed(new_width)
             mode = 'free'
 
-        self.update_selection(new_value=new_width,
-                              mode=mode)
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection(new_value=new_width,
+                                     mode=mode)
 
         self.ui.roi_size_slider.setVisible(slider_visible)
 

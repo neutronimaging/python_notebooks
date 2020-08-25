@@ -14,12 +14,12 @@ class BraggEdgeSelectionTab:
 
 	def update_all_size_widgets_infos(self):
 
-		if self.parentui.square_roi_radiobutton.isChecked():
+		if self.parent.ui.square_roi_radiobutton.isChecked():
 			return
 
-		roi_id = self.parentroi_id
-		region = roi_id.getArraySlice(self.parentfinal_image,
-		                              self.parentui.image_view.imageItem)
+		roi_id = self.parent.roi_id
+		region = roi_id.getArraySlice(self.parent.final_image,
+		                              self.parent.ui.image_view.imageItem)
 		x0 = region[0][0].start
 		x1 = region[0][0].stop
 		y0 = region[0][1].start
@@ -29,17 +29,17 @@ class BraggEdgeSelectionTab:
 		new_height = y1 - y0 - 1
 
 		# if new width and height is the same as before, just skip that step
-		if self.parentnew_dimensions_within_error_range():
+		if self.parent.new_dimensions_within_error_range():
 			return
 
-		self.parentui.roi_width.setText(str(new_width))
-		self.parentui.roi_height.setText(str(new_height))
-		self.parentui.profile_of_bin_size_width.setText(str(new_width))
-		self.parentui.profile_of_bin_size_height.setText(str(new_height))
+		self.parent.ui.roi_width.setText(str(new_width))
+		self.parent.ui.roi_height.setText(str(new_height))
+		self.parent.ui.profile_of_bin_size_width.setText(str(new_width))
+		self.parent.ui.profile_of_bin_size_height.setText(str(new_height))
 
 		max_value = np.min([new_width, new_height])
-		self.parentui.profile_of_bin_size_slider.setValue(max_value)
-		self.parentui.profile_of_bin_size_slider.setMaximum(max_value)
+		self.parent.ui.profile_of_bin_size_slider.setValue(max_value)
+		self.parent.ui.profile_of_bin_size_slider.setMaximum(max_value)
 
 	def get_shrinking_roi_dimension(self):
 		coordinates = self.get_coordinates_of_new_inside_selection_box()
@@ -93,7 +93,7 @@ class BraggEdgeSelectionTab:
 			                                          self.parent.selection_roi_rgb[2]))
 	
 			# shrinkable region
-			shrinking_roi = self.parent.get_coordinates_of_new_inside_selection_box()
+			shrinking_roi = self.get_coordinates_of_new_inside_selection_box()
 			x0 = shrinking_roi['x0']
 			y0 = shrinking_roi['y0']
 			x1 = shrinking_roi['x1']
@@ -156,8 +156,8 @@ class BraggEdgeSelectionTab:
 		else:
 			self.parent.roi_id.addScaleHandle([1, 1], [0, 0])
 
-		self.parent.update_selection_profile_plot()
-		self.parent.update_roi_defined_by_profile_of_bin_size_slider()
+		self.update_selection_profile_plot()
+		self.update_roi_defined_by_profile_of_bin_size_slider()
 
 	def update_selection_plot(self):
 		self.parent.ui.profile.clear()
@@ -201,16 +201,16 @@ class BraggEdgeSelectionTab:
 					new_height = new_value
 					delta = initial_roi_height - new_height
 					new_width = initial_roi_width - delta
-	
+
 			self.parent.ui.profile_of_bin_size_width.setText(str(new_width))
 			self.parent.ui.profile_of_bin_size_height.setText(str(new_height))
-			self.parent.update_roi_defined_by_profile_of_bin_size_slider()
-			self.parent.update_selection_profile_plot()
+			self.update_roi_defined_by_profile_of_bin_size_slider()
+			self.update_selection_profile_plot()
 		except AttributeError:
 			pass
 
 	def update_roi_defined_by_profile_of_bin_size_slider(self):
-		coordinates_new_selection = self.parent.get_coordinates_of_new_inside_selection_box()
+		coordinates_new_selection = self.get_coordinates_of_new_inside_selection_box()
 		self.parent.shrinking_roi = coordinates_new_selection
 		x0 = coordinates_new_selection['x0']
 		y0 = coordinates_new_selection['y0']
@@ -249,3 +249,7 @@ class BraggEdgeSelectionTab:
 		self.parent.ui.profile_of_bin_size_slider.setSingleStep(1)
 		self.parent.ui.profile_of_bin_size_slider.setValue(len(dict_rois_imported) - 1)
 		self.parent.update_profile_of_bin_slider_labels()
+
+	def update_selection_roi_slider_changed(self):
+	    value = self.parent.ui.roi_size_slider.value()
+	    self.parent.selection_roi_slider_changed(value)
