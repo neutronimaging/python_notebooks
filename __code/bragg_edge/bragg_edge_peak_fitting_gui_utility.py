@@ -1,4 +1,5 @@
 import numpy as np
+from qtpy.QtWidgets import QHBoxLayout,  QCheckBox, QLineEdit, QVBoxLayout, QWidget
 
 from __code.table_handler import TableHandler
 
@@ -109,3 +110,44 @@ class GuiUtility:
 			return str(item.text())
 		else:
 			return ""
+
+	def fill_march_dollase_table(self, list_state=None, list_initial_parameters=None):
+		table_ui = self.parent.ui.march_dollase_user_input_table
+
+		march_dollase_row_height = {0: 110,
+		                            'other': 60}
+
+		nbr_column = len(list_state[0])
+		for _row in np.arange(len(list_state)):
+			self.parent.ui.march_dollase_user_input_table.insertRow(_row)
+
+			row_height = march_dollase_row_height[0] if _row == 0 else march_dollase_row_height['other']
+			table_ui.setRowHeight(_row, row_height)
+
+			for _col in np.arange(nbr_column):
+				_state_col = list_state[_row][_col]
+				_widget = QWidget()
+				verti_layout = QVBoxLayout()
+
+				hori_layout = QHBoxLayout()
+				_checkbox = QCheckBox()
+				_checkbox.setChecked(_state_col)
+				_checkbox.stateChanged.connect(lambda state=0, row=_row, column=_col:
+				                               self.parent.march_dollase_table_state_changed(state=state,
+				                                                                             row=row,
+				                                                                             column=column))
+				hori_layout.addStretch()
+				hori_layout.addWidget(_checkbox)
+				hori_layout.addStretch()
+				new_widget = QWidget()
+				new_widget.setLayout(hori_layout)
+				verti_layout.addWidget(new_widget)
+
+				if _row == 0:
+					_input = QLineEdit()
+					_input.setText(str(list_initial_parameters[_col]))
+					verti_layout.addWidget(_input)
+					_input.setVisible(not _state_col)
+
+				_widget.setLayout(verti_layout)
+				table_ui.setCellWidget(_row, _col, _widget)

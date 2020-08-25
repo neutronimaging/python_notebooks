@@ -126,6 +126,7 @@ class Interface(QMainWindow):
     #                       }
 
     march_dollase_fitting_history_table = None
+    march_dollase_fitting_initial_parameters = None
 
     def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
 

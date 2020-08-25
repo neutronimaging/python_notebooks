@@ -5,12 +5,13 @@ matplotlib.use('Qt5Agg')
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from qtpy.QtWidgets import QProgressBar, QHBoxLayout,  QCheckBox, QLineEdit, QVBoxLayout, QWidget
-from qtpy import QtGui, QtCore
+from qtpy.QtWidgets import QProgressBar, QVBoxLayout
+from qtpy import QtGui
 import pyqtgraph as pg
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.mplcanvas import MplCanvas
+from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
 class Initialization:
@@ -26,8 +27,6 @@ class Initialization:
 	march_dollase_history_state.append([False, False, False, True, True, True, True])
 	march_dollase_history_state.append([True, True, True, False, False, False, False])
 	march_dollase_history_state.append([True, True, True, True, True, True, True])
-	march_dollase_row_height = {0: 110,
-	                            'other': 60}
 
 	def __init__(self, parent=None, tab='all'):
 		self.parent = parent
@@ -154,42 +153,12 @@ class Initialization:
 		down_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/down_arrow_black.png'))
 		self.parent.ui.march_dollase_user_input_down.setIcon(QtGui.QIcon(down_arrow_file))
 
-		# init history table
-		march_dollase_history_state = self.march_dollase_history_state
-		nbr_column = len(march_dollase_history_state[0])
-		for _row in np.arange(len(march_dollase_history_state)):
-			self.parent.ui.march_dollase_user_input_table.insertRow(_row)
+		o_gui = GuiUtility(parent=self.parent)
+		o_gui.fill_march_dollase_table(list_state=self.march_dollase_history_state,
+		                               list_initial_parameters=self.march_dollase_history_init)
 
-			row_height = self.march_dollase_row_height[0] if _row == 0 else self.march_dollase_row_height['other']
-			self.parent.ui.march_dollase_user_input_table.setRowHeight(_row, row_height)
-
-			for _col in np.arange(nbr_column):
-				_state_col = march_dollase_history_state[_row][_col]
-				_widget = QWidget()
-				verti_layout = QVBoxLayout()
-
-				hori_layout = QHBoxLayout()
-				_checkbox = QCheckBox()
-				_checkbox.setChecked(_state_col)
-				_checkbox.stateChanged.connect(lambda state=0, row=_row, column=_col:
-				                               self.parent.march_dollase_table_state_changed(state=state,
-				                                                                             row=row,
-				                                                                             column=column))
-				hori_layout.addStretch()
-				hori_layout.addWidget(_checkbox)
-				hori_layout.addStretch()
-				new_widget = QWidget()
-				new_widget.setLayout(hori_layout)
-				verti_layout.addWidget(new_widget)
-
-				if _row == 0:
-					_input = QLineEdit()
-					_input.setText(str(self.march_dollase_history_init[_col]))
-					verti_layout.addWidget(_input)
-					_input.setVisible(not _state_col)
-
-				_widget.setLayout(verti_layout)
-				self.parent.ui.march_dollase_user_input_table.setCellWidget(_row, _col, _widget)
+		self.parent.march_dollase_fitting_history_table = self.march_dollase_history_state
+		self.parent.march_dollase_fitting_initial_parameters = self.march_dollase_history_init
 
 	def labels(self):
 		# labels
