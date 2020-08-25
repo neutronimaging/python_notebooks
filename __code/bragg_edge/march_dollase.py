@@ -60,19 +60,21 @@ class MarchDollase:
 		self.table_clicked(row=new_row)
 
 	def table_right_clicked(self):
+
 		table_is_empty = False
 		list_state = self.parent.march_dollase_fitting_history_table
+
 		if not list_state:
 			table_is_empty = True
 
 		menu = QtGui.QMenu(self.parent)
 
-		insert_row = None
+		insert_row = -1
 
-		insert_above = None
-		insert_below = None
-		duplicate_row = None
-		delete_row = None
+		insert_above = -1
+		insert_below = -1
+		duplicate_row = -1
+		delete_row = -1
 
 		if table_is_empty:
 			insert_row = menu.addAction("Insert Row")
@@ -97,6 +99,8 @@ class MarchDollase:
 			self.delete_row()
 		elif action == insert_row:
 			self.insert_row()
+		else:
+			pass
 
 	def insert_row(self):
 		march_dollase_fitting_history_table = list()
