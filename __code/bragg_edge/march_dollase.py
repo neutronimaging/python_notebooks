@@ -56,11 +56,13 @@ class MarchDollase:
 		o_table.select_row(row=new_row)
 		self.table_clicked(row=new_row)
 
-	def table_right_clicked(self, position=None):
+	def table_right_clicked(self):
 		menu = QtGui.QMenu(self.parent)
 
 		insert_above = menu.addAction("Insert New Row Above")
 		insert_below = menu.addAction("Insert New Row Below")
+		menu.addSeparator()
+		duplicate_row = menu.addAction("Duplicate Row")
 		menu.addSeparator()
 		delete_row = menu.addAction("Remove Row")
 
@@ -70,13 +72,32 @@ class MarchDollase:
 			self.insert_row_above()
 		elif action == insert_below:
 			self.insert_row_below()
+		elif action == duplicate_row:
+			self.duplicate_row()
 		elif action == delete_row:
 			self.delete_row()
 
 	def insert_row_above(self):
-		pass
+		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_user_input_table)
+		row_selected = o_table.get_row_selected()
+		march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
+		new_entry = [False for _entry in march_dollase_fitting_history_table[0]]
+		march_dollase_fitting_history_table.insert(row_selected, new_entry)
+		self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+
+		o_gui = GuiUtility(parent=self.parent)
+		o_gui.fill_march_dollase_table(list_state=self.parent.march_dollase_fitting_history_table,
+		                               list_initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
+
+		# keep current selection on new row
+		o_table = TableHandler(table_ui=self.parent.march_dollase_user_input_table)
+		o_table.select_row(row=row_selected)
+		self.table_clicked(row=row_selected)
 
 	def insert_row_below(self):
+		pass
+
+	def duplicate_row(self):
 		pass
 
 	def delete_row(self):
