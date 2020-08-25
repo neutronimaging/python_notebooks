@@ -1,6 +1,8 @@
+from qtpy import QtGui
+
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
-from qtpy import QtGui
+from __code.bragg_edge.get import Get
 
 
 class MarchDollase:
@@ -160,6 +162,21 @@ class MarchDollase:
 		if self.parent.fitting_peak_ui:
 			self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
 
+		o_get = Get(parent=self.parent)
+		x_axis_selected = o_get.x_axis_checked()
+
+		xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
+		xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
+		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
+		xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+		selected_roi = self.parent.fitting_input_dictionary['rois'][0]
+		yaxis = selected_roi['profile']
+		yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+		self.parent.ui.fitting.plot(xaxis, yaxis,
+		                            pen=(self.parent.selection_roi_rgb[0],
+		                                 self.parent.selection_roi_rgb[1],
+		                                 self.parent.selection_roi_rgb[2]),
+		                            symbol='o')
 
 
 
