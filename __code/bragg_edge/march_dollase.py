@@ -156,5 +156,10 @@ class MarchDollase:
 		                         state=hide_advanced)
 
 	def update_fitting_plot(self):
-		print("updating march-dollase update fitting plot")
+		self.parent.ui.fitting.clear()
+		if self.parent.fitting_peak_ui:
+			self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
+
+
+
 
