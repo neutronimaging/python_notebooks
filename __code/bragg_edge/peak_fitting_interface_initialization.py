@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib
 import os
+import copy
 matplotlib.use('Qt5Agg')
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -159,6 +160,8 @@ class Initialization:
 
 		self.parent.march_dollase_fitting_history_table = self.march_dollase_history_state
 		self.parent.march_dollase_fitting_initial_parameters = self.march_dollase_history_init
+		self.parent.march_dollase_fitting_history_table_default_new_row = copy.deepcopy(
+				self.march_dollase_history_state[0])
 
 	def labels(self):
 		# labels

@@ -112,9 +112,13 @@ class GuiUtility:
 			return ""
 
 	def fill_march_dollase_table(self, list_state=None, list_initial_parameters=None):
+
 		table_ui = self.parent.ui.march_dollase_user_input_table
 		o_table = TableHandler(table_ui=table_ui)
 		o_table.remove_all_rows()
+
+		if not list_state:
+			return
 
 		march_dollase_row_height = {0: 110,
 		                            'other': 60}

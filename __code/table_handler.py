@@ -61,6 +61,8 @@ class TableHandler:
 		return first_selection.topRow()
 
 	def select_row(self, row=0):
+		if row < 0:
+			row = 0
 		self.table_ui.selectRow(row)
 
 	def set_column_names(self, column_names=None):
