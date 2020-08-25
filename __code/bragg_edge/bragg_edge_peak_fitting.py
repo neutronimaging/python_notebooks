@@ -145,7 +145,7 @@ class Interface(QMainWindow):
             self.o_bragg = o_bragg
             show_selection_tab = True
             # default_tab = 0
-            enabled_export_button = True
+            enabled_export_button = False
             self.index_array = np.arange(len(self.o_norm.data['sample']['file_name']))
         else:
             self.working_dir = working_dir
@@ -493,6 +493,7 @@ class Interface(QMainWindow):
         else:
             o_kropff.fill_table_with_fitting_information()
         self.ui.tabWidget.setTabEnabled(1, True)
+        self.ui.actionExport.setEnabled(True)
         self.select_first_row_of_all_fitting_table()
 
     def append_dict_regions_to_fitting_input_dictionary(self, dict_regions, fitting_input_dictionary):
