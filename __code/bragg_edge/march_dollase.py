@@ -1,5 +1,6 @@
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
+from qtpy import QtGui
 
 
 class MarchDollase:
@@ -54,3 +55,29 @@ class MarchDollase:
 		o_table = TableHandler(table_ui=self.parent.march_dollase_user_input_table)
 		o_table.select_row(row=new_row)
 		self.table_clicked(row=new_row)
+
+	def table_right_clicked(self, position=None):
+		menu = QtGui.QMenu(self.parent)
+
+		insert_above = menu.addAction("Insert New Row Above")
+		insert_below = menu.addAction("Insert New Row Below")
+		menu.addSeparator()
+		delete_row = menu.addAction("Remove Row")
+
+		action = menu.exec_(QtGui.QCursor.pos())
+
+		if action == insert_above:
+			self.insert_row_above()
+		elif action == insert_below:
+			self.insert_row_below()
+		elif action == delete_row:
+			self.delete_row()
+
+	def insert_row_above(self):
+		pass
+
+	def insert_row_below(self):
+		pass
+
+	def delete_row(self):
+		pass

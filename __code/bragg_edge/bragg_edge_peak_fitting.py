@@ -1007,6 +1007,9 @@ class Interface(QMainWindow):
         o_march = MarchDollase(parent=self)
         o_march.move_row_down()
 
+    def march_dollase_table_right_clicked(self):
+        print("right clicked")
+
     def cancel_clicked(self):
         self.close()
 
