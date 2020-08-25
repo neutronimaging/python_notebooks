@@ -1084,9 +1084,6 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="kropff_bragg_peak_sigma_init"/>
-                    </item>
-                    <item>
                      <spacer name="horizontalSpacer_11">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
