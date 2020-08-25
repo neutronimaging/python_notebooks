@@ -1012,6 +1012,10 @@ class Interface(QMainWindow):
         o_march = MarchDollase(parent=self)
         o_march.table_right_clicked()
 
+    def march_dollase_advanced_mode_clicked(self):
+        o_march = MarchDollase(parent=self)
+        o_march.advanced_mode_clicked()
+
     def cancel_clicked(self):
         self.close()
 

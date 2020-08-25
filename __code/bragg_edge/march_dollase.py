@@ -58,7 +58,6 @@ class MarchDollase:
 		self.table_clicked(row=new_row)
 
 	def table_right_clicked(self):
-
 		table_is_empty = False
 		list_state = self.parent.march_dollase_fitting_history_table
 		if not list_state:
@@ -148,3 +147,11 @@ class MarchDollase:
 		o_table = TableHandler(table_ui=self.parent.march_dollase_user_input_table)
 		o_table.select_row(row=changing_row-1)
 		self.table_clicked(row=changing_row)
+
+	def advanced_mode_clicked(self):
+		hide_advanced = not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+		o_gui = GuiUtility(parent=self.parent)
+		o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_user_input_table,
+				                 list_of_columns=[5, 6],
+		                         state=hide_advanced)
+

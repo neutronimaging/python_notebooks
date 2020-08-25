@@ -163,6 +163,11 @@ class Initialization:
 		self.parent.march_dollase_fitting_history_table_default_new_row = copy.deepcopy(
 				self.march_dollase_history_state[0])
 
+		state_advanced_columns = not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+		o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_user_input_table,
+		                         list_of_columns=[5, 6],
+		                         state=state_advanced_columns)
+
 	def labels(self):
 		# labels
 		self.parent.ui.detector_offset_units.setText(u"\u03BCs")

@@ -157,3 +157,7 @@ class GuiUtility:
 
 				_widget.setLayout(verti_layout)
 				table_ui.setCellWidget(_row, _col, _widget)
+
+	def set_columns_hidden(self, table_ui=None, list_of_columns=None, state=True):
+		for _col in list_of_columns:
+			table_ui.setColumnHidden(_col, state)

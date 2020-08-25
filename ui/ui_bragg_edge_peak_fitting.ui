@@ -2097,8 +2097,8 @@
    <slot>high_lambda_table_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>268</y>
+     <x>152</x>
+     <y>363</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -2129,8 +2129,8 @@
    <slot>bragg_peak_table_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>281</y>
+     <x>152</x>
+     <y>504</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -2146,7 +2146,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>117</x>
-     <y>145</y>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -2161,8 +2161,8 @@
    <slot>fit_kropff_button_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>274</y>
+     <x>178</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
@@ -2177,8 +2177,8 @@
    <slot>update_kropff_high_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>132</x>
-     <y>298</y>
+     <x>135</x>
+     <y>392</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -2193,8 +2193,8 @@
    <slot>update_kropff_high_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>172</x>
-     <y>298</y>
+     <x>175</x>
+     <y>392</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2241,8 +2241,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>136</x>
-     <y>299</y>
+     <x>139</x>
+     <y>461</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2257,8 +2257,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>189</x>
-     <y>299</y>
+     <x>192</x>
+     <y>461</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2273,8 +2273,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>189</x>
-     <y>299</y>
+     <x>192</x>
+     <y>461</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2289,8 +2289,8 @@
    <slot>kropff_bragg_peak_right_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>281</y>
+     <x>152</x>
+     <y>504</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2306,7 +2306,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>410</x>
-     <y>257</y>
+     <y>393</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2338,7 +2338,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>225</x>
-     <y>256</y>
+     <y>324</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2353,8 +2353,8 @@
    <slot>kropff_bragg_peak_selection_mode_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>157</x>
-     <y>287</y>
+     <x>168</x>
+     <y>473</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -2369,8 +2369,8 @@
    <slot>kropff_bragg_peak_selection_mode_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>189</x>
-     <y>287</y>
+     <x>233</x>
+     <y>473</y>
     </hint>
     <hint type="destinationlabel">
      <x>640</x>
@@ -2442,6 +2442,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>march_dollase_advanced_mode_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_advanced_mode_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>177</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -2476,5 +2492,6 @@
   <slot>march_dollase_move_row_down_clicked()</slot>
   <slot>march_dollase_table_clicked()</slot>
   <slot>march_dollase_table_right_clicked()</slot>
+  <slot>march_dollase_advanced_mode_clicked()</slot>
  </slots>
 </ui>
