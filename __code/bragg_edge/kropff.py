@@ -2,11 +2,14 @@ import numpy as np
 from qtpy import QtGui
 from qtpy.QtWidgets import QFileDialog
 from pathlib import Path
+import pyqtgraph as pg
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.fitting_job_handler import FittingJobHandler
 from __code.file_handler import make_ascii_file_from_2dim_array
+from __code.bragg_edge.get import Get
+from __code._utilities.dictionary import key_path_exists_in_dictionary
 
 
 class Kropff:
@@ -194,3 +197,105 @@ class Kropff:
 		o_gui = GuiUtility(parent=self.parent)
 		o_gui.select_rows_of_table(table_ui=self.parent.ui.bragg_edge_tableWidget,
 		                           list_of_rows=list_of_rows_to_select)
+
+	def update_fitting_plot(self):
+		self.parent.ui.fitting.clear()
+		o_get = Get(parent=self.parent)
+		part_of_fitting_dict = o_get.part_of_fitting_selected()
+		name_of_page = part_of_fitting_dict['name_of_page']
+		table_ui = part_of_fitting_dict['table_ui']
+
+		o_table = TableHandler(table_ui=table_ui)
+		list_row_selected = o_table.get_rows_of_table_selected()
+		x_axis_selected = o_get.x_axis_checked()
+
+		if list_row_selected is None:
+			# first fitting tab where we only display the full data with bragg peak selection
+			if self.parent.fitting_peak_ui:
+				self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
+			xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
+			xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
+			[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
+			xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+			selected_roi = self.parent.fitting_input_dictionary['rois'][0]
+			yaxis = selected_roi['profile']
+			yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+			self.parent.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.parent.selection_roi_rgb[0],
+			                                                 self.parent.selection_roi_rgb[1],
+			                                                 self.parent.selection_roi_rgb[2]),
+			                     symbol='o')
+			peak_range_index = self.parent.kropff_fitting_range['bragg_peak']
+			if peak_range_index[0] is None:
+				peak_range = self.parent.bragg_edge_range
+			else:
+				peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
+
+			if self.parent.fitting_peak_ui:
+				self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
+			self.parent.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
+			                                           orientation=None,
+			                                           brush=None,
+			                                           movable=True,
+			                                           bounds=None)
+			self.parent.fitting_peak_ui.sigRegionChanged.connect(self.parent.fitting_range_changed)
+			self.parent.fitting_peak_ui.setZValue(-10)
+			self.parent.ui.fitting.addItem(self.parent.fitting_peak_ui)
+
+		else:
+
+			for row_selected in list_row_selected:
+
+				selected_roi = self.parent.fitting_input_dictionary['rois'][row_selected]
+
+				xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
+				[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
+
+				yaxis = selected_roi['profile']
+				xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
+
+				xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+				yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+
+				self.parent.ui.fitting.setLabel("bottom", xaxis_label)
+				self.parent.ui.fitting.setLabel("left", 'Cross Section (arbitrary units)')
+				self.parent.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.parent.selection_roi_rgb[0],
+				                                                 self.parent.selection_roi_rgb[1],
+				                                                 self.parent.selection_roi_rgb[2]),
+				                     symbol='o')
+
+				peak_range_index = self.parent.kropff_fitting_range[name_of_page]
+				if peak_range_index[0] is None:
+					peak_range = self.parent.bragg_edge_range
+				else:
+					peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
+
+				if self.parent.fitting_peak_ui:
+					self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
+				self.parent.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
+				                                           orientation=None,
+				                                           brush=None,
+				                                           movable=False,
+				                                           bounds=None)
+				self.parent.fitting_peak_ui.sigRegionChanged.connect(self.parent.fitting_range_changed)
+				self.parent.fitting_peak_ui.setZValue(-10)
+				self.parent.ui.fitting.addItem(self.parent.fitting_peak_ui)
+
+				o_gui = GuiUtility(parent=self.parent)
+				algo_name = o_gui.get_tab_selected(self.parent.ui.tab_algorithm).lower()
+
+				if key_path_exists_in_dictionary(dictionary=self.parent.fitting_input_dictionary,
+				                                 tree_key=['rois', row_selected, 'fitting', algo_name,
+				                                           name_of_page, 'xaxis_to_fit']):
+
+					# show fit only if tof scale selected
+					if x_axis_selected == 'tof':
+						_entry = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
+						xaxis = _entry['xaxis_to_fit']
+						yaxis = _entry['yaxis_fitted']
+						# yaxis = -np.log(yaxis)
+						self.parent.ui.fitting.plot(xaxis, yaxis, pen=(self.parent.fit_rgb[0],
+						                                               self.parent.fit_rgb[1],
+						                                               self.parent.fit_rgb[2]))
+
+				if peak_range_index[0] is None:
+					self.parent.fitting_range_changed()

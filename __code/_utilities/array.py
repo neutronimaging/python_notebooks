@@ -14,3 +14,10 @@ def exclude_y_value_when_error_is_nan(axis, error_axis):
 			error_axis_cleaned.append(np.float(_error))
 
 	return axis_cleaned, error_axis_cleaned
+
+
+def check_size(x_axis=None, y_axis=None):
+	size_x = len(x_axis)
+	size_y = len(y_axis)
+	min_len = np.min([size_x, size_y])
+	return x_axis[:min_len], y_axis[:min_len]

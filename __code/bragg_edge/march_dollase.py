@@ -155,3 +155,6 @@ class MarchDollase:
 				                 list_of_columns=[5, 6],
 		                         state=hide_advanced)
 
+	def update_fitting_plot(self):
+		print("updating march-dollase update fitting plot")
+

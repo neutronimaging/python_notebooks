@@ -20,6 +20,7 @@ from __code.bragg_edge.fitting_job_handler import FittingJobHandler
 from __code.bragg_edge.kropff import Kropff
 from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
+from __code.bragg_edge.bragg_edge_selection_tab import BraggEdgeSelectionTab
 from __code.bragg_edge.get import Get
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 from __code.bragg_edge.march_dollase import MarchDollase
@@ -233,12 +234,12 @@ class Interface(QMainWindow):
         self.final_image = final_image
         return final_image
 
-    @staticmethod
-    def check_size(x_axis=None, y_axis=None):
-        size_x = len(x_axis)
-        size_y = len(y_axis)
-        min_len = np.min([size_x, size_y])
-        return x_axis[:min_len], y_axis[:min_len]
+    # @staticmethod
+    # def check_size(x_axis=None, y_axis=None):
+    #     size_x = len(x_axis)
+    #     size_y = len(y_axis)
+    #     min_len = np.min([size_x, size_y])
+    #     return x_axis[:min_len], y_axis[:min_len]
 
     def roi_moved(self):
         self.update_selection_profile_plot()
@@ -268,88 +269,90 @@ class Interface(QMainWindow):
         return False
 
     def update_all_size_widgets_infos(self):
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_all_size_widgets_infos()
 
-        if self.ui.square_roi_radiobutton.isChecked():
-            return
+        # if self.ui.square_roi_radiobutton.isChecked():
+        #     return
+        #
+        # roi_id = self.roi_id
+        # region = roi_id.getArraySlice(self.final_image,
+        #                               self.ui.image_view.imageItem)
+        # x0 = region[0][0].start
+        # x1 = region[0][0].stop
+        # y0 = region[0][1].start
+        # y1 = region[0][1].stop
+        #
+        # new_width = x1-x0-1
+        # new_height = y1-y0-1
+        #
+        # # if new width and height is the same as before, just skip that step
+        # if self.new_dimensions_within_error_range():
+        #     return
+        #
+        # self.ui.roi_width.setText(str(new_width))
+        # self.ui.roi_height.setText(str(new_height))
+        # self.ui.profile_of_bin_size_width.setText(str(new_width))
+        # self.ui.profile_of_bin_size_height.setText(str(new_height))
+        #
+        # max_value = np.min([new_width, new_height])
+        # self.ui.profile_of_bin_size_slider.setValue(max_value)
+        # self.ui.profile_of_bin_size_slider.setMaximum(max_value)
 
-        roi_id = self.roi_id
-        region = roi_id.getArraySlice(self.final_image,
-                                      self.ui.image_view.imageItem)
-        x0 = region[0][0].start
-        x1 = region[0][0].stop
-        y0 = region[0][1].start
-        y1 = region[0][1].stop
+    # def get_shrinking_roi_dimension(self):
+    #     coordinates = self.get_coordinates_of_new_inside_selection_box()
+    #     return [coordinates['x0'],
+    #             coordinates['y0'],
+    #             coordinates['x0'] + coordinates['width'],
+    #             coordinates['y0'] + coordinates['height']]
 
-        new_width = x1-x0-1
-        new_height = y1-y0-1
-
-        # if new width and height is the same as before, just skip that step
-        if self.new_dimensions_within_error_range():
-            return
-
-        self.ui.roi_width.setText(str(new_width))
-        self.ui.roi_height.setText(str(new_height))
-        self.ui.profile_of_bin_size_width.setText(str(new_width))
-        self.ui.profile_of_bin_size_height.setText(str(new_height))
-
-        max_value = np.min([new_width, new_height])
-        self.ui.profile_of_bin_size_slider.setValue(max_value)
-        self.ui.profile_of_bin_size_slider.setMaximum(max_value)
-
-    def get_shrinking_roi_dimension(self):
-        coordinates = self.get_coordinates_of_new_inside_selection_box()
-        return [coordinates['x0'],
-                coordinates['y0'],
-                coordinates['x0'] + coordinates['width'],
-                coordinates['y0'] + coordinates['height']]
-
-    def update_selection_profile_plot(self):
-
-        if self.is_file_imported:
-            self.update_selection_plot()
-            self.update_vertical_line_in_profile_plot()
-
-        else:
-            o_get = Get(parent=self)
-            x_axis, x_axis_label = o_get.x_axis()
-            self.ui.profile.clear()
-
-            # large selection region
-            [x0, y0, x1, y1, _, _] = o_get.selection_roi_dimension()
-            profile = o_get.profile_of_roi(x0, y0, x1, y1)
-            x_axis, y_axis = Interface.check_size(x_axis=x_axis,
-                                                  y_axis=profile)
-            self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
-                                                      self.selection_roi_rgb[1],
-                                                      self.selection_roi_rgb[2]))
-
-            # shrinkable region
-            shrinking_roi = self.get_coordinates_of_new_inside_selection_box()
-            x0 = shrinking_roi['x0']
-            y0 = shrinking_roi['y0']
-            x1 = shrinking_roi['x1']
-            y1 = shrinking_roi['y1']
-            profile = o_get.profile_of_roi(x0, y0, x1, y1)
-            x_axis, y_axis = Interface.check_size(x_axis=x_axis,
-                                                  y_axis=profile)
-            self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
-                                                      self.shrinking_roi_rgb[1],
-                                                      self.shrinking_roi_rgb[2]))
-            self.ui.profile.setLabel("bottom", x_axis_label)
-            self.ui.profile.setLabel("left", 'Mean transmission')
-
-            # vertical line showing peak to fit
-            bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
-                                x_axis[self.bragg_edge_range[1]]]
-
-            self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
-                                                           orientation=None,
-                                                           brush=None,
-                                                           movable=True,
-                                                           bounds=None)
-            self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
-            self.bragg_edge_range_ui.setZValue(-10)
-            self.ui.profile.addItem(self.bragg_edge_range_ui)
+    # def update_selection_profile_plot(self):
+    #
+    #     if self.is_file_imported:
+    #         self.update_selection_plot()
+    #         self.update_vertical_line_in_profile_plot()
+    #
+    #     else:
+    #         o_get = Get(parent=self)
+    #         x_axis, x_axis_label = o_get.x_axis()
+    #         self.ui.profile.clear()
+    #
+    #         # large selection region
+    #         [x0, y0, x1, y1, _, _] = o_get.selection_roi_dimension()
+    #         profile = o_get.profile_of_roi(x0, y0, x1, y1)
+    #         x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+    #                                               y_axis=profile)
+    #         self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
+    #                                                   self.selection_roi_rgb[1],
+    #                                                   self.selection_roi_rgb[2]))
+    #
+    #         # shrinkable region
+    #         shrinking_roi = self.get_coordinates_of_new_inside_selection_box()
+    #         x0 = shrinking_roi['x0']
+    #         y0 = shrinking_roi['y0']
+    #         x1 = shrinking_roi['x1']
+    #         y1 = shrinking_roi['y1']
+    #         profile = o_get.profile_of_roi(x0, y0, x1, y1)
+    #         x_axis, y_axis = Interface.check_size(x_axis=x_axis,
+    #                                               y_axis=profile)
+    #         self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
+    #                                                   self.shrinking_roi_rgb[1],
+    #                                                   self.shrinking_roi_rgb[2]))
+    #         self.ui.profile.setLabel("bottom", x_axis_label)
+    #         self.ui.profile.setLabel("left", 'Mean transmission')
+    #
+    #         # vertical line showing peak to fit
+    #         bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
+    #                             x_axis[self.bragg_edge_range[1]]]
+    #
+    #         self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
+    #                                                        orientation=None,
+    #                                                        brush=None,
+    #                                                        movable=True,
+    #                                                        bounds=None)
+    #         self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
+    #         self.bragg_edge_range_ui.setZValue(-10)
+    #         self.ui.profile.addItem(self.bragg_edge_range_ui)
 
     def bragg_edge_range_changed(self):
         [left_range, right_range] = list(self.bragg_edge_range_ui.getRegion())
@@ -367,43 +370,43 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
         self.ui.profile_of_bin_size_slider.setValue(max_value)
 
-    def update_selection(self, new_value=None, mode='square'):
-        if self.roi_id is None:
-            return
-
-        try:
-            region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
-        except TypeError:
-            return
-
-        x0 = region[0][0].start
-        y0 = region[0][1].start
-        self.selection_x0y0 = [x0, y0]
-
-        # remove old one
-        self.ui.image_view.removeItem(self.roi_id)
-
-        _pen = QtGui.QPen()
-        _pen.setColor(self.roi_settings['color'])
-        _pen.setWidth(self.roi_settings['width'])
-        self.roi_id = pg.ROI([x0, y0],
-                             [new_value, new_value],
-                             pen=_pen,
-                             scaleSnap=True)
-
-        self.ui.image_view.addItem(self.roi_id)
-        self.roi_id.sigRegionChanged.connect(self.roi_moved)
-
-        if mode == 'square':
-            self.ui.roi_width.setText(str(new_value))
-            self.ui.roi_height.setText(str(new_value))
-            self.reset_profile_of_bin_size_slider()
-            self.update_profile_of_bin_size_infos()
-        else:
-            self.roi_id.addScaleHandle([1, 1], [0, 0])
-
-        self.update_selection_profile_plot()
-        self.update_roi_defined_by_profile_of_bin_size_slider()
+    # def update_selection(self, new_value=None, mode='square'):
+    #     if self.roi_id is None:
+    #         return
+    #
+    #     try:
+    #         region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
+    #     except TypeError:
+    #         return
+    #
+    #     x0 = region[0][0].start
+    #     y0 = region[0][1].start
+    #     self.selection_x0y0 = [x0, y0]
+    #
+    #     # remove old one
+    #     self.ui.image_view.removeItem(self.roi_id)
+    #
+    #     _pen = QtGui.QPen()
+    #     _pen.setColor(self.roi_settings['color'])
+    #     _pen.setWidth(self.roi_settings['width'])
+    #     self.roi_id = pg.ROI([x0, y0],
+    #                          [new_value, new_value],
+    #                          pen=_pen,
+    #                          scaleSnap=True)
+    #
+    #     self.ui.image_view.addItem(self.roi_id)
+    #     self.roi_id.sigRegionChanged.connect(self.roi_moved)
+    #
+    #     if mode == 'square':
+    #         self.ui.roi_width.setText(str(new_value))
+    #         self.ui.roi_height.setText(str(new_value))
+    #         self.reset_profile_of_bin_size_slider()
+    #         self.update_profile_of_bin_size_infos()
+    #     else:
+    #         self.roi_id.addScaleHandle([1, 1], [0, 0])
+    #
+    #     self.update_selection_profile_plot()
+    #     self.update_roi_defined_by_profile_of_bin_size_slider()
 
     def update_selection_roi_slider_changed(self):
         value = self.ui.roi_size_slider.value()
@@ -414,8 +417,9 @@ class Interface(QMainWindow):
             mode = 'square'
         else:
             mode = 'free'
-        self.update_selection(new_value=new_value,
-                              mode=mode)
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection(new_value=new_value,
+                                     mode=mode)
 
     def update_profile_of_bin_size_infos(self):
         _width = np.int(self.ui.roi_width.text())
@@ -426,14 +430,17 @@ class Interface(QMainWindow):
 
     def distance_detector_sample_changed(self):
         self.update_time_spectra()
-        self.update_selection_profile_plot()
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection_profile_plot()
 
     def detector_offset_changed(self):
         self.update_time_spectra()
-        self.update_selection_profile_plot()
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection_profile_plot()
 
     def selection_axis_changed(self):
-        self.update_selection_profile_plot()
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection_profile_plot()
 
     def update_dict_profile_to_fit(self):
         [left_range, right_range] = self.bragg_edge_range
@@ -516,87 +523,46 @@ class Interface(QMainWindow):
         new_height = dict_rois_imported[new_value]['height']
         self.ui.profile_of_bin_size_height.setText(new_height)
         self.ui.profile_of_bin_size_width.setText(new_width)
-        self.update_selection_plot()
+
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_selection_plot()
+
+
         self.update_vertical_line_in_profile_plot()
         self.update_kropff_fit_table_graph(fit_region='high')
         self.update_kropff_fit_table_graph(fit_region='low')
         self.update_kropff_fit_table_graph(fit_region='bragg_peak')
 
     def profile_of_bin_size_slider_changed(self, new_value):
-        try:
-            self.update_dict_profile_to_fit()
-            if self.ui.square_roi_radiobutton.isChecked():
-                new_width = new_value
-                new_height = new_value
-            else:
-                initial_roi_width = np.int(str(self.ui.roi_width.text()))
-                initial_roi_height = np.int(str(self.ui.roi_height.text()))
-                if initial_roi_width == initial_roi_height:
-                    new_width = new_value
-                    new_height = new_value
-                elif initial_roi_width < initial_roi_height:
-                    new_width = new_value
-                    delta = initial_roi_width - new_width
-                    new_height = initial_roi_height - delta
-                else:
-                    new_height = new_value
-                    delta = initial_roi_height - new_height
-                    new_width = initial_roi_width - delta
-
-            self.ui.profile_of_bin_size_width.setText(str(new_width))
-            self.ui.profile_of_bin_size_height.setText(str(new_height))
-            self.update_roi_defined_by_profile_of_bin_size_slider()
-            self.update_selection_profile_plot()
-        except AttributeError:
-            pass
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.profile_of_bin_size_slider_changed(new_value=new_value)
 
     def update_roi_defined_by_profile_of_bin_size_slider(self):
-        coordinates_new_selection = self.get_coordinates_of_new_inside_selection_box()
-        self.shrinking_roi = coordinates_new_selection
-        x0 = coordinates_new_selection['x0']
-        y0 = coordinates_new_selection['y0']
-        width = coordinates_new_selection['width']
-        height = coordinates_new_selection['height']
+        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection.update_roi_defined_by_profile_of_bin_size_slider()
 
-        # remove old selection
-        if self.shrinking_roi_id:
-            self.ui.image_view.removeItem(self.shrinking_roi_id)
-
-        # plot new box
-        _pen = QtGui.QPen()
-        _pen.setDashPattern(self.shrinking_roi_settings['dashes_pattern'])
-        _pen.setColor(self.shrinking_roi_settings['color'])
-        _pen.setWidth(self.shrinking_roi_settings['width'])
-
-        self.shrinking_roi_id = pg.ROI([x0, y0],
-                                       [width, height],
-                                       pen=_pen,
-                                       scaleSnap=True,
-                                       movable=False)
-        self.ui.image_view.addItem(self.shrinking_roi_id)
-
-    def get_coordinates_of_new_inside_selection_box(self):
-        # get width and height defined in fitting labels (top right)
-        width_requested = np.int(str(self.ui.profile_of_bin_size_width.text()))
-        height_requested = np.int(str(self.ui.profile_of_bin_size_height.text()))
-
-        # retrieve x0, y0, width and height of full selection
-        region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
-        x0 = region[0][0].start
-        y0 = region[0][1].start
-        # [x0, y0] = self.selection_x0y0
-        width_full_selection = np.int(str(self.ui.roi_width.text()))
-        height_full_selection = np.int(str(self.ui.roi_height.text()))
-
-        delta_width = width_full_selection - width_requested
-        delta_height = height_full_selection - height_requested
-
-        new_x0 = x0 + np.int(delta_width / 2)
-        new_y0 = y0 + np.int(delta_height / 2)
-
-        return {'x0': new_x0, 'y0': new_y0,
-                'x1': new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
-                'width': width_requested, 'height': height_requested}
+    # def get_coordinates_of_new_inside_selection_box(self):
+    #     # get width and height defined in fitting labels (top right)
+    #     width_requested = np.int(str(self.ui.profile_of_bin_size_width.text()))
+    #     height_requested = np.int(str(self.ui.profile_of_bin_size_height.text()))
+    #
+    #     # retrieve x0, y0, width and height of full selection
+    #     region = self.roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
+    #     x0 = region[0][0].start
+    #     y0 = region[0][1].start
+    #     # [x0, y0] = self.selection_x0y0
+    #     width_full_selection = np.int(str(self.ui.roi_width.text()))
+    #     height_full_selection = np.int(str(self.ui.roi_height.text()))
+    #
+    #     delta_width = width_full_selection - width_requested
+    #     delta_height = height_full_selection - height_requested
+    #
+    #     new_x0 = x0 + np.int(delta_width / 2)
+    #     new_y0 = y0 + np.int(delta_height / 2)
+    #
+    #     return {'x0': new_x0, 'y0': new_y0,
+    #             'x1': new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
+    #             'width': width_requested, 'height': height_requested}
 
     def add_profile_to_dict_of_all_regions(self, dict_regions=None):
         for _key in dict_regions.keys():
@@ -629,113 +595,16 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def update_fitting_plot(self):
-        self.ui.fitting.clear()
-        o_get = Get(parent=self)
-        part_of_fitting_dict = o_get.part_of_fitting_selected()
-        name_of_page = part_of_fitting_dict['name_of_page']
-        table_ui = part_of_fitting_dict['table_ui']
+        o_gui = GuiUtility(parent=self)
+        algorithm_tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tab_algorithm)
 
-        o_table = TableHandler(table_ui=table_ui)
-        list_row_selected = o_table.get_rows_of_table_selected()
-        x_axis_selected = o_get.x_axis_checked()
+        if algorithm_tab_selected == 'Kropff':
+            o_kropff = Kropff(parent=self)
+            o_kropff.update_fitting_plot()
 
-        if list_row_selected is None:
-            # first fitting tab where we only display the full data with bragg peak selection
-            if self.fitting_peak_ui:
-                self.ui.fitting.removeItem(self.fitting_peak_ui)
-            xaxis_dict = self.fitting_input_dictionary['xaxis']
-            xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
-            [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
-            xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
-            selected_roi = self.fitting_input_dictionary['rois'][0]
-            yaxis = selected_roi['profile']
-            yaxis = yaxis[left_xaxis_index: right_xaxis_index]
-            self.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.selection_roi_rgb[0],
-                                                             self.selection_roi_rgb[1],
-                                                             self.selection_roi_rgb[2]),
-                                 symbol='o')
-            peak_range_index = self.kropff_fitting_range['bragg_peak']
-            if peak_range_index[0] is None:
-                peak_range = self.bragg_edge_range
-            else:
-                peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
-
-            if self.fitting_peak_ui:
-                self.ui.fitting.removeItem(self.fitting_peak_ui)
-            self.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
-                                                       orientation=None,
-                                                       brush=None,
-                                                       movable=True,
-                                                       bounds=None)
-            self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
-            self.fitting_peak_ui.setZValue(-10)
-            self.ui.fitting.addItem(self.fitting_peak_ui)
-
-        else:
-
-            for row_selected in list_row_selected:
-
-                selected_roi = self.fitting_input_dictionary['rois'][row_selected]
-
-                xaxis_dict = self.fitting_input_dictionary['xaxis']
-                [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
-
-                yaxis = selected_roi['profile']
-                xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
-
-                xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
-                yaxis = yaxis[left_xaxis_index: right_xaxis_index]
-
-                self.ui.fitting.setLabel("bottom", xaxis_label)
-                self.ui.fitting.setLabel("left", 'Cross Section (arbitrary units)')
-                self.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.selection_roi_rgb[0],
-                                                        self.selection_roi_rgb[1],
-                                                        self.selection_roi_rgb[2]),
-                                     symbol='o')
-
-                peak_range_index = self.kropff_fitting_range[name_of_page]
-                if peak_range_index[0] is None:
-                    peak_range = self.bragg_edge_range
-                else:
-                    peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
-
-                if self.fitting_peak_ui:
-                    self.ui.fitting.removeItem(self.fitting_peak_ui)
-                self.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
-                                                           orientation=None,
-                                                           brush=None,
-                                                           movable=False,
-                                                           bounds=None)
-                self.fitting_peak_ui.sigRegionChanged.connect(self.fitting_range_changed)
-                self.fitting_peak_ui.setZValue(-10)
-                self.ui.fitting.addItem(self.fitting_peak_ui)
-
-                o_gui = GuiUtility(parent=self)
-                algo_name = o_gui.get_tab_selected(self.ui.tab_algorithm).lower()
-
-                if Interface.key_path_exists_in_dictionary(dictionary=self.fitting_input_dictionary,
-                        tree_key=['rois', row_selected, 'fitting', algo_name, name_of_page, 'xaxis_to_fit']):
-
-                    # show fit only if tof scale selected
-                    if x_axis_selected == 'tof':
-                        _entry = self.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
-                        xaxis = _entry['xaxis_to_fit']
-                        yaxis = _entry['yaxis_fitted']
-                        # yaxis = -np.log(yaxis)
-                        self.ui.fitting.plot(xaxis, yaxis, pen=(self.fit_rgb[0], self.fit_rgb[1], self.fit_rgb[2]))
-
-                if peak_range_index[0] is None:
-                    self.fitting_range_changed()
-
-    @staticmethod
-    def key_path_exists_in_dictionary(dictionary=None, tree_key=None):
-        """this method checks if full key path in the dictionary exists"""
-        top_dictionary = dictionary
-        for _key in tree_key:
-            if top_dictionary.get(_key, None) is None:
-                return False
-            top_dictionary = top_dictionary.get(_key)
-        return True
+        elif algorithm_tab_selected == 'March-Dollase':
+            o_march = MarchDollase(parent=self)
+            o_march.update_fitting_plot()
 
     def fitting_range_changed(self):
         [global_left_range, global_right_range] = self.bragg_edge_range
@@ -765,45 +634,45 @@ class Interface(QMainWindow):
         if tab_index == 1:
             self.ui.working_folder_value.setText(self.working_dir)
 
-    def update_selection_plot(self):
-        # o_init = PeakFittingInitialization(parent=self)
-        # self.fitting_input_dictionary = o_init.fitting_input_dictionary()
+    # def update_selection_plot(self):
+    #     # o_init = PeakFittingInitialization(parent=self)
+    #     # self.fitting_input_dictionary = o_init.fitting_input_dictionary()
+    #
+    #     self.ui.profile.clear()
+    #     o_get = Get(parent=self)
+    #     x_axis, x_axis_label = o_get.x_axis()
+    #     max_value = self.ui.profile_of_bin_size_slider.maximum()
+    #     roi_selected = max_value - self.ui.profile_of_bin_size_slider.value()
+    #
+    #     y_axis = self.fitting_input_dictionary['rois'][roi_selected]['profile']
+    #
+    #     self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
+    #                                               self.shrinking_roi_rgb[1],
+    #                                               self.shrinking_roi_rgb[2]))
+    #     self.ui.profile.setLabel("bottom", x_axis_label)
+    #     self.ui.profile.setLabel("left", 'Mean transmission')
+    #
+    #     # full region
+    #     y_axis = self.fitting_input_dictionary['rois'][0]['profile']
+    #     self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
+    #                                               self.selection_roi_rgb[1],
+    #                                               self.selection_roi_rgb[2]))
 
-        self.ui.profile.clear()
-        o_get = Get(parent=self)
-        x_axis, x_axis_label = o_get.x_axis()
-        max_value = self.ui.profile_of_bin_size_slider.maximum()
-        roi_selected = max_value - self.ui.profile_of_bin_size_slider.value()
-
-        y_axis = self.fitting_input_dictionary['rois'][roi_selected]['profile']
-
-        self.ui.profile.plot(x_axis, y_axis, pen=(self.shrinking_roi_rgb[0],
-                                                  self.shrinking_roi_rgb[1],
-                                                  self.shrinking_roi_rgb[2]))
-        self.ui.profile.setLabel("bottom", x_axis_label)
-        self.ui.profile.setLabel("left", 'Mean transmission')
-
-        # full region
-        y_axis = self.fitting_input_dictionary['rois'][0]['profile']
-        self.ui.profile.plot(x_axis, y_axis, pen=(self.selection_roi_rgb[0],
-                                                  self.selection_roi_rgb[1],
-                                                  self.selection_roi_rgb[2]))
-
-    def update_profile_of_bin_slider_widget(self):
-        self.change_profile_of_bin_slider_signal()
-        fitting_input_dictionary = self.fitting_input_dictionary
-        dict_rois_imported = OrderedDict()
-        nbr_key = len(fitting_input_dictionary['rois'].keys())
-        for _index, _key in enumerate(fitting_input_dictionary['rois'].keys()):
-            dict_rois_imported[nbr_key - 1 - _index] = {'width': fitting_input_dictionary['rois'][_key]['width'],
-                                                        'height': fitting_input_dictionary['rois'][_key]['height']}
-        self.dict_rois_imported = dict_rois_imported
-        self.ui.profile_of_bin_size_slider.setRange(0, len(dict_rois_imported)-1)
-        # self.ui.profile_of_bin_size_slider.setMinimum(0)
-        # self.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
-        self.ui.profile_of_bin_size_slider.setSingleStep(1)
-        self.ui.profile_of_bin_size_slider.setValue(len(dict_rois_imported)-1)
-        self.update_profile_of_bin_slider_labels()
+    # def update_profile_of_bin_slider_widget(self):
+    #     self.change_profile_of_bin_slider_signal()
+    #     fitting_input_dictionary = self.fitting_input_dictionary
+    #     dict_rois_imported = OrderedDict()
+    #     nbr_key = len(fitting_input_dictionary['rois'].keys())
+    #     for _index, _key in enumerate(fitting_input_dictionary['rois'].keys()):
+    #         dict_rois_imported[nbr_key - 1 - _index] = {'width': fitting_input_dictionary['rois'][_key]['width'],
+    #                                                     'height': fitting_input_dictionary['rois'][_key]['height']}
+    #     self.dict_rois_imported = dict_rois_imported
+    #     self.ui.profile_of_bin_size_slider.setRange(0, len(dict_rois_imported)-1)
+    #     # self.ui.profile_of_bin_size_slider.setMinimum(0)
+    #     # self.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
+    #     self.ui.profile_of_bin_size_slider.setSingleStep(1)
+    #     self.ui.profile_of_bin_size_slider.setValue(len(dict_rois_imported)-1)
+    #     self.update_profile_of_bin_slider_labels()
 
     def update_profile_of_bin_slider_labels(self):
         slider_value = self.ui.profile_of_bin_size_slider.value()
@@ -1021,6 +890,12 @@ class Interface(QMainWindow):
     def march_dollase_advanced_mode_clicked(self):
         o_march = MarchDollase(parent=self)
         o_march.advanced_mode_clicked()
+
+    def march_dollase_item_to_plot_changed(self):
+        pass
+
+    def tab_algorithm_changed(self, tab_index):
+        pass
 
     def cancel_clicked(self):
         self.close()

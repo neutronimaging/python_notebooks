@@ -7,6 +7,7 @@ from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_f
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 from __code.bragg_edge.fitting_functions import kropff_high_tof, kropff_low_tof, kropff_bragg_peak_tof
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
+from __code.bragg_edge.bragg_edge_selection_tab import BraggEdgeSelectionTab
 
 
 class ImportHandler:
@@ -40,8 +41,11 @@ class ImportHandler:
 
             self.parent.disable_left_part_of_selection_tab()
             self.parent.ui.info_message_about_cyan.setVisible(False)
-            self.parent.update_profile_of_bin_slider_widget()
-            self.parent.update_selection_plot()
+
+            o_selection = BraggEdgeSelectionTab(parent=self.parent)
+            o_selection.update_profile_of_bin_slider_widget()
+            o_selection.update_selection_plot()
+
             self.parent.update_vertical_line_in_profile_plot()
 
             self.parent.ui.tabWidget.setTabEnabled(1, self.parent.is_fit_infos_loaded())

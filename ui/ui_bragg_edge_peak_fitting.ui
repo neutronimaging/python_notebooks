@@ -605,7 +605,7 @@
           </property>
           <widget class="QTabWidget" name="tab_algorithm">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab_3">
             <attribute name="title">
@@ -1551,7 +1551,7 @@
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_23">
                        <item>
-                        <widget class="QRadioButton" name="kropff_a0_radioButton_2">
+                        <widget class="QRadioButton" name="march_d_spacing">
                          <property name="text">
                           <string>d-spacing</string>
                          </property>
@@ -1561,42 +1561,42 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_2">
+                        <widget class="QRadioButton" name="march_sigma">
                          <property name="text">
                           <string>sigma</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_3">
+                        <widget class="QRadioButton" name="march_alpha">
                          <property name="text">
                           <string>alpha</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_4">
+                        <widget class="QRadioButton" name="march_a1">
                          <property name="text">
                           <string>A1</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_5">
+                        <widget class="QRadioButton" name="march_a2">
                          <property name="text">
                           <string>A2</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_7">
+                        <widget class="QRadioButton" name="march_a5">
                          <property name="text">
                           <string>A5</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QRadioButton" name="kropff_b0_radioButton_6">
+                        <widget class="QRadioButton" name="march_a6">
                          <property name="text">
                           <string>A6</string>
                          </property>
@@ -2458,6 +2458,134 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>march_d_spacing</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_item_to_plot_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>265</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>march_sigma</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_item_to_plot_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>216</x>
+     <y>271</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>223</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>march_alpha</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_item_to_plot_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>263</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>321</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>march_a1</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_item_to_plot_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>338</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>131</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>march_a2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_item_to_plot_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>390</x>
+     <y>267</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>93</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>march_a5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_item_to_plot_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>441</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>45</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>march_a6</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_item_to_plot_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>28</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tab_algorithm</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>tab_algorithm_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>351</x>
+     <y>118</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -2493,5 +2621,7 @@
   <slot>march_dollase_table_clicked()</slot>
   <slot>march_dollase_table_right_clicked()</slot>
   <slot>march_dollase_advanced_mode_clicked()</slot>
+  <slot>march_dollase_item_to_plot_changed()</slot>
+  <slot>tab_algorithm_changed()</slot>
  </slots>
 </ui>
