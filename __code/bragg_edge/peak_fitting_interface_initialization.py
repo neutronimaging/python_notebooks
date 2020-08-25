@@ -104,6 +104,9 @@ class Initialization:
 		self.parent.kropff_bragg_peak_plot = _matplotlib(parent=self.parent,
 		                                           widget=self.parent.ui.bragg_peak_widget)
 
+		self.parent.march_dollase_plot = _matplotlib(parent=self.parent,
+		                                             widget=self.parent.ui.march_dollase_graph_widget)
+
 	def pyqtgraph_fitting(self):
 		# fitting view
 		self.parent.ui.fitting = pg.PlotWidget(title="Fitting")

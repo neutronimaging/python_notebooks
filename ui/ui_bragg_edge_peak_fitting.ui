@@ -1250,7 +1250,7 @@
              <item>
               <widget class="QToolBox" name="toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_2">
                 <property name="geometry">
@@ -1475,8 +1475,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>513</width>
-                  <height>160</height>
+                  <width>611</width>
+                  <height>833</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1618,7 +1618,7 @@
                       </layout>
                      </item>
                      <item>
-                      <widget class="QWidget" name="high_widget_2" native="true">
+                      <widget class="QWidget" name="march_dollase_graph_widget" native="true">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                          <horstretch>0</horstretch>

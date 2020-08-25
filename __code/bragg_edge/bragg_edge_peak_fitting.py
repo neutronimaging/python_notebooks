@@ -129,6 +129,12 @@ class Interface(QMainWindow):
     march_dollase_fitting_initial_parameters = None
     march_dollase_fitting_history_table_default_new_row = None
 
+    # matplotlib canvas
+    kropff_high_plot = None
+    kropff_low_plot = None
+    kropff_bragg_peak_plot = None
+    march_dollase_plot = None
+
     def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
 
         if o_bragg:
