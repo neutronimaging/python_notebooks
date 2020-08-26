@@ -166,6 +166,23 @@ class Initialization:
 		self.parent.march_dollase_fitting_history_table_default_new_row = copy.deepcopy(
 				self.march_dollase_history_state[0])
 
+		column_names = [u'x\u2080; y\u2080; width; height',
+		                u'd_spacing', u'sigma', u'alpha',
+		                u'A\u2081', u'A\u2082',
+		                u'A\u2085', u'A\u2086',
+		                u'd_spacing_error', u'sigma_error', u'alpha_error',
+		                u'A\u2081_error',
+		                u'A\u2082_error',
+						u'A\u2085_error', u'A\u2086_error',
+		                ]
+		column_sizes = [150, 100, 100, 100, 100, 100, 100, 100,
+		                     100, 100, 100, 100, 100, 100, 100]
+		o_high = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
+		for _col_index, _col_name in enumerate(column_names):
+			o_high.insert_column(_col_index)
+		o_high.set_column_names(column_names=column_names)
+		o_high.set_column_sizes(column_sizes=column_sizes)
+
 		state_advanced_columns = not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
 		o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_user_input_table,
 		                         list_of_columns=[5, 6],

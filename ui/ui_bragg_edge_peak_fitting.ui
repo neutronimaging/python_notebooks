@@ -622,8 +622,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>356</width>
-                  <height>199</height>
+                  <width>727</width>
+                  <height>765</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -751,8 +751,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>174</width>
-                  <height>265</height>
+                  <width>727</width>
+                  <height>765</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -893,8 +893,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>192</width>
-                  <height>265</height>
+                  <width>727</width>
+                  <height>765</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1035,8 +1035,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>334</width>
-                  <height>338</height>
+                  <width>727</width>
+                  <height>765</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1254,8 +1254,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>398</width>
-                  <height>210</height>
+                  <width>727</width>
+                  <height>833</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1513,41 +1513,6 @@
                        <attribute name="verticalHeaderHighlightSections">
                         <bool>true</bool>
                        </attribute>
-                       <column>
-                        <property name="text">
-                         <string>d-spacing</string>
-                        </property>
-                       </column>
-                       <column>
-                        <property name="text">
-                         <string>sigma</string>
-                        </property>
-                       </column>
-                       <column>
-                        <property name="text">
-                         <string>alpha</string>
-                        </property>
-                       </column>
-                       <column>
-                        <property name="text">
-                         <string>A1</string>
-                        </property>
-                       </column>
-                       <column>
-                        <property name="text">
-                         <string>A2</string>
-                        </property>
-                       </column>
-                       <column>
-                        <property name="text">
-                         <string>A5</string>
-                        </property>
-                       </column>
-                       <column>
-                        <property name="text">
-                         <string>A6</string>
-                        </property>
-                       </column>
                       </widget>
                      </item>
                     </layout>

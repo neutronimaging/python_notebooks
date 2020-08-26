@@ -187,6 +187,9 @@ class MarchDollase:
 		o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_user_input_table,
 				                 list_of_columns=[5, 6],
 		                         state=hide_advanced)
+		o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_result_table,
+		                         list_of_columns=[6, 7, 13, 14],
+		                         state=hide_advanced)
 
 	def update_fitting_plot(self):
 		self.parent.ui.fitting.clear()
