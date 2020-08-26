@@ -171,6 +171,11 @@ class Initialization:
 		                         list_of_columns=[5, 6],
 		                         state=state_advanced_columns)
 
+		# table
+		self.parent.ui.march_dollase_user_input_table.verticalHeader().setVisible(True)
+		self.parent.ui.march_dollase_result_table.verticalHeader().setVisible(True)
+		self.parent.ui.march_dollase_result_table.horizontalHeader().setVisible(True)
+
 	def labels(self):
 		# labels
 		self.parent.ui.detector_offset_units.setText(u"\u03BCs")

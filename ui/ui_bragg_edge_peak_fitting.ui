@@ -622,8 +622,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>611</width>
-                  <height>765</height>
+                  <width>356</width>
+                  <height>199</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -751,8 +751,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>611</width>
-                  <height>765</height>
+                  <width>174</width>
+                  <height>265</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1035,8 +1035,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>611</width>
-                  <height>765</height>
+                  <width>334</width>
+                  <height>338</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1247,15 +1247,15 @@
              <item>
               <widget class="QToolBox" name="toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_2">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>611</width>
-                  <height>833</height>
+                  <width>398</width>
+                  <height>210</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1472,7 +1472,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>611</width>
+                  <width>727</width>
                   <height>833</height>
                  </rect>
                 </property>
@@ -1491,7 +1491,7 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_27">
                      <item>
-                      <widget class="QTableWidget" name="high_tof_tableWidget_2">
+                      <widget class="QTableWidget" name="march_dollase_result_table">
                        <property name="alternatingRowColors">
                         <bool>true</bool>
                        </property>
@@ -1501,6 +1501,18 @@
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
                        </property>
+                       <attribute name="horizontalHeaderVisible">
+                        <bool>false</bool>
+                       </attribute>
+                       <attribute name="horizontalHeaderCascadingSectionResizes">
+                        <bool>false</bool>
+                       </attribute>
+                       <attribute name="verticalHeaderVisible">
+                        <bool>false</bool>
+                       </attribute>
+                       <attribute name="verticalHeaderHighlightSections">
+                        <bool>true</bool>
+                       </attribute>
                        <column>
                         <property name="text">
                          <string>d-spacing</string>

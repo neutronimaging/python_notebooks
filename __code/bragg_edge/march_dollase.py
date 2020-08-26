@@ -1,4 +1,5 @@
 from qtpy import QtGui
+import numpy as np
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
@@ -10,6 +11,32 @@ class MarchDollase:
 	def __init__(self, parent=None):
 		self.parent = parent
 		self.table_ui = self.parent.ui.march_dollase_user_input_table
+		self.result_table_ui = self.parent.ui.march_dollase_result_table
+
+	def reset_table(self):
+		self.reset_result_table()
+
+	def reset_result_table(self):
+		"""remove all the rows of the table name specified, or all if is_all is True"""
+		o_table = TableHandler(table_ui=self.result_table_ui)
+		o_table.remove_all_rows()
+		self.fill_table_with_minimum_contain()
+
+	def fill_table_with_minimum_contain(self):
+		fitting_input_dictionary = self.parent.fitting_input_dictionary
+		rois = fitting_input_dictionary['rois']
+
+		o_table = TableHandler(table_ui=self.result_table_ui)
+		nbr_column = o_table.table_ui.columnCount()
+		other_column_name = ["N/A" for _ in np.arange(nbr_column)]
+		for _row, _roi in enumerate(rois.keys()):
+			_roi_key = rois[_roi]
+			list_col_name = "{}; {}; {}; {}".format(_roi_key['x0'],
+			                                        _roi_key['y0'],
+			                                        _roi_key['width'],
+			                                        _roi_key['height'])
+			col_name = [list_col_name] + other_column_name
+			o_table.insert_row(_row, col_name)
 
 	def table_clicked(self, row=None, column=None):
 		nbr_row = self.table_ui.rowCount()

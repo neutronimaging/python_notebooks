@@ -111,7 +111,21 @@ class Interface(QMainWindow):
     #                                                                                'tau_error': None,
     #                                                                                'sigma_error': None},
     #                                                                 },
-    #                                                      'TBD' : {},
+    #                                                      'march_dollase' : {'d_spacing': None,
+    #                                                                         'd_spacing_error': None,
+    #                                                                         'alpha': None,
+    #                                                                         'alpha_error': None,
+    #                                                                         'sigma': None,
+    #                                                                         'sigma_error': None,
+    #                                                                         'a1': None,
+    #                                                                         'a1_error': None,
+    #                                                                         'a2': None,
+    #                                                                         'a2_error': None,
+    #                                                                         'a5': None,
+    #                                                                         'a5_error': None,
+    #                                                                         'a6': None,
+    #                                                                         'a6_error': None,
+    #                                                                         },
     #                                                     },
     #                                          },
     #                                      },
@@ -352,6 +366,14 @@ class Interface(QMainWindow):
 
         o_kropff = Kropff(parent=self)
         o_kropff.reset_all_table()
+
+        o_march = MarchDollase(parent=self)
+        o_march.reset_table()
+
+
+
+
+
 
         if initialize_region:
             self.initialize_default_peak_regions()
