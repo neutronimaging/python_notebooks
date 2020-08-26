@@ -464,7 +464,22 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                           r"sigma:(?P<sigma>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"tofhkl_error:(?P<tofhkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"tau_error:(?P<tau_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"sigma_error:(?P<sigma_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+)$"
+                          r"sigma_error:(?P<sigma_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"march_dollase: " \
+                          r"d_spacing:(?P<d_spacing>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"sigma:(?P<sigma1>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"alpha:(?P<alpha>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a1:(?P<a1>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a2:(?P<a2>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a5:(?P<a5>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a6:(?P<a6>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"d_spacing_error:(?P<d_spacing_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"sigma_error:(?P<sigma1_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"alpha_error:(?P<alpha_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a1_error:(?P<a1_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a2_error:(?P<a2_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a5_error:(?P<a5_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"a6_error:(?P<a6_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+)$"
 
                 m = re.search(regular, line.strip())
                 if m:
@@ -486,7 +501,26 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                                                                                    'tofhkl_error': m.group(
                                                                                            'tofhkl_error'),
                                                                                    'tau_error': m.group('tau_error'),
-                                                                                   'sigma_error': m.group('sigma_error')},
+                                                                                   'sigma_error': m.group(
+                                                                                           'sigma_error'),
+                                                                                   },
+                                                                        'march_dollase': {
+                                                                            'd_spacing': m.group('d_spacing'),
+                                                                            'sigma': m.group('sigma1'),
+                                                                            'alpha': m.group('alpha'),
+                                                                            'a1': m.group('a1'),
+                                                                            'a2': m.group('a2'),
+                                                                            'a5': m.group('a5'),
+                                                                            'a6': m.group('a6'),
+                                                                            'd_spacing_error': m.group(
+                                                                                    'd_spacing_error'),
+                                                                            'sigma_error': m.group('sigma1_error'),
+                                                                            'alpha_error': m.group('alpha_error'),
+                                                                            'a1_error': m.group('a1_error'),
+                                                                            'a2_error': m.group('a2_error'),
+                                                                            'a5_error': m.group('a5_error'),
+                                                                            'a6_error': m.group('a6_error'),
+                                                                             }
                                                                         }
                     col_label.append(m.group("column_index"))
                 line_number += 1

@@ -3,7 +3,7 @@ from qtpy.QtWidgets import QFileDialog
 import numpy as np
 from collections import OrderedDict
 
-from __code.file_handler import make_ascii_file, read_bragg_edge_fitting_ascii_format
+from __code.file_handler import read_bragg_edge_fitting_ascii_format
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 from __code.bragg_edge.fitting_functions import kropff_high_tof, kropff_low_tof, kropff_bragg_peak_tof
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
@@ -23,9 +23,9 @@ class ImportHandler:
                                                  filter="ASCII (*.txt)")
 
         if ascii_file[0]:
+
             self.parent.full_reset_of_ui()
             self.parent.block_table_ui(True)
-
             self.parent.is_file_imported = True
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
             self.parent.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
@@ -190,6 +190,36 @@ class ImportHandler:
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['yaxis_fitted']\
                 = \
                 yaxis_fitted
+
+            # March_dollase
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['d_spacing'] = \
+                columns_roi[str_col]['march_dollase']['d_spacing']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['sigma'] = \
+                columns_roi[str_col]['march_dollase']['sigma']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['alpha'] = \
+                columns_roi[str_col]['march_dollase']['alpha']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a1'] = \
+                columns_roi[str_col]['march_dollase']['a1']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a2'] = \
+                columns_roi[str_col]['march_dollase']['a2']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a5'] = \
+                columns_roi[str_col]['march_dollase']['a5']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a6'] = \
+                columns_roi[str_col]['march_dollase']['a6']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['d_spacing_error'] = \
+                columns_roi[str_col]['march_dollase']['d_spacing_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['sigma_error'] = \
+                columns_roi[str_col]['march_dollase']['sigma_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['alpha_error'] = \
+                columns_roi[str_col]['march_dollase']['alpha_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a1_error'] = \
+                columns_roi[str_col]['march_dollase']['a1_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a2_error'] = \
+                columns_roi[str_col]['march_dollase']['a2_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a5_error'] = \
+                columns_roi[str_col]['march_dollase']['a5_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['march_dollase']['a6_error'] = \
+                columns_roi[str_col]['march_dollase']['a6_error']
 
         xaxis_dictionary = {'index': (index_array, self.parent.xaxis_label['index']),
                             'lambda': (lambda_array, self.parent.xaxis_label['lambda']),

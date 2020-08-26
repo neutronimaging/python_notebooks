@@ -543,10 +543,14 @@ class Interface(QMainWindow):
         o_table = TableHandler(table_ui=self.ui.bragg_edge_tableWidget)
         o_table.remove_all_rows()
 
+        o_table = TableHandler(table_ui=self.ui.march_dollase_result_table)
+        o_table.remove_all_rows()
+
     def block_table_ui(self, flag):
         list_ui = [self.ui.high_tof_tableWidget,
                    self.ui.low_tof_tableWidget,
-                   self.ui.bragg_edge_tableWidget]
+                   self.ui.bragg_edge_tableWidget,
+                   self.ui.march_dollase_result_table]
         for _ui in list_ui:
             _ui.blockSignals(flag)
 

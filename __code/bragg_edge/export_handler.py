@@ -209,7 +209,7 @@ class ExportHandler:
 			                " tofhkl:{}, tau:{}, sigma:{},"
 			                " tofhkl_error:{}, tau_error:{}, sigma_error:{},"
 			                " march_dollase: d_spacing:{}, sigma:{}, alpha:{},"
-			                " a1:{}, a2:{}, a5:{}, a6:{}, "
+			                " a1:{}, a2:{}, a5:{}, a6:{},"
 			                " d_spacing_error:{}, sigma_error:{}, alpha_error:{},"
 			                " a1_error:{}, a2_error:{}, a5_error:{}, a6_error:{}".format(_key + 3,
 			                                                                            x0, y0,
