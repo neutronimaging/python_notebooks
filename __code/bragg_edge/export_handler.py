@@ -64,6 +64,7 @@ class ExportHandler:
 		distance_detector_sample = str(self.parent.ui.distance_detector_sample.text())
 		detector_offset = str(self.parent.ui.detector_offset.text())
 		kropff_fitting_values = self.collect_all_kropff_fitting_values()
+		march_dollase_fitting_values = self.collect_all_march_dollase_fitting_values()
 
 		dict_regions = o_get.all_russian_doll_region_full_infos()
 		metadata = ExportHandler.make_metadata(base_folder=base_folder,
@@ -71,7 +72,8 @@ class ExportHandler:
 		                                       dict_regions=dict_regions,
 		                                       distance_detector_sample=distance_detector_sample,
 		                                       detector_offset=detector_offset,
-		                                       kropff_fitting_values=kropff_fitting_values)
+		                                       kropff_fitting_values=kropff_fitting_values,
+		                                       march_dollase_fitting_values=march_dollase_fitting_values)
 		self.add_fitting_infos_to_metadata(metadata)
 
 		metadata.append("#")
@@ -96,6 +98,30 @@ class ExportHandler:
 			                                                              self.parent.kropff_fitting_range[_key][0],
 			                                                              self.parent.kropff_fitting_range[_key][1]))
 
+	def collect_all_march_dollase_fitting_values(self):
+		march_fitting_values = OrderedDict()
+		fitting_input_dictionary = self.parent.fitting_input_dictionary
+
+		for _row in fitting_input_dictionary['rois'].keys():
+			_entry = fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']
+
+			march_fitting_values[_row] = {'d_spacing': _entry['d_spacing'],
+			                              'sigma': _entry['sigma'],
+			                              'alpha': _entry['alpha'],
+			                              'a1': _entry['a1'],
+			                              'a2': _entry['a2'],
+			                              'a5': _entry['a5'],
+			                              'a6': _entry['a6'],
+			                              'd_spacing_error': _entry['d_spacing_error'],
+			                              'sigma_error': _entry['sigma_error'],
+			                              'alpha_error': _entry['alpha_error'],
+			                              'a1_error': _entry['a1_error'],
+			                              'a2_error': _entry['a2_error'],
+			                              'a5_error': _entry['a5_error'],
+			                              'a6_error': _entry['a6_error'],
+			                               }
+		return march_fitting_values
+
 	def collect_all_kropff_fitting_values(self):
 		kropff_fitting_values = OrderedDict()
 
@@ -119,15 +145,20 @@ class ExportHandler:
 			                               'tau': _entry_bragg_peak['tau'],
 			                               'sigma': _entry_bragg_peak['sigma'],
 			                               'tofhkl_error': _entry_bragg_peak['tofhkl_error'],
-			                               'tau_error'       : _entry_bragg_peak['tau_error'],
-			                               'sigma_error'     : _entry_bragg_peak['sigma_error'],
+			                               'tau_error': _entry_bragg_peak['tau_error'],
+			                               'sigma_error': _entry_bragg_peak['sigma_error'],
 			                               }
 		return kropff_fitting_values
 
 	@staticmethod
-	def make_metadata(base_folder=None, fitting_peak_range=None, dict_regions=None,
-	                  distance_detector_sample="", detector_offset="",
-	                  kropff_fitting_values=None):
+	def make_metadata(base_folder=None,
+	                  fitting_peak_range=None,
+	                  dict_regions=None,
+	                  distance_detector_sample="",
+	                  detector_offset="",
+	                  kropff_fitting_values=None,
+	                  march_dollase_fitting_values=None):
+
 		metadata = ["#base folder: {}".format(base_folder)]
 		metadata.append("#fitting peak range in file index: [{}, {}]".format(fitting_peak_range[0],
 		                                                                     fitting_peak_range[1]))
@@ -139,6 +170,7 @@ class ExportHandler:
 			y0 = _entry['y0']
 			width = _entry['width']
 			height = _entry['height']
+
 			_entry_kropff = kropff_fitting_values[_row]
 			a0 = _entry_kropff['a0']
 			b0 = _entry_kropff['b0']
@@ -155,21 +187,49 @@ class ExportHandler:
 			tau_error = _entry_kropff['tau_error']
 			sigma_error = _entry_kropff['sigma_error']
 
+			_entry_march = march_dollase_fitting_values[_row]
+			d_spacing = _entry_march['d_spacing']
+			sigma1 = _entry_march['sigma']
+			alpha = _entry_march['alpha']
+			a1 = _entry_march['a1']
+			a2 = _entry_march['a2']
+			a5 = _entry_march['a5']
+			a6 = _entry_march['a6']
+			d_spacing_error = _entry_march['d_spacing_error']
+			sigma1_error = _entry_march['sigma_error']
+			alpha_error = _entry_march['alpha_error']
+			a1_error = _entry_march['a1_error']
+			a2_error = _entry_march['a2_error']
+			a5_error = _entry_march['a5_error']
+			a6_error = _entry_march['a6_error']
+
 			metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{},"
 			                " kropff: a0:{}, b0:{}, a0_error:{}, b0_error:{},"
 			                " ahkl:{}, bhkl:{}, ahkl_error:{}, bhkl_error:{},"
 			                " tofhkl:{}, tau:{}, sigma:{},"
-			                " tofhkl_error:{}, tau_error:{}, sigma_error:{}".format(_key + 3,
-			                                                                           x0, y0,
-			                                                                           width, height,
-			                                                                           a0, b0, a0_error, b0_error,
-			                                                                           ahkl, bhkl,
-			                                                                           ahkl_error,
-			                                                                           bhkl_error,
-			                                                                           tofhkl, tau, sigma,
-			                                                                           tofhkl_error,
-			                                                                           tau_error,
-			                                                                           sigma_error))
+			                " tofhkl_error:{}, tau_error:{}, sigma_error:{},"
+			                " march_dollase: d_spacing:{}, sigma:{}, alpha:{},"
+			                " a1:{}, a2:{}, a5:{}, a6:{}, "
+			                " d_spacing_error:{}, sigma_error:{}, alpha_error:{},"
+			                " a1_error:{}, a2_error:{}, a5_error:{}, a6_error:{}".format(_key + 3,
+			                                                                            x0, y0,
+			                                                                            width, height,
+			                                                                            a0, b0, a0_error, b0_error,
+			                                                                            ahkl, bhkl,
+			                                                                            ahkl_error,
+			                                                                            bhkl_error,
+			                                                                            tofhkl, tau, sigma,
+			                                                                            tofhkl_error,
+			                                                                            tau_error,
+			                                                                            sigma_error,
+			                                                                            d_spacing,
+			                                                                            sigma1, alpha,
+			                                                                            a1, a2, a5, a6,
+			                                                                            d_spacing_error,
+			                                                                            sigma1_error, alpha_error,
+			                                                                            a1_error, a2_error, a5_error,
+			                                                                            a6_error))
+
 		return metadata
 
 	@staticmethod
