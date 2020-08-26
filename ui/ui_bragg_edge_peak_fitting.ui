@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -605,7 +605,7 @@
           </property>
           <widget class="QTabWidget" name="tab_algorithm">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tab_3">
             <attribute name="title">
@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>3</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
@@ -1247,7 +1247,7 @@
              <item>
               <widget class="QToolBox" name="toolBox">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_2">
                 <property name="geometry">
@@ -1483,7 +1483,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_5">
                    <property name="currentIndex">
-                    <number>1</number>
+                    <number>0</number>
                    </property>
                    <widget class="QWidget" name="tab_11">
                     <attribute name="title">
@@ -2586,6 +2586,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>march_dollase_user_input_fit_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_fit_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>522</x>
+     <y>979</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>974</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -2623,5 +2639,6 @@
   <slot>march_dollase_advanced_mode_clicked()</slot>
   <slot>march_dollase_item_to_plot_changed()</slot>
   <slot>tab_algorithm_changed()</slot>
+  <slot>march_dollase_fit_button_clicked()</slot>
  </slots>
 </ui>

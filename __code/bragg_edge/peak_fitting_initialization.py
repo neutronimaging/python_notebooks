@@ -15,6 +15,21 @@ KROPFF_BRAGG_PEAK = {'tofhkl': None,
                      'tau_error': None,
                      'sigma': None,
                      'sigma_error': None}
+MARCHE_DOLLASE = {'d_spacing': None,
+                  'd_spacing_error': None,
+                  'alpha': None,
+                  'alpha_error': None,
+                  'sigma': None,
+                  'sigma_error': None,
+                  'a1': None,
+                  'a1_error': None,
+                  'a2': None,
+                  'a2_error': None,
+                  'a5': None,
+                  'a5_error': None,
+                  'a6': None,
+                  'a6_error': None,
+                  }
 
 
 class PeakFittingInitialization:
@@ -36,6 +51,7 @@ class PeakFittingInitialization:
 			                                    'low': deepcopy(KROPFF_LOW),
 			                                    'bragg_peak': deepcopy(KROPFF_BRAGG_PEAK),
 			                                    },
+			                         'march_dollase': deepcopy(MARCHE_DOLLASE),
 			                        },
 			             }
 			fitting_input_dictionary['rois'][_roi_index] = deepcopy(_roi_dict)

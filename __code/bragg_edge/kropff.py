@@ -6,7 +6,7 @@ import pyqtgraph as pg
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
-from __code.bragg_edge.fitting_job_handler import FittingJobHandler
+from __code.bragg_edge.kropff_fitting_job_handler import KropffFittingJobHandler
 from __code.file_handler import make_ascii_file_from_2dim_array
 from __code.bragg_edge.get import Get
 from __code._utilities.dictionary import key_path_exists_in_dictionary
@@ -147,7 +147,7 @@ class Kropff:
 				file_name = "kropff_bragg_peak_profile_{}.txt".format(name_of_row_formatted)
 				full_file_name = str(Path(_export_folder) / Path(file_name))
 
-				o_fit = FittingJobHandler(parent=self.parent)
+				o_fit = KropffFittingJobHandler(parent=self.parent)
 				o_fit.prepare(kropff_tooldbox='bragg_peak')
 
 				x_axis = o_fit.xaxis_to_fit

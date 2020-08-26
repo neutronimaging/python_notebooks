@@ -6,7 +6,7 @@ from __code.bragg_edge.fitting_functions import kropff_high_tof, kropff_low_tof,
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
-class FittingJobHandler:
+class KropffFittingJobHandler:
 	"""https://lmfit.github.io/lmfit-py/examples/example_Model_interface.html"""
 
 	def __init__(self, parent=None):

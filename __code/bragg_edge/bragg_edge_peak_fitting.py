@@ -6,7 +6,6 @@ from IPython.display import display
 import pyqtgraph as pg
 from qtpy.QtWidgets import QMainWindow
 from qtpy import QtGui
-from collections import OrderedDict
 
 from neutronbraggedge.experiment_handler import *
 
@@ -16,7 +15,8 @@ from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code import load_ui
 from __code.utilities import find_nearest_index
 from __code.table_handler import TableHandler
-from __code.bragg_edge.fitting_job_handler import FittingJobHandler
+from __code.bragg_edge.kropff_fitting_job_handler import KropffFittingJobHandler
+from __code.bragg_edge.march_dollase_fitting_job_handler import MarchDollaseFittingJobHandler
 from __code.bragg_edge.kropff import Kropff
 from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
@@ -587,7 +587,7 @@ class Interface(QMainWindow):
 
     def kropff_fit_high_lambda_region_clicked(self):
         self.switch_fitting_axis_to('tof')
-        o_fit = FittingJobHandler(parent=self)
+        o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='high')
         o_fit.run_kropff_high_tof(update_table_ui=True)
         self.update_fitting_plot()
@@ -595,7 +595,7 @@ class Interface(QMainWindow):
 
     def kropff_fit_low_lambda_region_clicked(self):
         self.switch_fitting_axis_to('tof')
-        o_fit = FittingJobHandler(parent=self)
+        o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='low')
         o_fit.run_kropff_low_tof(update_table_ui=True)
         self.update_fitting_plot()
@@ -606,7 +606,7 @@ class Interface(QMainWindow):
 
     def kropff_fit_bragg_peak_region_of_selected_rows(self, list_row_to_fit=None):
         self.switch_fitting_axis_to('tof')
-        o_fit = FittingJobHandler(parent=self)
+        o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='bragg_peak')
         o_fit.run_bragg_peak(update_table_ui=True, list_row_to_fit=list_row_to_fit)
         self.update_fitting_plot()
@@ -703,6 +703,10 @@ class Interface(QMainWindow):
 
     def tab_algorithm_changed(self, tab_index):
         self.update_fitting_plot()
+
+    def march_dollase_fit_button_clicked(self):
+        o_fit = MarchDollaseFittingJobHandler(parent=self)
+        o_fit.prepare()
 
     def cancel_clicked(self):
         self.close()

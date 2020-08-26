@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import special
+import math
 
 
 def kropff_high_tof(tof, a0, b0):
@@ -32,6 +33,7 @@ def kropff_low_tof(tof, a0, b0, ahkl, bhkl):
 	exp_expression_2 = np.exp(-(ahkl + bhkl * tof))
 	return exp_expression_1 * exp_expression_2
 
+
 def kropff_bragg_peak_tof(tof, a0, b0, ahkl, bhkl, tofhkl, sigma, tau):
 	"""Equation 4.3 and 4.4 found in Development and application of Bragg edge neutron transmission
 	imaging on the IMAT beamline. Thesis by Ranggi Sahmura Ramadhan. June 2019
@@ -59,3 +61,27 @@ def kropff_bragg_peak_tof(tof, a0, b0, ahkl, bhkl, tofhkl, sigma, tau):
 	expression_3 = (1 - np.exp(-(ahkl + bhkl * tof)) * B(tofhkl, sigma, tau, tof))
 
 	return exp_expression_1 * (exp_expression_2 + expression_3)
+
+
+def march_dollase_basic_fit(t, d_spacing, alpha, sigma, a1, a2):
+    t0 = 2 * d_spacing
+    term2 = special.erfc(-((t - t0) / (sigma * math.sqrt(2))) + sigma / alpha)
+    term1 = np.exp((t - t0) / alpha + (sigma * sigma) / (2 * alpha * alpha))
+    term0 = special.erfc(-((t - t0) / (sigma * math.sqrt(2))))
+
+    y = a1 + a2 * (term0 - (term1 * term2))
+
+    return y
+
+
+def march_dollase_advanced_fit(t, d_spacing, alpha, sigma, a1, a2, a5, a6):
+    t0 = 2 * d_spacing
+    term0 = a2 * (t - a6)
+    term1 = ((a5 - a2) / 2) * (t - a6)
+    term3 = special.erfc(-((t - t0) / (sigma * math.sqrt(2))))
+    term4 = np.exp(-((t - t0) / alpha) + ((sigma * sigma) / (2 * alpha * alpha)))
+    term5 = special.erfc(-((t - t0) / (sigma * math.sqrt(2))) + sigma / alpha)
+
+    y = a1 + term0 + term1 * (term3 - term4 * term5)
+
+    return y
