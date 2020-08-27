@@ -370,15 +370,11 @@ class Interface(QMainWindow):
         o_march = MarchDollase(parent=self)
         o_march.reset_table()
 
-
-
-
-
-
         if initialize_region:
             self.initialize_default_peak_regions()
         else:
             o_kropff.fill_table_with_fitting_information()
+
         self.ui.tabWidget.setTabEnabled(1, True)
         self.ui.actionExport.setEnabled(True)
         self.select_first_row_of_all_fitting_table()
@@ -733,6 +729,9 @@ class Interface(QMainWindow):
     def march_dollase_fit_button_clicked(self):
         o_fit = MarchDollaseFittingJobHandler(parent=self)
         o_fit.prepare()
+
+    def march_dollase_result_table_clicked(self):
+        self.update_fitting_plot()
 
     def cancel_clicked(self):
         self.close()

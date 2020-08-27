@@ -36,7 +36,7 @@ class ImportHandler:
             self.parent.lambda_array = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
             self.parent.index_array = self.parent.fitting_input_dictionary['xaxis']['index'][0]
 
-            self.parent.ui.statusbar.showMessage("{} has been imported!".format(ascii_file), 10000)  # 10s
+            self.parent.ui.statusbar.showMessage("{} has been imported!".format(ascii_file[0]), 10000)  # 10s
             self.parent.ui.statusbar.setStyleSheet("color: green")
 
             self.parent.disable_left_part_of_selection_tab()

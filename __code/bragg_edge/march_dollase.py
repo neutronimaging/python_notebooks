@@ -203,6 +203,12 @@ class MarchDollase:
 		xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
 		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
 		xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+
+		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
+		list_row_selected = o_table.get_rows_of_table_selected()
+
+		print(f"list_row_selected: {list_row_selected}")
+
 		selected_roi = self.parent.fitting_input_dictionary['rois'][0]
 		yaxis = selected_roi['profile']
 		yaxis = yaxis[left_xaxis_index: right_xaxis_index]
