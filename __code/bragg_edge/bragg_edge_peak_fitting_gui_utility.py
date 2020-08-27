@@ -151,6 +151,8 @@ class GuiUtility:
 
 				if _row == 0:
 					_input = QLineEdit()
+					_input.returnPressed.connect(lambda column=_col:
+					                             self.parent.march_dollase_table_init_value_changed(column=column))
 					_input.setText(str(list_initial_parameters[_col]))
 					verti_layout.addWidget(_input)
 					_input.setVisible(not _state_col)

@@ -706,6 +706,12 @@ class Interface(QMainWindow):
         print("new history init")
         print(self.march_dollase_fitting_initial_parameters)
 
+    def march_dollase_table_init_value_changed(self, column):
+        o_march = MarchDollase(parent=self)
+        o_march.save_table_history_and_initial_parameters()
+        print("new history init")
+        print(self.march_dollase_fitting_initial_parameters)
+
     def march_dollase_table_clicked(self, row, column):
         o_march = MarchDollase(parent=self)
         o_march.table_clicked(row=row, column=column)
