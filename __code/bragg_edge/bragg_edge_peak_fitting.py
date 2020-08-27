@@ -733,6 +733,13 @@ class Interface(QMainWindow):
     def march_dollase_result_table_clicked(self):
         self.update_fitting_plot()
 
+    def march_dollase_result_selection_mode_clicked(self):
+        if self.ui.march_dollase_result_single_selection.isChecked():
+            self.ui.march_dollase_result_table.setSelectionMode(1)
+        else:
+            self.ui.march_dollase_result_table.setSelectionMode(2)
+        self.update_fitting_plot()
+
     def cancel_clicked(self):
         self.close()
 

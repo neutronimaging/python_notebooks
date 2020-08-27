@@ -207,16 +207,18 @@ class MarchDollase:
 		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
 		list_row_selected = o_table.get_rows_of_table_selected()
 
-		print(f"list_row_selected: {list_row_selected}")
+		for row_selected in list_row_selected:
 
-		selected_roi = self.parent.fitting_input_dictionary['rois'][0]
-		yaxis = selected_roi['profile']
-		yaxis = yaxis[left_xaxis_index: right_xaxis_index]
-		self.parent.ui.fitting.plot(xaxis, yaxis,
-		                            pen=(self.parent.selection_roi_rgb[0],
-		                                 self.parent.selection_roi_rgb[1],
-		                                 self.parent.selection_roi_rgb[2]),
-		                            symbol='o')
+			selected_roi = self.parent.fitting_input_dictionary['rois'][row_selected]
+			yaxis = selected_roi['profile']
+			yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+			self.parent.ui.fitting.plot(xaxis, yaxis,
+			                            pen=(self.parent.selection_roi_rgb[0],
+			                                 self.parent.selection_roi_rgb[1],
+			                                 self.parent.selection_roi_rgb[2]),
+			                            symbol='o')
+			self.parent.ui.fitting.setLabel("bottom", xaxis_label)
+			self.parent.ui.fitting.setLabel("left", "Average transmission")
 
 
 

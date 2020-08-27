@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>1</number>
+                <number>3</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
@@ -1491,6 +1491,45 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_27">
                      <item>
+                      <widget class="QGroupBox" name="groupBox_8">
+                       <property name="title">
+                        <string>Selection</string>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_19">
+                        <item>
+                         <widget class="QRadioButton" name="march_dollase_result_single_selection">
+                          <property name="text">
+                           <string>Single</string>
+                          </property>
+                          <property name="checked">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QRadioButton" name="march_dollase_result_multi_selection">
+                          <property name="text">
+                           <string>Multi</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="horizontalSpacer_22">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QTableWidget" name="march_dollase_result_table">
                        <property name="alternatingRowColors">
                         <bool>true</bool>
@@ -2154,8 +2193,8 @@
    <slot>update_kropff_high_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>392</y>
+     <x>112</x>
+     <y>362</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -2170,8 +2209,8 @@
    <slot>update_kropff_high_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>175</x>
-     <y>392</y>
+     <x>141</x>
+     <y>362</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2186,8 +2225,8 @@
    <slot>update_kropff_low_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>152</x>
-     <y>426</y>
+     <x>112</x>
+     <y>396</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -2202,8 +2241,8 @@
    <slot>update_kropff_low_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>426</y>
+     <x>141</x>
+     <y>396</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2218,8 +2257,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>139</x>
-     <y>461</y>
+     <x>102</x>
+     <y>431</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2234,8 +2273,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>461</y>
+     <x>122</x>
+     <y>431</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2250,8 +2289,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>461</y>
+     <x>141</x>
+     <y>431</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2458,8 +2497,8 @@
    <slot>march_dollase_item_to_plot_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>287</y>
+     <x>250</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2474,8 +2513,8 @@
    <slot>march_dollase_item_to_plot_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>287</y>
+     <x>318</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2490,8 +2529,8 @@
    <slot>march_dollase_item_to_plot_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>287</y>
+     <x>368</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2506,8 +2545,8 @@
    <slot>march_dollase_item_to_plot_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>287</y>
+     <x>420</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2522,8 +2561,8 @@
    <slot>march_dollase_item_to_plot_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>287</y>
+     <x>472</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -2538,8 +2577,8 @@
    <slot>march_dollase_item_to_plot_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>287</y>
+     <x>524</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2595,6 +2634,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>march_dollase_result_single_selection</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_result_selection_mode_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1414</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>march_dollase_result_multi_selection</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_result_selection_mode_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>211</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1414</x>
+     <y>378</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -2634,5 +2705,6 @@
   <slot>tab_algorithm_changed()</slot>
   <slot>march_dollase_fit_button_clicked()</slot>
   <slot>march_dollase_result_table_clicked()</slot>
+  <slot>march_dollase_result_selection_mode_clicked()</slot>
  </slots>
 </ui>

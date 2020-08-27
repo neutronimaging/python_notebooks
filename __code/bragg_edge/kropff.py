@@ -168,7 +168,7 @@ class Kropff:
 				metadata.append("# ahkl: {}".format(ahkl))
 				metadata.append("# bhkl: {}".format(bhkl))
 				metadata.append("#")
-				metadata.append("# tof (micros), average transimission")
+				metadata.append("# tof (micros), average transmission")
 
 				make_ascii_file_from_2dim_array(metadata=metadata,
 				                                col1=x_axis,
