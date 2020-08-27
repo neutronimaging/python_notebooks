@@ -85,6 +85,9 @@ class Interface(QMainWindow):
                             'bragg_peak': [None, None]}
     fitting_peak_ui = None  # vertical line in fitting view (tab 2)
 
+    # x0, y0, x1, y1, width, height
+    roi_dimension_from_config_file = [None, None, None, None, None, None]
+
     # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
     #                                       'lambda': ([], 'lambda (Angstroms)'),
     #                                       'tof': ([], 'TOF (micros)')},
@@ -703,14 +706,10 @@ class Interface(QMainWindow):
             _textedit.setVisible(not state)
         o_march = MarchDollase(parent=self)
         o_march.save_table_history_and_initial_parameters()
-        print("new history init")
-        print(self.march_dollase_fitting_initial_parameters)
 
     def march_dollase_table_init_value_changed(self, column):
         o_march = MarchDollase(parent=self)
         o_march.save_table_history_and_initial_parameters()
-        print("new history init")
-        print(self.march_dollase_fitting_initial_parameters)
 
     def march_dollase_table_clicked(self, row, column):
         o_march = MarchDollase(parent=self)

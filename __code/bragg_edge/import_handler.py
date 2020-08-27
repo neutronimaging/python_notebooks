@@ -28,6 +28,7 @@ class ImportHandler:
             self.parent.block_table_ui(True)
             self.parent.is_file_imported = True
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
+            self.save_initial_roi_dimension_from_config_file(result_of_import['metadata']['columns']['3'])
             self.parent.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
             self.parent.ui.distance_detector_sample.setText(result_of_import['metadata']['distance_detector_sample'])
             self.parent.ui.detector_offset.setText(result_of_import['metadata']['detector_offset'])
@@ -60,6 +61,14 @@ class ImportHandler:
 
             o_gui = GuiUtility(parent=self.parent)
             o_gui.check_status_of_kropff_fitting_buttons()
+
+    def save_initial_roi_dimension_from_config_file(self, column_3_dict):
+        """column_3_dict = {'x0': value, 'y0': value, 'width': value, 'height': value}"""
+        self.parent.roi_dimension_from_config_file = [column_3_dict['x0'],
+                                                      column_3_dict['y0'],
+                                                      None, None,
+                                                      column_3_dict['width'],
+                                                      column_3_dict['height']]
 
     def create_fitting_input_dictionary_from_imported_ascii_file(self, result_of_import):
         metadata = result_of_import['metadata']

@@ -90,6 +90,9 @@ class Get:
 			width = np.int(x1 - x0)
 			height = np.int(y1 - y0)
 
+		else:
+			x0, y0, x1, y1, width, height = self.parent.roi_dimension_from_config_file
+
 		return [x0, y0, x1, y1, width, height]
 
 	def profile_of_roi(self, x0=None, y0=None, x1=None, y1=None, width=None, height=None):
