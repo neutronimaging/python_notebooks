@@ -370,6 +370,7 @@ class Interface(QMainWindow):
         o_march = MarchDollase(parent=self)
         o_march.reset_table()
 
+
         if initialize_region:
             self.initialize_default_peak_regions()
         else:
