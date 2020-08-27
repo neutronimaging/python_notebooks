@@ -220,5 +220,27 @@ class MarchDollase:
 			self.parent.ui.fitting.setLabel("bottom", xaxis_label)
 			self.parent.ui.fitting.setLabel("left", "Average transmission")
 
+	def save_table_history_and_initial_parameters(self):
+		march_dollase_fitting_history_table = list()
+		march_dollase_fitting_initial_parameters = []
+		nbr_row = self.table_ui.rowCount()
+		nbr_column = self.table_ui.columnCount()
+		for _row in np.arange(nbr_row):
+			_row_history = []
+			for _col in np.arange(nbr_column):
+				_list_widget = self.table_ui.cellWidget(_row, _col).children()
 
+				_check_box = _list_widget[1].children()[1]
+				_flag = False
+				if _check_box.isChecked():
+					_flag = True
+				_row_history.append(_flag)
 
+				if _row == 0:
+					_text = _list_widget[-1].text()
+					march_dollase_fitting_initial_parameters.append(_text)
+
+			march_dollase_fitting_history_table.append(_row_history)
+
+		self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+		self.parent.march_dollase_fitting_initial_parameters = march_dollase_fitting_initial_parameters

@@ -177,11 +177,11 @@ class Initialization:
 		                ]
 		column_sizes = [150, 100, 100, 100, 100, 100, 100, 100,
 		                     100, 100, 100, 100, 100, 100, 100]
-		o_high = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
+		o_march = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
 		for _col_index, _col_name in enumerate(column_names):
-			o_high.insert_column(_col_index)
-		o_high.set_column_names(column_names=column_names)
-		o_high.set_column_sizes(column_sizes=column_sizes)
+			o_march.insert_column(_col_index)
+		o_march.set_column_names(column_names=column_names)
+		o_march.set_column_sizes(column_sizes=column_sizes)
 
 		state_advanced_columns = not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
 		o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_user_input_table,

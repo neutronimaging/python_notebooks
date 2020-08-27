@@ -701,6 +701,10 @@ class Interface(QMainWindow):
         if row == 0:
             _textedit = self.ui.march_dollase_user_input_table.cellWidget(row, column).children()[-1]
             _textedit.setVisible(not state)
+        o_march = MarchDollase(parent=self)
+        o_march.save_table_history_and_initial_parameters()
+        print("new history init")
+        print(self.march_dollase_fitting_initial_parameters)
 
     def march_dollase_table_clicked(self, row, column):
         o_march = MarchDollase(parent=self)
