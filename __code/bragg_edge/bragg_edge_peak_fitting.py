@@ -445,6 +445,7 @@ class Interface(QMainWindow):
         self.ui.high_tof_tableWidget.selectRow(0)
         self.ui.low_tof_tableWidget.selectRow(0)
         self.ui.bragg_edge_tableWidget.selectRow(0)
+        self.ui.march_dollase_result_table.selectRow(0)
 
     def fitting_axis_changed(self):
         self.update_fitting_plot()
