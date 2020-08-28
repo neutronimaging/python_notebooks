@@ -10,17 +10,22 @@ class MarchDollase:
 
 	def __init__(self, parent=None):
 		self.parent = parent
-		self.table_ui = self.parent.ui.march_dollase_user_input_table
+		self.history_table_ui = self.parent.ui.march_dollase_user_input_table
 		self.result_table_ui = self.parent.ui.march_dollase_result_table
 
 	def reset_table(self):
 		self.reset_result_table()
+		self.reset_history_table()
 
 	def reset_result_table(self):
 		"""remove all the rows of the table name specified, or all if is_all is True"""
 		o_table = TableHandler(table_ui=self.result_table_ui)
 		o_table.remove_all_rows()
 		self.fill_table_with_minimum_contain()
+
+	def reset_history_table(self):
+		o_table = TableHandler(table_ui=self.history_table_ui)
+		o_table.remove_all_rows()
 
 	def fill_table_with_minimum_contain(self):
 		fitting_input_dictionary = self.parent.fitting_input_dictionary
@@ -39,7 +44,7 @@ class MarchDollase:
 			o_table.insert_row(_row, col_name)
 
 	def table_clicked(self, row=None, column=None):
-		nbr_row = self.table_ui.rowCount()
+		nbr_row = self.history_table_ui.rowCount()
 
 		enabled_up_button = True
 		enabled_down_button = True
@@ -207,8 +212,10 @@ class MarchDollase:
 		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
 		list_row_selected = o_table.get_rows_of_table_selected()
 
-		for row_selected in list_row_selected:
+		if list_row_selected is None:
+			return
 
+		for row_selected in list_row_selected:
 			selected_roi = self.parent.fitting_input_dictionary['rois'][row_selected]
 			yaxis = selected_roi['profile']
 			yaxis = yaxis[left_xaxis_index: right_xaxis_index]
@@ -223,12 +230,12 @@ class MarchDollase:
 	def save_table_history_and_initial_parameters(self):
 		march_dollase_fitting_history_table = list()
 		march_dollase_fitting_initial_parameters = []
-		nbr_row = self.table_ui.rowCount()
-		nbr_column = self.table_ui.columnCount()
+		nbr_row = self.history_table_ui.rowCount()
+		nbr_column = self.history_table_ui.columnCount()
 		for _row in np.arange(nbr_row):
 			_row_history = []
 			for _col in np.arange(nbr_column):
-				_list_widget = self.table_ui.cellWidget(_row, _col).children()
+				_list_widget = self.history_table_ui.cellWidget(_row, _col).children()
 
 				_check_box = _list_widget[1].children()[1]
 				_flag = False
@@ -244,3 +251,18 @@ class MarchDollase:
 
 		self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
 		self.parent.march_dollase_fitting_initial_parameters = march_dollase_fitting_initial_parameters
+
+	def fill_tables_with_fitting_information(self):
+		self.fill_history_table_with_fitting_information()
+		self.fill_result_table_with_fitting_information()
+
+	def fill_result_table_with_fitting_information(self):
+		pass
+
+	def fill_history_table_with_fitting_information(self):
+		march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
+		march_dollase_fitting_initial_parameters = self.parent.march_dollase_fitting_initial_parameters
+
+		o_gui = GuiUtility(parent=self.parent)
+		o_gui.fill_march_dollase_table(list_state=march_dollase_fitting_history_table,
+		                               list_initial_parameters=march_dollase_fitting_initial_parameters)

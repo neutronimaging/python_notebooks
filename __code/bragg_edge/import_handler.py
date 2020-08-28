@@ -29,25 +29,18 @@ class ImportHandler:
             self.parent.is_file_imported = True
             result_of_import = read_bragg_edge_fitting_ascii_format(full_file_name=str(ascii_file[0]))
             self.save_initial_roi_dimension_from_config_file(result_of_import['metadata']['columns']['3'])
+            self.save_march_dollase_parameters(result_of_import['metadata'])
             self.parent.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
-            self.parent.ui.distance_detector_sample.setText(result_of_import['metadata']['distance_detector_sample'])
-            self.parent.ui.detector_offset.setText(result_of_import['metadata']['detector_offset'])
-            self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import)
-            self.parent.tof_array_s = self.parent.fitting_input_dictionary['xaxis']['tof'][0] * 1e-6
-            self.parent.lambda_array = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
-            self.parent.index_array = self.parent.fitting_input_dictionary['xaxis']['index'][0]
+
+            self.update_selection_tab(result_of_import=result_of_import)
+            self.update_interface(result_of_import=result_of_import)
 
             self.parent.ui.statusbar.showMessage("{} has been imported!".format(ascii_file[0]), 10000)  # 10s
             self.parent.ui.statusbar.setStyleSheet("color: green")
 
-            self.parent.disable_left_part_of_selection_tab()
-            self.parent.ui.info_message_about_cyan.setVisible(False)
-
             o_selection = BraggEdgeSelectionTab(parent=self.parent)
             o_selection.update_profile_of_bin_slider_widget()
             o_selection.update_selection_plot()
-
-            self.parent.update_vertical_line_in_profile_plot()
 
             self.parent.ui.tabWidget.setTabEnabled(1, self.parent.is_fit_infos_loaded())
             self.parent.ui.tabWidget.setEnabled(True)
@@ -57,10 +50,47 @@ class ImportHandler:
                 self.parent.fit_that_selection_pushed_by_program(initialize_region=False)
 
             self.parent.block_table_ui(False)
+            self.parent.update_vertical_line_in_profile_plot()
             self.parent.update_fitting_plot()
 
             o_gui = GuiUtility(parent=self.parent)
             o_gui.check_status_of_kropff_fitting_buttons()
+
+    def update_interface(self, result_of_import=None):
+            self.create_fitting_input_dictionary_from_imported_ascii_file(result_of_import=result_of_import)
+            self.parent.tof_array_s = self.parent.fitting_input_dictionary['xaxis']['tof'][0] * 1e-6
+            self.parent.lambda_array = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
+            self.parent.index_array = self.parent.fitting_input_dictionary['xaxis']['index'][0]
+
+    def update_selection_tab(self, result_of_import=None):
+        self.parent.ui.distance_detector_sample.setText(result_of_import['metadata']['distance_detector_sample'])
+        self.parent.ui.detector_offset.setText(result_of_import['metadata']['detector_offset'])
+        self.parent.disable_left_part_of_selection_tab()
+        self.parent.ui.info_message_about_cyan.setVisible(False)
+
+    def save_march_dollase_parameters(self, metadata_dict):
+        march_dollase_history_table = metadata_dict['march-dollase history table']
+        march_dollase_history_init = metadata_dict['march-dollase history init']
+
+        march_dollase_fitting_history_table = []
+        for _row_index in march_dollase_history_table.keys():
+            str_flag = march_dollase_history_table[_row_index]
+            list_flag = str_flag.split(",")
+            list_flag = [_value.strip() for _value in list_flag]
+
+            _row_flag = []
+            for _value in list_flag:
+                _flag = True if _value == "True" else False
+                _row_flag.append(_flag)
+            march_dollase_fitting_history_table.append(_row_flag)
+
+        march_dollase_fitting_initial_parameters = []
+        list_init_arguments = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6']
+        for _arg in list_init_arguments:
+            march_dollase_fitting_initial_parameters.append(march_dollase_history_init[_arg])
+
+        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+        self.parent.march_dollase_fitting_initial_parameters = march_dollase_fitting_initial_parameters
 
     def save_initial_roi_dimension_from_config_file(self, column_3_dict):
         """column_3_dict = {'x0': value, 'y0': value, 'width': value, 'height': value}"""

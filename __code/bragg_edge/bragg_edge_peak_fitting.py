@@ -373,11 +373,11 @@ class Interface(QMainWindow):
         o_march = MarchDollase(parent=self)
         o_march.reset_table()
 
-
         if initialize_region:
             self.initialize_default_peak_regions()
         else:
             o_kropff.fill_table_with_fitting_information()
+            o_march.fill_tables_with_fitting_information()
 
         self.ui.tabWidget.setTabEnabled(1, True)
         self.ui.actionExport.setEnabled(True)

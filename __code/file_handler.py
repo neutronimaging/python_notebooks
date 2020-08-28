@@ -399,6 +399,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
     metadata = {'detector_offset': '',
                 'distance_detector_sample': '',
                 }
+    march_history_table = OrderedDict()
+    march_history_init = {}
     metadata_column = OrderedDict()
     line_number = 1
     col_label = ['index', 'tof', 'lambda']
@@ -444,6 +446,16 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 metadata['fitting_algorithm_selected'] = line.split('#fitting algorithm selected: ')[1].strip()
                 line_number += 1
                 continue
+            if "#march-dollase history table row " in line:
+                _row_and_list_flag = line.split('#march-dollase history table row ')[1].strip()
+                [_row, list_flag] = _row_and_list_flag.split(":")
+                march_history_table[_row] = list_flag
+                line_number += 1
+            if "#march-dollase history init " in line:
+                _parameter_and_value = line.split("#march-dollase history init ")[1].strip()
+                [_parameter, _value] = _parameter_and_value.split(":")
+                march_history_init[_parameter] = _value
+                line_number += 1
             if "#column " in line:
                 regular = r"^#column (?P<column_index>\d+) -> " \
                           r"x0:(?P<x0>\d+), " \
@@ -526,6 +538,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 line_number += 1
                 continue
         metadata['columns'] = metadata_column
+        metadata['march-dollase history table'] = march_history_table
+        metadata['march-dollase history init'] = march_history_init
 
     pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
     return {'data': pd_data, 'metadata': metadata}

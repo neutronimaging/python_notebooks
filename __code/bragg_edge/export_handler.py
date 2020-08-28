@@ -102,16 +102,16 @@ class ExportHandler:
 		for _row_index, _row_entry in enumerate(self.parent.march_dollase_fitting_history_table):
 			str_row_entry = [str(_value) for _value in _row_entry]
 			joined_str_row_entry = ", ".join(str_row_entry)
-			metadata.append("#marche-dollase history table row {}: {}".format(_row_index, joined_str_row_entry))
+			metadata.append("#march-dollase history table row {}: {}".format(_row_index, joined_str_row_entry))
 
 		[d_spacing, sigma, alpha, a1, a2, a5, a6] = self.parent.march_dollase_fitting_initial_parameters
-		metadata.append("#marche-dollase history init d_spacing: {}".format(d_spacing))
-		metadata.append("#marche-dollase history init sigma: {}".format(sigma))
-		metadata.append("#marche-dollase history init alpha: {}".format(alpha))
-		metadata.append("#marche-dollase history init a1: {}".format(a1))
-		metadata.append("#marche-dollase history init a2: {}".format(a2))
-		metadata.append("#marche-dollase history init a5: {}".format(a5))
-		metadata.append("#marche-dollase history init a6: {}".format(a6))
+		metadata.append("#march-dollase history init d_spacing: {}".format(d_spacing))
+		metadata.append("#march-dollase history init sigma: {}".format(sigma))
+		metadata.append("#march-dollase history init alpha: {}".format(alpha))
+		metadata.append("#march-dollase history init a1: {}".format(a1))
+		metadata.append("#march-dollase history init a2: {}".format(a2))
+		metadata.append("#march-dollase history init a5: {}".format(a5))
+		metadata.append("#march-dollase history init a6: {}".format(a6))
 
 	def collect_all_march_dollase_fitting_values(self):
 		march_fitting_values = OrderedDict()
