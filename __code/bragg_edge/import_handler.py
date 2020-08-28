@@ -46,7 +46,14 @@ class ImportHandler:
             self.parent.ui.tabWidget.setEnabled(True)
             self.parent.ui.actionExport.setEnabled(True)
 
-            if result_of_import.get('metadata').get('fitting_procedure_started', False):
+            self.parent.fitting_procedure_started['kropff'] = result_of_import.get('metadata').get('kropff fitting '
+                                                                                                   'procedure '
+                                                                                                   'started', False)
+            self.parent.fitting_procedure_started['march-dollase'] = result_of_import.get('metadata').get(
+                    'march-dollase fitting procedure started', False)
+
+            if result_of_import.get('metadata').get('kropff fitting procedure started', False) or \
+                result_of_import.get('metadata').get('march-dollase fitting procedure started'):
                 self.parent.fit_that_selection_pushed_by_program(initialize_region=False)
 
             self.parent.block_table_ui(False)

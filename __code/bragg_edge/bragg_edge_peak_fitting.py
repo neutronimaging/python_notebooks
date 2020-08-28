@@ -85,6 +85,9 @@ class Interface(QMainWindow):
                             'bragg_peak': [None, None]}
     fitting_peak_ui = None  # vertical line in fitting view (tab 2)
 
+    fitting_procedure_started = {'march-dollase': False,
+                                 'kropff': False}
+
     # x0, y0, x1, y1, width, height
     roi_dimension_from_config_file = [None, None, None, None, None, None]
 
@@ -612,6 +615,8 @@ class Interface(QMainWindow):
         self.ui.statusbar.setStyleSheet("color: blue")
         self.ui.statusbar.showMessage("Fitting Done!", 1000)  # 10s
 
+        self.fitting_procedure_started['kropff'] = True
+
     def kropff_fit_high_lambda_region_clicked(self):
         self.switch_fitting_axis_to('tof')
         o_fit = KropffFittingJobHandler(parent=self)
@@ -740,6 +745,7 @@ class Interface(QMainWindow):
     def march_dollase_fit_button_clicked(self):
         o_fit = MarchDollaseFittingJobHandler(parent=self)
         o_fit.prepare()
+        o_fit.done()
 
     def march_dollase_result_table_clicked(self):
         self.update_fitting_plot()

@@ -428,9 +428,15 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 metadata['detector_offset'] = line.split("#detector offset: ")[1].strip()
                 line_number += 1
                 continue
-            if "#fitting procedure started: " in line:
-                result = True if line.split("#fitting procedure started: ")[1].strip() == 'True' else False
-                metadata['fitting_procedure_started'] = result
+            if "#kropff fitting procedure started: " in line:
+                result = True if line.split("#kropff fitting procedure started: ")[1].strip() == 'True' else False
+                metadata['kropff fitting_procedure_started'] = result
+                line_number += 1
+                continue
+            if "#march-dollase fitting procedure started: " in line:
+                result = True if line.split("#march-dollase fitting procedure started: ")[1].strip() == 'True' else \
+                    False
+                metadata['march-dollase fitting_procedure_started'] = result
                 line_number += 1
                 continue
             if "#kropff " in line:

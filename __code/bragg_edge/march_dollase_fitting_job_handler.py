@@ -83,3 +83,6 @@ class MarchDollaseFittingJobHandler:
 			QApplication.processEvents()
 
 		self.parent.ui.eventProgress.setVisible(False)
+
+	def done(self):
+		self.parent.fitting_procedure_started['march-dollase'] = True

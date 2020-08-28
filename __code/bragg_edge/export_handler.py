@@ -89,9 +89,10 @@ class ExportHandler:
 		o_tab = GuiUtility(parent=self.parent)
 		fitting_algorithm_used = o_tab.get_tab_selected(tab_ui=self.parent.ui.tab_algorithm)
 		# fitting_rois = self.fitting_rois
-		fitting_flag = True if self.parent.fitting_peak_ui else False
-		metadata.append("#fitting procedure started: {}".format(fitting_flag))
+		# fitting_flag = True if self.parent.fitting_peak_ui else False
 		metadata.append("#fitting algorithm selected: {}".format(fitting_algorithm_used))
+		metadata.append("#kropff fitting procedure started: {}".format(
+				self.parent.fitting_procedure_started['kropff']))
 		# kropff
 		for _key in self.parent.kropff_fitting_range.keys():
 			metadata.append("#kropff {} selection range: [{}, {}]".format(_key,
@@ -99,6 +100,8 @@ class ExportHandler:
 			                                                              self.parent.kropff_fitting_range[_key][1]))
 
 		# March-dollase
+		metadata.append("#march-dollase fitting procedure started: {}".format(
+				self.parent.fitting_procedure_started['march-dollase']))
 		for _row_index, _row_entry in enumerate(self.parent.march_dollase_fitting_history_table):
 			str_row_entry = [str(_value) for _value in _row_entry]
 			joined_str_row_entry = ", ".join(str_row_entry)
