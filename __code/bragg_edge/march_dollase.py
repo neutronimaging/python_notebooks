@@ -257,7 +257,19 @@ class MarchDollase:
 		self.fill_result_table_with_fitting_information()
 
 	def fill_result_table_with_fitting_information(self):
-		pass
+		fitting_input_dictionary = self.parent.fitting_input_dictionary
+		march_data = fitting_input_dictionary['rois']
+
+		list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
+		                'd_spacing_error', 'sigma_error', 'alpha_error',
+		                'a1_error', 'a2_error', 'a5_error', 'a6_error']
+
+		for _row in march_data.keys():
+			_march_entry = march_data[_row]['fitting']['march_dollase']
+
+			for _col, _col_name in enumerate(list_columns):
+				_arg_value = _march_entry.get(_col_name)
+				self.result_table_ui.item(_row, _col+1).setText(_arg_value)
 
 	def fill_history_table_with_fitting_information(self):
 		march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
