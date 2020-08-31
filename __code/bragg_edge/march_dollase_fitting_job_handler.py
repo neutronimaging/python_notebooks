@@ -55,6 +55,10 @@ class MarchDollaseFittingJobHandler:
 		return None
 
 	def get_d_spacing(self):
+		return np.NaN
+
+
+	def calculate_d_spacing(self):
 		"""
 	    calculates the d-spacing using the lambda range selection and using the central lambda
 	    2* d_spacing = lambda

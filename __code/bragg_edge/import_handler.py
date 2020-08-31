@@ -108,10 +108,8 @@ class ImportHandler:
                 _row_flag.append(_flag)
             march_dollase_fitting_history_table.append(_row_flag)
 
-        march_dollase_fitting_initial_parameters = []
-        list_init_arguments = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6']
-        for _arg in list_init_arguments:
-            march_dollase_fitting_initial_parameters.append(march_dollase_history_init[_arg])
+        march_dollase_fitting_initial_parameters = {'sigma': march_dollase_history_init['sigma'],
+                                                    'alpha': march_dollase_history_init['alpha']}
 
         self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
         self.parent.march_dollase_fitting_initial_parameters = march_dollase_fitting_initial_parameters

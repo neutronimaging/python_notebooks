@@ -21,7 +21,7 @@ class Initialization:
 	detector_offset = 6500  # micros
 
 	march_dollase_history_state = list()
-	march_dollase_history_init = [np.NaN, 3.5, 4.5, np.NaN, np.NaN, np.NaN, np.NaN]
+	march_dollase_history_init = [np.NaN, np.NaN]
 	march_dollase_history_state.append([False, False, False, True, False, False, True])
 	march_dollase_history_state.append([False, False, False, False, True, True, False])
 	march_dollase_history_state.append([True, True, True, False, False, False, False])
@@ -159,10 +159,9 @@ class Initialization:
 
 		o_gui = GuiUtility(parent=self.parent)
 		o_gui.fill_march_dollase_table(list_state=self.march_dollase_history_state,
-		                               list_initial_parameters=self.march_dollase_history_init)
+		                               initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
 
 		self.parent.march_dollase_fitting_history_table = self.march_dollase_history_state
-		self.parent.march_dollase_fitting_initial_parameters = self.march_dollase_history_init
 		self.parent.march_dollase_fitting_history_table_default_new_row = copy.deepcopy(
 				self.march_dollase_history_state[0])
 

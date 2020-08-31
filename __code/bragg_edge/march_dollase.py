@@ -272,9 +272,9 @@ class MarchDollase:
 				self.result_table_ui.item(_row, _col+1).setText(_arg_value)
 
 	def fill_history_table_with_fitting_information(self):
-		march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
-		march_dollase_fitting_initial_parameters = self.parent.march_dollase_fitting_initial_parameters
-
 		o_gui = GuiUtility(parent=self.parent)
-		o_gui.fill_march_dollase_table(list_state=march_dollase_fitting_history_table,
-		                               list_initial_parameters=march_dollase_fitting_initial_parameters)
+		o_gui.fill_march_dollase_table(list_state=self.parent.march_dollase_fitting_history_table,
+		                               initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
+
+	def get_initial_parameter_value(self, column=-1):
+		return self.parent.march_dollase_fitting_initial_parameters[column]

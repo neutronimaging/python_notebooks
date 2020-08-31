@@ -111,7 +111,7 @@ class GuiUtility:
 		else:
 			return ""
 
-	def fill_march_dollase_table(self, list_state=None, list_initial_parameters=None):
+	def fill_march_dollase_table(self, list_state=None, initial_parameters=None):
 
 		table_ui = self.parent.ui.march_dollase_user_input_table
 		o_table = TableHandler(table_ui=table_ui)
@@ -150,12 +150,19 @@ class GuiUtility:
 				verti_layout.addWidget(new_widget)
 
 				if _row == 0:
-					_input = QLineEdit()
-					_input.returnPressed.connect(lambda column=_col:
-					                             self.parent.march_dollase_table_init_value_changed(column=column))
-					_input.setText(str(list_initial_parameters[_col]))
-					verti_layout.addWidget(_input)
-					_input.setVisible(not _state_col)
+
+					if (_col == 1) or (_col == 2):
+						if _col == 1:
+							parameter_key = 'sigma'
+						elif _col == 2:
+							parameter_key = 'alpha'
+
+						_input = QLineEdit()
+						_input.returnPressed.connect(lambda column=_col:
+						                             self.parent.march_dollase_table_init_value_changed(column=column))
+						_input.setText(str(initial_parameters[parameter_key]))
+						verti_layout.addWidget(_input)
+						_input.setVisible(not _state_col)
 
 				_widget.setLayout(verti_layout)
 				table_ui.setCellWidget(_row, _col, _widget)

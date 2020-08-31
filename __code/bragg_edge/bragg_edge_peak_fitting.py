@@ -148,7 +148,7 @@ class Interface(QMainWindow):
     #                       }
 
     march_dollase_fitting_history_table = None
-    march_dollase_fitting_initial_parameters = None
+    march_dollase_fitting_initial_parameters = {'sigma': 3.5, 'alpha': 4.5}
     march_dollase_fitting_history_table_default_new_row = None
 
     # matplotlib canvas
@@ -708,10 +708,11 @@ class Interface(QMainWindow):
         o_kropff.bragg_peak_right_click(position=position)
 
     def march_dollase_table_state_changed(self, state=None, row=None, column=None):
-        if row == 0:
-            _textedit = self.ui.march_dollase_user_input_table.cellWidget(row, column).children()[-1]
-            _textedit.setVisible(not state)
         o_march = MarchDollase(parent=self)
+        if (row == 0) and ((column == 1) or (column == 2)):
+            _textedit = self.ui.march_dollase_user_input_table.cellWidget(row, column).children()[-1]
+            _textedit.setText(o_march.get_initial_parameter_value(column=column))
+            _textedit.setVisible(not state)
         o_march.save_table_history_and_initial_parameters()
 
     def march_dollase_table_init_value_changed(self, column):
