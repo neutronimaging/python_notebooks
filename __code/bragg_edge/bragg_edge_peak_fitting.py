@@ -94,6 +94,7 @@ class Interface(QMainWindow):
     # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
     #                                       'lambda': ([], 'lambda (Angstroms)'),
     #                                       'tof': ([], 'TOF (micros)')},
+    #                             'bragg_edge_range': [200, 500],
     #                             'rois': {0: {'x0': None,
     #                                          'y0': None,
     #                                          'width': None,

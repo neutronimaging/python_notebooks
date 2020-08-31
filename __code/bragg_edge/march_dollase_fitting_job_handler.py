@@ -34,20 +34,48 @@ class MarchDollaseFittingJobHandler:
 				else:
 					_value = np.NaN
 
-				fitting_input_dictionary['rois'][_row]['march_dollase'][_name_of_parameter] = _value
+				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase'][_name_of_parameter] = _value
 
-	def get_initial_parameter_value(self, name_of_parameter):
-		return 10
+	def get_initial_parameter_value(self, name_of_parameter=None):
+
+		if name_of_parameter == 'd_spacing':
+			return self.get_d_spacing()
+		if name_of_parameter == 'sigma':
+			return -1
+		if name_of_parameter == 'alpha':
+			return -1
+		if name_of_parameter == 'a1':
+			return -1
+		if name_of_parameter == 'a2':
+			return -1
+		if name_of_parameter == 'a5':
+			return -1
+		if name_of_parameter == 'a6':
+			return -1
+		return None
+
+	def get_d_spacing(self):
+		"""
+	    calculates the d-spacing using the lambda range selection and using the central lambda
+	    2* d_spacing = lambda
+		"""
+		lambda_axis = self.parent.fitting_input_dictionary['xaxis']['lambda']
+		bragg_edge_range = self.parent.fitting_input_dictionary['bragg_edge_range']
+
+		from_lambda = np.float(lambda_axis[np.int(bragg_edge_range[0])])
+		to_lambda = np.float(lambda_axis[np.int(bragg_edge_range[1])])
+
+		average_lambda = np.mean([from_lambda, to_lambda])
+		d_spacing = average_lambda / 2.
+
+		return d_spacing
 
 	def prepare(self):
 
-		print(f"before ->")
-		print(f"self.parent.fitting_input_dictionary['rois'][0]['marche_dollase']: "
-		      f"{self.parent.fitting_input_dictionary['rois'][0]['marche_dollase']}")
 		self.initialize_fitting_input_dictionary()
 		print(f"after ->")
-		print(f"self.parent.fitting_input_dictionary['rois'][0]['marche_dollase']: "
-		      f"{self.parent.fitting_input_dictionary['rois'][0]['marche_dollase']}")
+		print(f"self.parent.fitting_input_dictionary['rois'][0]['fitting']['march_dollase']: "
+		      f"{self.parent.fitting_input_dictionary['rois'][0]['fitting']['march_dollase']}")
 		# fitting_input_dictionary = self.parent.fitting_input_dictionary
 
 		_is_advanced_mode = self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()

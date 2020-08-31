@@ -288,3 +288,4 @@ class ImportHandler:
                             'lambda': (lambda_array, self.parent.xaxis_label['lambda']),
                             'tof': (tof_array, self.parent.xaxis_label['tof'])}
         self.parent.fitting_input_dictionary['xaxis'] = xaxis_dictionary
+        self.parent.fitting_input_dictionary['bragg_edge_range_selected'] = result_of_import['metadata']['bragg_edge_range']

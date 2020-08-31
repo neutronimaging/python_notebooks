@@ -1341,7 +1341,7 @@
                        </attribute>
                        <column>
                         <property name="text">
-                         <string>d-spacing</string>
+                         <string>d_spacing</string>
                         </property>
                        </column>
                        <column>
