@@ -18,12 +18,12 @@ from __code.table_handler import TableHandler
 from __code.bragg_edge.kropff_fitting_job_handler import KropffFittingJobHandler
 from __code.bragg_edge.march_dollase_fitting_job_handler import MarchDollaseFittingJobHandler
 from __code.bragg_edge.kropff import Kropff
+from __code.bragg_edge.march_dollase import MarchDollase
 from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
 from __code.bragg_edge.bragg_edge_selection_tab import BraggEdgeSelectionTab
 from __code.bragg_edge.get import Get
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
-from __code.bragg_edge.march_dollase import MarchDollase
 from __code._utilities.array import exclude_y_value_when_error_is_nan
 
 DEBUGGING = True
@@ -379,8 +379,10 @@ class Interface(QMainWindow):
         if initialize_region:
             self.initialize_default_peak_regions()
         else:
-            o_kropff.fill_table_with_fitting_information()
-            o_march.fill_tables_with_fitting_information()
+            if self.fitting_procedure_started['kropff']:
+                o_kropff.fill_table_with_fitting_information()
+            if self.fitting_procedure_started['march-dollase']:
+                o_march.fill_tables_with_fitting_information()
 
         self.ui.tabWidget.setTabEnabled(1, True)
         self.ui.actionExport.setEnabled(True)
