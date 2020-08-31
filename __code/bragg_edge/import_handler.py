@@ -54,26 +54,25 @@ class ImportHandler:
             self.parent.fitting_procedure_started['march-dollase'] = result_of_import.get('metadata').get(
                     'march-dollase fitting procedure started', False)
 
+            o_kropff = Kropff(parent=self.parent)
+            o_kropff.reset_all_table()
+
+            o_march = MarchDollase(parent=self.parent)
+            o_march.reset_table()
+
             if result_of_import.get('metadata').get('kropff fitting procedure started', False):
                 # fill tables with minimum contains
-                o_kropff = Kropff(parent=self.parent)
-                o_kropff.reset_all_table()
                 o_kropff.fill_table_with_fitting_information()
 
             if result_of_import.get('metadata').get('march-dollase fitting procedure started', False):
                 # fill tables with minimum contains
-                o_march = MarchDollase(parent=self.parent)
-                o_march.reset_table()
                 o_march.fill_tables_with_fitting_information()
+            else:
+                o_march.fill_history_table_with_fitting_information()
 
             self.parent.select_first_row_of_all_fitting_table()
 
-            # if result_of_import.get('metadata').get('kropff fitting procedure started', False) or \
-            #     result_of_import.get('metadata').get('march-dollase fitting procedure started', False):
-            #     self.parent.fit_that_selection_pushed_by_program(initialize_region=False)
-            #
-            #
-            #     self.parent.initialize_default_peak_regions()
+            # self.parent.initialize_default_peak_regions()
 
             self.parent.block_table_ui(False)
             self.parent.update_vertical_line_in_profile_plot()
