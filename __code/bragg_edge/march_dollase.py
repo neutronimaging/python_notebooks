@@ -179,7 +179,7 @@ class MarchDollase:
 	def update_table_after_changing_row(self, changing_row=-1):
 		o_gui = GuiUtility(parent=self.parent)
 		o_gui.fill_march_dollase_table(list_state=self.parent.march_dollase_fitting_history_table,
-		                               list_initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
+		                               initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
 
 		# keep current selection on new row
 		o_table = TableHandler(table_ui=self.parent.march_dollase_user_input_table)
@@ -229,7 +229,7 @@ class MarchDollase:
 
 	def save_table_history_and_initial_parameters(self):
 		march_dollase_fitting_history_table = list()
-		march_dollase_fitting_initial_parameters = []
+		march_dollase_fitting_initial_parameters = {}
 		nbr_row = self.history_table_ui.rowCount()
 		nbr_column = self.history_table_ui.columnCount()
 		for _row in np.arange(nbr_row):
@@ -244,8 +244,13 @@ class MarchDollase:
 				_row_history.append(_flag)
 
 				if _row == 0:
-					_text = _list_widget[-1].text()
-					march_dollase_fitting_initial_parameters.append(_text)
+					if (_col == 1) or (_col == 2):
+						if (_col == 1):
+							name = 'sigma'
+						elif (_col == 2):
+							name = 'alpha'
+						_text = _list_widget[-1].text()
+						march_dollase_fitting_initial_parameters[name] = _text
 
 			march_dollase_fitting_history_table.append(_row_history)
 
@@ -277,4 +282,8 @@ class MarchDollase:
 		                               initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
 
 	def get_initial_parameter_value(self, column=-1):
-		return self.parent.march_dollase_fitting_initial_parameters[column]
+		if column == 1:
+			name = 'sigma'
+		else:
+			name = 'alpha'
+		return self.parent.march_dollase_fitting_initial_parameters[name]
