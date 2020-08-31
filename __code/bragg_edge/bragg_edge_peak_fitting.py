@@ -381,8 +381,7 @@ class Interface(QMainWindow):
         else:
             if self.fitting_procedure_started['kropff']:
                 o_kropff.fill_table_with_fitting_information()
-            if self.fitting_procedure_started['march-dollase']:
-                o_march.fill_tables_with_fitting_information()
+        o_march.fill_tables_with_fitting_information()
 
         self.ui.tabWidget.setTabEnabled(1, True)
         self.ui.actionExport.setEnabled(True)

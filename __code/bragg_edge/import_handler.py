@@ -67,8 +67,7 @@ class ImportHandler:
             if result_of_import.get('metadata').get('march-dollase fitting procedure started', False):
                 # fill tables with minimum contains
                 o_march.fill_tables_with_fitting_information()
-            else:
-                o_march.fill_history_table_with_fitting_information()
+            o_march.fill_history_table_with_fitting_information()
 
             self.parent.select_first_row_of_all_fitting_table()
 
