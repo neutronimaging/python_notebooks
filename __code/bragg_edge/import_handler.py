@@ -135,6 +135,7 @@ class ImportHandler:
 
         o_init = PeakFittingInitialization(parent=self.parent)
         self.parent.fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(columns_roi))
+        self.parent.fitting_input_dictionary['bragg_edge_range'] = metadata['bragg_edge_range']
 
         data = result_of_import['data']
         tof_array = np.array(data['tof'])

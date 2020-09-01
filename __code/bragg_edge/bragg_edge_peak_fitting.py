@@ -748,7 +748,6 @@ class Interface(QMainWindow):
     def march_dollase_fit_button_clicked(self):
         o_fit = MarchDollaseFittingJobHandler(parent=self)
         o_fit.prepare()
-        o_fit.done()
 
     def march_dollase_result_table_clicked(self):
         self.update_fitting_plot()
