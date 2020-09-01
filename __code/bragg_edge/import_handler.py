@@ -33,6 +33,7 @@ class ImportHandler:
             self.save_initial_roi_dimension_from_config_file(result_of_import['metadata']['columns']['3'])
             self.save_march_dollase_parameters(result_of_import['metadata'])
             self.parent.bragg_edge_range = result_of_import['metadata']['bragg_edge_range']
+            self.parent.bragg_peak_selection_range = result_of_import['metadata']['bragg_peak_selection_range']
 
             self.update_selection_tab(result_of_import=result_of_import)
             self.update_interface(result_of_import=result_of_import)

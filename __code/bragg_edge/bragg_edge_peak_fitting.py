@@ -44,6 +44,10 @@ class Interface(QMainWindow):
                                           'sigma': [1e-7, 1e-6, 1e-5]}}
 
     bragg_edge_range = [5, 20]
+
+    # relative index of the bragg peak only part (kropff and March-Dollase)
+    bragg_peak_selection_range = [np.NaN, np.NaN]
+
     selection_roi_rgb = (62, 13, 244)
     roi_settings = {'color': QtGui.QColor(selection_roi_rgb[0],
                                           selection_roi_rgb[1],
@@ -95,6 +99,7 @@ class Interface(QMainWindow):
     #                                       'lambda': ([], 'lambda (Angstroms)'),
     #                                       'tof': ([], 'TOF (micros)')},
     #                             'bragg_edge_range': [200, 500],
+    #                             'bragg_peak_selection_range': [20, 30],  # only the bragg peak using relative peak
     #                             'rois': {0: {'x0': None,
     #                                          'y0': None,
     #                                          'width': None,
@@ -503,6 +508,7 @@ class Interface(QMainWindow):
         self.kropff_fitting_range['high'] = [right_index, global_right_index]
         self.kropff_fitting_range['low'] = [global_left_index, left_index]
         self.kropff_fitting_range['bragg_peak'] = [left_index, right_index]
+        self.bragg_peak_selection_range = [left_index, right_index]
 
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:

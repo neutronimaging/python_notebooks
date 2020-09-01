@@ -93,6 +93,9 @@ class ExportHandler:
 		metadata.append("#fitting algorithm selected: {}".format(fitting_algorithm_used))
 		metadata.append("#kropff fitting procedure started: {}".format(
 				self.parent.fitting_procedure_started['kropff']))
+		metadata.append("#bragg peak selection range: [{}, {}]".format(self.parent.kropff_fitting_range[
+			                                                               'bragg_peak'][0],
+			                                                           self.parent.kropff_fitting_range['bragg_peak'][1]))
 		# kropff
 		for _key in self.parent.kropff_fitting_range.keys():
 			metadata.append("#kropff {} selection range: [{}, {}]".format(_key,

@@ -227,6 +227,13 @@ class MarchDollase:
 			self.parent.ui.fitting.setLabel("bottom", xaxis_label)
 			self.parent.ui.fitting.setLabel("left", "Average transmission")
 
+		if self.parent.ui.march_dollase_toolBox.currentIndex() == 0:
+			move_bragg_peak_range = True
+		else:
+			move_bragg_peak_range = False
+
+
+
 	def save_table_history_and_initial_parameters(self):
 		march_dollase_fitting_history_table = list()
 		march_dollase_fitting_initial_parameters = {}

@@ -439,6 +439,14 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 metadata['march-dollase fitting procedure started'] = result
                 line_number += 1
                 continue
+            if "#Bragg peak selection range:" in line:
+                regular = r"^#Bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
+                m = re.search(regular, line.strip())
+                if m:
+                    metadata['bragg_peak_selection_range'] = [np.int(m.group('left_index')),
+                                                              np.int(m.group('right_index'))]
+                line_number += 1
+                continue
             if "#kropff " in line:
                 regular = r"^#kropff (?P<type>\w+) selection range: \[(?P<left_index>\d+), " \
                           r"(?P<right_index>\d+)\]$"
