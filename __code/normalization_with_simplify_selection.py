@@ -791,9 +791,9 @@ class NormalizationWithSimplifySelection(object):
 			str_time_before = _format_time(time_before_selected)
 			str_time_after = _format_time(time_after_selected)
 
-			_message = "Use OB taken up to <b><font color='red'>{str_time_before}</b> " \
+			_message = "Use OB taken up to <b><font color='red'>" + str_time_before + "</b> " \
 			           "<font color='black'>before and up to </font>" \
-			           "<b><font color='red'>{str_time_after}</b> " \
+			           "<b><font color='red'>" + str_time_after + "</b> " \
 			           "<font color='black'>after experiment!</font>"
 
 		time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
