@@ -456,9 +456,14 @@ class NormalizationHandler(object):
 
             self.debugging_roi = _list_roi
 
-            # try:
             self.o_norm.df_correction()
-            self.o_norm.normalization(roi=_list_roi[0], notebook=True)
+            if _list_roi:
+                # try:
+                self.o_norm.normalization(roi=_list_roi[0], notebook=True)
+
+            else:
+                self.o_norm.normalization(notebook=True)
+
             self.normalized_data_array = self.o_norm.get_normalized_data()
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
