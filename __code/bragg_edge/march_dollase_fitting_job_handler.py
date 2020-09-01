@@ -53,15 +53,25 @@ class MarchDollaseFittingJobHandler:
 			if not alpha_flag:
 				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['alpha'] = alpha
 
-			self.isolate_left_and_right_part_of_inflection_point(row=_row)
+			# {'left_part': {'lambda_x_axis': [],
+			#                'y_axis': [],
+			#               },
+			#  'right_part': {'lambda_x_axis': [],
+			#                 'y_axis': [],
+			#                },
+			#  'inflection_point': {'x': np.NaN,
+			#                       'y': np.NaN,
+			#                      },
+			# }
+			inflection_dict = self.isolate_left_and_right_part_of_inflection_point(row=_row)
 
 			if self.is_advanced_mode():
 
 				if not a2_flag:
-					a2 = self.get_a2(row=_row, advanced_mode=self.is_advanced_mode())
+					a2 = self.get_a2(row=_row,
+					                 advanced_mode=self.is_advanced_mode(),
+					                 inflection_dict=inflection_dict)
 					fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
-
-
 
 		import pprint
 		pprint.pprint(fitting_input_dictionary['rois'][0]['fitting']['march_dollase'])
@@ -73,22 +83,30 @@ class MarchDollaseFittingJobHandler:
 
 		# get full x_axis (lambda)
 		full_lambda_x_axis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
+		lambda_x_axis = full_lambda_x_axis[left_index: right_index]
 
 		# get full y_axis (average transmission)
 		full_y_axis = self.parent.fitting_input_dictionary['rois'][row]['profile']
 		y_axis = full_y_axis[left_index: right_index]
 
-		print(f"in row:{row}, y_axis:{y_axis}")
+		# for now inflection is only calculated by using center of selection
+		# FIXME
 
+		inflection_point_index = np.int(len(lambda_x_axis) / 2.)
+		return {'left_part': {'lambda_x_axis': lambda_x_axis[0: inflection_point_index],
+		                      'y_axis': y_axis[0: inflection_point_index]},
+		        'right_part': {'lambda_x_axis': lambda_x_axis[inflection_point_index: ],
+		                       'y_axis': y_axis[inflection_point_index: ]},
+		        'inflection_point': {'y': y_axis[inflection_point_index],
+		                             'lambda_x': lambda_x_axis[inflection_point_index]}}
 
+	def get_a2(self, row=-1, advanced_mode=True, inflection_dict=None):
+		if advanced_mode:
+			x_axis = inflection_dict['left_part']['lambda_x_axis']
+			y_axis = inflection_dict['left_part']['y_axis']
 
-
-
-
-
-	def get_a2(self, row=-1, advanced_mode=True):
-		# if advanced_mode:
-		return np.NaN
+			nbr_data = len(x_axis)
+			return np.NaN
 
 
 
