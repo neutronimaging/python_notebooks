@@ -161,6 +161,7 @@ class NormalizationWithSimplifySelection(object):
 		folder = os.path.join(self.working_dir, 'raw', 'ob')
 		list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
 		                                                                    extensions=['tiff', 'tif'])
+
 		self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files)
 
 	def select_folder(self, message="", next_function=None):
@@ -240,11 +241,16 @@ class NormalizationWithSimplifySelection(object):
 			_df_instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(
 				_all_df_instrument_metadata)
 			_acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
+
 			if _acquisition_time in list_of_sample_acquisition:
 				for _config_id in final_full_master_dict[_acquisition_time].keys():
 					_sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
+
 					if NormalizationWithSimplifySelection.all_metadata_match(_sample_metadata_infos,
-					                                                         _df_instrument_metadata):
+					                                                         _df_instrument_metadata,
+					                                                         list_key_to_check=[METADATA_KEYS['df'][
+						                                                                            1].value]):
+
 						final_full_master_dict[_acquisition_time][_config_id]['list_df'].append(list_df_dict[_index_df])
 
 		self.final_full_master_dict = final_full_master_dict
@@ -973,11 +979,14 @@ class NormalizationWithSimplifySelection(object):
 		return _clean_dict
 
 	@staticmethod
-	def all_metadata_match(metadata_1={}, metadata_2={}):
-		for _key in metadata_1.keys():
+	def all_metadata_match(metadata_1={}, metadata_2={}, list_key_to_check=None):
+
+		list_key = metadata_1.keys() if list_key_to_check is None else list_key_to_check
+
+		for _key in list_key:
 			try:
 				if np.abs(np.float(
-						metadata_1[_key]['value'] - np.float(metadata_2[_key]['value']))) > METADATA_ERROR_ALLOWED:
+						metadata_1[_key]['value']) - np.float(metadata_2[_key]['value'])) > METADATA_ERROR_ALLOWED:
 					return False
 			except ValueError:
 				if metadata_1[_key]['value'] != metadata_2[_key]['value']:

@@ -382,7 +382,7 @@ def get_list_of_files(folder="", extension='tiff'):
     return list_files
 
 
-def get_list_of_all_files_in_subfolders(folder="", extensions=['tiff','tif']):
+def get_list_of_all_files_in_subfolders(folder="", extensions=['tiff', 'tif']):
     absolute_path_folder = os.path.abspath(folder)
     list_files = []
     for path, _, files in os.walk(absolute_path_folder):
