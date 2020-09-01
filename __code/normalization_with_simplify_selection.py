@@ -642,12 +642,15 @@ class NormalizationWithSimplifySelection(object):
 			visibility = 'visible'
 
 		[time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
-		time_before_selected_ui.layout.visibility = visibility
-		time_after_selected_ui.layout.visibility = visibility
 		experiment_label_ui = self.get_experiment_label_ui_of_this_config()
 		experiment_label_ui.layout.visibility = visibility
 
-		self.show_or_not_before_and_after_sliders()
+		if visibility == 'hidden':
+			time_before_selected_ui.layout.visibility = 'hidden'
+			time_after_selected_ui.layout.visibility = 'hidden'
+		else:
+			self.show_or_not_before_and_after_sliders()
+
 		self.update_time_range_event(message)
 
 	def show_or_not_before_and_after_sliders(self):
