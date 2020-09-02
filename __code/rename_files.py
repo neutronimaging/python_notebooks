@@ -4,7 +4,7 @@ from IPython.core.display import display, HTML
 import os
 import numpy as np
 from __code import utilities
-import ipywe
+from __code import ipywe
 
 from __code.file_handler import ListMostDominantExtension
 from __code.fileselector import FileSelectorPanelWithJumpFolders
@@ -54,7 +54,7 @@ class NamingSchemaDefinition(object):
 
 	def current_naming_schema(self):
 		pre_index_separator = self.box2.children[1].value
-		schema = "<file_name_prefix>" + pre_index_separator + '<digit>' + self.ext
+		schema = "<untouched_part>" + pre_index_separator + '<digit>' + self.ext
 		return schema
 
 	def new_naming_schema(self):
@@ -123,7 +123,7 @@ class NamingSchemaDefinition(object):
 		                    widgets.Text(value='_',
 		                                layout=widgets.Layout(width='5%'))])
 
-		self.box2b = widgets.HBox([widgets.Label("File name prefix:",
+		self.box2b = widgets.HBox([widgets.Label("Untouched filename part:",
 												 layout=widgets.Layout(width="20%")),
 								   widgets.Label("",
 												 layout=widgets.Layout(width='40%')),
@@ -235,6 +235,7 @@ class NamingSchemaDefinition(object):
 		new_index_separator = self.get_new_index_separator()
 		new_number_of_digits = self.get_new_number_of_digits()
 		offset = self.box8.children[1].value
+		[start_index, end_index] = self.int_range_slider.value
 
 		try:
 			display(HTML("""
@@ -248,6 +249,8 @@ class NamingSchemaDefinition(object):
 						  """))
 
 			new_name = self.generate_new_file_name(input_file,
+			                                       start_index,
+			                                       end_index,
 												   old_index_separator,
 												   new_prefix_name,
 												   new_index_separator,
@@ -291,6 +294,8 @@ class NamingSchemaDefinition(object):
 		return self.box7.children[1].value	
 
 	def generate_new_file_name(self, old_file_name,
+	                           start_index,
+	                           end_index,
 						 	   old_index_separator,
 						 	   new_prefix_name,
 						 	   new_index_separator,
@@ -301,7 +306,7 @@ class NamingSchemaDefinition(object):
 		_name_separated = _pre_extension.split(old_index_separator)
 		_index = np.int(_name_separated[-1]) + offset
 
-		new_name = new_prefix_name + new_index_separator + \
+		new_name = old_file_name[start_index: end_index+1] + new_index_separator + \
 				   '{:0{}}'.format(_index, new_number_of_digits) + \
 				   self.ext
 		return new_name
@@ -313,6 +318,9 @@ class NamingSchemaDefinition(object):
 
 		old_index_separator = self.get_old_index_separator()
 		new_prefix_name = self.get_new_prefix_name()
+
+		[start_index, end_index] = self.int_range_slider.value
+
 		new_index_separator = self.get_new_index_separator()
 		new_number_of_digits = self.get_new_number_of_digits()
 		offset = self.box8.children[1].value
@@ -322,6 +330,8 @@ class NamingSchemaDefinition(object):
 		new_list = {}
 		for _file_index, _file in enumerate(list_of_input_basename_files):
 			new_name = self.generate_new_file_name(_file,
+			                                       start_index,
+			                                       end_index,
 												   old_index_separator,
 												   new_prefix_name,
 												   new_index_separator,
@@ -357,7 +367,6 @@ class NamingSchemaDefinition(object):
 		                     overwrite=False)
 
 		self.new_list_files = dict_old_new_names
-
 		self.display_renaming_result(selected)
 
 	def display_renaming_result(self, selected):
