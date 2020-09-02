@@ -934,11 +934,11 @@ class NormalizationWithSimplifySelection(object):
 				o_load.load(file=list_df, data_type='df')
 
 				o_load.normalization()
-				o_load.export(folder=full_output_normalization_folder_name, file_type='tiff')
-
+				o_load.export(folder=full_output_normalization_folder_name, file_type='tif')
 				del o_load
 
 				normalization_progress.value += 1
+
 
 		horizontal_layout.close()
 
