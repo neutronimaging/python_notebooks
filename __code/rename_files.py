@@ -18,17 +18,26 @@ class FormatFileNameIndex(object):
 		self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Input Folder',
 																	type='directory',
 																	start_dir=self.working_dir,
+		                                                            next=self.next,
 																	multiple=False)
 		self.input_folder_ui.show()
 
 	def calculate_most_dominant_files(self):
-		self.o_list_dominant = ListMostDominantExtension(working_dir = self.input_folder_ui.selected)
+		self.o_list_dominant = ListMostDominantExtension(working_dir=self.input_folder)
 		self.o_list_dominant.calculate()
 
 	def get_most_dominant_files(self):
 		_result = self.o_list_dominant.get_files_of_selected_ext()
 		self.list_files = _result.list_files
 		self.ext = _result.ext
+
+	def next(self, input_folder):
+		self.input_folder = input_folder
+		self.calculate_most_dominant_files()
+		self.get_most_dominant_files()
+
+		self.o_schema = NamingSchemaDefinition(o_format=self)
+		self.o_schema.show()
 
 
 class NamingSchemaDefinition(object):
