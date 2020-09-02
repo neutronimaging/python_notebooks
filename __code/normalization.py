@@ -518,6 +518,8 @@ class NormalizationHandler(object):
         output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected, base_folder))
         utilities.make_dir(dir=output_folder)
 
+        print(f"output_folder: {output_folder}")
+
         w = widgets.IntProgress()
         w.max = len(self.files.sample)
         display(w)
@@ -526,6 +528,9 @@ class NormalizationHandler(object):
             basename = os.path.basename(_file)
             _base, _ext = os.path.splitext(basename)
             output_file_name = os.path.join(output_folder, _base + '.tiff')
+
+            print(f"output_file_name: {output_file_name}")
+
             file_handler.make_tiff(filename=output_file_name, data=self.normalized_data_array[_index])
 
             w.value = _index + 1
