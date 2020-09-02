@@ -527,6 +527,8 @@ class NormalizationHandler(object):
             _base, _ext = os.path.splitext(basename)
             output_file_name = os.path.join(output_folder, _base + '.tiff')
 
+            print(f"output_file_name: {output_file_name}")
+
             file_handler.make_tiff(filename=output_file_name, data=self.normalized_data_array[_index])
 
             w.value = _index + 1
