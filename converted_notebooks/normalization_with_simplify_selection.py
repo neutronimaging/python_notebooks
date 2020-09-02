@@ -47,4 +47,6 @@ o_which.checking_normalization_workflow()
 
 o_which.select_output_folder()
 
+o_which.debugging_o_load.export(folder="/Users/j35/Desktop/Aug25_2020_60.0_config0", file_type='tif')
+
 
