@@ -516,8 +516,8 @@ class NormalizationWithSimplifySelection(object):
 		 max_time_elapse_after_experiment] = self.calculate_max_time_before_and_after_exp_for_this_config(dict_config)
 
 		hori_layout1 = widgets.HBox([check_box_user_time_range,
-		                             widgets.FloatSlider(value=-max_time_elapse_before_experiment,
-		                                                 min=-max_time_elapse_before_experiment,
+		                             widgets.FloatSlider(value=-max_time_elapse_before_experiment-0.1,
+		                                                 min=-max_time_elapse_before_experiment-0.1,
 		                                                 max=0,
 		                                                 step=0.1,
 		                                                 readout=False,
@@ -526,9 +526,9 @@ class NormalizationWithSimplifySelection(object):
 		                             widgets.Label(" <<< EXPERIMENT >>> ",
 		                                           layout=widgets.Layout(width="20%",
 		                                                                 visibility='hidden')),
-		                             widgets.FloatSlider(value=max_time_elapse_before_experiment,
+		                             widgets.FloatSlider(value=max_time_elapse_before_experiment+0.1,
 		                                                 min=0,
-		                                                 max=max_time_elapse_after_experiment,
+		                                                 max=max_time_elapse_after_experiment+0.1,
 		                                                 step=0.1,
 		                                                 readout=False,
 		                                                 layout=widgets.Layout(width="30%",
@@ -780,13 +780,16 @@ class NormalizationWithSimplifySelection(object):
 
 			def _format_time(_time_s):
 				if _time_s < 60:
-					return "{:.02f}s".format(_time_s)
+					return "{:.2f}s".format(_time_s)
 				elif _time_s < 3600:
-					_time_mn = _time_s / 60.
-					return "{:.02f}mn".format(_time_mn)
+					_time_mn = np.int(_time_s % 60.)
+					_time_s = np.int((_time_s / 60) % 60)
+					return "{:d}mn {:d}s".format(_time_mn, _time_s)
 				else:
-					_time_hr = _time_s / 3600.
-					return "{:.02f}hr".format(_time_hr)
+					_time_hr = np.int(_time_s / 3600.)
+					_time_mn = np.int(_time_s % 60.)
+					_time_s = np.int((_time_s / 60) % 60)
+					return "{:d}hr {:d}mn {:d}s".format(_time_hr, _time_mn, _time_s)
 
 			str_time_before = _format_time(time_before_selected)
 			str_time_after = _format_time(time_after_selected)
