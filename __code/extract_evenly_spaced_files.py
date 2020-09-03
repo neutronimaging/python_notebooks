@@ -42,7 +42,7 @@ class ExtractEvenlySpacedFiles(object):
         return list_of_files_to_extract
 
     def _retrieve_list_of_files(self, folder_selected):
-        [self.list_files, _] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=folder_selected)
+        [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=folder_selected)
         self.list_of_files_to_extract = self.list_files
         self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
         self.basename_list_of_files_that_will_be_extracted = [os.path.basename(_file) for _file in self.list_files]

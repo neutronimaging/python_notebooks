@@ -43,7 +43,7 @@ class DisplayExportScreenshots(object):
         # images
         image_folder = self.folder_ui.selected
 
-        list_images = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=image_folder)
+        list_images = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=image_folder)
         list_images = list_images[0]
         self.nbr_images = len(list_images)
 

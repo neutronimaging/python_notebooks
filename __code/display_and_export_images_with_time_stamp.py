@@ -31,7 +31,7 @@ class DisplayExportScreenshots(object):
     def retrieve_time_stamp(self):
 
         self.image_folder = self.folder_ui.selected
-        [list_files, ext] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=self.image_folder)
+        [list_files, ext] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=self.image_folder)
         self.list_files = list_files
 
         if ext.lower() in ['.tiff', '.tif']:

@@ -250,10 +250,10 @@ def retrieve_metadata_from_dsc_list_files(list_files=[]):
     return metadata
 
 
-def retrieve_list_of_most_dominand_extension_from_folder(folder='', files=[]):
+def retrieve_list_of_most_dominant_extension_from_folder(folder='', files=[]):
     '''
-    This will return the list of files from the most dominand file extension found in the folder
-    as well as the most dominand extension used
+    This will return the list of files from the most dominant file extension found in the folder
+    as well as the most dominant extension used
     '''
 
     if folder:

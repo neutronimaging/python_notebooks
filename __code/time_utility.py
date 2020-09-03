@@ -104,7 +104,7 @@ class RetrieveTimeStamp(object):
 
     def _run(self):
 
-        [list_files, ext] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=self.folder,
+        [list_files, ext] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=self.folder,
                                                                                               files=self.input_list_files)
         self.output_list_files = list_files
 

@@ -20,7 +20,7 @@ class DisplayIntegratedStackOfImages(object):
 
     def __retrieve_files(self):
         input_folder = self.input_folder_ui.selected
-        list_files = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=input_folder)[0]
+        list_files = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=input_folder)[0]
         self.list_files = file_handler.remove_file_from_list(list_files=list_files,
                                                              regular_expression='.*_SummedImg.fits')
 

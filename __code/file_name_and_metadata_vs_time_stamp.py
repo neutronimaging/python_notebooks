@@ -212,7 +212,7 @@ class FileNameMetadataTimeStamp(object):
     def format_image_infos(self):
         self.input_folder = self.folder_ui.selected
 
-        list_files = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=self.input_folder)
+        list_files = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=self.input_folder)
         list_files = list_files[0]
 
         box = widgets.VBox([widgets.Label("Retrieving Time Stamp .......... IN PROGRESS")])

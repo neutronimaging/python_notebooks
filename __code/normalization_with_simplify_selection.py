@@ -135,7 +135,7 @@ class NormalizationWithSimplifySelection(object):
 		folder_sample_widget.show()
 
 	def retrieve_sample_metadata_from_sample_folder(self, sample_folder):
-		[list_of_images, _] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=sample_folder)
+		[list_of_images, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=sample_folder)
 		self.retrieve_sample_metadata(list_of_images)
 
 	def retrieve_sample_metadata(self, list_of_images):

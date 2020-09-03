@@ -26,7 +26,7 @@ class CombineImagesNByN(object):
         self.folder_widget.show()
 
     def _retrieve_number_of_files(self, folder_selected):
-        [self.list_files, _] = file_handler.retrieve_list_of_most_dominand_extension_from_folder(folder=folder_selected)
+        [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=folder_selected)
 
     def how_to_combine(self):
         _file = open("__docs/combine_images/geometric_mean.png", 'rb')
