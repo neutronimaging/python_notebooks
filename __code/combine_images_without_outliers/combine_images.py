@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class CombineImages:
+class CombineImagesAlgorithm:
 
 	def __init__(self, list_array=None):
 		if list_array is None:
@@ -38,3 +38,9 @@ class CombineImages:
 		mean_array = sum_array / (nbr_arrays - 2)
 
 		return mean_array
+
+
+class Interface:
+
+	def __init__(self):
+		pass
