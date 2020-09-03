@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_spacer='_'):
 	"""This method returns the continuous part of a string, from the beginning, that can be found
 	in all string provided. The match will stop before the last filename_spacer
@@ -10,12 +13,16 @@ def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_sp
 		raise ValueError("Please provide a list of string!")
 
 	split_list_of_text = [text.split(filename_spacer) for text in list_of_text]
+	split_list_of_text = np.array(split_list_of_text)
 
-	def intersection(lst1, lst2):
-		return [item for item in lst1 if item in lst2]
+	common_part = []
+	[_, nbr_argument] = split_list_of_text.shape
+	for _index in np.arange(nbr_argument):
+		_array = split_list_of_text[:, _index]
+		_set = set(_array)
+		if len(_set) > 1:
+			break
+		common_part.append(list(_set)[0])
 
-	list_reference = split_list_of_text[0]
-	for _list in split_list_of_text[1:]:
-		list_reference = intersection(list_reference, _list)
-
-	return filename_spacer.join(list_reference)
+	return filename_spacer.join(common_part
+	                            )
