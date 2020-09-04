@@ -273,7 +273,7 @@ class DFSelectionPanel(Panel):
     def next_button_clicked(self, event):
         self.remove()
         o_norm_handler = NormalizationHandler(files=self.files,
-                                              working_dir=self.working_dir,
+                                                working_dir=self.working_dir,
                                               gamma_threshold=self.gamma_threshold)
         o_norm_handler.load_data()
         self.top_object.o_norm_handler = o_norm_handler

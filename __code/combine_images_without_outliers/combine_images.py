@@ -5,9 +5,11 @@ from collections import OrderedDict
 from pathlib import Path
 import os
 
-from __code.ipywe import fileselector
+from NeuNorm.normalization import Normalization
+
 from __code.file_handler import retrieve_list_of_most_dominant_extension_from_folder
 from __code._utilities.string import get_beginning_common_part_of_string_from_list
+import ipywe.fileselector
 from __code import fileselector
 from __code.file_folder_browser import FileFolderBrowser
 from __code.file_handler import make_or_reset_folder
@@ -24,6 +26,7 @@ class CombineImagesAlgorithm:
 			raise ValueError("Please provide at least 3 arrays!")
 
 		self.check_arrays_have_same_size_and_dimensions(list_array=list_array)
+		self.mean_without_outliers(list_array=list_array)
 
 	@staticmethod
 	def check_arrays_have_same_size_and_dimensions(list_array=None):
@@ -75,7 +78,7 @@ class Interface:
 			self.select_data_folder_to_combine()
 
 	def select_data_folder_to_combine(self):
-		select_data = fileselector.FileSelectorPanel(instruction='Select folder of images to combine ...',
+		select_data = ipywe.fileselector.FileSelectorPanel(instruction='Select folder of images to combine ...',
 		                                                   start_dir=self.working_dir,
 		                                                   next=self.preview_combine_result,
 		                                                   type='directory',
@@ -192,17 +195,48 @@ class Interface:
 		                                  ipts_folder=self.ipts_folder)
 		self.o_folder.select_output_folder_with_new(instruction="Select where to create the combine data folder ...")
 
-		# o_folder = FileFolderBrowser(working_dir=self.working_dir,
-		#                              next_function=self.combine)
-		# o_folder.select_output_folder()
-
 	def combine(self, output_folder):
 		# remove shortcut buttons
 		self.o_folder.list_output_folders_ui.shortcut_buttons.close()
 
+		# create output folder
 		base_folder_name = os.path.basename(self.input_folder)
 		new_folder = base_folder_name + "_combined"
 		full_new_folder_name = os.path.join(os.path.abspath(output_folder), new_folder)
 		make_or_reset_folder(full_new_folder_name)
 
+		progress_ui = widgets.IntProgress(value=0,
+		                                  min=0,
+		                                  max=len(self.full_combine_dict.keys()))
+		display(progress_ui)
+		_index = 0
+
+		for _base_name in self.full_combine_dict.keys():
+			file_name = "{}_{:05d}.tiff".format(_base_name, _index)
+			full_file_name = os.path.join(full_new_folder_name, file_name)
+
+			list_files_to_combine_fullname = [os.path.join(self.input_folder, _file)
+			                                  for _file
+			                                  in self.full_combine_dict[_base_name]]
+
+			o_work = Normalization()
+			o_work.load(file=list_files_to_combine_fullname,
+			            auto_gamma_filter=False)
+
+			list_data = o_work.data['sample']['data']
+			o_combine = CombineImagesAlgorithm(list_array=list_data)
+			new_array = o_combine.mean_without_outliers(list_array=list_data)
+
+			o_work.data['sample']['data'] = [new_array]
+			o_work.data['sample']['file_name'] = [full_file_name]
+
+			o_work.export(folder=full_new_folder_name, data_type='sample')
+
+			_index += 1
+			progress_ui.value = _index
+
+		progress_ui.close()
+
+		display(HTML('<span style="font-size: 20px; color:blue">' + str(_index) + \
+	                 ' files have been created in ' + full_new_folder_name + '</span>'))
 
