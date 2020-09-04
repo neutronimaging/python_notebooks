@@ -1,6 +1,9 @@
 import numpy as np
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
+from collections import OrderedDict
+from pathlib import Path
+import os
 
 from __code.ipywe import fileselector
 from __code.file_handler import retrieve_list_of_most_dominant_extension_from_folder
@@ -48,6 +51,19 @@ class CombineImagesAlgorithm:
 
 class Interface:
 
+	# after removing those characters from the end of file name, match same base file name
+	nbr_character_to_remove = 0
+
+	# full_combine_dict = {'20200821_Femur_0010_000_000': {['20200821_Femur_0010_000_000_00000.tiff',
+	#                                                       '20200821_Femur_0010_000_000_00001.tiff',
+	#                                                       '20200821_Femur_0010_000_000_00002.tiff']},
+	#                      '20200821_Femur_0010_000_113': {['20200821_Femur_0010_000_113_00003.tiff',
+	#                                                       '20200821_Femur_0010_000_113_00004.tiff',
+	#                                                       '20200821_Femur_0010_000_113_00005.tiff']},
+	#                      ...}
+	full_combine_dict = OrderedDict()
+	block_preview = True
+
 	def __init__(self, working_dir="", debugging=False):
 		self.working_dir = working_dir
 		if not debugging:
@@ -62,7 +78,11 @@ class Interface:
 		select_data.show()
 
 	def preview_combine_result(self, data_folder):
+
 		list_of_input_filenames = retrieve_list_of_most_dominant_extension_from_folder(folder=data_folder)[0]
+		self.input_folder = str(Path(list_of_input_filenames[0]).parent)
+		list_of_input_filenames = [os.path.basename(_file) for _file in list_of_input_filenames]
+		self.list_of_input_filenames = list_of_input_filenames
 
 		display(HTML('<span style="font-size: 20px; color:blue">SELECT ONLY the first images to '
 		             'combine into 1 image! (Select at least 3 images)</span>'))
@@ -81,33 +101,72 @@ class Interface:
 		display(hori_layout)
 		self.prefix_filename_widget = hori_layout.children[1]
 
+		select_width = "400px"
+		select_height = "300px"
 		new_name_verti_layout = widgets.VBox([widgets.Label("New list of files"),
 		                                      widgets.Select(options=[],
-		                                                     layout=widgets.Layout(width="100%%",
-		                                                                           height="300px"))],
-		                                     layout=widgets.Layout(width='300px'))
-		old_name_verti_layout = widgets.VBox([widgets.Label("Combined files"),
+		                                                     layout=widgets.Layout(width="100%",
+		                                                                           height=select_height))],
+		                                     layout=widgets.Layout(width=select_width))
+		old_name_verti_layout = widgets.VBox([widgets.Label("Corresponding combined files"),
 		                                      widgets.Select(options=[],
 		                                                     layout=widgets.Layout(width="100%",
-		                                                                           height="300px"))],
-		                                     layout=widgets.Layout(width='300px'))
+		                                                                           height=select_height))],
+		                                     layout=widgets.Layout(width=select_width))
 
 		hori_layout_2 = widgets.HBox([new_name_verti_layout,
 		                              widgets.Label("  "),
-		                              old_name_verti_layout])
+		                              old_name_verti_layout],
+		                             layout=widgets.Layout(width="900px"))
 		display(hori_layout_2)
+		self.hori_layout_2 = hori_layout_2
+		hori_layout_2.layout.visibility = self.get_preview_visibility()
+		self.final_list_of_files_combined_renamed_widget = new_name_verti_layout.children[1]
 
-
-
-
+	def get_preview_visibility(self):
+		if self.block_preview:
+			return 'hidden'
+		else:
+			return 'visible'
 
 	def input_selection_changed(self, value):
 		list_of_files_selected = value['new']
 		if len(list_of_files_selected) < 3:
 			message = "Not Enough images selected to correctly combine!"
+			self.block_preview = True
 		else:
 			message = get_beginning_common_part_of_string_from_list(list_of_text=list_of_files_selected)
+			self.block_preview = False
 		self.prefix_filename_widget.value = message
+		self.hori_layout_2.layout.visibility = self.get_preview_visibility()
+
+		len_string_before = len(list_of_files_selected[0])
+		self.len_string_after = len(message)
+		self.nbr_character_to_remove = len_string_before - self.len_string_after
+
+		self.update_result_of_combination_summary()
+
+	def update_result_of_combination_summary(self):
+
+		full_combine_dict = OrderedDict()
+		list_of_input_filenames = self.list_of_input_filenames
+		final_list_of_combined_images_renamed = []
+
+		_index = 0
+		for _file in list_of_input_filenames:
+			base_file_name = _file[:self.len_string_after]
+			try:
+				full_combine_dict[base_file_name].append(_file)
+			except KeyError:
+				full_combine_dict[base_file_name] = [_file]
+				new_name = "{}_{:05d}".format(base_file_name, _index)
+				final_list_of_combined_images_renamed.append(new_name)
+				_index += 1
+
+		self.full_combine_dict = full_combine_dict
+
+		self.final_list_of_files_combined_renamed_widget.options = final_list_of_combined_images_renamed
+
 
 
 
