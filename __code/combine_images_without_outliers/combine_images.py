@@ -8,6 +8,9 @@ import os
 from __code.ipywe import fileselector
 from __code.file_handler import retrieve_list_of_most_dominant_extension_from_folder
 from __code._utilities.string import get_beginning_common_part_of_string_from_list
+from __code import fileselector
+from __code.file_folder_browser import FileFolderBrowser
+from __code.file_handler import make_or_reset_folder
 
 
 class CombineImagesAlgorithm:
@@ -67,6 +70,7 @@ class Interface:
 
 	def __init__(self, working_dir="", debugging=False):
 		self.working_dir = working_dir
+		self.ipts_folder = self.working_dir
 		if not debugging:
 			self.select_data_folder_to_combine()
 
@@ -181,4 +185,24 @@ class Interface:
 			base_name = dict_new_name_old_base_name_match[new_selection]
 			corresponding_list_of_files = self.full_combine_dict[base_name]
 			self.corresponding_list_of_files_combined.options = corresponding_list_of_files
+
+	def select_output_folder(self):
+		self.o_folder = FileFolderBrowser(working_dir=self.working_dir,
+		                                  next_function=self.combine,
+		                                  ipts_folder=self.ipts_folder)
+		self.o_folder.select_output_folder_with_new(instruction="Select where to create the combine data folder ...")
+
+		# o_folder = FileFolderBrowser(working_dir=self.working_dir,
+		#                              next_function=self.combine)
+		# o_folder.select_output_folder()
+
+	def combine(self, output_folder):
+		# remove shortcut buttons
+		self.o_folder.list_output_folders_ui.shortcut_buttons.close()
+
+		base_folder_name = os.path.basename(self.input_folder)
+		new_folder = base_folder_name + "_combined"
+		full_new_folder_name = os.path.join(os.path.abspath(output_folder), new_folder)
+		make_or_reset_folder(full_new_folder_name)
+
 

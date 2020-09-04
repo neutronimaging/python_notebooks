@@ -325,7 +325,7 @@ class BraggEdge(BraggEdgeParent):
 
     def select_output_table_folder(self):
         o_folder = FileFolderBrowser(working_dir=self.working_dir,
-                                     next=self.export_table)
+                                     next_function=self.export_table)
         o_folder.select_output_folder()
 
     def export_table(self, output_folder):
