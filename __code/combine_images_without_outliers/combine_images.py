@@ -54,9 +54,10 @@ class Interface:
 	# after removing those characters from the end of file name, match same base file name
 	nbr_character_to_remove = 0
 
+	dict_new_name_old_base_name_match = {}
 	# full_combine_dict = {'20200821_Femur_0010_000_000': {['20200821_Femur_0010_000_000_00000.tiff',
 	#                                                       '20200821_Femur_0010_000_000_00001.tiff',
-	#                                                       '20200821_Femur_0010_000_000_00002.tiff']},
+	#                                                       '20200821_Femur_0010_000_000_00002.tiff'],},
 	#                      '20200821_Femur_0010_000_113': {['20200821_Femur_0010_000_113_00003.tiff',
 	#                                                       '20200821_Femur_0010_000_113_00004.tiff',
 	#                                                       '20200821_Femur_0010_000_113_00005.tiff']},
@@ -94,8 +95,8 @@ class Interface:
 		input_selection_widget = verti_layout.children[0]
 		input_selection_widget.observe(self.input_selection_changed, names='value')
 
-		hori_layout = widgets.HBox([widgets.Label("Prefix new filename will be ->",
-		                                          layout=widgets.Layout(width='15%')),
+		hori_layout = widgets.HBox([widgets.Label("Prefix of new filename will be ->",
+		                                          layout=widgets.Layout(width='20%')),
 		                            widgets.Label("Not Enough images selected to correctly combine!",
 		                                          layout=widgets.Layout(width='80%'))])
 		display(hori_layout)
@@ -108,6 +109,7 @@ class Interface:
 		                                                     layout=widgets.Layout(width="100%",
 		                                                                           height=select_height))],
 		                                     layout=widgets.Layout(width=select_width))
+		new_name_verti_layout.children[1].observe(self.new_list_of_files_selection_changed, names='value')
 		old_name_verti_layout = widgets.VBox([widgets.Label("Corresponding combined files"),
 		                                      widgets.Select(options=[],
 		                                                     layout=widgets.Layout(width="100%",
@@ -122,6 +124,7 @@ class Interface:
 		self.hori_layout_2 = hori_layout_2
 		hori_layout_2.layout.visibility = self.get_preview_visibility()
 		self.final_list_of_files_combined_renamed_widget = new_name_verti_layout.children[1]
+		self.corresponding_list_of_files_combined = old_name_verti_layout.children[1]
 
 	def get_preview_visibility(self):
 		if self.block_preview:
@@ -147,10 +150,13 @@ class Interface:
 		self.update_result_of_combination_summary()
 
 	def update_result_of_combination_summary(self):
+		if self.block_preview:
+			return
 
 		full_combine_dict = OrderedDict()
 		list_of_input_filenames = self.list_of_input_filenames
 		final_list_of_combined_images_renamed = []
+		dict_new_name_old_base_name_match = {}
 
 		_index = 0
 		for _file in list_of_input_filenames:
@@ -160,14 +166,19 @@ class Interface:
 			except KeyError:
 				full_combine_dict[base_file_name] = [_file]
 				new_name = "{}_{:05d}".format(base_file_name, _index)
+				dict_new_name_old_base_name_match[new_name] = base_file_name
 				final_list_of_combined_images_renamed.append(new_name)
 				_index += 1
 
 		self.full_combine_dict = full_combine_dict
-
 		self.final_list_of_files_combined_renamed_widget.options = final_list_of_combined_images_renamed
+		self.dict_new_name_old_base_name_match = dict_new_name_old_base_name_match
 
-
-
-
+	def new_list_of_files_selection_changed(self, value):
+		new_selection = value['new']
+		dict_new_name_old_base_name_match = self.dict_new_name_old_base_name_match
+		if dict_new_name_old_base_name_match:
+			base_name = dict_new_name_old_base_name_match[new_selection]
+			corresponding_list_of_files = self.full_combine_dict[base_name]
+			self.corresponding_list_of_files_combined.options = corresponding_list_of_files
 
