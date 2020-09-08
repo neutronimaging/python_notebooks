@@ -39,7 +39,7 @@ class Interface(QMainWindow):
                                           'b0': 1,
                                           'ahkl': 1,
                                           'bhkl': 1,
-                                          'tofhkl': 1e-6,
+                                          'ldahkl': 1e-6,
                                           'tau': 1,
                                           'sigma': [1e-7, 1e-6, 1e-5]}}
 
@@ -116,10 +116,10 @@ class Interface(QMainWindow):
     #                                                                          'bhkl': None,
     #                                                                          'ahkl_error': None,
     #                                                                          'bhkl_error': None},
-    #                                                                  'bragg_peak: {'tofhkl': None,
+    #                                                                  'bragg_peak: {'ldahkl': None,
     #                                                                                'tau': None,
     #                                                                                'sigma': None,
-    #                                                                                'tofhkl_error': None,
+    #                                                                                'ldahkl_error': None,
     #                                                                                'tau_error': None,
     #                                                                                'sigma_error': None},
     #                                                                 },
@@ -456,8 +456,8 @@ class Interface(QMainWindow):
             current_region['profile'] = profile
 
     def select_first_row_of_all_fitting_table(self):
-        self.ui.high_tof_tableWidget.selectRow(0)
-        self.ui.low_tof_tableWidget.selectRow(0)
+        self.ui.high_lda_tableWidget.selectRow(0)
+        self.ui.low_lda_tableWidget.selectRow(0)
         self.ui.bragg_edge_tableWidget.selectRow(0)
         self.ui.march_dollase_result_table.selectRow(0)
 
@@ -546,10 +546,10 @@ class Interface(QMainWindow):
         o_import.run()
 
     def full_reset_of_ui(self):
-        o_table = TableHandler(table_ui=self.ui.high_tof_tableWidget)
+        o_table = TableHandler(table_ui=self.ui.high_lda_tableWidget)
         o_table.remove_all_rows()
 
-        o_table = TableHandler(table_ui=self.ui.low_tof_tableWidget)
+        o_table = TableHandler(table_ui=self.ui.low_lda_tableWidget)
         o_table.remove_all_rows()
 
         o_table = TableHandler(table_ui=self.ui.bragg_edge_tableWidget)
@@ -559,8 +559,8 @@ class Interface(QMainWindow):
         o_table.remove_all_rows()
 
     def block_table_ui(self, flag):
-        list_ui = [self.ui.high_tof_tableWidget,
-                   self.ui.low_tof_tableWidget,
+        list_ui = [self.ui.high_lda_tableWidget,
+                   self.ui.low_lda_tableWidget,
                    self.ui.bragg_edge_tableWidget,
                    self.ui.march_dollase_result_table]
         for _ui in list_ui:
@@ -629,7 +629,7 @@ class Interface(QMainWindow):
         self.switch_fitting_axis_to('tof')
         o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='high')
-        o_fit.run_kropff_high_tof(update_table_ui=True)
+        o_fit.run_kropff_high_lambda(update_table_ui=True)
         self.update_fitting_plot()
         self.update_kropff_fit_table_graph(fit_region='high')
 
@@ -637,7 +637,7 @@ class Interface(QMainWindow):
         self.switch_fitting_axis_to('tof')
         o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='low')
-        o_fit.run_kropff_low_tof(update_table_ui=True)
+        o_fit.run_kropff_low_lambda(update_table_ui=True)
         self.update_fitting_plot()
         self.update_kropff_fit_table_graph(fit_region='low')
 

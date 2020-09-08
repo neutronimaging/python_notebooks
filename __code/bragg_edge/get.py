@@ -129,8 +129,8 @@ class Get:
 		"""high, low or bragg_peak"""
 		list_pages = ["Bragg peak selection", "high", "low", "bragg_peak"]
 		list_table_ui = [None,
-		                 self.parent.ui.high_tof_tableWidget,
-		                 self.parent.ui.low_tof_tableWidget,
+		                 self.parent.ui.high_lda_tableWidget,
+		                 self.parent.ui.low_lda_tableWidget,
 		                 self.parent.ui.bragg_edge_tableWidget]
 
 		page_index = self.parent.ui.kropff_toolBox.currentIndex()

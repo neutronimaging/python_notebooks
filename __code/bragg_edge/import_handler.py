@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from __code.file_handler import read_bragg_edge_fitting_ascii_format
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
-from __code.bragg_edge.fitting_functions import kropff_high_tof, kropff_low_tof, kropff_bragg_peak_tof
+from __code.bragg_edge.fitting_functions import kropff_high_lambda, kropff_low_lambda, kropff_bragg_peak_tof
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.bragg_edge_selection_tab import BraggEdgeSelectionTab
 from __code.bragg_edge.kropff import Kropff
@@ -175,9 +175,9 @@ class ImportHandler:
                                                                                                 'kropff']['a0'])
             kropff_b0 = np.NaN if columns_roi[str_col]['kropff']['b0'] == 'None' else np.float(columns_roi[str_col][
                                                                                                 'kropff']['b0'])
-            yaxis_fitted = kropff_high_tof(xaxis_to_fit*1e-6,
-                                           kropff_a0,
-                                           kropff_b0)
+            yaxis_fitted = kropff_high_lambda(xaxis_to_fit * 1e-6,
+                                              kropff_a0,
+                                              kropff_b0)
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['yaxis_fitted'] = \
                 yaxis_fitted
 
@@ -201,23 +201,23 @@ class ImportHandler:
             kropff_bhkl = np.NaN if columns_roi[str_col]['kropff']['bhkl'] == 'None' else np.float(columns_roi[str_col][
                                                                                                 'kropff']['bhkl'])
 
-            yaxis_fitted = kropff_low_tof(xaxis_to_fit*1e-6,
-                                         kropff_a0,
-                                         kropff_b0,
-                                         kropff_ahkl,
-                                         kropff_bhkl)
+            yaxis_fitted = kropff_low_lambda(xaxis_to_fit * 1e-6,
+                                             kropff_a0,
+                                             kropff_b0,
+                                             kropff_ahkl,
+                                             kropff_bhkl)
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['yaxis_fitted'] = \
                 yaxis_fitted
 
             # Bragg peak
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tofhkl'] = \
-                columns_roi[str_col]['kropff']['tofhkl']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['ldahkl'] = \
+                columns_roi[str_col]['kropff']['ldahkl']
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau'] = \
                 columns_roi[str_col]['kropff']['tau']
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma'] = \
                 columns_roi[str_col]['kropff']['sigma']
-            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tofhkl_error'] = \
-                columns_roi[str_col]['kropff']['tofhkl_error']
+            self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['ldahkl_error']\
+                = columns_roi[str_col]['kropff']['ldahkl_error']
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['tau_error'] = \
                 columns_roi[str_col]['kropff']['tau_error']
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['sigma_error']\
@@ -233,10 +233,10 @@ class ImportHandler:
             kropff_tau = np.NaN if columns_roi[str_col]['kropff']['tau'] == 'None' else np.float(columns_roi[
                                                                                                      str_col][
                                                                                                      'kropff']['tau'])
-            kropff_tofhkl = np.NaN if columns_roi[str_col]['kropff']['tofhkl'] == 'None' else np.float(columns_roi[
+            kropff_ldahkl = np.NaN if columns_roi[str_col]['kropff']['ldahkl'] == 'None' else np.float(columns_roi[
                                                                                                      str_col][
                                                                                                      'kropff'][
-                                                                                                           'tofhkl'])
+                                                                                                           'ldahkl'])
             kropff_sigma = np.NaN if columns_roi[str_col]['kropff']['sigma'] == 'None' else np.float(columns_roi[
                                                                                                      str_col][
                                                                                                      'kropff'][
@@ -247,7 +247,7 @@ class ImportHandler:
                                                  kropff_b0,
                                                  kropff_ahkl,
                                                  kropff_bhkl,
-                                                 kropff_tofhkl,
+                                                 kropff_ldahkl,
                                                  kropff_sigma,
                                                  kropff_tau)
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['bragg_peak']['yaxis_fitted']\

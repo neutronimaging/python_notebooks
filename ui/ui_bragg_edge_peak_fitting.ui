@@ -605,7 +605,7 @@
           </property>
           <widget class="QTabWidget" name="tab_algorithm">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab_3">
             <attribute name="title">
@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
@@ -773,7 +773,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="kropff_high_tof_a0_init"/>
+                     <widget class="QLineEdit" name="kropff_high_lda_a0_init"/>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_15">
@@ -783,7 +783,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="kropff_high_tof_b0_init"/>
+                     <widget class="QLineEdit" name="kropff_high_lda_b0_init"/>
                     </item>
                     <item>
                      <spacer name="horizontalSpacer_7">
@@ -819,7 +819,7 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_15">
                      <item>
-                      <widget class="QTableWidget" name="high_tof_tableWidget">
+                      <widget class="QTableWidget" name="high_lda_tableWidget">
                        <property name="alternatingRowColors">
                         <bool>true</bool>
                        </property>
@@ -915,7 +915,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="kropff_low_tof_ahkl_init"/>
+                     <widget class="QLineEdit" name="kropff_low_lda_ahkl_init"/>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_19">
@@ -925,7 +925,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="kropff_low_tof_bhkl_init"/>
+                     <widget class="QLineEdit" name="kropff_low_lda_bhkl_init"/>
                     </item>
                     <item>
                      <spacer name="horizontalSpacer_9">
@@ -961,7 +961,7 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_17">
                      <item>
-                      <widget class="QTableWidget" name="low_tof_tableWidget">
+                      <widget class="QTableWidget" name="low_lda_tableWidget">
                        <property name="alternatingRowColors">
                         <bool>true</bool>
                        </property>
@@ -1052,12 +1052,12 @@
                     <item>
                      <widget class="QLabel" name="label_20">
                       <property name="text">
-                       <string>tof_hkl</string>
+                       <string>lambda_hkl</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="kropff_bragg_peak_tofhkl_init"/>
+                     <widget class="QLineEdit" name="kropff_bragg_peak_ldahkl_init"/>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_21">
@@ -1109,7 +1109,7 @@
                  <item>
                   <widget class="QTabWidget" name="tabWidget_4">
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="tab_9">
                     <attribute name="title">
@@ -1181,9 +1181,9 @@
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_17">
                        <item>
-                        <widget class="QRadioButton" name="kropff_tof_hkl_radioButton">
+                        <widget class="QRadioButton" name="kropff_lda_hkl_radioButton">
                          <property name="text">
-                          <string>tof_hkl</string>
+                          <string>lambda_hkl</string>
                          </property>
                          <property name="checked">
                           <bool>true</bool>
@@ -2107,7 +2107,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>high_tof_tableWidget</sender>
+   <sender>high_lda_tableWidget</sender>
    <signal>itemSelectionChanged()</signal>
    <receiver>MainWindow</receiver>
    <slot>high_lambda_table_clicked()</slot>
@@ -2123,7 +2123,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>low_tof_tableWidget</sender>
+   <sender>low_lda_tableWidget</sender>
    <signal>itemSelectionChanged()</signal>
    <receiver>MainWindow</receiver>
    <slot>low_lambda_table_clicked()</slot>
@@ -2251,7 +2251,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>kropff_tof_hkl_radioButton</sender>
+   <sender>kropff_lda_hkl_radioButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>update_kropff_bragg_peak_plot()</slot>

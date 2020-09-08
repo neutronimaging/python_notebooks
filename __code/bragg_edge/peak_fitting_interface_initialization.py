@@ -120,7 +120,7 @@ class Initialization:
 		column_names = [u'x\u2080; y\u2080; width; height', u'a\u2080', u'b\u2080', u'a\u2080_error',
 		                u'b\u2080_error']
 		column_sizes = [150, 100, 100, 100, 100]
-		o_high = TableHandler(table_ui=self.parent.ui.high_tof_tableWidget)
+		o_high = TableHandler(table_ui=self.parent.ui.high_lda_tableWidget)
 		for _col_index, _col_name in enumerate(column_names):
 			o_high.insert_column(_col_index)
 		o_high.set_column_names(column_names=column_names)
@@ -132,7 +132,7 @@ class Initialization:
 		                u'a_hkl_error',
 		                u'b_hkl_error']
 		column_sizes = [150, 100, 100, 100, 100]
-		o_low = TableHandler(table_ui=self.parent.ui.low_tof_tableWidget)
+		o_low = TableHandler(table_ui=self.parent.ui.low_lda_tableWidget)
 		for _col_index, _col_name in enumerate(column_names):
 			o_low.insert_column(_col_index)
 		o_low.set_column_names(column_names=column_names)
@@ -204,12 +204,12 @@ class Initialization:
 		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
 		self.parent.ui.detector_offset.setText(str(self.detector_offset))
 
-		self.parent.ui.kropff_high_tof_a0_init.setText(str(self.parent.fitting_parameters_init['kropff']['a0']))
-		self.parent.ui.kropff_high_tof_b0_init.setText(str(self.parent.fitting_parameters_init['kropff']['b0']))
-		self.parent.ui.kropff_low_tof_ahkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['ahkl']))
-		self.parent.ui.kropff_low_tof_bhkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['bhkl']))
-		self.parent.ui.kropff_bragg_peak_tofhkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
-			                                                         'tofhkl']))
+		self.parent.ui.kropff_high_lda_a0_init.setText(str(self.parent.fitting_parameters_init['kropff']['a0']))
+		self.parent.ui.kropff_high_lda_b0_init.setText(str(self.parent.fitting_parameters_init['kropff']['b0']))
+		self.parent.ui.kropff_low_lda_ahkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['ahkl']))
+		self.parent.ui.kropff_low_lda_bhkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['bhkl']))
+		self.parent.ui.kropff_bragg_peak_ldahkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
+			                                                         'ldahkl']))
 		self.parent.ui.kropff_bragg_peak_tau_init.setText(str(self.parent.fitting_parameters_init['kropff']['tau']))
 		# list_sigma = self.parent.fitting_parameters_init['kropff']['sigma']
 		# list_sigma = [str(_value) for _value in list_sigma]

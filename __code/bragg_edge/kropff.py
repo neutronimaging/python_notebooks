@@ -17,8 +17,8 @@ class Kropff:
 	def __init__(self, parent=None):
 		self.parent = parent
 
-		self.table_ui = {'high_tof': self.parent.ui.high_tof_tableWidget,
-		                 'low_tof' : self.parent.ui.low_tof_tableWidget,
+		self.table_ui = {'high_lda': self.parent.ui.high_lda_tableWidget,
+		                 'low_lda' : self.parent.ui.low_lda_tableWidget,
 		                 'bragg_peak' : self.parent.ui.bragg_edge_tableWidget}
 
 	def reset_all_table(self):
@@ -27,12 +27,12 @@ class Kropff:
 		self.reset_bragg_peak_table()
 
 	def reset_high_lambda_table(self):
-		self.clear_table(table_name='high_tof')
-		self.fill_table_with_minimum_contain(table_ui=self.table_ui['high_tof'])
+		self.clear_table(table_name='high_lda')
+		self.fill_table_with_minimum_contain(table_ui=self.table_ui['high_lda'])
 
 	def reset_low_lambda_table(self):
-		self.clear_table(table_name='low_tof')
-		self.fill_table_with_minimum_contain(table_ui=self.table_ui['low_tof'])
+		self.clear_table(table_name='low_lda')
+		self.fill_table_with_minimum_contain(table_ui=self.table_ui['low_lda'])
 
 	def reset_bragg_peak_table(self):
 		self.clear_table(table_name='bragg_peak')
@@ -66,7 +66,7 @@ class Kropff:
 	def fill_table_with_fitting_information(self):
 		fitting_input_dictionary = self.parent.fitting_input_dictionary
 
-		o_table = TableHandler(table_ui=self.table_ui['high_tof'])
+		o_table = TableHandler(table_ui=self.table_ui['high_lda'])
 		_col = 1
 		for _row in fitting_input_dictionary['rois'].keys():
 			_entry = fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
@@ -75,7 +75,7 @@ class Kropff:
 			o_table.set_item_with_float(_row, _col+2, _entry['a0_error'])
 			o_table.set_item_with_float(_row, _col+3, _entry['b0_error'])
 
-		o_table = TableHandler(table_ui=self.table_ui['low_tof'])
+		o_table = TableHandler(table_ui=self.table_ui['low_lda'])
 		_col = 1
 		for _row in fitting_input_dictionary['rois'].keys():
 			_entry = fitting_input_dictionary['rois'][_row]['fitting']['kropff']['low']
@@ -88,10 +88,10 @@ class Kropff:
 		_col = 1
 		for _row in fitting_input_dictionary['rois'].keys():
 			_entry = fitting_input_dictionary['rois'][_row]['fitting']['kropff']['bragg_peak']
-			o_table.set_item_with_float(_row, _col, _entry['tofhkl'])
+			o_table.set_item_with_float(_row, _col, _entry['ldahkl'])
 			o_table.set_item_with_float(_row, _col+1, _entry['tau'])
 			o_table.set_item_with_float(_row, _col+2, _entry['sigma'])
-			o_table.set_item_with_float(_row, _col+3, _entry['tofhkl_error'])
+			o_table.set_item_with_float(_row, _col+3, _entry['ldahkl_error'])
 			o_table.set_item_with_float(_row, _col+4, _entry['tau_error'])
 			o_table.set_item_with_float(_row, _col+5, _entry['sigma_error'])
 
@@ -168,7 +168,7 @@ class Kropff:
 				metadata.append("# ahkl: {}".format(ahkl))
 				metadata.append("# bhkl: {}".format(bhkl))
 				metadata.append("#")
-				metadata.append("# tof (micros), average transmission")
+				metadata.append("# lambda (Angstroms), average transmission")
 
 				make_ascii_file_from_2dim_array(metadata=metadata,
 				                                col1=x_axis,
@@ -190,7 +190,7 @@ class Kropff:
 		list_of_rows_to_select = []
 		fitting_input_dictionary_rois = self.parent.fitting_input_dictionary['rois']
 		for _row in fitting_input_dictionary_rois.keys():
-			_thkl = np.float(fitting_input_dictionary_rois[_row]['fitting']['kropff']['bragg_peak']['tofhkl'])
+			_thkl = np.float(fitting_input_dictionary_rois[_row]['fitting']['kropff']['bragg_peak']['ldahkl'])
 			if _thkl < 0:
 				list_of_rows_to_select.append(_row)
 
@@ -288,7 +288,7 @@ class Kropff:
 				                                           name_of_page, 'xaxis_to_fit']):
 
 					# show fit only if tof scale selected
-					if x_axis_selected == 'tof':
+					if x_axis_selected == 'lambda':
 						_entry = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
 						xaxis = _entry['xaxis_to_fit']
 						yaxis = _entry['yaxis_fitted']

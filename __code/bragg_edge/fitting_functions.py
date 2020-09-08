@@ -3,25 +3,25 @@ from scipy import special
 import math
 
 
-def kropff_high_tof(tof, a0, b0):
+def kropff_high_lambda(lda, a0, b0):
 	"""Equation 7.2 found in Development and application of Bragg edge neutron transmission
 	imaging on the IMAT beamline. Thesis by Ranggi Sahmura Ramadhan. June 2019
 	:param
-	tof (tof)
+	lda (Lambda - Angstroms)
 	a0 parameter to fit
 	b0 parameter to fit
 	"""
 	if (a0 == np.NaN) or (b0 == np.NaN):
 		return None
-	exp_expression = np.exp(-(a0 + b0 * tof))
+	exp_expression = np.exp(-(a0 + b0 * lda))
 	return exp_expression
 
 
-def kropff_low_tof(tof, a0, b0, ahkl, bhkl):
+def kropff_low_lambda(lda, a0, b0, ahkl, bhkl):
 	"""Equation 7.3 found in Development and application of Bragg edge neutron transmission
 	imaging on the IMAT beamline. Thesis by Ranggi Sahmura Ramadhan. June 2019
 	:param
-	tof (tof)
+	lda (Lambda - Angstroms)
 	a0 fix parameter
 	b0 fix parameter
 	ahkl parameter to fit
@@ -29,36 +29,36 @@ def kropff_low_tof(tof, a0, b0, ahkl, bhkl):
 	"""
 	if (a0 == np.NaN) or (b0 == np.NaN) or (ahkl == np.NaN) or (bhkl == np.NaN):
 		return None
-	exp_expression_1 = np.exp(-(a0 + b0 * tof))
-	exp_expression_2 = np.exp(-(ahkl + bhkl * tof))
+	exp_expression_1 = np.exp(-(a0 + b0 * lda))
+	exp_expression_2 = np.exp(-(ahkl + bhkl * lda))
 	return exp_expression_1 * exp_expression_2
 
 
-def kropff_bragg_peak_tof(tof, a0, b0, ahkl, bhkl, tofhkl, sigma, tau):
+def kropff_bragg_peak_tof(lda, a0, b0, ahkl, bhkl, ldahkl, sigma, tau):
 	"""Equation 4.3 and 4.4 found in Development and application of Bragg edge neutron transmission
 	imaging on the IMAT beamline. Thesis by Ranggi Sahmura Ramadhan. June 2019
 	:param
-	tof (tof)
+	lda (Lambda - Angstroms)
 	a0 fix parameter
 	b0 fix parameter
 	ahkl fix parameter
 	bhkl fix parameter
-	tofhkl parameter to fit
+	ldahkl parameter to fit
 	tau parameter to fit
 	sigma parameter to fit
 	"""
-	def B(tofhkl, sigma, tau, tof):
+	def B(ldahkl, sigma, tau, lda):
 		const1 = (sigma*sigma) / (2 * tau*tau)
 		const2 = sigma / tau
 
-		part1 = special.erfc(-(tof - tofhkl) / (np.sqrt(2) * sigma))
-		part2 = np.exp((-(tof - tofhkl) / tau) + const1)
-		part3 = special.erfc((-(tof - tofhkl)/(np.sqrt(2) * sigma)) + const2)
+		part1 = special.erfc(-(lda - ldahkl) / (np.sqrt(2) * sigma))
+		part2 = np.exp((-(lda - ldahkl) / tau) + const1)
+		part3 = special.erfc((-(lda - ldahkl)/(np.sqrt(2) * sigma)) + const2)
 		return 0.5 * (part1 - part2 * part3)
 
-	exp_expression_1 = np.exp(-(a0 + b0 * tof))
-	exp_expression_2 = np.exp(-(ahkl + bhkl * tof))
-	expression_3 = (1 - np.exp(-(ahkl + bhkl * tof)) * B(tofhkl, sigma, tau, tof))
+	exp_expression_1 = np.exp(-(a0 + b0 * lda))
+	exp_expression_2 = np.exp(-(ahkl + bhkl * lda))
+	expression_3 = (1 - np.exp(-(ahkl + bhkl * lda)) * B(ldahkl, sigma, tau, lda))
 
 	return exp_expression_1 * (exp_expression_2 + expression_3)
 

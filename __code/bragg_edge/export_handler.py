@@ -159,10 +159,10 @@ class ExportHandler:
 			                               'bhkl': _entry_low['bhkl'],
 			                               'ahkl_error': _entry_low['ahkl_error'],
 			                               'bhkl_error': _entry_low['bhkl_error'],
-			                               'tofhkl': _entry_bragg_peak['tofhkl'],
+			                               'ldahkl': _entry_bragg_peak['ldahkl'],
 			                               'tau': _entry_bragg_peak['tau'],
 			                               'sigma': _entry_bragg_peak['sigma'],
-			                               'tofhkl_error': _entry_bragg_peak['tofhkl_error'],
+			                               'ldahkl_error': _entry_bragg_peak['ldahkl_error'],
 			                               'tau_error': _entry_bragg_peak['tau_error'],
 			                               'sigma_error': _entry_bragg_peak['sigma_error'],
 			                               }
@@ -198,10 +198,10 @@ class ExportHandler:
 			bhkl = _entry_kropff['bhkl']
 			ahkl_error = _entry_kropff['ahkl_error']
 			bhkl_error = _entry_kropff['bhkl_error']
-			tofhkl = _entry_kropff['tofhkl']
+			ldahkl = _entry_kropff['ldahkl']
 			tau = _entry_kropff['tau']
 			sigma = _entry_kropff['sigma']
-			tofhkl_error = _entry_kropff['tofhkl_error']
+			ldahkl_error = _entry_kropff['ldahkl_error']
 			tau_error = _entry_kropff['tau_error']
 			sigma_error = _entry_kropff['sigma_error']
 
@@ -224,8 +224,8 @@ class ExportHandler:
 			metadata.append("#column {} -> x0:{}, y0:{}, width:{}, height:{},"
 			                " kropff: a0:{}, b0:{}, a0_error:{}, b0_error:{},"
 			                " ahkl:{}, bhkl:{}, ahkl_error:{}, bhkl_error:{},"
-			                " tofhkl:{}, tau:{}, sigma:{},"
-			                " tofhkl_error:{}, tau_error:{}, sigma_error:{},"
+			                " ldahkl:{}, tau:{}, sigma:{},"
+			                " ldahkl_error:{}, tau_error:{}, sigma_error:{},"
 			                " march_dollase: d_spacing:{}, sigma:{}, alpha:{},"
 			                " a1:{}, a2:{}, a5:{}, a6:{},"
 			                " d_spacing_error:{}, sigma_error:{}, alpha_error:{},"
@@ -236,8 +236,8 @@ class ExportHandler:
 			                                                                            ahkl, bhkl,
 			                                                                            ahkl_error,
 			                                                                            bhkl_error,
-			                                                                            tofhkl, tau, sigma,
-			                                                                            tofhkl_error,
+			                                                                            ldahkl, tau, sigma,
+			                                                                            ldahkl_error,
 			                                                                            tau_error,
 			                                                                            sigma_error,
 			                                                                            d_spacing,
