@@ -626,7 +626,7 @@ class Interface(QMainWindow):
         self.fitting_procedure_started['kropff'] = True
 
     def kropff_fit_high_lambda_region_clicked(self):
-        self.switch_fitting_axis_to('tof')
+        self.switch_fitting_axis_to('lambda')
         o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='high')
         o_fit.run_kropff_high_lambda(update_table_ui=True)
@@ -634,7 +634,7 @@ class Interface(QMainWindow):
         self.update_kropff_fit_table_graph(fit_region='high')
 
     def kropff_fit_low_lambda_region_clicked(self):
-        self.switch_fitting_axis_to('tof')
+        self.switch_fitting_axis_to('lambda')
         o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='low')
         o_fit.run_kropff_low_lambda(update_table_ui=True)
@@ -645,7 +645,7 @@ class Interface(QMainWindow):
         self.kropff_fit_bragg_peak_region_of_selected_rows()
 
     def kropff_fit_bragg_peak_region_of_selected_rows(self, list_row_to_fit=None):
-        self.switch_fitting_axis_to('tof')
+        self.switch_fitting_axis_to('lambda')
         o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='bragg_peak')
         o_fit.run_bragg_peak(update_table_ui=True, list_row_to_fit=list_row_to_fit)
