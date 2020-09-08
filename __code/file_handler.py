@@ -406,6 +406,9 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
     col_label = ['index', 'tof', 'lambda']
     with open(full_file_name, 'r') as f:
         for line in f:
+            if "#" == line.strip():
+                line_number += 1
+                continue
             if "#base folder: " in line:
                 metadata['base_folder'] = line.split("#base folder: ")[1].strip()
                 line_number += 1
@@ -485,10 +488,10 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                           r"bhkl:(?P<bhkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"ahkl_error:(?P<ahkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"bhkl_error:(?P<bhkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"tofhkl:(?P<tofhkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"ldahkl:(?P<ldahkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"tau:(?P<tau>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"sigma:(?P<sigma>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"tofhkl_error:(?P<tofhkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
+                          r"ldahkl_error:(?P<ldahkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"tau_error:(?P<tau_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"sigma_error:(?P<sigma_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
                           r"march_dollase: " \
@@ -521,11 +524,11 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                                                                                    'bhkl': m.group('bhkl'),
                                                                                    'ahkl_error': m.group('ahkl_error'),
                                                                                    'bhkl_error': m.group('bhkl_error'),
-                                                                                   'tofhkl': m.group('tofhkl'),
+                                                                                   'ldahkl': m.group('ldahkl'),
                                                                                    'tau': m.group('tau'),
                                                                                    'sigma': m.group('sigma'),
-                                                                                   'tofhkl_error': m.group(
-                                                                                           'tofhkl_error'),
+                                                                                   'ldahkl_error': m.group(
+                                                                                           'ldahkl_error'),
                                                                                    'tau_error': m.group('tau_error'),
                                                                                    'sigma_error': m.group(
                                                                                            'sigma_error'),
@@ -554,6 +557,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
         metadata['columns'] = metadata_column
         metadata['march-dollase history table'] = march_history_table
         metadata['march-dollase history init'] = march_history_init
+
+    print(f"skiprows: {line_number}")
 
     pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
     return {'data': pd_data, 'metadata': metadata}
@@ -590,7 +595,7 @@ class ListMostDominantExtension(object):
         self.dominant_extension = dominant_extension
         self.list_of_number_of_ext = list_of_number_of_ext
 
-    def check_uniqueness_of_dominand_extension(self):
+    def check_uniqueness_of_dominant_extension(self):
         # check if there are several ext with the same max number
         indices = [i for i, x in enumerate(self.list_of_number_of_ext) if x == self.dominant_number]
         if len(indices) > 1:  # found several majority ext
@@ -602,7 +607,7 @@ class ListMostDominantExtension(object):
         self.get_list_of_files()
         self.get_counter_of_extension()
         self.get_dominant_extension()
-        self.check_uniqueness_of_dominand_extension()
+        self.check_uniqueness_of_dominant_extension()
         self.retrieve_parameters()
 
     def retrieve_parameters(self):
