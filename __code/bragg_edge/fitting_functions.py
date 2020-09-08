@@ -58,10 +58,11 @@ def kropff_bragg_peak_tof(lda, a0, b0, ahkl, bhkl, ldahkl, sigma, tau):
 
 	exp_expression_1 = np.exp(-(a0 + b0 * lda))
 	exp_expression_2 = np.exp(-(ahkl + bhkl * lda))
-	expression_3 = (1 - np.exp(-(ahkl + bhkl * lda)) * B(ldahkl, sigma, tau, lda))
 
-	return exp_expression_1 * (exp_expression_2 + expression_3)
+	final_part1 = (B(ldahkl, sigma, tau, lda) * exp_expression_1)
+	final_part2 = (1 - B(ldahkl, sigma, tau, lda)) * exp_expression_1 * exp_expression_2
 
+	return final_part1 + final_part2
 
 def march_dollase_basic_fit(t, d_spacing, alpha, sigma, a1, a2):
     t0 = 2 * d_spacing
