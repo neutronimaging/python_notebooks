@@ -8,6 +8,10 @@ from __code.bragg_edge.get import Get
 
 class MarchDollase:
 
+	list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
+	                'd_spacing_error', 'sigma_error', 'alpha_error',
+	                'a1_error', 'a2_error', 'a5_error', 'a6_error']
+
 	def __init__(self, parent=None):
 		self.parent = parent
 		self.history_table_ui = self.parent.ui.march_dollase_user_input_table
@@ -118,6 +122,8 @@ class MarchDollase:
 			duplicate_row = menu.addAction("Duplicate Row")
 			menu.addSeparator()
 			delete_row = menu.addAction("Remove Row")
+			menu.addSeparator()
+			full_reset = menu.addAction("Full Table Reset")
 
 		action = menu.exec_(QtGui.QCursor.pos())
 
@@ -131,6 +137,8 @@ class MarchDollase:
 			self.delete_row()
 		elif action == insert_row:
 			self.insert_row()
+		elif action == full_reset:
+			self.full_reset()
 		else:
 			pass
 
@@ -175,6 +183,12 @@ class MarchDollase:
 		march_dollase_fitting_history_table.pop(row_selected)
 		self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
 		self.update_table_after_changing_row(changing_row=row_selected)
+
+	def full_reset(self):
+		march_dollase_history_state = self.parent.march_dollase_history_state_full_reset
+		o_gui = GuiUtility(parent=self.parent)
+		o_gui.fill_march_dollase_table(list_state=march_dollase_history_state,
+		                               initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
 
 	def update_table_after_changing_row(self, changing_row=-1):
 		o_gui = GuiUtility(parent=self.parent)
@@ -232,11 +246,9 @@ class MarchDollase:
 		else:
 			move_bragg_peak_range = False
 
-
-
 	def save_table_history_and_initial_parameters(self):
 		march_dollase_fitting_history_table = list()
-		march_dollase_fitting_initial_parameters = {}
+		march_dollase_fitting_initial_parameters = self.parent.march_dollase_fitting_initial_parameters
 		nbr_row = self.history_table_ui.rowCount()
 		nbr_column = self.history_table_ui.columnCount()
 		for _row in np.arange(nbr_row):
@@ -252,10 +264,7 @@ class MarchDollase:
 
 				if _row == 0:
 					if (_col == 1) or (_col == 2):
-						if (_col == 1):
-							name = 'sigma'
-						elif (_col == 2):
-							name = 'alpha'
+						name = self.parent.march_dollase_list_columns[_col]
 						_text = _list_widget[-1].text()
 						march_dollase_fitting_initial_parameters[name] = _text
 
@@ -272,10 +281,7 @@ class MarchDollase:
 		fitting_input_dictionary = self.parent.fitting_input_dictionary
 		march_data = fitting_input_dictionary['rois']
 
-		list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
-		                'd_spacing_error', 'sigma_error', 'alpha_error',
-		                'a1_error', 'a2_error', 'a5_error', 'a6_error']
-
+		list_columns = self.parent.march_dollase_list_columns
 		for _row in march_data.keys():
 			_march_entry = march_data[_row]['fitting']['march_dollase']
 
@@ -289,8 +295,5 @@ class MarchDollase:
 		                               initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
 
 	def get_initial_parameter_value(self, column=-1):
-		if column == 1:
-			name = 'sigma'
-		else:
-			name = 'alpha'
-		return self.parent.march_dollase_fitting_initial_parameters[name]
+		name = self.parent.march_dollase_list_columns[column]
+		return str(self.parent.march_dollase_fitting_initial_parameters[name])

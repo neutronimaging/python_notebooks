@@ -149,6 +149,9 @@ class Initialization:
 		o_bragg.set_column_sizes(column_sizes=column_sizes)
 
 	def march_dollase(self):
+
+		self.parent.march_dollase_history_state_full_reset = copy.deepcopy(self.march_dollase_history_state)
+
 		# init widgets
 		_file_path = os.path.dirname(__file__)
 		up_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/up_arrow_black.png'))

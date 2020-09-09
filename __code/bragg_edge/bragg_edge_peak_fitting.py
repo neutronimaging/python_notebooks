@@ -153,8 +153,18 @@ class Interface(QMainWindow):
     #                       }
 
     march_dollase_fitting_history_table = None
-    march_dollase_fitting_initial_parameters = {'sigma': 3.5, 'alpha': 4.5}
+    march_dollase_fitting_initial_parameters = {'d_spacing': np.NaN,
+                                                'sigma': 3.5,
+                                                'alpha': 4.5,
+                                                'a1': np.NaN,
+                                                'a2': np.NaN,
+                                                'a5': np.NaN,
+                                                'a6': np.NaN}
     march_dollase_fitting_history_table_default_new_row = None
+
+    march_dollase_list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
+                                  'd_spacing_error', 'sigma_error', 'alpha_error',
+                                  'a1_error', 'a2_error', 'a5_error', 'a6_error']
 
     # matplotlib canvas
     kropff_high_plot = None
@@ -715,10 +725,17 @@ class Interface(QMainWindow):
 
     def march_dollase_table_state_changed(self, state=None, row=None, column=None):
         o_march = MarchDollase(parent=self)
-        if (row == 0) and ((column == 1) or (column == 2)):
-            _textedit = self.ui.march_dollase_user_input_table.cellWidget(row, column).children()[-1]
-            _textedit.setText(o_march.get_initial_parameter_value(column=column))
-            _textedit.setVisible(not state)
+        if row == 0:
+            _widget = self.ui.march_dollase_user_input_table.cellWidget(row, column).children()[-1]
+            if (column == 1) or (column == 2):
+                _textedit = _widget
+                _textedit.setText(o_march.get_initial_parameter_value(column=column))
+                _textedit.setVisible(not state)
+            else:
+                _label = _widget
+                _label.setText(o_march.get_initial_parameter_value(column=column))
+                _label.setVisible(not state)
+
         o_march.save_table_history_and_initial_parameters()
 
     def march_dollase_table_init_value_changed(self, column):

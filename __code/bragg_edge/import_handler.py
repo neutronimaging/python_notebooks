@@ -110,7 +110,12 @@ class ImportHandler:
             march_dollase_fitting_history_table.append(_row_flag)
 
         march_dollase_fitting_initial_parameters = {'sigma': march_dollase_history_init['sigma'],
-                                                    'alpha': march_dollase_history_init['alpha']}
+                                                    'alpha': march_dollase_history_init['alpha'],
+                                                    'd_spacing': np.NaN,
+                                                    'a1': np.NaN,
+                                                    'a2': np.NaN,
+                                                    'a5': np.NaN,
+                                                    'a6': np.NaN}
 
         self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
         self.parent.march_dollase_fitting_initial_parameters = march_dollase_fitting_initial_parameters
