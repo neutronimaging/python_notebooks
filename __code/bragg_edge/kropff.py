@@ -326,8 +326,8 @@ class Kropff:
 			str_format = "{:04.2f}"
 		else:
 			str_format = "{}"
-			real_left_value = str_format.format(real_left_value)
-			real_right_value = str_format.format(real_right_value)
+		real_left_value = str_format.format(real_left_value)
+		real_right_value = str_format.format(real_right_value)
 
 		units = Get.units(name=x_axis_selected)
 		self.parent.ui.bragg_peak_range_from_value.setText(str(real_left_value))

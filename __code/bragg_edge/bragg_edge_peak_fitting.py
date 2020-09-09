@@ -508,12 +508,20 @@ class Interface(QMainWindow):
             o_march.update_fitting_plot()
 
     def fitting_range_changed(self):
+        o_gui = GuiUtility(parent=self)
+        algorithm_tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tab_algorithm)
+
+        if algorithm_tab_selected == 'Kropff':
+            self.kropff_fitting_range_changed()
+        elif algorithm_tab_selected == 'March-Dollase':
+            self.march_dollase_fitting_range_changed()
+
+    def kropff_fitting_range_changed(self):
         [global_left_range, global_right_range] = self.bragg_edge_range
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
         xaxis_dict = self.fitting_input_dictionary['xaxis']
         o_get = Get(parent=self)
         x_axis_selected = o_get.x_axis_checked()
-        units = Get.units(name=x_axis_selected)
         xaxis_index, _ = xaxis_dict[x_axis_selected]
 
         [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
@@ -525,9 +533,6 @@ class Interface(QMainWindow):
         global_left_index = find_nearest_index(array=xaxis, value=global_left_range)
         global_right_index = find_nearest_index(array=xaxis, value=global_right_range)
 
-        # part_of_fitting_dict = o_get.part_of_fitting_selected()
-        # name_of_page = part_of_fitting_dict['name_of_page']
-
         self.kropff_fitting_range['high'] = [right_index, global_right_index]
         self.kropff_fitting_range['low'] = [global_left_index, left_index]
         self.kropff_fitting_range['bragg_peak'] = [left_index, right_index]
@@ -535,18 +540,6 @@ class Interface(QMainWindow):
 
         o_kropff = Kropff(parent=self)
         o_kropff.update_roi_labels()
-
-        # xaxis_in_selected_axis = self.fitting_input_dictionary['xaxis'][x_axis_selected][0][global_left_range: global_right_range]
-        # real_left_value = xaxis_in_selected_axis[left_index]
-        # real_right_value = xaxis_in_selected_axis[right_index]
-        # if (x_axis_selected == 'tof') or (x_axis_selected == 'lambda'):
-        #     real_left_value = "{:02f}".format(real_left_value)
-        #     real_right_value = "{:02f}".format(real_right_value)
-        #
-        # self.ui.bragg_peak_range_from_value.setText(str(real_left_value))
-        # self.ui.bragg_peak_range_to_value.setText(str(real_right_value))
-        # self.ui.from_bragg_peak_range_units.setText(units)
-        # self.ui.to_bragg_peak_range_units.setText(units)
 
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:
@@ -814,7 +807,8 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def march_dollase_fitting_range_changed(self):
-        pass
+        o_march = MarchDollase(parent=self)
+        o_march.update_roi_labels()
 
     def cancel_clicked(self):
         self.close()

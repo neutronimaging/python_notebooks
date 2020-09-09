@@ -77,6 +77,7 @@ class ImportHandler:
             self.parent.block_table_ui(False)
             self.parent.update_vertical_line_in_profile_plot()
             self.parent.update_fitting_plot()
+            self.parent.kropff_fitting_range_changed()
 
             o_gui = GuiUtility(parent=self.parent)
             o_gui.check_status_of_kropff_fitting_buttons()
