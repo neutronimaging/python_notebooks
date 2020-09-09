@@ -558,8 +558,6 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
         metadata['march-dollase history table'] = march_history_table
         metadata['march-dollase history init'] = march_history_init
 
-    print(f"skiprows: {line_number}")
-
     pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
     return {'data': pd_data, 'metadata': metadata}
 

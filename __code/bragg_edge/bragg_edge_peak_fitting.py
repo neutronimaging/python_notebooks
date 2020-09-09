@@ -39,7 +39,7 @@ class Interface(QMainWindow):
                                           'b0': 1,
                                           'ahkl': 1,
                                           'bhkl': 1,
-                                          'ldahkl': 1e-6,
+                                          'ldahkl': 1e-8,
                                           'tau': 1,
                                           'sigma': [1e-7, 1e-6, 1e-5]}}
 
