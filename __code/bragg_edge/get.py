@@ -137,3 +137,14 @@ class Get:
 
 		return {'name_of_page': list_pages[page_index],
 		        'table_ui'    : list_table_ui[page_index]}
+
+	@staticmethod
+	def units(name='index'):
+		if name == 'index':
+			return 'file index'
+		elif name == 'tof':
+			return u"\u03BCs"
+		elif name == 'lambda':
+			return u"\u212B"
+		else:
+			return ""

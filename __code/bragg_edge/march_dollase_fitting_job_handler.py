@@ -35,12 +35,8 @@ class MarchDollaseFittingJobHandler:
 		sigma = self.get_initial_parameter_value(name_of_parameter='sigma')
 		alpha = self.get_initial_parameter_value(name_of_parameter='alpha')
 
+		self.parent.march_dollase_fitting_initial_parameters['d-spacing'] = d_spacing
 		fitting_input_dictionary = self.parent.fitting_input_dictionary
-
-
-		import pprint
-		pprint.pprint(fitting_input_dictionary['rois'][0]['profile'])
-
 
 		for _row in fitting_input_dictionary['rois'].keys():
 
@@ -72,6 +68,12 @@ class MarchDollaseFittingJobHandler:
 					                 advanced_mode=self.is_advanced_mode(),
 					                 inflection_dict=inflection_dict)
 					fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
+
+
+
+
+
+
 
 		import pprint
 		pprint.pprint(fitting_input_dictionary['rois'][0]['fitting']['march_dollase'])
@@ -111,6 +113,7 @@ class MarchDollaseFittingJobHandler:
 
 
 
+
 	def get_initial_parameter_value(self, name_of_parameter=None, row=-1):
 		if name_of_parameter == 'd_spacing':
 			return self.get_d_spacing()
@@ -140,9 +143,6 @@ class MarchDollaseFittingJobHandler:
 	    2* d_spacing = lambda
 		"""
 		lambda_axis = self.parent.fitting_input_dictionary['xaxis']['lambda']
-
-		print(f"lambda_axis: {lambda_axis}")
-
 		bragg_edge_range = self.parent.fitting_input_dictionary['bragg_edge_range']
 
 		from_lambda = np.float(lambda_axis[0][np.int(bragg_edge_range[0])])

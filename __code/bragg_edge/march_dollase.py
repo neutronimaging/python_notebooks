@@ -4,6 +4,7 @@ import numpy as np
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.get import Get
+import pyqtgraph as pg
 
 
 class MarchDollase:
@@ -245,6 +246,21 @@ class MarchDollase:
 			move_bragg_peak_range = True
 		else:
 			move_bragg_peak_range = False
+
+		#peak_range = self.parent.fitting_input_dictionary['bragg_peak_range']
+		peak_range = self.parent.bragg_edge_range
+
+		if self.parent.march_dollase_fitting_peak_ui:
+			self.parent.ui.fitting.removeItem(self.parent.march_dollase_fitting_peak_ui)
+		self.parent.march_dollase_fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
+		                                                                orientation=None,
+		                                                                brush=None,
+		                                                                movable=move_bragg_peak_range,
+		                                                                bounds=None)
+		self.parent.march_dollase_fitting_peak_ui.sigRegionChanged.connect(
+				self.parent.march_dollase_fitting_range_changed)
+		self.parent.march_dollase_fitting_peak_ui.setZValue(-10)
+		self.parent.ui.fitting.addItem(self.parent.march_dollase_fitting_peak_ui)
 
 	def save_table_history_and_initial_parameters(self):
 		march_dollase_fitting_history_table = list()

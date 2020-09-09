@@ -615,7 +615,7 @@
              <item>
               <widget class="QToolBox" name="kropff_toolBox">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page">
                 <property name="geometry">
@@ -679,7 +679,7 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="to_bragg_peak_range_value">
+                       <widget class="QLabel" name="bragg_peak_range_to_value">
                         <property name="text">
                          <string>N/A</string>
                         </property>
@@ -1263,207 +1263,298 @@
                 </attribute>
                 <layout class="QVBoxLayout" name="verticalLayout_26">
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_24">
-                   <item>
-                    <widget class="QLabel" name="label_7">
-                     <property name="text">
-                      <string>Create your fitting history.</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_20">
-                     <item>
-                      <widget class="QCheckBox" name="march_dollase_advanced_mode_checkBox">
-                       <property name="text">
-                        <string>Advanced mode</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_19">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label_6">
-                       <property name="text">
-                        <string>Check box to define parameter(s) to fit</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_21">
-                     <item>
-                      <widget class="QTableWidget" name="march_dollase_user_input_table">
-                       <property name="contextMenuPolicy">
-                        <enum>Qt::CustomContextMenu</enum>
-                       </property>
-                       <property name="acceptDrops">
-                        <bool>true</bool>
-                       </property>
-                       <property name="dragEnabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="dragDropOverwriteMode">
-                        <bool>false</bool>
-                       </property>
-                       <property name="dragDropMode">
-                        <enum>QAbstractItemView::NoDragDrop</enum>
-                       </property>
-                       <property name="defaultDropAction">
-                        <enum>Qt::IgnoreAction</enum>
-                       </property>
-                       <property name="alternatingRowColors">
-                        <bool>true</bool>
-                       </property>
-                       <property name="selectionMode">
-                        <enum>QAbstractItemView::SingleSelection</enum>
-                       </property>
-                       <property name="selectionBehavior">
-                        <enum>QAbstractItemView::SelectRows</enum>
-                       </property>
-                       <attribute name="horizontalHeaderCascadingSectionResizes">
-                        <bool>false</bool>
-                       </attribute>
-                       <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-                        <bool>false</bool>
-                       </attribute>
-                       <column>
+                  <widget class="QGroupBox" name="groupBox_9">
+                   <property name="font">
+                    <font>
+                     <pointsize>14</pointsize>
+                    </font>
+                   </property>
+                   <property name="title">
+                    <string>Step 1</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_21">
+                    <item>
+                     <widget class="QLabel" name="label_23">
+                      <property name="text">
+                       <string>Graphically select Bragg peak range !</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_24">
+                      <item>
+                       <widget class="QLabel" name="label_25">
                         <property name="text">
-                         <string>d_spacing</string>
+                         <string>From</string>
                         </property>
-                       </column>
-                       <column>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="march_dollase_bragg_peak_range_from_value">
                         <property name="text">
-                         <string>sigma</string>
+                         <string>N/A</string>
                         </property>
-                       </column>
-                       <column>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="march_dollase_from_bragg_peak_range_units">
                         <property name="text">
-                         <string>alpha</string>
+                         <string>units</string>
                         </property>
-                       </column>
-                       <column>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_26">
                         <property name="text">
-                         <string>A1</string>
+                         <string>to</string>
                         </property>
-                       </column>
-                       <column>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="march_dollase_bragg_peak_range_to_value">
                         <property name="text">
-                         <string>A2</string>
+                         <string>N/A</string>
                         </property>
-                       </column>
-                       <column>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="march_dollase_to_bragg_peak_range_units">
                         <property name="text">
-                         <string>A5</string>
+                         <string>units</string>
                         </property>
-                       </column>
-                       <column>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_14">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGroupBox" name="groupBox_10">
+                   <property name="font">
+                    <font>
+                     <pointsize>14</pointsize>
+                    </font>
+                   </property>
+                   <property name="title">
+                    <string>Step 2</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_22">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_24">
+                      <item>
+                       <widget class="QLabel" name="label_7">
                         <property name="text">
-                         <string>A6</string>
+                         <string>Create your fitting history.</string>
                         </property>
-                       </column>
-                      </widget>
-                     </item>
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_25">
-                       <item>
-                        <widget class="QPushButton" name="march_dollase_user_input_up">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>30</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>30</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="verticalSpacer_3">
-                         <property name="orientation">
-                          <enum>Qt::Vertical</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>20</width>
-                           <height>40</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="march_dollase_user_input_down">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>30</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>30</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_22">
-                     <item>
-                      <spacer name="horizontalSpacer_20">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="march_dollase_user_input_fit_button">
-                       <property name="text">
-                        <string>FIT by running table scenario</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_20">
+                        <item>
+                         <widget class="QCheckBox" name="march_dollase_advanced_mode_checkBox">
+                          <property name="text">
+                           <string>Advanced mode</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="horizontalSpacer_19">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_6">
+                          <property name="text">
+                           <string>Check box to define parameter(s) to fit</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_21">
+                        <item>
+                         <widget class="QTableWidget" name="march_dollase_user_input_table">
+                          <property name="contextMenuPolicy">
+                           <enum>Qt::CustomContextMenu</enum>
+                          </property>
+                          <property name="acceptDrops">
+                           <bool>true</bool>
+                          </property>
+                          <property name="dragEnabled">
+                           <bool>true</bool>
+                          </property>
+                          <property name="dragDropOverwriteMode">
+                           <bool>false</bool>
+                          </property>
+                          <property name="dragDropMode">
+                           <enum>QAbstractItemView::NoDragDrop</enum>
+                          </property>
+                          <property name="defaultDropAction">
+                           <enum>Qt::IgnoreAction</enum>
+                          </property>
+                          <property name="alternatingRowColors">
+                           <bool>true</bool>
+                          </property>
+                          <property name="selectionMode">
+                           <enum>QAbstractItemView::SingleSelection</enum>
+                          </property>
+                          <property name="selectionBehavior">
+                           <enum>QAbstractItemView::SelectRows</enum>
+                          </property>
+                          <attribute name="horizontalHeaderCascadingSectionResizes">
+                           <bool>false</bool>
+                          </attribute>
+                          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+                           <bool>false</bool>
+                          </attribute>
+                          <column>
+                           <property name="text">
+                            <string>d_spacing</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>sigma</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>alpha</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>A1</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>A2</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>A5</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>A6</string>
+                           </property>
+                          </column>
+                         </widget>
+                        </item>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_25">
+                          <item>
+                           <widget class="QPushButton" name="march_dollase_user_input_up">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>30</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>30</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="verticalSpacer_3">
+                            <property name="orientation">
+                             <enum>Qt::Vertical</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>20</width>
+                              <height>40</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="march_dollase_user_input_down">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>30</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>30</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGroupBox" name="groupBox_11">
+                   <property name="font">
+                    <font>
+                     <pointsize>14</pointsize>
+                    </font>
+                   </property>
+                   <property name="title">
+                    <string>Step 3</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_30">
+                    <item>
+                     <widget class="QPushButton" name="march_dollase_user_input_fit_button">
+                      <property name="text">
+                       <string>FIT by running table scenario</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -2258,7 +2349,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>102</x>
-     <y>431</y>
+     <y>435</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2273,8 +2364,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>431</y>
+     <x>205</x>
+     <y>435</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2289,8 +2380,8 @@
    <slot>update_kropff_bragg_peak_plot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>141</x>
-     <y>431</y>
+     <x>259</x>
+     <y>435</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2401,8 +2492,8 @@
    <slot>march_dollase_move_row_up_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>768</x>
-     <y>284</y>
+     <x>753</x>
+     <y>409</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2417,8 +2508,8 @@
    <slot>march_dollase_move_row_down_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>768</x>
-     <y>956</y>
+     <x>753</x>
+     <y>910</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2465,8 +2556,8 @@
    <slot>march_dollase_advanced_mode_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>93</x>
-     <y>233</y>
+     <x>108</x>
+     <y>358</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2609,8 +2700,8 @@
    <slot>march_dollase_fit_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>771</x>
-     <y>999</y>
+     <x>296</x>
+     <y>993</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -2666,6 +2757,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>march_dollase_toolBox</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_toolbox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>421</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>708</x>
+     <y>586</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -2706,5 +2813,6 @@
   <slot>march_dollase_fit_button_clicked()</slot>
   <slot>march_dollase_result_table_clicked()</slot>
   <slot>march_dollase_result_selection_mode_clicked()</slot>
+  <slot>march_dollase_toolbox_changed()</slot>
  </slots>
 </ui>

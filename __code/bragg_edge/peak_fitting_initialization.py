@@ -47,6 +47,7 @@ class PeakFittingInitialization:
 			_roi_dict = {'x0': None, 'y0': None,
 			             'width': None, 'height': None,
 			             'profile': None,
+			             'bragg_edge_range': None,   # bragg peak range selected in first tab
 			             'fitting': {'kropff': {'high': deepcopy(KROPFF_HIGH),
 			                                    'low': deepcopy(KROPFF_LOW),
 			                                    'bragg_peak': deepcopy(KROPFF_BRAGG_PEAK),
@@ -57,3 +58,8 @@ class PeakFittingInitialization:
 			fitting_input_dictionary['rois'][_roi_index] = deepcopy(_roi_dict)
 
 		return fitting_input_dictionary
+
+	def set_top_keys_values(self, dictionary=None, new_keys_values=None):
+		for _key in new_keys_values.keys():
+			_value = new_keys_values[_key]
+			dictionary[_key] = _value

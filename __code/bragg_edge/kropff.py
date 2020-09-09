@@ -10,6 +10,7 @@ from __code.bragg_edge.kropff_fitting_job_handler import KropffFittingJobHandler
 from __code.file_handler import make_ascii_file_from_2dim_array
 from __code.bragg_edge.get import Get
 from __code._utilities.dictionary import key_path_exists_in_dictionary
+from __code.utilities import find_nearest_index
 
 
 class Kropff:
@@ -299,3 +300,37 @@ class Kropff:
 
 				if peak_range_index[0] is None:
 					self.parent.fitting_range_changed()
+
+	def update_roi_labels(self):
+		[global_left_range, global_right_range] = self.parent.bragg_edge_range
+		[left_range, right_range] = list(self.parent.fitting_peak_ui.getRegion())
+
+		o_get = Get(parent=self.parent)
+		x_axis_selected = o_get.x_axis_checked()
+		xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
+		xaxis_index, _ = xaxis_dict[x_axis_selected]
+		[left_xaxis_index, right_xaxis_index] = [global_left_range, global_right_range]
+
+		xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+
+		left_index = find_nearest_index(array=xaxis, value=left_range)
+		right_index = find_nearest_index(array=xaxis, value=right_range)
+
+		xaxis_in_selected_axis = self.parent.fitting_input_dictionary['xaxis'][x_axis_selected][0][
+		                         global_left_range: global_right_range]
+		real_left_value = xaxis_in_selected_axis[left_index]
+		real_right_value = xaxis_in_selected_axis[right_index]
+		if x_axis_selected == 'lambda':
+			str_format = "{:02f}"
+		elif x_axis_selected == 'tof':
+			str_format = "{:04.2f}"
+		else:
+			str_format = "{}"
+			real_left_value = str_format.format(real_left_value)
+			real_right_value = str_format.format(real_right_value)
+
+		units = Get.units(name=x_axis_selected)
+		self.parent.ui.bragg_peak_range_from_value.setText(str(real_left_value))
+		self.parent.ui.bragg_peak_range_to_value.setText(str(real_right_value))
+		self.parent.ui.from_bragg_peak_range_units.setText(units)
+		self.parent.ui.to_bragg_peak_range_units.setText(units)

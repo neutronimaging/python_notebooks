@@ -152,14 +152,15 @@ class Interface(QMainWindow):
     #                       1: {'width': None, 'height': None},
     #                       }
 
+    march_dollase_fitting_peak_ui = None   # ROI of march dollase peak region
     march_dollase_fitting_history_table = None
     march_dollase_fitting_initial_parameters = {'d_spacing': np.NaN,
                                                 'sigma': 3.5,
                                                 'alpha': 4.5,
-                                                'a1': np.NaN,
-                                                'a2': np.NaN,
-                                                'a5': np.NaN,
-                                                'a6': np.NaN}
+                                                'a1': "row dependent",
+                                                'a2': "row dependent",
+                                                'a5': "row dependent",
+                                                'a6': "row dependent"}
     march_dollase_fitting_history_table_default_new_row = None
 
     march_dollase_list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
@@ -380,9 +381,13 @@ class Interface(QMainWindow):
 
         o_init = PeakFittingInitialization(parent=self)
         fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(dict_regions))
+        o_init.set_top_keys_values(fitting_input_dictionary,
+                                   {'xaxis': x_axis,
+                                    'bragg_edge_range': self.bragg_edge_range})
         self.append_dict_regions_to_fitting_input_dictionary(dict_regions, fitting_input_dictionary)
 
-        fitting_input_dictionary['xaxis'] = x_axis
+        # fitting_input_dictionary['xaxis'] = x_axis
+        # fitting_input_dictionary['bragg_edge_range'] = self.bragg_edge_range
 
         self.fitting_input_dictionary = fitting_input_dictionary
 
@@ -398,6 +403,10 @@ class Interface(QMainWindow):
             if self.fitting_procedure_started['kropff']:
                 o_kropff.fill_table_with_fitting_information()
         o_march.fill_tables_with_fitting_information()
+
+        if initialize_region:
+            o_march_fitting = MarchDollaseFittingJobHandler(parent=self)
+            o_march_fitting.initialize_fitting_input_dictionary()
 
         self.ui.tabWidget.setTabEnabled(1, True)
         self.ui.actionExport.setEnabled(True)
@@ -473,12 +482,15 @@ class Interface(QMainWindow):
 
     def fitting_axis_changed(self):
         self.update_fitting_plot()
+        self.fitting_range_changed()
 
     def high_lambda_table_clicked(self):
         self.update_fitting_plot()
+        self.fitting_range_changed()
 
     def low_lambda_table_clicked(self):
         self.update_fitting_plot()
+        self.fitting_range_changed()
 
     def bragg_peak_table_clicked(self):
         self.update_fitting_plot()
@@ -501,6 +513,7 @@ class Interface(QMainWindow):
         xaxis_dict = self.fitting_input_dictionary['xaxis']
         o_get = Get(parent=self)
         x_axis_selected = o_get.x_axis_checked()
+        units = Get.units(name=x_axis_selected)
         xaxis_index, _ = xaxis_dict[x_axis_selected]
 
         [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
@@ -519,6 +532,21 @@ class Interface(QMainWindow):
         self.kropff_fitting_range['low'] = [global_left_index, left_index]
         self.kropff_fitting_range['bragg_peak'] = [left_index, right_index]
         self.bragg_peak_selection_range = [left_index, right_index]
+
+        o_kropff = Kropff(parent=self)
+        o_kropff.update_roi_labels()
+
+        # xaxis_in_selected_axis = self.fitting_input_dictionary['xaxis'][x_axis_selected][0][global_left_range: global_right_range]
+        # real_left_value = xaxis_in_selected_axis[left_index]
+        # real_right_value = xaxis_in_selected_axis[right_index]
+        # if (x_axis_selected == 'tof') or (x_axis_selected == 'lambda'):
+        #     real_left_value = "{:02f}".format(real_left_value)
+        #     real_right_value = "{:02f}".format(real_right_value)
+        #
+        # self.ui.bragg_peak_range_from_value.setText(str(real_left_value))
+        # self.ui.bragg_peak_range_to_value.setText(str(real_right_value))
+        # self.ui.from_bragg_peak_range_units.setText(units)
+        # self.ui.to_bragg_peak_range_units.setText(units)
 
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:
@@ -781,6 +809,12 @@ class Interface(QMainWindow):
         else:
             self.ui.march_dollase_result_table.setSelectionMode(2)
         self.update_fitting_plot()
+
+    def march_dollase_toolbox_changed(self, index):
+        self.update_fitting_plot()
+
+    def march_dollase_fitting_range_changed(self):
+        pass
 
     def cancel_clicked(self):
         self.close()
