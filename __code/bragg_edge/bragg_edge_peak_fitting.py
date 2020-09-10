@@ -753,9 +753,13 @@ class Interface(QMainWindow):
                 _textedit = _widget
                 _textedit.setText(o_march.get_initial_parameter_value(column=column))
                 _textedit.setVisible(not state)
+            elif column == 0:
+                _label = _widget
+                _label.setText("{:0.6f}".format(np.float(o_march.get_initial_parameter_value(column=column))))
+                _label.setVisible(not state)
             else:
                 _label = _widget
-                _label.setText(o_march.get_initial_parameter_value(column=column))
+                _label.setText("Row dependent")
                 _label.setVisible(not state)
 
         o_march.save_table_history_and_initial_parameters()
@@ -783,6 +787,9 @@ class Interface(QMainWindow):
     def march_dollase_advanced_mode_clicked(self):
         o_march = MarchDollase(parent=self)
         o_march.advanced_mode_clicked()
+        o_fit = MarchDollaseFittingJobHandler(parent=self)
+        o_fit.initialize_fitting_input_dictionary()
+        o_march.fill_history_table_with_fitting_information()
 
     def march_dollase_item_to_plot_changed(self):
         pass

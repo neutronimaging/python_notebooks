@@ -54,19 +54,17 @@ class MarchDollaseFittingJobHandler:
 			#  'right_part': {'lambda_x_axis': [],
 			#                 'y_axis': [],
 			#                },
-			#  'inflection_point': {'x': np.NaN,
-			#                       'y': np.NaN,
-			#                      },
-			# }
+			#  'center_part': {'lambda_x_axis': [],
+			#                  'y_axis': [],
+			#                  }
+			#  }
 			left_center_right_axis = self.isolate_left_center_right_axis(row=_row)
+			if self.is_advanced_mode():
 
-			# if self.is_advanced_mode():
-			#
-			# 	if not a2_flag:
-			# 		a2 = self.get_a2(row=_row,
-			# 		                 advanced_mode=self.is_advanced_mode(),
-			# 		                 inflection_dict=inflection_dict)
-			# 		fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
+				if not a2_flag:
+					a2 = self.get_a2(advanced_mode=self.is_advanced_mode(),
+					                 all_fitting_axis_dictionary=left_center_right_axis)
+					fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
 
 		# import pprint
 		# pprint.pprint(fitting_input_dictionary['rois'][0]['fitting']['march_dollase'])
@@ -116,13 +114,20 @@ class MarchDollaseFittingJobHandler:
 	# 	        'inflection_point': {'y': y_axis[inflection_point_index],
 	# 	                             'lambda_x': lambda_x_axis[inflection_point_index]}}
 
-	def get_a2(self, row=-1, advanced_mode=True, inflection_dict=None):
+	def get_a2(self, advanced_mode=True, all_fitting_axis_dictionary=None):
 		if advanced_mode:
-			x_axis = inflection_dict['left_part']['lambda_x_axis']
-			y_axis = inflection_dict['left_part']['y_axis']
+			x_axis = all_fitting_axis_dictionary['left_part']['lambda_x_axis']
+			y_axis = all_fitting_axis_dictionary['left_part']['y_axis']
 
-			nbr_data = len(x_axis)
-			return np.NaN
+			[slope, interception] = np.polyfit(x_axis, y_axis, 1)
+
+			self.a2 = slope  # saving it to calculate a6
+			self.a2_intercept = interception  # saving it to calculate a1
+
+			return slope
+
+	def get_a1(self, row=-1):
+		return np.NaN
 
 	def get_initial_parameter_value(self, name_of_parameter=None, row=-1):
 		if name_of_parameter == 'd_spacing':

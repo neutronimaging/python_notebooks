@@ -160,15 +160,23 @@ class GuiUtility:
 						verti_layout.addWidget(_input)
 						_input.setVisible(not _state_col)
 
-					else:
+					elif (_col == 0):
 						_label = QLabel()
 						try:
 							str_format = "{:0.6f}".format(np.float(initial_parameters[parameter_key]))
 						except ValueError:
 							str_format = initial_parameters[parameter_key]
+
 						_label.setText(str_format)
 						verti_layout.addWidget(_label)
 						_label.setVisible(not _state_col)
+
+					else:
+						_label = QLabel()
+						_label.setText("Row dependent")
+						verti_layout.addWidget(_label)
+						_label.setVisible(not _state_col)
+
 
 				_widget.setLayout(verti_layout)
 				table_ui.setCellWidget(_row, _col, _widget)
