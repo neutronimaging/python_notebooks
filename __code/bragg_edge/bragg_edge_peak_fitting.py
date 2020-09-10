@@ -820,7 +820,7 @@ class Interface(QMainWindow):
         o_march.update_roi_labels()
 
         o_fit = MarchDollaseFittingJobHandler(parent=self)
-        o_fit.initialize_fitting_input_dictionary()
+        o_fit.initialize_d_spacing()
         o_march.fill_history_table_with_fitting_information()
 
     def cancel_clicked(self):

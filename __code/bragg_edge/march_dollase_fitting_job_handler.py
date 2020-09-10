@@ -16,6 +16,10 @@ class MarchDollaseFittingJobHandler:
 		else:
 			return False
 
+	def initialize_d_spacing(self):
+		d_spacing = self.get_initial_parameter_value(name_of_parameter='d_spacing')
+		self.parent.march_dollase_fitting_initial_parameters['d_spacing'] = d_spacing
+
 	def initialize_fitting_input_dictionary(self):
 		"""
 		This method uses the first row of the history to figure out which parameter need to be initialized
@@ -58,13 +62,28 @@ class MarchDollaseFittingJobHandler:
 			#                  'y_axis': [],
 			#                  }
 			#  }
-			left_center_right_axis = self.isolate_left_center_right_axis(row=_row)
+			self.left_center_right_axis = self.isolate_left_center_right_axis(row=_row)
 			if self.is_advanced_mode():
 
-				if not a2_flag:
-					a2 = self.get_a2(advanced_mode=self.is_advanced_mode(),
-					                 all_fitting_axis_dictionary=left_center_right_axis)
-					fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
+				a2 = self.get_a2(advanced_mode=self.is_advanced_mode())
+				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
+
+				a5 = self.get_a5()
+				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a5'] = a5
+
+				a6 = self.get_a6()
+				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a6'] = a6
+
+				a1 = self.get_a1(advanced_mode=self.is_advanced_mode())
+				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a1'] = a1
+
+			else:
+
+				a1 = self.get_a1(advanced_mode=self.is_advanced_mode())
+				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a1'] = a1
+
+				a2 = self.get_a2(advanced_mode=self.is_advanced_mode())
+				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
 
 		# import pprint
 		# pprint.pprint(fitting_input_dictionary['rois'][0]['fitting']['march_dollase'])
@@ -114,7 +133,8 @@ class MarchDollaseFittingJobHandler:
 	# 	        'inflection_point': {'y': y_axis[inflection_point_index],
 	# 	                             'lambda_x': lambda_x_axis[inflection_point_index]}}
 
-	def get_a2(self, advanced_mode=True, all_fitting_axis_dictionary=None):
+	def get_a2(self, advanced_mode=True):
+		all_fitting_axis_dictionary = self.left_center_right_axis
 		if advanced_mode:
 			x_axis = all_fitting_axis_dictionary['left_part']['lambda_x_axis']
 			y_axis = all_fitting_axis_dictionary['left_part']['y_axis']
@@ -126,8 +146,38 @@ class MarchDollaseFittingJobHandler:
 
 			return slope
 
-	def get_a1(self, row=-1):
-		return np.NaN
+	def get_a5(self):
+		all_fitting_axis_dictionary = self.left_center_right_axis
+
+		x_axis = all_fitting_axis_dictionary['right_part']['lambda_x_axis']
+		y_axis = all_fitting_axis_dictionary['right_part']['y_axis']
+
+		[slope, _] = np.polyfit(x_axis, y_axis)
+		self.a5 = slope
+		return slope
+
+	def get_a6(self):
+		all_fitting_axis_dictionary = self.left_center_right_axis
+
+		x_axis = all_fitting_axis_dictionary['right_part']['lambda_x_axis']
+		y_axis = all_fitting_axis_dictionary['right_part']['y_axis']
+
+		a6 = x_axis - (2. * y_axis) / (self.a5 - self.a2)
+		self.a6 = a6
+		return a6
+
+	def get_a1(self, advanced_mode=True):
+		if advanced_mode:
+			intercept = self.a2_intercept
+			a2 = self.a2
+			a6 = self.a6
+			return intercept + a2 * a6
+		else:
+			all_fitting_axis_dictionary = self.left_center_right_axis
+			y_axis = all_fitting_axis_dictionary['left_part']['y_axis']
+			a1 = np.mean(y_axis)
+			self.a1 = a1
+			return a1
 
 	def get_initial_parameter_value(self, name_of_parameter=None, row=-1):
 		if name_of_parameter == 'd_spacing':
@@ -137,7 +187,7 @@ class MarchDollaseFittingJobHandler:
 		if name_of_parameter == 'alpha':
 			return self.parent.march_dollase_fitting_initial_parameters['alpha']
 		if name_of_parameter == 'a1':
-			return self.calculate_a1(row=row)
+			return self.calculate_a1()
 		if name_of_parameter == 'a2':
 			return -1
 		if name_of_parameter == 'a5':
@@ -146,7 +196,7 @@ class MarchDollaseFittingJobHandler:
 			return -1
 		return None
 
-	def calculate_a1(self, row=-1):
+	def calculate_a1(self):
 		if self.is_advanced_mode():
 			pass
 		else:
