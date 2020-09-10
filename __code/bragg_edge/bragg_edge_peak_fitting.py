@@ -162,6 +162,7 @@ class Interface(QMainWindow):
                                                 'a5': "row dependent",
                                                 'a6': "row dependent"}
     march_dollase_fitting_history_table_default_new_row = None
+    march_dollase_fitting_range_selected = None
 
     march_dollase_list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
                                   'd_spacing_error', 'sigma_error', 'alpha_error',
@@ -788,6 +789,7 @@ class Interface(QMainWindow):
 
     def tab_algorithm_changed(self, tab_index):
         self.update_fitting_plot()
+        self.march_dollase_fitting_range_changed()
 
     def march_dollase_fit_button_clicked(self):
         o_fit = MarchDollaseFittingJobHandler(parent=self)
@@ -809,6 +811,10 @@ class Interface(QMainWindow):
     def march_dollase_fitting_range_changed(self):
         o_march = MarchDollase(parent=self)
         o_march.update_roi_labels()
+
+        o_fit = MarchDollaseFittingJobHandler(parent=self)
+        o_fit.initialize_fitting_input_dictionary()
+        o_march.fill_history_table_with_fitting_information()
 
     def cancel_clicked(self):
         self.close()

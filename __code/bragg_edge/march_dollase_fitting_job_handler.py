@@ -20,7 +20,6 @@ class MarchDollaseFittingJobHandler:
 		"""
 		This method uses the first row of the history to figure out which parameter need to be initialized
 		"""
-
 		nbr_column = self.parent.ui.march_dollase_user_input_table.columnCount()
 		list_name_of_parameters = []
 		for _col in np.arange(nbr_column):
@@ -42,6 +41,7 @@ class MarchDollaseFittingJobHandler:
 
 			if not d_spacing_flag:
 				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['d_spacing'] = d_spacing
+
 
 			if not sigma_flag:
 				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['sigma'] = sigma
@@ -69,14 +69,8 @@ class MarchDollaseFittingJobHandler:
 					                 inflection_dict=inflection_dict)
 					fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
 
-
-
-
-
-
-
-		import pprint
-		pprint.pprint(fitting_input_dictionary['rois'][0]['fitting']['march_dollase'])
+		# import pprint
+		# pprint.pprint(fitting_input_dictionary['rois'][0]['fitting']['march_dollase'])
 
 	def isolate_left_and_right_part_of_inflection_point(self, row=-1):
 		bragg_edge_range = self.parent.fitting_input_dictionary['bragg_edge_range']
@@ -143,7 +137,7 @@ class MarchDollaseFittingJobHandler:
 	    2* d_spacing = lambda
 		"""
 		lambda_axis = self.parent.fitting_input_dictionary['xaxis']['lambda']
-		bragg_edge_range = self.parent.fitting_input_dictionary['bragg_edge_range']
+		bragg_edge_range = self.parent.march_dollase_fitting_range_selected
 
 		from_lambda = np.float(lambda_axis[0][np.int(bragg_edge_range[0])])
 		to_lambda = np.float(lambda_axis[0][np.int(bragg_edge_range[1])])
