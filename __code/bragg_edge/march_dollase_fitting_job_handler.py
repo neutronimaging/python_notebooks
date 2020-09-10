@@ -34,14 +34,13 @@ class MarchDollaseFittingJobHandler:
 		sigma = self.get_initial_parameter_value(name_of_parameter='sigma')
 		alpha = self.get_initial_parameter_value(name_of_parameter='alpha')
 
-		self.parent.march_dollase_fitting_initial_parameters['d-spacing'] = d_spacing
+		self.parent.march_dollase_fitting_initial_parameters['d_spacing'] = d_spacing
 		fitting_input_dictionary = self.parent.fitting_input_dictionary
 
 		for _row in fitting_input_dictionary['rois'].keys():
 
 			if not d_spacing_flag:
 				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['d_spacing'] = d_spacing
-
 
 			if not sigma_flag:
 				fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['sigma'] = sigma
@@ -59,42 +58,63 @@ class MarchDollaseFittingJobHandler:
 			#                       'y': np.NaN,
 			#                      },
 			# }
-			inflection_dict = self.isolate_left_and_right_part_of_inflection_point(row=_row)
+			left_center_right_axis = self.isolate_left_center_right_axis(row=_row)
 
-			if self.is_advanced_mode():
-
-				if not a2_flag:
-					a2 = self.get_a2(row=_row,
-					                 advanced_mode=self.is_advanced_mode(),
-					                 inflection_dict=inflection_dict)
-					fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
+			# if self.is_advanced_mode():
+			#
+			# 	if not a2_flag:
+			# 		a2 = self.get_a2(row=_row,
+			# 		                 advanced_mode=self.is_advanced_mode(),
+			# 		                 inflection_dict=inflection_dict)
+			# 		fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']['a2'] = a2
 
 		# import pprint
 		# pprint.pprint(fitting_input_dictionary['rois'][0]['fitting']['march_dollase'])
 
-	def isolate_left_and_right_part_of_inflection_point(self, row=-1):
+	def isolate_left_center_right_axis(self, row=-1):
 		bragg_edge_range = self.parent.fitting_input_dictionary['bragg_edge_range']
-		left_index = np.int(bragg_edge_range[0])
-		right_index = np.int(bragg_edge_range[1])
-
-		# get full x_axis (lambda)
+		[global_left_index, global_right_index] = [np.int(bragg_edge_range[0]),
+		                                           np.int(bragg_edge_range[1])]
+		# get full x-axis (lambda)
 		full_lambda_x_axis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
-		lambda_x_axis = full_lambda_x_axis[left_index: right_index]
+		lambda_x_axis = full_lambda_x_axis[global_left_index: global_right_index]
 
 		# get full y_axis (average transmission)
 		full_y_axis = self.parent.fitting_input_dictionary['rois'][row]['profile']
-		y_axis = full_y_axis[left_index: right_index]
+		y_axis = full_y_axis[global_left_index: global_right_index]
 
-		# for now inflection is only calculated by using center of selection
-		# FIXME
+		[left_index, right_index] = self.parent.march_dollase_fitting_range_selected
 
-		inflection_point_index = np.int(len(lambda_x_axis) / 2.)
-		return {'left_part': {'lambda_x_axis': lambda_x_axis[0: inflection_point_index],
-		                      'y_axis': y_axis[0: inflection_point_index]},
-		        'right_part': {'lambda_x_axis': lambda_x_axis[inflection_point_index: ],
-		                       'y_axis': y_axis[inflection_point_index: ]},
-		        'inflection_point': {'y': y_axis[inflection_point_index],
-		                             'lambda_x': lambda_x_axis[inflection_point_index]}}
+		return {'left_part': {'lambda_x_axis': lambda_x_axis[0: left_index],
+		                      'y_axis': y_axis[0: left_index]},
+		        'center_part': {'lambda_x_axis': lambda_x_axis[left_index: right_index],
+		                        'y_axis': y_axis[left_index: right_index]},
+		        'right_part': {'lambda_x_axis': lambda_x_axis[right_index:],
+		                       'y_axis': y_axis[right_index:]}}
+
+	# def isolate_left_and_right_part_of_inflection_point(self, row=-1):
+	# 	bragg_edge_range = self.parent.fitting_input_dictionary['bragg_edge_range']
+	# 	left_index = np.int(bragg_edge_range[0])
+	# 	right_index = np.int(bragg_edge_range[1])
+	#
+	# 	# get full x_axis (lambda)
+	# 	full_lambda_x_axis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
+	# 	lambda_x_axis = full_lambda_x_axis[left_index: right_index]
+	#
+	# 	# get full y_axis (average transmission)
+	# 	full_y_axis = self.parent.fitting_input_dictionary['rois'][row]['profile']
+	# 	y_axis = full_y_axis[left_index: right_index]
+	#
+	# 	# for now inflection is only calculated by using center of selection
+	# 	# FIXME
+	#
+	# 	inflection_point_index = np.int(len(lambda_x_axis) / 2.)
+	# 	return {'left_part': {'lambda_x_axis': lambda_x_axis[0: inflection_point_index],
+	# 	                      'y_axis': y_axis[0: inflection_point_index]},
+	# 	        'right_part': {'lambda_x_axis': lambda_x_axis[inflection_point_index: ],
+	# 	                       'y_axis': y_axis[inflection_point_index: ]},
+	# 	        'inflection_point': {'y': y_axis[inflection_point_index],
+	# 	                             'lambda_x': lambda_x_axis[inflection_point_index]}}
 
 	def get_a2(self, row=-1, advanced_mode=True, inflection_dict=None):
 		if advanced_mode:
@@ -103,10 +123,6 @@ class MarchDollaseFittingJobHandler:
 
 			nbr_data = len(x_axis)
 			return np.NaN
-
-
-
-
 
 	def get_initial_parameter_value(self, name_of_parameter=None, row=-1):
 		if name_of_parameter == 'd_spacing':
@@ -133,7 +149,7 @@ class MarchDollaseFittingJobHandler:
 
 	def get_d_spacing(self):
 		"""
-	    calculates the d-spacing using the lambda range selection and using the central lambda
+	    calculates the d_spacing using the lambda range selection and using the central lambda
 	    2* d_spacing = lambda
 		"""
 		lambda_axis = self.parent.fitting_input_dictionary['xaxis']['lambda']
@@ -148,7 +164,6 @@ class MarchDollaseFittingJobHandler:
 		return d_spacing
 
 	def prepare(self):
-
 		self.initialize_fitting_input_dictionary()
 		# fitting_input_dictionary = self.parent.fitting_input_dictionary
 

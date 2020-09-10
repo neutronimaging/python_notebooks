@@ -112,6 +112,7 @@ class GuiUtility:
 			return ""
 
 	def fill_march_dollase_table(self, list_state=None, initial_parameters=None):
+
 		table_ui = self.parent.ui.march_dollase_user_input_table
 		o_table = TableHandler(table_ui=table_ui)
 		o_table.remove_all_rows()
@@ -149,7 +150,6 @@ class GuiUtility:
 				verti_layout.addWidget(new_widget)
 
 				if _row == 0:
-
 					parameter_key = self.parent.march_dollase_list_columns[_col]
 
 					if (_col == 1) or (_col == 2):
@@ -162,7 +162,11 @@ class GuiUtility:
 
 					else:
 						_label = QLabel()
-						_label.setText(str(initial_parameters[parameter_key]))
+						try:
+							str_format = "{:0.6f}".format(np.float(initial_parameters[parameter_key]))
+						except ValueError:
+							str_format = initial_parameters[parameter_key]
+						_label.setText(str_format)
 						verti_layout.addWidget(_label)
 						_label.setVisible(not _state_col)
 
