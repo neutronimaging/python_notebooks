@@ -440,7 +440,6 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#march-dollase bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    print("inside m")
                     metadata['march-dollase bragg peak selection range'] = [np.int(m.group('left_index')),
                                                                             np.int(m.group('right_index'))]
                 line_number += 1

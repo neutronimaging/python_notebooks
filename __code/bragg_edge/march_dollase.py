@@ -250,10 +250,11 @@ class MarchDollase:
 
 		#peak_range = self.parent.fitting_input_dictionary['bragg_peak_range']
 		peak_range = self.parent.march_dollase_fitting_range_selected
+		local_peak_range = [xaxis[peak_range[0]], xaxis[peak_range[1]]]
 
 		if self.parent.march_dollase_fitting_peak_ui:
 			self.parent.ui.fitting.removeItem(self.parent.march_dollase_fitting_peak_ui)
-		self.parent.march_dollase_fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
+		self.parent.march_dollase_fitting_peak_ui = pg.LinearRegionItem(values=local_peak_range,
 		                                                                orientation=None,
 		                                                                brush=None,
 		                                                                movable=move_bragg_peak_range,
@@ -262,7 +263,7 @@ class MarchDollase:
 				self.parent.march_dollase_fitting_range_changed)
 		self.parent.march_dollase_fitting_peak_ui.setZValue(-10)
 		self.parent.ui.fitting.addItem(self.parent.march_dollase_fitting_peak_ui)
-		self.parent.march_dollase_fitting_range_changed()
+		# self.parent.march_dollase_fitting_range_changed()
 
 	def save_table_history_and_initial_parameters(self):
 		march_dollase_fitting_history_table = list()
@@ -320,8 +321,6 @@ class MarchDollase:
 		[global_left_range, global_right_range] = self.parent.bragg_edge_range
 		[left_range, right_range] = list(self.parent.march_dollase_fitting_peak_ui.getRegion())
 
-		self.parent.march_dollase_fitting_range_selected = [left_range, right_range]
-
 		o_get = Get(parent=self.parent)
 		x_axis_selected = o_get.x_axis_checked()
 		xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
@@ -332,6 +331,8 @@ class MarchDollase:
 
 		left_index = find_nearest_index(array=xaxis, value=left_range)
 		right_index = find_nearest_index(array=xaxis, value=right_range)
+
+		self.parent.march_dollase_fitting_range_selected = [left_index, right_index]
 
 		xaxis_in_selected_axis = self.parent.fitting_input_dictionary['xaxis'][x_axis_selected][0][
 		                         global_left_range: global_right_range]
