@@ -103,6 +103,8 @@ class ExportHandler:
 			                                                              self.parent.kropff_fitting_range[_key][1]))
 
 		# March-dollase
+		[left_peak, right_peak] = self.parent.march_dollase_fitting_range_selected
+		metadata.append("#march-dollase bragg peak selection range: [{}, {}]".format(left_peak, right_peak))
 		metadata.append("#march-dollase fitting procedure started: {}".format(
 				self.parent.fitting_procedure_started['march-dollase']))
 		for _row_index, _row_entry in enumerate(self.parent.march_dollase_fitting_history_table):

@@ -249,7 +249,7 @@ class MarchDollase:
 			move_bragg_peak_range = False
 
 		#peak_range = self.parent.fitting_input_dictionary['bragg_peak_range']
-		peak_range = self.parent.bragg_edge_range
+		peak_range = self.parent.march_dollase_fitting_range_selected
 
 		if self.parent.march_dollase_fitting_peak_ui:
 			self.parent.ui.fitting.removeItem(self.parent.march_dollase_fitting_peak_ui)
@@ -319,6 +319,8 @@ class MarchDollase:
 	def update_roi_labels(self):
 		[global_left_range, global_right_range] = self.parent.bragg_edge_range
 		[left_range, right_range] = list(self.parent.march_dollase_fitting_peak_ui.getRegion())
+
+		self.parent.march_dollase_fitting_range_selected = [left_range, right_range]
 
 		o_get = Get(parent=self.parent)
 		x_axis_selected = o_get.x_axis_checked()

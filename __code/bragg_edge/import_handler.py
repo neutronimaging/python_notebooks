@@ -120,6 +120,7 @@ class ImportHandler:
 
         self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
         self.parent.march_dollase_fitting_initial_parameters = march_dollase_fitting_initial_parameters
+        self.parent.march_dollase_fitting_range_selected = metadata_dict['march-dollase bragg peak selection range']
 
     def save_initial_roi_dimension_from_config_file(self, column_3_dict):
         """column_3_dict = {'x0': value, 'y0': value, 'width': value, 'height': value}"""

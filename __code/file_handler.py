@@ -436,6 +436,15 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 metadata['kropff fitting procedure started'] = result
                 line_number += 1
                 continue
+            if "#march-dollase bragg peak selection range: " in line:
+                regular = r"^#march-dollase bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
+                m = re.search(regular, line.strip())
+                if m:
+                    print("inside m")
+                    metadata['march-dollase bragg peak selection range'] = [np.int(m.group('left_index')),
+                                                                            np.int(m.group('right_index'))]
+                line_number += 1
+                continue
             if "#march-dollase fitting procedure started: " in line:
                 result = True if line.split("#march-dollase fitting procedure started: ")[1].strip() == 'True' else \
                     False
@@ -468,11 +477,13 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 [_row, list_flag] = _row_and_list_flag.split(":")
                 march_history_table[_row] = list_flag
                 line_number += 1
+                continue
             if "#march-dollase history init " in line:
                 _parameter_and_value = line.split("#march-dollase history init ")[1].strip()
                 [_parameter, _value] = _parameter_and_value.split(":")
                 march_history_init[_parameter] = _value
                 line_number += 1
+                continue
             if "#column " in line:
                 regular = r"^#column (?P<column_index>\d+) -> " \
                           r"x0:(?P<x0>\d+), " \
