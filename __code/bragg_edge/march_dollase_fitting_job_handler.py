@@ -196,17 +196,25 @@ class MarchDollaseFittingJobHandler:
 		nbr_row_in_fitting_scenario = len(march_dollase_fitting_history_table)
 
 		self.parent.ui.eventProgress.setValue(0)
-		self.parent.ui.eventProgress.setMaximum(nbr_row_in_fitting_scenario)
+		nbr_roi_row = len(fitting_input_dictionary['rois'].keys())
+		self.parent.ui.eventProgress.setMaximum(nbr_roi_row)
 		self.parent.ui.eventProgress.setVisible(True)
 
 		def set_params(params_object, name_of_parameter, dict_entry, parameter_flag):
-			print(f"dict_entry[{name_of_parameter}]= {dict_entry[name_of_parameter]}")
-
 			params_object.add(name_of_parameter,
 			                  value=np.float(dict_entry[name_of_parameter]),
 			                  vary=parameter_flag)
 
-		nbr_roi_row = len(fitting_input_dictionary['rois'].keys())
+		def record_result_into_dict(entry_dict, result_object, name_of_parameter, parameter_flag):
+			print(f"-> name_of_parameter: {name_of_parameter}")
+			print(f"  - flag: {parameter_flag}")
+			if parameter_flag:
+				[value, error] = result_object.get_value_err(tag=name_of_parameter)
+				entry_dict[name_of_parameter] = value
+				entry_dict[name_of_parameter + "_error"] = error
+				print(f"   - value: {value}")
+				print(f"   - error: {error}")
+
 		for _roi_row in np.arange(nbr_roi_row):
 			_entry = fitting_input_dictionary['rois'][_roi_row]['fitting']['march_dollase']
 
@@ -235,11 +243,39 @@ class MarchDollaseFittingJobHandler:
 					set_params(params, 'a5', _entry, a5_flag)
 					set_params(params, 'a6', _entry, a6_flag)
 
-				result = gmodel.fit(yaxis, params, t=xaxis)
+				try:
+					result = gmodel.fit(yaxis, params, t=xaxis)
+				except ValueError:
+					print(f"we are having an error row:{_roi_row}")
 
+				print(f"in _history_row: {_history_row}")
 
-			self.parent.ui.eventProgress.setValue(_history_row + 1)
+				o_result = ResultValueError(result=result)
+				record_result_into_dict(_entry, o_result, 'd_spacing', d_spacing_flag)
+				record_result_into_dict(_entry, o_result, 'sigma', sigma_flag)
+				record_result_into_dict(_entry, o_result, 'alpha', alpha_flag)
+				record_result_into_dict(_entry, o_result, 'a1', a1_flag)
+				record_result_into_dict(_entry, o_result, 'a2', a2_flag)
+
+				if _is_advanced_mode:
+					record_result_into_dict(_entry, o_result, 'a5', a5_flag)
+					record_result_into_dict(_entry, o_result, 'a6', a6_flag)
+
+			break  # for debugging only
+
+			self.parent.ui.eventProgress.setValue(_roi_row + 1)
 			QApplication.processEvents()
 
 		self.parent.ui.eventProgress.setVisible(False)
 		self.parent.fitting_procedure_started['march-dollase'] = True
+
+
+class ResultValueError(object):
+
+    def __init__(self, result=None):
+        self.result = result
+
+    def get_value_err(self, tag=''):
+        value = self.result.params[tag].value
+        error = self.result.params[tag].stderr
+        return [value, error]
