@@ -192,9 +192,14 @@ class MarchDollaseFittingJobHandler:
 		self.parent.ui.eventProgress.setMaximum(nbr_row_in_fitting_scenario)
 		self.parent.ui.eventProgress.setVisible(True)
 
+		def set_params(params_object, name_of_parameter, dict_entry, parameter_flag):
+			params_object(name_of_parameter, value=dict_entry[name_of_parameter], vary=parameter_flag)
+
 		nbr_roi_row = len(fitting_input_dictionary['rois'].keys())
 		for _roi_row in np.arange(nbr_roi_row):
 			_entry = fitting_input_dictionary['rois'][_roi_row]['fitting']['march_dollase']
+
+			# x_axis =
 
 			for _history_row, _row_entry in enumerate(march_dollase_fitting_history_table):
 
@@ -207,7 +212,18 @@ class MarchDollaseFittingJobHandler:
 
 				params = gmodel.make_params()
 
-				
+				set_params(params, 'd_spacing', _entry, d_spacing_flag)
+				set_params(params, 'sigma', _entry, sigma_flag)
+				set_params(params, 'alpha', _entry, alpha_flag)
+				set_params(params, 'a1', _entry, a1_flag)
+				set_params(params, 'a2', _entry, a2_flag)
+
+				if _is_advanced_mode:
+					set_params(params, 'a5', _entry, a5_flag)
+					set_params(params, 'a6', _entry, a6_flag)
+
+
+
 
 			self.parent.ui.eventProgress.setValue(_history_row + 1)
 			QApplication.processEvents()

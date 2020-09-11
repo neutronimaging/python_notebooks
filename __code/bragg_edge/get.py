@@ -31,6 +31,11 @@ class Get:
 		else:
 			raise NotImplementedError
 
+	def x_axis_label(self):
+		x_axis_checked = self.x_axis_checked()
+		x_axis_dict = self.parent.fitting_input_dictionary['xaxis']
+		return x_axis_dict[x_axis_checked][1]
+
 	def x_axis_checked(self):
 		o_gui = GuiUtility(parent=self)
 		tab_selected = o_gui.get_tab_selected(tab_ui=self.parent.ui.tabWidget).lower()
@@ -137,6 +142,21 @@ class Get:
 
 		return {'name_of_page': list_pages[page_index],
 		        'table_ui'    : list_table_ui[page_index]}
+
+	def y_axis_data_of_selected_row(self, row_selected):
+		selected_roi = self.parent.fitting_input_dictionary['rois'][row_selected]
+		yaxis = selected_roi['profile']
+		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
+		yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+		return yaxis
+
+	def x_axis_data(self):
+		x_axis_selected = self.x_axis_checked()
+		xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
+		xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
+		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
+		xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+		return xaxis
 
 	@staticmethod
 	def units(name='index'):

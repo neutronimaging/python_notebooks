@@ -218,12 +218,11 @@ class MarchDollase:
 			self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
 
 		o_get = Get(parent=self.parent)
-		x_axis_selected = o_get.x_axis_checked()
-
-		xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
-		xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
-		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
-		xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+		xaxis = o_get.x_axis_data()
+		xaxis_label = o_get.x_axis_label()
+		# x_axis_selected = o_get.x_axis_checked()
+		# xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
+		# _, xaxis_label = xaxis_dict[x_axis_selected]
 
 		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
 		list_row_selected = o_table.get_rows_of_table_selected()
@@ -232,9 +231,7 @@ class MarchDollase:
 			return
 
 		for row_selected in list_row_selected:
-			selected_roi = self.parent.fitting_input_dictionary['rois'][row_selected]
-			yaxis = selected_roi['profile']
-			yaxis = yaxis[left_xaxis_index: right_xaxis_index]
+			yaxis = o_get.y_axis_data_of_selected_row(row_selected=row_selected)
 			self.parent.ui.fitting.plot(xaxis, yaxis,
 			                            pen=(self.parent.selection_roi_rgb[0],
 			                                 self.parent.selection_roi_rgb[1],
@@ -248,7 +245,6 @@ class MarchDollase:
 		else:
 			move_bragg_peak_range = False
 
-		#peak_range = self.parent.fitting_input_dictionary['bragg_peak_range']
 		peak_range = self.parent.march_dollase_fitting_range_selected
 		local_peak_range = [xaxis[peak_range[0]], xaxis[peak_range[1]]]
 
