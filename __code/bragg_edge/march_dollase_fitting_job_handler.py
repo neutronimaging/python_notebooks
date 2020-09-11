@@ -177,6 +177,7 @@ class MarchDollaseFittingJobHandler:
 	def prepare(self):
 		self.initialize_fitting_input_dictionary()
 		fitting_input_dictionary = self.parent.fitting_input_dictionary
+		march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
 
 		_is_advanced_mode = self.is_advanced_mode()
 		if _is_advanced_mode:
@@ -192,15 +193,21 @@ class MarchDollaseFittingJobHandler:
 		self.parent.ui.eventProgress.setVisible(True)
 
 		nbr_roi_row = len(fitting_input_dictionary['rois'].keys())
-		for _history_row, _row_entry in enumerate(march_dollase_fitting_history_table):
-			print(f"working with history row #{_history_row}")
+		for _roi_row in np.arange(nbr_roi_row):
+			_entry = fitting_input_dictionary['rois'][_roi_row]['fitting']['march_dollase']
 
-			for _roi_row in np.arange(nbr_roi_row):
-				print(f"-> working with roi row {_roi_row}")
-				# _entry = fitting_input_dictionary['rois'][_roi_row]['fitting']['march_dollase']
-				# d_spacing_flag =
+			for _history_row, _row_entry in enumerate(march_dollase_fitting_history_table):
 
+				[d_spacing_flag, sigma_flag, alpha_flag,
+				 a1_flag, a2_flag, a5_flag, a6_flag] = _row_entry
 
+				if _is_advanced_mode:
+					a5_flag = _entry['a5']
+					a6_flag = _entry['a6']
+
+				params = gmodel.make_params()
+
+				
 
 			self.parent.ui.eventProgress.setValue(_history_row + 1)
 			QApplication.processEvents()
