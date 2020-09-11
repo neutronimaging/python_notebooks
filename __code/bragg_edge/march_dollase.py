@@ -220,9 +220,6 @@ class MarchDollase:
 		o_get = Get(parent=self.parent)
 		xaxis = o_get.x_axis_data()
 		xaxis_label = o_get.x_axis_label()
-		# x_axis_selected = o_get.x_axis_checked()
-		# xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
-		# _, xaxis_label = xaxis_dict[x_axis_selected]
 
 		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
 		list_row_selected = o_table.get_rows_of_table_selected()

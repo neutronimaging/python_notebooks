@@ -3,6 +3,7 @@ import numpy as np
 from qtpy.QtWidgets import QApplication
 
 from __code.bragg_edge.fitting_functions import march_dollase_basic_fit, march_dollase_advanced_fit
+from __code.bragg_edge.get import Get
 
 
 class MarchDollaseFittingJobHandler:
@@ -129,8 +130,14 @@ class MarchDollaseFittingJobHandler:
 
 			self.a2 = slope  # saving it to calculate a6
 			self.a2_intercept = interception  # saving it to calculate a1
-
 			return slope
+
+		else:
+			_mean_left_part_side = self.a1
+			y_axis = all_fitting_axis_dictionary['right_part']['y_axis']
+			_mean_right_part_side = np.mean(y_axis)
+			a2 = np.abs(_mean_right_part_side - _mean_left_part_side)
+			return a2
 
 	def get_a5(self):
 		all_fitting_axis_dictionary = self.left_center_right_axis
@@ -193,13 +200,19 @@ class MarchDollaseFittingJobHandler:
 		self.parent.ui.eventProgress.setVisible(True)
 
 		def set_params(params_object, name_of_parameter, dict_entry, parameter_flag):
-			params_object(name_of_parameter, value=dict_entry[name_of_parameter], vary=parameter_flag)
+			print(f"dict_entry[{name_of_parameter}]= {dict_entry[name_of_parameter]}")
+
+			params_object.add(name_of_parameter,
+			                  value=np.float(dict_entry[name_of_parameter]),
+			                  vary=parameter_flag)
 
 		nbr_roi_row = len(fitting_input_dictionary['rois'].keys())
 		for _roi_row in np.arange(nbr_roi_row):
 			_entry = fitting_input_dictionary['rois'][_roi_row]['fitting']['march_dollase']
 
-			# x_axis =
+			o_get = Get(parent=self.parent)
+			xaxis = o_get.x_axis_data()
+			yaxis = o_get.y_axis_data_of_selected_row(_roi_row)
 
 			for _history_row, _row_entry in enumerate(march_dollase_fitting_history_table):
 
@@ -222,7 +235,7 @@ class MarchDollaseFittingJobHandler:
 					set_params(params, 'a5', _entry, a5_flag)
 					set_params(params, 'a6', _entry, a6_flag)
 
-
+				result = gmodel.fit(yaxis, params, t=xaxis)
 
 
 			self.parent.ui.eventProgress.setValue(_history_row + 1)
