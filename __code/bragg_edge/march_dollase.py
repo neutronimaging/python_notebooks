@@ -218,8 +218,9 @@ class MarchDollase:
 			self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
 
 		o_get = Get(parent=self.parent)
-		xaxis = o_get.x_axis_data()
-		xaxis_label = o_get.x_axis_label()
+		xaxis_checked = o_get.x_axis_checked()
+		xaxis = o_get.x_axis_data(x_axis_selected=xaxis_checked)
+		xaxis_label = o_get.x_axis_label(x_axis_selected=xaxis_checked)
 
 		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
 		list_row_selected = o_table.get_rows_of_table_selected()

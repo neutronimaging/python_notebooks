@@ -31,10 +31,9 @@ class Get:
 		else:
 			raise NotImplementedError
 
-	def x_axis_label(self):
-		x_axis_checked = self.x_axis_checked()
+	def x_axis_label(self, x_axis_selected='index'):
 		x_axis_dict = self.parent.fitting_input_dictionary['xaxis']
-		return x_axis_dict[x_axis_checked][1]
+		return x_axis_dict[x_axis_selected][1]
 
 	def x_axis_checked(self):
 		o_gui = GuiUtility(parent=self)
@@ -54,7 +53,6 @@ class Get:
 		tab_selected = o_gui.get_tab_selected(self.parent.ui.tabWidget).lower()
 
 		list_ui = self.x_axis_choice_ui[tab_selected]
-
 		if list_ui['index'].isChecked():
 			return self.specified_x_axis(xaxis='index')
 		elif list_ui['tof'].isChecked():

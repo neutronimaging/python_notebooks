@@ -221,10 +221,11 @@ class Kropff:
 			selected_roi = self.parent.fitting_input_dictionary['rois'][0]
 			yaxis = selected_roi['profile']
 			yaxis = yaxis[left_xaxis_index: right_xaxis_index]
-			self.parent.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.parent.selection_roi_rgb[0],
-			                                                 self.parent.selection_roi_rgb[1],
-			                                                 self.parent.selection_roi_rgb[2]),
-			                     symbol='o')
+			self.parent.ui.fitting.plot(xaxis, -np.log(yaxis),
+			                            pen=(self.parent.selection_roi_rgb[0],
+			                                 self.parent.selection_roi_rgb[1],
+			                                 self.parent.selection_roi_rgb[2]),
+			                            symbol='o')
 			self.parent.ui.fitting.setLabel("bottom", xaxis_label)
 			peak_range_index = self.parent.kropff_fitting_range['bragg_peak']
 			if peak_range_index[0] is None:
@@ -235,10 +236,10 @@ class Kropff:
 			if self.parent.fitting_peak_ui:
 				self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
 			self.parent.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
-			                                           orientation=None,
-			                                           brush=None,
-			                                           movable=True,
-			                                           bounds=None)
+					                                          orientation=None,
+					                                          brush=None,
+					                                          movable=True,
+					                                          bounds=None)
 			self.parent.fitting_peak_ui.sigRegionChanged.connect(self.parent.fitting_range_changed)
 			self.parent.fitting_peak_ui.setZValue(-10)
 			self.parent.ui.fitting.addItem(self.parent.fitting_peak_ui)
@@ -260,10 +261,11 @@ class Kropff:
 
 				self.parent.ui.fitting.setLabel("bottom", xaxis_label)
 				self.parent.ui.fitting.setLabel("left", 'Cross Section (arbitrary units)')
-				self.parent.ui.fitting.plot(xaxis, -np.log(yaxis), pen=(self.parent.selection_roi_rgb[0],
-				                                                 self.parent.selection_roi_rgb[1],
-				                                                 self.parent.selection_roi_rgb[2]),
-				                     symbol='o')
+				self.parent.ui.fitting.plot(xaxis, -np.log(yaxis),
+				                            pen=(self.parent.selection_roi_rgb[0],
+				                                 self.parent.selection_roi_rgb[1],
+				                                 self.parent.selection_roi_rgb[2]),
+				                            symbol='o')
 
 				peak_range_index = self.parent.kropff_fitting_range[name_of_page]
 				if peak_range_index[0] is None:
@@ -274,10 +276,10 @@ class Kropff:
 				if self.parent.fitting_peak_ui:
 					self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
 				self.parent.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
-				                                           orientation=None,
-				                                           brush=None,
-				                                           movable=False,
-				                                           bounds=None)
+					                                              orientation=None,
+					                                              brush=None,
+					                                              movable=False,
+					                                              bounds=None)
 				self.parent.fitting_peak_ui.sigRegionChanged.connect(self.parent.fitting_range_changed)
 				self.parent.fitting_peak_ui.setZValue(-10)
 				self.parent.ui.fitting.addItem(self.parent.fitting_peak_ui)
@@ -295,9 +297,10 @@ class Kropff:
 						xaxis = _entry['xaxis_to_fit']
 						yaxis = _entry['yaxis_fitted']
 						# yaxis = -np.log(yaxis)
-						self.parent.ui.fitting.plot(xaxis, yaxis, pen=(self.parent.fit_rgb[0],
-						                                               self.parent.fit_rgb[1],
-						                                               self.parent.fit_rgb[2]))
+						self.parent.ui.fitting.plot(xaxis, yaxis,
+						                            pen=(self.parent.fit_rgb[0],
+						                                 self.parent.fit_rgb[1],
+						                                 self.parent.fit_rgb[2]))
 
 				if peak_range_index[0] is None:
 					self.parent.fitting_range_changed()
