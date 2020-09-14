@@ -3,11 +3,13 @@ import numpy as np
 import pyqtgraph as pg
 from qtpy.QtWidgets import QFileDialog
 from pathlib import Path
+import os
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.get import Get
 from __code.utilities import find_nearest_index
+from __code.file_handler import make_ascii_file
 
 
 class MarchDollase:
@@ -357,46 +359,6 @@ class MarchDollase:
 			self.export_data_of_selected_rows()
 
 	def export_data_of_selected_rows(self):
-		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
-		list_of_rows_selected = o_table.get_rows_of_table_selected()
-		fitting_input_dictionary = self.parent.fitting_input_dictionary
-
-		o_get = Get(parent=self.parent)
-		xaxis_index = o_get.x_axis_data(x_axis_selected='index')
-		xaxis_tof = o_get.x_axis_data(x_axis_selected='tof')
-		xaxis_lambda = o_get.x_axis_data(x_axis_selected='lambda')
-
-		xaxis_index_label = o_get.x_axis_label(x_axis_selected='index')
-		xaxis_tof_label = o_get.x_axis_label(x_axis_selected='tof')
-		xaxis_lambda_label = o_get.x_axis_label(x_axis_selected='lambda')
-
-		# metadata
-
-		metadata = ["#Marche Dollase Result of Fitting"]
-		is_advance_mode = self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
-		metadata.append("#Using advanced fitting mode: {}".format(is_advance_mode))
-
-		data_label = "#image index, TOF(micros), Lambda(Angstroms)"
-		data = []
-		for _row in list_of_rows_selected:
-			_entry = fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']
-			_line = "#-> row {}: d_spacing:{}, sigma:{}, alpha:{}, a1:{}, a2:{}".format(_row,
-			                                                                            _entry['d_spacing'],
-			                                                                            _entry['sigma'],
-			                                                                            _entry['alpha'],
-			                                                                            _entry['a1'],
-			                                                                            _entry['a2'])
-			if is_advance_mode:
-				_line += ", a5:{}, a6:{}".format(_entry['a5'], _entry['a6'])
-			metadata.append(_line)
-			data_label += ", row {}".format(_row)
-
-			data.append(o_get.y_axis_data_of_selected_row(row_selected=_row))
-
-		metadata.append("#")
-		metadata.append(data_label)
-
-		print(metadata)
 
 		base_folder = Path(self.parent.working_dir)
 		directory = str(base_folder.parent)
@@ -405,10 +367,69 @@ class MarchDollase:
 		                                                  caption="Select Output Folder")
 
 		if _export_folder:
-			print(f"folder is: {_export_folder}")
+			o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
+			list_of_rows_selected = o_table.get_rows_of_table_selected()
 
+			str_list_of_rows_selected = [str(_row) for _row in list_of_rows_selected]
+			str_rows = "_".join(str_list_of_rows_selected)
+			output_file_name = os.path.join(str(_export_folder), "march_dollase_result_fitting_row{}.txt".format(
+					str_rows))
 
+			fitting_input_dictionary = self.parent.fitting_input_dictionary
 
+			o_get = Get(parent=self.parent)
+			xaxis_index = o_get.x_axis_data(x_axis_selected='index')
+			xaxis_tof = o_get.x_axis_data(x_axis_selected='tof')
+			xaxis_lambda = o_get.x_axis_data(x_axis_selected='lambda')
 
+			# metadata
+			metadata = ["#Marche Dollase Result of Fitting"]
+			is_advance_mode = self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+			metadata.append("#Using advanced fitting mode: {}".format(is_advance_mode))
 
+			data_label = "#image index, TOF(micros), Lambda(Angstroms)"
+			temp_data = []
+			for _row in list_of_rows_selected:
+				_entry = fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']
+				_top_entry = fitting_input_dictionary['rois'][_row]
+				_line = "#-> row {}: x0: {}, y0:{}, width:{}, height:{}, " \
+				        "d_spacing:{}, sigma:{}, alpha:{}, a1:{}, " \
+				        "a2:{}".format(_row,
+                                       _top_entry['x0'],
+                                       _top_entry['y0'],
+                                       _top_entry['width'],
+				                       _top_entry['height'],
+                                       _entry['d_spacing'],
+                                       _entry['sigma'],
+                                       _entry['alpha'],
+                                       _entry['a1'],
+                                       _entry['a2'])
+				if is_advance_mode:
+					_line += ", a5:{}, a6:{}".format(_entry['a5'], _entry['a6'])
+				metadata.append(_line)
+				data_label += ", row {}".format(_row)
 
+				temp_data.append(o_get.y_axis_data_of_selected_row(row_selected=_row))
+
+			metadata.append("#")
+			metadata.append(data_label)
+
+			# data
+			data = []
+			self.parent.debug_data = temp_data
+
+			for _index in np.arange(len(xaxis_index)):
+				str_data = "{}, {}, {}".format(xaxis_index[_index],
+				                               xaxis_tof[_index],
+				                               xaxis_lambda[_index])
+				for _col_index in np.arange(len(list_of_rows_selected)):
+					str_data += ", {}".format(temp_data[_col_index][_index])
+				data.append(str_data)
+
+			make_ascii_file(metadata=metadata,
+			                data=data,
+			                output_file_name=output_file_name,
+			                dim='1d')
+
+			message = "{} has been created!".format(output_file_name)
+			self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
