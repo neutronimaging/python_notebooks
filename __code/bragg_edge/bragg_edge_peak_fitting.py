@@ -519,6 +519,10 @@ class Interface(QMainWindow):
 
     def kropff_fitting_range_changed(self):
         [global_left_range, global_right_range] = self.bragg_edge_range
+
+        if not self.fitting_peak_ui:
+            return
+
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
         xaxis_dict = self.fitting_input_dictionary['xaxis']
         o_get = Get(parent=self)
