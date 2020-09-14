@@ -1,6 +1,8 @@
 from qtpy import QtGui
 import numpy as np
 import pyqtgraph as pg
+from qtpy.QtWidgets import QFileDialog
+from pathlib import Path
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
@@ -98,7 +100,6 @@ class MarchDollase:
 		self.table_clicked(row=new_row)
 
 	def table_right_clicked(self):
-
 		table_is_empty = False
 		list_state = self.parent.march_dollase_fitting_history_table
 
@@ -346,3 +347,68 @@ class MarchDollase:
 		self.parent.ui.march_dollase_bragg_peak_range_to_value.setText(str(real_right_value))
 		self.parent.ui.march_dollase_from_bragg_peak_range_units.setText(units)
 		self.parent.ui.march_dollase_to_bragg_peak_range_units.setText(units)
+
+	def result_table_right_click(self):
+		menu = QtGui.QMenu(self.parent)
+		export_data = menu.addAction("Export Data ...")
+		action = menu.exec_(QtGui.QCursor.pos())
+
+		if action == export_data:
+			self.export_data_of_selected_rows()
+
+	def export_data_of_selected_rows(self):
+		o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
+		list_of_rows_selected = o_table.get_rows_of_table_selected()
+		fitting_input_dictionary = self.parent.fitting_input_dictionary
+
+		o_get = Get(parent=self.parent)
+		xaxis_index = o_get.x_axis_data(x_axis_selected='index')
+		xaxis_tof = o_get.x_axis_data(x_axis_selected='tof')
+		xaxis_lambda = o_get.x_axis_data(x_axis_selected='lambda')
+
+		xaxis_index_label = o_get.x_axis_label(x_axis_selected='index')
+		xaxis_tof_label = o_get.x_axis_label(x_axis_selected='tof')
+		xaxis_lambda_label = o_get.x_axis_label(x_axis_selected='lambda')
+
+		# metadata
+
+		metadata = ["#Marche Dollase Result of Fitting"]
+		is_advance_mode = self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+		metadata.append("#Using advanced fitting mode: {}".format(is_advance_mode))
+
+		data_label = "#image index, TOF(micros), Lambda(Angstroms)"
+		data = []
+		for _row in list_of_rows_selected:
+			_entry = fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']
+			_line = "#-> row {}: d_spacing:{}, sigma:{}, alpha:{}, a1:{}, a2:{}".format(_row,
+			                                                                            _entry['d_spacing'],
+			                                                                            _entry['sigma'],
+			                                                                            _entry['alpha'],
+			                                                                            _entry['a1'],
+			                                                                            _entry['a2'])
+			if is_advance_mode:
+				_line += ", a5:{}, a6:{}".format(_entry['a5'], _entry['a6'])
+			metadata.append(_line)
+			data_label += ", row {}".format(_row)
+
+			data.append(o_get.y_axis_data_of_selected_row(row_selected=_row))
+
+		metadata.append("#")
+		metadata.append(data_label)
+
+		print(metadata)
+
+		base_folder = Path(self.parent.working_dir)
+		directory = str(base_folder.parent)
+		_export_folder = QFileDialog.getExistingDirectory(self.parent,
+		                                                  directory=directory,
+		                                                  caption="Select Output Folder")
+
+		if _export_folder:
+			print(f"folder is: {_export_folder}")
+
+
+
+
+
+

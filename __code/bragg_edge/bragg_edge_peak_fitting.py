@@ -823,6 +823,10 @@ class Interface(QMainWindow):
         o_fit.initialize_d_spacing()
         o_march.fill_history_table_with_fitting_information()
 
+    def march_dollase_result_table_right_clicked(self, point):
+        o_march = MarchDollase(parent=self)
+        o_march.result_table_right_click()
+
     def cancel_clicked(self):
         self.close()
 

@@ -605,7 +605,7 @@
           </property>
           <widget class="QTabWidget" name="tab_algorithm">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tab_3">
             <attribute name="title">
@@ -1247,7 +1247,7 @@
              <item>
               <widget class="QToolBox" name="march_dollase_toolBox">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_2">
                 <property name="geometry">
@@ -1622,6 +1622,9 @@
                      </item>
                      <item>
                       <widget class="QTableWidget" name="march_dollase_result_table">
+                       <property name="contextMenuPolicy">
+                        <enum>Qt::CustomContextMenu</enum>
+                       </property>
                        <property name="alternatingRowColors">
                         <bool>true</bool>
                        </property>
@@ -2773,6 +2776,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>march_dollase_result_table</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>march_dollase_result_table_right_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>421</x>
+     <y>670</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>708</x>
+     <y>586</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -2814,5 +2833,6 @@
   <slot>march_dollase_result_table_clicked()</slot>
   <slot>march_dollase_result_selection_mode_clicked()</slot>
   <slot>march_dollase_toolbox_changed()</slot>
+  <slot>march_dollase_result_table_right_clicked()</slot>
  </slots>
 </ui>
