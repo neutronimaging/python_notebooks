@@ -225,6 +225,7 @@ class Kropff:
 			                                                 self.parent.selection_roi_rgb[1],
 			                                                 self.parent.selection_roi_rgb[2]),
 			                     symbol='o')
+			self.parent.ui.fitting.setLabel("bottom", xaxis_label)
 			peak_range_index = self.parent.kropff_fitting_range['bragg_peak']
 			if peak_range_index[0] is None:
 				peak_range = self.parent.bragg_edge_range

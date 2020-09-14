@@ -219,7 +219,7 @@ class MarchDollaseFittingJobHandler:
 			_entry = fitting_input_dictionary['rois'][_roi_row]['fitting']['march_dollase']
 
 			o_get = Get(parent=self.parent)
-			xaxis = o_get.x_axis_data()
+			xaxis = o_get.x_axis_data(x_axis_selected='lambda')
 			yaxis = o_get.y_axis_data_of_selected_row(_roi_row)
 
 			for _history_row, _row_entry in enumerate(march_dollase_fitting_history_table):
@@ -243,10 +243,13 @@ class MarchDollaseFittingJobHandler:
 					set_params(params, 'a5', _entry, a5_flag)
 					set_params(params, 'a6', _entry, a6_flag)
 
-				try:
-					result = gmodel.fit(yaxis, params, t=xaxis)
-				except ValueError:
-					print(f"we are having an error row:{_roi_row}")
+				print(f"xaxis: {xaxis}")
+				print(f"yaxis: {yaxis}")
+
+				# try:
+				result = gmodel.fit(yaxis, params, t=xaxis)
+				# except ValueError:
+				# 	print(f"we are having an error row:{_roi_row}")
 
 				print(f"in _history_row: {_history_row}")
 
@@ -261,7 +264,7 @@ class MarchDollaseFittingJobHandler:
 					record_result_into_dict(_entry, o_result, 'a5', a5_flag)
 					record_result_into_dict(_entry, o_result, 'a6', a6_flag)
 
-			break  # for debugging only
+			break  # for debugging only (stop only after first row)
 
 			self.parent.ui.eventProgress.setValue(_roi_row + 1)
 			QApplication.processEvents()

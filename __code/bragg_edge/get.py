@@ -150,8 +150,7 @@ class Get:
 		yaxis = yaxis[left_xaxis_index: right_xaxis_index]
 		return yaxis
 
-	def x_axis_data(self):
-		x_axis_selected = self.x_axis_checked()
+	def x_axis_data(self, x_axis_selected='index'):
 		xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
 		xaxis_index, xaxis_label = xaxis_dict[x_axis_selected]
 		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
