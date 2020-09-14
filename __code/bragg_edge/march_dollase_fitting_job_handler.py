@@ -190,7 +190,8 @@ class MarchDollaseFittingJobHandler:
 		if _is_advanced_mode:
 			gmodel = Model(march_dollase_advanced_fit, missing='drop')
 		else:
-			gmodel = Model(march_dollase_basic_fit, missing='drop')
+			# gmodel = Model(march_dollase_basic_fit, missing='drop')
+			gmodel = Model(march_dollase_basic_fit, nan_policy='propagate')
 
 		march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
 		nbr_row_in_fitting_scenario = len(march_dollase_fitting_history_table)
@@ -206,9 +207,8 @@ class MarchDollaseFittingJobHandler:
 			                  vary=parameter_flag)
 
 		def record_result_into_dict(entry_dict, result_object, name_of_parameter, parameter_flag):
-			print(f"-> name_of_parameter: {name_of_parameter}")
-			print(f"  - flag: {parameter_flag}")
 			if parameter_flag:
+				print(f"-> name_of_parameter: {name_of_parameter}")
 				[value, error] = result_object.get_value_err(tag=name_of_parameter)
 				entry_dict[name_of_parameter] = value
 				entry_dict[name_of_parameter + "_error"] = error
@@ -243,8 +243,18 @@ class MarchDollaseFittingJobHandler:
 					set_params(params, 'a5', _entry, a5_flag)
 					set_params(params, 'a6', _entry, a6_flag)
 
-				print(f"xaxis: {xaxis}")
-				print(f"yaxis: {yaxis}")
+				print("Parameters pre-initialized:")
+				if not d_spacing_flag:
+					print(f"- d_spacing: {_entry['d_spacing']}")
+				if not sigma_flag:
+					print(f"- sigma: {_entry['sigma']}")
+				if not alpha_flag:
+					print(f"- alpha: {_entry['alpha']}")
+				if not a1_flag:
+					print(f"- a1: {_entry['a1']}")
+				if not a2_flag:
+					print(f"- a2: {_entry['a2']}")
+
 
 				# try:
 				result = gmodel.fit(yaxis, params, t=xaxis)

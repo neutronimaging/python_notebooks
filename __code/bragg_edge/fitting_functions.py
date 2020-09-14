@@ -64,7 +64,8 @@ def kropff_bragg_peak_tof(lda, a0, b0, ahkl, bhkl, ldahkl, sigma, tau):
 
 	return final_part1 + final_part2
 
-def march_dollase_basic_fit(t, d_spacing, alpha, sigma, a1, a2):
+
+def march_dollase_basic_fit(t, d_spacing, sigma, alpha, a1, a2):
     t0 = 2 * d_spacing
     term2 = special.erfc(-((t - t0) / (sigma * math.sqrt(2))) + sigma / alpha)
     term1 = np.exp((t - t0) / alpha + (sigma * sigma) / (2 * alpha * alpha))
@@ -75,7 +76,7 @@ def march_dollase_basic_fit(t, d_spacing, alpha, sigma, a1, a2):
     return y
 
 
-def march_dollase_advanced_fit(t, d_spacing, alpha, sigma, a1, a2, a5, a6):
+def march_dollase_advanced_fit(t, d_spacing, sigma, alpha, a1, a2, a5, a6):
     t0 = 2 * d_spacing
     term0 = a2 * (t - a6)
     term1 = ((a5 - a2) / 2) * (t - a6)
