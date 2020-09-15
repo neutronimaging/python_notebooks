@@ -384,8 +384,6 @@
     <property name="title">
      <string>Project</string>
     </property>
-    <addaction name="actionImport"/>
-    <addaction name="actionExport"/>
    </widget>
    <addaction name="menuImport_Export"/>
   </widget>

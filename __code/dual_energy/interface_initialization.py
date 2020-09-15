@@ -28,11 +28,11 @@ class Initialization:
 		self.pyqtgraph_profile()
 		self.matplotlib()
 		self.widgets()
+		self.roi_setup()
 
 		# if tab == 'all':
 		# 	self.normalize_images_by_white_beam()
 		# 	self.save_image_size()
-		# 	self.roi_setup()
 		# 	self.widgets()
 		#
 		# self.labels()
@@ -153,16 +153,17 @@ class Initialization:
 	def roi_setup(self):
 		[x0, y0] = self.parent.roi_settings['position']
 		self.parent.selection_x0y0 = [x0, y0]
-		width = self.parent.ui.roi_size_slider.value()
-		self.parent.previous_roi_selection['width'] = width
-		self.parent.previous_roi_selection['height'] = width
+		width = self.parent.previous_roi_selection['width']
+		height = self.parent.previous_roi_selection['height']
 		_pen = QtGui.QPen()
 		_pen.setColor(self.parent.roi_settings['color'])
-		_pen.setWidth(self.parent.roi_settings['width'])
+		_pen.setWidth(self.parent.roi_settings['border_width'])
 		self.parent.roi_id = pg.ROI([x0, y0],
 		                            [width, width],
 		                            pen=_pen,
 		                            scaleSnap=True)
+		self.parent.roi_id.addScaleHandle([1, 1], [0, 0])
+		self.parent.roi_id.addScaleHandle([0, 0], [1, 1])
 		self.parent.ui.image_view.addItem(self.parent.roi_id)
 		self.parent.roi_id.sigRegionChanged.connect(self.parent.roi_moved)
 

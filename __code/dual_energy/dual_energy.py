@@ -13,9 +13,7 @@ from __code.bragg_edge.bragg_edge_normalization import BraggEdge as BraggEdgePar
 from __code import load_ui
 
 from __code.dual_energy.interface_initialization import Initialization
-
-
-
+from __code.dual_energy.selection_tab import SelectionTab
 
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.utilities import find_nearest_index
@@ -58,12 +56,14 @@ class Interface(QMainWindow):
     # # relative index of the bragg peak only part (kropff and March-Dollase)
     # bragg_peak_selection_range = [np.NaN, np.NaN]
     #
-    # selection_roi_rgb = (62, 13, 244)
-    # roi_settings = {'color': QtGui.QColor(selection_roi_rgb[0],
-    #                                       selection_roi_rgb[1],
-    #                                       selection_roi_rgb[2]),
-    #                 'width': 0.01,
-    #                 'position': [10, 10]}
+    selection_roi_rgb = (62, 13, 244)
+    roi_settings = {'color': QtGui.QColor(selection_roi_rgb[0],
+                                          selection_roi_rgb[1],
+                                          selection_roi_rgb[2]),
+                    'border_width': 0.01,
+                    'position': [10, 10]}
+    previous_roi_selection = {'width': 50,
+                              'height': 50}
     # shrinking_roi_rgb = (13, 214, 244)
     # shrinking_roi_settings = {'color': QtGui.QColor(shrinking_roi_rgb[0],
     #                                                 shrinking_roi_rgb[1],
@@ -82,9 +82,9 @@ class Interface(QMainWindow):
     # image_size = {'width': None,
     #               'height': None}
     # roi_id = None
-    # xaxis_label = {'index': "File index",
-    #                'tof': u"TOF (\u00B5s)",
-    #                'lambda': u"\u03BB (\u212B)"}
+    xaxis_label = {'index': "File index",
+                   'tof': u"TOF (\u00B5s)",
+                   'lambda': u"\u03BB (\u212B)"}
     # fitting_rois = {'kropff': {'step1': None,
     #                            'step2': None,
     #                            'step3': None,
@@ -199,12 +199,6 @@ class Interface(QMainWindow):
         final_image = np.mean(final_array, axis=0)
         self.live_image = final_image
         return final_image
-
-    def roi_moved(self):
-        o_selection = BraggEdgeSelectionTab(parent=self)
-        o_selection.update_selection_profile_plot()
-        o_selection.update_all_size_widgets_infos()
-        o_selection.update_roi_defined_by_profile_of_bin_size_slider()
 
     def new_dimensions_within_error_range(self):
         """this method is used to check if the ROI sizes changed. We need an error uncertainties as sometimes
@@ -340,6 +334,11 @@ class Interface(QMainWindow):
         self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
         self.bragg_edge_range_ui.setZValue(-10)
         self.ui.profile.addItem(self.bragg_edge_range_ui)
+
+    # events triggered by
+    def roi_moved(self):
+        o_selection = SelectionTab(parent=self)
+        o_selection.update_selection_profile_plot()
 
     # event handler
     def import_button_clicked(self):
