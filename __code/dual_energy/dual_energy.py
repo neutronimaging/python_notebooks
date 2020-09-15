@@ -14,6 +14,7 @@ from __code import load_ui
 
 from __code.dual_energy.interface_initialization import Initialization
 from __code.dual_energy.selection_tab import SelectionTab
+from __code.dual_energy.get import Get
 
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.utilities import find_nearest_index
@@ -25,7 +26,6 @@ from __code.bragg_edge.march_dollase import MarchDollase
 from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
 from __code.bragg_edge.bragg_edge_selection_tab import BraggEdgeSelectionTab
-from __code.bragg_edge.get import Get
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 from __code._utilities.array import exclude_y_value_when_error_is_nan
 
@@ -43,16 +43,9 @@ class Interface(QMainWindow):
 
     live_image = None  # image displayed on the left (integrated sample images)
 
-    # fitting_parameters_init = {'kropff': {'a0': 1,
-    #                                       'b0': 1,
-    #                                       'ahkl': 1,
-    #                                       'bhkl': 1,
-    #                                       'ldahkl': 1e-8,
-    #                                       'tau': 1,
-    #                                       'sigma': [1e-7, 1e-6, 1e-5]}}
-    #
-    # bragg_edge_range = [5, 20]
-    #
+    profile_selection_range = [5, 20]   # in index units, the min and max ROI ranges in the right plot (profile plot)
+    profile_selection_range_ui = None   # ROI ui of profile
+
     # # relative index of the bragg peak only part (kropff and March-Dollase)
     # bragg_peak_selection_range = [np.NaN, np.NaN]
     #
@@ -134,7 +127,7 @@ class Interface(QMainWindow):
         o_init = Initialization(parent=self)
         o_init.display(image=self.get_live_image())
         self.load_time_spectra()
-
+        self.roi_moved()
 
         #     self.roi_moved()
         # else:
@@ -256,9 +249,6 @@ class Interface(QMainWindow):
 
 
 
-    def selection_axis_changed(self):
-        o_selection = BraggEdgeSelectionTab(parent=self)
-        o_selection.update_selection_profile_plot()
 
     def initialize_default_peak_regions(self):
         [left_range, right_range] = self.bragg_edge_range
@@ -335,6 +325,18 @@ class Interface(QMainWindow):
         self.bragg_edge_range_ui.setZValue(-10)
         self.ui.profile.addItem(self.bragg_edge_range_ui)
 
+    ### clean implementation after this
+    def profile_selection_range_changed(self):
+        """this method converts the ROI left and right position in current x-axis units to index units """
+        [left_range, right_range] = list(self.profile_selection_range_ui.getRegion())
+        o_get = Get(parent=self)
+        x_axis, _ = o_get.x_axis()
+
+        left_index = find_nearest_index(array=x_axis, value=left_range)
+        right_index = find_nearest_index(array=x_axis, value=right_range)
+
+        self.profile_selection_range = [left_index, right_index]
+
     # events triggered by
     def roi_moved(self):
         o_selection = SelectionTab(parent=self)
@@ -345,28 +347,23 @@ class Interface(QMainWindow):
         o_import = ImportHandler(parent=self)
         o_import.run()
 
+    def selection_axis_changed(self):
+        o_selection = SelectionTab(parent=self)
+        o_selection.update_selection_profile_plot()
+
     def export_button_clicked(self):
         o_export = ExportHandler(parent=self)
         o_export.configuration()
 
     def distance_detector_sample_changed(self):
         self.update_time_spectra()
-        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection = SelectionTab(parent=self)
         o_selection.update_selection_profile_plot()
 
     def detector_offset_changed(self):
         self.update_time_spectra()
-        o_selection = BraggEdgeSelectionTab(parent=self)
+        o_selection = SelectionTab(parent=self)
         o_selection.update_selection_profile_plot()
-
-    def switch_fitting_axis_to(self, button_name='tof'):
-        if button_name == 'tof':
-            self.ui.fitting_tof_radiobutton.setChecked(True)
-        elif button_name == 'lambda':
-            self.ui.fitting_lambda_radiobutton.setChecked(True)
-        else:
-            self.ui.fitting_index_radiobutton.setChecked(True)
-        self.fitting_axis_changed()
 
     def cancel_clicked(self):
         self.close()

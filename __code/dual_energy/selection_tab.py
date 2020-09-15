@@ -29,21 +29,18 @@ class SelectionTab:
 		self.parent.ui.profile.setLabel("bottom", x_axis_label)
 		self.parent.ui.profile.setLabel("left", 'Mean transmission')
 
-		# # vertical line showing peak to fit
-		# bragg_edge_range = [x_axis[self.parent.bragg_edge_range[0]],
-		#                     x_axis[self.parent.bragg_edge_range[1]]]
-		#
-		# self.parent.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
-		#                                                orientation=None,
-		#                                                brush=None,
-		#                                                movable=True,
-		#                                                bounds=None)
-		# self.parent.bragg_edge_range_ui.sigRegionChanged.connect(self.parent.bragg_edge_range_changed)
-		# self.parent.bragg_edge_range_ui.setZValue(-10)
-		# self.parent.ui.profile.addItem(self.parent.bragg_edge_range_ui)
+		# vertical line showing peak to fit
+		profile_selection_range = [x_axis[self.parent.profile_selection_range[0]],
+		                           x_axis[self.parent.profile_selection_range[1]]]
 
-
-
+		self.parent.profile_selection_range_ui = pg.LinearRegionItem(values=profile_selection_range,
+		                                                             orientation=None,
+		                                                             brush=None,
+		                                                             movable=True,
+		                                                             bounds=None)
+		self.parent.profile_selection_range_ui.sigRegionChanged.connect(self.parent.profile_selection_range_changed)
+		self.parent.profile_selection_range_ui.setZValue(-10)
+		self.parent.ui.profile.addItem(self.parent.profile_selection_range_ui)
 
 
 

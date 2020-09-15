@@ -29,6 +29,7 @@ class Initialization:
 		self.matplotlib()
 		self.widgets()
 		self.roi_setup()
+		self.text_fields()
 
 		# if tab == 'all':
 		# 	self.normalize_images_by_white_beam()
@@ -36,7 +37,6 @@ class Initialization:
 		# 	self.widgets()
 		#
 		# self.labels()
-		# self.text_fields()
 		# self.statusbar()
 		# self.pyqtgraph_fitting()
 		# self.kropff_fitting_table()
@@ -119,36 +119,9 @@ class Initialization:
 		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
 		self.parent.ui.detector_offset.setText(str(self.detector_offset))
 
-		self.parent.ui.kropff_high_lda_a0_init.setText(str(self.parent.fitting_parameters_init['kropff']['a0']))
-		self.parent.ui.kropff_high_lda_b0_init.setText(str(self.parent.fitting_parameters_init['kropff']['b0']))
-		self.parent.ui.kropff_low_lda_ahkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['ahkl']))
-		self.parent.ui.kropff_low_lda_bhkl_init.setText(str(self.parent.fitting_parameters_init['kropff']['bhkl']))
-		self.parent.ui.kropff_bragg_peak_ldahkl_init.setText(str(self.parent.fitting_parameters_init['kropff'][
-			                                                         'ldahkl']))
-		self.parent.ui.kropff_bragg_peak_tau_init.setText(str(self.parent.fitting_parameters_init['kropff']['tau']))
-		# list_sigma = self.parent.fitting_parameters_init['kropff']['sigma']
-		# list_sigma = [str(_value) for _value in list_sigma]
-		# str_list_sigma = ", ".join(list_sigma)
-		# self.parent.ui.kropff_bragg_peak_sigma_init.setText(str_list_sigma)
-
-		kropff_list_sigma = self.parent.fitting_parameters_init['kropff']['sigma']
-		str_kropff_list_sigma = [str(value) for value in kropff_list_sigma]
-		self.parent.ui.kropff_bragg_peak_sigma_comboBox.addItems(str_kropff_list_sigma)
-
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])
 
-		# self.parent.ui.roi_size_slider.setMinimum(1)
-		# max_value = np.min([self.parent.image_size['width'], self.parent.image_size['height']])
-		# self.parent.ui.roi_size_slider.setMaximum(max_value)
-		# default_roi_size = np.int(max_value/3)
-		# self.parent.ui.roi_size_slider.setValue(default_roi_size)
-		# self.parent.ui.roi_width.setText(str(default_roi_size))
-		# self.parent.ui.roi_height.setText(str(default_roi_size))
-		# self.parent.ui.profile_of_bin_size_width.setText(str(default_roi_size))
-		# self.parent.ui.profile_of_bin_size_height.setText(str(default_roi_size))
-		# self.parent.ui.profile_of_bin_size_slider.setMaximum(default_roi_size)
-		# self.parent.ui.profile_of_bin_size_slider.setValue(default_roi_size)
 
 	def roi_setup(self):
 		[x0, y0] = self.parent.roi_settings['position']
