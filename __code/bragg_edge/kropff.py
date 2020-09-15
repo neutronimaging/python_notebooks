@@ -221,7 +221,8 @@ class Kropff:
 			selected_roi = self.parent.fitting_input_dictionary['rois'][0]
 			yaxis = selected_roi['profile']
 			yaxis = yaxis[left_xaxis_index: right_xaxis_index]
-			self.parent.ui.fitting.plot(xaxis, -np.log(yaxis),
+			yaxis = -np.log(yaxis)
+			self.parent.ui.fitting.plot(xaxis, yaxis,
 			                            pen=(self.parent.selection_roi_rgb[0],
 			                                 self.parent.selection_roi_rgb[1],
 			                                 self.parent.selection_roi_rgb[2]),
@@ -261,7 +262,8 @@ class Kropff:
 
 				self.parent.ui.fitting.setLabel("bottom", xaxis_label)
 				self.parent.ui.fitting.setLabel("left", 'Cross Section (arbitrary units)')
-				self.parent.ui.fitting.plot(xaxis, -np.log(yaxis),
+				yaxis = -np.log(yaxis)
+				self.parent.ui.fitting.plot(xaxis, yaxis,
 				                            pen=(self.parent.selection_roi_rgb[0],
 				                                 self.parent.selection_roi_rgb[1],
 				                                 self.parent.selection_roi_rgb[2]),
@@ -296,7 +298,7 @@ class Kropff:
 						_entry = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
 						xaxis = _entry['xaxis_to_fit']
 						yaxis = _entry['yaxis_fitted']
-						# yaxis = -np.log(yaxis)
+						yaxis = -np.log(yaxis)
 						self.parent.ui.fitting.plot(xaxis, yaxis,
 						                            pen=(self.parent.fit_rgb[0],
 						                                 self.parent.fit_rgb[1],
@@ -304,6 +306,8 @@ class Kropff:
 
 				if peak_range_index[0] is None:
 					self.parent.fitting_range_changed()
+
+		self.parent.ui.fitting.setLabel("left", "Cross Section (arbitrary Units)")
 
 	def update_roi_labels(self):
 		[global_left_range, global_right_range] = self.parent.bragg_edge_range

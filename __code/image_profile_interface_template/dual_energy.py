@@ -29,16 +29,12 @@ from __code._utilities.array import exclude_y_value_when_error_is_nan
 DEBUGGING = True
 
 
-class BraggEdge(BraggEdgeParent):
+class ImageProfile(BraggEdgeParent):
 
     def load_ob(self, folder_selected):
         self.load_files(data_type='ob', folder=folder_selected)
         self.check_data_array_sizes()
-        self.divide_normalized_data_by_OB_white_beam()
 
-    def divide_normalized_data_by_OB_white_beam(self):
-        norm_data = self.o_norm.data['ob']['data']
-        self.white_beam_ob = np.mean(norm_data, 0)
 
 class Interface(QMainWindow):
 
@@ -102,131 +98,34 @@ class Interface(QMainWindow):
     # x0, y0, x1, y1, width, height
     roi_dimension_from_config_file = [None, None, None, None, None, None]
 
-    # fitting_input_dictionary = {'xaxis': {'index': ([], 'File index'),
-    #                                       'lambda': ([], 'lambda (Angstroms)'),
-    #                                       'tof': ([], 'TOF (micros)')},
-    #                             'bragg_edge_range': [200, 500],
-    #                             'bragg_peak_selection_range': [20, 30],  # only the bragg peak using relative peak
-    #                             'rois': {0: {'x0': None,
-    #                                          'y0': None,
-    #                                          'width': None,
-    #                                          'height': None,
-    #                                          'profile': [],
-    #                                          'fitting': {'kropff': {'high': {'a0': None,
-    #                                                                          'b0': None,
-    #                                                                          'a0_error': None,
-    #                                                                          'b0_error': None,
-    #                                                                          'yaxis_fitted': [],
-    #                                                                          'xaxis_to_fit': [],
-    #                                                                          },
-    #                                                                  'low': {'ahkl': None,
-    #                                                                          'bhkl': None,
-    #                                                                          'ahkl_error': None,
-    #                                                                          'bhkl_error': None},
-    #                                                                  'bragg_peak: {'ldahkl': None,
-    #                                                                                'tau': None,
-    #                                                                                'sigma': None,
-    #                                                                                'ldahkl_error': None,
-    #                                                                                'tau_error': None,
-    #                                                                                'sigma_error': None},
-    #                                                                 },
-    #                                                      'march_dollase' : {'d_spacing': None,
-    #                                                                         'd_spacing_error': None,
-    #                                                                         'alpha': None,
-    #                                                                         'alpha_error': None,
-    #                                                                         'sigma': None,
-    #                                                                         'sigma_error': None,
-    #                                                                         'a1': None,
-    #                                                                         'a1_error': None,
-    #                                                                         'a2': None,
-    #                                                                         'a2_error': None,
-    #                                                                         'a5': None,
-    #                                                                         'a5_error': None,
-    #                                                                         'a6': None,
-    #                                                                         'a6_error': None,
-    #                                                                         },
-    #                                                     },
-    #                                          },
-    #                                      },
-    #                             'fit_infos': {'high_lambda': {},         # do we have a range selected
-    #                                           'low_lambda': {},
-    #                                           'bragg_peak': {},
-    #                                           },
-    #                             }
+    def __init__(self, parent=None, working_dir=""):
 
-    ## list of width and height after importing a file (will be used in the profile slider (top right))
-    # dict_rois_imported = {0: {'width': None, 'height': None},
-    #                       1: {'width': None, 'height': None},
-    #                       }
-
-    march_dollase_fitting_peak_ui = None   # ROI of march dollase peak region
-    march_dollase_fitting_history_table = None
-    march_dollase_fitting_initial_parameters = {'d_spacing': np.NaN,
-                                                'sigma': 3.5,
-                                                'alpha': 4.5,
-                                                'a1': "row dependent",
-                                                'a2': "row dependent",
-                                                'a5': "row dependent",
-                                                'a6': "row dependent"}
-    march_dollase_fitting_history_table_default_new_row = None
-    march_dollase_fitting_range_selected = None
-
-    march_dollase_list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
-                                  'd_spacing_error', 'sigma_error', 'alpha_error',
-                                  'a1_error', 'a2_error', 'a5_error', 'a6_error']
-
-    # matplotlib canvas
-    kropff_high_plot = None
-    kropff_low_plot = None
-    kropff_bragg_peak_plot = None
-    march_dollase_plot = None
-
-    def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
-
-        if o_bragg:
-            # self.working_dir = o_bragg.working_dir
-            self.o_norm = o_bragg.o_norm
-            self.working_dir = self.retrieve_working_dir()
-            self.o_bragg = o_bragg
-            show_selection_tab = True
-            enabled_export_button = False
-            self.index_array = np.arange(len(self.o_norm.data['sample']['file_name']))
-        else:
-            self.working_dir = working_dir
-            show_selection_tab = False
-            enabled_export_button = False
-
-        if spectra_file:
-            self.spectra_file = spectra_file
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
 
         super(Interface, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
-                                                 'ui_bragg_edge_peak_fitting.ui'))
+                                                 'ui_image_profile_template.ui'))
 
         self.ui = load_ui(ui_full_path, baseinstance=self)
-        self.setWindowTitle("Peak Fitting Tool")
+        self.setWindowTitle("Image Profile Template")
 
-        if show_selection_tab:
-            # initialization
-            o_init = Initialization(parent=self)
-            o_init.display(image=self.get_live_image())
-            self.load_time_spectra()
-            self.roi_moved()
-        else:
-            o_init = Initialization(parent=self, tab='2')
-            self.disable_left_part_of_selection_tab()
-            self.ui.tabWidget.setEnabled(False)
-
-        self.ui.tabWidget.setTabEnabled(1, False)
-        # self.ui.tabWidget.setCurrentIndex(default_tab)
-        self.ui.actionExport.setEnabled(enabled_export_button)
-
-        o_selection = BraggEdgeSelectionTab(parent=self)
-        o_selection.update_selection_roi_slider_changed()
+        # o_init = Initialization(parent=self)
+        #     o_init.display(image=self.get_live_image())
+        #     self.load_time_spectra()
+        #     self.roi_moved()
+        # else:
+        #     o_init = Initialization(parent=self, tab='2')
+        #     self.disable_left_part_of_selection_tab()
+        #     self.ui.tabWidget.setEnabled(False)
+        #
+        # self.ui.tabWidget.setTabEnabled(1, False)
+        # # self.ui.tabWidget.setCurrentIndex(default_tab)
+        # self.ui.actionExport.setEnabled(enabled_export_button)
+        #
+        # o_selection = BraggEdgeSelectionTab(parent=self)
+        # o_selection.update_selection_roi_slider_changed()
 
     def retrieve_working_dir(self):
         o_norm = self.o_norm
