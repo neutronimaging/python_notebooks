@@ -78,6 +78,10 @@ class Interface(QMainWindow):
     xaxis_label = {'index': "File index",
                    'tof': u"TOF (\u00B5s)",
                    'lambda': u"\u03BB (\u212B)"}
+    xaxis_units = {'index': "File #",
+                   'tof': u"\u00B5s",
+                   'lambda': u"\u212B"}
+
     # fitting_rois = {'kropff': {'step1': None,
     #                            'step2': None,
     #                            'step3': None,
@@ -325,6 +329,8 @@ class Interface(QMainWindow):
         self.bragg_edge_range_ui.setZValue(-10)
         self.ui.profile.addItem(self.bragg_edge_range_ui)
 
+
+
     ### clean implementation after this
     def profile_selection_range_changed(self):
         """this method converts the ROI left and right position in current x-axis units to index units """
@@ -350,6 +356,7 @@ class Interface(QMainWindow):
     def selection_axis_changed(self):
         o_selection = SelectionTab(parent=self)
         o_selection.update_selection_profile_plot()
+        o_selection.update_bin_size_widgets()
 
     def export_button_clicked(self):
         o_export = ExportHandler(parent=self)

@@ -22,6 +22,13 @@ class Get(BraggEdgeGet):
 		else:
 			return self.specified_x_axis(xaxis='lambda')
 
+	def x_axis_units(self):
+		list_ui = self.x_axis_choice_ui
+		for _key in list_ui.keys():
+			if list_ui[_key].isChecked():
+				return self.parent.xaxis_units[_key]
+		return ""
+
 	def selection_roi_dimension(self):
 		roi_id = self.parent.roi_id
 

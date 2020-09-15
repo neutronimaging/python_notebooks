@@ -30,13 +30,13 @@ class Initialization:
 		self.widgets()
 		self.roi_setup()
 		self.text_fields()
+		self.labels()
 
 		# if tab == 'all':
 		# 	self.normalize_images_by_white_beam()
 		# 	self.save_image_size()
 		# 	self.widgets()
 		#
-		# self.labels()
 		# self.statusbar()
 		# self.pyqtgraph_fitting()
 		# self.kropff_fitting_table()
@@ -111,9 +111,7 @@ class Initialization:
 		# labels
 		self.parent.ui.detector_offset_units.setText(u"\u03BCs")
 		self.parent.ui.selection_tof_radiobutton.setText(u"TOF (\u03BCs)")
-		self.parent.ui.fitting_tof_radiobutton.setText(u"TOF (\u03BCs)")
 		self.parent.ui.selection_lambda_radiobutton.setText(u"\u03BB (\u212B)")
-		self.parent.ui.fitting_lambda_radiobutton.setText(u"\u03BB (\u212B)")
 
 	def text_fields(self):
 		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))

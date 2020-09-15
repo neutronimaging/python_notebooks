@@ -42,6 +42,12 @@ class SelectionTab:
 		self.parent.profile_selection_range_ui.setZValue(-10)
 		self.parent.ui.profile.addItem(self.parent.profile_selection_range_ui)
 
+	def update_bin_size_widgets(self):
+		o_get = Get(parent=self.parent)
+		x_axis_units = o_get.x_axis_units()
+
+		# update units
+		self.parent.ui.selection_bin_size_units.setText(x_axis_units)
 
 
 
