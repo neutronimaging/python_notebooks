@@ -153,6 +153,9 @@ class Interface(QMainWindow):
         o_init.display(image=self.get_live_image())
         self.load_time_spectra()
         self.roi_moved()
+        o_selection = SelectionTab(parent=self)
+        o_selection.calculate_bin_size_in_all_units()
+        o_selection.make_list_of_bins()
 
         #     self.roi_moved()
         # else:
@@ -367,6 +370,8 @@ class Interface(QMainWindow):
     # events triggered by
     def roi_moved(self):
         o_selection = SelectionTab(parent=self)
+        o_selection.calculate_bin_size_in_all_units()
+        o_selection.make_list_of_bins()
         o_selection.update_selection_profile_plot()
 
     # event handler

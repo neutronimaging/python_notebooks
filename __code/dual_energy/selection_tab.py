@@ -40,6 +40,8 @@ class SelectionTab:
 		                                                             movable=True,
 		                                                             bounds=None)
 		self.parent.profile_selection_range_ui.sigRegionChanged.connect(self.parent.profile_selection_range_changed)
+		self.parent.profile_selection_range_ui.sigRegionChangeFinished.connect(
+				self.parent.roi_moved)
 		self.parent.profile_selection_range_ui.setZValue(-10)
 		self.parent.ui.profile.addItem(self.parent.profile_selection_range_ui)
 
