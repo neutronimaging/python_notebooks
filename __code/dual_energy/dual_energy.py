@@ -391,11 +391,15 @@ class Interface(QMainWindow):
     def distance_detector_sample_changed(self):
         self.update_time_spectra()
         o_selection = SelectionTab(parent=self)
+        o_selection.calculate_bin_size_in_all_units()
+        o_selection.make_list_of_bins()
         o_selection.update_selection_profile_plot()
 
     def detector_offset_changed(self):
         self.update_time_spectra()
         o_selection = SelectionTab(parent=self)
+        o_selection.calculate_bin_size_in_all_units()
+        o_selection.make_list_of_bins()
         o_selection.update_selection_profile_plot()
 
     def bin_size_returned_pressed(self):
