@@ -116,10 +116,10 @@ class Initialization:
 	def text_fields(self):
 		self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
 		self.parent.ui.detector_offset.setText(str(self.detector_offset))
+		self.parent.ui.selection_bin_size_value.setText(str(self.parent.bin_size_value['index']))
 
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])
-
 
 	def roi_setup(self):
 		[x0, y0] = self.parent.roi_settings['position']

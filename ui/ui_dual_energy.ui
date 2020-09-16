@@ -583,8 +583,8 @@
    <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>836</x>
-     <y>995</y>
+     <x>617</x>
+     <y>1032</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -599,8 +599,8 @@
    <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1114</x>
-     <y>995</y>
+     <x>895</x>
+     <y>1032</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -615,8 +615,8 @@
    <slot>selection_axis_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>951</x>
-     <y>995</y>
+     <x>732</x>
+     <y>1032</y>
     </hint>
     <hint type="destinationlabel">
      <x>672</x>
@@ -672,6 +672,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>selection_bin_size_value</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>bin_size_returned_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>727</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1414</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -714,5 +730,6 @@
   <slot>march_dollase_result_selection_mode_clicked()</slot>
   <slot>march_dollase_toolbox_changed()</slot>
   <slot>march_dollase_result_table_right_clicked()</slot>
+  <slot>bin_size_returned_pressed()</slot>
  </slots>
 </ui>

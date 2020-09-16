@@ -48,13 +48,34 @@ class Interface(QMainWindow):
 
     # # relative index of the bragg peak only part (kropff and March-Dollase)
     # bragg_peak_selection_range = [np.NaN, np.NaN]
-    #
+
+    index_array = None
+    tof_array_s = None
+    lambda_array = None
+
+    bin_size_value = {'index': 50,
+                      'tof': np.NaN,
+                      'lambda': np.NaN}
+
     selection_roi_rgb = (62, 13, 244)
     roi_settings = {'color': QtGui.QColor(selection_roi_rgb[0],
                                           selection_roi_rgb[1],
                                           selection_roi_rgb[2]),
                     'border_width': 0.01,
                     'position': [10, 10]}
+
+    bin_roi_rgb = (50, 50, 50, 200)
+    bin_line_settings = {'color': QtGui.QColor(bin_roi_rgb[0],
+                                               bin_roi_rgb[1],
+                                               bin_roi_rgb[2],
+                                               bin_roi_rgb[3]),
+                         'width': 0.005}
+
+    list_bin_positions = {'index': [],
+                          'tof': [],
+                          'lambda': []}
+    list_bin_ui = []
+
     previous_roi_selection = {'width': 50,
                               'height': 50}
     # shrinking_roi_rgb = (13, 214, 244)
@@ -370,6 +391,12 @@ class Interface(QMainWindow):
     def detector_offset_changed(self):
         self.update_time_spectra()
         o_selection = SelectionTab(parent=self)
+        o_selection.update_selection_profile_plot()
+
+    def bin_size_returned_pressed(self):
+        o_selection = SelectionTab(parent=self)
+        o_selection.calculate_bin_size_in_all_units()
+        o_selection.make_list_of_bins()
         o_selection.update_selection_profile_plot()
 
     def cancel_clicked(self):

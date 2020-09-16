@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 from __code._utilities.array import check_size
 from __code.dual_energy.get import Get
+from __code.utilities import find_nearest_index
 
 
 class SelectionTab:
@@ -42,18 +43,94 @@ class SelectionTab:
 		self.parent.profile_selection_range_ui.setZValue(-10)
 		self.parent.ui.profile.addItem(self.parent.profile_selection_range_ui)
 
+		_pen = QtGui.QPen()
+		_pen.setColor(self.parent.bin_line_settings['color'])
+		_pen.setWidth(self.parent.bin_line_settings['width'])
+
+		if self.parent.list_bin_ui:
+			for _bin_ui in self.parent.list_bin_ui:
+				self.parent.ui.profile.removeItem(_bin_ui)
+			self.parent.list_bin_ui = []
+
+		if self.parent.list_bin_positions:
+			current_axis_name = o_get.x_axis_name_checked()
+			for bin in self.parent.list_bin_positions[current_axis_name]:
+				if current_axis_name == 'tof':
+					bin *= 1e6
+				_bin_ui = pg.InfiniteLine(bin,
+				                          movable=False,
+				                          pen=_pen)
+				self.parent.ui.profile.addItem(_bin_ui)
+				self.parent.list_bin_ui.append(bin)
+
 	def update_bin_size_widgets(self):
 		o_get = Get(parent=self.parent)
 		x_axis_units = o_get.x_axis_units()
+		current_axis_name = o_get.x_axis_name_checked()
 
 		# update units
 		self.parent.ui.selection_bin_size_units.setText(x_axis_units)
 
+		bin_size_value = self.parent.bin_size_value[current_axis_name]
+		if current_axis_name == 'tof':
+			bin_size_value *= 1e6
+		elif current_axis_name == 'lambda':
+			bin_size_value = "{:2f}".format(bin_size_value)
+		self.parent.ui.selection_bin_size_value.setText(str(bin_size_value))
 
+	def calculate_bin_size_in_all_units(self):
+		current_value = np.float(self.parent.ui.selection_bin_size_value.text())
+		o_get = Get(parent=self.parent)
+		current_axis_name = o_get.x_axis_name_checked()
 
+		tof_array_s = self.parent.tof_array_s
+		lambda_array = self.parent.lambda_array
 
+		if current_axis_name == 'index':
+			current_value = np.int(current_value)
+			bin_index = current_value
+			bin_tof = tof_array_s[current_value]
+			bin_lambda = lambda_array[current_value]
+		elif current_axis_name == 'tof':
+			bin_index = find_nearest_index(array=tof_array_s,
+			                               value=current_value*1e-6)
+			bin_tof = current_value
+			bin_lambda = lambda_array[bin_index]
+		elif current_axis_name == 'lambda':
+			bin_index = find_nearest_index(array=lambda_array,
+			                               value=current_value)
+			bin_tof = tof_array_s[bin_index]
+			bin_lambda = current_value
 
+		self.parent.bin_size_value = {'index': bin_index,
+		                              'tof': bin_tof,
+		                              'lambda': bin_lambda}
 
+	def make_list_of_bins(self):
+		[from_index, to_index] = self.parent.profile_selection_range
+
+		list_bin = {'index': [],
+		            'tof': [],
+		            'lambda': []}
+
+		# index scale
+		index_bin_size = self.parent.bin_size_value['index']
+		left_bin_value = from_index
+		right_bin_value = from_index + index_bin_size
+		list_bin['index'] = [left_bin_value]
+		while right_bin_value <= to_index:
+			list_bin['index'].append(right_bin_value)
+			right_bin_value += index_bin_size
+
+		# tof scale
+		tof_array_s = self.parent.tof_array_s
+		list_bin['tof'] = tof_array_s[list_bin['index']]
+
+		# lambda scale
+		lambda_array = self.parent.lambda_array
+		list_bin['lambda'] = lambda_array[list_bin['index']]
+
+		self.parent.list_bin_positions = list_bin
 
 	def update_all_size_widgets_infos(self):
 
