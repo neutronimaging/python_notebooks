@@ -412,6 +412,83 @@
             <item>
              <widget class="QTableWidget" name="calculation_bin_table"/>
             </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>170</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>170</height>
+               </size>
+              </property>
+              <property name="title">
+               <string>Summary</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_5">
+               <item>
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>Maximum deviation from 1 was found using the following two bins (only showing the first 2 bins if more than 1 pair)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTableWidget" name="summary_table">
+                 <row>
+                  <property name="text">
+                   <string>Bin</string>
+                  </property>
+                 </row>
+                 <row>
+                  <property name="text">
+                   <string>Bin</string>
+                  </property>
+                 </row>
+                 <column>
+                  <property name="text">
+                   <string>#</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>from file index</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>to file index</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>from TOF</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>to TOF</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>from Lambda</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>to lambda</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="calculation_bin_widget" native="true"/>

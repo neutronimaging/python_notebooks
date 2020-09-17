@@ -25,12 +25,14 @@ class Initialization:
 
 		self.block_signals(True)
 		self.pyqtgraph_image_view()
+		self.pyqtgraph_image_ratio_view()
 		self.pyqtgraph_profile()
 		self.matplotlib()
 		self.widgets()
 		self.roi_setup()
 		self.text_fields()
 		self.labels()
+		self.table_header()
 
 		# if tab == 'all':
 		# 	self.normalize_images_by_white_beam()
@@ -42,6 +44,15 @@ class Initialization:
 		# self.kropff_fitting_table()
 
 		self.block_signals(False)
+
+	def pyqtgraph_image_ratio_view(self):
+		# image view
+		self.parent.ui.image_ratio_view = pg.ImageView()
+		self.parent.ui.image_ratio_view.ui.roiBtn.hide()
+		self.parent.ui.image_ratio_view.ui.menuBtn.hide()
+		image_layout = QVBoxLayout()
+		image_layout.addWidget(self.parent.ui.image_ratio_view)
+		self.parent.ui.calculation_bin_widget.setLayout(image_layout)
 
 	def normalize_images_by_white_beam(self):
 		white_beam_ob = self.parent.o_bragg.white_beam_ob
@@ -148,3 +159,10 @@ class Initialization:
 		_result_inf = np.where(np.isinf(image))
 		image[_result_inf] = np.NaN
 		return image
+
+	def table_header(self):
+		column_names = [u'#', u'From file index', u'To file index',
+						u'From TOF (\u03BCs)', u'To TOF (\u03BCs)',
+		                u'From \u03BB (\u212B)', u'To \u03BB (\u212B)']
+		o_high = TableHandler(table_ui=self.parent.ui.summary_table)
+		o_high.set_column_names(column_names=column_names)

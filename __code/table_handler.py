@@ -108,11 +108,16 @@ class TableHandler:
 			_str_value = self.cell_str_format.format(np.float(float_value))
 		self.table_ui.item(row, column).setText(_str_value)
 
-	def insert_item_with_float(self, row=0, column=0, float_value="", format_str={}):
+	def insert_item_with_float(self, row=0, column=0, float_value="", format_str="{}"):
 		if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
 			_str_value = "N/A"
 		else:
 			_str_value = format_str.format(np.float(float_value))
+		_item = QtGui.QTableWidgetItem(_str_value)
+		self.table_ui.setItem(row, column, _item)
+
+	def insert_item(self, row=0, column=0, value="", format_str="{}"):
+		_str_value = format_str.format(value)
 		_item = QtGui.QTableWidgetItem(_str_value)
 		self.table_ui.setItem(row, column, _item)
 

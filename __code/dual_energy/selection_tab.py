@@ -369,9 +369,11 @@ class SelectionTab:
 					row_and_column_of_max_ratio_value['row'].append(_row)
 					row_and_column_of_max_ratio_value['column'].append(_col)
 
+				# choose to display the difference related to 1
+				diff_from_1 = np.abs(1 - bin_col_divided_by_bin_row)
 				_item = o_table.insert_item_with_float(row=_row,
 				                                       column=_col,
-				                                       float_value=bin_col_divided_by_bin_row,
+				                                       float_value=diff_from_1,
 				                                       format_str="{:.4f}")
 
 		# change the background of the max_ratio_value_cell
@@ -380,6 +382,77 @@ class SelectionTab:
 			o_table.set_background_color(row=_row,
 			                             column=_col,
 			                             qcolor=self.background_color_of_max_bin_ratio)
+
+		self.fill_summary_table(bin_index_1=row_and_column_of_max_ratio_value['row'][0],
+		                        bin_index_2=row_and_column_of_max_ratio_value['column'][0])
+
+		self.parent.optimum_bin_ratio = {'bin_number_1': row_and_column_of_max_ratio_value['row'][0],
+		                                 'bin_number_2': row_and_column_of_max_ratio_value['column'][0]}
+
+
+	@staticmethod
+	def get_file_index_range(bin_index=None, list_bin_positions=None):
+			return SelectionTab.get_range_for_given_key(key='index',
+			                                            index=bin_index,
+			                                            list_bin_positions=list_bin_positions)
+
+	@staticmethod
+	def get_tof_index_range(bin_index=None, list_bin_positions=None):
+			return SelectionTab.get_range_for_given_key(key='tof',
+			                                            index=bin_index,
+			                                            list_bin_positions=list_bin_positions)
+
+	@staticmethod
+	def get_lambda_index_range(bin_index=None, list_bin_positions=None):
+			return SelectionTab.get_range_for_given_key(key='lambda',
+			                                            index=bin_index,
+			                                            list_bin_positions=list_bin_positions)
+
+	@staticmethod
+	def get_range_for_given_key(key='index', index=0, list_bin_positions=None):
+		from_index = list_bin_positions[key][index]
+		to_index = list_bin_positions[key][index + 1]
+		return (from_index, to_index)
+
+	def fill_summary_table(self, bin_index_1=None, bin_index_2=None):
+		o_table = TableHandler(table_ui=self.parent.ui.summary_table)
+		o_table.insert_item(row=0, column=0, value=np.int(bin_index_1), format_str="{:d}")
+		o_table.insert_item(row=1, column=0, value=np.int(bin_index_2), format_str="{:d}")
+
+		list_bin_positions = self.parent.list_bin_positions
+		
+		# file index
+		(from_file_index, to_file_index) = SelectionTab.get_file_index_range(bin_index=bin_index_1,
+		                                                                     list_bin_positions=list_bin_positions)
+		o_table.insert_item(row=0, column=1, value=from_file_index, format_str="{:d}")
+		o_table.insert_item(row=0, column=2, value=to_file_index, format_str="{:d}")
+		
+		(from_file_index, to_file_index) = SelectionTab.get_file_index_range(bin_index=bin_index_2,
+		                                                                     list_bin_positions=list_bin_positions)
+		o_table.insert_item(row=1, column=1, value=from_file_index, format_str="{:d}")
+		o_table.insert_item(row=1, column=2, value=to_file_index, format_str="{:d}")
+
+		# tof index
+		(from_tof_index, to_tof_index) = SelectionTab.get_tof_index_range(bin_index=bin_index_1,
+		                                                                  list_bin_positions=list_bin_positions)
+		o_table.insert_item(row=0, column=3, value=from_tof_index*1e6, format_str="{:f}")
+		o_table.insert_item(row=0, column=4, value=to_tof_index*1e6, format_str="{:f}")
+
+		(from_tof_index, to_tof_index) = SelectionTab.get_tof_index_range(bin_index=bin_index_2,
+		                                                                   list_bin_positions=list_bin_positions)
+		o_table.insert_item(row=1, column=3, value=from_tof_index*1e6, format_str="{:f}")
+		o_table.insert_item(row=1, column=4, value=to_tof_index*1e6, format_str="{:2f}")
+
+		# lambda index
+		(from_lambda_index, to_lambda_index) = SelectionTab.get_lambda_index_range(bin_index=bin_index_1,
+		                                                                  list_bin_positions=list_bin_positions)
+		o_table.insert_item(row=0, column=5, value=from_lambda_index, format_str="{:f}")
+		o_table.insert_item(row=0, column=6, value=to_lambda_index, format_str="{:f}")
+	
+		(from_lambda_index, to_lambda_index) = SelectionTab.get_lambda_index_range(bin_index=bin_index_2,
+		                                                                  list_bin_positions=list_bin_positions)
+		o_table.insert_item(row=1, column=5, value=from_lambda_index, format_str="{:f}")
+		o_table.insert_item(row=1, column=6, value=to_lambda_index, format_str="{:f}")
 
 	def initialize_table(self, nbr_bin=0):
 		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
@@ -393,3 +466,29 @@ class SelectionTab:
 
 		o_table.set_row_names(row_names=list_row_col_names)
 		o_table.set_column_names(column_names=list_row_col_names)
+
+	def display_image_of_best_ratio(self):
+		list_bin_positions = self.parent.list_bin_positions
+		list_bin_index = list_bin_positions['index']
+
+		optimum_bin_ratio = self.parent.optimum_bin_ratio
+		data = self.parent.o_norm.data['sample']['data']
+
+		# image 1
+		from_index = optimum_bin_ratio['bin_number_1']
+		to_index = from_index + 1
+		image_stack1 = data[list_bin_index[from_index]: list_bin_index[to_index]][:][:]
+		image1 = np.mean(image_stack1, axis=0)
+
+		# image 2
+		from_index = optimum_bin_ratio['bin_number_2']
+		to_index = from_index + 1
+		image_stack2 = data[list_bin_index[from_index]: list_bin_index[to_index]][:][:]
+		image2 = np.mean(image_stack2, axis=0)
+
+		index_of_0 = np.where(image2 == 0)
+		image2[index_of_0] = np.NaN
+		image1_over_image2 = np.true_divide(image1, image2)
+
+		_image = np.transpose(image1_over_image2)
+		self.parent.ui.image_ratio_view.setImage(_image)

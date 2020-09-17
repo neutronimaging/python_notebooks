@@ -53,6 +53,10 @@ class Interface(QMainWindow):
     tof_array_s = None
     lambda_array = None
 
+    # bin number 1 and 2 that gives the biggest difference related to 1
+    optimum_bin_ratio = {'bin_number_1': np.NaN,
+                         'bin_number_2': np.NaN}
+
     bin_size_value = {'index': 50,
                       'tof': np.NaN,
                       'lambda': np.NaN}
@@ -411,6 +415,7 @@ class Interface(QMainWindow):
         if tab_index == 1:
             o_selection = SelectionTab(parent=self)
             o_selection.calculate_big_table()
+            o_selection.display_image_of_best_ratio()
 
     def cancel_clicked(self):
         self.close()
