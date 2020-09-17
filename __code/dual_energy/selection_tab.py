@@ -349,8 +349,8 @@ class SelectionTab:
 		for n_bin in np.arange(nbr_bin):
 			left_bin = list_bin_index[n_bin]
 			right_bin = list_bin_index[n_bin+1]
-			mean_images_of_bin = np.mean(list_data[left_bin:right_bin][:][:], axis=0)
-			mean_images_of_bin_and_selection = np.mean(mean_images_of_bin[y0:y1][x0:x1])
+			mean_images_of_bin = np.nanmean(list_data[left_bin:right_bin][:][:], axis=0)
+			mean_images_of_bin_and_selection = np.nanmean(mean_images_of_bin[y0:y1, x0:x1])
 			list_mean_counts_of_bin.append(mean_images_of_bin_and_selection)
 
 		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
@@ -358,7 +358,7 @@ class SelectionTab:
 		row_and_column_of_max_ratio_value = {'row': [],
 		                                     'column': []}
 		for _row in np.arange(nbr_bin):
-			for _col in np.arange(nbr_bin):
+			for _col in np.arange(_row, nbr_bin):
 				bin_col_divided_by_bin_row = list_mean_counts_of_bin[_col] / list_mean_counts_of_bin[_row]
 				diff_with_1 = np.abs(1 - bin_col_divided_by_bin_row)
 				if diff_with_1 > max_ratio_value:
@@ -379,9 +379,6 @@ class SelectionTab:
 		                      row_and_column_of_max_ratio_value['column']):
 			o_table.set_background_color(row=_row,
 			                             column=_col,
-			                             qcolor=self.background_color_of_max_bin_ratio)
-			o_table.set_background_color(row=_col,
-			                             column=_row,
 			                             qcolor=self.background_color_of_max_bin_ratio)
 
 	def initialize_table(self, nbr_bin=0):
