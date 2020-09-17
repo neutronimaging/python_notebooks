@@ -410,7 +410,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QTableWidget" name="calculation_bin_table"/>
+             <widget class="QTableWidget" name="calculation_bin_table">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QGroupBox" name="groupBox">
@@ -781,6 +785,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>calculation_bin_table</sender>
+   <signal>itemEntered(QTableWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calculation_table_cell_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>748</x>
+     <y>311</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1412</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -825,5 +845,6 @@
   <slot>march_dollase_result_table_right_clicked()</slot>
   <slot>bin_size_returned_pressed()</slot>
   <slot>calculation_table_cell_clicked()</slot>
+  <slot>calculation_table_cell_selection_changed()</slot>
  </slots>
 </ui>

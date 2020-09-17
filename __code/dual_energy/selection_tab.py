@@ -498,6 +498,10 @@ class SelectionTab:
 		                    column=optimum_bin_ratio['bin_number_2'])
 
 	def display_image_of_selected_cell(self, row=0, column=0):
+		if row > column:
+			self.parent.ui.image_ratio_view.clear()
+			return
+
 		data = self.parent.o_norm.data['sample']['data']
 		list_bin_positions = self.parent.list_bin_positions
 		list_bin_index = list_bin_positions['index']
