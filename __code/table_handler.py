@@ -29,6 +29,15 @@ class TableHandler:
 		for _ in np.arange(nbr_row):
 			self.table_ui.removeRow(0)
 
+	def remove_all_columns(self):
+		nbr_column = self.table_ui.columnCount()
+		for _ in np.arange(nbr_column):
+			self.table_ui.removeColumn(0)
+
+	def full_reset(self):
+		self.remove_all_rows()
+		self.remove_all_columns()
+
 	def get_rows_of_table_selected(self):
 		if self.table_ui is None:
 			return None
@@ -68,21 +77,29 @@ class TableHandler:
 	def set_column_names(self, column_names=None):
 		self.table_ui.setHorizontalHeaderLabels(column_names)
 
+	def set_row_names(self, row_names=None):
+		self.table_ui.setVerticalHeaderLabels(row_names)
+
 	def set_column_sizes(self, column_sizes=None):
 		for _col, _size in enumerate(column_sizes):
 			self.table_ui.setColumnWidth(_col, _size)
 
+	def insert_empty_row(self, row=0):
+		self.table_ui.insertRow(row)
+
 	def insert_row(self, row=0, list_col_name=None):
 		"""row is the row number
-		*wargs are the contain of each column
 		"""
 		self.table_ui.insertRow(row)
 		for column, _text in enumerate(list_col_name):
 			_item = QtGui.QTableWidgetItem(_text)
 			self.table_ui.setItem(row, column, _item)
 
-	def insert_column(self, row):
-		self.table_ui.insertColumn(row)
+	def insert_column(self, column):
+		self.table_ui.insertColumn(column)
+
+	def insert_empty_column(self, column):
+		self.table_ui.insertColumn(column)
 
 	def set_item_with_float(self, row=0, column=0, float_value=""):
 		if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
@@ -90,3 +107,11 @@ class TableHandler:
 		else:
 			_str_value = self.cell_str_format.format(np.float(float_value))
 		self.table_ui.item(row, column).setText(_str_value)
+
+	def insert_item_with_float(self, row=0, column=0, float_value="", format_str={}):
+		if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
+			_str_value = "N/A"
+		else:
+			_str_value = format_str.format(np.float(float_value))
+		_item = QtGui.QTableWidgetItem(_str_value)
+		self.table_ui.setItem(row, column, _item)

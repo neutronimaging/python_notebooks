@@ -63,6 +63,10 @@ class Interface(QMainWindow):
                                           selection_roi_rgb[2]),
                     'border_width': 0.01,
                     'position': [10, 10]}
+    roi_selection_dict = {'x0': np.NaN,
+                          'y0': np.NaN,
+                          'x1': np.NaN,
+                          'y1': np.NaN}
 
     bin_roi_rgb = (50, 50, 50, 200)
     bin_line_settings = {'color': QtGui.QColor(bin_roi_rgb[0],
@@ -330,11 +334,6 @@ class Interface(QMainWindow):
                                            y1=y0 + height)
             current_region['profile'] = profile
 
-    def switching_master_tab_clicked(self, tab_index):
-        pass
-        # if tab_index == 1:
-        #     self.ui.working_folder_value.setText(self.working_dir)
-
     def update_vertical_line_in_profile_plot(self):
         o_get = Get(parent=self)
         x_axis, x_axis_label = o_get.x_axis()
@@ -407,6 +406,11 @@ class Interface(QMainWindow):
         o_selection.calculate_bin_size_in_all_units()
         o_selection.make_list_of_bins()
         o_selection.update_selection_profile_plot()
+
+    def switching_master_tab_clicked(self, tab_index):
+        if tab_index == 1:
+            o_selection = SelectionTab(parent=self)
+            o_selection.calculate_big_table()
 
     def cancel_clicked(self):
         self.close()

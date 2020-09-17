@@ -6,6 +6,7 @@ from collections import OrderedDict
 from __code._utilities.array import check_size
 from __code.dual_energy.get import Get
 from __code.utilities import find_nearest_index
+from __code.table_handler import TableHandler
 
 
 class SelectionTab:
@@ -21,6 +22,10 @@ class SelectionTab:
 		# large selection region
 		[x0, y0, x1, y1, _, _] = o_get.selection_roi_dimension()
 		profile = o_get.profile_of_roi(x0, y0, x1, y1)
+		self.parent.roi_selection_dict = {'x0': x0,
+		                                  'y0': y0,
+		                                  'x1': x1,
+		                                  'y1': y1}
 		x_axis, y_axis = check_size(x_axis=x_axis,
 		                            y_axis=profile)
 		self.parent.ui.profile.plot(x_axis, y_axis, pen=(self.parent.selection_roi_rgb[0],
@@ -163,31 +168,31 @@ class SelectionTab:
 		self.parent.ui.profile_of_bin_size_slider.setValue(max_value)
 		self.parent.ui.profile_of_bin_size_slider.setMaximum(max_value)
 
-	def get_shrinking_roi_dimension(self):
-		coordinates = self.get_coordinates_of_new_inside_selection_box()
-		return [coordinates['x0'],
-		        coordinates['y0'],
-		        coordinates['x0'] + coordinates['width'],
-		        coordinates['y0'] + coordinates['height']]
+	# def get_shrinking_roi_dimension(self):
+	# 	coordinates = self.get_coordinates_of_new_inside_selection_box()
+	# 	return [coordinates['x0'],
+	# 	        coordinates['y0'],
+	# 	        coordinates['x0'] + coordinates['width'],
+	# 	        coordinates['y0'] + coordinates['height']]
 
-	def get_coordinates_of_new_inside_selection_box(self):
-		# retrieve x0, y0, width and height of full selection
-		region = self.parent.roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
-		x0 = region[0][0].start
-		y0 = region[0][1].start
-		# [x0, y0] = self.parentselection_x0y0
-		width_full_selection = np.int(str(self.parent.ui.roi_width.text()))
-		height_full_selection = np.int(str(self.parent.ui.roi_height.text()))
-	
-		delta_width = width_full_selection - width_requested
-		delta_height = height_full_selection - height_requested
-	
-		new_x0 = x0 + np.int(delta_width / 2)
-		new_y0 = y0 + np.int(delta_height / 2)
-	
-		return {'x0'   : new_x0, 'y0': new_y0,
-		        'x1'   : new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
-		        'width': width_requested, 'height': height_requested}
+	# def get_coordinates_of_new_inside_selection_box(self):
+	# 	# retrieve x0, y0, width and height of full selection
+	# 	region = self.parent.roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
+	# 	x0 = region[0][0].start
+	# 	y0 = region[0][1].start
+	# 	# [x0, y0] = self.parentselection_x0y0
+	# 	width_full_selection = np.int(str(self.parent.ui.roi_width.text()))
+	# 	height_full_selection = np.int(str(self.parent.ui.roi_height.text()))
+	#
+	# 	delta_width = width_full_selection - width_requested
+	# 	delta_height = height_full_selection - height_requested
+	#
+	# 	new_x0 = x0 + np.int(delta_width / 2)
+	# 	new_y0 = y0 + np.int(delta_height / 2)
+	#
+	# 	return {'x0'   : new_x0, 'y0': new_y0,
+	# 	        'x1'   : new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
+	# 	        'width': width_requested, 'height': height_requested}
 
 
 
@@ -324,3 +329,46 @@ class SelectionTab:
 	def update_selection_roi_slider_changed(self):
 	    value = self.parent.ui.roi_size_slider.value()
 	    self.parent.selection_roi_slider_changed(value)
+
+	def calculate_big_table(self):
+		list_data = self.parent.o_norm.data['sample']['data']
+		list_bin_positions = self.parent.list_bin_positions
+		list_bin_index = list_bin_positions['index']
+		nbr_bin = len(list_bin_index) - 1
+		x0 = self.parent.roi_selection_dict['x0']
+		y0 = self.parent.roi_selection_dict['y0']
+		x1 = self.parent.roi_selection_dict['x1']
+		y1 = self.parent.roi_selection_dict['y1']
+
+		self.initialize_table(nbr_bin=nbr_bin)
+
+		# calculate the mean of current bin and current ROI
+		list_mean_counts_of_bin = []
+		for n_bin in np.arange(nbr_bin):
+			left_bin = list_bin_index[n_bin]
+			right_bin = list_bin_index[n_bin+1]
+			mean_images_of_bin = np.mean(list_data[left_bin:right_bin][:][:], axis=0)
+			mean_images_of_bin_and_selection = np.mean(mean_images_of_bin[y0:y1][x0:x1])
+			list_mean_counts_of_bin.append(mean_images_of_bin_and_selection)
+
+		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
+		for _row in np.arange(nbr_bin):
+			for _col in np.arange(nbr_bin):
+				bin_col_divided_by_bin_row = list_mean_counts_of_bin[_col] / list_mean_counts_of_bin[_row]
+				_item = o_table.insert_item_with_float(row=_row,
+				                                       column=_col,
+				                                       float_value=bin_col_divided_by_bin_row,
+				                                       format_str="{:.4f}")
+
+	def initialize_table(self, nbr_bin=0):
+		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
+		o_table.full_reset()
+
+		list_row_col_names = []
+		for bin_index in np.arange(nbr_bin):
+			o_table.insert_empty_row(row=bin_index)
+			o_table.insert_empty_column(column=bin_index)
+			list_row_col_names.append("Bin #{}".format(bin_index))
+
+		o_table.set_row_names(row_names=list_row_col_names)
+		o_table.set_column_names(column_names=list_row_col_names)
