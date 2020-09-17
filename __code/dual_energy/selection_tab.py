@@ -492,3 +492,29 @@ class SelectionTab:
 
 		_image = np.transpose(image1_over_image2)
 		self.parent.ui.image_ratio_view.setImage(_image)
+
+		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
+		o_table.select_cell(row=optimum_bin_ratio['bin_number_1'],
+		                    column=optimum_bin_ratio['bin_number_2'])
+
+	def display_image_of_selected_cell(self, row=0, column=0):
+		data = self.parent.o_norm.data['sample']['data']
+		list_bin_positions = self.parent.list_bin_positions
+		list_bin_index = list_bin_positions['index']
+
+		from_index1 = row
+		to_index1 = from_index1 + 1
+		image_stack1 = data[list_bin_index[from_index1]: list_bin_index[to_index1]][:][:]
+		image1 = np.mean(image_stack1, axis=0)
+
+		from_index2 = column
+		to_index2 = from_index2 + 1
+		image_stack2 = data[list_bin_index[from_index2]: list_bin_index[to_index2]][:][:]
+		image2 = np.mean(image_stack2, axis=0)
+
+		index_of_0 = np.where(image2 == 0)
+		image2[index_of_0] = np.NaN
+		image1_over_image2 = np.true_divide(image1, image2)
+
+		_image = np.transpose(image1_over_image2)
+		self.parent.ui.image_ratio_view.setImage(_image)

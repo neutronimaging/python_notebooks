@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -765,6 +765,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>calculation_bin_table</sender>
+   <signal>cellClicked(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calculation_table_cell_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>552</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1411</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -808,5 +824,6 @@
   <slot>march_dollase_toolbox_changed()</slot>
   <slot>march_dollase_result_table_right_clicked()</slot>
   <slot>bin_size_returned_pressed()</slot>
+  <slot>calculation_table_cell_clicked()</slot>
  </slots>
 </ui>

@@ -417,6 +417,10 @@ class Interface(QMainWindow):
             o_selection.calculate_big_table()
             o_selection.display_image_of_best_ratio()
 
+    def calculation_table_cell_clicked(self, row, column):
+        o_selection = SelectionTab(parent=self)
+        o_selection.display_image_of_selected_cell(row, column)
+
     def cancel_clicked(self):
         self.close()
 
