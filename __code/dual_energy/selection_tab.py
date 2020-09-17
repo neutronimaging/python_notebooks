@@ -11,6 +11,8 @@ from __code.table_handler import TableHandler
 
 class SelectionTab:
 
+	background_color_of_max_bin_ratio = QtGui.QColor(107, 255, 157)
+
 	def __init__(self, parent=None):
 		self.parent = parent
 
@@ -352,13 +354,35 @@ class SelectionTab:
 			list_mean_counts_of_bin.append(mean_images_of_bin_and_selection)
 
 		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
+		max_ratio_value = 0
+		row_and_column_of_max_ratio_value = {'row': [],
+		                                     'column': []}
 		for _row in np.arange(nbr_bin):
 			for _col in np.arange(nbr_bin):
 				bin_col_divided_by_bin_row = list_mean_counts_of_bin[_col] / list_mean_counts_of_bin[_row]
+				diff_with_1 = np.abs(1 - bin_col_divided_by_bin_row)
+				if diff_with_1 > max_ratio_value:
+					max_ratio_value = diff_with_1
+					row_and_column_of_max_ratio_value['row'] = [_row]
+					row_and_column_of_max_ratio_value['column'] = [_col]
+				elif diff_with_1 == max_ratio_value:
+					row_and_column_of_max_ratio_value['row'].append(_row)
+					row_and_column_of_max_ratio_value['column'].append(_col)
+
 				_item = o_table.insert_item_with_float(row=_row,
 				                                       column=_col,
 				                                       float_value=bin_col_divided_by_bin_row,
 				                                       format_str="{:.4f}")
+
+		# change the background of the max_ratio_value_cell
+		for _row, _col in zip(row_and_column_of_max_ratio_value['row'],
+		                      row_and_column_of_max_ratio_value['column']):
+			o_table.set_background_color(row=_row,
+			                             column=_col,
+			                             qcolor=self.background_color_of_max_bin_ratio)
+			o_table.set_background_color(row=_col,
+			                             column=_row,
+			                             qcolor=self.background_color_of_max_bin_ratio)
 
 	def initialize_table(self, nbr_bin=0):
 		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)

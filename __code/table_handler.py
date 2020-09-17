@@ -115,3 +115,7 @@ class TableHandler:
 			_str_value = format_str.format(np.float(float_value))
 		_item = QtGui.QTableWidgetItem(_str_value)
 		self.table_ui.setItem(row, column, _item)
+
+	def set_background_color(self, row=0, column=0, qcolor=QtGui.QColor(0, 255, 255)):
+		_item = self.table_ui.item(row, column)
+		_item.setBackground(qcolor)
