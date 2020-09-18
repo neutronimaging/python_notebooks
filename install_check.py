@@ -11,6 +11,7 @@ requirements = [
     'numpy',
     'pyoncat',
     'tifffile',
+    'qtpy',
 ]
 
 import_result = {p: False for p in requirements}
@@ -42,6 +43,7 @@ version_check_packages = {'numpy': '1.15.2',
                           'pyoncat': '1.0',
                           'oauthlib': '3.0.1',
                           'tifffile': '2019.7.26.2',
+                          'qtpy': '1.9.0',
                           }
 
 if success:
@@ -169,3 +171,10 @@ except ImportError:
     pass
 else:
     version_checker('tifffile', tifffile.__version__)
+
+try:
+    import qtpy
+except ImportError:
+    pass
+else:
+    version_checker('qtpy', qtpy.__version__)

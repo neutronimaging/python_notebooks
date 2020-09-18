@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages, Command
 import os
+import codecs
 import sys
 from shutil import rmtree
 
-import __code
+import version
 
 # to create library
 # > python setup.py upload
@@ -15,18 +16,11 @@ LONGDESCRIPTION = "See the full tutorial of the notebooks on https://neutronimag
 URL = "https://neutronimaging.pages.ornl.gov/tutorial/notebooks/"
 EMAIL = "bilheuxjm@ornl.gov"
 AUTHOR = "Jean Bilheux"
-VERSION = __code.__version__
+VERSION = version.__version__
 KEYWORDS = "neutron analysis imaging"
 
-# what packages are required for this module to be executed
-REQUIRED = ['numpy',
-            'pillow',
-            'pathlib',
-            'astropy',
-            'scipy',
-            ]
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 
-here = os.path.abspath('./')
 
 class UploadCommand(Command):
     """Support setup.py upload."""
@@ -50,7 +44,7 @@ class UploadCommand(Command):
         """Remove previous builds."""
         try:
             self.status('Removing previous builds...')
-            rmtree(os.path.join(here, 'dist'))
+            rmtree(os.path.join(THIS_DIR, 'dist'))
         except OSError:
             pass
 
@@ -63,15 +57,40 @@ class UploadCommand(Command):
         sys.exit()
 
 
+def read_requirements_from_file(filepath):
+    '''Read a list of requirements from the given file and split into a
+    list of strings. It is assumed that the file is a flat
+    list with one requirement per line.
+    :param filepath: Path to the file to read
+    :return: A list of strings containing the requirements
+    '''
+    with open(filepath, 'r') as req_file:
+        return req_file.readlines()
+
+
+def read(*parts):
+    """
+    Build an absolute path from *parts* and and return the contents of the
+    resulting file.  Assume UTF-8 encoding.
+    """
+    with codecs.open(os.path.join(THIS_DIR, *parts), "rb", "utf-8") as f:
+        return f.read()
+
+
+install_requires = read_requirements_from_file(os.path.join(THIS_DIR, 'requirements.txt'))
+REQUIRED = ['numpy',
+            'pillow',
+            'jupyter']
 setup(
     name=NAME,
-    description=DESCRIPTION ,
+    description=DESCRIPTION,
     long_description=LONGDESCRIPTION,
     url=URL,
     version=VERSION,
     author=AUTHOR,
     author_email=EMAIL,
     packages=find_packages(exclude=['tests', 'notebooks']),
+    package_data={'': ["*.ui"]},
     include_package_data=True,
     test_suite='tests',
     install_requires=REQUIRED,
@@ -90,5 +109,3 @@ setup(
         'upload': UploadCommand,
     },
 )
-
-# End of file
