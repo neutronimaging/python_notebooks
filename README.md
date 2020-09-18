@@ -1,5 +1,5 @@
 # notebooks
-List of notebooks for users
+List of notebooks for users. Full tutorial of most of the notebooks can be found at [https://neutronimaging.pages.ornl.gov/tutorial/](https://neutronimaging.pages.ornl.gov/tutorial/)
 
 ## Instructions ##
 After bringing the entire project to your computer, create a conda environment (named **notebook_environment** here)
