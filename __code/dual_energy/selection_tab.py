@@ -6,6 +6,8 @@ from qtpy.QtWidgets import QFileDialog
 from pathlib import Path
 import os
 
+from NeuNorm.normalization import Normalization
+
 from __code._utilities.array import check_size
 from __code.dual_energy.get import Get
 from __code.utilities import find_nearest_index
@@ -500,6 +502,7 @@ class SelectionTab:
 		o_table.select_cell(row=optimum_bin_ratio['bin_number_1'],
 		                    column=optimum_bin_ratio['bin_number_2'])
 		self.save_widget_enabled(enabled=True)
+		self.parent.calculated_live_image = _image
 
 	def display_image_of_selected_cell(self, row=0, column=0):
 		if row > column:
@@ -531,6 +534,7 @@ class SelectionTab:
 
 		_image = np.transpose(image1_over_image2)
 		self.parent.ui.image_ratio_view.setImage(_image)
+		self.parent.calculated_live_image = _image
 
 	def save_widget_enabled(self, enabled=True):
 		self.parent.ui.export_image_button.setEnabled(enabled)
@@ -552,3 +556,15 @@ class SelectionTab:
 		                                               caption="Define output image name (*.tiff)")
 		if export_file_tuple[0]:
 			export_file_name = export_file_tuple[0]
+			image_to_save = self.parent.calculated_live_image
+
+			folder_where_to_save = os.path.dirname(export_file_name)
+			base_export_file_name = os.path.basename(export_file_name)
+
+			metadata = self.parent.o_norm.data['sample']['metadata'][0]
+			o_norm = Normalization()
+			o_norm.data['sample']['data'] = [image_to_save]
+			o_norm.data['sample']['metadata'] = [metadata]
+			o_norm.data['sample']['file_name'] = [base_export_file_name]
+			o_norm.export(folder=folder_where_to_save,
+			              data_type='sample')
