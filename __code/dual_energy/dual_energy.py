@@ -421,9 +421,6 @@ class Interface(QMainWindow):
         o_selection = SelectionTab(parent=self)
         o_selection.display_image_of_selected_cell(row, column)
 
-    def calculation_table_cell_selection_changed(self, item):
-        print("here")
-
     def cancel_clicked(self):
         self.close()
 

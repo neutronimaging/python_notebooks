@@ -394,7 +394,7 @@
        <attribute name="title">
         <string>Calculation</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <widget class="QSplitter" name="splitter_2">
           <property name="orientation">
@@ -495,7 +495,20 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="calculation_bin_widget" native="true"/>
+          <widget class="QWidget" name="">
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QWidget" name="calculation_bin_widget" native="true"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="text">
+               <string>Export image ...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -782,22 +795,6 @@
     <hint type="destinationlabel">
      <x>1411</x>
      <y>386</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>calculation_bin_table</sender>
-   <signal>itemEntered(QTableWidgetItem*)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>calculation_table_cell_selection_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>748</x>
-     <y>311</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1412</x>
-     <y>329</y>
     </hint>
    </hints>
   </connection>
