@@ -410,11 +410,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QTableWidget" name="calculation_bin_table">
-              <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_table"/>
             </item>
             <item>
              <widget class="QGroupBox" name="groupBox">
@@ -779,22 +775,6 @@
     <hint type="destinationlabel">
      <x>1414</x>
      <y>158</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>calculation_bin_table</sender>
-   <signal>cellClicked(int,int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>calculation_table_cell_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>552</x>
-     <y>356</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1411</x>
-     <y>386</y>
     </hint>
    </hints>
   </connection>

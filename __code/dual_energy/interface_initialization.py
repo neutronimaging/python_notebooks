@@ -12,6 +12,7 @@ import pyqtgraph as pg
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.mplcanvas import MplCanvas
+from __code.dual_energy.my_table_widget import MyTableWidget
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
@@ -131,6 +132,11 @@ class Initialization:
 
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])
+		self.parent.ui.calculation_bin_table = MyTableWidget(parent=self.parent)
+		self.parent.ui.calculation_bin_table.cellClicked['int', 'int'].connect(
+				self.parent.calculation_table_cell_clicked)
+		self.parent.ui.calculation_bin_table.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+		self.parent.ui.verticalLayout_table.addWidget(self.parent.ui.calculation_bin_table)
 
 	def roi_setup(self):
 		[x0, y0] = self.parent.roi_settings['position']
