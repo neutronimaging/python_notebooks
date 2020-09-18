@@ -1,7 +1,11 @@
 # notebooks
 List of notebooks for users
 
-## Instructions ##
+## Instruction for users ##
+
+TBD
+
+## Instructions for developers ##
 
 To recover notebook, runs following commands
 
