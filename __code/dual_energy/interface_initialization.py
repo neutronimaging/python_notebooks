@@ -132,6 +132,7 @@ class Initialization:
 
 	def widgets(self):
 		self.parent.ui.splitter.setSizes([500, 400])
+		self.parent.ui.splitter_2.setSizes([500, 400])
 		self.parent.ui.calculation_bin_table = MyTableWidget(parent=self.parent)
 		self.parent.ui.calculation_bin_table.cellClicked['int', 'int'].connect(
 				self.parent.calculation_table_cell_clicked)

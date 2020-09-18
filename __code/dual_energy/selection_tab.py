@@ -2,6 +2,9 @@ import numpy as np
 import pyqtgraph as pg
 from qtpy import QtGui
 from collections import OrderedDict
+from qtpy.QtWidgets import QFileDialog
+from pathlib import Path
+import os
 
 from __code._utilities.array import check_size
 from __code.dual_energy.get import Get
@@ -496,11 +499,17 @@ class SelectionTab:
 		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
 		o_table.select_cell(row=optimum_bin_ratio['bin_number_1'],
 		                    column=optimum_bin_ratio['bin_number_2'])
+		self.save_widget_enabled(enabled=True)
 
 	def display_image_of_selected_cell(self, row=0, column=0):
 		if row > column:
 			self.parent.ui.image_ratio_view.clear()
+			self.save_widget_enabled(enabled=False)
 			return
+		elif row == column:
+			self.save_widget_enabled(enabled=False)
+		else:
+			self.save_widget_enabled(enabled=True)
 
 		data = self.parent.o_norm.data['sample']['data']
 		list_bin_positions = self.parent.list_bin_positions
@@ -522,3 +531,24 @@ class SelectionTab:
 
 		_image = np.transpose(image1_over_image2)
 		self.parent.ui.image_ratio_view.setImage(_image)
+
+	def save_widget_enabled(self, enabled=True):
+		self.parent.ui.export_image_button.setEnabled(enabled)
+
+	def make_image_name(self, full_base_folder=""):
+		o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
+		(row, col) = o_table.get_cell_selected()
+		base_folder = os.path.basename(full_base_folder)
+		image_name = "{}_bin{}_divided_by_bin{}.tiff".format(base_folder,
+		                                                     col,
+		                                                     row)
+		return image_name
+
+	def export_selected_image(self):
+		base_folder = Path(self.parent.working_dir)
+		image_name = self.make_image_name(base_folder)
+		export_file_tuple = QFileDialog.getSaveFileName(parent=self.parent,
+		                                               directory=str(base_folder) + "/" + image_name,
+		                                               caption="Define output image name (*.tiff)")
+		if export_file_tuple[0]:
+			export_file_name = export_file_tuple[0]

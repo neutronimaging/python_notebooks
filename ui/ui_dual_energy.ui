@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -439,6 +439,9 @@
                </item>
                <item>
                 <widget class="QTableWidget" name="summary_table">
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
                  <row>
                   <property name="text">
                    <string>Bin</string>
@@ -497,7 +500,7 @@
              <widget class="QWidget" name="calculation_bin_widget" native="true"/>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="export_image_button">
               <property name="text">
                <string>Export image ...</string>
               </property>
@@ -778,6 +781,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>export_image_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_selected_image()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1287</x>
+     <y>1049</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1414</x>
+     <y>1050</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -823,5 +842,6 @@
   <slot>bin_size_returned_pressed()</slot>
   <slot>calculation_table_cell_clicked()</slot>
   <slot>calculation_table_cell_selection_changed()</slot>
+  <slot>export_selected_image()</slot>
  </slots>
 </ui>

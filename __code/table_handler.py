@@ -69,6 +69,13 @@ class TableHandler:
 			return -1
 		return first_selection.topRow()
 
+	def get_cell_selected(self):
+		list_selection = self.table_ui.selectedRanges()
+		first_selection = list_selection[0]
+		row = first_selection.topRow()
+		col = first_selection.leftColumn()
+		return (row, col)
+
 	def select_cell(self, row=0, column=0):
 		self.select_everything(False)
 		range_selected = QtGui.QTableWidgetSelectionRange(row, column, row, column)

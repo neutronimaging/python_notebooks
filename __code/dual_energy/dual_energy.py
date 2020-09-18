@@ -414,12 +414,19 @@ class Interface(QMainWindow):
     def switching_master_tab_clicked(self, tab_index):
         if tab_index == 1:
             o_selection = SelectionTab(parent=self)
-            o_selection.calculate_big_table()
-            o_selection.display_image_of_best_ratio()
+            try:
+                o_selection.calculate_big_table()
+                o_selection.display_image_of_best_ratio()
+            except IndexError:
+                o_selection.save_widget_enabled(False)
 
     def calculation_table_cell_clicked(self, row, column):
         o_selection = SelectionTab(parent=self)
         o_selection.display_image_of_selected_cell(row, column)
+
+    def export_selected_image(self):
+        o_selection = SelectionTab(parent=self)
+        o_selection.export_selected_image()
 
     def cancel_clicked(self):
         self.close()

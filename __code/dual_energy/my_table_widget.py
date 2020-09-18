@@ -53,4 +53,3 @@ class MyTableWidget(QTableWidget):
 			self.parent.calculation_table_cell_clicked(row, col)
 		except IndexError:
 			self.setCurrentCell(prev_row, prev_col)
-
