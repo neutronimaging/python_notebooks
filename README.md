@@ -14,7 +14,7 @@ conda activate notebook_environment
 
 Then run the following script to install all the necessary libraries
 ```
-./.script_for_installation.sh
+./script_for_installation.sh
 ```
 
 ## for developpers ##
