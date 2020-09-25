@@ -1,19 +1,40 @@
-conda update -y -n base -c defaults conda
-conda install -y numpy
-conda install -y jupyter
-conda install -y matplotlib
-conda install -y scipy
-conda install -y qtpy
-conda install -y -c conda-forge ipywe
-conda install -y -c plotly plotly
-conda install -y -c conda-forge lmfit
-conda install -y -c anaconda pyqtgraph=0.10.0
-conda install -y scikit-image
-conda install -y -c neutrons ipywe
-conda install -y pandas
+#!/bin/bash
 
-pip install neutronbraggedge
-pip install NeuNorm
-pip install sectorizedradialprofile
-pip install https://oncat.ornl.gov/packages/pyoncat-1.3.1-py2.py3-none-any.whl
-pip install requests requests-oauthlib
+# This is a special package for ORNL
+PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl"
+
+# update base conda
+conda update -y -n base -c defaults conda
+
+# install dependencies from main channel
+conda install -y      \
+    requests          \
+    requests-oauthlib \
+    numpy             \
+    scipy             \
+    pandas            \
+    scikit-image      \
+    matplotlib        \
+    plotly            \
+    jupyter           \
+    jupyterlab        \
+    nodejs            \
+    qtpy              \
+    pyqtgraph         \
+    astropy
+
+# install dependencies from conda-forge
+conda install -y -c conda-forge \
+    ipywe \
+    lmfit 
+
+# install additional from pip
+pip install \
+    neutronbraggedge \
+    NeuNorm \
+    sectorizedradialprofile \
+    $PYONCAT_LOCATION
+
+# build Jupyter lab
+jupyter labextension install @jupyter-widgets/jupyterlab-manager
+jupyter lab build
