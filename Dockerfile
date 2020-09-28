@@ -15,6 +15,7 @@ RUN conda install --quiet --yes \
     plotly            \
     nodejs            \
     qtpy              \
+    pyqt5             \
     pyqtgraph         \
     astropy           \
     && \
@@ -47,4 +48,8 @@ RUN conda install --quiet --yes \
 # -- DEVELOPER INSTRUCTION --
 # User the following command to build the image
 # $ docker build -t YOUR_DOCKERHUB_ID/NAME_OF_THIS_IMAGE:VERSION
-# 
+# > NOTE:
+#   * some firewall setting might prevent developers from building the image, it is recommended to build the image from
+#     a non-restricted network.
+# Publish your image
+# $ 
