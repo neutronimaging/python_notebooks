@@ -40,7 +40,7 @@ RUN conda install --quiet --yes \
 
 # -- USER INSTRUCTION --
 # Use the following command to start the notebook
-# $ docker run --rm -p 38764:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/work kedokudo/neutron-imaging:latest
+# $ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/work kedokudo/neutron-imaging:latest
 # then use the link in the command prompt to connect to Jupyter
 # > NOTE: you need to replace 127.0.0.1 to localhost in the URL
 #
