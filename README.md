@@ -80,14 +80,30 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 Then go to the root of this repository (if you haven't done so already), and use the following command to start the containerized notebook env
 ```bash
-
+$ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/work kedokudo/neutron-imaging:latest
 ```
+* `--rm`: remove the runtime container once your exit the notebook by pressing `Ctrl+C` in the terminal.  
+  * If you would like to preserve the changes in the runtime container (for example, you might installed some additional pacakges in the env). Replace `--rm` with `--name CONTAINER_NAME` where `CONTAINER_NAME` is the identifier you can use later to restart the container by 
+  ```bash
+  $ docker start CONTAINER_NAME
+  ```
+* `-p 9999:8888`: mapping the container internal port, `8888`, to the host port `9999` such that you can access Jupyter by going to `http://localhost:9999` on the host machine.
+  * First time launching the Jupyter will ask you for a one time token, which you can find in the terminal output.  The easiest way to do this would be copy and past the link in the termial, and replace teh port number `8888` with `9999`.
+* `-e JUPYTER_ENABLE_LAB=yes`: this allows you to use Jupyter lab instead of Jupyter notebook, which is very similar to Jupyter notebook, but with some additional features.
+* `-v "$PWD":/home/jovyan/work`: mapping/mounting the current local directory (the root of repo) to `/home/jovyan/work` inside the container.
+* `kedokudo/neutron-imaging:latest`: the image name and tag
+
+> __WARNING__   
+> On some system the port mapping is restricted by IT, which would prevent you from accessing the Jupyter inside the container.  For such situation, you can either contact the IT to figure out a correct setting for your system, or try to run the container on a non-restricted machine. 
 
 ## How to contribute back
 
+You can contribute back to this repo by forking it to your own account, make the necessary adjustments, and make a pull request on Github.
+The maintainer of this repo will review your changes and provided feedback if needed.
+A more detailed instructions can be found in this [post by dataschool](https://www.dataschool.io/how-to-contribute-on-github/).
 
 
-## for developpers ##
+<!-- ## for developpers ##
 
 Before pushing any changes you made, clean up the notebook by running the command
 ```
@@ -106,4 +122,4 @@ To turn debugging mode on, add the flag -d (--use_debugging_mode) to the command
 
 ```
 $ python before_and_after_github_script.py -a -d
-```
+``` -->
