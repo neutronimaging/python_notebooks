@@ -88,7 +88,7 @@ $ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/
   $ docker start CONTAINER_NAME
   ```
 * `-p 9999:8888`: mapping the container internal port, `8888`, to the host port `9999` such that you can access Jupyter by going to `http://localhost:9999` on the host machine.
-  * First time launching the Jupyter will ask you for a one time token, which you can find in the terminal output.  The easiest way to do this would be copy and past the link in the termial, and replace teh port number `8888` with `9999`.
+  * First time launching the Jupyter will ask you for a one time token, which you can find in the terminal output.  The easiest way to do this would be copy&past the link in the termial, and replace teh port number `8888` with `9999`.
 * `-e JUPYTER_ENABLE_LAB=yes`: this allows you to use Jupyter lab instead of Jupyter notebook, which is very similar to Jupyter notebook, but with some additional features.
 * `-v "$PWD":/home/jovyan/work`: mapping/mounting the current local directory (the root of repo) to `/home/jovyan/work` inside the container.
 * `kedokudo/neutron-imaging:latest`: the image name and tag
