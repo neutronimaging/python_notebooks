@@ -18,9 +18,50 @@ __two methods__ are provided here to setup your personal environment to run thes
 For most developers who wish to build on top of existing notebooks, it is recommended to build you own local environment such that additional dependencies and modules can be added to the `conda` env easily.
 Here are the steps needed to build your own Conda env
 
-* Install `Anaconda3` or `miniconda3`.
+* Install [`Anaconda3`](https://www.anaconda.com/products/individual) or [`miniconda3`](https://docs.conda.io/en/latest/miniconda.html).
   > If one of the two is already installed, skip this step.
-* 
+* Create a virtual environment for this repo, e.g.
+  ```bash
+  conda create -n neutron_imaging python=3
+  ```
+* Activate the virtual environment with
+  ```bash
+  conda activate neutron_imaging
+  ```
+  then use the provided bash script, `config_conda_env.sh`, to install required packages.
+  ```bash
+  bash config_conda_env.sh
+  ```
+  > NOTE: technically you can run this script in any environment, but it is __highly recommended__ to run it in a virual environment.
+* Fire up your terminal, go to the root of this repo, and start the Jupyter notebook server with
+  ```bash
+  jupyter notebook
+  ```
+  You will see something similar to the following
+  ```bash
+    [I 14:00:13.183 NotebookApp] The port 8888 is already in use, trying another port.
+    [I 14:00:14.061 NotebookApp] JupyterLab extension loaded from A_REALL_LONG_PATH
+    [I 14:00:14.061 NotebookApp] JupyterLab application directory is ANOTHER_LONG_PATH
+    [I 14:00:14.063 NotebookApp] Serving notebooks from local directory: CURRNT_DIR
+    [I 14:00:14.063 NotebookApp] Jupyter Notebook 6.1.1 is running at:
+    [I 14:00:14.063 NotebookApp] http://localhost:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
+    [I 14:00:14.063 NotebookApp]  or http://127.0.0.1:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
+    [I 14:00:14.063 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+    [C 14:00:14.068 NotebookApp] 
+
+    To access the notebook, open this file in a browser:
+        file:///home/user/.local/share/jupyter/runtime/nbserver-2560206-open.html
+    Or copy and paste one of these URLs:
+        http://localhost:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
+        or http://127.0.0.1:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
+
+  ```
+  Copy and paste the 6th line of the output to your browser
+  ```bash
+  http://localhost:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
+  ```
+  and you are ready to use the notebooks.
+  > NOTE: For most terminals, you can also `Ctrl+click` or `CMD+click` on the link to open it in your default browser. 
 
 ### Use pre-configured Docker image
 
