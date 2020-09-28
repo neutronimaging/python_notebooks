@@ -36,8 +36,8 @@ RUN conda install --quiet --yes \
     npm cache clean --force
 
 # Directly inherit the CMD from the base image
-# 
-# 
+
+
 # -- USER INSTRUCTION --
 # Use the following command to start the notebook
 # $ docker run --rm -p 38764:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/work kedokudo/neutron-imaging:latest
@@ -52,4 +52,6 @@ RUN conda install --quiet --yes \
 #   * some firewall setting might prevent developers from building the image, it is recommended to build the image from
 #     a non-restricted network.
 # Publish your image
-# $ 
+# $ docker push YOUR_DOCKERHUB_ID/NAME_OF_THIS_IMAGE:VERSION
+# > NOTE: your DockerHub credential is needed for this step
+#
