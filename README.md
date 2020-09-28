@@ -5,7 +5,7 @@ Full tutorial of most of the notebooks can be found at [here](https://neutronima
 
 ## Instructions
 
-The majority of the notebooks are ready to use on the ORNL cluster ([analysis cluster](https://analysis.ornl.gov)) when logged in with your __XCAME__ account.
+The majority of the notebooks are ready to use on the ORNL cluster ([analysis cluster](https://analysis.sns.gov)) when logged in with your __XCAME__ account.
 For those who wish to run these notebooks locally for
 * light-weight data processing
 * training and education
