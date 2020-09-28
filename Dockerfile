@@ -15,7 +15,7 @@ RUN conda install --quiet --yes \
     plotly            \
     nodejs            \
     qtpy              \
-    pyqt5             \
+    pyqt              \
     pyqtgraph         \
     astropy           \
     && \
