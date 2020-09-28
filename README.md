@@ -83,7 +83,7 @@ Then go to the root of this repository (if you haven't done so already), and use
 $ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/work kedokudo/neutron-imaging:latest
 ```
 * `--rm`: remove the runtime container once your exit the notebook by pressing `Ctrl+C` in the terminal.  
-  * If you would like to preserve the changes in the runtime container (for example, you might installed some additional pacakges in the env). Replace `--rm` with `--name CONTAINER_NAME` where `CONTAINER_NAME` is the identifier you can use later to restart the container by 
+  * If you would like to preserve the changes in the runtime container (for example, you might install some additional pacakges in the env). Replace `--rm` with `--name CONTAINER_NAME` where `CONTAINER_NAME` is the identifier you can use later to restart the container by 
   ```bash
   $ docker start CONTAINER_NAME
   ```
