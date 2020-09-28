@@ -94,13 +94,18 @@ $ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/
 * `kedokudo/neutron-imaging:latest`: the image name and tag
 
 > __WARNING__   
-> On some system the port mapping is restricted by IT, which would prevent you from accessing the Jupyter inside the container.  For such situation, you can either contact the IT to figure out a correct setting for your system, or try to run the container on a non-restricted machine. 
+> On some system the port mapping is restricted by IT through a system wide policy or network-wide policy, which would prevent you from accessing the Jupyter inside the container.
+> For such situation, you can either contact the IT to figure out a correct setting for your system, or try to run the container on a non-restricted machine/network. 
 
 ## How to contribute back
 
-You can contribute back to this repo by forking it to your own account, make the necessary adjustments, and make a pull request on Github.
+You can contribute back to this repo by 
+* fork it to your own account
+* make the necessary adjustments
+* make a pull request on Github.
+
 The maintainer of this repo will review your changes and provided feedback if needed.
-A more detailed instructions can be found in this [post by dataschool](https://www.dataschool.io/how-to-contribute-on-github/).
+A more detailed instructions can be found in this [post by DataSchool](https://www.dataschool.io/how-to-contribute-on-github/).
 
 
 <!-- ## for developpers ##
