@@ -65,25 +65,27 @@ Here are the steps needed to build your own Conda env
 
 ### Use pre-configured Docker image
 
+A pre-configured docker image is available for those who do not wish to setup a local conda environment.
+To use this approach, you need to install the [Docker desktop](https://www.docker.com/products/docker-desktop) on your local mahcine, which provides a Docker engine that manages all your containers.
+> NOTE: Installation of `Docker Desktop` requires privileged access to the local system (as in using `sudo` on most Linux distro).  If you cannot perform this task due to security restrictions, please contact your IT support on how to enable docker for your account. 
+
+Fire up your favorite terminal, and you can check if `docker` is properly installed on your system by
+```bash
+$ docker ps
+```
+which should show something similar to this
+```bash
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+```
+
+Then go to the root of this repository (if you haven't done so already), and use the following command to start the containerized notebook env
+```bash
+
+```
 
 ## How to contribute back
 
 
-## Instructions ##
-After bringing the entire project to your computer, create a conda environment (named **notebook_environment** here)
-```
-conda create -n notebook_environment python=3.6
-```
-
-Activate the environment
-```
-conda activate notebook_environment
-```
-
-Then run the following script to install all the necessary libraries
-```
-./script_for_installation.sh
-```
 
 ## for developpers ##
 
