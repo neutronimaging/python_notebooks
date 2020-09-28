@@ -1,5 +1,32 @@
-# notebooks
-List of notebooks for users. Full tutorial of most of the notebooks can be found at [https://neutronimaging.pages.ornl.gov/tutorial/](https://neutronimaging.pages.ornl.gov/tutorial/)
+# Python Notebooks
+This reporsitory provides various notebooks for users of the neutron imaging beamlines at ORNL. 
+Full tutorial of most of the notebooks can be found at [here](https://neutronimaging.pages.ornl.gov/tutorial/).
+
+
+## Instructions
+
+The majority of the notebooks are ready to use on the ORNL cluster ([analysis cluster](https://analysis.ornl.gov)) when logged in with your __XCAME__ account.
+For those who wish to run these notebooks locally for
+* light-weight data processing
+* training and education
+* development
+
+__two methods__ are provided here to setup your personal environment to run these notebooks.
+
+### Build Local Conda Environment
+
+For most developers who wish to build on top of existing notebooks, it is recommended to build you own local environment such that additional dependencies and modules can be added to the `conda` env easily.
+Here are the steps needed to build your own Conda env
+
+* Install `Anaconda3` or `miniconda3`.
+  > If one of the two is already installed, skip this step.
+* 
+
+### Use pre-configured Docker image
+
+
+## How to contribute back
+
 
 ## Instructions ##
 After bringing the entire project to your computer, create a conda environment (named **notebook_environment** here)
