@@ -61,7 +61,7 @@ Here are the steps needed to build your own Conda env
         or http://127.0.0.1:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
 
   ```
-  Copy and paste the 6th line of the output to your browser
+  At that point, your favorite browser should show up with the jupyter environment ready to go. If it does not, copy and paste the 6th line of the output to your browser
   ```bash
   http://localhost:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
   ```
