@@ -5,12 +5,11 @@ from ipywidgets import widgets
 from IPython.core.display import display, HTML
 from enum import Enum
 
-import ipywe.fileselector
+from NeuNorm.normalization import Normalization
 
 from __code import file_handler
 from __code import metadata_handler
-from __code import fileselector
-from NeuNorm.normalization import Normalization
+from __code.ipywe import fileselector
 
 JSON_DEBUGGING = False
 
@@ -119,19 +118,19 @@ class NormalizationWithSimplifySelection(object):
 		self.select_sample_folder()
 
 	def select_sample_images(self):
-		list_of_images_widget = ipywe.fileselector.FileSelectorPanel(instruction='select images'
-		                                                                         'to normalize',
-		                                                             start_dir=self.working_dir,
-		                                                             next=self.retrieve_sample_metadata,
-		                                                             multiple=True)
+		list_of_images_widget = fileselector.FileSelectorPanel(instruction='select images'
+		                                                                   'to normalize',
+		                                                       start_dir=self.working_dir,
+		                                                       next=self.retrieve_sample_metadata,
+		                                                       multiple=True)
 		list_of_images_widget.show()
 
 	def select_sample_folder(self):
-		folder_sample_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder of images to normalize',
-		                                                            start_dir=self.working_dir,
-		                                                            next=self.retrieve_sample_metadata_from_sample_folder,
-		                                                            type='directory',
-		                                                            multiple=False)
+		folder_sample_widget = fileselector.FileSelectorPanel(instruction='select folder of images to normalize',
+		                                                      start_dir=self.working_dir,
+		                                                      next=self.retrieve_sample_metadata_from_sample_folder,
+		                                                      type='directory',
+		                                                      multiple=False)
 		folder_sample_widget.show()
 
 	def retrieve_sample_metadata_from_sample_folder(self, sample_folder):
@@ -165,11 +164,11 @@ class NormalizationWithSimplifySelection(object):
 		self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files)
 
 	def select_folder(self, message="", next_function=None):
-		folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
-		                                                     start_dir=self.working_dir,
-		                                                     next=next_function,
-		                                                     type='directory',
-		                                                     multiple=False)
+		folder_widget = fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
+		                                               start_dir=self.working_dir,
+		                                               next=next_function,
+		                                               type='directory',
+		                                               multiple=False)
 		folder_widget.show()
 
 	def select_df_folder(self):

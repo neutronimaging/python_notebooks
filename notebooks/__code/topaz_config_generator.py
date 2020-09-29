@@ -1,11 +1,7 @@
 import glob
 from ipywidgets import widgets
-#import ipywe.fileselector as MyFileSelectorPanel
-#import ipywidgets as ipyw
 import os
-# import time
 import re
-# import numpy as np
 import shutil
 from collections import defaultdict
 from IPython.core.display import HTML
@@ -15,7 +11,7 @@ import subprocess
 
 from __code.file_handler import make_ascii_file_from_string
 from __code.file_handler import read_ascii
-from __code.fileselector import MyFileSelectorPanel
+from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.utilities import ListRunsParser
 from __code.topaz_config import topaz_python_script, topaz_reduction_path
 

@@ -1,10 +1,7 @@
-from ipywidgets import widgets
 from IPython.core.display import HTML
 from IPython.display import display
-import ipywe.fileselector
 
 import numpy as np
-import os
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -15,8 +12,10 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication
 
-from __code import file_handler
 from NeuNorm.normalization import Normalization
+
+from __code import file_handler
+from __code.ipywe import fileselector
 
 
 class LoadImages(object):
@@ -38,10 +37,10 @@ class LoadImages(object):
         else:
             next = None
         display(HTML('<span style="font-size: 20px; color:blue">Select the images you want to work on!</span>'))
-        self.list_images_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images...',
-                                                              multiple=True,
-                                                              next=next,
-                                                              start_dir = self.working_dir)
+        self.list_images_ui = fileselector.FileSelectorPanel(instruction='Select Images...',
+                                                             multiple=True,
+                                                             next=next,
+                                                             start_dir = self.working_dir)
         self.list_images_ui.show()
 
     def load_images(self, list_images=[]):

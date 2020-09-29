@@ -1,8 +1,5 @@
-#from ipywidgets.widgets import interact
-from ipywidgets import widgets
 from IPython.core.display import HTML
 from IPython.display import display
-import ipywe.fileselector
 
 import matplotlib.pyplot as plt
 
