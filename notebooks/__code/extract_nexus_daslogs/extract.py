@@ -8,7 +8,7 @@ from IPython.core.display import HTML
 from collections import OrderedDict
 import numpy as np
 
-from __code import fileselector
+from __code.ipywe import myfileselector
 from __code.nexus_handler import get_list_entries, get_entry_value
 from __code.file_folder_browser import FileFolderBrowser
 from __code.time_utility import AbsoluteTimeHandler, RelativeTimeHandler
@@ -277,7 +277,7 @@ class Extract(FileFolderBrowser):
 		        'metadata': metadata}
 
 	def export(self):
-		self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(
+		self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(
 				instruction='select where to create the ' + \
 				            'ascii file',
 				start_dir=self.working_dir,

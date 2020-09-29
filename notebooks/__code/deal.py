@@ -1,10 +1,11 @@
 import shutil
 import os
-import ipywe.fileselector
 import glob
-
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
+
+from __code.ipywe import fileselector
+
 
 class Deal(object):
 
@@ -12,19 +13,19 @@ class Deal(object):
         self.working_dir = working_dir
 
     def select_input_folder(self):
-        self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Folder with All Images to Deal ...',
-                                                                    start_dir=self.working_dir,
-                                                                    multiple=False,
-                                                                    type='directory')
+        self.input_folder_ui = fileselector.FileSelectorPanel(instruction='Select Folder with All Images to Deal ...',
+                                                              start_dir=self.working_dir,
+                                                              multiple=False,
+                                                              type='directory')
 
         self.input_folder_ui.show()
 
     def select_output_folder(self):
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
-                                                                    start_dir=self.working_dir,
-                                                                    multiple=False,
-                                                                     next=self.deal,
-                                                                    type='directory')
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
+                                                               start_dir=self.working_dir,
+                                                               multiple=False,
+                                                               next=self.deal,
+                                                               type='directory')
 
         self.output_folder_ui.show()
 
