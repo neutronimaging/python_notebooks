@@ -28,11 +28,16 @@ Here are the steps needed to build your own Conda env
   ```bash
   conda activate neutron_imaging
   ```
-  then use the provided bash script, `config_conda_env.sh`, to install required packages.
+* You now need to bring the python notebooks repository to your computer
+  
+  **TODO**: we should specify here how to bring a tag version into their computer (zip, ...), then move to the repository
+  
+* Then use the provided bash script, `config_conda_env.sh`, to install required packages.
   ```bash
   bash config_conda_env.sh
   ```
   > NOTE: technically you can run this script in any environment, but it is __highly recommended__ to run it in a virual environment.
+
 * Fire up your terminal, go to the root of this repo, and start the Jupyter notebook server with
   ```bash
   jupyter notebook
