@@ -33,6 +33,8 @@ pip install \
     neutronbraggedge \
     NeuNorm \
     sectorizedradialprofile \
+    inflect \
+    ImagingReso \
     $PYONCAT_LOCATION
 
 # build Jupyter lab

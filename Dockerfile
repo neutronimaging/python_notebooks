@@ -29,6 +29,8 @@ RUN conda install --quiet --yes \
     neutronbraggedge \
     NeuNorm \
     sectorizedradialprofile \
+    inflect \
+    ImagingReso \
     $PYONCAT_LOCATION \
     && \
     conda clean --all --yes \
