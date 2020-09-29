@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_calibrated_transmission.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_calibrated_transmission.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -23,7 +23,6 @@ class Ui_MainWindow(object):
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.tab)
-        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.splitter_2 = QtWidgets.QSplitter(self.tab)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
@@ -75,14 +74,12 @@ class Ui_MainWindow(object):
         self.page.setGeometry(QtCore.QRect(0, 0, 590, 646))
         self.page.setObjectName("page")
         self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.page)
-        self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_11.setObjectName("verticalLayout_11")
         self.tabWidget_2 = QtWidgets.QTabWidget(self.page)
         self.tabWidget_2.setObjectName("tabWidget_2")
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.tab_3)
-        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_12.setObjectName("horizontalLayout_12")
@@ -378,7 +375,6 @@ class Ui_MainWindow(object):
         self.tab_4 = QtWidgets.QWidget()
         self.tab_4.setObjectName("tab_4")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.tab_4)
-        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.horizontalLayout_13 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_13.setObjectName("horizontalLayout_13")
@@ -587,7 +583,6 @@ class Ui_MainWindow(object):
         self.page_2.setGeometry(QtCore.QRect(0, 0, 590, 646))
         self.page_2.setObjectName("page_2")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.page_2)
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.tableWidget = QtWidgets.QTableWidget(self.page_2)
         self.tableWidget.setObjectName("tableWidget")
@@ -631,7 +626,6 @@ class Ui_MainWindow(object):
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.tab_2)
-        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.summary_table = QtWidgets.QTableWidget(self.tab_2)
         self.summary_table.setAlternatingRowColors(True)
