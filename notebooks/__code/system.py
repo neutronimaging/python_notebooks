@@ -81,7 +81,9 @@ class System(object):
             cls.result_label.value = ""
 
         except:
-            display(HTML('<span style="font-size: 20px; color:red">TURN ON DEBUGGIN MODE!!!!!</span>'))
+            cls.working_dir = os.path.expanduser("~")
+            display(HTML('<span style="font-size: 15px; color:blue">working dir set to -> ' + cls.working_dir +
+                         '</span>'))
 
     @classmethod
     def get_full_list_instrument(cls):
@@ -230,4 +232,7 @@ class System(object):
 
     @classmethod
     def get_working_dir(cls):
-        return os.path.join(cls.start_path, cls.working_dir_ui.value)
+        if cls.working_dir:
+            return cls.working_dir
+        else:
+            return os.path.join(cls.start_path, cls.working_dir_ui.value)
