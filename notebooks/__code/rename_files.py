@@ -1,13 +1,12 @@
-from ipywidgets.widgets import interact
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import os
 import numpy as np
 from __code import utilities
-from __code import ipywe
+from __code.ipywe import fileselector
 
 from __code.file_handler import ListMostDominantExtension
-from __code.fileselector import FileSelectorPanelWithJumpFolders
+from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
 
 class FormatFileNameIndex(object):
 
@@ -15,11 +14,11 @@ class FormatFileNameIndex(object):
 		self.working_dir = working_dir
 
 	def select_input_folder(self):
-		self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Input Folder',
-																	type='directory',
-																	start_dir=self.working_dir,
-		                                                            next=self.next,
-																	multiple=False)
+		self.input_folder_ui = fileselector.FileSelectorPanel(instruction='Select Input Folder',
+								        					  type='directory',
+															  start_dir=self.working_dir,
+		                                                      next=self.next,
+															  multiple=False)
 		self.input_folder_ui.show()
 
 	def calculate_most_dominant_files(self):

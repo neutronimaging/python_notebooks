@@ -1,23 +1,20 @@
-from __code import file_handler
-import ipywe.fileselector
-
 import pandas as pd
 import numpy as np
 from pprint import pprint
-
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
-
 import matplotlib.pyplot as plt
-
+import os
+import sys
+import time
+import datetime
 
 from plotly.offline import init_notebook_mode, iplot
 init_notebook_mode()
 import plotly.graph_objs as go
 
-import os
-import sys
-import time, datetime
+from __code import file_handler
+from __code.ipywe import myfileselector as filesector
 
 
 class FileNameMetadataTimeStamp(object):

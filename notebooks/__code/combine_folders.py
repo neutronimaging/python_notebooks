@@ -1,13 +1,13 @@
 import glob
 import os
-import ipywe.fileselector
-
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 
-from __code import file_handler
 from NeuNorm.normalization import Normalization
+
+from __code import file_handler
+from __code.ipywe import fileselector
 
 
 class CombineFolders(object):
@@ -22,11 +22,11 @@ class CombineFolders(object):
         self.list_folders_short = []
 
     def select_folders(self):
-        self.folder_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder to combine',
-                                                                       start_dir=self.working_dir,
-                                                                       type='directory',
-                                                                       next=self.check_number_of_files,
-                                                                       multiple=True)
+        self.folder_list_widget = fileselector.FileSelectorPanel(instruction='select folder to combine',
+                                                                 start_dir=self.working_dir,
+                                                                 type='directory',
+                                                                 next=self.check_number_of_files,
+                                                                 multiple=True)
         self.folder_list_widget.show()
 
     def __get_list_files(self, file_format='', folder=''):
@@ -206,10 +206,10 @@ class CombineFolders(object):
         return function_(*args)
 
     def select_output_folder(self):
-        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
-                                                                                     'output folders ...',
-                                                                         start_dir=self.working_dir,
-                                                                         next=self.merging,
-                                                                         type='directory')
+        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+                                                                               'output folders ...',
+                                                                   start_dir=self.working_dir,
+                                                                   next=self.merging,
+                                                                   type='directory')
 
         self.output_folder_widget.show()

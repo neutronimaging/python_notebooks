@@ -9,8 +9,7 @@ from NeuNorm.normalization import Normalization
 
 from __code.file_handler import retrieve_list_of_most_dominant_extension_from_folder
 from __code._utilities.string import get_beginning_common_part_of_string_from_list
-import ipywe.fileselector
-from __code import fileselector
+from __code.ipywe import fileselector
 from __code.file_folder_browser import FileFolderBrowser
 from __code.file_handler import make_or_reset_folder
 
@@ -78,11 +77,11 @@ class Interface:
 			self.select_data_folder_to_combine()
 
 	def select_data_folder_to_combine(self):
-		select_data = ipywe.fileselector.FileSelectorPanel(instruction='Select folder of images to combine ...',
-		                                                   start_dir=self.working_dir,
-		                                                   next=self.preview_combine_result,
-		                                                   type='directory',
-		                                                   multiple=False)
+		select_data = fileselector.FileSelectorPanel(instruction='Select folder of images to combine ...',
+		                                             start_dir=self.working_dir,
+		                                             next=self.preview_combine_result,
+		                                             type='directory',
+		                                             multiple=False)
 		select_data.show()
 
 	def preview_combine_result(self, data_folder):

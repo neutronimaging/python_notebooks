@@ -1,5 +1,3 @@
-import ipywe.fileselector
-
 from IPython.core.display import HTML
 from IPython.core.display import display
 from ipywidgets import widgets
@@ -10,14 +8,11 @@ import re
 import glob
 from scipy.special import erf
 from scipy.optimize import curve_fit
-import pprint
 from changepy import pelt
 from changepy.costs import normal_var
 
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-
-from __code.file_handler import make_ascii_file
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -29,9 +24,11 @@ except ImportError:
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from NeuNorm.normalization import Normalization
+
+from __code.file_handler import make_ascii_file
+from __code.ipywe import fileselector
 from __code.file_handler import retrieve_time_stamp
 from __code.file_format_reader import DscReader
-
 from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
 
 
@@ -1085,10 +1082,10 @@ class WaterIntakeProfileCalculator(object):
         help_ui.on_click(self.select_file_help)
         display(help_ui)
 
-        self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
-                                                             start_dir=self.working_dir,
-                                                             next=self.load_and_plot,
-                                                             multiple=True)
+        self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                       start_dir=self.working_dir,
+                                                       next=self.load_and_plot,
+                                                       multiple=True)
 
         self.files_ui.show()
 

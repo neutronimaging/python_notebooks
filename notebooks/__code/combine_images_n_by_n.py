@@ -1,14 +1,12 @@
-import os
-import ipywe.fileselector
 from scipy.stats.mstats import gmean
-import glob
-
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 
-from __code import file_handler
 from NeuNorm.normalization import Normalization
+
+from __code import file_handler
+from __code.ipywe import fileselector
 
 
 class CombineImagesNByN(object):
@@ -18,11 +16,11 @@ class CombineImagesNByN(object):
         self.working_dir = working_dir
 
     def select_folder(self):
-        self.folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder with images to combine',
-                                                                  start_dir=self.working_dir,
-                                                                  type='directory',
-                                                                  next=self._retrieve_number_of_files,
-                                                                  multiple=False)
+        self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
+                                                            start_dir=self.working_dir,
+                                                            type='directory',
+                                                            next=self._retrieve_number_of_files,
+                                                            multiple=False)
         self.folder_widget.show()
 
     def _retrieve_number_of_files(self, folder_selected):
@@ -78,11 +76,11 @@ class CombineImagesNByN(object):
         self.bin_size_label.value = message
 
     def select_output_folder(self):
-        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
-                                                                                     'combined image ...',
-                                                                         start_dir=self.working_dir,
-                                                                         next=self.merging,
-                                                                         type='directory')
+        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+                                                                               'combined image ...',
+                                                                   start_dir=self.working_dir,
+                                                                   next=self.merging,
+                                                                   type='directory')
 
         self.output_folder_widget.show()
 

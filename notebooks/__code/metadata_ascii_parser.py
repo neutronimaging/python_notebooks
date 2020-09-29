@@ -2,16 +2,9 @@ import codecs
 import time
 import datetime
 import inflect
-
-# to be able to run this code from the command line for testing
-try:
-    import ipywe.fileselector
-    from ipywidgets import widgets
-except ImportError:
-    pass
+from ipywidgets import widgets
 from IPython.display import display
 from IPython.core.display import HTML
-
 import numpy as np
 import os
 import pandas as pd
@@ -19,6 +12,7 @@ import pandas as pd
 from __code.file_handler import get_file_extension
 from __code.file_handler import make_ascii_file_from_string
 from __code.file_handler import force_file_extension
+from __code.ipywe import fileselector
 
 
 class MetadataAsciiParser(object):
@@ -30,10 +24,10 @@ class MetadataAsciiParser(object):
 
     def select_folder(self, instruction="Select Input Folder ...", next=None):
 
-        self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction=instruction,
-                                                                    start_dir=self.working_dir,
-                                                                    type='directory',
-                                                                    next=next)
+        self.input_folder_ui = fileselector.FileSelectorPanel(instruction=instruction,
+                                                              start_dir=self.working_dir,
+                                                              type='directory',
+                                                              next=next)
         self.input_folder_ui.show()
 
     def save_metadata_file(self, filename):
@@ -41,9 +35,9 @@ class MetadataAsciiParser(object):
 
     def select_metadata_file(self):
         _instruction = "Select Metadata File ..."
-        self.metadata_ui = ipywe.fileselector.FileSelectorPanel(instruction=_instruction,
-                                                                start_dir=self.working_dir,
-                                                                next=self.save_metadata_file)
+        self.metadata_ui = fileselector.FileSelectorPanel(instruction=_instruction,
+                                                          start_dir=self.working_dir,
+                                                          next=self.save_metadata_file)
         self.metadata_ui.show()
 
 

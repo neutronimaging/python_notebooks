@@ -3,8 +3,6 @@ from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 
-import ipywe.fileselector
-
 from __code import file_handler
 from __code import fileselector
 
@@ -17,11 +15,11 @@ class ExtractEvenlySpacedFiles(object):
         self.working_dir = working_dir
 
     def select_folder(self):
-        self.folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select folder with images to combine',
-                                                                  start_dir=self.working_dir,
-                                                                  type='directory',
-                                                                  next=self._retrieve_list_of_files,
-                                                                  multiple=False)
+        self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
+                                                            start_dir=self.working_dir,
+                                                            type='directory',
+                                                            next=self._retrieve_list_of_files,
+                                                            multiple=False)
         self.folder_widget.show()
 
     def get_number_of_files_to_extract(self):

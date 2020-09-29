@@ -8,7 +8,7 @@ from IPython.core.display import HTML
 from collections import OrderedDict
 import numpy as np
 
-from __code import fileselector
+from __code.ipywe import myfileselector as fileselector
 from __code.nexus_handler import get_list_entries
 from __code.file_folder_browser import FileFolderBrowser
 from __code.sans.sans_config import gpsans_parameters, biosans_parameters

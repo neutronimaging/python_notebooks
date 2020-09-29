@@ -1,6 +1,5 @@
 from IPython.core.display import HTML
 from IPython.core.display import display
-
 import numpy as np
 import os
 import copy

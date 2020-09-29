@@ -1,15 +1,10 @@
 from collections import OrderedDict
-import glob
 import numpy as np
 import os
 import re
 
-from IPython.core.display import HTML
 from IPython.core.display import display
 from ipywidgets import widgets
-
-import pyqtgraph as pg
-from pyqtgraph.dockarea import *
 
 try:
     from PyQt4.QtGui import QFileDialog
@@ -20,7 +15,7 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
-import ipywe.fileselector
+from __code.ipywe import fileselector
 
 from __code.file_handler import make_ascii_file
 from NeuNorm.normalization import Normalization
@@ -45,10 +40,10 @@ class FrederickIpts(object):
         help_ui.on_click(self.select_file_help)
         display(help_ui)
 
-        self.files_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Images ...',
-                                                             start_dir=self.working_dir,
-                                                             next=self.load_and_sort,
-                                                             multiple=True)
+        self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                       start_dir=self.working_dir,
+                                                       next=self.load_and_sort,
+                                                       multiple=True)
 
         self.files_ui.show()
 

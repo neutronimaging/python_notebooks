@@ -1,4 +1,4 @@
-import ipywe.fileselector
+from __code.ipywe import fileselector
 import random
 import os
 import glob
@@ -117,10 +117,8 @@ class BraggEdge:
         self.hkl = _handler.hkl
         self.handler = _handler
 
-        print(_handler)
-
     def select_working_folder(self):
-        select_data = ipywe.fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
+        select_data = fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
                                                            start_dir=self.working_dir,
                                                            next=self.load_data,
                                                            type='directory',
@@ -178,18 +176,18 @@ class BraggEdge:
     def select_time_spectra_file(self):
         self.working_dir = os.path.dirname(self.list_files[0])
 
-        self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
-                                                                    start_dir=self.working_dir,
-                                                                    next=self.save_time_spectra,
-                                                                    filters={'spectra_file': "_Spectra.txt"},
-                                                                    multiple=False)
+        self.time_spectra_ui = fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
+                                                              start_dir=self.working_dir,
+                                                              next=self.save_time_spectra,
+                                                              filters={'spectra_file': "_Spectra.txt"},
+                                                              multiple=False)
         self.time_spectra_ui.show()
 
     def select_just_time_spectra_file(self):
-        self.time_spectra_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
-                                                                    start_dir=self.working_dir,
-                                                                    filters={'spectra_file': "*_Spectra.txt"},
-                                                                    multiple=False)
+        self.time_spectra_ui = fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
+                                                              start_dir=self.working_dir,
+                                                              filters={'spectra_file': "*_Spectra.txt"},
+                                                              multiple=False)
         self.time_spectra_ui.show()
 
     def how_many_data_to_use_to_select_sample_roi(self):
@@ -351,11 +349,11 @@ class BraggEdge:
                      output_file_name + '</span>'))
 
     def select_folder(self, message="", next_function=None):
-        folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
-                                                             start_dir=self.working_dir,
-                                                             next=next_function,
-                                                             type='directory',
-                                                             multiple=False)
+        folder_widget = fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
+                                                       start_dir=self.working_dir,
+                                                       next=next_function,
+                                                       type='directory',
+                                                       multiple=False)
         folder_widget.show()
 
 

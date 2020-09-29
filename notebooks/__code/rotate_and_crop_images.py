@@ -9,7 +9,6 @@ except ImportError:
 
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
-import ipywe.fileselector
 
 import pyqtgraph as pg
 import scipy.ndimage
@@ -18,6 +17,7 @@ import os
 
 from __code import file_handler
 from __code.ui_rotate_and_crop import Ui_MainWindow as UiMainWindow
+from __code.ipywe import fileselector
 
 
 class RotateAndCropImages(QMainWindow):
@@ -279,10 +279,10 @@ class Export(object):
         display(HTML(
            '<span style="font-size: 20px; color:blue">Select where you want to create the rotated images folder!</span>'))
 
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction = 'Select Output Folder ...',
-                                                                     start_dir = self.working_dir,
-                                                                     type = 'directory',
-                                                                     next=self.export)
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
+                                                               start_dir=self.working_dir,
+                                                               type='directory',
+                                                               next=self.export)
 
         self.output_folder_ui.show()
 

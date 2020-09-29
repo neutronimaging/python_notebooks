@@ -1,13 +1,13 @@
 import os
-import ipywe.fileselector
 from scipy.stats.mstats import gmean
-
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 
-from __code import file_handler
 from NeuNorm.normalization import Normalization
+
+from __code import file_handler
+from __code.ipywe import fileselector
 
 
 class CombineImages(object):
@@ -17,9 +17,9 @@ class CombineImages(object):
         self.working_dir = working_dir
 
     def select_files(self):
-        self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select files to combine',
-                                                                      start_dir=self.working_dir,
-                                                                      multiple=True)
+        self.files_list_widget = fileselector.FileSelectorPanel(instruction='select files to combine',
+                                                                start_dir=self.working_dir,
+                                                                multiple=True)
         self.files_list_widget.show()
 
     def how_to_combine(self):
@@ -43,10 +43,10 @@ class CombineImages(object):
         display(vertical)
 
     def select_output_folder(self):
-        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
-                                                                                     'combined image ...',
-                                                                         start_dir=self.working_dir,
-                                                                         type='directory')
+        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+                                                                               'combined image ...',
+                                                                   start_dir=self.working_dir,
+                                                                   type='directory')
 
         self.output_folder_widget.show()
 
