@@ -4,7 +4,6 @@ import os
 import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-import pprint
 
 try:
     from PyQt4.QtGui import QFileDialog

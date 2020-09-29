@@ -23,7 +23,7 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
-from __code.color import  Color
+from __code.color import Color
 from __code.file_handler import retrieve_time_stamp, make_ascii_file
 from __code.ui_integrated_roi_counts_vs_file_name_and_time_stamp import Ui_MainWindow as UiMainWindow
 from __code.decorators import wait_cursor

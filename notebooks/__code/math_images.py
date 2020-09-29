@@ -1,13 +1,12 @@
 import os
-import ipywe.fileselector
-from scipy.stats.mstats import gmean
-
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 
-from __code import file_handler
 from NeuNorm.normalization import Normalization
+
+from __code import file_handler
+from __code.ipywe import fileselector
 
 
 class MathImages(object):
@@ -17,15 +16,15 @@ class MathImages(object):
         self.working_dir = working_dir
 
     def select_files(self):
-        self.files_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='select images to operate on',
-                                                                      start_dir=self.working_dir,
-                                                                      multiple=True)
+        self.files_list_widget = fileselector.FileSelectorPanel(instruction='select images to operate on',
+                                                                start_dir=self.working_dir,
+                                                                multiple=True)
         self.files_list_widget.show()
 
     def select_target_image(self):
-        self.target_file = ipywe.fileselector.FileSelectorPanel(instruction='select images to use in operation',
-                                                                start_dir=self.working_dir,
-                                                                multiple=False)
+        self.target_file = fileselector.FileSelectorPanel(instruction='select images to use in operation',
+                                                          start_dir=self.working_dir,
+                                                          multiple=False)
         self.target_file.show()
 
     def which_math(self):
@@ -54,11 +53,11 @@ class MathImages(object):
                      ' </span><span style="font-size: 20px; color:blue">files you selected!</span>'))
 
     def select_output_folder(self):
-        self.output_folder_widget = ipywe.fileselector.FileSelectorPanel(instruction='select where to create the ' + \
-                                                                                     'new images ...',
-                                                                         start_dir=self.working_dir,
-                                                                         next=self.do_the_math,
-                                                                         type='directory')
+        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+                                                                               'new images ...',
+                                                                   start_dir=self.working_dir,
+                                                                   next=self.do_the_math,
+                                                                   type='directory')
 
         self.output_folder_widget.show()
 

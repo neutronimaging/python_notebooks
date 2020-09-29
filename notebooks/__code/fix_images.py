@@ -5,7 +5,6 @@ import numpy as np
 from ipywidgets import widgets
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 
 from IPython.core.display import display
 from IPython.core.display import HTML

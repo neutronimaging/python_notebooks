@@ -1,11 +1,12 @@
-import ipywe.fileselector
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 import os
 
-from __code.file_handler import ListMostDominantExtension, make_or_reset_folder
 from NeuNorm.normalization import Normalization
+
+from __code.file_handler import ListMostDominantExtension, make_or_reset_folder
+from __code.ipywe import fileselector
 
 
 class FromAttenuationToConcentration(object):
@@ -14,10 +15,10 @@ class FromAttenuationToConcentration(object):
         self.working_dir = working_dir
 
     def select_folder(self):
-        self.folder_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='Select data folder',
-                                                                       start_dir=self.working_dir,
-                                                                       next=self.load_data,
-                                                                       type='directory')
+        self.folder_list_widget = fileselector.FileSelectorPanel(instruction='Select data folder',
+                                                                 start_dir=self.working_dir,
+                                                                 next=self.load_data,
+                                                                 type='directory')
         self.folder_list_widget.show()
 
     def load_data(self, folder):
@@ -73,10 +74,10 @@ class FromAttenuationToConcentration(object):
             display(HTML('<span style="font-size: 20px; color:red">Make sure the coefficient are floats!</span>'))
 
     def select_output_folder(self):
-        self.output_folder_list_widget = ipywe.fileselector.FileSelectorPanel(instruction='Select where new folder will be created',
-                                                                       start_dir=self.working_dir,
-                                                                       next=self.export_data,
-                                                                       type='directory')
+        self.output_folder_list_widget = fileselector.FileSelectorPanel(instruction='Select where new folder will be created',
+                                                                        start_dir=self.working_dir,
+                                                                        next=self.export_data,
+                                                                        type='directory')
         self.output_folder_list_widget.show()
 
     def create_concentration_list_of_file_names(self):

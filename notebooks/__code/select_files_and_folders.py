@@ -1,11 +1,10 @@
 import os
 from IPython.display import display
 from ipywidgets import widgets
-from IPython.core.display import HTML
-import ipywe.fileselector
 
 from __code.file_folder_browser import FileFolderBrowser
 from __code.utilities import display_html_message
+from __code.ipywe import fileselector
 
 
 class SelectFiles(FileFolderBrowser):
@@ -74,11 +73,11 @@ class SelectFolderWithDefaultPaths(FileFolderBrowser):
         self.display_file_selector(start_dir=start_dir)
 
     def display_file_selector(self, start_dir=''):
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
-                                                                start_dir=start_dir,
-                                                                multiple=False,
-                                                                next=self.next_function,
-                                                                type='directory')
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
+                                                               start_dir=start_dir,
+                                                               multiple=False,
+                                                               next=self.next_function,
+                                                               type='directory')
         self.output_folder_ui.show()
 
 

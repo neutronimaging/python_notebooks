@@ -1,4 +1,4 @@
-from __code.ipywe import myfileselector as filesector
+from __code.ipywe import myfileselector as fileselector
 
 
 class FileFolderBrowser(object):
