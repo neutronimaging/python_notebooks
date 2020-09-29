@@ -3,14 +3,12 @@ import matplotlib.gridspec as gridspec
 from ipywidgets.widgets import interact
 import numpy as np
 import os
-import ipywe.fileselector
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
-import pytz
-import datetime
 
 from NeuNorm.normalization import Normalization
 
+from __code.ipywe import fileselector
 from __code.metadata_handler import MetadataHandler
 from __code import file_handler
 
@@ -22,9 +20,9 @@ class CreateListFileName(object):
         self.verbose = verbose
 
     def select_image_folder(self):
-        self.folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Raw Image Folder ...',
-                                                              start_dir=self.working_dir,
-                                                              type='directory')
+        self.folder_ui = fileselector.FileSelectorPanel(instruction='Select Raw Image Folder ...',
+                                                        start_dir=self.working_dir,
+                                                        type='directory')
         self.folder_ui.show()
 
         display(HTML(
@@ -214,10 +212,9 @@ class CreateListFileName(object):
         self.display_file_selector()
 
     def display_file_selector(self, start_dir=''):
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
-                                                                     start_dir=start_dir,
-                                                                     multiple=False,
-                                                                     next=self.export,
-                                                                     type='directory')
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
+                                                               start_dir=start_dir,
+                                                               multiple=False,
+                                                               next=self.export,
+                                                               type='directory')
         self.output_folder_ui.show()
-
