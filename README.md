@@ -71,8 +71,8 @@ Here are the steps needed to build your own Conda env
 ### Use pre-configured Docker image
 
 A pre-configured docker image is available for those who do not wish to setup a local conda environment.
-To use this approach, you need to install the [Docker desktop](https://www.docker.com/products/docker-desktop) on your local mahcine, which provides a Docker engine that manages all your containers.
-> NOTE: Installation of `Docker Desktop` requires privileged access to the local system (as in using `sudo` on most Linux distro).  If you cannot perform this task due to security restrictions, please contact your IT support on how to enable docker for your account. 
+To use this approach, you need to install the [Docker desktop](https://www.docker.com/products/docker-desktop) on your local machine, which provides a Docker engine that manages all your containers.
+> NOTE: Installation of `Docker Desktop` requires privileged access to the local system (as in using `sudo` on most Linux distribution).  If you cannot perform this task due to security restrictions, please contact your IT support on how to enable docker for your account. 
 
 Fire up your favorite terminal, and you can check if `docker` is properly installed on your system by
 ```bash
