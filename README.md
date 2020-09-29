@@ -102,8 +102,9 @@ $ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/
 * `kedokudo/neutron-imaging:latest`: the image name and tag
 
 > __WARNING__   
-> On some system the port mapping is restricted by IT through a system wide policy or network-wide policy, which would prevent you from accessing the Jupyter inside the container.
-> For such situation, you can either contact the IT to figure out a correct setting for your system, or try to run the container on a non-restricted machine/network. 
+> * On some system the port mapping is restricted by IT through a system wide policy or network-wide policy, which would prevent you from accessing the Jupyter inside the container. 
+> For such situation, you can either contact the IT to figure out a correct setting for your system, or try to run the container on a non-restricted machine/network.
+> * Some of the Widgets are still not functioning reliably within Jupyter Lab environment.  Additional adjustments are being made to improve its stability.
 
 ## How to contribute back
 
