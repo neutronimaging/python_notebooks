@@ -1,13 +1,12 @@
 import numpy as np
 import os
-
 from IPython.core.display import HTML
 from ipywidgets import widgets
 from IPython.core.display import display
 
-import ipywe.fileselector
 from NeuNorm.normalization import Normalization
 
+from __code.ipywe import fileselector
 from __code import utilities, file_handler
 
 
@@ -26,7 +25,7 @@ class BinHandler(object):
 
     def select_images(self):
         _instruction = 'Select images to bin'
-        self.images_ui = ipywe.fileselector.FileSelectorPanel(instruction=_instruction,
+        self.images_ui = fileselector.FileSelectorPanel(instruction=_instruction,
                                                               start_dir=self.working_dir,
                                                               multiple=True,
                                                               next=self.load)
@@ -100,7 +99,7 @@ class BinHandler(object):
 
     def select_export_folder(self):
 
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
                                                                      start_dir=self.working_dir,
                                                                      multiple=False,
                                                                      next=self.export,
