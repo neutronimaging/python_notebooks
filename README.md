@@ -28,11 +28,12 @@ Here are the steps needed to build your own Conda env
   ```bash
   conda activate neutron_imaging
   ```
-* You now need to bring the python notebooks repository to your computer
-  
-  **TODO**: we should specify here how to bring a tag version into their computer (zip, ...), then move to the repository
-  
-* Then use the provided bash script, `config_conda_env.sh`, to install required packages.
+* Clone this repository to your local computer with
+  ```bash
+  git clone https://github.com/neutronimaging/python_notebooks.git
+  ```
+  > NOTE: There are often many branches within the same repository, please contact your beamline support to get the correct branch name so that you can switch to the correct branch using `git checkout -b BRANCH_NAME`.
+* Inside the repository, you should be able to find a bash script, `config_conda_env.sh`.  Use it to install required packages with
   ```bash
   bash config_conda_env.sh
   ```
@@ -87,6 +88,8 @@ Then go to the root of this repository (if you haven't done so already), and use
 ```bash
 $ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/work kedokudo/neutron-imaging:latest
 ```
+![exmaple_output](static/docker_example.png)
+
 * `--rm`: remove the runtime container once your exit the notebook by pressing `Ctrl+C` in the terminal.  
   * If you would like to preserve the changes in the runtime container (for example, you might install some additional pacakges in the env). Replace `--rm` with `--name CONTAINER_NAME` where `CONTAINER_NAME` is the identifier you can use later to restart the container by 
   ```bash
