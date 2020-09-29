@@ -6,13 +6,13 @@ from IPython.core.display import HTML
 
 from ipywidgets import widgets, Layout
 from IPython.core.display import display
-import ipywe.fileselector
 
 from NeuNorm.normalization import Normalization
 from NeuNorm.roi import ROI
 
 from __code import utilities, file_handler
 from __code.config import gamma_filtering_coefficient
+from __code.ipywe import fileselector
 
 
 def close(w):
@@ -25,7 +25,7 @@ def close(w):
     return
 
 
-class myFileSelectorPanel(ipywe.fileselector.FileSelectorPanel):
+class myFileSelectorPanel(fileselector.FileSelectorPanel):
     def __init__(self, instruction, start_dir=".", type='file',
                  next=None,
                  multiple=False,
@@ -505,10 +505,10 @@ class NormalizationHandler(object):
         self.display_file_selector()
 
     def display_file_selector(self, start_dir=''):
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Output Folder',
-                                                                     start_dir=start_dir,
-                                                                     multiple=False,
-                                                                     type='directory')
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
+                                                               start_dir=start_dir,
+                                                               multiple=False,
+                                                               type='directory')
         self.output_folder_ui.show()
 
 
