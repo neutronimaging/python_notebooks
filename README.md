@@ -11,7 +11,9 @@ For those who wish to run these notebooks locally for
 * training and education
 * development
 
+<!---
 __two methods__ are provided here to setup your personal environment to run these notebooks.
+--->
 
 ### Build Local Conda Environment
 
