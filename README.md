@@ -69,6 +69,7 @@ Here are the steps needed to build your own Conda env
   and you are ready to use the notebooks.
   > NOTE: For most terminals, you can also `Ctrl+click` or `CMD+click` on the link to open it in your default browser. 
 
+<!---
 ### Use pre-configured Docker image
 
 A pre-configured docker image is available for those who do not wish to setup a local conda environment.
@@ -105,6 +106,7 @@ $ docker run --rm -p 9999:8888 -e JUPYTER_ENABLE_LAB=yes -v "$PWD":/home/jovyan/
 > * On some system the port mapping is restricted by IT through a system wide policy or network-wide policy, which would prevent you from accessing the Jupyter inside the container. 
 > For such situation, you can either contact the IT to figure out a correct setting for your system, or try to run the container on a non-restricted machine/network.
 > * Some of the Widgets are still not functioning reliably within Jupyter Lab environment.  Additional adjustments are being made to improve its stability.
+--->
 
 ## How to contribute back
 
