@@ -32,9 +32,9 @@ Here are the steps needed to build your own Conda env
   ```
 * Clone this repository to your local computer with
   ```bash
-  git clone https://github.com/neutronimaging/python_notebooks.git
+  git clone -b make_releasable_version_of_notebooks https://github.com/neutronimaging/python_notebooks.git
   ```
-  > NOTE: There are often many branches within the same repository, please contact your beamline support to get the correct branch name so that you can switch to the correct branch using `git checkout -b BRANCH_NAME`.
+
 * Inside the repository, you should be able to find a bash script, `config_conda_env.sh`.  Use it to install required packages with
   ```bash
   bash config_conda_env.sh
