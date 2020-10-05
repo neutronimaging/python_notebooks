@@ -23,10 +23,7 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_dual_energy.ui')
-
-from __code.dual_energy import ImageWindow, DualEnergy
+from __code.dual_energy.dual_energy import Interface, DualEnergy
 
 from __code import system
 system.System.select_working_dir()
@@ -40,18 +37,46 @@ custom_style.style()
 # %gui qt
 
 # + [markdown] cell_style="split" run_control={"frozen": false, "read_only": false}
-# # Select stack folder
+# # Select data input folder
 
 # + run_control={"frozen": false, "read_only": false}
-o_display = DualEnergy(working_dir=system.System.get_working_dir())
-o_display.select_input_folder()
+o_dual = DualEnergy(working_dir=system.System.get_working_dir())
+o_dual.select_working_folder()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Launch UI
 
 # + run_control={"frozen": false, "read_only": false}
-_image = ImageWindow(display_counts_vs_stack=o_display)
-_image.show()
+o_interface = Interface(o_dual=o_dual, spectra_file=o_dual.spectra_file)
+o_interface.show()
 
-# + run_control={"frozen": false, "read_only": false}
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # DEBUGGING 
+
+# +
+import warnings
+warnings.filterwarnings('ignore')
+
+from __code.dual_energy.dual_energy import Interface, DualEnergy
+import glob
+import os
+# -
+
+# %gui qt
+
+# +
+data_path = '/Users/j35/IPTS/VENUS/IPTS-25778_normalized'
+list_data = glob.glob(data_path + "*.tif")
+spectra_file = os.path.join(data_path, "Image019_Spectra.txt")
+assert os.path.exists(spectra_file)
+
+o_dual = DualEnergy(working_dir=data_path)
+o_dual.load_data(data_path)
+# -
+
+o_interface = Interface(o_dual=o_dual,
+                       working_dir=data_path,
+                       spectra_file=spectra_file)
+o_interface.show()
+
 

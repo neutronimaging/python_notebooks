@@ -46,6 +46,10 @@ o_bragg = BraggEdge(working_dir=system.System.get_working_dir())
 o_bragg.select_working_folder()
 # -
 
+# # Select Open Beam Data Input folder 
+
+o_bragg.select_ob_folder()
+
 # # Select sample region and peak to fit
 
 # ### Select how many random files to use to select region to fit

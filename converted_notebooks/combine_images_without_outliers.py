@@ -28,7 +28,11 @@ from __code.__all import custom_style
 custom_style.style()
 # -
 
+# # Select how you want to combine the first images 
+
 o_combine = Interface(working_dir=system.System.get_working_dir())
+
+# # Select output folder 
 
 o_combine.select_output_folder()
 
