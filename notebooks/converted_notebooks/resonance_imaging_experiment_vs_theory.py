@@ -46,7 +46,7 @@ from __code import file_handler, utilities
 from __code.display_counts_of_region_vs_stack_vs_theory import ImageWindow
 from __code.display_imaging_resonance_sample_definition import SampleWindow
 from NeuNorm.normalization import Normalization
-import ipywe.fileselector
+from __code.ipywe import fileselector
 
 import pprint
 

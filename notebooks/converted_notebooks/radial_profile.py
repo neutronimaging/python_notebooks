@@ -26,7 +26,7 @@ from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name = 'ui_radial_profile.ui')
 
 from __code import system
-from __code.fileselector import FileSelection
+from __code.ipywe.myfileselector import FileSelection
 from __code.radial_profile import RadialProfile, SelectRadialParameters
 
 system.System.select_working_dir()

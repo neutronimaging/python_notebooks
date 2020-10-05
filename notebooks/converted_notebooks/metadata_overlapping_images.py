@@ -27,7 +27,7 @@ o_builder = UiBuilder(ui_name = 'ui_metadata_overlapping_images.ui')
 o_builder = UiBuilder(ui_name = 'ui_metadata_overlapping_images_string_format.ui')
 
 from __code import system
-from __code.fileselector import FileSelection
+from __code.ipywe.myfileselector import FileSelection
 from __code.metadata_overlapping_images import MetadataOverlappingImagesUi
 
 system.System.select_working_dir()

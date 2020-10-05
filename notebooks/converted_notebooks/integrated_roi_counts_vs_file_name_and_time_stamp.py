@@ -34,7 +34,7 @@ from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name = 'ui_integrated_roi_counts_vs_file_name_and_time_stamp.ui')
 
 from __code import system
-from __code.fileselector import FileSelection
+from __code.ipywe.myfileselector import FileSelection
 from __code.integrated_roi_counts_vs_file_name_and_time_stamp import IntegratedRoiUi
 
 system.System.select_working_dir()

@@ -48,7 +48,9 @@ o_bragg.select_working_folder()
 
 # # Select Open Beam Data Input folder 
 
+# + jupyter={"outputs_hidden": true}
 o_bragg.select_ob_folder()
+# -
 
 # # Select sample region and peak to fit
 
