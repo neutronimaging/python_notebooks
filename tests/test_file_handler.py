@@ -18,19 +18,21 @@ class TestReadBraggEdgeFittingAsciiFormat:
 
 	def test_retrieving_metadata_base_folder(self):
 		result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
-		assert result['metadata']['base_folder'] == '/Users/j35/IPTS/VENUS/shared/testing_normalized'
+		assert result['metadata']['base_folder'] == '/Users/j35/IPTS/VENUS/IPTS-25778_normalized'
 
 	def test_retrieving_metadata_columns(self):
 		result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
 		metadata_column = result['metadata']['columns']
-		assert metadata_column['3'] == {'x0': '334', 'y0': '166', 'width': '17', 'height': '17'}
-		assert len(metadata_column) == 9
+
+		assert metadata_column['3'] == {'x0': '285', 'y0': '131', 'width': '171', 'height': '171', 'kropff': {'a0': '0.05697761445846593', 'b0': '-12.17789476349729', 'a0_error': '0.012625967415442281', 'b0_error': '0.32166122161751043', 'ahkl': '0.22249188576171708', 'bhkl': '-7.201720779647523', 'ahkl_error': '0.01749711471030342', 'bhkl_error': '0.49197822510433087', 'ldahkl': '0.0368126543734365', 'tau': '0.00018227258697928991', 'sigma': '0.00027024177029020614', 'ldahkl_error': '0.00033445772089875196', 'tau_error': '0.00012216476414800265', 'sigma_error': '0.0001071763960918388'}, 'march_dollase': {'d_spacing': 'None', 'sigma': 'None', 'alpha': 'None', 'a1': 'None', 'a2': 'None', 'a5': 'None', 'a6': 'None', 'd_spacing_error': 'None', 'sigma_error': 'None', 'alpha_error': 'None', 'a1_error': 'None', 'a2_error': 'None', 'a5_error': 'None', 'a6_error': 'None'}}
+		assert len(metadata_column) == 86
 
 	def test_retrieving_data(self):
 		result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
 		pd_data = result['data']
 		data_col3 = np.array(pd_data['3'])
-		assert np.allclose(data_col3[0:4], [0.233055, 0.223026, 0.233431, 0.230279], atol=1e-5)
+		print(data_col3[0:4])
+		assert np.allclose(data_col3[0:4], [0.00078657, 0.00066687, 0.00100886, 0.00068397], atol=1e-5)
 
 	def test_retrieving_xaxis(self):
 		result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)

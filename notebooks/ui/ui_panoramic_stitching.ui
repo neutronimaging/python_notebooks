@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>982</width>
+    <height>833</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
+    <item>
+     <widget class="QSplitter" name="main_vertical_splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Step 1</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QSplitter" name="splitter_between_previews_and_table">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <widget class="QSplitter" name="splitter_between_previews">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Reference Image</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QWidget" name="reference_widget" native="true"/>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Target Image</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QWidget" name="target_widget" native="true"/>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+           <widget class="QTableWidget" name="tableWidget">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>200</height>
+             </size>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <column>
+             <property name="text">
+              <string>Reference Images</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Target Images</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Status</string>
+             </property>
+            </column>
+           </widget>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="run_stitching_button">
+           <property name="text">
+            <string>Run Stitching </string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Step 2</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>File Names</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QListView" name="listView"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QWidget" name="preview_widget" native="true"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="title">
+            <string>Manual Mode</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="0" column="3">
+               <widget class="QPushButton" name="up_up_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QPushButton" name="up_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="left_left_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QPushButton" name="left_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>150</width>
+                  <height>150</height>
+                 </size>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <property name="default">
+                 <bool>false</bool>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Minimum</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="4">
+               <widget class="QPushButton" name="right_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="5">
+               <widget class="QPushButton" name="right_right_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="6">
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="3" column="3">
+               <widget class="QPushButton" name="down_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QPushButton" name="down_down_button">
+                <property name="styleSheet">
+                 <string notr="true">border: None</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>-&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="single_arrow_motion_value">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>-&gt;&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="double_arrow_motion_value">
+             <property name="minimum">
+              <number>5</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Stiched Image</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QTableWidget" name="stitched_table">
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="stitched_widget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="cancel_button">
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="export_button">
+        <property name="text">
+         <string>Export ...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>982</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionImport_ROIs">
+   <property name="text">
+    <string>Import ...</string>
+   </property>
+  </action>
+  <action name="actionExport_ROIs">
+   <property name="text">
+    <string>Export ...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>cancel_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cancel_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>71</x>
+     <y>799</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>179</x>
+     <y>478</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>export_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>apply_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>969</x>
+     <y>799</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>552</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_widget_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>541</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>506</x>
+     <y>409</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>run_stitching_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>run_stitching_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>519</x>
+     <y>502</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>357</x>
+     <y>366</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>357</x>
+     <y>366</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>502</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>438</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>627</x>
+     <y>370</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>553</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>645</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>610</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>697</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>971</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>697</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>976</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>11</x>
+     <y>652</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>11</x>
+     <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>309</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>309</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>cancel_clicked()</slot>
+  <slot>apply_clicked()</slot>
+  <slot>circle_center_changed()</slot>
+  <slot>sector_radio_button_changed()</slot>
+  <slot>sector_changed()</slot>
+  <slot>guide_color_changed()</slot>
+  <slot>grid_size_changed()</slot>
+  <slot>table_widget_selection_changed()</slot>
+  <slot>run_stitching_button_clicked()</slot>
+  <slot>import_roi_clicked()</slot>
+  <slot>export_roi_clicked()</slot>
+  <slot>left_button_pressed()</slot>
+  <slot>left_button_released()</slot>
+  <slot>right_button_pressed()</slot>
+  <slot>right_button_released()</slot>
+  <slot>left_left_button_pressed()</slot>
+  <slot>left_left_button_released()</slot>
+  <slot>right_right_button_pressed()</slot>
+  <slot>right_right_button_released()</slot>
+  <slot>up_button_pressed()</slot>
+  <slot>up_button_released()</slot>
+  <slot>down_button_pressed()</slot>
+  <slot>down_button_released()</slot>
+  <slot>up_up_button_pressed()</slot>
+  <slot>up_up_button_released()</slot>
+  <slot>down_down_button_pressed()</slot>
+  <slot>down_down_button_released()</slot>
+ </slots>
+</ui>
