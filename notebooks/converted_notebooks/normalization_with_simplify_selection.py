@@ -34,6 +34,8 @@ custom_style.style()
 #
 # Change the time range if needed!
 
+print(o_which.final_full_master_dict[30.0]['config0']['list_ob'])
+
 # + run_control={"frozen": false, "read_only": false}
 o_which = NormalizationWithSimplifySelection(working_dir=system.System.get_working_dir())
 o_which.select_sample_images_and_create_configuration()
@@ -46,7 +48,5 @@ o_which.checking_normalization_workflow()
 # # Select Output Folder 
 
 o_which.select_output_folder()
-
-o_which.debugging_o_load.export(folder="/Users/j35/Desktop/Aug25_2020_60.0_config0", file_type='tif')
 
 
