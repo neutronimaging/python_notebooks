@@ -38,7 +38,7 @@ class Initialization:
 		self.matplotlib()
 
 		if tab == 'all':
-			self.normalize_images_by_white_beam()
+			# self.normalize_images_by_white_beam()
 			self.save_image_size()
 			self.roi_setup()
 			self.widgets()
