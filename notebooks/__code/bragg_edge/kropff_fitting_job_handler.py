@@ -28,7 +28,7 @@ class KropffFittingJobHandler:
 		xaxis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
 		[left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
 		full_fitting_xaxis = xaxis[left_xaxis_index: right_xaxis_index]
-		# self.xaxis_to_fit = full_fitting_xaxis[fitting_range[0]: fitting_range[1] + 1] * 1e-6  # to convert in s
+		#self.xaxis_to_fit = full_fitting_xaxis[fitting_range[0]: fitting_range[1] + 1] * 1e-6  # to convert in s
 		self.xaxis_to_fit = full_fitting_xaxis[fitting_range[0]: fitting_range[1] + 1]
 
 		list_yaxis_to_fit = []

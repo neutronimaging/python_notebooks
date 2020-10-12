@@ -293,7 +293,7 @@ class Kropff:
 				                                 tree_key=['rois', row_selected, 'fitting', algo_name,
 				                                           name_of_page, 'xaxis_to_fit']):
 
-					# show fit only if tof scale selected
+					# show fit only if lambda scale selected
 					if x_axis_selected == 'lambda':
 						_entry = self.parent.fitting_input_dictionary['rois'][row_selected]['fitting'][algo_name][name_of_page]
 						xaxis = _entry['xaxis_to_fit']
