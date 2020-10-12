@@ -517,6 +517,13 @@ class NormalizationWithSimplifySelection(object):
 		list_ob = _make_list_basename_file(list_name='list_ob')
 		list_df = _make_list_basename_file(list_name='list_df')
 
+		# normalize or not this configuration
+		use_this_config_widget = widgets.Checkbox(description="Normalize this configuration",
+		                                          value=True,
+		                                          layout=widgets.Layout(width="100%"))
+		use_this_config_widget.observe(self.update_use_this_config_widget, names='value')
+		config_widgets_id_dict['use_this_config'] = use_this_config_widget
+
 		# use custom time range check box
 		check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
 		                                             value=False,
@@ -597,7 +604,8 @@ class NormalizationWithSimplifySelection(object):
 		config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
 		config_widgets_id_dict['list_of_df'] = df_list_of_runs.children[1]
 
-		verti_layout = widgets.VBox([hori_layout1,
+		verti_layout = widgets.VBox([use_this_config_widget,
+		                             hori_layout1,
 		                             hori_layout2,
 		                             metadata_table_label,
 		                             metadata_table,
@@ -643,8 +651,12 @@ class NormalizationWithSimplifySelection(object):
 
 		return [table_label, table]
 
-	def update_config_widgets(self, state):
+	def update_use_this_config_widget(self, state):
+		new_state = state['new']
+		[active_acquisition, active_config] = self.get_active_tabs()
+		self.config_tab_dict[active_acquisition][active_config]['normalize_this_config'] = new_state
 
+	def update_config_widgets(self, state):
 		if state['new'] is False:
 			# use all files
 			message = None
@@ -825,6 +837,7 @@ class NormalizationWithSimplifySelection(object):
 		_final_full_master_dict = self.final_full_master_dict
 		_config_tab_dict = self.config_tab_dict
 		_final_json_dict = {}
+
 		for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
 
 			_final_json_for_this_acquisition = {}
@@ -832,6 +845,7 @@ class NormalizationWithSimplifySelection(object):
 			_dict_of_this_acquisition = _final_full_master_dict[_acquisition]
 			for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
 				this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
+				normalize_flag = this_config_tab_dict['use_this_config']
 
 				_dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
 
@@ -865,7 +879,8 @@ class NormalizationWithSimplifySelection(object):
 
 				_final_json_for_this_acquisition[_config] = {'list_sample': list_sample,
 				                                             'list_df': list_df,
-				                                             'list_ob': list_ob_to_keep}
+				                                             'list_ob': list_ob_to_keep,
+				                                             'normalize_this_config': normalize_flag}
 
 			_final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
@@ -884,7 +899,7 @@ class NormalizationWithSimplifySelection(object):
 			_current_acquisition_dict = final_json[_name_acquisition]
 			for _name_config in _current_acquisition_dict.keys():
 				_current_config_dict = _current_acquisition_dict[_name_config]
-
+				normalize_this_config = _current_config_dict['normalize_this_config']
 				nbr_ob = len(_current_config_dict['list_ob'])
 				nbr_df = len(_current_config_dict['list_df'])
 				nbr_sample = len(_current_config_dict['list_sample'])
@@ -894,7 +909,8 @@ class NormalizationWithSimplifySelection(object):
 					config=_name_config,
 					nbr_sample=nbr_sample,
 					nbr_ob=nbr_ob,
-					nbr_df=nbr_df)
+					nbr_df=nbr_df,
+					normalize_this_config=normalize_this_config)
 
 		table += "</table>"
 		table_ui = widgets.HTML(table)
@@ -973,11 +989,16 @@ class NormalizationWithSimplifySelection(object):
 		return full_basename_sample_folder
 
 	@staticmethod
-	def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0):
-		if nbr_ob > 0:
-			status_string = "<th style='color:#odbc2e'>OK</th>"
+	def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0,
+	                                     normalize_this_config=True):
+
+		if not normalize_this_config.value:
+			status_string = "<th style='color:#ff0000'>SKIP!</th>"
 		else:
-			status_string = "<th style='color:#ff0000'>Missing OB!</th>"
+			if nbr_ob > 0:
+				status_string = "<th style='color:#odbc2e'>OK</th>"
+			else:
+				status_string = "<th style='color:#ff0000'>Missing OB!</th>"
 
 		_row = ""
 		_row = "<tr><th>{}</th><th>{}</th><th>{}</th><th>{}</th><th>{}</th>{}</tr>". \
