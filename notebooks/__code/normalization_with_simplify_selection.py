@@ -926,7 +926,6 @@ class NormalizationWithSimplifySelection(object):
 			newdir_toolbar_button=True)
 
 	def normalization(self, output_folder):
-
 		self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
 
 		final_json = self.final_json_dict
@@ -934,7 +933,7 @@ class NormalizationWithSimplifySelection(object):
 
 		horizontal_layout = widgets.HBox([widgets.Label("Normalization progress",
 		                                                layout=widgets.Layout(width='20%')),
-		                                  widgets.IntProgress(max=number_of_normalization,
+		                                  widgets.IntProgress(max=number_of_normalization+1,
 		                                                      value=0,
 		                                                      layout=widgets.Layout(width='50%'))])
 		normalization_progress = horizontal_layout.children[1]
@@ -948,6 +947,11 @@ class NormalizationWithSimplifySelection(object):
 
 				list_ob = _current_config['list_ob']
 				if list_ob == []:
+					normalization_progress.value += 1
+					continue
+
+				if not _current_config['normalize_this_config'].value:
+					normalization_progress.value += 1
 					continue
 
 				list_sample = _current_config['list_sample']
@@ -976,6 +980,7 @@ class NormalizationWithSimplifySelection(object):
 
 		display(HTML('<span style="font-size: 20px; color:blue">Following folders have been created:</span>'))
 		for _folder in list_full_output_normalization_folder_name:
+			_folder = _folder if _folder else "None"
 			display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + '</span>'))
 
 	@staticmethod
