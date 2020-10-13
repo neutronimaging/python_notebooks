@@ -9,7 +9,7 @@ from NeuNorm.normalization import Normalization
 
 from __code import file_handler
 from __code import metadata_handler
-from __code.ipywe import fileselector
+from __code.ipywe import myfileselector
 
 JSON_DEBUGGING = False
 
@@ -118,7 +118,7 @@ class NormalizationWithSimplifySelection(object):
 		self.select_sample_folder()
 
 	def select_sample_images(self):
-		list_of_images_widget = fileselector.FileSelectorPanel(instruction='select images'
+		list_of_images_widget = myfileselector.MyFileSelectorPanel(instruction='select images'
 		                                                                   'to normalize',
 		                                                       start_dir=self.working_dir,
 		                                                       next=self.retrieve_sample_metadata,
@@ -126,7 +126,7 @@ class NormalizationWithSimplifySelection(object):
 		list_of_images_widget.show()
 
 	def select_sample_folder(self):
-		folder_sample_widget = fileselector.FileSelectorPanel(instruction='select folder of images to normalize',
+		folder_sample_widget = myfileselector.MyFileSelectorPanel(instruction='select folder of images to normalize',
 		                                                      start_dir=self.working_dir,
 		                                                      next=self.retrieve_sample_metadata_from_sample_folder,
 		                                                      type='directory',
@@ -135,12 +135,24 @@ class NormalizationWithSimplifySelection(object):
 
 	def retrieve_sample_metadata_from_sample_folder(self, sample_folder):
 		[list_of_images, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=sample_folder)
-		self.retrieve_sample_metadata(list_of_images)
+		can_we_continue = self.images_files_found_in_list(list_of_images)
+		if can_we_continue:
+			self.retrieve_sample_metadata(list_of_images)
+		else:
+			display(HTML('<span style="font-size: 20px; color:Red">No images found in the folder selected!</span>'))
+
+	def images_files_found_in_list(self, list_of_images):
+		for _file in list_of_images:
+			if (".tiff" in _file) or (".tif" in _file) or (".fits" in _file):
+				return True
+		return False
 
 	def retrieve_sample_metadata(self, list_of_images):
 		self.list_of_images = list_of_images
 		self.sample_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_images,
-		                                                                                 display_infos=False)
+		                                                                                 display_infos=False,
+		                                                                                 label='sample')
+
 		self.auto_retrieve_ob_metadata()
 		self.auto_retrieve_df_metadata()
 		self.match_files()
@@ -160,11 +172,11 @@ class NormalizationWithSimplifySelection(object):
 		folder = os.path.join(self.working_dir, 'raw', 'ob')
 		list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
 		                                                                    extensions=['tiff', 'tif'])
-
-		self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files)
+		self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files,
+		                                                                             label='ob')
 
 	def select_folder(self, message="", next_function=None):
-		folder_widget = fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
+		folder_widget = myfileselector.MyFileSelectorPanel(instruction='select {} folder'.format(message),
 		                                               start_dir=self.working_dir,
 		                                               next=next_function,
 		                                               type='directory',
@@ -183,7 +195,8 @@ class NormalizationWithSimplifySelection(object):
 		folder = os.path.join(self.working_dir, 'raw', 'df')
 		list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
 		                                                                    extensions=['tiff', 'tif'])
-		self.df_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_df_files)
+		self.df_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_df_files,
+		                                                                             label='df')
 
 	def match_files(self):
 		"""This is where the files will be associated with their respective OB, DF by using the metadata"""
@@ -410,12 +423,13 @@ class NormalizationWithSimplifySelection(object):
 
 			first_sample_image = current_acquisition_config_dict['first_images']['sample']
 			first_ob_image = current_acquisition_config_dict['first_images']['ob']
-			delta_time_before = first_sample_image['time_stamp'] - first_ob_image['time_stamp']
+
+			delta_time_before = first_sample_image.get('time_stamp', 0) - first_ob_image.get('time_stamp', 0)
 			_time_range_s_before = delta_time_before if delta_time_before > 0 else 0
 
 			last_sample_image = current_acquisition_config_dict['last_images']['sample']
 			last_ob_image = current_acquisition_config_dict['last_images']['ob']
-			delta_time_after = last_ob_image['time_stamp'] - last_sample_image['time_stamp']
+			delta_time_after = last_ob_image.get('time_stamp', 0) - last_sample_image.get('time_stamp', 0)
 			_time_range_s_after = delta_time_after if delta_time_after > 0 else 0
 
 			_final_full_master_dict[_acquisition][_config]['time_range_s']['before'] = _time_range_s_before
@@ -503,6 +517,13 @@ class NormalizationWithSimplifySelection(object):
 		list_ob = _make_list_basename_file(list_name='list_ob')
 		list_df = _make_list_basename_file(list_name='list_df')
 
+		# normalize or not this configuration
+		use_this_config_widget = widgets.Checkbox(description="Normalize this configuration",
+		                                          value=True,
+		                                          layout=widgets.Layout(width="100%"))
+		use_this_config_widget.observe(self.update_use_this_config_widget, names='value')
+		config_widgets_id_dict['use_this_config'] = use_this_config_widget
+
 		# use custom time range check box
 		check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
 		                                             value=False,
@@ -583,7 +604,8 @@ class NormalizationWithSimplifySelection(object):
 		config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
 		config_widgets_id_dict['list_of_df'] = df_list_of_runs.children[1]
 
-		verti_layout = widgets.VBox([hori_layout1,
+		verti_layout = widgets.VBox([use_this_config_widget,
+		                             hori_layout1,
 		                             hori_layout2,
 		                             metadata_table_label,
 		                             metadata_table,
@@ -596,7 +618,7 @@ class NormalizationWithSimplifySelection(object):
 		max_time_before = 0
 
 		first_sample_image_time_stamp = dict_config['first_images']['sample']['time_stamp']
-		first_ob_image_time_stamp = dict_config['first_images']['ob']['time_stamp']
+		first_ob_image_time_stamp = dict_config['first_images']['ob'].get('time_stamp', 0)
 
 		if first_ob_image_time_stamp > first_sample_image_time_stamp:
 			max_time_before = 0
@@ -606,7 +628,7 @@ class NormalizationWithSimplifySelection(object):
 		max_time_after = 0
 
 		last_sample_image_time_stamp = dict_config['last_images']['sample']['time_stamp']
-		last_ob_image_time_stamp = dict_config['last_images']['ob']['time_stamp']
+		last_ob_image_time_stamp = dict_config['last_images']['ob'].get('time_stamp', 0)
 
 		if last_ob_image_time_stamp < last_sample_image_time_stamp:
 			max_time_after = 0
@@ -629,8 +651,12 @@ class NormalizationWithSimplifySelection(object):
 
 		return [table_label, table]
 
-	def update_config_widgets(self, state):
+	def update_use_this_config_widget(self, state):
+		new_state = state['new']
+		[active_acquisition, active_config] = self.get_active_tabs()
+		self.config_tab_dict[active_acquisition][active_config]['normalize_this_config'] = new_state
 
+	def update_config_widgets(self, state):
 		if state['new'] is False:
 			# use all files
 			message = None
@@ -811,6 +837,7 @@ class NormalizationWithSimplifySelection(object):
 		_final_full_master_dict = self.final_full_master_dict
 		_config_tab_dict = self.config_tab_dict
 		_final_json_dict = {}
+
 		for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
 
 			_final_json_for_this_acquisition = {}
@@ -818,6 +845,7 @@ class NormalizationWithSimplifySelection(object):
 			_dict_of_this_acquisition = _final_full_master_dict[_acquisition]
 			for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
 				this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
+				normalize_flag = this_config_tab_dict['use_this_config']
 
 				_dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
 
@@ -851,7 +879,8 @@ class NormalizationWithSimplifySelection(object):
 
 				_final_json_for_this_acquisition[_config] = {'list_sample': list_sample,
 				                                             'list_df': list_df,
-				                                             'list_ob': list_ob_to_keep}
+				                                             'list_ob': list_ob_to_keep,
+				                                             'normalize_this_config': normalize_flag}
 
 			_final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
@@ -870,7 +899,7 @@ class NormalizationWithSimplifySelection(object):
 			_current_acquisition_dict = final_json[_name_acquisition]
 			for _name_config in _current_acquisition_dict.keys():
 				_current_config_dict = _current_acquisition_dict[_name_config]
-
+				normalize_this_config = _current_config_dict['normalize_this_config']
 				nbr_ob = len(_current_config_dict['list_ob'])
 				nbr_df = len(_current_config_dict['list_df'])
 				nbr_sample = len(_current_config_dict['list_sample'])
@@ -880,14 +909,15 @@ class NormalizationWithSimplifySelection(object):
 					config=_name_config,
 					nbr_sample=nbr_sample,
 					nbr_ob=nbr_ob,
-					nbr_df=nbr_df)
+					nbr_df=nbr_df,
+					normalize_this_config=normalize_this_config)
 
 		table += "</table>"
 		table_ui = widgets.HTML(table)
 		display(table_ui)
 
 	def select_output_folder(self):
-		self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(
+		self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(
 			instruction='select where to create the ' + \
 			            'normalized folders',
 			start_dir=self.working_dir,
@@ -896,7 +926,6 @@ class NormalizationWithSimplifySelection(object):
 			newdir_toolbar_button=True)
 
 	def normalization(self, output_folder):
-
 		self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
 
 		final_json = self.final_json_dict
@@ -904,7 +933,7 @@ class NormalizationWithSimplifySelection(object):
 
 		horizontal_layout = widgets.HBox([widgets.Label("Normalization progress",
 		                                                layout=widgets.Layout(width='20%')),
-		                                  widgets.IntProgress(max=number_of_normalization,
+		                                  widgets.IntProgress(max=number_of_normalization+1,
 		                                                      value=0,
 		                                                      layout=widgets.Layout(width='50%'))])
 		normalization_progress = horizontal_layout.children[1]
@@ -918,6 +947,11 @@ class NormalizationWithSimplifySelection(object):
 
 				list_ob = _current_config['list_ob']
 				if list_ob == []:
+					normalization_progress.value += 1
+					continue
+
+				if not _current_config['normalize_this_config'].value:
+					normalization_progress.value += 1
 					continue
 
 				list_sample = _current_config['list_sample']
@@ -946,6 +980,7 @@ class NormalizationWithSimplifySelection(object):
 
 		display(HTML('<span style="font-size: 20px; color:blue">Following folders have been created:</span>'))
 		for _folder in list_full_output_normalization_folder_name:
+			_folder = _folder if _folder else "None"
 			display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + '</span>'))
 
 	@staticmethod
@@ -959,11 +994,16 @@ class NormalizationWithSimplifySelection(object):
 		return full_basename_sample_folder
 
 	@staticmethod
-	def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0):
-		if nbr_ob > 0:
-			status_string = "<th style='color:#odbc2e'>OK</th>"
+	def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0,
+	                                     normalize_this_config=True):
+
+		if not normalize_this_config.value:
+			status_string = "<th style='color:#ff0000'>SKIP!</th>"
 		else:
-			status_string = "<th style='color:#ff0000'>Missing OB!</th>"
+			if nbr_ob > 0:
+				status_string = "<th style='color:#odbc2e'>OK</th>"
+			else:
+				status_string = "<th style='color:#ff0000'>Missing OB!</th>"
 
 		_row = ""
 		_row = "<tr><th>{}</th><th>{}</th><th>{}</th><th>{}</th><th>{}</th>{}</tr>". \
@@ -1044,7 +1084,7 @@ class NormalizationWithSimplifySelection(object):
 		return new_master_dictionary
 
 	@staticmethod
-	def retrieve_metadata(list_of_files=[], display_infos=False):
+	def retrieve_metadata(list_of_files=[], display_infos=False, label=""):
 		"""
 		dict = {'file1': {'metadata1_key': {'value': value, 'name': name},
 						  'metadata2_key': {'value': value, 'name': name},
@@ -1054,7 +1094,7 @@ class NormalizationWithSimplifySelection(object):
 				...
 				}
 		"""
-		_dict = file_handler.retrieve_time_stamp(list_of_files)
+		_dict = file_handler.retrieve_time_stamp(list_of_files, label=label)
 		_time_metadata_dict = NormalizationWithSimplifySelection._reformat_dict(dictionary=_dict)
 
 		_beamline_metadata_dict = NormalizationWithSimplifySelection.retrieve_beamline_metadata(list_of_files)

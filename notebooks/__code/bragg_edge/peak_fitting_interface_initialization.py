@@ -17,6 +17,7 @@ from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 
 
 class Initialization:
+
     distance_detector_sample = 1300  # m
     detector_offset = 6500  # micros
 

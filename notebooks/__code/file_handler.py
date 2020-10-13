@@ -339,7 +339,7 @@ def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
     return unix_epoch_timestamp
 
 
-def retrieve_time_stamp(list_images):
+def retrieve_time_stamp(list_images, label=""):
     [_, ext] = os.path.splitext(list_images[0])
     if ext.lower() in ['.tiff', '.tif']:
         ext = 'tif'
@@ -348,7 +348,8 @@ def retrieve_time_stamp(list_images):
     else:
         raise ValueError
 
-    box = widgets.HBox([widgets.Label("Retrieving Time Stamp",
+    message = "Retrieving time stamp of {}".format(label) if label else "Retrieving time stamp"
+    box = widgets.HBox([widgets.Label(message,
                                       layout=widgets.Layout(width='20%')),
                         widgets.IntProgress(min=0,
                                             max=len(list_images),

@@ -681,7 +681,7 @@ class Interface(QMainWindow):
         o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='low')
         o_fit.run_kropff_low_lambda(update_table_ui=True)
- #       self.update_fitting_plot()
+        self.update_fitting_plot()
         self.update_kropff_fit_table_graph(fit_region='low')
 
     def kropff_fit_bragg_peak_region_clicked(self):
@@ -692,7 +692,7 @@ class Interface(QMainWindow):
         o_fit = KropffFittingJobHandler(parent=self)
         o_fit.prepare(kropff_tooldbox='bragg_peak')
         o_fit.run_bragg_peak(update_table_ui=True, list_row_to_fit=list_row_to_fit)
-  #      self.update_fitting_plot()
+        self.update_fitting_plot()
         self.update_kropff_fit_table_graph(fit_region='bragg_peak')
 
     def update_kropff_fit_table_graph(self, fit_region='high'):
