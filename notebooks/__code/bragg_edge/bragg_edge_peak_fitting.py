@@ -660,15 +660,15 @@ class Interface(QMainWindow):
         self.ui.eventProgress.setValue(3)
         QtGui.QGuiApplication.processEvents()
 
-        # self.kropff_fit_bragg_peak_region_clicked()
-        # self.ui.eventProgress.setValue(4)
-        # QtGui.QGuiApplication.processEvents()
-        #
-        # self.ui.eventProgress.setVisible(False)
-        # self.ui.statusbar.setStyleSheet("color: blue")
-        # self.ui.statusbar.showMessage("Fitting Done!", 1000)  # 10s
-        #
-        # self.fitting_procedure_started['kropff'] = True
+        self.kropff_fit_bragg_peak_region_clicked()
+        self.ui.eventProgress.setValue(4)
+        QtGui.QGuiApplication.processEvents()
+
+        self.ui.eventProgress.setVisible(False)
+        self.ui.statusbar.setStyleSheet("color: blue")
+        self.ui.statusbar.showMessage("Fitting Done!", 1000)  # 10s
+
+        self.fitting_procedure_started['kropff'] = True
 
     def kropff_fit_high_lambda_region_clicked(self):
         self.switch_fitting_axis_to('lambda')
