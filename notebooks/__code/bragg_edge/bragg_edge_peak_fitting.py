@@ -550,8 +550,6 @@ class Interface(QMainWindow):
         self.kropff_fitting_range['bragg_peak'] = [left_index, right_index]
         self.bragg_peak_selection_range = [left_index, right_index]
 
-        print(f"left: {global_left_index}", end=" | ")
-
         o_kropff = Kropff(parent=self)
         o_kropff.update_roi_labels()
 
