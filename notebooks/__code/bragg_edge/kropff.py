@@ -276,6 +276,7 @@ class Kropff:
 
                 if self.parent.fitting_peak_ui:
                     self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
+
                 self.parent.fitting_peak_ui = pg.LinearRegionItem(values=peak_range,
                                                                   orientation=None,
                                                                   brush=None,

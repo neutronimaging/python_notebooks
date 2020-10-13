@@ -19,11 +19,12 @@ class KropffFittingJobHandler:
         """
         :param kropff_tooldbox: 'high', 'low', 'bragg_peak'
         """
-        if kropff_tooldbox == 'bragg_peak':
-            fitting_range = [self.parent.kropff_fitting_range['low'][0],
-                             self.parent.kropff_fitting_range['high'][1]]
-        else:
-            fitting_range = self.parent.kropff_fitting_range[kropff_tooldbox]
+        # if kropff_tooldbox == 'bragg_peak':
+        #     fitting_range = [self.parent.kropff_fitting_range['low'][0],
+        #                      self.parent.kropff_fitting_range['high'][1]]
+        # else:
+        #     fitting_range = self.parent.kropff_fitting_range[kropff_tooldbox]
+        fitting_range = self.parent.kropff_fitting_range[kropff_tooldbox]
 
         xaxis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
         [left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
