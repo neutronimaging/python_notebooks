@@ -411,9 +411,9 @@ class Interface(QMainWindow):
                 o_kropff.fill_table_with_fitting_information()
         # o_march.fill_tables_with_fitting_information()
 
-        if initialize_region:
-            o_march_fitting = MarchDollaseFittingJobHandler(parent=self)
-            # o_march_fitting.initialize_fitting_input_dictionary()
+        # if initialize_region:
+        #     o_march_fitting = MarchDollaseFittingJobHandler(parent=self)
+        #     o_march_fitting.initialize_fitting_input_dictionary()
 
         self.ui.tabWidget.setTabEnabled(1, True)
         self.ui.actionExport.setEnabled(True)
@@ -493,11 +493,11 @@ class Interface(QMainWindow):
 
     def high_lambda_table_clicked(self):
         self.update_fitting_plot()
-        self.fitting_range_changed()
+        # self.fitting_range_changed()
 
     def low_lambda_table_clicked(self):
         self.update_fitting_plot()
-        self.fitting_range_changed()
+        # self.fitting_range_changed()
 
     def bragg_peak_table_clicked(self):
         self.update_fitting_plot()
@@ -542,6 +542,7 @@ class Interface(QMainWindow):
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
         global_left_index = find_nearest_index(array=xaxis, value=global_left_range)
+        global_left_index = 0 # for debugging
         global_right_index = find_nearest_index(array=xaxis, value=global_right_range)
 
         self.kropff_fitting_range['high'] = [right_index, global_right_index]
@@ -653,19 +654,19 @@ class Interface(QMainWindow):
         self.ui.eventProgress.setValue(2)
         QtGui.QGuiApplication.processEvents()
 
-        # self.kropff_fit_low_lambda_region_clicked()
-        # self.ui.eventProgress.setValue(3)
-        # QtGui.QGuiApplication.processEvents()
-		#
-        # self.kropff_fit_bragg_peak_region_clicked()
-        # self.ui.eventProgress.setValue(4)
-        # QtGui.QGuiApplication.processEvents()
-		#
-        # self.ui.eventProgress.setVisible(False)
-        # self.ui.statusbar.setStyleSheet("color: blue")
-        # self.ui.statusbar.showMessage("Fitting Done!", 1000)  # 10s
-		#
-        # self.fitting_procedure_started['kropff'] = True
+        self.kropff_fit_low_lambda_region_clicked()
+        self.ui.eventProgress.setValue(3)
+        QtGui.QGuiApplication.processEvents()
+
+        self.kropff_fit_bragg_peak_region_clicked()
+        self.ui.eventProgress.setValue(4)
+        QtGui.QGuiApplication.processEvents()
+
+        self.ui.eventProgress.setVisible(False)
+        self.ui.statusbar.setStyleSheet("color: blue")
+        self.ui.statusbar.showMessage("Fitting Done!", 1000)  # 10s
+
+        self.fitting_procedure_started['kropff'] = True
 
     def kropff_fit_high_lambda_region_clicked(self):
         self.switch_fitting_axis_to('lambda')
