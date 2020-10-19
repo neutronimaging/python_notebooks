@@ -9,7 +9,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
 
 	def setup_method(self):
 		data_path = Path(__file__).parent
-		self.ascii_file_name = Path(data_path) / 'data' / 'bragg_edge_fitting_all_regions.txt'
+		self.ascii_file_name = Path(data_path) / 'data' / 'ascii' / 'bragg_edge_fitting_all_regions.txt'
 
 	def test_file_does_not_exist(self):
 		ascii_file = 'does_not_exist'

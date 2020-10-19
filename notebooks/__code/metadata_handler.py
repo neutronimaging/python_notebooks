@@ -1,6 +1,7 @@
 from PIL import Image
 import datetime
 import os
+from collections import OrderedDict
 
 
 class MetadataHandler(object):
@@ -79,6 +80,11 @@ class MetadataHandler(object):
         image = Image.open(filename)
         metadata = image.tag_v2
         result = {}
+        if list_metadata == []:
+            for _key in metadata.keys():
+                result[_key] = metadata.get(_key)
+            return result
+
         for _meta in list_metadata:
             result[_meta] = metadata.get(_meta.value)
 
@@ -90,11 +96,43 @@ class MetadataHandler(object):
         if list_files == []:
             return {}
 
-        _dict = {}
+        _dict = OrderedDict()
         for _file in list_files:
             _meta = MetadataHandler.get_metadata(filename=_file,
                                                  list_metadata=list_metadata,
                                                  using_enum_object=using_enum_object)
+            _dict[_file] = _meta
+
+        return _dict
+
+    @staticmethod
+    def get_value_of_metadata_key(filename='', list_key=None):
+        if filename == "":
+            return {}
+
+        image = Image.open(filename)
+        metadata = image.tag_v2
+        result = {}
+        if list_key == []:
+            for _key in metadata.keys():
+                result[_key] = metadata.get(_key)
+            return result
+
+        for _meta in list_key:
+            result[_meta] = metadata.get(_meta)
+
+        image.close()
+        return result
+
+    @staticmethod
+    def retrieve_value_of_metadata_key(list_files=[], list_key=[]):
+        if list_files == []:
+            return {}
+
+        _dict = OrderedDict()
+        for _file in list_files:
+            _meta = MetadataHandler.get_value_of_metadata_key(filename=_file,
+                                                              list_key=list_key)
             _dict[_file] = _meta
 
         return _dict
