@@ -2,6 +2,7 @@ from collections import OrderedDict
 import numpy as np
 
 from __code.metadata_handler import MetadataHandler
+from __code._utilities.list import are_those_two_list_identical_within_tolerance
 
 
 class GroupImagesByCycle:
@@ -59,7 +60,9 @@ class GroupImagesByCycle:
                 _value = np.float(_file_dictionary[_key])
                 list_of_metadata_for_that_file.append(_value)
 
-            if not (list_of_metadata_for_that_file in full_list_of_metadata_list):
+            if not are_those_two_list_identical_within_tolerance(list_of_metadata_for_that_file,
+                                                                 full_list_of_metadata_list,
+                                                                 tolerance=self.tolerance_value):
                 full_list_of_metadata_list.append(list_of_metadata_for_that_file)
                 list_files_in_that_group.append(_file)
             else:
