@@ -7,10 +7,17 @@ class TestMetadataHandler:
 
     def setup_method(self):
         data_path = Path(__file__).parent
-        self.tiff_path = Path(data_path) / 'data' / 'images' / 'tiff'
-        list_of_files = glob.glob(str(self.tiff_path) + '/*.tif')
+
+        tiff_path = Path(data_path) / 'data' / 'images' / 'tiff'
+        list_of_files = glob.glob(str(tiff_path) + '/*.tif')
         list_of_files.sort()
         self.list_of_files = list_of_files
+
+        full_tiff_path = Path(data_path) / 'data' / 'images' / 'data_with_acquisition_cycle'
+        full_list_of_files = glob.glob(str(full_tiff_path) + '/*.tif')
+        full_list_of_files.sort()
+        self.full_list_of_files = full_list_of_files
+
         self.list_of_metadata_key = [65045, 65041]
 
     def test_create_master_dictionary(self):
@@ -54,3 +61,11 @@ class TestMetadataHandler:
             _returned = dict_returned[_file]
             for _key in _expected.keys():
                 assert _expected[_key] == _returned[_key]
+
+    def test_group_dictionary(self):
+        o_group = GroupImagesByCycle(list_of_files=self.full_list_of_files,
+                                     list_of_metadata_key=self.list_of_metadata_key)
+        o_group.create_master_dictionary()
+        o_group.group()
+
+        print(o_group.dictionary_of_groups.keys())
