@@ -60,6 +60,9 @@ class GroupImagesByCycle:
                 _value = np.float(_file_dictionary[_key])
                 list_of_metadata_for_that_file.append(_value)
 
+            print(f"list_of_metadata_for_that_file: {list_of_metadata_for_that_file}")
+            print(f"full_list_of_metadata_list: {full_list_of_metadata_list}")
+
             if not are_those_two_lists_of_lists_identical_within_tolerance(list_of_metadata_for_that_file,
                                                                            full_list_of_metadata_list,
                                                                            tolerance=self.tolerance_value):
