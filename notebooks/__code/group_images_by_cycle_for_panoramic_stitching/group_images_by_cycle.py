@@ -26,8 +26,9 @@ class GroupImagesByCycle:
         self.group()
 
     def create_master_dictionary(self):
+        list_key_value = self.list_of_metadata_key_value_number
         master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(list_files=self.list_of_files,
-                                                                           list_key=self.list_of_metadata_key_value_number)
+                                                                           list_key=list_key_value)
 
         clean_master_dictionary = OrderedDict()
         list_metadata_key = []
@@ -69,7 +70,7 @@ class GroupImagesByCycle:
                 self.dictionary_of_groups[group_index] = list_files_in_that_group
                 list_files_in_that_group = [_file]
                 full_list_of_metadata_list = list()
+                full_list_of_metadata_list.append(list_of_metadata_for_that_file)
                 group_index += 1
 
         self.dictionary_of_groups[group_index] = list_files_in_that_group
-

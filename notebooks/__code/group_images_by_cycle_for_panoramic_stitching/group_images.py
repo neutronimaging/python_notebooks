@@ -13,6 +13,7 @@ from NeuNorm.normalization import Normalization
 from __code.ipywe import fileselector
 from __code import file_handler
 from __code.metadata_handler import MetadataHandler
+from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
@@ -57,12 +58,18 @@ class GroupImages(object):
         selected = os.path.abspath(selected)
         self.folder_selected = selected
         self.list_images = self.get_list_of_images()
+        self.record_file_extension(filename=self.list_images[0])
 
         selected = os.path.abspath(selected)
         display(GroupImages.format_html_message('Input folder', selected))
         display(GroupImages.format_html_message('Nbr files', str(len(self.list_images))))
         if not ('tif' in self.file_extension):
             display(GroupImages.format_html_message('This notebook only works with TIFF images!', is_error=True))
+            return
+
+        # group the images
+        self.group_images()
+        self.display_groups()
 
     def record_file_extension(self, filename=''):
         self.file_extension = file_handler.get_file_extension(filename)
@@ -71,6 +78,48 @@ class GroupImages(object):
         list_of_images = glob.glob(self.folder_selected + "/*.tif*")
         list_of_images.sort()
         return list_of_images
+
+    def group_images(self):
+        o_group = GroupImagesByCycle(list_of_files=self.list_images,
+                                     list_of_metadata_key=self.default_metadata_to_select,
+                                     tolerance_value=METADATA_ERROR)
+        o_group.run()
+        self.dictionary_of_groups = o_group.dictionary_of_groups
+
+    def display_groups(self):
+        dictionary_of_groups = self.dictionary_of_groups
+        nbr_groups = len(self.dictionary_of_groups)
+
+        group_label = ["Group # {}".format(_index) for _index in np.arange(nbr_groups)]
+        vbox_left = widgets.VBox([widgets.Label("Select Group:"),
+                                  widgets.Select(options=group_label,
+                                                 layout=widgets.Layout(width="150px",
+                                                                       height="300px"))])
+        select_group_ui = vbox_left.children[1]
+        select_group_ui.observe(self.group_index_changed, 'value')
+        vbox_right = widgets.VBox([widgets.Label("List of Files:"),
+                                   widgets.Select(options=dictionary_of_groups[0],
+                                                  layout=widgets.Layout(width="600px",
+                                                                        height="300px"))])
+        list_of_files_ui = vbox_right.children[1]
+        list_of_files_ui.observe(self.list_of_files_changed, 'value')
+        self.list_of_files_ui = list_of_files_ui
+
+        hbox = widgets.HBox([vbox_left, vbox_right])
+        display(hbox)
+
+    def group_index_changed(self, value):
+        new_group_selected = value['new']
+        _, new_group_index = new_group_selected.split(" # ")
+        new_list_of_files = self.dictionary_of_groups[np.int(new_group_index)]
+        self.list_of_files_ui.options = new_list_of_files
+
+    def list_of_files_changed(self, value):
+        # print(value)
+        pass
+
+
+
 
     def display_metadata_list(self):
         self.list_images = self.get_list_of_images()

@@ -75,3 +75,9 @@ class TestMetadataHandler:
 
         for _file_returned, _file_expected in zip(o_group.dictionary_of_groups[0], expected_list_group0):
             assert _file_expected == _file_returned
+
+        expected_list_group1 = self.full_list_of_files[9:18]
+        assert len(o_group.dictionary_of_groups[1]) == len(expected_list_group1)
+
+        for _file_returned, _file_expected in zip(o_group.dictionary_of_groups[1], expected_list_group1):
+            assert _file_expected == _file_returned
