@@ -9,6 +9,8 @@ def are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.01)
     :param tolerance:
     :return:
     """
+    if (not (type(list1) == list)) or (not (type(list2) == list)):
+        raise TypeError("first 2 parameters passed should be list!")
 
     if len(list1) != len(list2):
         return False
@@ -31,6 +33,9 @@ def are_those_two_lists_of_lists_identical_within_tolerance(list1, list2, tolera
     :param tolerance:
     :return:
     """
+    if (not (type(list1) == list)) or (not (type(list2) == list)):
+        raise TypeError("first 2 parameters passed should be list!")
+
     if len(list1) != len(list2):
         return False
 

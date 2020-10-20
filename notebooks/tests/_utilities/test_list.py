@@ -1,7 +1,14 @@
+import pytest
+
 from __code._utilities import list
 
 
 def test_are_those_two_lists_identical_within_tolerance():
+    list1 = 10
+    list2 = [[1, 2]]
+    with pytest.raises(TypeError):
+        list.are_those_two_lists_of_lists_identical_within_tolerance(list1, list2)
+
     list1 = [1, 2]
     list2 = [1, 2, 3]
     assert not list.are_those_two_lists_identical_within_tolerance(list1, list2)
@@ -38,6 +45,11 @@ def test_are_those_two_lists_identical_within_tolerance():
     assert list.are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.15)
 
 def test_are_those_two_lists_of_lists_identical_within_tolerance():
+    list1 = 10
+    list2 = [[1, 2]]
+    with pytest.raises(TypeError):
+        list.are_those_two_lists_of_lists_identical_within_tolerance(list1, list2)
+
     list1 = [[1, 2]]
     list2 = [[1, 2], [3, 4]]
     assert not list.are_those_two_lists_of_lists_identical_within_tolerance(list1, list2)
