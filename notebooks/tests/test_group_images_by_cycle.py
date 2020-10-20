@@ -68,4 +68,10 @@ class TestMetadataHandler:
         o_group.create_master_dictionary()
         o_group.group()
 
-        print(o_group.dictionary_of_groups.keys())
+        assert len(o_group.dictionary_of_groups.keys()) == 3
+
+        expected_list_group0 = self.full_list_of_files[:9]
+        assert len(o_group.dictionary_of_groups[0]) == len(expected_list_group0)
+
+        for _file_returned, _file_expected in zip(o_group.dictionary_of_groups[0], expected_list_group0):
+            assert _file_expected == _file_returned
