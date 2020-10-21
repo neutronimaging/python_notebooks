@@ -1,10 +1,10 @@
 {
-    'vertical_motor_pv': {
-        'key': 65040,
-        'name': 'MotLiftTable.RBV'
+    "vertical_motor_pv": {
+        "key": 65041,
+        "name": "MotLiftTable"
     },
-    'horizontal_motor_pv': {
-        'key': 65044,
-        'name': 'MotLongAxis.RBV'
+    "horizontal_motor_pv": {
+        "key": 65045,
+        "name": "MotLongAxis"
     }
 }
