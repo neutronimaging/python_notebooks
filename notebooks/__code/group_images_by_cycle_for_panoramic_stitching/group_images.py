@@ -4,6 +4,7 @@ from IPython.core.display import display, HTML
 import numpy as np
 import glob
 import json
+from collections import OrderedDict
 
 
 from __code.ipywe import fileselector
@@ -15,6 +16,7 @@ from __code.file_handler import make_or_reset_folder, copy_files_to_folder
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
 CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config.json')
+NEW_FILE_NAME_PREFIX = "image_"
 
 
 class GroupImages:
@@ -103,7 +105,22 @@ class GroupImages:
                                      tolerance_value=METADATA_ERROR)
         o_group.run()
         self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
+        dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_unsorted)
+        self.dictionary_of_groups_new_names = dict_new_names
         self.dictionary_file_vs_metadata = o_group.master_dictionary
+
+    @staticmethod
+    def make_dictionary_of_groups_new_names(dictionary_of_group_unsorted):
+        general_index = 0
+        dict_new_names = OrderedDict()
+        for _group_index in dictionary_of_group_unsorted.keys():
+            nbr_files = len(dictionary_of_group_unsorted[_group_index])
+            list_new_names = [NEW_FILE_NAME_PREFIX + "{:04d}.tiff".format(_index)
+                              for _index
+                              in np.arange(general_index, general_index + nbr_files)]
+            dict_new_names[_group_index] = list_new_names
+            general_index += nbr_files
+        return dict_new_names
 
     def display_groups(self):
         nbr_groups = len(self.dictionary_of_groups_unsorted)
@@ -211,17 +228,27 @@ class GroupImages:
         self.select_group_ui = hori1.children[1]
         self.select_group_ui.observe(self.selection_of_group_changed, 'value')
 
-        vbox3 = widgets.VBox([widgets.Label("Old name -> new name",
+        vbox3 = widgets.VBox([widgets.Label("Old name",
                                             layout=widgets.Layout(width="200px")),
                               widgets.Select(options="",
-                                             layout=widgets.Layout(width="800px",
+                                             layout=widgets.Layout(width="400px",
                                                                    height="300px"))])
-        self.old_name_new_name_ui = vbox3.children[1]
-        verti2 = widgets.VBox([hori1, vbox3])
-        display(verti2)
-        self.update_old_name_new_name()
 
-    def update_old_name_new_name(self):
+        vbox4 = widgets.VBox([widgets.Label("New name",
+                                            layout=widgets.Layout(width="200px")),
+                              widgets.Select(options="",
+                                             layout=widgets.Layout(width="400px",
+                                                                   height="300px"))])
+
+        hori2 = widgets.HBox([vbox3, vbox4])
+        self.old_name_ui = vbox3.children[1]
+        self.new_name_ui = vbox4.children[1]
+        verti2 = widgets.VBox([hori1, hori2])
+        display(verti2)
+        self.update_old_name_order()
+        self.selection_of_group_changed()
+
+    def update_old_name_order(self):
         how_to_sort_within_cycle = self.how_to_sort_within_cycle
         o_sort = SortImagesWithinEachCycle(dict_groups_filename=self.dictionary_of_groups_unsorted,
                                            dict_filename_metadata=self.dictionary_file_vs_metadata)
@@ -231,7 +258,7 @@ class GroupImages:
         group_number_selected = self._get_group_number_selected()
         list_files_sorted = self.dictionary_of_groups_sorted[group_number_selected]
         short_list_files_sorted = [os.path.basename(_file) for _file in list_files_sorted]
-        self.old_name_new_name_ui.options = short_list_files_sorted
+        self.old_name_ui.options = short_list_files_sorted
 
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
@@ -242,31 +269,34 @@ class GroupImages:
         new_value = value['new']
         is_ascending = True if new_value == 'Ascending' else False
         self.how_to_sort_within_cycle['1st_variable']['is_ascending'] = is_ascending
-        self.update_old_name_new_name()
+        self.update_old_name_order()
 
     def sorting_algorithm_variable2_changed(self, value):
         new_value = value['new']
         is_ascending = True if new_value == 'Ascending' else False
         self.how_to_sort_within_cycle['2nd_variable']['is_ascending'] = is_ascending
-        self.update_old_name_new_name()
+        self.update_old_name_order()
 
     def name_of_first_metadata_changed(self, value):
         old_value = value['old']
         new_value = value['new']
         self.how_to_sort_within_cycle['1st_variable']['name'] = new_value
         self.name_of_second_metadata_ui.value = old_value
-        self.update_old_name_new_name()
+        self.update_old_name_order()
 
     def name_of_second_metadata_changed(self, value):
         old_value = value['old']
         new_value = value['new']
         self.how_to_sort_within_cycle['2nd_variable']['name'] = new_value
         self.name_of_first_metadata_ui.value = old_value
-        self.update_old_name_new_name()
+        self.update_old_name_order()
 
-    def selection_of_group_changed(self, value):
-        self.update_old_name_new_name()
-        # print(self.how_to_sort_within_cycle)
+    def selection_of_group_changed(self, value=None):
+        self.update_old_name_order()
+        group_index = self._get_group_number_selected()
+        dict_new_names = self.dictionary_of_groups_new_names
+        list_new_names = dict_new_names[group_index]
+        self.new_name_ui.options = list_new_names
 
     def select_output_folder(self):
         output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
