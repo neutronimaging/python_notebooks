@@ -6,7 +6,7 @@ import glob
 class TestGroupImagesByCycle:
 
     def setup_method(self):
-        data_path = Path(__file__).parent
+        data_path = Path(__file__).parent.parent
 
         tiff_path = Path(data_path) / 'data' / 'images' / 'tiff'
         list_of_files = glob.glob(str(tiff_path) + '/*.tif')
