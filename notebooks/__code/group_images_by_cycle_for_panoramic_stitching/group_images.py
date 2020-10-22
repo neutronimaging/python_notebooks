@@ -9,6 +9,7 @@ import json
 from __code.ipywe import fileselector
 from __code import file_handler
 from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
+from __code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import SortImagesWithinEachCycle
 from __code.file_handler import make_or_reset_folder, copy_files_to_folder
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
@@ -27,6 +28,7 @@ class GroupImages:
                                 '2nd_variable': {'name': '',
                                                  'is_ascending': True},
                                 }
+    dictionary_of_groups_sorted = None
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
@@ -206,31 +208,35 @@ class GroupImages:
                                            layout=widgets.Layout(width="100px")),
                               widgets.Dropdown(options=self.list_group_label,
                                                layout=widgets.Layout(width="150px"))])
-        select_group_ui = hori1.children[1]
-        select_group_ui.observe(self.selection_of_group_changed, 'value')
+        self.select_group_ui = hori1.children[1]
+        self.select_group_ui.observe(self.selection_of_group_changed, 'value')
 
         vbox3 = widgets.VBox([widgets.Label("Old name -> new name",
                                             layout=widgets.Layout(width="200px")),
                               widgets.Select(options="",
-                                             layout=widgets.Layout(width="400px",
+                                             layout=widgets.Layout(width="800px",
                                                                    height="300px"))])
-        vbox4 = widgets.VBox([widgets.Label(self.metadata_name_to_select[0],
-                                            layout=widgets.Layout(width="150px")),
-                              widgets.Select(options="",
-                                             layout=widgets.Layout(width="200px"))])
-        vbox5 = widgets.VBox([widgets.Label(self.metadata_name_to_select[1],
-                                            layout=widgets.Layout(width="150px")),
-                              widgets.Select(options="",
-                                             layout=widgets.Layout(width="200px"))])
-        hori2 = widgets.HBox([vbox3, vbox4, vbox5])
-        verti2 = widgets.VBox([hori1, hori2])
+        self.old_name_new_name_ui = vbox3.children[1]
+        verti2 = widgets.VBox([hori1, vbox3])
         display(verti2)
+        self.update_old_name_new_name()
 
     def update_old_name_new_name(self):
         how_to_sort_within_cycle = self.how_to_sort_within_cycle
+        o_sort = SortImagesWithinEachCycle(dict_groups_filename=self.dictionary_of_groups_unsorted,
+                                           dict_filename_metadata=self.dictionary_file_vs_metadata)
+        o_sort.sort(dict_how_to_sort=how_to_sort_within_cycle)
+        self.dictionary_of_groups_sorted = o_sort.dict_groups_filename_sorted
 
+        group_number_selected = self._get_group_number_selected()
+        list_files_sorted = self.dictionary_of_groups_sorted[group_number_selected]
+        short_list_files_sorted = [os.path.basename(_file) for _file in list_files_sorted]
+        self.old_name_new_name_ui.options = short_list_files_sorted
 
-
+    def _get_group_number_selected(self):
+        group_string = self.select_group_ui.value
+        _, group_number = group_string.split(" # ")
+        return np.int(group_number)
 
     def sorting_algorithm_variable1_changed(self, value):
         new_value = value['new']
@@ -260,11 +266,7 @@ class GroupImages:
 
     def selection_of_group_changed(self, value):
         self.update_old_name_new_name()
-        print(self.how_to_sort_within_cycle)
-
-
-
-
+        # print(self.how_to_sort_within_cycle)
 
     def select_output_folder(self):
         output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
