@@ -11,7 +11,7 @@ from __code.ipywe import fileselector
 from __code import file_handler
 from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
 from __code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import SortImagesWithinEachCycle
-from __code.file_handler import make_or_reset_folder, copy_files_to_folder
+from __code.file_handler import make_or_reset_folder, copy_and_rename_files_to_folder
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
@@ -310,9 +310,13 @@ class GroupImages:
         if not output_folder:
             return
 
+        output_folder_basename = os.path.basename(self.folder_selected) + "_sorted_by_cycle"
+        output_folder = os.path.join(output_folder, output_folder_basename)
         output_folder = os.path.abspath(output_folder)
-        dictionary_of_groups_unsorted = self.dictionary_of_groups_unsorted
-        nbr_groups = len(dictionary_of_groups_unsorted.keys())
+
+        dictionary_of_groups_sorted = self.dictionary_of_groups_sorted
+        dictionary_of_groups_new_names = self.dictionary_of_groups_new_names
+        nbr_groups = len(dictionary_of_groups_sorted.keys())
         hbox = widgets.HBox([widgets.IntProgress(value=0,
                                                  min=0,
                                                  max=nbr_groups),
@@ -321,16 +325,17 @@ class GroupImages:
         label_ui = hbox.children[1]
         display(hbox)
 
-        for _group_index in dictionary_of_groups_unsorted.keys():
+        for _group_index in dictionary_of_groups_sorted.keys():
             full_folder_name = os.path.join(output_folder, 'group#{}'.format(_group_index))
             make_or_reset_folder(full_folder_name)
-            copy_files_to_folder(list_files=dictionary_of_groups_unsorted[_group_index],
-                                 output_folder=full_folder_name)
+            copy_and_rename_files_to_folder(list_files=dictionary_of_groups_sorted[_group_index],
+                                            new_list_files_names=dictionary_of_groups_new_names[_group_index],
+                                            output_folder=full_folder_name)
             progress_ui.value = _group_index + 1
             label_ui.value = "{}/{}".format(_group_index+1, nbr_groups)
 
         hbox.close()
         message = "{} folders have been created".format(nbr_groups)
         display(GroupImages.format_html_message(pre_message=message,
-                                                spacer="in",
+                                                spacer=" in ",
                                                 message=output_folder))
