@@ -3,7 +3,7 @@ from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle 
 import glob
 
 
-class TestMetadataHandler:
+class TestGroupImagesByCycle:
 
     def setup_method(self):
         data_path = Path(__file__).parent
