@@ -7,6 +7,8 @@ from __code._utilities.folder import get_list_of_folders_with_specified_file_typ
 from __code._utilities.string import format_html_message
 from __code import load_ui
 
+from __code.panoramic_stitching.gui_initialization import GuiInitialization
+
 
 class PanoramicStitching:
 
@@ -40,7 +42,7 @@ class PanoramicStitching:
                                     spacer=""))
 
         o_interface = Interface(working_dir=self.working_dir, list_folders=final_list_folders)
-
+        o_interface.show()
 
 class Interface(QMainWindow):
 
@@ -52,7 +54,9 @@ class Interface(QMainWindow):
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
                                                  'ui_panoramic_stitching_manual.ui'))
-        print(ui_full_path)
         self.ui = load_ui(ui_full_path, baseinstance=self)
-        self.setWindowTitle("Panoramic Stitching")
+        self.setWindowTitle("Semi-Automatic Panoramic Stitching")
+
+        o_init = GuiInitialization(parent=self)
+        o_init.run_all()
 

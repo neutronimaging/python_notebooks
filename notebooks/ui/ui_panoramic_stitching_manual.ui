@@ -16,16 +16,16 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
-     <widget class="QSplitter" name="splitter_3">
+     <widget class="QSplitter" name="full_splitter">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QSplitter" name="splitter_2">
+      <widget class="QSplitter" name="display_splitter">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
        <widget class="QWidget" name="stitched_widget" native="true"/>
-       <widget class="QSplitter" name="splitter">
+       <widget class="QSplitter" name="profile_display_splitter">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
