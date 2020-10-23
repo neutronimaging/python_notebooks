@@ -1,6 +1,6 @@
 import pytest
 
-from __code import time_utility
+from notebooks.__code import time_utility
 
 
 class TestAbsoluteTimeHandler:

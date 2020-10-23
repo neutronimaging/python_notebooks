@@ -21,14 +21,14 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.bragg_edge.bragg_edge_peak_fitting import BraggEdge, Interface
+from __code.bragg_edge.bragg_edge_peak_fitting_evaluation import BraggEdge, Interface
 
 system.System.select_working_dir(facility='SNS', instrument='VENUS')
 from __code.__all import custom_style
 custom_style.style()
 
-# from plotly.offline import plot, init_notebook_mode, iplot
-# init_notebook_mode()
+from plotly.offline import plot, init_notebook_mode, iplot
+init_notebook_mode()
 # -
 
 # ## Prepare UI engine 
@@ -70,7 +70,7 @@ from __code.bragg_edge.bragg_edge_peak_fitting import BraggEdge, Interface
 
 # %gui qt
 
-data_path = "/Users/j35/IPTS/VENUS/IPTS-25778_normalized"
+data_path = "/Users/j35/IPTS/VENUS/shared/testing_normalized/"
 import glob
 import os
 list_data = glob.glob(data_path + "*.tif")
