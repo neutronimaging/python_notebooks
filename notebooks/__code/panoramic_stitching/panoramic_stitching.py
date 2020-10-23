@@ -46,6 +46,9 @@ class PanoramicStitching:
 
 class Interface(QMainWindow):
 
+    horizontal_profile_plot = None
+    vertical_profile_plot = None
+
     def __init__(self, parent=None, working_dir=None, list_folders=None):
         display(format_html_message(pre_message="Check UI that popped up \
                     (maybe hidden behind this browser!)",
