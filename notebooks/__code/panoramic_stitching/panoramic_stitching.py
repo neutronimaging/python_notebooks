@@ -41,15 +41,21 @@ class PanoramicStitching:
         display(format_html_message(pre_message="Notebook is about to work with {} folders!".format(nbr_folder),
                                     spacer=""))
 
+        # gui initialization
         o_interface = Interface(working_dir=self.working_dir, list_folders=final_list_folders)
         o_interface.show()
 
 class Interface(QMainWindow):
 
+    list_folders = None # list of folders to work on
+
     horizontal_profile_plot = None
     vertical_profile_plot = None
 
     def __init__(self, parent=None, working_dir=None, list_folders=None):
+
+        self.list_folders = list_folders
+
         display(format_html_message(pre_message="Check UI that popped up \
                     (maybe hidden behind this browser!)",
                                     spacer=""))
@@ -60,6 +66,15 @@ class Interface(QMainWindow):
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Semi-Automatic Panoramic Stitching")
 
+        # gui initialization
         o_init = GuiInitialization(parent=self)
+        o_init.statusbar()
+
+        # load data and metadata
+
+        # finish initialization
         o_init.run_all()
 
+    # event handler
+    def list_folder_combobox_value_changed(self, new_folder_selected):
+        print(new_folder_selected)

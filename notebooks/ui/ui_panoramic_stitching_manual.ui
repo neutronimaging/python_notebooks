@@ -239,7 +239,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox"/>
+           <widget class="QComboBox" name="list_folders_combobox"/>
           </item>
          </layout>
         </item>
@@ -297,5 +297,25 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>list_folders_combobox</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>list_folder_combobox_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>101</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>505</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>list_folder_combobox_value_changed()</slot>
+ </slots>
 </ui>
