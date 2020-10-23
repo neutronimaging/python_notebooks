@@ -326,7 +326,7 @@ class GroupImages:
         display(hbox)
 
         for _group_index in dictionary_of_groups_sorted.keys():
-            full_folder_name = os.path.join(output_folder, 'group#{}'.format(_group_index))
+            full_folder_name = os.path.join(output_folder, 'group#{:02d}'.format(_group_index))
             make_or_reset_folder(full_folder_name)
             copy_and_rename_files_to_folder(list_files=dictionary_of_groups_sorted[_group_index],
                                             new_list_files_names=dictionary_of_groups_new_names[_group_index],
