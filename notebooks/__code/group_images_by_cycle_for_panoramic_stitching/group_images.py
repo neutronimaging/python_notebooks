@@ -81,8 +81,8 @@ class GroupImages:
         self.record_file_extension(filename=self.list_images[0])
 
         selected = os.path.abspath(selected)
-        display(GroupImages.format_html_message('Input folder', selected))
-        display(GroupImages.format_html_message('Nbr files', str(len(self.list_images))))
+        display(GroupImages.format_html_message('Input folder ', selected))
+        display(GroupImages.format_html_message('Nbr files ', str(len(self.list_images))))
         if not ('tif' in self.file_extension):
             display(GroupImages.format_html_message('This notebook only works with TIFF images!', is_error=True))
             return
