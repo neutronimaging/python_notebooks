@@ -1,6 +1,6 @@
 import os
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.core.display import display
 import numpy as np
 import glob
 import json
@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 from __code.ipywe import fileselector
 from __code import file_handler
+from __code._utilities.string import format_html_message
 from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
 from __code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import SortImagesWithinEachCycle
 from __code.file_handler import make_or_reset_folder, copy_and_rename_files_to_folder
@@ -61,18 +62,6 @@ class GroupImages:
                                                                 multiple=False)
         self.files_list_widget.show()
 
-    @staticmethod
-    def format_html_message(pre_message='', spacer=':', message='', is_error=False):
-        if is_error:
-            pre_message_color = 'red'
-            message_color = 'red'
-        else:
-            pre_message_color = 'blue'
-            message_color = 'green'
-        return HTML('<span style="font-size: 15px; color:' + pre_message_color + '">' + pre_message + spacer +
-                    '</span>' +
-                     '<span style="font-size: 15px; color:' + message_color + '">' + message + '</span>')
-
     def info_folder_selected(self, selected):
         selected = os.path.abspath(selected)
         self.folder_selected = selected
@@ -81,10 +70,10 @@ class GroupImages:
         self.record_file_extension(filename=self.list_images[0])
 
         selected = os.path.abspath(selected)
-        display(GroupImages.format_html_message('Input folder ', selected))
-        display(GroupImages.format_html_message('Nbr files ', str(len(self.list_images))))
+        display(format_html_message('Input folder ', selected))
+        display(format_html_message('Nbr files ', str(len(self.list_images))))
         if not ('tif' in self.file_extension):
-            display(GroupImages.format_html_message('This notebook only works with TIFF images!', is_error=True))
+            display(format_html_message('This notebook only works with TIFF images!', is_error=True))
             return
 
         # group the images
@@ -336,6 +325,6 @@ class GroupImages:
 
         hbox.close()
         message = "{} folders have been created".format(nbr_groups)
-        display(GroupImages.format_html_message(pre_message=message,
-                                                spacer=" in ",
-                                                message=output_folder))
+        display(format_html_message(pre_message=message,
+                                    spacer=" in ",
+                                    message=output_folder))
