@@ -65,5 +65,3 @@ class GuiInitialization:
         self.parent.eventProgress.setMaximumSize(540, 100)
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
-        # self.parent.eventProgress.setMaximum(10)
-        # self.parent.eventProgress.setValue(5)

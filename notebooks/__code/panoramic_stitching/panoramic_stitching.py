@@ -8,6 +8,7 @@ from __code._utilities.string import format_html_message
 from __code import load_ui
 
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
+from __code.panoramic_stitching.load_data import LoadData
 
 
 class PanoramicStitching:
@@ -45,9 +46,19 @@ class PanoramicStitching:
         o_interface = Interface(working_dir=self.working_dir, list_folders=final_list_folders)
         o_interface.show()
 
+
 class Interface(QMainWindow):
 
-    list_folders = None # list of folders to work on
+    list_folders = None  # list of folders to work on
+
+    # data_dictionary = {'folder_name1': {'file_name1': LoadData},
+    #                                     'file_name2': LoadData,
+    #                                     'file_name3': LoadData,
+    #                                    },
+    #                    'folder_name2': {...},
+    #                     ...,
+    #                    }
+    data_dictionary = None
 
     horizontal_profile_plot = None
     vertical_profile_plot = None
@@ -71,6 +82,9 @@ class Interface(QMainWindow):
         o_init.statusbar()
 
         # load data and metadata
+        o_load = LoadData(parent=self,
+                          list_folders=list_folders)
+        o_load.run()
 
         # finish initialization
         o_init.run_all()
