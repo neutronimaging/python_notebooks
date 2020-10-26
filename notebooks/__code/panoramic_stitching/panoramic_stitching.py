@@ -45,7 +45,7 @@ class PanoramicStitching:
         # gui initialization
         o_interface = Interface(working_dir=self.working_dir, list_folders=final_list_folders)
         o_interface.show()
-
+        o_interface.load_data()
 
 class Interface(QMainWindow):
 
@@ -81,13 +81,14 @@ class Interface(QMainWindow):
         o_init = GuiInitialization(parent=self)
         o_init.statusbar()
 
-        # load data and metadata
-        o_load = LoadData(parent=self,
-                          list_folders=list_folders)
-        o_load.run()
-
         # finish initialization
         o_init.run_all()
+
+    def load_data(self):
+        # load data and metadata
+        o_load = LoadData(parent=self,
+                          list_folders=self.list_folders)
+        o_load.run()
 
     # event handler
     def list_folder_combobox_value_changed(self, new_folder_selected):
