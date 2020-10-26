@@ -14,12 +14,19 @@ class GuiInitialization:
         self.parent = parent
 
     def before_loading_data(self):
+        self.block_signals(True)
         self.statusbar()
         self.splitter()
         self.pyqtgraph()
         self.matplotlib()
         self.widgets()
         self.table()
+        self.block_signals(False)
+
+    def block_signals(self, status):
+        list_ui = [self.parent.ui.list_folders_combobox]
+        for _ui in list_ui:
+            _ui.blockSignals(status)
 
     def splitter(self):
         self.parent.ui.profile_display_splitter.setSizes([500, 500])
@@ -68,7 +75,7 @@ class GuiInitialization:
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def after_loading_data(self):
-        # update list of files
+        self.parent.list_folder_combobox_value_changed()
         # select first file
         # update pyqtgraph (image + contour of file selected, and profile)
         # plot profiles in matplotlib

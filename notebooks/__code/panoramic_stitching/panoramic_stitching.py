@@ -5,6 +5,7 @@ import os
 from __code.ipywe import fileselector
 from __code._utilities.folder import get_list_of_folders_with_specified_file_type
 from __code._utilities.string import format_html_message
+from __code._utilities.table_handler import TableHandler
 from __code import load_ui
 
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
@@ -92,6 +93,18 @@ class Interface(QMainWindow):
         o_init.after_loading_data()
 
     # event handler
-    def list_folder_combobox_value_changed(self, new_folder_selected):
-        print(new_folder_selected)
+    def list_folder_combobox_value_changed(self, new_folder_selected=None):
+        if new_folder_selected is None:
+            new_folder_selected = self.ui.list_folders_combobox.currentText()
+
+        group_name = os.path.basename(new_folder_selected)
+        list_files = self.data_dictionary[group_name].keys()
+
+        list_items = []
+        for _file in list_files:
+            list_items.append([_file, 10, 20])
+
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        o_table.fill_table_with(list_items=list_items,
+                                editable_columns_boolean=[False, True, True])
 
