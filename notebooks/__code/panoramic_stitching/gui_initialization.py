@@ -13,7 +13,8 @@ class GuiInitialization:
     def __init__(self, parent=None):
         self.parent = parent
 
-    def run_all(self):
+    def before_loading_data(self):
+        self.statusbar()
         self.splitter()
         self.pyqtgraph()
         self.matplotlib()
@@ -65,3 +66,10 @@ class GuiInitialization:
         self.parent.eventProgress.setMaximumSize(540, 100)
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
+
+    def after_loading_data(self):
+        # update list of files
+        # select first file
+        # update pyqtgraph (image + contour of file selected, and profile)
+        # plot profiles in matplotlib
+        pass

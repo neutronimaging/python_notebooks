@@ -3,6 +3,7 @@ from collections import OrderedDict
 import os
 import json
 from qtpy import QtGui
+import numpy as np
 
 from NeuNorm.normalization import Normalization
 
@@ -20,7 +21,9 @@ class MetadataData:
     def keep_only_metadata_defined_in_config(self, list_key=None):
         metadata_to_keep = {}
         for key in list_key:
-            metadata_to_keep[key] = self.metadata[key]
+            _metadata_value = self.metadata[key]
+            _name, _value = _metadata_value.split(":")
+            metadata_to_keep[_name] = np.float(_value)
         self.metadata = metadata_to_keep
 
 
@@ -39,8 +42,10 @@ class LoadData:
             config = json.load(f)
 
         self.metadata_key_to_keep = []
+        self.metadata_name_to_keep = []
         for key in config.keys():
             self.metadata_key_to_keep.append(config[key]['key'])
+            self.metadata_name_to_keep.append(config[key]['name'])
 
     def run(self):
         nbr_folder = len(self.list_folders)
@@ -60,6 +65,7 @@ class LoadData:
                 _metadatadata.data = o_norm.data['sample']['data'][_index]
                 _metadatadata.metadata = o_norm.data['sample']['metadata'][_index]
                 _metadatadata.keep_only_metadata_defined_in_config(list_key=self.metadata_key_to_keep)
+
                 local_dict[_file] = _metadatadata
 
             master_dict[os.path.basename(_folder)] = local_dict

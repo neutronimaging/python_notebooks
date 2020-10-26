@@ -51,9 +51,9 @@ class Interface(QMainWindow):
 
     list_folders = None  # list of folders to work on
 
-    # data_dictionary = {'folder_name1': {'file_name1': LoadData},
-    #                                     'file_name2': LoadData,
-    #                                     'file_name3': LoadData,
+    # data_dictionary = {'folder_name1': {'file_name1': MetadataData},
+    #                                     'file_name2': MetadataData,
+    #                                     'file_name3': MetadataData,
     #                                    },
     #                    'folder_name2': {...},
     #                     ...,
@@ -79,10 +79,7 @@ class Interface(QMainWindow):
 
         # gui initialization
         o_init = GuiInitialization(parent=self)
-        o_init.statusbar()
-
-        # finish initialization
-        o_init.run_all()
+        o_init.before_loading_data()
 
     def load_data(self):
         # load data and metadata
@@ -90,6 +87,11 @@ class Interface(QMainWindow):
                           list_folders=self.list_folders)
         o_load.run()
 
+    def initialization_after_loading_data(self):
+        o_init = GuiInitialization(parent=self)
+        o_init.after_loading_data()
+
     # event handler
     def list_folder_combobox_value_changed(self, new_folder_selected):
         print(new_folder_selected)
+
