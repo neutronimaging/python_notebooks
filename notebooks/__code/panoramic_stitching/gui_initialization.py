@@ -6,6 +6,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.table_handler import TableHandler
+from __code.panoramic_stitching.panoramic_image import PanoramicImage
 
 
 class GuiInitialization:
@@ -81,7 +82,8 @@ class GuiInitialization:
         self.parent.list_folder_combobox_value_changed()
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         o_table.select_rows(list_of_rows=[0])
-        # select first file
+        o_panoramic = PanoramicImage(parent=self.parent)
+        # o_panoramic.update_current_panoramic_image()
         # update pyqtgraph (image + contour of file selected, and profile)
         # plot profiles in matplotlib
-        pass
+

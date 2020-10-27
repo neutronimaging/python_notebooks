@@ -13,6 +13,7 @@ from __code import load_ui
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
 from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.load_data import LoadData
+from __code.panoramic_stitching.panoramic_image import PanoramicImage
 
 
 class PanoramicStitching:
@@ -74,6 +75,11 @@ class Interface(QMainWindow):
     #                       }
     offset_dictionary = None
 
+    # panoramic_images = {'folder_name1': [],
+    #                     'folder_name2': [],
+    #                     ... }
+    panoramic_images = {}
+
     horizontal_profile_plot = None
     vertical_profile_plot = None
 
@@ -107,6 +113,9 @@ class Interface(QMainWindow):
 
         o_init = GuiInitialization(parent=self)
         o_init.after_loading_data()
+
+        o_image = PanoramicImage(parent=self)
+        o_image.update_current_panoramic_image()
 
     # event handler
     def list_folder_combobox_value_changed(self, new_folder_selected=None):

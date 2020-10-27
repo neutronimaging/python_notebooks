@@ -8,3 +8,6 @@ class ComboboxHandler:
 
     def add_items(self, list_string=None):
         self.combobox_ui.addItems(list_string)
+
+    def get_current_text_selected(self):
+        return self.combobox_ui.currentText()

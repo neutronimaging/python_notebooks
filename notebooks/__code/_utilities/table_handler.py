@@ -75,7 +75,11 @@ class TableHandler:
         first_selection = list_selection[0]
         row = first_selection.topRow()
         col = first_selection.leftColumn()
-        return (row, col)
+        return row, col
+
+    def get_item_str_from_cell(self, row=-1, column=-1):
+        item_selected = self.table_ui.item(row, column)
+        return str(item_selected)
 
     def select_cell(self, row=0, column=0):
         self.select_everything(False)
@@ -157,10 +161,14 @@ class TableHandler:
         for _row_index, _row_entry in enumerate(list_items):
             self.insert_empty_row(_row_index)
             for _column_index, _text in enumerate(list_items[_row_index]):
+                if _row_index == 0:
+                    editable_flag = False
+                else:
+                    editable_flag = editable_columns_boolean[_column_index]
                 self.insert_item(row=_row_index,
                                  column=_column_index,
                                  value=_text,
-                                 editable=editable_columns_boolean[_column_index])
+                                 editable=editable_flag)
 
         if block_signal:
             self.table_ui.blockSignals(not block_signal)
