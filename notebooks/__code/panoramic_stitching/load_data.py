@@ -57,6 +57,7 @@ class LoadData:
         for _folder_index, _folder in enumerate(self.list_folders):
             o_norm = Normalization()
             list_files = glob.glob(_folder + "/*.tiff")
+            list_files.sort()
             o_norm.load(file=list_files, notebook=False)
 
             local_dict = OrderedDict()
