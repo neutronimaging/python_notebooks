@@ -221,7 +221,7 @@
         </widget>
        </widget>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -314,8 +314,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>cellChanged(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_of_offset_cell_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>414</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>668</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
+  <slot>table_of_offset_cell_changed()</slot>
  </slots>
 </ui>

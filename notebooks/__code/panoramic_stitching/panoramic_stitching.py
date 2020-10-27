@@ -1,6 +1,8 @@
 from IPython.core.display import display
 from qtpy.QtWidgets import QMainWindow
 import os
+from collections import OrderedDict
+import copy
 
 from __code.ipywe import fileselector
 from __code._utilities.folder import get_list_of_folders_with_specified_file_type
@@ -9,6 +11,7 @@ from __code._utilities.table_handler import TableHandler
 from __code import load_ui
 
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
+from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.load_data import LoadData
 
 
@@ -48,6 +51,7 @@ class PanoramicStitching:
         o_interface.show()
         o_interface.load_data()
 
+
 class Interface(QMainWindow):
 
     list_folders = None  # list of folders to work on
@@ -60,6 +64,15 @@ class Interface(QMainWindow):
     #                     ...,
     #                    }
     data_dictionary = None
+
+    # offset_dictionary =  {'folder_name1': {'file_name1': {'xoffset': 0, 'yoffset': 0},
+    #                                        'file_name2': {'xoffset': 0, 'yoffset': 0},
+    #                                        'file_name3': {'xoffset': 0, 'yoffset': 0},
+    #                                       },
+    #                       'folder_name2': {...},
+    #                       ...,
+    #                       }
+    offset_dictionary = None
 
     horizontal_profile_plot = None
     vertical_profile_plot = None
@@ -89,6 +102,9 @@ class Interface(QMainWindow):
         o_load.run()
 
     def initialization_after_loading_data(self):
+        o_init = DataInitialization(parent=self)
+        o_init.offset_table()
+
         o_init = GuiInitialization(parent=self)
         o_init.after_loading_data()
 
@@ -98,13 +114,21 @@ class Interface(QMainWindow):
             new_folder_selected = self.ui.list_folders_combobox.currentText()
 
         group_name = os.path.basename(new_folder_selected)
-        list_files = self.data_dictionary[group_name].keys()
+        group_offset_dictionary = self.offset_dictionary[group_name]
+
+        list_files = list(self.data_dictionary[group_name].keys())
+        list_files.sort()
 
         list_items = []
         for _file in list_files:
-            list_items.append([_file, 10, 20])
+            offset_file_entry = group_offset_dictionary[_file]
+            list_items.append([_file, offset_file_entry['xoffset'], offset_file_entry['yoffset']])
 
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         o_table.fill_table_with(list_items=list_items,
-                                editable_columns_boolean=[False, True, True])
+                                editable_columns_boolean=[False, True, True],
+                                block_signal=True)
+
+    def table_of_offset_cell_changed(self, row, column):
+        print("table of offset cell changed")
 

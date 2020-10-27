@@ -5,7 +5,7 @@ matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
-from __code.table_handler import TableHandler
+from __code._utilities.table_handler import TableHandler
 
 
 class GuiInitialization:
@@ -24,7 +24,8 @@ class GuiInitialization:
         self.block_signals(False)
 
     def block_signals(self, status):
-        list_ui = [self.parent.ui.list_folders_combobox]
+        list_ui = [self.parent.ui.list_folders_combobox,
+                   self.parent.ui.tableWidget]
         for _ui in list_ui:
             _ui.blockSignals(status)
 
@@ -63,9 +64,11 @@ class GuiInitialization:
         self.parent.ui.list_folders_combobox.addItems(list_folders)
 
     def table(self):
-        column_sizes = [700, 100, 100]
+        column_sizes = [900, 100, 100]
+        column_names = ['File name', 'xoffset (px)', 'yoffset (px)']
         o_table = TableHandler(table_ui=self.parent.tableWidget)
         o_table.set_column_sizes(column_sizes=column_sizes)
+        o_table.set_column_names(column_names=column_names)
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
@@ -76,6 +79,8 @@ class GuiInitialization:
 
     def after_loading_data(self):
         self.parent.list_folder_combobox_value_changed()
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        o_table.select_rows(list_of_rows=[0])
         # select first file
         # update pyqtgraph (image + contour of file selected, and profile)
         # plot profiles in matplotlib

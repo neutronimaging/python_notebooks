@@ -140,18 +140,20 @@ class TableHandler:
         _item = self.table_ui.item(row, column)
         _item.setBackground(qcolor)
 
-    def fill_table_with(self, list_items=None, editable_columns_boolean=None):
+    def fill_table_with(self, list_items=None, editable_columns_boolean=None, block_signal=False):
         """
         :param:
         list_items: 2D array of text to put in the table
             ex: list_items = [ ['file1', 10, 20'], ['file2', 20, 30] ...]
         editable_columns_boolean: which columns are editable
             ex: editable_columns_boolean = [False, True, True]
+        block_signals: block or not any signal emitted by the table
         """
-        self.full_reset()
+        if block_signal:
+            self.table_ui.blockSignals(block_signal)
 
+        self.remove_all_rows()
 
-        
         for _row_index, _row_entry in enumerate(list_items):
             self.insert_empty_row(_row_index)
             for _column_index, _text in enumerate(list_items[_row_index]):
@@ -159,3 +161,6 @@ class TableHandler:
                                  column=_column_index,
                                  value=_text,
                                  editable=editable_columns_boolean[_column_index])
+
+        if block_signal:
+            self.table_ui.blockSignals(not block_signal)
