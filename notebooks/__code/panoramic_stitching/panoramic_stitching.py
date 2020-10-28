@@ -141,6 +141,9 @@ class Interface(QMainWindow):
                                 editable_columns_boolean=[False, True, True],
                                 block_signal=True)
 
+        o_pano = PanoramicImage(parent=self)
+        o_pano.update_current_panoramic_image()
+
     def table_of_offset_cell_changed(self, row, column):
         o_event = EventHandler(parent=self)
         o_event.save_table_offset_of_this_cell(row=row, column=column)
