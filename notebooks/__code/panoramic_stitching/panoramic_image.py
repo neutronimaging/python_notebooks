@@ -11,6 +11,17 @@ class PanoramicImage:
         self.parent = parent
 
     def update_current_panoramic_image(self):
+
+        _view = self.parent.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.parent.histogram_level is None:
+            first_update = True
+        _histo_widget = self.parent.ui.image_view.getHistogramWidget()
+        self.parent.histogram_level = _histo_widget.getLevels()
+
         o_get = Get(parent=self.parent)
         folder_selected = o_get.get_combobox_folder_selected()
 
@@ -40,6 +51,11 @@ class PanoramicImage:
         _image = np.transpose(panoramic_image)
         # _image = self._clean_image(_image)
         self.parent.ui.image_view.setImage(_image)
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.parent.histogram_level[0],
+                                    self.parent.histogram_level[1])
 
     def get_max_offset(self, folder_selected=None):
         offset_dictionary = self.parent.offset_dictionary[folder_selected]

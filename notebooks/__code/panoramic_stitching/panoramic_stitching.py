@@ -84,6 +84,8 @@ class Interface(QMainWindow):
     horizontal_profile_plot = None
     vertical_profile_plot = None
 
+    histogram_level = None
+
     def __init__(self, parent=None, working_dir=None, list_folders=None):
 
         self.list_folders = list_folders

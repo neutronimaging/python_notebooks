@@ -36,7 +36,7 @@ class GuiInitialization:
         self.parent.ui.full_splitter.setSizes([400, 100])
 
     def pyqtgraph(self):
-        self.parent.ui.image_view = pg.ImageView()
+        self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.image_view.ui.roiBtn.hide()
         self.parent.ui.image_view.ui.menuBtn.hide()
         image_layout = QVBoxLayout()
