@@ -2,6 +2,7 @@ import numpy as np
 import os
 
 from __code._utilities.table_handler import TableHandler
+from __code.panoramic_stitching.get import Get
 
 
 class PanoramicImage:
@@ -10,7 +11,8 @@ class PanoramicImage:
         self.parent = parent
 
     def update_current_panoramic_image(self):
-        folder_selected = os.path.basename(self.parent.ui.list_folders_combobox.currentText())
+        o_get = Get(parent=self.parent)
+        folder_selected = o_get.get_combobox_folder_selected()
 
         data_dictionary = self.parent.data_dictionary[folder_selected]
         offset_dictionary = self.parent.offset_dictionary[folder_selected]
@@ -46,3 +48,4 @@ class PanoramicImage:
         list_yoffset = [offset_dictionary[_key]['yoffset'] for _key in offset_dictionary.keys()]
 
         return np.int(np.max(list_yoffset)), np.int(np.max(list_xoffset))
+

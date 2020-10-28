@@ -78,7 +78,7 @@ class TableHandler:
         return row, col
 
     def get_item_str_from_cell(self, row=-1, column=-1):
-        item_selected = self.table_ui.item(row, column)
+        item_selected = self.table_ui.item(row, column).text()
         return str(item_selected)
 
     def select_cell(self, row=0, column=0):

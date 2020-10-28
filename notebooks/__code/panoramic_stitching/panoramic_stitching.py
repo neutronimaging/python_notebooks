@@ -14,6 +14,7 @@ from __code.panoramic_stitching.gui_initialization import GuiInitialization
 from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.load_data import LoadData
 from __code.panoramic_stitching.panoramic_image import PanoramicImage
+from __code.panoramic_stitching.event_handler import EventHandler
 
 
 class PanoramicStitching:
@@ -139,5 +140,5 @@ class Interface(QMainWindow):
                                 block_signal=True)
 
     def table_of_offset_cell_changed(self, row, column):
-        print("table of offset cell changed")
-
+        o_event = EventHandler(parent=self)
+        o_event.save_table_offset_of_this_cell(row=row, column=column)
