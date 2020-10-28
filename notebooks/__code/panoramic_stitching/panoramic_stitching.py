@@ -13,7 +13,7 @@ from __code import load_ui
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
 from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.load_data import LoadData
-from __code.panoramic_stitching.panoramic_image import PanoramicImage
+from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
 
 
@@ -117,7 +117,7 @@ class Interface(QMainWindow):
         o_init = GuiInitialization(parent=self)
         o_init.after_loading_data()
 
-        o_image = PanoramicImage(parent=self)
+        o_image = ImageHandler(parent=self)
         o_image.update_current_panoramic_image()
 
     # event handler
@@ -141,12 +141,12 @@ class Interface(QMainWindow):
                                 editable_columns_boolean=[False, True, True],
                                 block_signal=True)
 
-        o_pano = PanoramicImage(parent=self)
+        o_pano = ImageHandler(parent=self)
         o_pano.update_current_panoramic_image()
 
     def table_of_offset_cell_changed(self, row, column):
         o_event = EventHandler(parent=self)
         o_event.save_table_offset_of_this_cell(row=row, column=column)
 
-        o_pano = PanoramicImage(parent=self)
+        o_pano = ImageHandler(parent=self)
         o_pano.update_current_panoramic_image()

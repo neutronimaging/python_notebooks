@@ -5,7 +5,7 @@ from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
 
 
-class PanoramicImage:
+class ImageHandler:
 
     def __init__(self, parent=None):
         self.parent = parent
