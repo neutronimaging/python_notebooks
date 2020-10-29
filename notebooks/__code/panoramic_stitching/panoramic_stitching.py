@@ -146,3 +146,7 @@ class Interface(QMainWindow):
     def table_of_offset_selection_changed(self):
         o_pano = ImageHandler(parent=self)
         o_pano.update_contour_plot()
+
+    def from_to_checkbox_checked(self, state):
+        o_event = EventHandler(parent=self)
+        o_event.from_to_checkbox_changed(state=state)

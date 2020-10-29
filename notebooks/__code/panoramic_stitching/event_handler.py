@@ -107,3 +107,6 @@ class EventHandler:
         o_pano.update_contour_plot()
 
         self.parent.ui.tableWidget.blockSignals(False)
+
+    def from_to_checkbox_changed(self, state=False):
+        self.parent.ui.from_to_button.setEnabled(state)

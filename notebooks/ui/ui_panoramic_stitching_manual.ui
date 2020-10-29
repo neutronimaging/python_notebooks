@@ -16,6 +16,65 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="from_to_checkbox">
+        <property name="minimumSize">
+         <size>
+          <width>160</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>FROM -&gt; TO pointer</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="from_to_button">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Move image of active row FROM -&gt; TO</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QSplitter" name="full_splitter">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -311,7 +370,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>101</x>
-     <y>501</y>
+     <y>525</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -351,10 +410,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>from_to_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>from_to_checkbox_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>503</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
   <slot>table_of_offset_cell_changed()</slot>
   <slot>table_of_offset_selection_changed()</slot>
+  <slot>from_to_checkbox_checked()</slot>
  </slots>
 </ui>
