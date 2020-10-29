@@ -269,6 +269,11 @@
             <string>y offset</string>
            </property>
           </column>
+          <column>
+           <property name="text">
+            <string>visible ?</string>
+           </property>
+          </column>
          </widget>
         </item>
         <item>

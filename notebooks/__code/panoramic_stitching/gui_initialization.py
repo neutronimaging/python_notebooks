@@ -65,8 +65,8 @@ class GuiInitialization:
         self.parent.ui.list_folders_combobox.addItems(list_folders)
 
     def table(self):
-        column_sizes = [900, 100, 100]
-        column_names = ['File name', 'xoffset (px)', 'yoffset (px)']
+        column_sizes = [900, 100, 100, 100]
+        column_names = ['File name', 'xoffset (px)', 'yoffset (px)', 'visible?']
         o_table = TableHandler(table_ui=self.parent.tableWidget)
         o_table.set_column_sizes(column_sizes=column_sizes)
         o_table.set_column_names(column_names=column_names)

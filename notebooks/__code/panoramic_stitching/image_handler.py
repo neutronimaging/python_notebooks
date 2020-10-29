@@ -5,8 +5,8 @@ import pyqtgraph as pg
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
 
-COLOR_LOCK = QtGui.QColor(62, 13, 244)
-COLOR_UNLOCK = QtGui.QColor(255, 0, 0)
+COLOR_LOCK = QtGui.QColor(62, 13, 244, 100)
+COLOR_UNLOCK = QtGui.QColor(255, 0, 0, 100)
 
 class ImageHandler:
 
@@ -45,6 +45,7 @@ class ImageHandler:
             self.parent.contour_image_roi_id = _roi_id
 
     def update_current_panoramic_image(self):
+
         _view = self.parent.ui.image_view.getView()
         _view_box = _view.getViewBox()
         _state = _view_box.getState()
@@ -57,8 +58,6 @@ class ImageHandler:
 
         o_get = Get(parent=self.parent)
         folder_selected = o_get.get_combobox_folder_selected()
-
-        # o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
 
         data_dictionary = self.parent.data_dictionary[folder_selected]
         offset_dictionary = self.parent.offset_dictionary[folder_selected]
@@ -93,6 +92,8 @@ class ImageHandler:
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0],
                                     self.parent.histogram_level[1])
+
+
 
     def get_max_offset(self, folder_selected=None):
         offset_dictionary = self.parent.offset_dictionary[folder_selected]

@@ -19,7 +19,7 @@ class DataInitialization:
     def offset_table(self):
         data_dictionary = self.parent.data_dictionary
         offset_dictionary = OrderedDict()
-        _offset_dict = {'xoffset': 0, 'yoffset': 0}
+        _offset_dict = None
 
         image_width, image_height = self._get_image_size()
 
@@ -44,7 +44,8 @@ class DataInitialization:
                 previous_metadata = copy.deepcopy(current_metadata)
 
                 _offset_dict = {'xoffset': xoffset,
-                                'yoffset': yoffset}
+                                'yoffset': yoffset,
+                                'visible': True}
 
                 _dict[_file] = _offset_dict
 

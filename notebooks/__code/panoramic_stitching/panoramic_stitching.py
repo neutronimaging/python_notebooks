@@ -1,8 +1,7 @@
 from IPython.core.display import display
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
+from qtpy import QtCore
 import os
-from collections import OrderedDict
-import copy
 
 from __code.ipywe import fileselector
 from __code._utilities.folder import get_list_of_folders_with_specified_file_type
@@ -67,9 +66,9 @@ class Interface(QMainWindow):
     #                    }
     data_dictionary = None
 
-    # offset_dictionary =  {'folder_name1': {'file_name1': {'xoffset': 0, 'yoffset': 0},
-    #                                        'file_name2': {'xoffset': 0, 'yoffset': 0},
-    #                                        'file_name3': {'xoffset': 0, 'yoffset': 0},
+    # offset_dictionary =  {'folder_name1': {'file_name1': {'xoffset': 0, 'yoffset': 0, 'visible': True},
+    #                                        'file_name2': {'xoffset': 0, 'yoffset': 0, 'visible': True},
+    #                                        'file_name3': {'xoffset': 0, 'yoffset': 0, 'visible', True},
     #                                       },
     #                       'folder_name2': {...},
     #                       ...,
@@ -126,6 +125,9 @@ class Interface(QMainWindow):
 
     # event handler
     def list_folder_combobox_value_changed(self, new_folder_selected=None):
+
+        self.ui.tableWidget.blockSignals(True)
+
         update_image = True
         if new_folder_selected is None:
             update_image = False
@@ -137,20 +139,61 @@ class Interface(QMainWindow):
         list_files = list(self.data_dictionary[group_name].keys())
         list_files.sort()
 
-        list_items = []
-        for _file in list_files:
-            offset_file_entry = group_offset_dictionary[_file]
-            list_items.append([_file, offset_file_entry['xoffset'], offset_file_entry['yoffset']])
-
         o_table = TableHandler(table_ui=self.ui.tableWidget)
-        o_table.fill_table_with(list_items=list_items,
-                                editable_columns_boolean=[False, True, True],
-                                block_signal=True)
+        o_table.remove_all_rows()
+
+        editable_columns_boolean = [False, True, True, True]
+
+        for _row_index, _file in enumerate(list_files):
+
+            o_table.insert_empty_row(_row_index)
+
+            offset_file_entry = group_offset_dictionary[_file]
+
+            xoffset = offset_file_entry['xoffset']
+            yoffset = offset_file_entry['yoffset']
+            list_items = [_file, xoffset, yoffset]
+
+            for _column_index, _text in enumerate(list_items):
+
+                if _row_index == 0:
+                    editable_flag = False
+                else:
+                    editable_flag = editable_columns_boolean[_column_index]
+
+                o_table.insert_item(row=_row_index,
+                                    column=_column_index,
+                                    value=_text,
+                                    editable=editable_flag)
+
+            # checkbox to turn on/off visibility of the row
+            hori_layout = QHBoxLayout()
+            spacer_item_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            hori_layout.addItem(spacer_item_left)
+            check_box = QCheckBox()
+            if offset_file_entry['visible']:
+                _state = QtCore.Qt.Checked
+            else:
+                _state = QtCore.Qt.Unchecked
+            check_box.setCheckState(_state)
+            hori_layout.addWidget(check_box)
+            spacer_item_right = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            hori_layout.addItem(spacer_item_right)
+            cell_widget = QWidget()
+            cell_widget.setLayout(hori_layout)
+            o_table.insert_widget(row=_row_index,
+                                  column=3,
+                                  widget=cell_widget)
+
         o_table.select_row(0)
 
+        o_pano = ImageHandler(parent=self)
         if update_image:
-            o_pano = ImageHandler(parent=self)
             o_pano.update_current_panoramic_image()
+        o_pano.update_contour_plot()
+
+        self.ui.tableWidget.blockSignals(False)
+
 
     def table_of_offset_cell_changed(self, row, column):
         o_event = EventHandler(parent=self)
