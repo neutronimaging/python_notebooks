@@ -60,6 +60,10 @@ class LoadData:
             list_files.sort()
             o_norm.load(file=list_files, notebook=False)
 
+            # record size of images
+            if _folder_index == 0:
+                self.parent.image_height, self.parent.image_width = np.shape(o_norm.data['sample']['data'][0])
+
             local_dict = OrderedDict()
             for _index, _file in enumerate(list_files):
                 _metadatadata = MetadataData()

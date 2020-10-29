@@ -82,5 +82,3 @@ class GuiInitialization:
         self.parent.list_folder_combobox_value_changed()
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         o_table.select_rows(list_of_rows=[0])
-        # o_panoramic = PanoramicImage(parent=self.parent)
-

@@ -86,6 +86,10 @@ class Interface(QMainWindow):
 
     histogram_level = None
 
+    image_width = None
+    image_height = None
+    contour_image_roi_id = None
+
     def __init__(self, parent=None, working_dir=None, list_folders=None):
 
         self.list_folders = list_folders
@@ -122,7 +126,9 @@ class Interface(QMainWindow):
 
     # event handler
     def list_folder_combobox_value_changed(self, new_folder_selected=None):
+        update_image = True
         if new_folder_selected is None:
+            update_image = False
             new_folder_selected = self.ui.list_folders_combobox.currentText()
 
         group_name = os.path.basename(new_folder_selected)
@@ -140,9 +146,11 @@ class Interface(QMainWindow):
         o_table.fill_table_with(list_items=list_items,
                                 editable_columns_boolean=[False, True, True],
                                 block_signal=True)
+        o_table.select_row(0)
 
-        o_pano = ImageHandler(parent=self)
-        o_pano.update_current_panoramic_image()
+        if update_image:
+            o_pano = ImageHandler(parent=self)
+            o_pano.update_current_panoramic_image()
 
     def table_of_offset_cell_changed(self, row, column):
         o_event = EventHandler(parent=self)
