@@ -72,9 +72,15 @@ class ImageHandler:
         panoramic_image = None
         for _file_index, _file in enumerate(data_dictionary.keys()):
 
-            _image = data_dictionary[_file].data
             if _file_index == 0:
                 panoramic_image = np.zeros((max_yoffset + image_height, max_xoffset + image_width))
+
+            _image = data_dictionary[_file].data
+            is_visible = offset_dictionary[_file]['visible']
+            if not is_visible:
+                continue
+
+            if _file_index == 0:
                 panoramic_image[0:image_height, 0:image_width] = _image
             else:
                 xoffset = offset_dictionary[_file]['xoffset']

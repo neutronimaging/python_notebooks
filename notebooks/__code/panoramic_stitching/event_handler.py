@@ -1,7 +1,11 @@
 import numpy as np
+import os
+from qtpy.QtWidgets import QMainWindow, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
+from qtpy import QtCore
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
+from __code.panoramic_stitching.image_handler import ImageHandler
 
 
 class EventHandler:
@@ -9,17 +13,97 @@ class EventHandler:
     def __init__(self, parent=None):
         self.parent = parent
 
-    def save_table_offset_of_this_cell(self, row=-1, column=-1):
+    def save_table_offset_of_this_cell(self, row=-1, column=-1, state=-1):
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
 
-        offset_value = np.int(o_table.get_item_str_from_cell(row=row, column=column))
         file_name = o_table.get_item_str_from_cell(row=row, column=0)
 
         o_get = Get(parent=self.parent)
         folder_selected = o_get.get_combobox_folder_selected()
 
         offset_dictionary = self.parent.offset_dictionary
-        offset_key_name = 'xoffset' if column == 1 else 'yoffset'
+        if (column == 1) or (column == 2):
+            offset_value = np.int(o_table.get_item_str_from_cell(row=row, column=column))
 
-        offset_dictionary[folder_selected][file_name][offset_key_name] = offset_value
+        if column == 1:
+            offset_dictionary[folder_selected][file_name]['xoffset'] = offset_value
+        elif column == 2:
+            offset_dictionary[folder_selected][file_name]['yoffset'] = offset_value
+        elif column == 3:
+            is_visible = True if state == 2 else False
+            offset_dictionary[folder_selected][file_name]['visible'] = is_visible
         self.parent.offset_dictionary = offset_dictionary
+
+    def list_folder_combobox_value_changed(self, new_folder_selected=None):
+
+        self.parent.ui.tableWidget.blockSignals(True)
+
+        update_image = True
+        if new_folder_selected is None:
+            update_image = False
+            new_folder_selected = self.parent.ui.list_folders_combobox.currentText()
+
+        group_name = os.path.basename(new_folder_selected)
+        group_offset_dictionary = self.parent.offset_dictionary[group_name]
+
+        list_files = list(self.parent.data_dictionary[group_name].keys())
+        list_files.sort()
+
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        o_table.remove_all_rows()
+
+        editable_columns_boolean = [False, True, True, True]
+
+        for _row_index, _file in enumerate(list_files):
+
+            o_table.insert_empty_row(_row_index)
+
+            offset_file_entry = group_offset_dictionary[_file]
+
+            xoffset = offset_file_entry['xoffset']
+            yoffset = offset_file_entry['yoffset']
+            list_items = [_file, xoffset, yoffset]
+
+            for _column_index, _text in enumerate(list_items):
+
+                if _row_index == 0:
+                    editable_flag = False
+                else:
+                    editable_flag = editable_columns_boolean[_column_index]
+
+                o_table.insert_item(row=_row_index,
+                                    column=_column_index,
+                                    value=_text,
+                                    editable=editable_flag)
+
+            # checkbox to turn on/off visibility of the row
+            hori_layout = QHBoxLayout()
+            spacer_item_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            hori_layout.addItem(spacer_item_left)
+            check_box = QCheckBox()
+            if offset_file_entry['visible']:
+                _state = QtCore.Qt.Checked
+            else:
+                _state = QtCore.Qt.Unchecked
+            check_box.setCheckState(_state)
+
+            check_box.stateChanged.connect(lambda state=0, row=_row_index:
+                                           self.parent.visibility_checkbox_changed(state=state,
+                                                                                   row=row))
+            hori_layout.addWidget(check_box)
+            spacer_item_right = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            hori_layout.addItem(spacer_item_right)
+            cell_widget = QWidget()
+            cell_widget.setLayout(hori_layout)
+            o_table.insert_widget(row=_row_index,
+                                  column=3,
+                                  widget=cell_widget)
+
+        o_table.select_row(0)
+
+        o_pano = ImageHandler(parent=self.parent)
+        if update_image:
+            o_pano.update_current_panoramic_image()
+        o_pano.update_contour_plot()
+
+        self.parent.ui.tableWidget.blockSignals(False)
