@@ -17,6 +17,7 @@ class TableHandler:
         self.table_ui.setRangeSelected(selection_range, state)
 
     def select_rows(self, list_of_rows=None):
+        self.table_ui.blockSignals(True)
         self.select_everything(False)
         nbr_row = self.table_ui.rowCount()
         nbr_column = self.table_ui.columnCount()
@@ -24,6 +25,7 @@ class TableHandler:
         for _row in list_of_rows:
             selection_range = QTableWidgetSelectionRange(_row, 0, _row, nbr_column - 1)
             self.table_ui.setRangeSelected(selection_range, True)
+        self.table_ui.blockSignals(False)
 
     def remove_all_rows(self):
         nbr_row = self.table_ui.rowCount()

@@ -13,10 +13,38 @@ class ImageHandler:
     def __init__(self, parent=None):
         self.parent = parent
 
-    def update_current_panoramic_image(self):
+    def update_contour_plot(self):
         if self.parent.contour_image_roi_id:
             self.parent.ui.image_view.removeItem(self.parent.contour_image_roi_id)
 
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        name_of_file_selected = o_table.get_item_str_from_cell(row=row_selected, column=0)
+
+        o_get = Get(parent=self.parent)
+        folder_selected = o_get.get_combobox_folder_selected()
+        offset_dictionary = self.parent.offset_dictionary[folder_selected]
+
+        roi = {'x0': offset_dictionary[name_of_file_selected]['xoffset'],
+               'y0': offset_dictionary[name_of_file_selected]['yoffset']}
+
+        if row_selected == 0:
+            _color = COLOR_LOCK
+        else:
+            _color = COLOR_UNLOCK
+
+        if roi:
+            _pen = QtGui.QPen()
+            _pen.setColor(_color)
+            _pen.setWidthF(0.01)
+            _roi_id = pg.ROI([roi['x0'], roi['y0']],
+                             [self.parent.image_width, self.parent.image_height],
+                             pen=_pen, scaleSnap=True,
+                             movable=False)
+            self.parent.ui.image_view.addItem(_roi_id)
+            self.parent.contour_image_roi_id = _roi_id
+
+    def update_current_panoramic_image(self):
         _view = self.parent.ui.image_view.getView()
         _view_box = _view.getViewBox()
         _state = _view_box.getState()
@@ -30,9 +58,7 @@ class ImageHandler:
         o_get = Get(parent=self.parent)
         folder_selected = o_get.get_combobox_folder_selected()
 
-        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
-        row_selected = o_table.get_row_selected()
-        name_of_file_selected = o_table.get_item_str_from_cell(row=row_selected, column=0)
+        # o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
 
         data_dictionary = self.parent.data_dictionary[folder_selected]
         offset_dictionary = self.parent.offset_dictionary[folder_selected]
@@ -42,7 +68,6 @@ class ImageHandler:
         image_height = self.parent.image_height
         image_width = self.parent.image_width
 
-        roi = None
         _color = None
 
         panoramic_image = None
@@ -58,31 +83,12 @@ class ImageHandler:
 
                 panoramic_image[yoffset: yoffset+image_height, xoffset: xoffset+image_width] = _image
 
-            if _file == name_of_file_selected:
-                roi = {'x0': offset_dictionary[_file]['xoffset'],
-                       'y0': offset_dictionary[_file]['yoffset']}
-                if _file_index == 0:
-                    _color = COLOR_LOCK
-                else:
-                    _color = COLOR_UNLOCK
-
         self.parent.panoramic_images[folder_selected] = panoramic_image
 
         _image = np.transpose(panoramic_image)
         # _image = self._clean_image(_image)
         self.parent.ui.image_view.setImage(_image)
         _view_box.setState(_state)
-
-        if roi:
-            _pen = QtGui.QPen()
-            _pen.setColor(_color)
-            _pen.setWidthF(0.01)
-            _roi_id = pg.ROI([roi['x0'], roi['y0']],
-                             [self.parent.image_width, self.parent.image_height],
-                             pen=_pen, scaleSnap=True,
-                             movable=False)
-            self.parent.ui.image_view.addItem(_roi_id)
-            self.parent.contour_image_roi_id
 
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0],

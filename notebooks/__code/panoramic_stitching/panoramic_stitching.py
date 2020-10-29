@@ -158,3 +158,8 @@ class Interface(QMainWindow):
 
         o_pano = ImageHandler(parent=self)
         o_pano.update_current_panoramic_image()
+        o_pano.update_contour_plot()
+
+    def table_of_offset_selection_changed(self):
+        o_pano = ImageHandler(parent=self)
+        o_pano.update_contour_plot()
