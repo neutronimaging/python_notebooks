@@ -110,3 +110,6 @@ class EventHandler:
 
     def from_to_checkbox_changed(self, state=False):
         self.parent.ui.from_to_button.setEnabled(state)
+        o_image = ImageHandler(parent=self.parent)
+        o_image.update_from_to_roi(state=state)
+

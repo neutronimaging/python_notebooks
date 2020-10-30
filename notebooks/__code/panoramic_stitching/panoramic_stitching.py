@@ -88,6 +88,8 @@ class Interface(QMainWindow):
     image_width = None
     image_height = None
     contour_image_roi_id = None
+    from_to_roi_id = None
+    from_to_roi = {'x0': 2000, 'y0': 50, 'x1': 50, 'y1': 50}
 
     def __init__(self, parent=None, working_dir=None, list_folders=None):
 

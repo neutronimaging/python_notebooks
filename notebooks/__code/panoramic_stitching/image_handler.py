@@ -7,6 +7,9 @@ from __code.panoramic_stitching.get import Get
 
 COLOR_LOCK = QtGui.QColor(62, 13, 244, 100)
 COLOR_UNLOCK = QtGui.QColor(255, 0, 0, 100)
+COLOR_LINE_SEGMENT = QtGui.QColor(255, 0, 255)
+LINE_SEGMENT_FONT = QtGui.QFont("Arial", 15)
+
 
 class ImageHandler:
 
@@ -99,8 +102,6 @@ class ImageHandler:
             _histo_widget.setLevels(self.parent.histogram_level[0],
                                     self.parent.histogram_level[1])
 
-
-
     def get_max_offset(self, folder_selected=None):
         offset_dictionary = self.parent.offset_dictionary[folder_selected]
 
@@ -109,3 +110,35 @@ class ImageHandler:
 
         return np.int(np.max(list_yoffset)), np.int(np.max(list_xoffset))
 
+    def update_from_to_roi(self, state=False):
+
+        if state:
+            from_to_roi = self.parent.from_to_roi
+            x0 = from_to_roi['x0']
+            y0 = from_to_roi['y0']
+            x1 = from_to_roi['x1']
+            y1 = from_to_roi['y1']
+            _pen = QtGui.QPen()
+            _pen.setColor(COLOR_LINE_SEGMENT)
+            _pen.setWidthF(1)
+            _line_segment = pg.LineSegmentROI(positions=[[x0, y0], [x1, y1]],
+                                              pen=_pen,
+                                              )
+            self.parent.ui.image_view.addItem(_line_segment)
+            self.parent.from_to_roi_id = _line_segment
+
+            _text_from = pg.TextItem(text="from")
+            _text_from.setPos(x0, y0)
+            _text_from.setFont(LINE_SEGMENT_FONT)
+
+            _text_to = pg.TextItem(text="to")
+            _text_to.setPos(x1, y1)
+            _text_to.setFont(LINE_SEGMENT_FONT)
+
+            self.parent.ui.image_view.addItem(_text_from)
+            self.parent.ui.image_view.addItem(_text_to)
+
+        else:
+            if self.parent.from_to_roi_id:
+                if self.parent.contour_image_roi_id:
+                    self.parent.ui.image_view.removeItem(self.parent.from_to_roi_id)
