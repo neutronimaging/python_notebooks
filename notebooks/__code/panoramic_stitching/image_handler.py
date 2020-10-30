@@ -115,66 +115,38 @@ class ImageHandler:
 
     def update_from_to_roi(self, state=False):
 
+        if self.parent.from_roi_id:
+            self.parent.ui.image_view.removeItem(self.parent.from_roi_id)
+            self.parent.ui.image_view.removeItem(self.parent.to_roi_id)
+            self.parent.ui.image_view.removeItem(self.parent.from_label_id)
+            self.parent.ui.image_view.removeItem(self.parent.to_label_id)
+            self.parent.ui.image_view.removeItem(self.parent.from_roi_cross_id)
+            self.parent.ui.image_view.removeItem(self.parent.to_roi_cross_id)
+
         if state:
 
-            if not self.parent.from_roi_id:
-                from_roi = self.parent.from_roi
-                x = from_roi['x']
-                y = from_roi['y']
-                self.parent.from_roi_id = pg.ROI([x, y],
-                                                 [ROI_WIDTH, ROI_HEIGHT],
-                                                 scaleSnap=True)
-                self.parent.ui.image_view.addItem(self.parent.from_roi_id)
-                self.parent.from_roi_id.sigRegionChanged.connect(self.parent.from_roi_box_changed)
+            from_roi = self.parent.from_roi
+            x = from_roi['x']
+            y = from_roi['y']
+            self.parent.from_roi_id = pg.ROI([x, y],
+                                             [ROI_WIDTH, ROI_HEIGHT],
+                                             scaleSnap=True)
+            self.parent.ui.image_view.addItem(self.parent.from_roi_id)
+            self.parent.from_roi_id.sigRegionChanged.connect(self.parent.from_roi_box_changed)
 
-                to_roi = self.parent.to_roi
-                x = to_roi['x']
-                y = to_roi['y']
-                self.parent.to_roi_id = pg.ROI([x, y],
-                                               [ROI_WIDTH, ROI_HEIGHT],
-                                               scaleSnap=True)
-                self.parent.ui.image_view.addItem(self.parent.to_roi_id)
-                self.parent.to_roi_id.sigRegionChanged.connect(self.parent.to_roi_box_changed)
+            to_roi = self.parent.to_roi
+            x = to_roi['x']
+            y = to_roi['y']
+            self.parent.to_roi_id = pg.ROI([x, y],
+                                           [ROI_WIDTH, ROI_HEIGHT],
+                                           scaleSnap=True)
+            self.parent.ui.image_view.addItem(self.parent.to_roi_id)
+            self.parent.to_roi_id.sigRegionChanged.connect(self.parent.to_roi_box_changed)
 
             self.update_from_label()
             self.update_from_cross_line()
             self.update_to_label()
             self.update_to_cross_line()
-
-            # from_to_roi = self.parent.from_to_roi
-            # x0 = from_to_roi['x0']
-            # y0 = from_to_roi['y0']
-            # x1 = from_to_roi['x1']
-            # y1 = from_to_roi['y1']
-            # _pen = QtGui.QPen()
-            # _pen.setColor(COLOR_LINE_SEGMENT)
-            # _pen.setWidthF(1)
-            # _line_segment = pg.LineROI(pos1=[x0, y0],
-            #                            pos2=[x1, y1],
-            #                            pen=_pen,
-            #                            width=1,
-            #                           )
-            # self.parent.ui.image_view.addItem(_line_segment)
-            # self.parent.from_to_roi_id = _line_segment
-            # _line_segment.sigRegionChanged.connect(self.parent.from_to_line_segment_changed)
-            #
-            # _text_from = pg.TextItem(text="from")
-            # _text_from.setPos(x0, y0)
-            # _text_from.setFont(LINE_SEGMENT_FONT)
-            # self.parent.from_label_id = _text_from
-            #
-            # _text_to = pg.TextItem(text="to")
-            # _text_to.setPos(x1, y1)
-            # _text_to.setFont(LINE_SEGMENT_FONT)
-            # self.parent.to_label_id = _text_to
-            #
-            # self.parent.ui.image_view.addItem(_text_from)
-            # self.parent.ui.image_view.addItem(_text_to)
-
-        else:
-            if self.parent.from_to_roi_id:
-                if self.parent.contour_image_roi_id:
-                    self.parent.ui.image_view.removeItem(self.parent.from_to_roi_id)
 
     def update_from_to_line_label_changed(self):
         from_to_roi = self.parent.from_to_roi

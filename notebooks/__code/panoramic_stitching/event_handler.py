@@ -108,7 +108,13 @@ class EventHandler:
 
         self.parent.ui.tableWidget.blockSignals(False)
 
-    def from_to_checkbox_changed(self, state=False):
+    def check_status_of_from_to_checkbox(self):
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        if row_selected == 0:
+            state = False
+        else:
+            state = self.parent.ui.from_to_checkbox.isChecked()
         self.parent.ui.from_to_button.setEnabled(state)
         o_image = ImageHandler(parent=self.parent)
         o_image.update_from_to_roi(state=state)
@@ -133,3 +139,9 @@ class EventHandler:
         o_image = ImageHandler(parent=self.parent)
         o_image.update_to_cross_line()
         o_image.update_to_label()
+
+    def from_to_button_pushed(self):
+        from_roi = self.parent.from_roi
+        to_roi = self.parent.to_roi
+
+        print(f"from_roi:{from_roi} -> to_roi:{to_roi}")

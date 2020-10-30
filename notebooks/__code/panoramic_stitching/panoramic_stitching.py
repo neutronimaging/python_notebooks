@@ -89,7 +89,7 @@ class Interface(QMainWindow):
     image_width = None
     image_height = None
     contour_image_roi_id = None
-    from_to_roi_id = None
+    # from_to_roi_id = None
     from_label_id = None
     to_label_id = None
     from_to_roi = {'x0': 2000, 'y0': 50, 'x1': 50, 'y1': 50}
@@ -159,10 +159,12 @@ class Interface(QMainWindow):
     def table_of_offset_selection_changed(self):
         o_pano = ImageHandler(parent=self)
         o_pano.update_contour_plot()
+        o_event = EventHandler(parent=self)
+        o_event.check_status_of_from_to_checkbox()
 
     def from_to_checkbox_checked(self, state):
         o_event = EventHandler(parent=self)
-        o_event.from_to_checkbox_changed(state=state)
+        o_event.check_status_of_from_to_checkbox()
 
     def from_roi_box_changed(self):
         o_event = EventHandler(parent=self)
@@ -171,3 +173,7 @@ class Interface(QMainWindow):
     def to_roi_box_changed(self):
         o_event = EventHandler(parent=self)
         o_event.to_roi_box_changed()
+
+    def from_to_button_pushed(self):
+        o_event = EventHandler(parent=self)
+        o_event.from_to_button_pushed()

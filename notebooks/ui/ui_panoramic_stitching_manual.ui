@@ -426,11 +426,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>from_to_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>from_to_button_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>695</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>181</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
   <slot>table_of_offset_cell_changed()</slot>
   <slot>table_of_offset_selection_changed()</slot>
   <slot>from_to_checkbox_checked()</slot>
+  <slot>from_to_button_pushed()</slot>
  </slots>
 </ui>
