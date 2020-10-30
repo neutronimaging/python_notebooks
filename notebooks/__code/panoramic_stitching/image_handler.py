@@ -96,6 +96,7 @@ class ImageHandler:
         _image = np.transpose(panoramic_image)
         # _image = self._clean_image(_image)
         self.parent.ui.image_view.setImage(_image)
+        self.parent.current_live_image = _image
         _view_box.setState(_state)
 
         if not first_update:
@@ -126,14 +127,17 @@ class ImageHandler:
                                               )
             self.parent.ui.image_view.addItem(_line_segment)
             self.parent.from_to_roi_id = _line_segment
+            _line_segment.sigRegionChanged.connect(self.parent.from_to_line_segment_changed)
 
             _text_from = pg.TextItem(text="from")
             _text_from.setPos(x0, y0)
             _text_from.setFont(LINE_SEGMENT_FONT)
+            self.parent.from_label_id = _text_from
 
             _text_to = pg.TextItem(text="to")
             _text_to.setPos(x1, y1)
             _text_to.setFont(LINE_SEGMENT_FONT)
+            self.parent.to_label_id = _text_to
 
             self.parent.ui.image_view.addItem(_text_from)
             self.parent.ui.image_view.addItem(_text_to)
@@ -142,3 +146,13 @@ class ImageHandler:
             if self.parent.from_to_roi_id:
                 if self.parent.contour_image_roi_id:
                     self.parent.ui.image_view.removeItem(self.parent.from_to_roi_id)
+
+    def update_from_to_line_label_changed(self):
+        from_to_roi = self.parent.from_to_roi
+        x0 = from_to_roi['x0']
+        y0 = from_to_roi['y0']
+        x1 = from_to_roi['x1']
+        y1 = from_to_roi['y1']
+
+        self.parent.from_label_id.setPos(x1, y1)
+        self.parent.to_label_id.setPos(x0, y0)

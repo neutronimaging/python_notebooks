@@ -113,3 +113,21 @@ class EventHandler:
         o_image = ImageHandler(parent=self.parent)
         o_image.update_from_to_roi(state=state)
 
+    def from_to_line_changed(self):
+        _roi_id = self.parent.from_to_roi_id
+
+        region = _roi_id.getArraySlice(self.parent.current_live_image,
+                                       self.parent.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        self.parent.from_to_roi = {'x0': x0,
+                                   'y0': y0,
+                                   'x1': x1,
+                                   'y1': y1}
+
+        o_image = ImageHandler(parent=self.parent)
+        o_image.update_from_to_line_label_changed()

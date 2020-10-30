@@ -84,11 +84,14 @@ class Interface(QMainWindow):
     vertical_profile_plot = None
 
     histogram_level = None
+    current_live_image = None
 
     image_width = None
     image_height = None
     contour_image_roi_id = None
     from_to_roi_id = None
+    from_label_id = None
+    to_label_id = None
     from_to_roi = {'x0': 2000, 'y0': 50, 'x1': 50, 'y1': 50}
 
     def __init__(self, parent=None, working_dir=None, list_folders=None):
@@ -152,3 +155,7 @@ class Interface(QMainWindow):
     def from_to_checkbox_checked(self, state):
         o_event = EventHandler(parent=self)
         o_event.from_to_checkbox_changed(state=state)
+
+    def from_to_line_segment_changed(self):
+        o_event = EventHandler(parent=self)
+        o_event.from_to_line_changed()
