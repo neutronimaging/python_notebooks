@@ -233,4 +233,3 @@ class ImageHandler:
         label_id = self.parent.to_label_id
         roi = self.parent.to_roi
         self.parent.to_label_id = self.update_label(label_id=label_id, roi=roi, text="to")
-

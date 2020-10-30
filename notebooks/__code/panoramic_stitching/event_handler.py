@@ -141,7 +141,32 @@ class EventHandler:
         o_image.update_to_label()
 
     def from_to_button_pushed(self):
+        self.parent.ui.tableWidget.blockSignals(True)
+
         from_roi = self.parent.from_roi
         to_roi = self.parent.to_roi
 
-        print(f"from_roi:{from_roi} -> to_roi:{to_roi}")
+        from_x = from_roi['x']
+        to_x = to_roi['x']
+        delta_x = from_x - to_x
+
+        from_y = from_roi['y']
+        to_y = to_roi['y']
+        delta_y = from_y - to_y
+
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
+        current_xoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=1))
+        new_xoffset = np.int(current_xoffset_of_selected_row - delta_x)
+        self.parent.ui.tableWidget.item(row_selected, 1).setText(str(new_xoffset))
+        # o_table.set_item_with_float(row=row_selected, column=1, float_value=new_xoffset)
+        self.save_table_offset_of_this_cell(row=row_selected, column=1)
+
+        current_yoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=2))
+        new_yoffset = current_yoffset_of_selected_row - delta_y
+        self.parent.ui.tableWidget.item(row_selected, 2).setText(str(new_yoffset))
+        # o_table.set_item_with_float(row=row_selected, column=2, float_value=new_yoffset)
+        self.save_table_offset_of_this_cell(row=row_selected, column=2)
+
+        self.parent.ui.tableWidget.blockSignals(False)
