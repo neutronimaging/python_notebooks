@@ -167,3 +167,7 @@ class Interface(QMainWindow):
     def from_roi_box_changed(self):
         o_event = EventHandler(parent=self)
         o_event.from_roi_box_changed()
+
+    def to_roi_box_changed(self):
+        o_event = EventHandler(parent=self)
+        o_event.to_roi_box_changed()

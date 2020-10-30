@@ -117,9 +117,8 @@ class ImageHandler:
 
         if state:
 
-            from_roi = self.parent.from_roi
-            from_roi_id = self.parent.from_roi_id
-            if not from_roi_id:
+            if not self.parent.from_roi_id:
+                from_roi = self.parent.from_roi
                 x = from_roi['x']
                 y = from_roi['y']
                 self.parent.from_roi_id = pg.ROI([x, y],
@@ -128,8 +127,19 @@ class ImageHandler:
                 self.parent.ui.image_view.addItem(self.parent.from_roi_id)
                 self.parent.from_roi_id.sigRegionChanged.connect(self.parent.from_roi_box_changed)
 
+                to_roi = self.parent.to_roi
+                x = to_roi['x']
+                y = to_roi['y']
+                self.parent.to_roi_id = pg.ROI([x, y],
+                                               [ROI_WIDTH, ROI_HEIGHT],
+                                               scaleSnap=True)
+                self.parent.ui.image_view.addItem(self.parent.to_roi_id)
+                self.parent.to_roi_id.sigRegionChanged.connect(self.parent.to_roi_box_changed)
+
             self.update_from_label()
             self.update_from_cross_line()
+            self.update_to_label()
+            self.update_to_cross_line()
 
             # from_to_roi = self.parent.from_to_roi
             # x0 = from_to_roi['x0']
@@ -176,17 +186,15 @@ class ImageHandler:
         self.parent.from_label_id.setPos(x1, y1)
         self.parent.to_label_id.setPos(x0, y0)
 
-    def update_from_cross_line(self):
-
-        if self.parent.from_roi_cross_id:
-            self.parent.ui.image_view.removeItem(self.parent.from_roi_cross_id)
+    def update_cross_line(self, roi_cross_id=None, roi=None):
+        if roi_cross_id:
+            self.parent.ui.image_view.removeItem(roi_cross_id)
 
         pos = []
         adj = []
 
-        from_roi = self.parent.from_roi
-        x = from_roi['x']
-        y = from_roi['y']
+        x = roi['x']
+        y = roi['y']
 
         # vertical guide
         pos.append([x + ROI_WIDTH / 2, y - ROI_HEIGHT / 2])
@@ -214,19 +222,43 @@ class ImageHandler:
                                   symbol=None,
                                   pxMode=False)
 
-        self.parent.from_roi_cross_id = line_view_binning
+        return line_view_binning
+
+    def update_from_cross_line(self):
+        from_roi_cross_id = self.parent.from_roi_cross_id
+        from_roi = self.parent.from_roi
+
+        self.parent.from_roi_cross_id = self.update_cross_line(roi_cross_id=from_roi_cross_id,
+                                                               roi=from_roi)
+
+    def update_to_cross_line(self):
+        to_roi_cross_id = self.parent.to_roi_cross_id
+        to_roi = self.parent.to_roi
+
+        self.parent.to_roi_cross_id = self.update_cross_line(roi_cross_id=to_roi_cross_id,
+                                                             roi=to_roi)
+
+    def update_label(self, label_id=None, roi=None, text=""):
+        if label_id:
+            self.parent.ui.image_view.removeItem(label_id)
+
+        x = roi['x'] + ROI_WIDTH
+        y = roi['y']
+
+        _text_id = pg.TextItem(text=text)
+        _text_id.setPos(x, y)
+        _text_id.setFont(LINE_SEGMENT_FONT)
+        self.parent.ui.image_view.addItem(_text_id)
+
+        return _text_id
 
     def update_from_label(self):
+        label_id = self.parent.from_label_id
+        roi = self.parent.from_roi
+        self.parent.from_label_id = self.update_label(label_id=label_id, roi=roi, text="from")
 
-        if self.parent.from_label_id:
-            self.parent.ui.image_view.removeItem(self.parent.from_label_id)
+    def update_to_label(self):
+        label_id = self.parent.to_label_id
+        roi = self.parent.to_roi
+        self.parent.to_label_id = self.update_label(label_id=label_id, roi=roi, text="to")
 
-        from_roi = self.parent.from_roi
-        x = from_roi['x'] + ROI_WIDTH
-        y = from_roi['y']
-
-        _text_from = pg.TextItem(text="from")
-        _text_from.setPos(x, y)
-        _text_from.setFont(LINE_SEGMENT_FONT)
-        self.parent.from_label_id = _text_from
-        self.parent.ui.image_view.addItem(_text_from)
