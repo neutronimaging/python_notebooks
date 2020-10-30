@@ -106,6 +106,8 @@ class EventHandler:
             o_pano.update_current_panoramic_image()
         o_pano.update_contour_plot()
 
+        self.check_status_of_from_to_checkbox()
+
         self.parent.ui.tableWidget.blockSignals(False)
 
     def check_status_of_from_to_checkbox(self):
@@ -170,3 +172,6 @@ class EventHandler:
         self.save_table_offset_of_this_cell(row=row_selected, column=2)
 
         self.parent.ui.tableWidget.blockSignals(False)
+
+        o_pano = ImageHandler(parent=self.parent)
+        o_pano.update_current_panoramic_image()
