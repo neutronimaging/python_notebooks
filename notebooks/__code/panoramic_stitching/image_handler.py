@@ -10,6 +10,8 @@ COLOR_UNLOCK = QtGui.QColor(255, 0, 0, 100)
 COLOR_LINE_SEGMENT = QtGui.QColor(255, 0, 255)
 LINE_SEGMENT_FONT = QtGui.QFont("Arial", 15)
 
+ROI_WIDTH, ROI_HEIGHT = 50, 50
+
 
 class ImageHandler:
 
@@ -114,33 +116,50 @@ class ImageHandler:
     def update_from_to_roi(self, state=False):
 
         if state:
-            from_to_roi = self.parent.from_to_roi
-            x0 = from_to_roi['x0']
-            y0 = from_to_roi['y0']
-            x1 = from_to_roi['x1']
-            y1 = from_to_roi['y1']
-            _pen = QtGui.QPen()
-            _pen.setColor(COLOR_LINE_SEGMENT)
-            _pen.setWidthF(1)
-            _line_segment = pg.LineSegmentROI(positions=[[x0, y0], [x1, y1]],
-                                              pen=_pen,
-                                              )
-            self.parent.ui.image_view.addItem(_line_segment)
-            self.parent.from_to_roi_id = _line_segment
-            _line_segment.sigRegionChanged.connect(self.parent.from_to_line_segment_changed)
 
-            _text_from = pg.TextItem(text="from")
-            _text_from.setPos(x0, y0)
-            _text_from.setFont(LINE_SEGMENT_FONT)
-            self.parent.from_label_id = _text_from
+            from_roi = self.parent.from_roi
+            from_roi_id = self.parent.from_roi_id
+            if not from_roi_id:
+                x = from_roi['x']
+                y = from_roi['y']
+                self.parent.from_roi_id = pg.ROI([x, y],
+                                                 [ROI_WIDTH, ROI_HEIGHT],
+                                                 scaleSnap=True)
+                self.parent.ui.image_view.addItem(self.parent.from_roi_id)
+                self.parent.from_roi_id.sigRegionChanged.connect(self.parent.from_roi_box_changed)
 
-            _text_to = pg.TextItem(text="to")
-            _text_to.setPos(x1, y1)
-            _text_to.setFont(LINE_SEGMENT_FONT)
-            self.parent.to_label_id = _text_to
+            self.update_from_label()
+            self.update_from_cross_line()
 
-            self.parent.ui.image_view.addItem(_text_from)
-            self.parent.ui.image_view.addItem(_text_to)
+            # from_to_roi = self.parent.from_to_roi
+            # x0 = from_to_roi['x0']
+            # y0 = from_to_roi['y0']
+            # x1 = from_to_roi['x1']
+            # y1 = from_to_roi['y1']
+            # _pen = QtGui.QPen()
+            # _pen.setColor(COLOR_LINE_SEGMENT)
+            # _pen.setWidthF(1)
+            # _line_segment = pg.LineROI(pos1=[x0, y0],
+            #                            pos2=[x1, y1],
+            #                            pen=_pen,
+            #                            width=1,
+            #                           )
+            # self.parent.ui.image_view.addItem(_line_segment)
+            # self.parent.from_to_roi_id = _line_segment
+            # _line_segment.sigRegionChanged.connect(self.parent.from_to_line_segment_changed)
+            #
+            # _text_from = pg.TextItem(text="from")
+            # _text_from.setPos(x0, y0)
+            # _text_from.setFont(LINE_SEGMENT_FONT)
+            # self.parent.from_label_id = _text_from
+            #
+            # _text_to = pg.TextItem(text="to")
+            # _text_to.setPos(x1, y1)
+            # _text_to.setFont(LINE_SEGMENT_FONT)
+            # self.parent.to_label_id = _text_to
+            #
+            # self.parent.ui.image_view.addItem(_text_from)
+            # self.parent.ui.image_view.addItem(_text_to)
 
         else:
             if self.parent.from_to_roi_id:
@@ -156,3 +175,58 @@ class ImageHandler:
 
         self.parent.from_label_id.setPos(x1, y1)
         self.parent.to_label_id.setPos(x0, y0)
+
+    def update_from_cross_line(self):
+
+        if self.parent.from_roi_cross_id:
+            self.parent.ui.image_view.removeItem(self.parent.from_roi_cross_id)
+
+        pos = []
+        adj = []
+
+        from_roi = self.parent.from_roi
+        x = from_roi['x']
+        y = from_roi['y']
+
+        # vertical guide
+        pos.append([x + ROI_WIDTH / 2, y - ROI_HEIGHT / 2])
+        pos.append([x + ROI_WIDTH / 2, y + ROI_HEIGHT + ROI_HEIGHT / 2])
+        adj.append([0, 1])
+
+        # horizontal guide
+        pos.append([x - ROI_WIDTH / 2, y + ROI_HEIGHT / 2])
+        pos.append([x + ROI_WIDTH + ROI_WIDTH / 2, y + ROI_HEIGHT / 2])
+        adj.append([2, 3])
+
+        pos = np.array(pos)
+        adj = np.array(adj)
+
+        line_color = (255, 0, 0, 255, 1)
+        lines = np.array([line_color for _ in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+        line_view_binning = pg.GraphItem()
+        self.parent.ui.image_view.addItem(line_view_binning)
+        line_view_binning.setData(pos=pos,
+                                  adj=adj,
+                                  pen=lines,
+                                  symbol=None,
+                                  pxMode=False)
+
+        self.parent.from_roi_cross_id = line_view_binning
+
+    def update_from_label(self):
+
+        if self.parent.from_label_id:
+            self.parent.ui.image_view.removeItem(self.parent.from_label_id)
+
+        from_roi = self.parent.from_roi
+        x = from_roi['x'] + ROI_WIDTH
+        y = from_roi['y']
+
+        _text_from = pg.TextItem(text="from")
+        _text_from.setPos(x, y)
+        _text_from.setFont(LINE_SEGMENT_FONT)
+        self.parent.from_label_id = _text_from
+        self.parent.ui.image_view.addItem(_text_from)

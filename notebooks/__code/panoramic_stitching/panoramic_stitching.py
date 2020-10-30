@@ -94,6 +94,14 @@ class Interface(QMainWindow):
     to_label_id = None
     from_to_roi = {'x0': 2000, 'y0': 50, 'x1': 50, 'y1': 50}
 
+    # new implementation
+    from_roi_id = None
+    from_roi_cross_id = None
+    to_roi_id = None
+    to_roi_cross_id = None
+    from_roi = {'x': 2000, 'y': 100}
+    to_roi = {'x': 100, 'y': 50}
+
     def __init__(self, parent=None, working_dir=None, list_folders=None):
 
         self.list_folders = list_folders
@@ -156,6 +164,6 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.from_to_checkbox_changed(state=state)
 
-    def from_to_line_segment_changed(self):
+    def from_roi_box_changed(self):
         o_event = EventHandler(parent=self)
-        o_event.from_to_line_changed()
+        o_event.from_roi_box_changed()
