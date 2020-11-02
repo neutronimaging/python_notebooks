@@ -10,6 +10,7 @@ from __code.panoramic_stitching.get import Get
 from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching import config_buttons as config
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of
+from __code.panoramic_stitching.gui_handler import GuiHandler
 
 
 class EventHandler:
@@ -191,7 +192,8 @@ class EventHandler:
         o_pano.update_contour_plot()
 
     def horizontal_profile(self, enabled=True):
-        self.parent.ui.horizontal_profile_plot_widget.setEnabled(enabled)
+        o_gui = GuiHandler(parent=self.parent)
+        o_gui.enabled_horizontal_profile_widgets(enabled=enabled)
 
         horizontal_profile = self.parent.horizontal_profile
         if enabled:
@@ -212,7 +214,8 @@ class EventHandler:
                 self.parent.ui.image_view.removeItem(horizontal_profile['id'])
 
     def vertical_profile(self, enabled=True):
-        self.parent.ui.vertical_profile_plot_widget.setEnabled(enabled)
+        o_gui = GuiHandler(parent=self.parent)
+        o_gui.enabled_vertical_profile_widgets(enabled=enabled)
 
         vertical_profile = self.parent.vertical_profile
         if enabled:

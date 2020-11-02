@@ -11,6 +11,7 @@ from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of, set_widgets_size
 from __code.panoramic_stitching.config_buttons import button
+from __code.panoramic_stitching.gui_handler import GuiHandler
 
 
 class GuiInitialization:
@@ -134,10 +135,11 @@ class GuiInitialization:
                          height=self.button_size['double_vertical_arrow']['height'])
 
         state_hori_matplotlib = self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
-        self.parent.ui.horizontal_profile_plot_widget.setEnabled(state_hori_matplotlib)
+        o_gui = GuiHandler(parent=self.parent)
+        o_gui.enabled_horizontal_profile_widgets(enabled=state_hori_matplotlib)
 
         state_verti_matplotlib = self.parent.ui.enable_vertical_profile_checkbox.isChecked()
-        self.parent.ui.vertical_profile_plot_widget.setEnabled(state_verti_matplotlib)
+        o_gui.enabled_vertical_profile_widgets(enabled=state_verti_matplotlib)
 
     def table(self):
         column_sizes = [900, 100, 100, 100]

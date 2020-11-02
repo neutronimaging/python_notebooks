@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1623</width>
-    <height>1242</height>
+    <width>1667</width>
+    <height>1181</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -171,14 +171,58 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <widget class="QCheckBox" name="enable_horizontal_profile_checkbox">
-               <property name="text">
-                <string>Enable</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <widget class="QCheckBox" name="enable_horizontal_profile_checkbox">
+                 <property name="text">
+                  <string>Enable</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Width</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="horizontal_profile_width_slider">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="QWidget" name="horizontal_profile_plot_widget" native="true">
@@ -294,19 +338,63 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QCheckBox" name="enable_vertical_profile_checkbox">
-               <property name="text">
-                <string>Enable</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QCheckBox" name="enable_vertical_profile_checkbox">
+                 <property name="text">
+                  <string>Enable</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Width</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="vertical_profile_width_slider">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_9">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="QWidget" name="vertical_profile_plot_widget" native="true">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
@@ -462,7 +550,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1623</width>
+     <width>1667</width>
      <height>22</height>
     </rect>
    </property>
@@ -564,22 +652,6 @@
     <hint type="destinationlabel">
      <x>5</x>
      <y>142</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>enable_vertical_profile_checkbox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>enable_vertical_profile_checked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1293</x>
-     <y>207</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1342</x>
-     <y>201</y>
     </hint>
    </hints>
   </connection>
@@ -836,6 +908,22 @@
     <hint type="destinationlabel">
      <x>1620</x>
      <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enable_vertical_profile_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>enable_vertical_profile_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1313</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>833</x>
+     <y>590</y>
     </hint>
    </hints>
   </connection>
