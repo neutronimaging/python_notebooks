@@ -3,6 +3,7 @@ import os
 from qtpy.QtWidgets import QMainWindow, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
 from qtpy import QtCore
 from qtpy.QtGui import QIcon
+import pyqtgraph as pg
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
@@ -192,8 +193,44 @@ class EventHandler:
     def horizontal_profile(self, enabled=True):
         self.parent.ui.horizontal_profile_plot_widget.setEnabled(enabled)
 
+        horizontal_profile = self.parent.horizontal_profile
+        if enabled:
+            if horizontal_profile['id']:
+                self.parent.ui.image_view.addItem(horizontal_profile['id'])
+            else:
+                x0 = horizontal_profile['x0']
+                x1 = horizontal_profile['x1']
+                y = horizontal_profile['y']
+                width = horizontal_profile['width']
+
+                roi = pg.ROI([x0, y], [x1-x0, width])
+                roi.addScaleHandle([0.5, 0], [0, 0])
+                self.parent.ui.image_view.addItem(roi)
+                self.parent.horizontal_profile['id'] = roi
+        else:
+            if horizontal_profile['id']:
+                self.parent.ui.image_view.removeItem(horizontal_profile['id'])
+
     def vertical_profile(self, enabled=True):
         self.parent.ui.vertical_profile_plot_widget.setEnabled(enabled)
+
+        vertical_profile = self.parent.vertical_profile
+        if enabled:
+            if vertical_profile['id']:
+                self.parent.ui.image_view.addItem(vertical_profile['id'])
+            else:
+                x = vertical_profile['x']
+                y0 = vertical_profile['y0']
+                y1 = vertical_profile['y1']
+                width = vertical_profile['width']
+
+                roi = pg.ROI([x, y0], [width, y1-y0])
+                roi.addScaleHandle([0, 0.5], [0, 0])
+                self.parent.ui.image_view.addItem(roi)
+                self.parent.vertical_profile['id'] = roi
+        else:
+            if vertical_profile['id']:
+                self.parent.ui.image_view.removeItem(vertical_profile['id'])
 
     def manual_offset_changed(self, direction='horizontal', nbr_pixel=1):
         """

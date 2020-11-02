@@ -105,6 +105,17 @@ class Interface(QMainWindow):
     from_roi = {'x': 2000, 'y': 100}
     to_roi = {'x': 100, 'y': 50}
 
+    horizontal_profile = {'id': None,
+                          'x0': 500,
+                          'y': 200,
+                          'x1': 2500,
+                          'width': 50}
+    vertical_profile = {'id': None,
+                        'x': 300,
+                        'y0': 70,
+                        'y1': 2000,
+                        'width': 50}
+
     def __init__(self, parent=None, working_dir=None, list_folders=None):
 
         self.list_folders = list_folders
@@ -188,6 +199,12 @@ class Interface(QMainWindow):
     def enable_horizontal_profile_checked(self, state):
         o_event = EventHandler(parent=self)
         o_event.horizontal_profile(enabled=state)
+
+    def horizontal_profile_changed(self):
+        pass
+
+    def vertical_profile_changed(self):
+        pass
 
     def enable_vertical_profile_checked(self, state):
         o_event = EventHandler(parent=self)

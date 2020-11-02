@@ -133,6 +133,12 @@ class GuiInitialization:
                          width=self.button_size['double_vertical_arrow']['width'],
                          height=self.button_size['double_vertical_arrow']['height'])
 
+        state_hori_matplotlib = self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
+        self.parent.ui.horizontal_profile_plot_widget.setEnabled(state_hori_matplotlib)
+
+        state_verti_matplotlib = self.parent.ui.enable_vertical_profile_checkbox.isChecked()
+        self.parent.ui.vertical_profile_plot_widget.setEnabled(state_verti_matplotlib)
+
     def table(self):
         column_sizes = [900, 100, 100, 100]
         column_names = ['File name', 'xoffset (px)', 'yoffset (px)', 'visible?']
