@@ -479,7 +479,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>101</x>
-     <y>525</y>
+     <y>595</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -526,7 +526,7 @@
    <slot>from_to_checkbox_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>320</x>
+     <x>460</x>
      <y>51</y>
     </hint>
     <hint type="destinationlabel">
@@ -558,8 +558,8 @@
    <slot>enable_horizontal_profile_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>71</x>
-     <y>176</y>
+     <x>86</x>
+     <y>205</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -574,12 +574,268 @@
    <slot>enable_vertical_profile_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1067</x>
-     <y>178</y>
+     <x>1293</x>
+     <y>207</y>
     </hint>
     <hint type="destinationlabel">
      <x>1342</x>
      <y>201</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>47</x>
+     <y>543</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>549</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>39</x>
+     <y>538</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>589</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>100</x>
+     <y>544</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>82</x>
+     <y>538</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>624</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1128</x>
+     <y>543</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1616</x>
+     <y>682</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1142</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1615</x>
+     <y>753</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1174</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>617</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1189</x>
+     <y>544</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1619</x>
+     <y>562</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1575</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1617</x>
+     <y>832</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1589</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>525</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1564</x>
+     <y>515</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1617</x>
+     <y>473</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1591</x>
+     <y>515</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>505</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1579</x>
+     <y>216</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1616</x>
+     <y>256</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1569</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1616</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1591</x>
+     <y>187</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1590</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1620</x>
+     <y>162</y>
     </hint>
    </hints>
   </connection>
@@ -592,5 +848,21 @@
   <slot>from_to_button_pushed()</slot>
   <slot>enable_horizontal_profile_checked()</slot>
   <slot>enable_vertical_profile_checked()</slot>
+  <slot>left_left_button_pressed()</slot>
+  <slot>left_left_button_released()</slot>
+  <slot>left_button_pressed()</slot>
+  <slot>left_button_released()</slot>
+  <slot>right_button_pressed()</slot>
+  <slot>right_button_released()</slot>
+  <slot>right_right_button_pressed()</slot>
+  <slot>right_right_button_released()</slot>
+  <slot>up_button_pressed()</slot>
+  <slot>up_button_released()</slot>
+  <slot>up_up_button_pressed()</slot>
+  <slot>up_up_button_released()</slot>
+  <slot>down_button_released()</slot>
+  <slot>down_down_button_pressed()</slot>
+  <slot>down_down_button_released()</slot>
+  <slot>down_button_pressed()</slot>
  </slots>
 </ui>

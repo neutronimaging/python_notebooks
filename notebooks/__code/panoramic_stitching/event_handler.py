@@ -2,10 +2,13 @@ import numpy as np
 import os
 from qtpy.QtWidgets import QMainWindow, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
 from qtpy import QtCore
+from qtpy.QtGui import QIcon
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
 from __code.panoramic_stitching.image_handler import ImageHandler
+from __code.panoramic_stitching import config_buttons as config
+from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of
 
 
 class EventHandler:
@@ -166,13 +169,11 @@ class EventHandler:
         current_xoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=1))
         new_xoffset = np.int(current_xoffset_of_selected_row - delta_x)
         self.parent.ui.tableWidget.item(row_selected, 1).setText(str(new_xoffset))
-        # o_table.set_item_with_float(row=row_selected, column=1, float_value=new_xoffset)
         self.save_table_offset_of_this_cell(row=row_selected, column=1)
 
         current_yoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=2))
         new_yoffset = current_yoffset_of_selected_row - delta_y
         self.parent.ui.tableWidget.item(row_selected, 2).setText(str(new_yoffset))
-        # o_table.set_item_with_float(row=row_selected, column=2, float_value=new_yoffset)
         self.save_table_offset_of_this_cell(row=row_selected, column=2)
 
         self.parent.ui.tableWidget.blockSignals(False)
@@ -185,3 +186,13 @@ class EventHandler:
 
     def vertical_profile(self, enabled=True):
         self.parent.ui.vertical_profile_plot_widget.setEnabled(enabled)
+
+    @staticmethod
+    def button_pressed(ui=None, name='left'):
+        full_file = make_full_file_name_to_static_folder_of(config.button[name]['pressed'])
+        ui.setIcon(QIcon(full_file))
+
+    @staticmethod
+    def button_released(ui=None, name='left'):
+        full_file = make_full_file_name_to_static_folder_of(config.button[name]['released'])
+        ui.setIcon(QIcon(full_file))

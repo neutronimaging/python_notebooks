@@ -186,3 +186,51 @@ class Interface(QMainWindow):
     def enable_vertical_profile_checked(self, state):
         o_event = EventHandler(parent=self)
         o_event.vertical_profile(enabled=state)
+        
+    def left_left_button_pressed(self):
+        EventHandler.button_pressed(ui=self.ui.left_left_button, name='left_left')
+    
+    def left_left_button_released(self):
+        EventHandler.button_released(ui=self.ui.left_left_button, name='left_left')
+
+    def left_button_pressed(self):
+        pass
+
+    def left_button_released(self):
+        pass
+
+    def right_right_button_pressed(self):
+        pass
+
+    def right_right_button_released(self):
+        pass
+
+    def right_button_pressed(self):
+        pass
+
+    def right_button_released(self):
+        pass
+
+    def up_up_button_pressed(self):
+        pass
+
+    def up_up_button_released(self):
+        pass
+
+    def up_button_pressed(self):
+        pass
+
+    def up_button_released(self):
+        pass
+
+    def down_down_button_pressed(self):
+        pass
+
+    def down_down_button_released(self):
+        pass
+
+    def down_button_pressed(self):
+        pass
+
+    def down_button_released(self):
+        pass
