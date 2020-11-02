@@ -135,6 +135,7 @@ class Interface(QMainWindow):
 
         o_image = ImageHandler(parent=self)
         o_image.update_current_panoramic_image()
+        o_image.update_contour_plot()
 
     # event handler
     def list_folder_combobox_value_changed(self, new_folder_selected=None):

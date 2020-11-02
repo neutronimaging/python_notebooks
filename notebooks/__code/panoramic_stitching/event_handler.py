@@ -118,6 +118,7 @@ class EventHandler:
         else:
             state = self.parent.ui.from_to_checkbox.isChecked()
         self.parent.ui.from_to_button.setEnabled(state)
+        self.parent.ui.from_to_error_label.setVisible(not state)
         o_image = ImageHandler(parent=self.parent)
         o_image.update_from_to_roi(state=state)
 

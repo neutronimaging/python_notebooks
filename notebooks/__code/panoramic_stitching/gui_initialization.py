@@ -63,6 +63,8 @@ class GuiInitialization:
         # list_folders
         list_folders = self.parent.list_folders
         self.parent.ui.list_folders_combobox.addItems(list_folders)
+        # hide error lable
+        self.parent.ui.from_to_error_label.setVisible(False)
 
     def table(self):
         column_sizes = [900, 100, 100, 100]
@@ -81,4 +83,4 @@ class GuiInitialization:
     def after_loading_data(self):
         self.parent.list_folder_combobox_value_changed()
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
-        o_table.select_rows(list_of_rows=[0])
+        o_table.select_rows(list_of_rows=[1])
