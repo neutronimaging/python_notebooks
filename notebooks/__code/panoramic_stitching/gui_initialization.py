@@ -1,15 +1,46 @@
+import os
 import pyqtgraph as pg
 from qtpy.QtWidgets import QVBoxLayout, QProgressBar
+from qtpy.QtGui import QIcon
+from qtpy.QtCore import QSize
 import matplotlib
+
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.table_handler import TableHandler
-from __code.panoramic_stitching.image_handler import ImageHandler
 
 
 class GuiInitialization:
+
+    button = {'left': {'pressed': 'left_arrow_v2_pressed.png',
+                       'released': 'left_arrow_v2_released.png'},
+              'right': {'pressed': 'right_arrow_v2_pressed.png',
+                        'released': 'right_arrow_v2_released.png'},
+              'left_left': {'pressed': 'left_left_arrow_v2_pressed.png',
+                            'released': 'left_left_arrow_v2_released.png'},
+              'right_right': {'pressed': 'right_right_arrow_v2_pressed.png',
+                              'released': 'right_right_arrow_v2_released.png'},
+              'up': {'pressed': 'up_arrow_v2_pressed.png',
+                     'released': 'up_arrow_v2_released.png'},
+              'down': {'pressed': 'down_arrow_v2_pressed.png',
+                       'released': 'down_arrow_v2_released.png'},
+              'up_up': {'pressed': 'up_up_arrow_v2_pressed.png',
+                        'released': 'up_up_arrow_v2_released.png'},
+              'down_down': {'pressed': 'down_down_arrow_v2_pressed.png',
+                            'released': 'down_down_arrow_v2_released.png'},
+              }
+
+    button_size = {'single_arrow': {'width': 50,
+                                             'height': 50},
+                   'double_arrow': {'width': 65,
+                                             'height': 50},
+                   'single_vertical_arrow': {'width': 50,
+                                             'height': 50},
+                   'double_vertical_arrow': {'width': 50,
+                                             'height': 65},
+                   }
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -63,8 +94,64 @@ class GuiInitialization:
         # list_folders
         list_folders = self.parent.list_folders
         self.parent.ui.list_folders_combobox.addItems(list_folders)
-        # hide error lable
+        # hide error label
         self.parent.ui.from_to_error_label.setVisible(False)
+        # move buttons
+        _file_path = os.path.dirname(__file__)
+
+        up_up_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button['up_up']
+                                                                                                  ['released'])
+        self.parent.ui.up_up_button.setIcon(QIcon(up_up_arrow_file))
+        up_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button['up']
+                                                                                               ['released'])
+        self.parent.ui.up_button.setIcon(QIcon(up_arrow_file))
+        left_left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button[
+                                                                                               'left_left']
+                                                                                              ['released'])
+        self.parent.ui.left_left_button.setIcon(QIcon(left_left_arrow_file))
+        left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button['left']
+                                                                                      ['released'])
+        self.parent.ui.left_button.setIcon(QIcon(left_arrow_file))
+        right_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button['right']
+                                                                                       ['released'])
+        self.parent.ui.right_button.setIcon(QIcon(right_arrow_file))
+        right_right_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button['right_right']
+                                                                                       ['released'])
+        self.parent.ui.right_right_button.setIcon(QIcon(right_right_arrow_file))
+
+        down_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button['down']
+                                                                                                  ['released'])
+        self.parent.ui.down_button.setIcon(QIcon(down_arrow_file))
+        down_down_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(self.button[
+                                                                                               'down_down']
+                                                                                                  ['released'])
+        self.parent.ui.down_down_button.setIcon(QIcon(down_down_arrow_file))
+
+        list_ui = [self.parent.ui.left_button,
+                   self.parent.ui.right_button]
+        GuiInitialization.__set_widgets_size(widgets=list_ui,
+                                             width=self.button_size['single_arrow']['width'],
+                                             height=self.button_size['single_arrow']['height'])
+
+        list_ui = [self.parent.ui.left_left_button,
+                   self.parent.ui.right_right_button]
+        GuiInitialization.__set_widgets_size(widgets=list_ui,
+                                             width=self.button_size['double_arrow']['width'],
+                                             height=self.button_size['double_arrow']['height'])
+
+        list_ui = [self.parent.ui.up_button,
+                   self.parent.ui.down_button]
+        GuiInitialization.__set_widgets_size(widgets=list_ui,
+                                             width=self.button_size['single_vertical_arrow']['width'],
+                                             height=self.button_size['single_vertical_arrow']['height'])
+
+        list_ui = [self.parent.ui.up_up_button,
+                   self.parent.ui.down_down_button]
+        GuiInitialization.__set_widgets_size(widgets=list_ui,
+                                             width=self.button_size['double_vertical_arrow']['width'],
+                                             height=self.button_size['double_vertical_arrow']['height'])
+
+
 
     def table(self):
         column_sizes = [900, 100, 100, 100]
@@ -84,3 +171,14 @@ class GuiInitialization:
         self.parent.list_folder_combobox_value_changed()
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         o_table.select_rows(list_of_rows=[1])
+
+    @staticmethod
+    def __make_full_file_name_to_static_folder_of(file_name):
+        _file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+        full_path_file = os.path.abspath(os.path.join(_file_path, file_name))
+        return full_path_file
+
+    @staticmethod
+    def __set_widgets_size(widgets=[], width=10, height=10):
+        for _widget in widgets:
+            _widget.setIconSize(QSize(width, height))

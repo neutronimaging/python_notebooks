@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1344</width>
-    <height>1082</height>
+    <width>1623</width>
+    <height>1242</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -161,17 +161,36 @@
         </property>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Horizontal Profile</string>
+          <string>Horizontal</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QWidget" name="horizontal_profile_plot_widget" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Profile</string>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QCheckBox" name="enable_horizontal_profile_checkbox">
+               <property name="text">
+                <string>Enable</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="horizontal_profile_plot_widget" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
@@ -223,7 +242,7 @@
                <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
+               <enum>QSizePolicy::Expanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -265,17 +284,36 @@
         </widget>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Vertical Profile</string>
+          <string>Vertical</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QWidget" name="vertical_profile_plot_widget" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Profile</string>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QCheckBox" name="enable_vertical_profile_checkbox">
+               <property name="text">
+                <string>Enable</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="vertical_profile_plot_widget" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
@@ -424,7 +462,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1344</width>
+     <width>1623</width>
      <height>22</height>
     </rect>
    </property>
@@ -488,7 +526,7 @@
    <slot>from_to_checkbox_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>503</x>
+     <x>320</x>
      <y>51</y>
     </hint>
     <hint type="destinationlabel">
@@ -513,6 +551,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>enable_horizontal_profile_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>enable_horizontal_profile_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>71</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enable_vertical_profile_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>enable_vertical_profile_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1067</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1342</x>
+     <y>201</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
@@ -520,5 +590,7 @@
   <slot>table_of_offset_selection_changed()</slot>
   <slot>from_to_checkbox_checked()</slot>
   <slot>from_to_button_pushed()</slot>
+  <slot>enable_horizontal_profile_checked()</slot>
+  <slot>enable_vertical_profile_checked()</slot>
  </slots>
 </ui>

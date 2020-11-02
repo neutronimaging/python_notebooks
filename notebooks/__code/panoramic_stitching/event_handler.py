@@ -179,3 +179,9 @@ class EventHandler:
 
         o_pano = ImageHandler(parent=self.parent)
         o_pano.update_current_panoramic_image()
+
+    def horizontal_profile(self, enabled=True):
+        self.parent.ui.horizontal_profile_plot_widget.setEnabled(enabled)
+
+    def vertical_profile(self, enabled=True):
+        self.parent.ui.vertical_profile_plot_widget.setEnabled(enabled)
