@@ -120,6 +120,9 @@ class TableHandler:
     def insert_empty_column(self, column):
         self.table_ui.insertColumn(column)
 
+    def set_item_with_str(self, row=0, column=0, cell_str=""):
+        self.table_ui.item(row, column).setText(cell_str)
+
     def set_item_with_float(self, row=0, column=0, float_value=""):
         if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
             _str_value = "N/A"

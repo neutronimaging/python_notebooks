@@ -115,18 +115,25 @@ class EventHandler:
 
     def check_status_of_from_to_checkbox(self):
         state = self.parent.ui.from_to_checkbox.isChecked()
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
         if state is False:
             self.parent.ui.from_to_button.setEnabled(False)
             self.parent.ui.from_to_error_label.setVisible(False)
         else:
-            o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
-            row_selected = o_table.get_row_selected()
             if row_selected == 0:
                 state = False
             self.parent.ui.from_to_button.setEnabled(state)
             self.parent.ui.from_to_error_label.setVisible(not state)
         o_image = ImageHandler(parent=self.parent)
         o_image.update_from_to_roi(state=state)
+
+        if row_selected == 0:
+            state_button = False
+        else:
+            state_button = True
+        self.enabled_all_manual_widgets(state=state_button)
 
     def roi_box_changed(self, roi_id=None, ):
         region = roi_id.getArraySlice(self.parent.current_live_image,
@@ -186,6 +193,36 @@ class EventHandler:
 
     def vertical_profile(self, enabled=True):
         self.parent.ui.vertical_profile_plot_widget.setEnabled(enabled)
+
+    def manual_offset_changed(self, direction='horizontal', nbr_pixel=1):
+        """
+        apply in the select row the value of the pixel offset
+        :param:
+        change_direction: 'horizontal' or 'vertical'
+        nbr_pixel: 1 by default, but can be any negative or positive values
+        """
+        column = 1 if direction == 'horizontal' else 2
+
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        current_offset = o_table.get_item_str_from_cell(row=row_selected, column=column)
+
+        new_offset = np.int(current_offset) + nbr_pixel
+        o_table.set_item_with_str(row=row_selected, column=column, cell_str=str(new_offset))
+
+        self.table_of_offset_cell_changed(row_selected, column)
+
+    def enabled_all_manual_widgets(self, state=True):
+        list_ui = [self.parent.ui.left_button,
+                   self.parent.ui.left_left_button,
+                   self.parent.ui.right_button,
+                   self.parent.ui.right_right_button,
+                   self.parent.ui.up_button,
+                   self.parent.ui.up_up_button,
+                   self.parent.ui.down_button,
+                   self.parent.ui.down_down_button]
+        for _ui in list_ui:
+            _ui.setEnabled(state)
 
     @staticmethod
     def button_pressed(ui=None, name='left'):

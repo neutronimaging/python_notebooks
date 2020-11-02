@@ -15,6 +15,9 @@ from __code.panoramic_stitching.load_data import LoadData
 from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
 
+SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
+DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
+
 
 class PanoramicStitching:
 
@@ -133,6 +136,9 @@ class Interface(QMainWindow):
         o_init = GuiInitialization(parent=self)
         o_init.after_loading_data()
 
+        o_event = EventHandler(parent=self)
+        o_event.check_status_of_from_to_checkbox()
+
         o_image = ImageHandler(parent=self)
         o_image.update_current_panoramic_image()
         o_image.update_contour_plot()
@@ -189,48 +195,64 @@ class Interface(QMainWindow):
         
     def left_left_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.left_left_button, name='left_left')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
     
     def left_left_button_released(self):
         EventHandler.button_released(ui=self.ui.left_left_button, name='left_left')
 
     def left_button_pressed(self):
-        pass
+        EventHandler.button_pressed(ui=self.ui.left_button, name='left')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
 
     def left_button_released(self):
-        pass
+        EventHandler.button_released(ui=self.ui.left_button, name='left')
 
     def right_right_button_pressed(self):
-        pass
+        EventHandler.button_pressed(ui=self.ui.right_right_button, name='right_right')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
 
     def right_right_button_released(self):
-        pass
+        EventHandler.button_released(ui=self.ui.right_right_button, name='right_right')
 
     def right_button_pressed(self):
-        pass
+        EventHandler.button_pressed(ui=self.ui.right_button, name='right')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
 
     def right_button_released(self):
-        pass
+        EventHandler.button_released(ui=self.ui.right_button, name='right')
 
     def up_up_button_pressed(self):
-        pass
+        EventHandler.button_pressed(ui=self.ui.up_up_button, name='up_up')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='vertical', nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
 
     def up_up_button_released(self):
-        pass
+        EventHandler.button_released(ui=self.ui.up_up_button, name='up_up')
 
     def up_button_pressed(self):
-        pass
+        EventHandler.button_pressed(ui=self.ui.up_button, name='up')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='vertical', nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
 
     def up_button_released(self):
-        pass
+        EventHandler.button_released(ui=self.ui.up_button, name='up')
 
     def down_down_button_pressed(self):
-        pass
+        EventHandler.button_pressed(ui=self.ui.down_down_button, name='down_down')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='vertical', nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
 
     def down_down_button_released(self):
-        pass
+        EventHandler.button_released(ui=self.ui.down_down_button, name='down_down')
 
     def down_button_pressed(self):
-        pass
+        EventHandler.button_pressed(ui=self.ui.down_button, name='down')
+        o_event = EventHandler(parent=self)
+        o_event.manual_offset_changed(direction='vertical', nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
 
     def down_button_released(self):
-        pass
+        EventHandler.button_released(ui=self.ui.down_button, name='down')
