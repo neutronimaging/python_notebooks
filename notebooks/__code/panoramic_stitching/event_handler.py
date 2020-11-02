@@ -111,14 +111,17 @@ class EventHandler:
         self.parent.ui.tableWidget.blockSignals(False)
 
     def check_status_of_from_to_checkbox(self):
-        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
-        row_selected = o_table.get_row_selected()
-        if row_selected == 0:
-            state = False
+        state = self.parent.ui.from_to_checkbox.isChecked()
+        if state is False:
+            self.parent.ui.from_to_button.setEnabled(False)
+            self.parent.ui.from_to_error_label.setVisible(False)
         else:
-            state = self.parent.ui.from_to_checkbox.isChecked()
-        self.parent.ui.from_to_button.setEnabled(state)
-        self.parent.ui.from_to_error_label.setVisible(not state)
+            o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+            row_selected = o_table.get_row_selected()
+            if row_selected == 0:
+                state = False
+            self.parent.ui.from_to_button.setEnabled(state)
+            self.parent.ui.from_to_error_label.setVisible(not state)
         o_image = ImageHandler(parent=self.parent)
         o_image.update_from_to_roi(state=state)
 
