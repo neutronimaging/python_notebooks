@@ -14,6 +14,7 @@ from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.load_data import LoadData
 from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
+from __code.panoramic_stitching.profile import Profile
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
 DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
@@ -105,16 +106,20 @@ class Interface(QMainWindow):
     from_roi = {'x': 2000, 'y': 100}
     to_roi = {'x': 100, 'y': 50}
 
+    width_profile = {'min': 1,
+                     'max': 300,
+                     'default': 10}
+
     horizontal_profile = {'id': None,
                           'x0': 500,
                           'y': 200,
                           'x1': 2500,
-                          'width': 50}
+                          'width': width_profile['default']}
     vertical_profile = {'id': None,
                         'x': 300,
                         'y0': 70,
                         'y1': 2000,
-                        'width': 50}
+                        'width': width_profile['default']}
 
     def __init__(self, parent=None, working_dir=None, list_folders=None):
 
@@ -201,10 +206,20 @@ class Interface(QMainWindow):
         o_event.horizontal_profile(enabled=state)
 
     def horizontal_profile_changed(self):
-        pass
+        o_profile = Profile(parent=self)
+        o_profile.horizontal_profile_changed()
+
+    def horizontal_profile_slider_changed(self, new_value):
+        o_event = EventHandler(parent=self)
+        o_event.horizontal_slider_width_changed(width=new_value)
+
+    def vertical_profile_slider_changed(self, new_value):
+        o_event = EventHandler(parent=self)
+        o_event.vertical_slider_width_changed(width=new_value)
 
     def vertical_profile_changed(self):
-        pass
+        o_profile = Profile(parent=self)
+        o_profile.vertical_profile_changed()
 
     def enable_vertical_profile_checked(self, state):
         o_event = EventHandler(parent=self)

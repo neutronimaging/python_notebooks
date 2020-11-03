@@ -141,6 +141,13 @@ class GuiInitialization:
         state_verti_matplotlib = self.parent.ui.enable_vertical_profile_checkbox.isChecked()
         o_gui.enabled_vertical_profile_widgets(enabled=state_verti_matplotlib)
 
+        profile_sliders = [self.parent.ui.horizontal_profile_width_slider,
+                           self.parent.ui.vertical_profile_width_slider]
+        for _slider in profile_sliders:
+            _slider.setMinimum(self.parent.width_profile['min'])
+            _slider.setMaximum(self.parent.width_profile['max'])
+            _slider.setValue(self.parent.width_profile['default'])
+
     def table(self):
         column_sizes = [900, 100, 100, 100]
         column_names = ['File name', 'xoffset (px)', 'yoffset (px)', 'visible?']

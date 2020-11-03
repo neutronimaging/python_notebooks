@@ -209,9 +209,16 @@ class EventHandler:
                 roi.addScaleHandle([0.5, 0], [0, 0])
                 self.parent.ui.image_view.addItem(roi)
                 self.parent.horizontal_profile['id'] = roi
+                roi.sigRegionChanged.connect(self.parent.horizontal_profile_changed)
         else:
             if horizontal_profile['id']:
                 self.parent.ui.image_view.removeItem(horizontal_profile['id'])
+
+    def horizontal_slider_width_changed(self, width=1):
+        self.parent.horizontal_profile['width'] = width
+        length, _ = self.parent.horizontal_profile['id'].size()
+        self.parent.horizontal_profile['id'].setSize((length, width))
+        self.parent.horizontal_profile_changed()
 
     def vertical_profile(self, enabled=True):
         o_gui = GuiHandler(parent=self.parent)
@@ -231,9 +238,17 @@ class EventHandler:
                 roi.addScaleHandle([0, 0.5], [0, 0])
                 self.parent.ui.image_view.addItem(roi)
                 self.parent.vertical_profile['id'] = roi
+                roi.sigRegionChanged.connect(self.parent.vertical_profile_changed)
+
         else:
             if vertical_profile['id']:
                 self.parent.ui.image_view.removeItem(vertical_profile['id'])
+
+    def vertical_slider_width_changed(self, width=1):
+        self.parent.vertical_profile['width'] = width
+        _, length = self.parent.vertical_profile['id'].size()
+        self.parent.vertical_profile['id'].setSize((width, length))
+        self.parent.vertical_profile_changed()
 
     def manual_offset_changed(self, direction='horizontal', nbr_pixel=1):
         """
