@@ -70,8 +70,8 @@ class GuiInitialization:
 
         self.parent.horizontal_profile_plot = _matplotlib(parent=self.parent,
                                                           widget=self.parent.ui.horizontal_profile_plot_widget)
-        self.parent.kropff_low_plot = _matplotlib(parent=self.parent,
-                                                  widget=self.parent.ui.vertical_profile_plot_widget)
+        self.parent.vertical_profile_plot = _matplotlib(parent=self.parent,
+                                                        widget=self.parent.ui.vertical_profile_plot_widget)
 
     def widgets(self):
         # list_folders

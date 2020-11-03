@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from qtpy.QtWidgets import QMainWindow, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
+from qtpy.QtWidgets import QApplication, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
 from qtpy import QtCore
 from qtpy.QtGui import QIcon
 import pyqtgraph as pg
@@ -11,6 +11,7 @@ from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching import config_buttons as config
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of
 from __code.panoramic_stitching.gui_handler import GuiHandler
+from __code.panoramic_stitching.profile import Profile
 
 
 class EventHandler:
@@ -196,6 +197,7 @@ class EventHandler:
         o_gui.enabled_horizontal_profile_widgets(enabled=enabled)
 
         horizontal_profile = self.parent.horizontal_profile
+
         if enabled:
             if horizontal_profile['id']:
                 self.parent.ui.image_view.addItem(horizontal_profile['id'])
@@ -210,9 +212,14 @@ class EventHandler:
                 self.parent.ui.image_view.addItem(roi)
                 self.parent.horizontal_profile['id'] = roi
                 roi.sigRegionChanged.connect(self.parent.horizontal_profile_changed)
+
+            self.parent.horizontal_profile_changed()
+
         else:
             if horizontal_profile['id']:
                 self.parent.ui.image_view.removeItem(horizontal_profile['id'])
+            self.parent.horizontal_profile_plot.axes.clear()
+            self.parent.horizontal_profile_plot.draw()
 
     def horizontal_slider_width_changed(self, width=1):
         self.parent.horizontal_profile['width'] = width
@@ -240,9 +247,13 @@ class EventHandler:
                 self.parent.vertical_profile['id'] = roi
                 roi.sigRegionChanged.connect(self.parent.vertical_profile_changed)
 
+            self.parent.vertical_profile_changed()
+
         else:
             if vertical_profile['id']:
                 self.parent.ui.image_view.removeItem(vertical_profile['id'])
+            self.parent.vertical_profile_plot.axes.clear()
+            self.parent.vertical_profile_plot.draw()
 
     def vertical_slider_width_changed(self, width=1):
         self.parent.vertical_profile['width'] = width

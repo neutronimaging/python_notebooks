@@ -13,22 +13,24 @@ class Profile:
         self.parent = parent
 
     def horizontal_profile_changed(self):
-        roi_id = self.parent.horizontal_profile['id']
-        horizontal_roi_dimensions = Profile.get_x_y_width_height_of_roi(roi_id=roi_id)
-        self.plot_profile(x=horizontal_roi_dimensions['x'],
-                          y=horizontal_roi_dimensions['y'],
-                          width=horizontal_roi_dimensions['width'],
-                          height=horizontal_roi_dimensions['height'],
-                          profile_type='horizontal')
+        if self.parent.ui.enable_horizontal_profile_checkbox.isChecked():
+            roi_id = self.parent.horizontal_profile['id']
+            horizontal_roi_dimensions = Profile.get_x_y_width_height_of_roi(roi_id=roi_id)
+            self.plot_profile(x=horizontal_roi_dimensions['x'],
+                              y=horizontal_roi_dimensions['y'],
+                              width=horizontal_roi_dimensions['width'],
+                              height=horizontal_roi_dimensions['height'],
+                              profile_type='horizontal')
 
     def vertical_profile_changed(self):
-        roi_id = self.parent.vertical_profile['id']
-        vertical_roi_dimensions = Profile.get_x_y_width_height_of_roi(roi_id=roi_id)
-        self.plot_profile(x=vertical_roi_dimensions['x'],
-                          y=vertical_roi_dimensions['y'],
-                          width=vertical_roi_dimensions['width'],
-                          height=vertical_roi_dimensions['height'],
-                          profile_type='vertical')
+        if self.parent.ui.enable_vertical_profile_checkbox.isChecked():
+            roi_id = self.parent.vertical_profile['id']
+            vertical_roi_dimensions = Profile.get_x_y_width_height_of_roi(roi_id=roi_id)
+            self.plot_profile(x=vertical_roi_dimensions['x'],
+                              y=vertical_roi_dimensions['y'],
+                              width=vertical_roi_dimensions['width'],
+                              height=vertical_roi_dimensions['height'],
+                              profile_type='vertical')
 
     def plot_profile(self, x=None, y=None, width=None, height=None, profile_type='horizontal'):
         if profile_type == 'horizontal':
@@ -88,14 +90,17 @@ class Profile:
             y_top_for_profile = np.max([y, top_of_image]) - top_of_image
             y_bottom_for_profile = np.min([y + height, top_of_image + image_height]) - top_of_image
 
-            x_axis_of_profile = np.arange(x_left_for_profile, x_right_for_profile) + left_of_image
+            if profile_type == 'horizontal':
+                x_axis_of_profile = np.arange(x_left_for_profile, x_right_for_profile) + left_of_image
+            else:
+                x_axis_of_profile = np.arange(y_top_for_profile, y_bottom_for_profile) + top_of_image
+
             y_axis_of_profile = data_dictionary[_file].data[
                                 y_top_for_profile:y_bottom_for_profile,
                                 x_left_for_profile:x_right_for_profile,
                                 ]
 
             y_axis = np.mean(y_axis_of_profile, axis=dim_to_keep)
-            #
             plot_ui.axes.plot(x_axis_of_profile, y_axis, color=color)
             # plot_ui.axes.set_xlabel("Pixel")
             # plot_ui.axes.set_ylabel("Average counts")

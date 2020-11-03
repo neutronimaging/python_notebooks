@@ -179,6 +179,9 @@ class Interface(QMainWindow):
         o_pano.update_current_panoramic_image()
         o_pano.update_contour_plot()
 
+        self.horizontal_profile_changed()
+        self.vertical_profile_changed()
+
     def table_of_offset_selection_changed(self):
         o_pano = ImageHandler(parent=self)
         o_pano.update_contour_plot()
@@ -200,12 +203,11 @@ class Interface(QMainWindow):
     def from_to_button_pushed(self):
         o_event = EventHandler(parent=self)
         o_event.from_to_button_pushed()
+        self.horizontal_profile_changed()
 
     def enable_horizontal_profile_checked(self, state):
         o_event = EventHandler(parent=self)
         o_event.horizontal_profile(enabled=state)
-        o_profile = Profile(parent=self)
-        o_profile.horizontal_profile_changed()
 
     def horizontal_profile_changed(self):
         o_profile = Profile(parent=self)
@@ -226,14 +228,13 @@ class Interface(QMainWindow):
     def enable_vertical_profile_checked(self, state):
         o_event = EventHandler(parent=self)
         o_event.vertical_profile(enabled=state)
-        o_profile = Profile(parent=self)
-        o_profile.vertical_profile_changed()
 
     def left_left_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.left_left_button, name='left_left')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='horizontal', nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
-    
+        self.horizontal_profile_changed()
+
     def left_left_button_released(self):
         EventHandler.button_released(ui=self.ui.left_left_button, name='left_left')
 
@@ -241,6 +242,7 @@ class Interface(QMainWindow):
         EventHandler.button_pressed(ui=self.ui.left_button, name='left')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='horizontal', nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        self.horizontal_profile_changed()
 
     def left_button_released(self):
         EventHandler.button_released(ui=self.ui.left_button, name='left')
@@ -249,6 +251,7 @@ class Interface(QMainWindow):
         EventHandler.button_pressed(ui=self.ui.right_right_button, name='right_right')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='horizontal', nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        self.horizontal_profile_changed()
 
     def right_right_button_released(self):
         EventHandler.button_released(ui=self.ui.right_right_button, name='right_right')
@@ -257,6 +260,7 @@ class Interface(QMainWindow):
         EventHandler.button_pressed(ui=self.ui.right_button, name='right')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='horizontal', nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        self.horizontal_profile_changed()
 
     def right_button_released(self):
         EventHandler.button_released(ui=self.ui.right_button, name='right')
@@ -265,6 +269,7 @@ class Interface(QMainWindow):
         EventHandler.button_pressed(ui=self.ui.up_up_button, name='up_up')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='vertical', nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
+        self.vertical_profile_changed()
 
     def up_up_button_released(self):
         EventHandler.button_released(ui=self.ui.up_up_button, name='up_up')
@@ -273,6 +278,7 @@ class Interface(QMainWindow):
         EventHandler.button_pressed(ui=self.ui.up_button, name='up')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='vertical', nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        self.vertical_profile_changed()
 
     def up_button_released(self):
         EventHandler.button_released(ui=self.ui.up_button, name='up')
@@ -281,6 +287,7 @@ class Interface(QMainWindow):
         EventHandler.button_pressed(ui=self.ui.down_down_button, name='down_down')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='vertical', nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        self.vertical_profile_changed()
 
     def down_down_button_released(self):
         EventHandler.button_released(ui=self.ui.down_down_button, name='down_down')
@@ -289,6 +296,8 @@ class Interface(QMainWindow):
         EventHandler.button_pressed(ui=self.ui.down_button, name='down')
         o_event = EventHandler(parent=self)
         o_event.manual_offset_changed(direction='vertical', nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        self.vertical_profile_changed()
 
     def down_button_released(self):
         EventHandler.button_released(ui=self.ui.down_button, name='down')
+
