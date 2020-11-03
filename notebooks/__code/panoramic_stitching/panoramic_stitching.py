@@ -204,6 +204,8 @@ class Interface(QMainWindow):
     def enable_horizontal_profile_checked(self, state):
         o_event = EventHandler(parent=self)
         o_event.horizontal_profile(enabled=state)
+        o_profile = Profile(parent=self)
+        o_profile.horizontal_profile_changed()
 
     def horizontal_profile_changed(self):
         o_profile = Profile(parent=self)
@@ -224,7 +226,9 @@ class Interface(QMainWindow):
     def enable_vertical_profile_checked(self, state):
         o_event = EventHandler(parent=self)
         o_event.vertical_profile(enabled=state)
-        
+        o_profile = Profile(parent=self)
+        o_profile.vertical_profile_changed()
+
     def left_left_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.left_left_button, name='left_left')
         o_event = EventHandler(parent=self)

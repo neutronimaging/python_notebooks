@@ -13,6 +13,12 @@ class Profile:
                                                    y=horizontal_roi_dimensions['y'],
                                                    width=horizontal_roi_dimensions['width'],
                                                    height=horizontal_roi_dimensions['height'])
+        plot_ui = self.parent.horizontal_profile_plot
+        plot_ui.axes.cla()
+        plot_ui.axes.plot(np.arange(10), np.ones(10))
+        plot_ui.axes.set_xlabel("Pixel")
+        plot_ui.axes.set_ylabel("Average counts")
+        plot_ui.draw()
 
     def vertical_profile_changed(self):
         roi_id = self.parent.vertical_profile['id']

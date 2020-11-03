@@ -266,7 +266,7 @@ class EventHandler:
         new_offset = np.int(current_offset) + nbr_pixel
         o_table.set_item_with_str(row=row_selected, column=column, cell_str=str(new_offset))
 
-        self.table_of_offset_cell_changed(row_selected, column)
+        self.parent.table_of_offset_cell_changed(row_selected, column)
 
     def enabled_all_manual_widgets(self, state=True):
         list_ui = [self.parent.ui.left_button,
