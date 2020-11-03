@@ -171,6 +171,9 @@ class Interface(QMainWindow):
         o_pano = ImageHandler(parent=self)
         o_pano.update_current_panoramic_image()
 
+        self.horizontal_profile_changed()
+        self.vertical_profile_changed()
+
     def table_of_offset_cell_changed(self, row, column):
         o_event = EventHandler(parent=self)
         o_event.save_table_offset_of_this_cell(row=row, column=column)
