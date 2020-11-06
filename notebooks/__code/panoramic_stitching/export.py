@@ -4,7 +4,10 @@ from qtpy import QtGui
 import numpy as np
 from collections import OrderedDict
 
+from NeuNorm.normalization import Normalization
+
 from __code.file_handler import make_or_reset_folder
+from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 
 
 class Export:
@@ -18,18 +21,32 @@ class Export:
                                                          caption="Select where the folder containing the "
                                                                    "panoramic images will be created!",
                                                          options=QFileDialog.ShowDirsOnly)
-
+        QtGui.QGuiApplication.processEvents()
         if output_folder:
-            self._export(output_folder=output_folder)
+            self.create_panoramic_images()
+            self.export_images(output_folder=output_folder)
 
-    def _export(self, output_folder=None):
-        data_dictionary = self.parent.data_dictionary
-        offset_dictionary = self.parent.offset_dictionary
-
+    def export_images(self, output_folder=None):
         new_output_folder_name = os.path.join(output_folder,
                                               os.path.basename(self.parent.working_dir) + "_panoramic")
 
         make_or_reset_folder(new_output_folder_name)
+        panoramic_images_dict = self.parent.panoramic_images
+
+        list_data = []
+        list_filename = []
+        for _key in panoramic_images_dict.keys():
+            list_data.append(panoramic_images_dict[_key])
+            list_filename.append(_key)
+
+        o_norm = Normalization()
+        o_norm.load(data=list_data)
+        o_norm.data['sample']['filename'] = list_filename
+        o_norm.export(new_output_folder_name, data_type='sample')
+
+    def create_panoramic_images(self, output_folder=None):
+        data_dictionary = self.parent.data_dictionary
+        offset_dictionary = self.parent.offset_dictionary
 
         nbr_group = len(data_dictionary.keys())
         self.parent.eventProgress.setMaximum(nbr_group)
@@ -40,31 +57,31 @@ class Export:
         image_height = self.parent.image_height
         image_width = self.parent.image_width
 
-        panoramic_images = OrderedDict()
+        panoramic_images_dict = OrderedDict()
 
         for _group_index, _group_name in enumerate(data_dictionary.keys()):
 
-            panoramic_image = np.zeros(panoramic_height, panoramic_width)
+            panoramic_image = np.zeros((panoramic_height, panoramic_width))
 
             data_dictionary_of_group = data_dictionary[_group_name]
             offset_dictionary_of_group = offset_dictionary[_group_name]
 
-            for _file_index, _file in enumerate(data_dictionary.keys()):
+            for _file_index, _file in enumerate(data_dictionary_of_group.keys()):
 
                 yoffset = offset_dictionary_of_group[_file]['yoffset']
                 xoffset = offset_dictionary_of_group[_file]['xoffset']
-                image = data_dictionary_of_group['file'].data
+                image = data_dictionary_of_group[_file].data
 
                 if _file_index == 0:
-                    panoramic_image[yoffset: yoffset+image_height,
-                    xoffset: xoffset+image_width] = image
+                    panoramic_image[yoffset+VERTICAL_MARGIN: yoffset+image_height+VERTICAL_MARGIN,
+                    xoffset+HORIZONTAL_MARGIN: xoffset+image_width+HORIZONTAL_MARGIN] = image
                     continue
 
-                temp_big_image = np.zeros(panoramic_height, panoramic_width)
-                temp_big_image[yoffset: yoffset+image_height,
-                xoffset: xoffset+image_width] = image
+                temp_big_image = np.zeros((panoramic_height, panoramic_width))
+                temp_big_image[yoffset+VERTICAL_MARGIN: yoffset+image_height+VERTICAL_MARGIN,
+                xoffset+HORIZONTAL_MARGIN: xoffset+image_width+HORIZONTAL_MARGIN] = image
 
-                where_panoramic_image_has_value_only = np.where((panoramic_image != 0) & (temp_big_image == 0))
+                # where_panoramic_image_has_value_only = np.where((panoramic_image != 0) & (temp_big_image == 0))
                 where_temp_big_image_has_value_only = np.where((temp_big_image != 0) & (panoramic_image == 0))
                 where_both_images_overlap = np.where((panoramic_image != 0) & (temp_big_image != 0))
 
@@ -73,13 +90,11 @@ class Export:
                 panoramic_image[where_both_images_overlap] = (panoramic_image[where_both_images_overlap] +
                                                               temp_big_image[where_both_images_overlap]) / 2
 
-            panoramic_image[_group_name] = panoramic_image
+            panoramic_images_dict[_group_name] = panoramic_image
 
             self.parent.eventProgress.setValue(_group_index + 1)
             QtGui.QGuiApplication.processEvents()
 
-        self.parent.panoramic_images = panoramic_image
+        self.parent.panoramic_images = panoramic_images_dict
 
         self.parent.eventProgress.setVisible(False)
-
-
