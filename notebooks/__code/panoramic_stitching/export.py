@@ -21,28 +21,12 @@ class Export:
                                                          caption="Select where the folder containing the "
                                                                    "panoramic images will be created!",
                                                          options=QFileDialog.ShowDirsOnly)
-        QtGui.QGuiApplication.processEvents()
         if output_folder:
+            self.parent.ui.setEnabled(False)
+            QtGui.QGuiApplication.processEvents()
             self.create_panoramic_images()
             self.export_images(output_folder=output_folder)
-
-    def export_images(self, output_folder=None):
-        new_output_folder_name = os.path.join(output_folder,
-                                              os.path.basename(self.parent.working_dir) + "_panoramic")
-
-        make_or_reset_folder(new_output_folder_name)
-        panoramic_images_dict = self.parent.panoramic_images
-
-        list_data = []
-        list_filename = []
-        for _key in panoramic_images_dict.keys():
-            list_data.append(panoramic_images_dict[_key])
-            list_filename.append(_key)
-
-        o_norm = Normalization()
-        o_norm.load(data=list_data)
-        o_norm.data['sample']['filename'] = list_filename
-        o_norm.export(new_output_folder_name, data_type='sample')
+            self.parent.ui.setEnabled(True)
 
     def create_panoramic_images(self, output_folder=None):
         data_dictionary = self.parent.data_dictionary
@@ -60,6 +44,8 @@ class Export:
         panoramic_images_dict = OrderedDict()
 
         for _group_index, _group_name in enumerate(data_dictionary.keys()):
+
+            self.parent.ui.statusbar.showMessage("Creating panoramic image of {} in progress...".format(_group_name))
 
             panoramic_image = np.zeros((panoramic_height, panoramic_width))
 
@@ -98,3 +84,24 @@ class Export:
         self.parent.panoramic_images = panoramic_images_dict
 
         self.parent.eventProgress.setVisible(False)
+
+    def export_images(self, output_folder=None):
+
+        new_folder_name = os.path.basename(self.parent.working_dir) + "_panoramic"
+        self.parent.ui.statusbar.showMessage("Exporting images in folder {}".format(new_folder_name))
+        new_output_folder_name = os.path.join(output_folder, new_folder_name)
+
+        make_or_reset_folder(new_output_folder_name)
+        panoramic_images_dict = self.parent.panoramic_images
+
+        list_data = []
+        list_filename = []
+        for _key in panoramic_images_dict.keys():
+            list_data.append(panoramic_images_dict[_key])
+            list_filename.append(_key)
+
+        o_norm = Normalization()
+        o_norm.load(data=list_data)
+        o_norm.data['sample']['filename'] = list_filename
+        o_norm.export(new_output_folder_name, data_type='sample')
+        self.parent.ui.statusbar.showMessage("{} has been created!".format(new_output_folder_name), 10000)  # 10s
