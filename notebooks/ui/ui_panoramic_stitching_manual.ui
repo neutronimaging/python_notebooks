@@ -533,10 +533,35 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Automatically stitch all other folders using those offset parameters</string>
+         <widget class="QFrame" name="frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Automatically stitch all other folders using those offset parameters</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="export_panoramic_images_button">
+             <property name="maximumSize">
+              <size>
+               <width>200</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Export Panoramic Images ...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -566,8 +591,8 @@
    <slot>list_folder_combobox_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>568</y>
+     <x>170</x>
+     <y>548</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -662,8 +687,8 @@
    <slot>left_left_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>47</x>
-     <y>516</y>
+     <x>62</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -678,8 +703,8 @@
    <slot>left_left_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>39</x>
-     <y>511</y>
+     <x>62</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -694,8 +719,8 @@
    <slot>left_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>100</x>
-     <y>517</y>
+     <x>111</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -710,8 +735,8 @@
    <slot>left_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>82</x>
-     <y>511</y>
+     <x>111</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -726,8 +751,8 @@
    <slot>right_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1161</x>
-     <y>516</y>
+     <x>707</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>1616</x>
@@ -742,8 +767,8 @@
    <slot>right_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1175</x>
-     <y>518</y>
+     <x>707</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>1615</x>
@@ -758,8 +783,8 @@
    <slot>right_right_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1207</x>
-     <y>515</y>
+     <x>756</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>1618</x>
@@ -774,8 +799,8 @@
    <slot>right_right_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1222</x>
-     <y>517</y>
+     <x>756</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
      <x>1619</x>
@@ -790,8 +815,8 @@
    <slot>down_down_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1619</x>
-     <y>514</y>
+     <x>1638</x>
+     <y>497</y>
     </hint>
     <hint type="destinationlabel">
      <x>1617</x>
@@ -806,8 +831,8 @@
    <slot>down_down_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1633</x>
-     <y>515</y>
+     <x>1638</x>
+     <y>497</y>
     </hint>
     <hint type="destinationlabel">
      <x>1618</x>
@@ -822,8 +847,8 @@
    <slot>down_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1608</x>
-     <y>488</y>
+     <x>1638</x>
+     <y>467</y>
     </hint>
     <hint type="destinationlabel">
      <x>1617</x>
@@ -838,8 +863,8 @@
    <slot>down_button_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1635</x>
-     <y>488</y>
+     <x>1638</x>
+     <y>467</y>
     </hint>
     <hint type="destinationlabel">
      <x>1618</x>
@@ -918,8 +943,8 @@
    <slot>enable_vertical_profile_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1313</x>
-     <y>207</y>
+     <x>875</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
      <x>833</x>
@@ -934,8 +959,8 @@
    <slot>horizontal_profile_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>557</x>
-     <y>209</y>
+     <x>544</x>
+     <y>214</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -950,7 +975,7 @@
    <slot>vertical_profile_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1482</x>
+     <x>1353</x>
      <y>214</y>
     </hint>
     <hint type="destinationlabel">
@@ -972,6 +997,22 @@
     <hint type="destinationlabel">
      <x>1662</x>
      <y>1099</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>export_panoramic_images_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_panoramic_images_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1547</x>
+     <y>1124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1660</x>
+     <y>1148</y>
     </hint>
    </hints>
   </connection>
@@ -1003,5 +1044,6 @@
   <slot>horizontal_profile_slider_changed()</slot>
   <slot>vertical_profile_slider_changed()</slot>
   <slot>automatically_stitch_all_other_images_button_clicked()</slot>
+  <slot>export_panoramic_images_button_clicked()</slot>
  </slots>
 </ui>

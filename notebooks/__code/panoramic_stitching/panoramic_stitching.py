@@ -16,6 +16,7 @@ from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.profile import Profile
 from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
+from __code.panoramic_stitching.export import Export
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
 DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
@@ -308,3 +309,7 @@ class Interface(QMainWindow):
     def automatically_stitch_all_other_images_button_clicked(self):
         o_auto = AutomaticallyStitch(parent=self)
         o_auto.run()
+
+    def export_panoramic_images_button_clicked(self):
+        o_export = Export(parent=self)
+        o_export.run()

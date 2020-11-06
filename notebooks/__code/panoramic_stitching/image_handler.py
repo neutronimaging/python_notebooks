@@ -11,6 +11,8 @@ COLOR_LINE_SEGMENT = QtGui.QColor(255, 0, 255)
 LINE_SEGMENT_FONT = QtGui.QFont("Arial", 15)
 
 ROI_WIDTH, ROI_HEIGHT = 50, 50
+HORIZONTAL_MARGIN = 500
+VERTICAL_MARGIN = 500
 
 
 class ImageHandler:
@@ -42,7 +44,7 @@ class ImageHandler:
             _pen = QtGui.QPen()
             _pen.setColor(_color)
             _pen.setWidthF(0.01)
-            _roi_id = pg.ROI([roi['x0'], roi['y0']],
+            _roi_id = pg.ROI([roi['x0'] + HORIZONTAL_MARGIN, roi['y0'] + VERTICAL_MARGIN],
                              [self.parent.image_width, self.parent.image_height],
                              pen=_pen, scaleSnap=True,
                              movable=False)
@@ -78,7 +80,8 @@ class ImageHandler:
         for _file_index, _file in enumerate(data_dictionary.keys()):
 
             if _file_index == 0:
-                panoramic_image = np.zeros((max_yoffset + image_height, max_xoffset + image_width))
+                panoramic_image = np.zeros((max_yoffset + image_height + 2*VERTICAL_MARGIN,
+                                            max_xoffset + image_width + 2*HORIZONTAL_MARGIN))
 
             _image = data_dictionary[_file].data
             is_visible = offset_dictionary[_file]['visible']
@@ -86,12 +89,15 @@ class ImageHandler:
                 continue
 
             if _file_index == 0:
-                panoramic_image[0:image_height, 0:image_width] = _image
+                panoramic_image[VERTICAL_MARGIN:image_height+VERTICAL_MARGIN,
+                HORIZONTAL_MARGIN:image_width+HORIZONTAL_MARGIN] = _image
             else:
                 xoffset = offset_dictionary[_file]['xoffset']
                 yoffset = offset_dictionary[_file]['yoffset']
 
-                panoramic_image[yoffset: yoffset+image_height, xoffset: xoffset+image_width] = _image
+                panoramic_image[yoffset+VERTICAL_MARGIN: yoffset+image_height+VERTICAL_MARGIN,
+                xoffset+HORIZONTAL_MARGIN: xoffset+image_width+HORIZONTAL_MARGIN] = \
+                    _image
 
         self.parent.panoramic_images[folder_selected] = panoramic_image
 
@@ -124,11 +130,10 @@ class ImageHandler:
             self.parent.ui.image_view.removeItem(self.parent.to_roi_cross_id)
 
         if state:
-
             from_roi = self.parent.from_roi
             x = from_roi['x']
             y = from_roi['y']
-            self.parent.from_roi_id = pg.ROI([x, y],
+            self.parent.from_roi_id = pg.ROI([x+HORIZONTAL_MARGIN, y+VERTICAL_MARGIN],
                                              [ROI_WIDTH, ROI_HEIGHT],
                                              scaleSnap=True)
             self.parent.ui.image_view.addItem(self.parent.from_roi_id)
@@ -137,7 +142,7 @@ class ImageHandler:
             to_roi = self.parent.to_roi
             x = to_roi['x']
             y = to_roi['y']
-            self.parent.to_roi_id = pg.ROI([x, y],
+            self.parent.to_roi_id = pg.ROI([x+HORIZONTAL_MARGIN, y+VERTICAL_MARGIN],
                                            [ROI_WIDTH, ROI_HEIGHT],
                                            scaleSnap=True)
             self.parent.ui.image_view.addItem(self.parent.to_roi_id)

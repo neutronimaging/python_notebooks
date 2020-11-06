@@ -75,7 +75,7 @@ class AutomaticallyStitch:
             long_axis_value_image_reference = 0
             lift_axis_value_image_reference = 0
 
-            # get x and yofffset pixel/motor position of each image of reference group
+            # get xoffset and yofffset pixel/motor position of each image of reference group
             for _file_index, _file in enumerate(list_files):
 
                 if _file_index == 0:

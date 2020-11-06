@@ -77,5 +77,6 @@ class LoadData:
             self.parent.eventProgress.setValue(_folder_index+1)
             QtGui.QGuiApplication.processEvents()
 
+        self.parent.working_dir = os.path.dirname(self.list_folders[0])
         self.parent.data_dictionary = master_dict
         self.parent.eventProgress.setVisible(False)
