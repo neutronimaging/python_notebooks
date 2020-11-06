@@ -535,7 +535,7 @@
         <item>
          <widget class="QPushButton" name="pushButton">
           <property name="text">
-           <string>Automatically stitch all other folders using those parameters</string>
+           <string>Automatically stitch all other folders using those offset parameters</string>
           </property>
          </widget>
         </item>
@@ -959,6 +959,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatically_stitch_all_other_images_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>923</x>
+     <y>1132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1662</x>
+     <y>1099</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
@@ -986,5 +1002,6 @@
   <slot>down_button_pressed()</slot>
   <slot>horizontal_profile_slider_changed()</slot>
   <slot>vertical_profile_slider_changed()</slot>
+  <slot>automatically_stitch_all_other_images_button_clicked()</slot>
  </slots>
 </ui>

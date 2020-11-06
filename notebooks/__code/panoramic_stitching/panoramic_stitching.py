@@ -15,6 +15,7 @@ from __code.panoramic_stitching.load_data import LoadData
 from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.profile import Profile
+from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
 DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
@@ -304,3 +305,6 @@ class Interface(QMainWindow):
     def down_button_released(self):
         EventHandler.button_released(ui=self.ui.down_button, name='down')
 
+    def automatically_stitch_all_other_images_button_clicked(self):
+        o_auto = AutomaticallyStitch(parent=self)
+        o_auto.run()
