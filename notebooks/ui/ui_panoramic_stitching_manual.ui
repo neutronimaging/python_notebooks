@@ -495,7 +495,37 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="list_folders_combobox"/>
+           <widget class="QComboBox" name="list_folders_combobox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="reset_table_button">
+            <property name="text">
+             <string>Reset Table</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -639,7 +669,7 @@
    <slot>from_to_checkbox_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>460</x>
+     <x>320</x>
      <y>51</y>
     </hint>
     <hint type="destinationlabel">
@@ -1016,6 +1046,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>reset_table_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reset_table_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1540</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1662</x>
+     <y>508</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
@@ -1045,5 +1091,6 @@
   <slot>vertical_profile_slider_changed()</slot>
   <slot>automatically_stitch_all_other_images_button_clicked()</slot>
   <slot>export_panoramic_images_button_clicked()</slot>
+  <slot>reset_table_button_clicked()</slot>
  </slots>
 </ui>

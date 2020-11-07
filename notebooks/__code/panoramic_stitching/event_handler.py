@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from qtpy.QtWidgets import QApplication, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
+from qtpy.QtWidgets import QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
 from qtpy import QtCore
 from qtpy.QtGui import QIcon
 import pyqtgraph as pg
@@ -11,7 +11,6 @@ from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching import config_buttons as config
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of
 from __code.panoramic_stitching.gui_handler import GuiHandler
-from __code.panoramic_stitching.profile import Profile
 
 
 class EventHandler:

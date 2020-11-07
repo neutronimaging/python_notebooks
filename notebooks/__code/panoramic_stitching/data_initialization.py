@@ -51,6 +51,7 @@ class DataInitialization:
 
             offset_dictionary[_folder_name] = _dict
         self.parent.offset_dictionary = offset_dictionary
+        self.parent.offset_dictionary_for_reset = copy.deepcopy(offset_dictionary)
 
     def _get_image_size(self):
         data_dictionary = self.parent.data_dictionary

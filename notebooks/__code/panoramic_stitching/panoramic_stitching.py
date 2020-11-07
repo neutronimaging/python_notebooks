@@ -1,12 +1,11 @@
 from IPython.core.display import display
-from qtpy.QtWidgets import QMainWindow, QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
-from qtpy import QtCore
+from qtpy.QtWidgets import QMainWindow
 import os
+import copy
 
 from __code.ipywe import fileselector
 from __code._utilities.folder import get_list_of_folders_with_specified_file_type
 from __code._utilities.string import format_html_message
-from __code._utilities.table_handler import TableHandler
 from __code import load_ui
 
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
@@ -81,6 +80,7 @@ class Interface(QMainWindow):
     #                       ...,
     #                       }
     offset_dictionary = None
+    offset_dictionary_for_reset = None
 
     # panoramic_images = {'folder_name1': [],
     #                     'folder_name2': [],
@@ -145,6 +145,8 @@ class Interface(QMainWindow):
 
     def load_data(self):
         # load data and metadata
+
+        self.ui.setEnabled(False)
         o_load = LoadData(parent=self,
                           list_folders=self.list_folders)
         o_load.run()
@@ -162,6 +164,8 @@ class Interface(QMainWindow):
         o_image = ImageHandler(parent=self)
         o_image.update_current_panoramic_image()
         o_image.update_contour_plot()
+
+        self.ui.setEnabled(True)
 
     # event handler
     def list_folder_combobox_value_changed(self, new_folder_selected=None):
@@ -315,3 +319,16 @@ class Interface(QMainWindow):
     def export_panoramic_images_button_clicked(self):
         o_export = Export(parent=self)
         o_export.run()
+
+    def reset_table_button_clicked(self):
+        self.offset_dictionary = copy.deepcopy(self.offset_dictionary_for_reset)
+
+        o_init = GuiInitialization(parent=self)
+        o_init.after_loading_data()
+
+        o_event = EventHandler(parent=self)
+        o_event.check_status_of_from_to_checkbox()
+
+        o_image = ImageHandler(parent=self)
+        o_image.update_current_panoramic_image()
+        o_image.update_contour_plot()
