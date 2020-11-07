@@ -2,6 +2,7 @@ import numpy as np
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
+from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 
 COLOR_WORKING_ROW = 'red'
 COLOR_NONE_WORKING_ROW = 'black'
@@ -111,7 +112,7 @@ class Profile:
     def get_x_y_width_height_of_roi(roi_id=None):
         x, y = roi_id.pos()
         width, height = roi_id.size()
-        return {'x'     : np.int(x),
-                'y'     : np.int(y),
+        return {'x'     : np.int(x) - HORIZONTAL_MARGIN,
+                'y'     : np.int(y) - VERTICAL_MARGIN,
                 'width' : np.int(width),
                 'height': np.int(height)}

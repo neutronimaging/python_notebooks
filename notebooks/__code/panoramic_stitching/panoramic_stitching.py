@@ -17,6 +17,7 @@ from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.profile import Profile
 from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
 from __code.panoramic_stitching.export import Export
+from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
 DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
@@ -98,29 +99,30 @@ class Interface(QMainWindow):
     # from_to_roi_id = None
     from_label_id = None
     to_label_id = None
-    from_to_roi = {'x0': 2000, 'y0': 50, 'x1': 50, 'y1': 50}
+    from_to_roi = {'x0': 2000 + HORIZONTAL_MARGIN, 'y0': 50 + VERTICAL_MARGIN,
+                   'x1': 50 + HORIZONTAL_MARGIN, 'y1': 50 + VERTICAL_MARGIN}
 
     # new implementation
     from_roi_id = None
     from_roi_cross_id = None
     to_roi_id = None
     to_roi_cross_id = None
-    from_roi = {'x': 2000, 'y': 100}
-    to_roi = {'x': 100, 'y': 50}
+    from_roi = {'x': 2000 + HORIZONTAL_MARGIN, 'y': 100 + VERTICAL_MARGIN}
+    to_roi = {'x': 100 + HORIZONTAL_MARGIN, 'y': 50 + VERTICAL_MARGIN}
 
     width_profile = {'min': 1,
                      'max': 300,
                      'default': 10}
 
     horizontal_profile = {'id': None,
-                          'x0': 500,
-                          'y': 200,
-                          'x1': 2500,
+                          'x0': 500 + HORIZONTAL_MARGIN,
+                          'y': 200 + VERTICAL_MARGIN,
+                          'x1': 2500 + HORIZONTAL_MARGIN,
                           'width': width_profile['default']}
     vertical_profile = {'id': None,
-                        'x': 300,
-                        'y0': 70,
-                        'y1': 2000,
+                        'x': 300 + HORIZONTAL_MARGIN,
+                        'y0': 70 + VERTICAL_MARGIN,
+                        'y1': 2000 + VERTICAL_MARGIN,
                         'width': width_profile['default']}
 
     def __init__(self, parent=None, working_dir=None, list_folders=None):

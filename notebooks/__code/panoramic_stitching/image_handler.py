@@ -133,7 +133,7 @@ class ImageHandler:
             from_roi = self.parent.from_roi
             x = from_roi['x']
             y = from_roi['y']
-            self.parent.from_roi_id = pg.ROI([x+HORIZONTAL_MARGIN, y+VERTICAL_MARGIN],
+            self.parent.from_roi_id = pg.ROI([x, y],
                                              [ROI_WIDTH, ROI_HEIGHT],
                                              scaleSnap=True)
             self.parent.ui.image_view.addItem(self.parent.from_roi_id)
@@ -142,7 +142,7 @@ class ImageHandler:
             to_roi = self.parent.to_roi
             x = to_roi['x']
             y = to_roi['y']
-            self.parent.to_roi_id = pg.ROI([x+HORIZONTAL_MARGIN, y+VERTICAL_MARGIN],
+            self.parent.to_roi_id = pg.ROI([x, y],
                                            [ROI_WIDTH, ROI_HEIGHT],
                                            scaleSnap=True)
             self.parent.ui.image_view.addItem(self.parent.to_roi_id)
