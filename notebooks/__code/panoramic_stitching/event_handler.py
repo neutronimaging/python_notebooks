@@ -129,6 +129,10 @@ class EventHandler:
                 state = False
             self.parent.ui.from_to_button.setEnabled(state)
             self.parent.ui.from_to_error_label.setVisible(not state)
+            if state:
+                o_image = ImageHandler(parent=self.parent)
+                o_image.update_validity_of_from_to_button()
+
         o_image = ImageHandler(parent=self.parent)
         o_image.update_from_to_roi(state=state)
 
@@ -152,6 +156,7 @@ class EventHandler:
         o_image = ImageHandler(parent=self.parent)
         o_image.update_from_cross_line()
         o_image.update_from_label()
+        o_image.update_validity_of_from_to_button()
 
     def to_roi_box_changed(self):
         self.parent.to_roi = self.roi_box_changed(roi_id=self.parent.to_roi_id)

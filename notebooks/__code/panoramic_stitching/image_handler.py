@@ -153,6 +153,35 @@ class ImageHandler:
             self.update_to_label()
             self.update_to_cross_line()
 
+    def update_validity_of_from_to_button(self):
+        # check that from ROI is inside the selected image
+        from_roi = self.parent.from_roi
+        x = from_roi['x']
+        y = from_roi['y']
+
+        o_get = Get(parent=self.parent)
+        folder_selected = o_get.get_combobox_folder_selected()
+
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        name_of_file_selected = o_table.get_item_str_from_cell(row=row_selected, column=0)
+
+        offset_dictionary = self.parent.offset_dictionary[folder_selected]
+
+        xoffset_of_selected_image = offset_dictionary[name_of_file_selected]['xoffset'] + HORIZONTAL_MARGIN
+        yoffset_of_selected_image = offset_dictionary[name_of_file_selected]['yoffset'] + VERTICAL_MARGIN
+
+        if (x < xoffset_of_selected_image) or (y < yoffset_of_selected_image) or \
+            (x > xoffset_of_selected_image + self.parent.image_width) or \
+                (y > yoffset_of_selected_image + self.parent.image_height):
+            from_to_button_status = False
+            from_to_error_label = True
+        else:
+            from_to_button_status = True
+            from_to_error_label = False
+        self.parent.ui.from_to_button.setEnabled(from_to_button_status)
+        self.parent.ui.from_to_error_label.setVisible(from_to_error_label)
+
     def update_from_to_line_label_changed(self):
         from_to_roi = self.parent.from_to_roi
         x0 = from_to_roi['x0']

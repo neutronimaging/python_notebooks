@@ -126,7 +126,7 @@
          </palette>
         </property>
         <property name="text">
-         <string>Switch DISABLED for first image of table (reference image)</string>
+         <string>Switch DISABLED for first image of table (reference image) or when FROM ROI is outside selected image!</string>
         </property>
        </widget>
       </item>
