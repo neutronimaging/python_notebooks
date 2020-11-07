@@ -55,10 +55,10 @@ class PanoramicStitching:
                                     spacer=""))
 
         # gui initialization
-        o_interface = Interface(working_dir=self.working_dir, list_folders=final_list_folders)
+        o_interface = Interface(list_folders=final_list_folders)
         o_interface.show()
         o_interface.load_data()
-
+        o_interface.initialization_after_loading_data()
 
 class Interface(QMainWindow):
 
@@ -125,7 +125,7 @@ class Interface(QMainWindow):
                         'y1': 2000 + VERTICAL_MARGIN,
                         'width': width_profile['default']}
 
-    def __init__(self, parent=None, working_dir=None, list_folders=None):
+    def __init__(self, parent=None, list_folders=None):
 
         self.list_folders = list_folders
 
