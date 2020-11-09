@@ -96,3 +96,6 @@ class AutomaticallyStitch:
             QtGui.QGuiApplication.processEvents()
 
         self.parent.eventProgress.setVisible(False)
+
+        # enable button to save panoramic images
+        self.parent.ui.export_panoramic_images_button.setEnabled(True)

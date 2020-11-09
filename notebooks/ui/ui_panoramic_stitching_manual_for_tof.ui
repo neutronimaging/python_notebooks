@@ -1,0 +1,1114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1667</width>
+    <height>1181</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="from_to_checkbox">
+            <property name="minimumSize">
+             <size>
+              <width>160</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>160</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>FROM -&gt; TO pointer</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="from_to_button">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Move image of active row FROM -&gt; TO</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="from_to_error_label">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>220</red>
+                  <green>0</green>
+                  <blue>14</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>220</red>
+                  <green>0</green>
+                  <blue>14</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>220</red>
+                  <green>0</green>
+                  <blue>14</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>220</red>
+                  <green>0</green>
+                  <blue>14</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>127</red>
+                  <green>127</green>
+                  <blue>127</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>127</red>
+                  <green>127</green>
+                  <blue>127</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="text">
+             <string>Switch DISABLED for first image of table (reference image) or when FROM ROI is outside selected image!</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QSplitter" name="full_splitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QSplitter" name="display_splitter">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <widget class="QWidget" name="stitched_widget" native="true"/>
+           <widget class="QSplitter" name="profile_display_splitter">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Horizontal</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
+               <widget class="QGroupBox" name="groupBox_3">
+                <property name="title">
+                 <string>Profile</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_5">
+                   <item>
+                    <widget class="QCheckBox" name="enable_horizontal_profile_checkbox">
+                     <property name="text">
+                      <string>Enable</string>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_4">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="horizontal_profile_label">
+                     <property name="text">
+                      <string>Width</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSlider" name="horizontal_profile_width_slider">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_5">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="horizontal_profile_plot_widget" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetMinimumSize</enum>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="left_left_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="left_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>150</width>
+                    <height>150</height>
+                   </size>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
+                  <property name="default">
+                   <bool>false</bool>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Expanding</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>37</width>
+                    <height>17</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="right_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="right_right_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Vertical</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QGroupBox" name="groupBox_4">
+                <property name="title">
+                 <string>Profile</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_5">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_7">
+                   <item>
+                    <widget class="QCheckBox" name="enable_vertical_profile_checkbox">
+                     <property name="text">
+                      <string>Enable</string>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_8">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="vertical_profile_label">
+                     <property name="text">
+                      <string>Width</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSlider" name="vertical_profile_width_slider">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_9">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="vertical_profile_plot_widget" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <item>
+                 <widget class="QPushButton" name="up_up_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="up_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="down_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="down_down_button">
+                  <property name="styleSheet">
+                   <string notr="true">border: None</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Step 1 - Coarse Alignment</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="QTableWidget" name="tableWidget_2">
+           <column>
+            <property name="text">
+             <string>Folder Name</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Row</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>New Column</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Visible?</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="text">
+            <string>Validate Coarse Alignment and Go to Step 2</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Step 2 - Fine Alignment</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Minimum</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>37</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="reset_table_button">
+             <property name="text">
+              <string>Reset Table</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTableWidget" name="tableWidget">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <column>
+            <property name="text">
+             <string>file name</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>x offset</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>y offset</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>visible ?</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="text">
+               <string>Automatically stitch all TOF images using those offset parameters</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="export_panoramic_images_button">
+              <property name="maximumSize">
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Export Panoramic Images ...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1667</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>cellChanged(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_of_offset_cell_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>414</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>668</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_of_offset_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>229</x>
+     <y>720</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>817</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>from_to_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>from_to_checkbox_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>from_to_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>from_to_button_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>695</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>181</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enable_horizontal_profile_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>enable_horizontal_profile_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>86</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>62</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>549</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>62</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>589</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>111</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>left_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>111</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>624</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>707</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1616</x>
+     <y>682</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>707</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1615</x>
+     <y>753</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>756</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>617</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_right_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>right_right_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>756</x>
+     <y>496</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1619</x>
+     <y>562</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1638</x>
+     <y>497</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1617</x>
+     <y>832</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1638</x>
+     <y>497</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>525</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1638</x>
+     <y>467</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1617</x>
+     <y>473</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>down_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>down_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1638</x>
+     <y>467</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>505</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1623</x>
+     <y>213</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1616</x>
+     <y>256</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1613</x>
+     <y>217</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1616</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1635</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1618</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>up_up_button</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>up_up_button_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1634</x>
+     <y>187</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1620</x>
+     <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enable_vertical_profile_checkbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>enable_vertical_profile_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>875</x>
+     <y>213</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>833</x>
+     <y>590</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontal_profile_width_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>horizontal_profile_slider_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>544</x>
+     <y>214</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>vertical_profile_width_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>vertical_profile_slider_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1353</x>
+     <y>214</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1663</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatically_stitch_all_other_images_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>923</x>
+     <y>1132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1662</x>
+     <y>1099</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>export_panoramic_images_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_panoramic_images_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1547</x>
+     <y>1124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1660</x>
+     <y>1148</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reset_table_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reset_table_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1540</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1662</x>
+     <y>508</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>list_folder_combobox_value_changed()</slot>
+  <slot>table_of_offset_cell_changed()</slot>
+  <slot>table_of_offset_selection_changed()</slot>
+  <slot>from_to_checkbox_checked()</slot>
+  <slot>from_to_button_pushed()</slot>
+  <slot>enable_horizontal_profile_checked()</slot>
+  <slot>enable_vertical_profile_checked()</slot>
+  <slot>left_left_button_pressed()</slot>
+  <slot>left_left_button_released()</slot>
+  <slot>left_button_pressed()</slot>
+  <slot>left_button_released()</slot>
+  <slot>right_button_pressed()</slot>
+  <slot>right_button_released()</slot>
+  <slot>right_right_button_pressed()</slot>
+  <slot>right_right_button_released()</slot>
+  <slot>up_button_pressed()</slot>
+  <slot>up_button_released()</slot>
+  <slot>up_up_button_pressed()</slot>
+  <slot>up_up_button_released()</slot>
+  <slot>down_button_released()</slot>
+  <slot>down_down_button_pressed()</slot>
+  <slot>down_down_button_released()</slot>
+  <slot>down_button_pressed()</slot>
+  <slot>horizontal_profile_slider_changed()</slot>
+  <slot>vertical_profile_slider_changed()</slot>
+  <slot>automatically_stitch_all_other_images_button_clicked()</slot>
+  <slot>export_panoramic_images_button_clicked()</slot>
+  <slot>reset_table_button_clicked()</slot>
+ </slots>
+</ui>

@@ -44,7 +44,7 @@ class PanoramicStitching:
 
             str_list_ext = ", ".join(self.file_extension)
             display(format_html_message(pre_message="None of the folder selected contains the file of extension "
-                                                    "requested ({})".format(str_list_ext),
+                                                    "requested ({}}".format(str_list_ext),
                                         spacer=""))
             return
 
@@ -135,13 +135,13 @@ class Interface(QMainWindow):
         super(Interface, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
-                                                 'ui_panoramic_stitching_manual.ui'))
+                                                 'ui_panoramic_stitching_manual_for_tof.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Semi-Automatic Panoramic Stitching")
 
         # gui initialization
-        o_init = GuiInitialization(parent=self)
-        o_init.before_loading_data()
+        # o_init = GuiInitialization(parent=self)
+        # o_init.before_loading_data()
 
     def load_data(self):
         # load data and metadata
