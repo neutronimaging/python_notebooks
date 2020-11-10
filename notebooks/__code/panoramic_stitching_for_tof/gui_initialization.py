@@ -55,7 +55,8 @@ class GuiInitialization:
 
     def pyqtgraph(self):
         # calculate best contrast images
-        self.parent.ui.image_view_best_contrast = pg.ImageView(view=pg.PlotItem())
+        _view1 = pg.PlotItem()
+        self.parent.ui.image_view_best_contrast = pg.ImageView(view=_view1, name='view1')
         self.parent.ui.image_view_best_contrast.ui.roiBtn.hide()
         self.parent.ui.image_view_best_contrast.ui.menuBtn.hide()
         image_layout_best_contrast = QVBoxLayout()
@@ -63,7 +64,8 @@ class GuiInitialization:
         self.parent.ui.best_contrast_widget.setLayout(image_layout_best_contrast)
 
         # stitch images
-        self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
+        _view2 = pg.PlotItem()
+        self.parent.ui.image_view = pg.ImageView(view=_view2, name='view2')
         self.parent.ui.image_view.ui.roiBtn.hide()
         self.parent.ui.image_view.ui.menuBtn.hide()
         image_layout = QVBoxLayout()
@@ -178,6 +180,8 @@ class GuiInitialization:
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def after_loading_data(self):
-        self.parent.list_folder_combobox_value_changed()
-        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
-        o_table.select_rows(list_of_rows=[1])
+        self.parent.best_contrast_list_folders_combobox_changed()
+
+        # self.parent.list_folder_combobox_value_changed()
+        # o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        # o_table.select_rows(list_of_rows=[1])

@@ -10,6 +10,7 @@ from __code import load_ui
 
 from __code.panoramic_stitching_for_tof.gui_initialization import GuiInitialization
 from __code.panoramic_stitching_for_tof.load_data import LoadData
+from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import BestContrastTabHandler
 
 from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.image_handler import ImageHandler
@@ -98,7 +99,9 @@ class Interface(QMainWindow):
     vertical_profile_plot = None
 
     histogram_level = None
+    histogram_level_best_contrast = None
     current_live_image = None
+    current_live_image_best_contrast = None
 
     image_width = None
     image_height = None
@@ -161,8 +164,8 @@ class Interface(QMainWindow):
         # o_init = DataInitialization(parent=self)
         # o_init.offset_table()
         #
-        # o_init = GuiInitialization(parent=self)
-        # o_init.after_loading_data()
+        o_init = GuiInitialization(parent=self)
+        o_init.after_loading_data()
         #
         # o_event = EventHandler(parent=self)
         # o_event.check_status_of_from_to_checkbox()
@@ -338,3 +341,7 @@ class Interface(QMainWindow):
         o_image = ImageHandler(parent=self)
         o_image.update_current_panoramic_image()
         o_image.update_contour_plot()
+
+    def best_contrast_list_folders_combobox_changed(self, index=-1):
+        o_handler = BestContrastTabHandler(parent=self)
+        o_handler.display_selected_folder()
