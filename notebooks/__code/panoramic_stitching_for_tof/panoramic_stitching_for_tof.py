@@ -94,6 +94,7 @@ class Interface(QMainWindow):
     #                     'folder_name2': [],
     #                     ... }
     panoramic_images = {}
+    nbr_files_per_folder = 0
 
     horizontal_profile_plot = None
     vertical_profile_plot = None

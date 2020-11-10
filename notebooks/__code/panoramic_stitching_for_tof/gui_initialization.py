@@ -3,6 +3,7 @@ import pyqtgraph as pg
 from qtpy.QtWidgets import QVBoxLayout, QProgressBar
 from qtpy.QtGui import QIcon
 import matplotlib
+import numpy as np
 
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -181,6 +182,10 @@ class GuiInitialization:
 
     def after_loading_data(self):
         self.parent.best_contrast_list_folders_combobox_changed()
+
+        # bin size of best contrast (nbr of images / 100 by default)
+        bin_size = np.int(self.parent.nbr_files_per_folder / 100)
+        self.parent.ui.selection_bin_size_value.setText(str(bin_size))
 
         # self.parent.list_folder_combobox_value_changed()
         # o_table = TableHandler(table_ui=self.parent.ui.tableWidget)

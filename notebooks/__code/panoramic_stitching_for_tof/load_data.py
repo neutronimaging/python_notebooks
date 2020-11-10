@@ -54,6 +54,7 @@ class LoadData:
                 self.parent.image_height, self.parent.image_width = np.shape(o_norm.data['sample']['data'][0])
 
             local_dict = OrderedDict()
+            self.parent.nbr_files_per_folder = len(list_files)
             for _index, _file in enumerate(list_files):
                 _metadatadata = MetadataData()
                 _metadatadata.data = o_norm.data['sample']['data'][_index]
