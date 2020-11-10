@@ -64,6 +64,12 @@ class Interface(QMainWindow):
 
     list_folders = None  # list of folders to work on
 
+    # integrated_images = {'folder_name1': MetadataData,
+    #                      'folder_name2': MetadataData,
+    #                       ...,
+    #                       }
+    integrated_images = None
+
     # data_dictionary = {'folder_name1': {'file_name1': MetadataData},
     #                                     'file_name2': MetadataData,
     #                                     'file_name3': MetadataData,

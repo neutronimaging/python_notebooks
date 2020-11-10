@@ -37,6 +37,7 @@ class LoadData:
         self.parent.eventProgress.setVisible(True)
 
         master_dict = OrderedDict()
+        integrated_images_dict = OrderedDict()
         for _folder_index, _folder in enumerate(self.list_folders):
 
             self.parent.ui.statusbar.showMessage("Loading data from folder {}".format(os.path.basename(_folder)))
@@ -45,6 +46,7 @@ class LoadData:
             o_norm = Normalization()
             list_files = glob.glob(_folder + "/*.tiff")
             list_files.sort()
+
             o_norm.load(file=list_files, notebook=False)
 
             # record size of images
@@ -59,12 +61,23 @@ class LoadData:
                 local_dict[_file] = _metadatadata
 
             master_dict[os.path.basename(_folder)] = local_dict
+
+            o_data = MetadataData()
+            _data = LoadData.calculate_integrated_data(o_norm.data['sample']['data'])
+            o_data.data = _data
+            integrated_images_dict[_folder] = o_data
+
             self.parent.eventProgress.setValue(_folder_index+1)
             QtGui.QGuiApplication.processEvents()
 
         self.parent.working_dir = os.path.dirname(self.list_folders[0])
+        self.parent.integrated_images = integrated_images_dict
         self.parent.data_dictionary = master_dict
         self.parent.eventProgress.setVisible(False)
 
         self.parent.ui.statusbar.showMessage("Done Loading data from {} folders!".format(nbr_folder), 5000)
         QApplication.restoreOverrideCursor()
+
+    @staticmethod
+    def calculate_integrated_data(list_arrays=None):
+        return np.sum(list_arrays, 0)
