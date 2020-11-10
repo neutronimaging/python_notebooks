@@ -9,8 +9,9 @@ from __code._utilities.string import format_html_message
 from __code import load_ui
 
 from __code.panoramic_stitching_for_tof.gui_initialization import GuiInitialization
+from __code.panoramic_stitching_for_tof.load_data import LoadData
+
 from __code.panoramic_stitching.data_initialization import DataInitialization
-from __code.panoramic_stitching.load_data import LoadData
 from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.profile import Profile
@@ -56,7 +57,7 @@ class PanoramicStitching:
         # gui initialization
         o_interface = Interface(list_folders=final_list_folders)
         o_interface.show()
-        # o_interface.load_data()
+        o_interface.load_data()
         # o_interface.initialization_after_loading_data()
 
 class Interface(QMainWindow):
@@ -151,18 +152,18 @@ class Interface(QMainWindow):
         o_load.run()
 
     def initialization_after_loading_data(self):
-        o_init = DataInitialization(parent=self)
-        o_init.offset_table()
-
-        o_init = GuiInitialization(parent=self)
-        o_init.after_loading_data()
-
-        o_event = EventHandler(parent=self)
-        o_event.check_status_of_from_to_checkbox()
-
-        o_image = ImageHandler(parent=self)
-        o_image.update_current_panoramic_image()
-        o_image.update_contour_plot()
+        # o_init = DataInitialization(parent=self)
+        # o_init.offset_table()
+        #
+        # o_init = GuiInitialization(parent=self)
+        # o_init.after_loading_data()
+        #
+        # o_event = EventHandler(parent=self)
+        # o_event.check_status_of_from_to_checkbox()
+        #
+        # o_image = ImageHandler(parent=self)
+        # o_image.update_current_panoramic_image()
+        # o_image.update_contour_plot()
 
         self.ui.setEnabled(True)
 

@@ -54,6 +54,15 @@ class GuiInitialization:
         self.parent.ui.full_splitter.setSizes([400, 100])
 
     def pyqtgraph(self):
+        # calculate best contrast images
+        self.parent.ui.image_view_best_contrast = pg.ImageView(view=pg.PlotItem())
+        self.parent.ui.image_view_best_contrast.ui.roiBtn.hide()
+        self.parent.ui.image_view_best_contrast.ui.menuBtn.hide()
+        image_layout_best_contrast = QVBoxLayout()
+        image_layout_best_contrast.addWidget(self.parent.ui.image_view_best_contrast)
+        self.parent.ui.best_contrast_widget.setLayout(image_layout_best_contrast)
+
+        # stitch images
         self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.image_view.ui.roiBtn.hide()
         self.parent.ui.image_view.ui.menuBtn.hide()
