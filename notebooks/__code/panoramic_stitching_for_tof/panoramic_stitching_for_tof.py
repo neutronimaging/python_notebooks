@@ -8,7 +8,7 @@ from __code._utilities.folder import get_list_of_folders_with_specified_file_typ
 from __code._utilities.string import format_html_message
 from __code import load_ui
 
-from __code.panoramic_stitching.gui_initialization import GuiInitialization
+from __code.panoramic_stitching_for_tof.gui_initialization import GuiInitialization
 from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.load_data import LoadData
 from __code.panoramic_stitching.image_handler import ImageHandler
@@ -29,7 +29,7 @@ class PanoramicStitching:
         self.file_extension = ["tiff", "tif"]
 
     def select_input_folders(self):
-        self.list_folder_widget = fileselector.FileSelectorPanel(instruction='select all the folders of images to '
+        self.list_folder_widget = fileselector.FileSelectorPanel(instruction='select the folders of images to '
                                                                              'stitch',
                                                                  start_dir=self.working_dir,
                                                                  type='directory',
@@ -56,8 +56,8 @@ class PanoramicStitching:
         # gui initialization
         o_interface = Interface(list_folders=final_list_folders)
         o_interface.show()
-        o_interface.load_data()
-        o_interface.initialization_after_loading_data()
+        # o_interface.load_data()
+        # o_interface.initialization_after_loading_data()
 
 class Interface(QMainWindow):
 
@@ -137,11 +137,10 @@ class Interface(QMainWindow):
                                     os.path.join('ui',
                                                  'ui_panoramic_stitching_manual_for_tof.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
-        self.setWindowTitle("Semi-Automatic Panoramic Stitching")
+        self.setWindowTitle("Semi-Automatic Panoramic Stitching for TOF Data Sets")
 
-        # gui initialization
-        # o_init = GuiInitialization(parent=self)
-        # o_init.before_loading_data()
+        o_init = GuiInitialization(parent=self)
+        o_init.before_loading_data()
 
     def load_data(self):
         # load data and metadata
