@@ -12,6 +12,7 @@ from __code.panoramic_stitching_for_tof.gui_initialization import GuiInitializat
 from __code.panoramic_stitching_for_tof.load_data import LoadData
 from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import BestContrastTabHandler
 from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
+from __code.panoramic_stitching_for_tof.coarse_table_handler import CoarseTableHandler
 
 from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.image_handler import ImageHandler
@@ -78,11 +79,8 @@ class Interface(QMainWindow):
     #                       }
     best_contrast_images = None
 
-    # data_dictionary = {'folder_name1': {'file_name1': MetadataData},
-    #                                     'file_name2': MetadataData,
-    #                                     'file_name3': MetadataData,
-    #                                    },
-    #                    'folder_name2': {...},
+    # data_dictionary = {'folder_name1': [],
+    #                    'folder_name2': [],
     #                     ...,
     #                    }
     data_dictionary = None
@@ -365,10 +363,13 @@ class Interface(QMainWindow):
     def raw_or_best_contrast_radio_button_changed(self):
         o_handler = BestContrastTabHandler(parent=self)
         o_handler.display_selected_folder()
+        o_event = TOFEventHandler(parent=self)
+        o_event.update_working_images()
 
     def tab_changed(self, index):
         o_event = TOFEventHandler(parent=self)
         o_event.tab_changed(new_tab_index=index)
 
     def coarse_alignment_table_combobox_changed(self, index):
-        print("changed")
+        o_event = CoarseTableHandler(parent=self)
+        o_event.combobox_changed()

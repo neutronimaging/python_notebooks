@@ -118,6 +118,10 @@ class TableHandler:
             _item = QTableWidgetItem(_text)
             self.table_ui.setItem(row, column, _item)
 
+    def get_widget(self, row=-1, column=-1):
+        _widget = self.table_ui.cellWidget(row, column)
+        return _widget
+
     def insert_column(self, column):
         self.table_ui.insertColumn(column)
 

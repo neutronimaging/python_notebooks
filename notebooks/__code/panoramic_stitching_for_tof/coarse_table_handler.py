@@ -13,7 +13,6 @@ class CoarseTableHandler:
     def initialize_table(self):
         list_folders = self.parent.list_folders
         short_list_folders = [''] + [os.path.basename(_file) for _file in list_folders]
-
         nbr_folders = len(list_folders)
 
         o_table = TableHandler(table_ui=self.parent.ui.coarse_alignment_tableWidget)
@@ -33,3 +32,35 @@ class CoarseTableHandler:
         row_height = [40 for _ in np.arange(nbr_row)]
         o_table.set_column_sizes(column_sizes=column_width)
         o_table.set_row_height(row_height=row_height)
+
+    def combobox_changed(self):
+        list_folders = self.parent.list_folders
+        nbr_folders = len(list_folders)
+
+        nbr_row = self.parent.ui.coarse_alignment_tableWidget.rowCount()
+        nbr_column = self.parent.ui.coarse_alignment_tableWidget.columnCount()
+
+        data_dictionary = self.parent.data_dictionary
+        image_width = self.parent.image_width
+        image_height = self.parent.image_height
+
+        panoramic_image = []
+        o_table = TableHandler(table_ui=self.parent.ui.coarse_alignment_tableWidget)
+        panoramic_width = 0
+        panoramic_height = 0
+        for _row in np.arange(nbr_row):
+            width = 0
+            height = 0
+            for _column in np.arange(nbr_column):
+                _widget = o_table.get_widget(row=_row, column=_column)
+                folder_name = _widget.currentText()
+                if not folder_name == "":
+                    width = (_column + 1) * image_width
+                    height = (_row + 1) * image_height
+
+            if width > panoramic_width:
+                panoramic_width = width
+            if height > panoramic_height:
+                panoramic_height = height
+
+        print(f"pano width:{panoramic_width} and height:{panoramic_height}")
