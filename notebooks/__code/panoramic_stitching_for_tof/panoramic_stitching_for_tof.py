@@ -71,6 +71,12 @@ class Interface(QMainWindow):
     #                       }
     integrated_images = None
 
+    # best_contrast_images = {'folder_name1': [],
+    #                         'folder_name2': [],
+    #                          ...,
+    #                       }
+    best_contrast_images = None
+
     # data_dictionary = {'folder_name1': {'file_name1': MetadataData},
     #                                     'file_name2': MetadataData,
     #                                     'file_name3': MetadataData,
@@ -89,6 +95,7 @@ class Interface(QMainWindow):
     #                       }
     offset_dictionary = None
     offset_dictionary_for_reset = None
+    default_best_contrast_bin_size_divider = 40
 
     # panoramic_images = {'folder_name1': [],
     #                     'folder_name2': [],
@@ -350,3 +357,9 @@ class Interface(QMainWindow):
     def calculate_best_contrast_images_button_clicked(self):
         o_handler = BestContrastTabHandler(parent=self)
         o_handler.calculate_best_contrast()
+        self.ui.best_contrast_image_radioButton.setChecked(True)
+        o_handler.display_selected_folder()
+
+    def raw_or_best_contrast_radio_button_changed(self):
+        o_handler = BestContrastTabHandler(parent=self)
+        o_handler.display_selected_folder()

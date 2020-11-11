@@ -97,6 +97,26 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QRadioButton" name="raw_image_radioButton">
+            <property name="text">
+             <string>Raw image</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="best_contrast_image_radioButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Best contrast image</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -1226,6 +1246,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>raw_image_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>raw_or_best_contrast_radio_button_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1234</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1472</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>best_contrast_image_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>raw_or_best_contrast_radio_button_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1312</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1473</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
@@ -1258,5 +1310,6 @@
   <slot>reset_table_button_clicked()</slot>
   <slot>best_contrast_list_folders_combobox_changed()</slot>
   <slot>calculate_best_contrast_images_button_clicked()</slot>
+  <slot>raw_or_best_contrast_radio_button_changed()</slot>
  </slots>
 </ui>

@@ -184,7 +184,7 @@ class GuiInitialization:
         self.parent.best_contrast_list_folders_combobox_changed()
 
         # bin size of best contrast (nbr of images / 100 by default)
-        bin_size = np.int(self.parent.nbr_files_per_folder / 100)
+        bin_size = np.int(self.parent.nbr_files_per_folder / self.parent.default_best_contrast_bin_size_divider)
         self.parent.ui.best_contrast_bin_size_value.setText(str(bin_size))
 
         # self.parent.list_folder_combobox_value_changed()
