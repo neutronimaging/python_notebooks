@@ -32,53 +32,6 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_8">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <item>
-           <widget class="QPushButton" name="pushButton_3">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Calculate Best Contrast Images</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>with a Bin size of </string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="best_contrast_bin_size_value">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="selection_bin_size_units">
-            <property name="text">
-             <string>File #</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QLabel" name="label">
@@ -114,6 +67,32 @@
             </property>
             <property name="text">
              <string>Best contrast image</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="best_contrast_bin_size_value">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="bin_size_label">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>number of files per bin</string>
             </property>
            </widget>
           </item>
@@ -1209,30 +1188,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>calculate_best_contrast_images_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>499</x>
-     <y>81</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>7</x>
-     <y>85</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>raw_image_radioButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>raw_or_best_contrast_radio_button_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1234</x>
-     <y>123</y>
+     <x>977</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>1472</x>
@@ -1247,8 +1210,8 @@
    <slot>raw_or_best_contrast_radio_button_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1312</x>
-     <y>123</y>
+     <x>1055</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>1473</x>
@@ -1269,6 +1232,22 @@
     <hint type="destinationlabel">
      <x>1470</x>
      <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>best_contrast_bin_size_value</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>bin_size_text_field_return_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1246</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1471</x>
+     <y>50</y>
     </hint>
    </hints>
   </connection>
@@ -1306,5 +1285,6 @@
   <slot>calculate_best_contrast_images_button_clicked()</slot>
   <slot>raw_or_best_contrast_radio_button_changed()</slot>
   <slot>tab_changed()</slot>
+  <slot>bin_size_text_field_return_pressed()</slot>
  </slots>
 </ui>

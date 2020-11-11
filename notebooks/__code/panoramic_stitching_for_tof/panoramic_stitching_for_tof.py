@@ -361,12 +361,6 @@ class Interface(QMainWindow):
         o_handler = BestContrastTabHandler(parent=self)
         o_handler.display_selected_folder()
 
-    def calculate_best_contrast_images_button_clicked(self):
-        o_handler = BestContrastTabHandler(parent=self)
-        o_handler.calculate_best_contrast()
-        self.ui.best_contrast_image_radioButton.setChecked(True)
-        o_handler.display_selected_folder()
-
     def raw_or_best_contrast_radio_button_changed(self):
         o_handler = BestContrastTabHandler(parent=self)
         o_handler.display_selected_folder()
@@ -381,3 +375,8 @@ class Interface(QMainWindow):
         o_event = CoarseTableHandler(parent=self)
         o_event.combobox_changed()
         o_event.update_coarse_panoramic_image()
+
+    def bin_size_text_field_return_pressed(self):
+        o_handler = BestContrastTabHandler(parent=self)
+        o_handler.calculate_best_contrast()
+        o_handler.display_selected_folder()

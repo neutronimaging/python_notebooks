@@ -18,9 +18,14 @@ class BestContrastTabHandler:
         if self.parent.ui.raw_image_radioButton.isChecked():
             image = self.parent.integrated_images[folder_name].data
             # histogram_level = self.parent.histogram_level_raw_image.get(folder_name, None)
+            status_best_constrast_button = False
         else:
             image = self.parent.best_contrast_images[folder_name]
             # histogram_level = self.parent.histogram_level_best_contrast
+            status_best_constrast_button = True
+
+        self.parent.ui.best_contrast_bin_size_value.setEnabled(status_best_constrast_button)
+        self.parent.ui.bin_size_label.setEnabled(status_best_constrast_button)
 
         # _view = self.parent.ui.image_view_best_contrast.getView()
         # _view_box = _view.getViewBox()

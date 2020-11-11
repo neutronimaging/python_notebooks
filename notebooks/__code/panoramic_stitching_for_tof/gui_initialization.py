@@ -200,6 +200,8 @@ class GuiInitialization:
         bin_size = np.int(self.parent.nbr_files_per_folder / self.parent.default_best_contrast_bin_size_divider)
         self.parent.ui.best_contrast_bin_size_value.setText(str(bin_size))
 
+        self.parent.bin_size_text_field_return_pressed()
+
         o_table = CoarseTableHandler(parent=self.parent)
         o_table.initialize_table()
 
