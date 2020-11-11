@@ -346,3 +346,7 @@ class Interface(QMainWindow):
     def best_contrast_list_folders_combobox_changed(self, index=-1):
         o_handler = BestContrastTabHandler(parent=self)
         o_handler.display_selected_folder()
+
+    def calculate_best_contrast_images_button_clicked(self):
+        o_handler = BestContrastTabHandler(parent=self)
+        o_handler.calculate_best_contrast()

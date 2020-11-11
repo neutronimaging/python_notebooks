@@ -185,7 +185,7 @@ class GuiInitialization:
 
         # bin size of best contrast (nbr of images / 100 by default)
         bin_size = np.int(self.parent.nbr_files_per_folder / 100)
-        self.parent.ui.selection_bin_size_value.setText(str(bin_size))
+        self.parent.ui.best_contrast_bin_size_value.setText(str(bin_size))
 
         # self.parent.list_folder_combobox_value_changed()
         # o_table = TableHandler(table_ui=self.parent.ui.tableWidget)

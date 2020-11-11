@@ -283,9 +283,6 @@ class Interface(QMainWindow):
         self.ui.profile_of_bin_size_height.setText(str(_height))
         self.ui.profile_of_bin_size_slider.setValue(np.min([_width, _height]))
 
-
-
-
     def initialize_default_peak_regions(self):
         [left_range, right_range] = self.bragg_edge_range
         xaxis_dict = self.fitting_input_dictionary['xaxis']
@@ -355,8 +352,6 @@ class Interface(QMainWindow):
         self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
         self.bragg_edge_range_ui.setZValue(-10)
         self.ui.profile.addItem(self.bragg_edge_range_ui)
-
-
 
     ### clean implementation after this
     def profile_selection_range_changed(self):

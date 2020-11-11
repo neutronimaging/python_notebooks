@@ -54,7 +54,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="selection_bin_size_value">
+           <widget class="QLineEdit" name="best_contrast_bin_size_value">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -1210,6 +1210,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calculate_best_contrast_images_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>499</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>85</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
@@ -1241,5 +1257,6 @@
   <slot>export_panoramic_images_button_clicked()</slot>
   <slot>reset_table_button_clicked()</slot>
   <slot>best_contrast_list_folders_combobox_changed()</slot>
+  <slot>calculate_best_contrast_images_button_clicked()</slot>
  </slots>
 </ui>
