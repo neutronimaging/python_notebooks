@@ -108,6 +108,7 @@ class Interface(QMainWindow):
 
     histogram_level = None
     histogram_level_best_contrast = None
+    histogram_level_raw_image = {}
     current_live_image = None
     current_live_image_best_contrast = None
 

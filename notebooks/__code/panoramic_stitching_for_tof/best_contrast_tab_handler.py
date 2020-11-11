@@ -2,6 +2,7 @@ import numpy as np
 from qtpy.QtWidgets import QApplication
 from qtpy import QtCore, QtGui
 import os
+import copy
 
 from __code.panoramic_stitching_for_tof.get import Get
 
@@ -16,17 +17,23 @@ class BestContrastTabHandler:
 
         if self.parent.ui.raw_image_radioButton.isChecked():
             image = self.parent.integrated_images[folder_name].data
+            # histogram_level = self.parent.histogram_level_raw_image.get(folder_name, None)
         else:
             image = self.parent.best_contrast_images[folder_name]
+            # histogram_level = self.parent.histogram_level_best_contrast
 
         # _view = self.parent.ui.image_view_best_contrast.getView()
         # _view_box = _view.getViewBox()
         # _state = _view_box.getState()
         #
         # first_update = False
-        # if self.parent.histogram_level_best_contrast is None:
+        # if histogram_level is None:
         #     first_update = True
         # _histo_widget = self.parent.ui.image_view_best_contrast.getHistogramWidget()
+
+        # if self.parent.ui.raw_image_radioButton.isChecked():
+        #     self.parent.histogram_level_raw_image[folder_name] = _histo_widget.getLevels()
+        #else:
         # self.parent.histogram_level_best_contrast = _histo_widget.getLevels()
 
         _image = np.transpose(image)
@@ -35,8 +42,8 @@ class BestContrastTabHandler:
         # _view_box.setState(_state)
 
         # if not first_update:
-        #     _histo_widget.setLevels(self.parent.histogram_level_best_contrast[0],
-        #                             self.parent.histogram_level_best_contrast[1])
+        #     _histo_widget.setLevels(histogram_level[0],
+        #                             histogram_level[1])
 
     def calculate_best_contrast(self):
         nbr_images = self.parent.nbr_files_per_folder
