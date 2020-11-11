@@ -103,6 +103,10 @@ class TableHandler:
         for _col, _size in enumerate(column_sizes):
             self.table_ui.setColumnWidth(_col, _size)
 
+    def set_row_height(self, row_height=None):
+        for _row, _height in enumerate(row_height):
+            self.table_ui.setRowHeight(_row, _height)
+
     def insert_empty_row(self, row=0):
         self.table_ui.insertRow(row)
 
@@ -118,7 +122,7 @@ class TableHandler:
         self.table_ui.insertColumn(column)
 
     def insert_empty_column(self, column):
-        self.table_ui.insertColumn(column)
+        self.insert_column(column)
 
     def set_item_with_str(self, row=0, column=0, cell_str=""):
         self.table_ui.item(row, column).setText(cell_str)

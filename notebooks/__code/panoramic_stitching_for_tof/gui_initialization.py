@@ -8,6 +8,8 @@ import numpy as np
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
+from __code.panoramic_stitching_for_tof.coarse_table_handler import CoarseTableHandler
+
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of, set_widgets_size
@@ -42,6 +44,7 @@ class GuiInitialization:
 
     def tab(self):
         self.parent.ui.top_tabWidget.setTabEnabled(1, False)
+        self.parent.ui.top_tabWidget.setTabEnabled(2, False)
 
     def block_signals(self, status):
         list_ui = [self.parent.ui.list_folders_combobox,
@@ -51,8 +54,9 @@ class GuiInitialization:
 
     def splitter(self):
         self.parent.ui.profile_display_splitter.setSizes([500, 500])
-        self.parent.ui.display_splitter.setSizes([200, 100])
+        self.parent.ui.full_splitter.setSizes([200, 100])
         self.parent.ui.full_splitter.setSizes([400, 100])
+        self.parent.ui.coarse_alignment_splitter.setSizes([400, 100])
 
     def pyqtgraph(self):
         # calculate best contrast images
@@ -63,6 +67,15 @@ class GuiInitialization:
         image_layout_best_contrast = QVBoxLayout()
         image_layout_best_contrast.addWidget(self.parent.ui.image_view_best_contrast)
         self.parent.ui.best_contrast_widget.setLayout(image_layout_best_contrast)
+
+        # coarse alignment images
+        _view3 = pg.PlotItem()
+        self.parent.ui.image_view_coarse_alignment = pg.ImageView(view=pg.PlotItem())
+        self.parent.ui.image_view_coarse_alignment.ui.roiBtn.hide()
+        self.parent.ui.image_view_coarse_alignment.ui.menuBtn.hide()
+        image_layout_coarse_alignment = QVBoxLayout()
+        image_layout_coarse_alignment.addWidget(self.parent.ui.image_view_coarse_alignment)
+        self.parent.ui.coarse_alignment_widget.setLayout(image_layout_coarse_alignment)
 
         # stitch images
         _view2 = pg.PlotItem()
@@ -186,6 +199,11 @@ class GuiInitialization:
         # bin size of best contrast (nbr of images / 100 by default)
         bin_size = np.int(self.parent.nbr_files_per_folder / self.parent.default_best_contrast_bin_size_divider)
         self.parent.ui.best_contrast_bin_size_value.setText(str(bin_size))
+
+        o_table = CoarseTableHandler(parent=self.parent)
+        o_table.initialize_table()
+
+        self.parent.ui.top_tabWidget.setTabEnabled(1, True)
 
         # self.parent.list_folder_combobox_value_changed()
         # o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
