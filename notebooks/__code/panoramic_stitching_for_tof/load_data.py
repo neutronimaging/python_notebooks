@@ -76,6 +76,11 @@ class LoadData:
         self.parent.data_dictionary = master_dict
         self.parent.eventProgress.setVisible(False)
 
+        coarse_images_dictionary = OrderedDict()
+        for _folder in self.parent.integrated_images.keys():
+            coarse_images_dictionary[os.path.basename(_folder)] = self.parent.integrated_images[_folder].data
+        self.parent.coarse_images_dictionary = coarse_images_dictionary
+
         self.parent.ui.statusbar.showMessage("Done Loading data from {} folders!".format(nbr_folder), 5000)
         QApplication.restoreOverrideCursor()
 

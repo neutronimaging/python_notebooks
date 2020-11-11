@@ -79,11 +79,18 @@ class Interface(QMainWindow):
     #                       }
     best_contrast_images = None
 
-    # data_dictionary = {'folder_name1': [],
-    #                    'folder_name2': [],
+    # coarse_images_dictionary = {'folder_name1': [],
+    #                             'folder_name2': [],
+    #                             ...,
+    #                            }
+    coarse_images_dictionary = None
+
+    # data_dictionary = {'folder_name1': MetadataData,
+    #                    'folder_name2': MetadataData,
     #                     ...,
     #                    }
     data_dictionary = None
+    coarse_panoramic_image = None
 
     # offset_dictionary =  {'folder_name1': {'file_name1': {'xoffset': 0, 'yoffset': 0, 'visible': True},
     #                                        'file_name2': {'xoffset': 0, 'yoffset': 0, 'visible': True},
@@ -373,3 +380,4 @@ class Interface(QMainWindow):
     def coarse_alignment_table_combobox_changed(self, index):
         o_event = CoarseTableHandler(parent=self)
         o_event.combobox_changed()
+        o_event.update_coarse_panoramic_image()

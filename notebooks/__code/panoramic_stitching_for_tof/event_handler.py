@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import copy
+import os
 
 
 class TOFEventHandler:
@@ -11,11 +12,11 @@ class TOFEventHandler:
         pass
 
     def update_working_images(self):
-        data_dictionary = OrderedDict()
+        coarse_images_dictionary = OrderedDict()
         if self.parent.ui.raw_image_radioButton.isChecked():
             for _folder in self.parent.integrated_images.keys():
-                data_dictionary[_folder] = self.parent.integrated_images[_folder]
+                coarse_images_dictionary[os.path.basename(_folder)] = self.parent.integrated_images[_folder]
         else:
-            data_dictionary = copy.deepcopy(self.parent.best_contrast_images)
+            coarse_images_dictionary = copy.deepcopy(self.parent.best_contrast_images)
 
-        self.parent.data_dictionary = data_dictionary
+        self.parent.coarse_images_dictionary = coarse_images_dictionary
