@@ -3,6 +3,8 @@ from qtpy.QtWidgets import QApplication
 from qtpy import QtCore, QtGui
 import os
 
+from __code.panoramic_stitching_for_tof.get import Get
+
 
 class BestContrastTabHandler:
 
@@ -43,14 +45,19 @@ class BestContrastTabHandler:
 
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
-        nbr_folders = len(self.parent.list_folders*2)
-        self.parent.eventProgress.setMaximum(nbr_folders)
+        nbr_folders = len(self.parent.list_folders)
+
+        # 1 loop of nbr_folder to calculate all_data
+        # +1 to calculate best contrast bin coefficient
+        # 1 loop of nbr_folder to calculate best contrast image
+        self.parent.eventProgress.setMaximum(nbr_folders*2 + 1)
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
 
         best_contrast_images = {}
         all_data = {}
         progress_index = 0
+        # loop over list of folders to gather all the data into [nbr_files, height_image, width_image]
         for _folder in self.parent.list_folders:
             folder_key = os.path.basename(_folder)
             tmp_all_data = [self.parent.data_dictionary[folder_key][_key].data
@@ -62,7 +69,16 @@ class BestContrastTabHandler:
             progress_index += 1
             QtGui.QGuiApplication.processEvents()
 
+        o_get = Get(parent=self.parent)
+        folder_selected = o_get.get_combobox_full_name_folder_selected()
+        best_bin_index = {'numerator': 0, 'denominator': 0}
+
+        # calculate best contrast only of folder selected
         for _folder in self.parent.list_folders:
+
+            if not _folder == folder_selected:
+                continue
+
             left_bin_index = 0
             folder_key = os.path.basename(_folder)
             all_data_of_folder = all_data[folder_key]
@@ -73,8 +89,6 @@ class BestContrastTabHandler:
                 mean_data_bin = np.nanmean(data_bin)
                 list_mean_counts_of_bin.append(mean_data_bin)
                 left_bin_index += 1
-
-            best_bin_index = {'numerator': 0, 'denominator': 0}
 
             max_ratio_value = 0
             for _bin_index_numerator in np.arange(len(list_bin)-1):
@@ -87,6 +101,16 @@ class BestContrastTabHandler:
                         max_ratio_value = diff_with_1
                         best_bin_index['numerator'] = _bin_index_numerator
                         best_bin_index['denominator'] = _bin_index_denominator
+
+            self.parent.eventProgress.setValue(progress_index)
+            progress_index += 1
+            QtGui.QGuiApplication.processEvents()
+
+        # calculate the best contrast image for all folders
+        for _folder in self.parent.list_folders:
+
+            folder_key = os.path.basename(_folder)
+            all_data_of_folder = all_data[folder_key]
 
             image1 = all_data_of_folder[list_bin[best_bin_index['numerator']]:
                                         list_bin[best_bin_index['numerator']+1]]
