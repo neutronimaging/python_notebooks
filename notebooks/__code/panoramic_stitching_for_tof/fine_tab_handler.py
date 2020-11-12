@@ -1,8 +1,10 @@
 from qtpy.QtWidgets import QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
 from qtpy import QtCore
+import numpy as np
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
+from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
 
 
 class FineTabHandler:
@@ -103,3 +105,59 @@ class FineTabHandler:
                    self.parent.ui.down_down_button]
         for _ui in list_ui:
             _ui.setEnabled(state)
+
+    def roi_box_changed(self, roi_id=None, ):
+        region = roi_id.getArraySlice(self.parent.current_live_image,
+                                      self.parent.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
+        y0 = region[0][1].start
+
+        return {'x': x0, 'y': y0}
+
+    def from_roi_box_changed(self):
+        self.parent.from_roi = self.roi_box_changed(roi_id=self.parent.from_roi_id)
+        o_image = ImageHandler(parent=self.parent)
+        o_image.update_from_cross_line()
+        o_image.update_from_label()
+        o_image.update_validity_of_from_to_button()
+
+    def to_roi_box_changed(self):
+        self.parent.to_roi = self.roi_box_changed(roi_id=self.parent.to_roi_id)
+        o_image = ImageHandler(parent=self.parent)
+        o_image.update_to_cross_line()
+        o_image.update_to_label()
+
+    def from_to_button_pushed(self):
+        self.parent.ui.tableWidget.blockSignals(True)
+
+        from_roi = self.parent.from_roi
+        to_roi = self.parent.to_roi
+
+        from_x = from_roi['x']
+        to_x = to_roi['x']
+        delta_x = from_x - to_x
+
+        from_y = from_roi['y']
+        to_y = to_roi['y']
+        delta_y = from_y - to_y
+
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
+        current_xoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=1))
+        new_xoffset = np.int(current_xoffset_of_selected_row - delta_x)
+        self.parent.ui.tableWidget.item(row_selected, 1).setText(str(new_xoffset))
+        o_event = TOFEventHandler(parent=self.parent)
+        o_event.save_table_offset_of_this_cell(row=row_selected, column=1)
+
+        current_yoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=2))
+        new_yoffset = current_yoffset_of_selected_row - delta_y
+        self.parent.ui.tableWidget.item(row_selected, 2).setText(str(new_yoffset))
+        o_event.save_table_offset_of_this_cell(row=row_selected, column=2)
+
+        self.parent.ui.tableWidget.blockSignals(False)
+
+        o_pano = ImageHandler(parent=self.parent)
+        o_pano.update_current_panoramic_image()
+        o_pano.update_contour_plot()

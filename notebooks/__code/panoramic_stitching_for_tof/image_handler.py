@@ -155,14 +155,11 @@ class ImageHandler:
         x = from_roi['x']
         y = from_roi['y']
 
-        o_get = Get(parent=self.parent)
-        folder_selected = o_get.get_combobox_folder_selected()
-
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
         name_of_file_selected = o_table.get_item_str_from_cell(row=row_selected, column=0)
 
-        offset_dictionary = self.parent.offset_dictionary[folder_selected]
+        offset_dictionary = self.parent.offset_dictionary
 
         xoffset_of_selected_image = offset_dictionary[name_of_file_selected]['xoffset'] + HORIZONTAL_MARGIN
         yoffset_of_selected_image = offset_dictionary[name_of_file_selected]['yoffset'] + VERTICAL_MARGIN

@@ -133,7 +133,7 @@ class Interface(QMainWindow):
     from_roi_cross_id = None
     to_roi_id = None
     to_roi_cross_id = None
-    from_roi = {'x': 2000 + HORIZONTAL_MARGIN, 'y': 100 + VERTICAL_MARGIN}
+    from_roi = {'x': 512 + HORIZONTAL_MARGIN, 'y': 100 + VERTICAL_MARGIN}
     to_roi = {'x': 100 + HORIZONTAL_MARGIN, 'y': 50 + VERTICAL_MARGIN}
 
     width_profile = {'min': 1,
@@ -193,9 +193,6 @@ class Interface(QMainWindow):
         self.ui.setEnabled(True)
 
     # event handler
-    def list_folder_combobox_value_changed(self, new_folder_selected=None):
-        o_event = EventHandler(parent=self)
-        o_event.list_folder_combobox_value_changed(new_folder_selected=new_folder_selected)
 
     def visibility_checkbox_changed(self, state=None, row=-1):
         o_event = TOFEventHandler(parent=self)
@@ -221,23 +218,23 @@ class Interface(QMainWindow):
     def table_of_offset_selection_changed(self):
         o_pano = ImageHandler(parent=self)
         o_pano.update_contour_plot()
-        o_event = EventHandler(parent=self)
+        o_event = FineTabHandler(parent=self)
         o_event.check_status_of_from_to_checkbox()
 
     def from_to_checkbox_checked(self, state):
-        o_event = EventHandler(parent=self)
+        o_event = FineTabHandler(parent=self)
         o_event.check_status_of_from_to_checkbox()
 
     def from_roi_box_changed(self):
-        o_event = EventHandler(parent=self)
+        o_event = FineTabHandler(parent=self)
         o_event.from_roi_box_changed()
 
     def to_roi_box_changed(self):
-        o_event = EventHandler(parent=self)
+        o_event = FineTabHandler(parent=self)
         o_event.to_roi_box_changed()
 
     def from_to_button_pushed(self):
-        o_event = EventHandler(parent=self)
+        o_event = FineTabHandler(parent=self)
         o_event.from_to_button_pushed()
         self.horizontal_profile_changed()
 
