@@ -390,7 +390,5 @@ class Interface(QMainWindow):
     def validate_coarse_alignment_button_pressed(self):
         self.ui.top_tabWidget.setTabEnabled(2, True)
         o_data = DataInitialization(parent=self)
-        # o_data.offset_table()
-
-
+        o_data.offset_table()
         print(f"offset_dictionary: {self.offset_dictionary}")

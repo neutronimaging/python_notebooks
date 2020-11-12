@@ -63,8 +63,8 @@ class CoarseTabHandler:
                 panoramic_height = height
 
         # number of empty rows and columns before first file selected
-        nbr_empty_rows = self._get_number_of_empty_rows_from_top(nbr_row=nbr_row, nbr_column=nbr_column)
-        nbr_empty_columns = self._get_number_of_empty_columns_from_left(nbr_row=nbr_row, nbr_column=nbr_column)
+        nbr_empty_rows = self.get_number_of_empty_rows_from_top(nbr_row=nbr_row, nbr_column=nbr_column)
+        nbr_empty_columns = self.get_number_of_empty_columns_from_left(nbr_row=nbr_row, nbr_column=nbr_column)
 
         panoramic_image = np.zeros((panoramic_height, panoramic_width))
         for _row in np.arange(nbr_row):
@@ -80,7 +80,7 @@ class CoarseTabHandler:
 
         self.parent.coarse_panoramic_image = panoramic_image
 
-    def _get_number_of_empty_rows_from_top(self, nbr_row=-1, nbr_column=-1):
+    def get_number_of_empty_rows_from_top(self, nbr_row=-1, nbr_column=-1):
         nbr_empty_row = 0
         o_table = TableHandler(table_ui=self.parent.ui.coarse_alignment_tableWidget)
         for _row in np.arange(nbr_row):
@@ -92,7 +92,7 @@ class CoarseTabHandler:
             nbr_empty_row += 1
         return nbr_empty_row
 
-    def _get_number_of_empty_columns_from_left(self, nbr_row=-1, nbr_column=-1):
+    def get_number_of_empty_columns_from_left(self, nbr_row=-1, nbr_column=-1):
         nbr_empty_column = 0
         o_table = TableHandler(table_ui=self.parent.ui.coarse_alignment_tableWidget)
         for _column in np.arange(nbr_column):
