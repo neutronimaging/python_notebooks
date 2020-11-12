@@ -12,9 +12,9 @@ from __code.panoramic_stitching_for_tof.gui_initialization import GuiInitializat
 from __code.panoramic_stitching_for_tof.load_data import LoadData
 from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import BestContrastTabHandler
 from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
-from __code.panoramic_stitching_for_tof.coarse_table_handler import CoarseTableHandler
+from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
+from __code.panoramic_stitching_for_tof.data_initialization import DataInitialization
 
-from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.profile import Profile
@@ -380,7 +380,7 @@ class Interface(QMainWindow):
         o_event.tab_changed(new_tab_index=index)
 
     def coarse_alignment_table_combobox_changed(self, index=-1):
-        o_event = CoarseTableHandler(parent=self)
+        o_event = CoarseTabHandler(parent=self)
         o_event.combobox_changed()
         o_event.update_coarse_panoramic_image()
         o_handler = TOFEventHandler(parent=self)
@@ -389,3 +389,8 @@ class Interface(QMainWindow):
 
     def validate_coarse_alignment_button_pressed(self):
         self.ui.top_tabWidget.setTabEnabled(2, True)
+        o_data = DataInitialization(parent=self)
+        # o_data.offset_table()
+
+
+        print(f"offset_dictionary: {self.offset_dictionary}")

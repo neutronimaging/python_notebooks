@@ -8,7 +8,7 @@ import numpy as np
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from __code.panoramic_stitching_for_tof.coarse_table_handler import CoarseTableHandler
+from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.table_handler import TableHandler
@@ -202,7 +202,7 @@ class GuiInitialization:
 
         self.parent.bin_size_text_field_return_pressed()
 
-        o_table = CoarseTableHandler(parent=self.parent)
+        o_table = CoarseTabHandler(parent=self.parent)
         o_table.initialize_table()
 
         self.parent.ui.top_tabWidget.setTabEnabled(1, True)
