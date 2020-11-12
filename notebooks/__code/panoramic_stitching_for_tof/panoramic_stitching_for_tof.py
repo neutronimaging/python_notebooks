@@ -367,6 +367,14 @@ class Interface(QMainWindow):
         o_event = TOFEventHandler(parent=self)
         o_event.update_working_images()
 
+    def bin_size_text_field_return_pressed(self):
+        o_handler = BestContrastTabHandler(parent=self)
+        o_handler.calculate_best_contrast()
+        o_handler.display_selected_folder()
+        o_event = TOFEventHandler(parent=self)
+        o_event.update_working_images()
+
+    # tab 2 - coarse alignment
     def tab_changed(self, index):
         o_event = TOFEventHandler(parent=self)
         o_event.tab_changed(new_tab_index=index)
@@ -375,10 +383,6 @@ class Interface(QMainWindow):
         o_event = CoarseTableHandler(parent=self)
         o_event.combobox_changed()
         o_event.update_coarse_panoramic_image()
+        o_handler = TOFEventHandler(parent=self)
+        o_handler.check_validate_coarse_alignment_button()
 
-    def bin_size_text_field_return_pressed(self):
-        o_handler = BestContrastTabHandler(parent=self)
-        o_handler.calculate_best_contrast()
-        o_handler.display_selected_folder()
-        o_event = TOFEventHandler(parent=self)
-        o_event.update_working_images()
