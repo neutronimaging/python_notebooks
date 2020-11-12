@@ -73,14 +73,14 @@ class Interface(QMainWindow):
     #                       }
     integrated_images = None
 
-    # best_contrast_images = {'folder_name1': [],
-    #                         'folder_name2': [],
+    # best_contrast_images = {'folder_name1': MetadataData,
+    #                         'folder_name2': MetadataData,
     #                          ...,
     #                       }
     best_contrast_images = None
 
-    # coarse_images_dictionary = {'folder_name1': [],
-    #                             'folder_name2': [],
+    # coarse_images_dictionary = {'folder_name1': MetadataData,
+    #                             'folder_name2': MetadataData,
     #                             ...,
     #                            }
     coarse_images_dictionary = None
@@ -371,7 +371,7 @@ class Interface(QMainWindow):
         o_event = TOFEventHandler(parent=self)
         o_event.tab_changed(new_tab_index=index)
 
-    def coarse_alignment_table_combobox_changed(self, index):
+    def coarse_alignment_table_combobox_changed(self, index=-1):
         o_event = CoarseTableHandler(parent=self)
         o_event.combobox_changed()
         o_event.update_coarse_panoramic_image()
@@ -380,3 +380,5 @@ class Interface(QMainWindow):
         o_handler = BestContrastTabHandler(parent=self)
         o_handler.calculate_best_contrast()
         o_handler.display_selected_folder()
+        o_event = TOFEventHandler(parent=self)
+        o_event.update_working_images()

@@ -2,9 +2,9 @@ import numpy as np
 from qtpy.QtWidgets import QApplication
 from qtpy import QtCore, QtGui
 import os
-import copy
 
 from __code.panoramic_stitching_for_tof.get import Get
+from __code.panoramic_stitching_for_tof.load_data import MetadataData
 
 
 class BestContrastTabHandler:
@@ -13,19 +13,19 @@ class BestContrastTabHandler:
         self.parent = parent
 
     def display_selected_folder(self):
-        folder_name = self.parent.ui.list_folders_combobox.currentText()
+        folder_name = os.path.basename(self.parent.ui.list_folders_combobox.currentText())
 
         if self.parent.ui.raw_image_radioButton.isChecked():
             image = self.parent.integrated_images[folder_name].data
             # histogram_level = self.parent.histogram_level_raw_image.get(folder_name, None)
-            status_best_constrast_button = False
+            status_best_contrast_button = False
         else:
-            image = self.parent.best_contrast_images[folder_name]
+            image = self.parent.best_contrast_images[os.path.basename(folder_name)].data
             # histogram_level = self.parent.histogram_level_best_contrast
-            status_best_constrast_button = True
+            status_best_contrast_button = True
 
-        self.parent.ui.best_contrast_bin_size_value.setEnabled(status_best_constrast_button)
-        self.parent.ui.bin_size_label.setEnabled(status_best_constrast_button)
+        self.parent.ui.best_contrast_bin_size_value.setEnabled(status_best_contrast_button)
+        self.parent.ui.bin_size_label.setEnabled(status_best_contrast_button)
 
         # _view = self.parent.ui.image_view_best_contrast.getView()
         # _view_box = _view.getViewBox()
@@ -135,7 +135,10 @@ class BestContrastTabHandler:
             index_of_0 = np.where(image_denominator_mean == 0)
             image_denominator_mean[index_of_0] = np.NaN
 
-            best_contrast_images[_folder] = np.true_divide(image_numerator_mean, image_denominator_mean)
+            _data = np.true_divide(image_numerator_mean, image_denominator_mean)
+            o_data = MetadataData()
+            o_data.data = _data
+            best_contrast_images[os.path.basename(folder_key)] = o_data
 
             self.parent.eventProgress.setValue(progress_index)
             progress_index += 1

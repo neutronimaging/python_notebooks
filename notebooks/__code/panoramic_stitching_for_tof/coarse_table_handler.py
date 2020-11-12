@@ -68,7 +68,7 @@ class CoarseTableHandler:
                 _widget = o_table.get_widget(row=_row, column=_column)
                 folder_name = _widget.currentText()
                 if not folder_name == "":
-                    data = data_dictionary[folder_name]
+                    data = data_dictionary[folder_name].data
                     panoramic_image[_row*image_height:(_row+1)*image_height,
                         _column*image_width:(_column+1)*image_width] = data
 
@@ -76,4 +76,7 @@ class CoarseTableHandler:
 
     def update_coarse_panoramic_image(self):
         _image = np.transpose(self.parent.coarse_panoramic_image)
-        self.parent.ui.image_view_coarse_alignment.setImage(_image)
+        if len(_image) == 0:
+            self.parent.ui.image_view_coarse_alignment.clear()
+        else:
+            self.parent.ui.image_view_coarse_alignment.setImage(_image)

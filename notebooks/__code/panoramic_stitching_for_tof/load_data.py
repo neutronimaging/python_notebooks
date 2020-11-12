@@ -66,7 +66,7 @@ class LoadData:
             o_data = MetadataData()
             _data = LoadData.calculate_integrated_data(o_norm.data['sample']['data'])
             o_data.data = _data
-            integrated_images_dict[_folder] = o_data
+            integrated_images_dict[os.path.basename(_folder)] = o_data
 
             self.parent.eventProgress.setValue(_folder_index+1)
             QtGui.QGuiApplication.processEvents()
@@ -78,7 +78,7 @@ class LoadData:
 
         coarse_images_dictionary = OrderedDict()
         for _folder in self.parent.integrated_images.keys():
-            coarse_images_dictionary[os.path.basename(_folder)] = self.parent.integrated_images[_folder].data
+            coarse_images_dictionary[os.path.basename(_folder)] = self.parent.integrated_images[_folder]
         self.parent.coarse_images_dictionary = coarse_images_dictionary
 
         self.parent.ui.statusbar.showMessage("Done Loading data from {} folders!".format(nbr_folder), 5000)
