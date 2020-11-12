@@ -14,10 +14,11 @@ from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import BestCon
 from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
 from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
 from __code.panoramic_stitching_for_tof.data_initialization import DataInitialization
+from __code.panoramic_stitching_for_tof.fine_tab_handler import FineTabHandler
+from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
+from __code.panoramic_stitching_for_tof.profile import Profile
 
-from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching.event_handler import EventHandler
-from __code.panoramic_stitching.profile import Profile
 from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
 from __code.panoramic_stitching.export import Export
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
@@ -207,15 +208,15 @@ class Interface(QMainWindow):
         self.vertical_profile_changed()
 
     def table_of_offset_cell_changed(self, row, column):
-        o_event = EventHandler(parent=self)
+        o_event = TOFEventHandler(parent=self)
         o_event.save_table_offset_of_this_cell(row=row, column=column)
 
-        o_pano = ImageHandler(parent=self)
-        o_pano.update_current_panoramic_image()
-        o_pano.update_contour_plot()
-
-        self.horizontal_profile_changed()
-        self.vertical_profile_changed()
+        # o_pano = ImageHandler(parent=self)
+        # o_pano.update_current_panoramic_image()
+        # o_pano.update_contour_plot()
+        #
+        # self.horizontal_profile_changed()
+        # self.vertical_profile_changed()
 
     def table_of_offset_selection_changed(self):
         o_pano = ImageHandler(parent=self)
@@ -391,4 +392,11 @@ class Interface(QMainWindow):
         self.ui.top_tabWidget.setTabEnabled(2, True)
         o_data = DataInitialization(parent=self)
         o_data.offset_table()
-        print(f"offset_dictionary: {self.offset_dictionary}")
+        o_fine = FineTabHandler(parent=self)
+        o_fine.initialize_table_of_offset()
+
+        o_pano = ImageHandler(parent=self)
+        o_pano.update_current_panoramic_image()
+        o_pano.update_contour_plot()
+        # self.horizontal_profile_changed()
+        # self.vertical_profile_changed()

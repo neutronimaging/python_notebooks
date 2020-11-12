@@ -54,8 +54,8 @@ class GuiInitialization:
 
     def splitter(self):
         self.parent.ui.profile_display_splitter.setSizes([500, 500])
-        self.parent.ui.full_splitter.setSizes([200, 100])
         self.parent.ui.full_splitter.setSizes([400, 100])
+        self.parent.ui.top_splitter.setSizes([200, 200])
         self.parent.ui.coarse_alignment_splitter.setSizes([400, 100])
 
     def pyqtgraph(self):
@@ -180,8 +180,8 @@ class GuiInitialization:
             _slider.setValue(self.parent.width_profile['default'])
 
     def table(self):
-        column_sizes = [900, 100, 100, 100]
-        column_names = ['File name', 'xoffset (px)', 'yoffset (px)', 'visible?']
+        column_sizes = [200, 100, 100, 100]
+        column_names = ['Folder name', 'xoffset (px)', 'yoffset (px)', 'visible?']
         o_table = TableHandler(table_ui=self.parent.tableWidget)
         o_table.set_column_sizes(column_sizes=column_sizes)
         o_table.set_column_names(column_names=column_names)

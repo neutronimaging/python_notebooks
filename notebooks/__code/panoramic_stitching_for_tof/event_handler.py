@@ -2,6 +2,7 @@ import copy
 import numpy as np
 
 from __code._utilities.table_handler import TableHandler
+from __code.panoramic_stitching_for_tof.get import Get
 
 
 class TOFEventHandler:
@@ -10,8 +11,9 @@ class TOFEventHandler:
         self.parent = parent
 
     def tab_changed(self, new_tab_index=-1):
-        if new_tab_index == 1:
-            self.parent.coarse_alignment_table_combobox_changed()
+        pass
+        # if new_tab_index == 1:
+        #     self.parent.coarse_alignment_table_combobox_changed()
 
     def update_working_images(self):
         if self.parent.ui.raw_image_radioButton.isChecked():
@@ -50,3 +52,20 @@ class TOFEventHandler:
         self.parent.ui.validate_coarse_alignment_button.setEnabled(validate_button)
         self.parent.ui.validate_coarse_alignment_error.setText(error_message)
         self.parent.ui.validate_coarse_alignment_error.setVisible(not validate_button)
+
+    def save_table_offset_of_this_cell(self, row=-1, column=-1, state=-1):
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+
+        folder_name = o_table.get_item_str_from_cell(row=row, column=0)
+        offset_dictionary = self.parent.offset_dictionary
+        if (column == 1) or (column == 2):
+            offset_value = np.int(o_table.get_item_str_from_cell(row=row, column=column))
+
+        if column == 1:
+            offset_dictionary[folder_name]['xoffset'] = offset_value
+        elif column == 2:
+            offset_dictionary[folder_name]['yoffset'] = offset_value
+        elif column == 3:
+            is_visible = True if state == 2 else False
+            offset_dictionary[folder_name]['visible'] = is_visible
+        self.parent.offset_dictionary = offset_dictionary
