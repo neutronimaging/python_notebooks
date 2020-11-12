@@ -347,16 +347,17 @@ class Interface(QMainWindow):
 
     def reset_table_button_clicked(self):
         self.offset_dictionary = copy.deepcopy(self.offset_dictionary_for_reset)
+        self.validate_coarse_alignment_button_pressed()
 
-        o_init = GuiInitialization(parent=self)
-        o_init.after_loading_data()
-
-        o_event = EventHandler(parent=self)
-        o_event.check_status_of_from_to_checkbox()
-
-        o_image = ImageHandler(parent=self)
-        o_image.update_current_panoramic_image()
-        o_image.update_contour_plot()
+        # o_init = GuiInitialization(parent=self)
+        # o_init.after_loading_data()
+        #
+        # o_event = FineTabHandler(parent=self)
+        # o_event.check_status_of_from_to_checkbox()
+        #
+        # o_image = ImageHandler(parent=self)
+        # o_image.update_current_panoramic_image()
+        # o_image.update_contour_plot()
 
     def best_contrast_list_folders_combobox_changed(self, index=-1):
         o_handler = BestContrastTabHandler(parent=self)

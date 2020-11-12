@@ -2,6 +2,7 @@ from qtpy.QtWidgets import QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWi
 from qtpy import QtCore
 
 from __code._utilities.table_handler import TableHandler
+from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
 
 
 class FineTabHandler:
@@ -64,3 +65,41 @@ class FineTabHandler:
 
         o_table.select_row(0)
         self.parent.ui.tableWidget.blockSignals(False)
+
+    def check_status_of_from_to_checkbox(self):
+        state = self.parent.ui.from_to_checkbox.isChecked()
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
+        if state is False:
+            self.parent.ui.from_to_button.setEnabled(False)
+            self.parent.ui.from_to_error_label.setVisible(False)
+        else:
+            if row_selected == 0:
+                state = False
+            self.parent.ui.from_to_button.setEnabled(state)
+            self.parent.ui.from_to_error_label.setVisible(not state)
+            if state:
+                o_image = ImageHandler(parent=self.parent)
+                o_image.update_validity_of_from_to_button()
+
+        o_image = ImageHandler(parent=self.parent)
+        o_image.update_from_to_roi(state=state)
+
+        if row_selected == 0:
+            state_button = False
+        else:
+            state_button = True
+        self.enabled_all_manual_widgets(state=state_button)
+
+    def enabled_all_manual_widgets(self, state=True):
+        list_ui = [self.parent.ui.left_button,
+                   self.parent.ui.left_left_button,
+                   self.parent.ui.right_button,
+                   self.parent.ui.right_right_button,
+                   self.parent.ui.up_button,
+                   self.parent.ui.up_up_button,
+                   self.parent.ui.down_button,
+                   self.parent.ui.down_down_button]
+        for _ui in list_ui:
+            _ui.setEnabled(state)
