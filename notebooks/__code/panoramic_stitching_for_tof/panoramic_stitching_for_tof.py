@@ -211,12 +211,12 @@ class Interface(QMainWindow):
         o_event = TOFEventHandler(parent=self)
         o_event.save_table_offset_of_this_cell(row=row, column=column)
 
-        # o_pano = ImageHandler(parent=self)
-        # o_pano.update_current_panoramic_image()
-        # o_pano.update_contour_plot()
-        #
-        # self.horizontal_profile_changed()
-        # self.vertical_profile_changed()
+        o_pano = ImageHandler(parent=self)
+        o_pano.update_current_panoramic_image()
+        o_pano.update_contour_plot()
+
+        self.horizontal_profile_changed()
+        self.vertical_profile_changed()
 
     def table_of_offset_selection_changed(self):
         o_pano = ImageHandler(parent=self)
