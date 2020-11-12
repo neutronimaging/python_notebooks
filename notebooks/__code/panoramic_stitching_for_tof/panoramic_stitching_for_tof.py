@@ -17,10 +17,10 @@ from __code.panoramic_stitching_for_tof.data_initialization import DataInitializ
 from __code.panoramic_stitching_for_tof.fine_tab_handler import FineTabHandler
 from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
 from __code.panoramic_stitching_for_tof.profile import Profile
+from __code.panoramic_stitching_for_tof.automatically_stitch import AutomaticallyStitch
+from __code.panoramic_stitching_for_tof.export import Export
 
 from __code.panoramic_stitching.event_handler import EventHandler
-from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
-from __code.panoramic_stitching.export import Export
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
@@ -338,10 +338,6 @@ class Interface(QMainWindow):
         o_auto = AutomaticallyStitch(parent=self)
         o_auto.run()
 
-    def export_panoramic_images_button_clicked(self):
-        o_export = Export(parent=self)
-        o_export.run()
-
     def reset_table_button_clicked(self):
         self.offset_dictionary = copy.deepcopy(self.offset_dictionary_for_reset)
         self.validate_coarse_alignment_button_pressed()
@@ -389,3 +385,7 @@ class Interface(QMainWindow):
         self.horizontal_profile_changed()
         self.vertical_profile_changed()
         self.table_of_offset_selection_changed()
+
+    def export_panoramic_images_button_clicked(self):
+        o_export = Export(parent=self)
+        o_export.run()

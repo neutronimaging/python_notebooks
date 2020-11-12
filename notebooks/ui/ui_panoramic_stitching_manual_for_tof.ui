@@ -774,20 +774,19 @@
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
-                <widget class="QPushButton" name="pushButton">
-                 <property name="text">
-                  <string>Automatically stitch all TOF images using those offset parameters</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QPushButton" name="export_panoramic_images_button">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>200</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -1204,22 +1203,6 @@
     <hint type="destinationlabel">
      <x>1475</x>
      <y>295</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>automatically_stitch_all_other_images_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>968</x>
-     <y>1060</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1475</x>
-     <y>1099</y>
     </hint>
    </hints>
   </connection>
