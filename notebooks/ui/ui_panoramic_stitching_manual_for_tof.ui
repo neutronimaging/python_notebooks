@@ -1263,7 +1263,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>132</x>
-     <y>124</y>
+     <y>82</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1279,7 +1279,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>977</x>
-     <y>122</y>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
      <x>1472</x>
@@ -1295,7 +1295,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1055</x>
-     <y>122</y>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
      <x>1473</x>
@@ -1327,11 +1327,27 @@
    <hints>
     <hint type="sourcelabel">
      <x>1246</x>
-     <y>124</y>
+     <y>82</y>
     </hint>
     <hint type="destinationlabel">
      <x>1471</x>
      <y>50</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>validate_coarse_alignment_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>validate_coarse_alignment_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>906</x>
+     <y>1072</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1472</x>
+     <y>1088</y>
     </hint>
    </hints>
   </connection>
@@ -1370,5 +1386,6 @@
   <slot>raw_or_best_contrast_radio_button_changed()</slot>
   <slot>tab_changed()</slot>
   <slot>bin_size_text_field_return_pressed()</slot>
+  <slot>validate_coarse_alignment_button_pressed()</slot>
  </slots>
 </ui>

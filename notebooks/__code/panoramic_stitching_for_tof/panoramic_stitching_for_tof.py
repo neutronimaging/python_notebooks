@@ -385,4 +385,7 @@ class Interface(QMainWindow):
         o_event.update_coarse_panoramic_image()
         o_handler = TOFEventHandler(parent=self)
         o_handler.check_validate_coarse_alignment_button()
+        self.ui.top_tabWidget.setTabEnabled(2, False)
 
+    def validate_coarse_alignment_button_pressed(self):
+        self.ui.top_tabWidget.setTabEnabled(2, True)
