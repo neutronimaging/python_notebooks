@@ -112,7 +112,7 @@ class Export:
         o_norm.data['sample']['filename'] = list_filename
         o_norm.export(new_output_folder_name, data_type='sample')
 
-        self.copy_txt_files_to_output_folder(output_folder=new_folder_name)
+        self.copy_txt_files_to_output_folder(output_folder=new_output_folder_name)
 
         self.parent.ui.statusbar.showMessage("{} has been created!".format(new_output_folder_name), 10000)  # 10s
         QtGui.QGuiApplication.processEvents()

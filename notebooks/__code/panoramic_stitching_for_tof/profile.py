@@ -1,7 +1,7 @@
 import numpy as np
 
 from __code._utilities.table_handler import TableHandler
-from __code.panoramic_stitching.get import Get
+from __code.panoramic_stitching_for_tof.get import Get
 from __code.panoramic_stitching_for_tof.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 
 COLOR_WORKING_ROW = 'red'
@@ -51,7 +51,9 @@ class Profile:
         image_height = self.parent.image_height
         image_width = self.parent.image_width
 
-        for _file_index, _file in enumerate(data_dictionary.keys()):
+        o_get = Get(parent=self.parent)
+        list_folders = o_get.get_list_folders_according_to_offset_table()
+        for _file_index, _file in enumerate(list_folders):
 
             # no need to display profile if image is not visible
             if not offset_dictionary[_file]['visible']:
