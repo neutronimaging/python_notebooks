@@ -2,7 +2,7 @@ import numpy as np
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
-from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
+from __code.panoramic_stitching_for_tof.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 
 COLOR_WORKING_ROW = 'red'
 COLOR_NONE_WORKING_ROW = 'black'

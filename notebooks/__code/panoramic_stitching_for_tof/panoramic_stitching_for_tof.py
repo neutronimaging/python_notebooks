@@ -62,7 +62,7 @@ class PanoramicStitching:
         o_interface = Interface(list_folders=final_list_folders)
         o_interface.show()
         o_interface.load_data()
-        # o_interface.initialization_after_loading_data()
+        o_interface.initialization_after_loading_data()
 
 class Interface(QMainWindow):
 
@@ -239,7 +239,7 @@ class Interface(QMainWindow):
         self.horizontal_profile_changed()
 
     def enable_horizontal_profile_checked(self, state):
-        o_event = EventHandler(parent=self)
+        o_event = FineTabHandler(parent=self)
         o_event.horizontal_profile(enabled=state)
 
     def horizontal_profile_changed(self):
@@ -259,7 +259,7 @@ class Interface(QMainWindow):
         o_profile.vertical_profile_changed()
 
     def enable_vertical_profile_checked(self, state):
-        o_event = EventHandler(parent=self)
+        o_event = FineTabHandler(parent=self)
         o_event.vertical_profile(enabled=state)
 
     def left_left_button_pressed(self):

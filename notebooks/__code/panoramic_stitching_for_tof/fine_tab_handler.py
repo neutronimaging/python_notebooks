@@ -1,10 +1,12 @@
 from qtpy.QtWidgets import QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
 from qtpy import QtCore
 import numpy as np
+import pyqtgraph as pg
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
 from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
+from __code.panoramic_stitching.gui_handler import GuiHandler
 
 
 class FineTabHandler:
@@ -161,3 +163,60 @@ class FineTabHandler:
         o_pano = ImageHandler(parent=self.parent)
         o_pano.update_current_panoramic_image()
         o_pano.update_contour_plot()
+
+    def horizontal_profile(self, enabled=True):
+        o_gui = GuiHandler(parent=self.parent)
+        o_gui.enabled_horizontal_profile_widgets(enabled=enabled)
+
+        horizontal_profile = self.parent.horizontal_profile
+
+        if enabled:
+            if horizontal_profile['id']:
+                self.parent.ui.image_view.addItem(horizontal_profile['id'])
+            else:
+                x0 = horizontal_profile['x0']
+                x1 = horizontal_profile['x1']
+                y = horizontal_profile['y']
+                width = horizontal_profile['width']
+
+                roi = pg.ROI([x0, y], [x1-x0, width])
+                roi.addScaleHandle([0.5, 0], [0, 0])
+                self.parent.ui.image_view.addItem(roi)
+                self.parent.horizontal_profile['id'] = roi
+                roi.sigRegionChanged.connect(self.parent.horizontal_profile_changed)
+
+            self.parent.horizontal_profile_changed()
+
+        else:
+            if horizontal_profile['id']:
+                self.parent.ui.image_view.removeItem(horizontal_profile['id'])
+            self.parent.horizontal_profile_plot.axes.clear()
+            self.parent.horizontal_profile_plot.draw()
+
+    def vertical_profile(self, enabled=True):
+        o_gui = GuiHandler(parent=self.parent)
+        o_gui.enabled_vertical_profile_widgets(enabled=enabled)
+
+        vertical_profile = self.parent.vertical_profile
+        if enabled:
+            if vertical_profile['id']:
+                self.parent.ui.image_view.addItem(vertical_profile['id'])
+            else:
+                x = vertical_profile['x']
+                y0 = vertical_profile['y0']
+                y1 = vertical_profile['y1']
+                width = vertical_profile['width']
+
+                roi = pg.ROI([x, y0], [width, y1-y0])
+                roi.addScaleHandle([0, 0.5], [0, 0])
+                self.parent.ui.image_view.addItem(roi)
+                self.parent.vertical_profile['id'] = roi
+                roi.sigRegionChanged.connect(self.parent.vertical_profile_changed)
+
+            self.parent.vertical_profile_changed()
+
+        else:
+            if vertical_profile['id']:
+                self.parent.ui.image_view.removeItem(vertical_profile['id'])
+            self.parent.vertical_profile_plot.axes.clear()
+            self.parent.vertical_profile_plot.draw()
