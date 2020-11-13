@@ -73,7 +73,8 @@ class ImageHandler:
         _color = None
 
         panoramic_image = None
-        for _folder_index, _folder in enumerate(data_dictionary.keys()):
+        list_folders = self.get_list_folders_according_to_offset_table()
+        for _folder_index, _folder in enumerate(list_folders):
 
             if _folder_index == 0:
                 panoramic_image = np.zeros((max_yoffset + image_height + 2*VERTICAL_MARGIN,
@@ -106,6 +107,15 @@ class ImageHandler:
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0],
                                     self.parent.histogram_level[1])
+
+    def get_list_folders_according_to_offset_table(self):
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        nbr_row = o_table.table_ui.rowCount()
+        list_folders = []
+        for _row in np.arange(nbr_row):
+            _folder = o_table.get_item_str_from_cell(row=_row, column=0)
+            list_folders.append(_folder)
+        return list_folders
 
     def get_max_offset(self):
         offset_dictionary = self.parent.offset_dictionary
