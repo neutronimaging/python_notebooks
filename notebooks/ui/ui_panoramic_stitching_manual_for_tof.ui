@@ -24,7 +24,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -53,7 +53,7 @@
           <item>
            <widget class="QRadioButton" name="raw_image_radioButton">
             <property name="text">
-             <string>Raw image</string>
+             <string>Integrated Image</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -121,7 +121,7 @@
            <enum>Qt::Vertical</enum>
           </property>
           <widget class="QWidget" name="coarse_alignment_widget" native="true"/>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
              <widget class="QTableWidget" name="coarse_alignment_tableWidget"/>
@@ -237,7 +237,7 @@
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <widget class="QWidget" name="">
+           <widget class="QWidget" name="layoutWidget">
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -696,7 +696,7 @@
             </widget>
            </widget>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_8">
