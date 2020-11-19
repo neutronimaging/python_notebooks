@@ -737,7 +737,7 @@ class CalibratedTransmissionUi(QMainWindow):
                                                           options=QFileDialog.ShowDirsOnly)
         if _export_folder:
             o_export = ExportCalibration(parent = self,
-                                         export_folder = _export_folder)
+                                         export_folder=_export_folder)
             o_export.run()
             QtGui.QGuiApplication.processEvents()
 

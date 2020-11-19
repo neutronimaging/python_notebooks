@@ -200,7 +200,7 @@ class Interface(QMainWindow):
         if spectra_file:
             self.spectra_file = spectra_file
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
 
         super(Interface, self).__init__(parent)

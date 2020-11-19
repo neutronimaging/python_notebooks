@@ -31,7 +31,6 @@ from __code.file_handler import make_ascii_file
 
 
 class ProfileUi(QMainWindow):
-
     data_dict = {}
     data_dict_raw = {}
     timestamp_dict = {}
@@ -46,9 +45,9 @@ class ProfileUi(QMainWindow):
     summary_table_width = [300, 150, 100]
 
     live_image = []
-    grid_view = {'pos': None,
-                 'adj': None,
-                 'item': None,
+    grid_view = {'pos'  : None,
+                 'adj'  : None,
+                 'item' : None,
                  'color': (0, 0, 255, 255, 1)}
 
     profile_color = (0, 255, 0, 255, 1)
@@ -59,18 +58,17 @@ class ProfileUi(QMainWindow):
     list_guide_pyqt_roi = list()
     list_profile_pyqt_roi = list()
     list_table_widget_checkbox = list()
-    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 800,
-                         'isChecked': True,
-                         'color_activated':'r',
+    default_guide_roi = {'x0'               : 0, 'y0': 0, 'width': 200, 'height': 800,
+                         'isChecked'        : True,
+                         'color_activated'  : 'r',
                          'color_deactivated': 'b'}
-    previous_active_row = -1 # use to deactivated the guide and profile roi
+    previous_active_row = -1  # use to deactivated the guide and profile roi
 
     # default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
     #                               'width': 200, 'height': 200}
-    default_profile_width_values = np.arange(1,50,2)
+    default_profile_width_values = np.arange(1, 50, 2)
 
-
-    #remove-me
+    # remove-me
     test_roi = None
 
     def __init__(self, parent=None, working_dir='', data_dict=None):
@@ -84,10 +82,10 @@ class ProfileUi(QMainWindow):
         self.setWindowTitle("Profile")
 
         self.working_dir = working_dir
-        self.data_dict = data_dict # Normalization data dictionary  {'file_name': [],
-                                                                     #'data': [[...],[...]]],
-                                                                     #'metadata': [],
-                                                                     #'shape': {}}
+        self.data_dict = data_dict  # Normalization data dictionary  {'file_name': [],
+        # 'data': [[...],[...]]],
+        # 'metadata': [],
+        # 'shape': {}}
 
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
@@ -141,11 +139,11 @@ class ProfileUi(QMainWindow):
 
         for _row in np.arange(nbr_row):
             [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-            _label = ' Profile #{}'.format(_row+1)
+            _label = ' Profile #{}'.format(_row + 1)
             _color = list_rgb_profile_color[_row]
             self.ui.profile_view.plot(x_axis, profile,
-                                        name=_label,
-                                        pen=_color)
+                                      name=_label,
+                                      pen=_color)
 
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
@@ -206,7 +204,6 @@ class ProfileUi(QMainWindow):
             new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
 
-
     def update_guide_roi_using_guide_table(self, row=-1):
         [x0, y0, width, height] = self.get_item_row(row=row)
         roi_ui = self.list_guide_pyqt_roi[row]
@@ -216,7 +213,7 @@ class ProfileUi(QMainWindow):
         roi_ui.blockSignals(False)
 
     def update_profile_rois(self, row=-1):
-        if row == -1: # update all of them
+        if row == -1:  # update all of them
 
             # # remove all profile rois
             # self.list_profile_pyqt_roi = list()
@@ -250,8 +247,8 @@ class ProfileUi(QMainWindow):
                 y0 = region[0][1].start
                 y1 = region[0][1].stop
 
-                width = np.abs(x1 - x0)-1
-                height = np.abs(y1 - y0)-1
+                width = np.abs(x1 - x0) - 1
+                height = np.abs(y1 - y0) - 1
 
                 self.set_item_main_table(row=_row, col=1, value=str(x0))
                 self.set_item_main_table(row=_row, col=2, value=str(y0))
@@ -316,7 +313,7 @@ class ProfileUi(QMainWindow):
         """rename all the profile name"""
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText("Profile # {}".format(_row+1))
+            self.ui.all_plots_profiles_table.item(_row, 0).setText("Profile # {}".format(_row + 1))
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):
@@ -373,7 +370,7 @@ class ProfileUi(QMainWindow):
             x_left = x0
             x_right = x0 + width
 
-            profile_center = y0 + np.abs(np.int((height)/2.))
+            profile_center = y0 + np.abs(np.int((height) / 2.))
             y_top = profile_center - delta_profile
             y_bottom = profile_center + delta_profile
 
@@ -438,7 +435,7 @@ class ProfileUi(QMainWindow):
         for _selection in selection:
             top_row = _selection.topRow()
             bottom_row = _selection.bottomRow()
-            for _row in np.arange(top_row, bottom_row+1):
+            for _row in np.arange(top_row, bottom_row + 1):
                 list_row_selected.append(_row)
         return list_row_selected
 
@@ -506,7 +503,7 @@ class ProfileUi(QMainWindow):
 
     ## Event Handler
     def tab_changed(self, tab_index):
-        if tab_index == 1: # display all plots
+        if tab_index == 1:  # display all plots
             self.update_all_plots()
 
     def guide_changed(self):
@@ -627,11 +624,11 @@ class ProfileUi(QMainWindow):
             QtGui.QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
-        self.change_slider(offset = -1)
+        self.change_slider(offset=-1)
         # self.display_measurement_profiles()
 
     def next_image_button_clicked(self):
-        self.change_slider(offset = +1)
+        self.change_slider(offset=+1)
         # self.display_measurement_profiles()
 
     def help_button_clicked(self):
@@ -650,7 +647,7 @@ class ExportProfiles(object):
 
     def _create_output_file_name(self, profile_index=0):
         base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index+1))
+        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index + 1))
         return output_file_name
 
     def _create_metadata(self, profile_index=0):
@@ -673,8 +670,8 @@ class ExportProfiles(object):
         nbr_files = len(self.parent.data_dict['file_name'])
         metadata.append("#List of files ({} files)".format(nbr_files))
         for _index, _file in enumerate(self.parent.data_dict['file_name']):
-            metadata.append("# * {} -> col{}".format(_file, _index+1))
-            table_axis.append("# col.{}".format(_index+1))
+            metadata.append("# * {} -> col{}".format(_file, _index + 1))
+            table_axis.append("# col.{}".format(_index + 1))
         metadata.append("#")
         metadata.append("#" + ",".join(table_axis))
         return metadata
@@ -709,7 +706,6 @@ class ExportProfiles(object):
 
 
 class GuideAndProfileRoisHandler(object):
-
     __profile = None
 
     def __init__(self, parent=None, row=-1):
@@ -731,8 +727,8 @@ class GuideAndProfileRoisHandler(object):
     def _define_guide(self):
         """define the guide"""
         guide_roi = pg.RectROI([self.parent.default_guide_roi['x0'], self.parent.default_guide_roi['y0']],
-                                [self.parent.default_guide_roi['width'], self.parent.default_guide_roi['height']],
-                            pen=self.parent.default_guide_roi['color_activated'])
+                               [self.parent.default_guide_roi['width'], self.parent.default_guide_roi['height']],
+                               pen=self.parent.default_guide_roi['color_activated'])
         guide_roi.addScaleHandle([1, 1], [0, 0])
         guide_roi.addScaleHandle([0, 0], [1, 1])
         guide_roi.sigRegionChanged.connect(self.parent.guide_changed)
@@ -760,7 +756,7 @@ class GuideAndProfileRoisHandler(object):
             adj = []
             adj.append([0, 1])
 
-            if y_top != y_bottom: # height == 1
+            if y_top != y_bottom:  # height == 1
                 pos.append([x_left, y_bottom])
                 pos.append([x_right, y_bottom])
                 adj.append([2, 3])
@@ -768,7 +764,7 @@ class GuideAndProfileRoisHandler(object):
             adj = np.array(adj)
             pos = np.array(pos)
 
-        else: # y-profile direction
+        else:  # y-profile direction
 
             pos = []
             pos.append([x_left, y_top])
@@ -795,10 +791,10 @@ class GuideAndProfileRoisHandler(object):
         profile = pg.GraphItem()
         self.parent.ui.image_view.addItem(profile)
         profile.setData(pos=pos,
-                     adj=adj,
-                     pen=lines,
-                     symbol=None,
-                     pxMode=False)
+                        adj=adj,
+                        pen=lines,
+                        symbol=None,
+                        pxMode=False)
 
         self.__profile = profile
 
@@ -830,13 +826,13 @@ class Initializer(object):
             self.parent.ui.all_plots_file_name_table.insertRow(_row)
             self.set_item_all_plot_file_name_table(row=_row, value=os.path.basename(_file))
 
-    def parameters(self):        
+    def parameters(self):
         # init the position of the measurement ROI
         [height, width] = np.shape(self.parent.data_dict['data'][0])
-        self.parent.default_guide_roi['width'] = np.int(width/10)
-        self.parent.default_guide_roi['height'] = np.int(height/5)
-        self.parent.default_guide_roi['x0'] = np.int(width/2)
-        self.parent.default_guide_roi['y0'] = np.int(height/2)
+        self.parent.default_guide_roi['width'] = np.int(width / 10)
+        self.parent.default_guide_roi['height'] = np.int(height / 5)
+        self.parent.default_guide_roi['x0'] = np.int(width / 2)
+        self.parent.default_guide_roi['y0'] = np.int(height / 2)
         self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
 
     def widgets(self):
@@ -844,26 +840,26 @@ class Initializer(object):
         left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
                                                                'static/profile/button_rotation_left_fast.png'))
         self.parent.ui.left_rotation_button_fast.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_fast_file + "'); " + \
-                                                        "background-repeat: no-repeat")
+                                                               "url('" + left_rotation_fast_file + "'); " + \
+                                                               "background-repeat: no-repeat")
 
         right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
                                                                 'static/profile/button_rotation_right_fast.png'))
         self.parent.ui.right_rotation_button_fast.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_fast_file + "'); " + \
-                                                         "background-repeat: no-repeat")
+                                                                "url('" + right_rotation_fast_file + "'); " + \
+                                                                "background-repeat: no-repeat")
 
         left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
                                                                'static/profile/button_rotation_left_slow.png'))
         self.parent.ui.left_rotation_button_slow.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_slow_file + "'); " + \
-                                                        "background-repeat: no-repeat")
+                                                               "url('" + left_rotation_slow_file + "'); " + \
+                                                               "background-repeat: no-repeat")
 
         right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
                                                                 'static/profile/button_rotation_right_slow.png'))
         self.parent.ui.right_rotation_button_slow.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_slow_file + "'); " + \
-                                                         "background-repeat: no-repeat")
+                                                                "url('" + right_rotation_slow_file + "'); " + \
+                                                                "background-repeat: no-repeat")
 
         self.parent.ui.splitter_2.setSizes([250, 50])
         self.parent.ui.splitter.setSizes([500, 50])
@@ -884,9 +880,9 @@ class Initializer(object):
             self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
 
         self.parent.display_ui = [self.parent.ui.display_size_label,
-                           self.parent.ui.grid_size_slider,
-                           self.parent.ui.display_transparency_label,
-                           self.parent.ui.transparency_slider]
+                                  self.parent.ui.grid_size_slider,
+                                  self.parent.ui.display_transparency_label,
+                                  self.parent.ui.transparency_slider]
 
     def pyqtgraph(self):
         # image
@@ -938,7 +934,8 @@ class DisplayImages(object):
         if recalculate_image:
             angle = self.parent.rotation_angle
             # rotate all images
-            self.parent.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.parent.data_dict_raw['data']]
+            self.parent.data_dict['data'] = [transform.rotate(_image, angle) for _image in
+                                             self.parent.data_dict_raw['data']]
 
         _image = self.parent.data_dict['data'][slider_index]
         return _image
@@ -1008,7 +1005,6 @@ class DisplayImages(object):
 
         # if we want a grid
         if self.parent.ui.grid_display_checkBox.isChecked():
-
             grid_size = self.parent.ui.grid_size_slider.value()
             [height, width] = np.shape(self.parent.live_image)
 
@@ -1019,7 +1015,7 @@ class DisplayImages(object):
             adj = pos_adj_dict['adj']
 
             line_color = self.parent.grid_view['color']
-            _transparency_value = 255 - (np.float(str(self.parent.ui.transparency_slider.value()))/100) * 255
+            _transparency_value = 255 - (np.float(str(self.parent.ui.transparency_slider.value())) / 100) * 255
             _list_line_color = list(line_color)
             _list_line_color[3] = _transparency_value
             line_color = tuple(_list_line_color)
@@ -1036,6 +1032,3 @@ class DisplayImages(object):
                          symbol=None,
                          pxMode=False)
             self.parent.grid_view['item'] = grid
-
-
-
