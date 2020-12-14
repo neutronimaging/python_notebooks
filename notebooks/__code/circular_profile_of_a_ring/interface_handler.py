@@ -148,6 +148,11 @@ class Interface(QMainWindow):
         self.ui.image_view.removeItem(self.line_view_binning)
         self.display_grid()
 
+    def display_ring(self):
+        x_central_pixel = np.float(str(self.ui.circle_x.text()))
+        y_central_pixel = np.float(str(self.ui.circle_y.text()))
+        #ring_radius =
+
     # Event handler
     def manual_circle_center_changed(self):
         new_x0 = np.float(self.vLine.value())
@@ -226,3 +231,7 @@ class Interface(QMainWindow):
 
     def ring_settings_changed(self, slider_value):
         pass
+
+    def ring_settings_double_spin_box_changed(self, spin_box_value):
+        pass
+    

@@ -259,6 +259,9 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QDoubleSpinBox" name="ring_inner_radius_doubleSpinBox"/>
+                 </item>
+                 <item>
                   <widget class="QSlider" name="ring_inner_radius_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -287,6 +290,9 @@
                     <string>Thickness</string>
                    </property>
                   </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="ring_thickness_doubleSpinBox"/>
                  </item>
                  <item>
                   <widget class="QSlider" name="ring_thickness_slider">
@@ -819,6 +825,38 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>ring_inner_radius_doubleSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ring_settings_double_spin_box_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>552</x>
+     <y>405</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1233</x>
+     <y>366</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ring_thickness_doubleSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ring_settings_double_spin_box_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>534</x>
+     <y>443</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1234</x>
+     <y>514</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -841,5 +879,6 @@ p, li { white-space: pre-wrap; }
   <slot>help_button_clicked()</slot>
   <slot>slider_image_changed()</slot>
   <slot>ring_settings_changed()</slot>
+  <slot>ring_settings_double_spin_box_changed()</slot>
  </slots>
 </ui>
