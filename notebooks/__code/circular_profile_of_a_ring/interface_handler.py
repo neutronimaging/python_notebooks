@@ -75,6 +75,11 @@ class Interface(QMainWindow):
         self.ui.circle_y.setText(str(np.int(self.width / 2)))
         self.ui.circle_x.setText(str(np.int(self.height / 2)))
 
+        self.ui.guide_red_slider.setValue(self.guide_color_slider['red'])
+        self.ui.guide_green_slider.setValue(self.guide_color_slider['green'])
+        self.ui.guide_blue_slider.setValue(self.guide_color_slider['blue'])
+        self.ui.guide_alpha_slider.setValue(self.guide_color_slider['alpha'])
+
     def display_grid(self):
         [width, height] = [self.width, self.height]
         # bin_size = float(str(self.ui.lineEdit.text()))
