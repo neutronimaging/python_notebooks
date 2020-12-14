@@ -26,18 +26,25 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QWidget" name="widget" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-          <item>
+         <widget class="QSplitter" name="splitter">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QWidget" name="layoutWidget">
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QWidget" name="widget" native="true"/>
+            </item>
+            <item>
+             <widget class="QSlider" name="image_slider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <widget class="QGroupBox" name="groupBox_2">
@@ -130,68 +137,16 @@
                <string>Grid Settings </string>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
-               <item row="0" column="1">
-                <widget class="QSlider" name="guide_red_slider">
+               <item row="4" column="1">
+                <widget class="QSlider" name="grid_size_slider">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
                  <property name="maximum">
-                  <number>255</number>
+                  <number>100</number>
                  </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_6">
-                 <property name="text">
-                  <string>Green</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>Transparency</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QSlider" name="guide_blue_slider">
-                 <property name="maximum">
-                  <number>255</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QSlider" name="guide_green_slider">
-                 <property name="maximum">
-                  <number>255</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>Blue</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_5">
-                 <property name="text">
-                  <string>Red</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QSlider" name="guide_alpha_slider">
-                 <property name="maximum">
-                  <number>255</number>
+                 <property name="value">
+                  <number>50</number>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -205,16 +160,68 @@
                  </property>
                 </widget>
                </item>
-               <item row="4" column="1">
-                <widget class="QSlider" name="grid_size_slider">
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
+               <item row="3" column="1">
+                <widget class="QSlider" name="guide_alpha_slider">
                  <property name="maximum">
-                  <number>100</number>
+                  <number>255</number>
                  </property>
-                 <property name="value">
-                  <number>50</number>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Red</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Blue</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QSlider" name="guide_green_slider">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QSlider" name="guide_blue_slider">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>Transparency</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Green</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QSlider" name="guide_red_slider">
+                 <property name="maximum">
+                  <number>255</number>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -238,8 +245,8 @@
              </spacer>
             </item>
            </layout>
-          </item>
-         </layout>
+          </widget>
+         </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox">
@@ -414,8 +421,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>770</x>
-     <y>339</y>
+     <x>623</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -430,8 +437,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>377</y>
+     <x>623</x>
+     <y>243</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -446,8 +453,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>411</y>
+     <x>623</x>
+     <y>277</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -462,8 +469,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>445</y>
+     <x>623</x>
+     <y>311</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -478,8 +485,8 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>783</x>
-     <y>482</y>
+     <x>623</x>
+     <y>345</y>
     </hint>
     <hint type="destinationlabel">
      <x>823</x>
@@ -494,8 +501,8 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>764</x>
-     <y>477</y>
+     <x>623</x>
+     <y>345</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
@@ -510,8 +517,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>740</x>
-     <y>340</y>
+     <x>623</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
      <x>762</x>
@@ -526,8 +533,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>764</x>
-     <y>343</y>
+     <x>623</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
      <x>734</x>
@@ -542,8 +549,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>778</x>
-     <y>373</y>
+     <x>623</x>
+     <y>243</y>
     </hint>
     <hint type="destinationlabel">
      <x>750</x>
@@ -558,8 +565,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>763</x>
-     <y>374</y>
+     <x>623</x>
+     <y>243</y>
     </hint>
     <hint type="destinationlabel">
      <x>724</x>
@@ -574,8 +581,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>759</x>
-     <y>409</y>
+     <x>623</x>
+     <y>277</y>
     </hint>
     <hint type="destinationlabel">
      <x>763</x>
@@ -590,8 +597,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>735</x>
-     <y>406</y>
+     <x>623</x>
+     <y>277</y>
     </hint>
     <hint type="destinationlabel">
      <x>743</x>
@@ -606,8 +613,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>764</x>
-     <y>441</y>
+     <x>623</x>
+     <y>311</y>
     </hint>
     <hint type="destinationlabel">
      <x>775</x>
@@ -622,8 +629,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>783</x>
-     <y>442</y>
+     <x>623</x>
+     <y>311</y>
     </hint>
     <hint type="destinationlabel">
      <x>753</x>
@@ -638,8 +645,8 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>775</x>
-     <y>483</y>
+     <x>623</x>
+     <y>345</y>
     </hint>
     <hint type="destinationlabel">
      <x>689</x>
@@ -695,6 +702,22 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>image_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slider_image_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>660</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>666</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -715,5 +738,6 @@ p, li { white-space: pre-wrap; }
   <slot>calculate_profiles_clicked()</slot>
   <slot>export_profiles_clicked()</slot>
   <slot>help_button_clicked()</slot>
+  <slot>slider_image_changed()</slot>
  </slots>
 </ui>
