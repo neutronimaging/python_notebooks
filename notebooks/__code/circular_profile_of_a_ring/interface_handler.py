@@ -20,9 +20,15 @@ class Interface(QMainWindow):
     histogram_level = None
     current_live_image = None
 
+    guide_color_slider = {'red'  : 255,
+                          'green': 0,
+                          'blue' : 255,
+                          'alpha': 255}
+
     def __init__(self, parent=None, data=None, working_dir=None):
 
         self.data = data
+        [self.height, self.width] = np.shape(data[0])
         self.working_dir = working_dir
 
         super(Interface, self).__init__(parent)
@@ -35,6 +41,20 @@ class Interface(QMainWindow):
 
         self.init_widgets()
         self.slider_image_changed(new_index=0)
+        self.init_crosshair()
+
+    def init_crosshair(self):
+        x0 = float(str(self.ui.circle_x.text()))
+        y0 = float(str(self.ui.circle_y.text()))
+
+        self.vLine = pg.InfiniteLine(pos=x0, angle=90, movable=True)
+        self.hLine = pg.InfiniteLine(pos=y0, angle=0, movable=True)
+
+        self.vLine.sigDragged.connect(self.manual_circle_center_changed)
+        self.hLine.sigDragged.connect(self.manual_circle_center_changed)
+
+        self.ui.image_view.addItem(self.vLine, ignoreBounds=False)
+        self.ui.image_view.addItem(self.hLine, ignoreBounds=False)
 
     def init_widgets(self):
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
@@ -48,6 +68,17 @@ class Interface(QMainWindow):
 
         nbr_files = len(self.data)
         self.ui.image_slider.setMaximum(nbr_files-1)
+
+        self.ui.circle_y.setText(str(np.int(self.width / 2)))
+        self.ui.circle_x.setText(str(np.int(self.height / 2)))
+
+    # Event handler
+    def manual_circle_center_changed(self):
+        new_x0 = np.int(self.vLine.value())
+        self.ui.circle_x.setText("{}".format(new_x0))
+
+        new_y0 = np.int(self.hLine.value())
+        self.ui.circle_y.setText("{}".format(new_y0))
 
     def help_button_clicked(self):
         pass
