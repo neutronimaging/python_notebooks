@@ -8,6 +8,9 @@ from __code import load_ui
 from __code.decorators import wait_cursor
 from __code._utilities.math import get_distance_between_two_points
 
+INNER_RING_MARKER_LENGTH = 30  # number of pixels
+OUTER_RING_MARKER_LENGTH = 50  # number of pixels
+
 
 class InterfaceHandler:
 
@@ -26,7 +29,14 @@ class Interface(QMainWindow):
                           'green': 0,
                           'blue': 255,
                           'alpha': 255}
+
+    ring_maker_color = {'red': 0,
+                        'green': 255,
+                        'blue': 255,
+                        'alpha': 255}
+
     line_view_binning = None
+    ring_makers = None
 
     def __init__(self, parent=None, data=None, working_dir=None):
 
@@ -83,16 +93,17 @@ class Interface(QMainWindow):
 
         # ring settings
         max_ring_value = self.width
-        default_inner_ring_value = np.int(self.width/2)
+        max_ring_thickness = 100
+        default_inner_ring_value = np.int(self.width/4)
         default_ring_thickness = 20
         self.ui.ring_inner_radius_slider.setMaximum(max_ring_value*100)  # *100 because slider is int
         self.ui.ring_inner_radius_slider.setValue(default_inner_ring_value*100)
         self.ui.ring_inner_radius_doubleSpinBox.setMaximum(max_ring_value)
         self.ui.ring_inner_radius_doubleSpinBox.setSingleStep(0.01)
         self.ui.ring_inner_radius_doubleSpinBox.setValue(default_inner_ring_value)
-        self.ui.ring_thickness_slider.setMaximum(max_ring_value*100)
+        self.ui.ring_thickness_slider.setMaximum(max_ring_thickness*100)
         self.ui.ring_thickness_slider.setValue(default_ring_thickness*100)
-        self.ui.ring_thickness_doubleSpinBox.setMaximum(max_ring_value)
+        self.ui.ring_thickness_doubleSpinBox.setMaximum(max_ring_thickness)
         self.ui.ring_thickness_doubleSpinBox.setValue(default_ring_thickness)
 
     def display_grid(self):
@@ -164,7 +175,6 @@ class Interface(QMainWindow):
         self.display_grid()
 
     def display_ring(self):
-        print("starting display_ring")
         x_central_pixel = np.float(str(self.ui.circle_x.text()))
         y_central_pixel = np.float(str(self.ui.circle_y.text()))
 
@@ -182,6 +192,81 @@ class Interface(QMainWindow):
 
         mask_ring = np.where(distances_power_2 < ring_radius) and (distances_power_2 > (ring_radius + ring_thickness))
 
+    def display_ring_marker(self):
+
+        if self.ring_makers:
+            self.ui.image_view.removeItem(self.ring_makers)
+
+        x_central_pixel = np.float(str(self.ui.circle_x.text()))
+        y_central_pixel = np.float(str(self.ui.circle_y.text()))
+
+        ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
+        ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
+
+        pos = []
+        adj = []
+
+        x1_inner_left = x_central_pixel - ring_radius
+        pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_left]))
+        pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_left]))
+        adj.append([0, 1])
+
+        x2_outer_left = x1_inner_left - ring_thickness
+        pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_left]))
+        pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_left]))
+        adj.append([2, 3])
+
+        x1_inner_right = x_central_pixel + ring_radius
+        pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_right]))
+        pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_right]))
+        adj.append([4, 5])
+
+        x2_outer_right = x1_inner_right + ring_thickness
+        pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_right]))
+        pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_right]))
+        adj.append([6, 7])
+
+        y1_inner_top = y_central_pixel - ring_radius
+        pos.append(np.flip([y1_inner_top, x_central_pixel - INNER_RING_MARKER_LENGTH]))
+        pos.append(np.flip([y1_inner_top, x_central_pixel + INNER_RING_MARKER_LENGTH]))
+        adj.append([8, 9])
+
+        y2_outer_top = y1_inner_top - ring_thickness
+        pos.append(np.flip([y2_outer_top, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
+        pos.append(np.flip([y2_outer_top, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
+        adj.append([10, 11])
+
+        y1_inner_bottom = y_central_pixel + ring_radius
+        pos.append(np.flip([y1_inner_bottom, x_central_pixel - INNER_RING_MARKER_LENGTH]))
+        pos.append(np.flip([y1_inner_bottom, x_central_pixel + INNER_RING_MARKER_LENGTH]))
+        adj.append([12, 13])
+
+        y2_outer_bottom = y1_inner_bottom + ring_thickness
+        pos.append(np.flip([y2_outer_bottom, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
+        pos.append(np.flip([y2_outer_bottom, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
+        adj.append([14, 15])
+
+        pos = np.array(pos)
+        adj = np.array(adj)
+
+        line_color = (self.ring_maker_color['red'],
+                      self.ring_maker_color['green'],
+                      self.ring_maker_color['blue'],
+                      self.ring_maker_color['alpha'], 1)
+        lines = np.array([line_color for n in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+
+        self.ring_makers = pg.GraphItem()
+        self.ui.image_view.addItem(self.ring_makers)
+        self.ring_makers.setData(pos=pos,
+                                  adj=adj,
+                                  pen=lines,
+                                  symbol=None,
+                                  pxMode=False)
+
+
     # Event handler
     def manual_circle_center_changed(self):
         new_x0 = np.float(self.vLine.value())
@@ -189,6 +274,8 @@ class Interface(QMainWindow):
 
         new_y0 = np.float(self.hLine.value())
         self.ui.circle_y.setText("{:.2f}".format(new_y0))
+
+        self.display_ring_marker()
 
     def help_button_clicked(self):
         pass
@@ -256,12 +343,16 @@ class Interface(QMainWindow):
 
     def ring_settings_thickness_slider_changed(self, slider_value):
         self.ui.ring_thickness_doubleSpinBox.setValue(slider_value/100)
+        self.display_ring_marker()
 
     def ring_settings_thickness_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_thickness_slider.setValue(np.int(spin_box_value*100))
+        self.display_ring_marker()
 
     def ring_settings_inner_radius_slider_changed(self, slider_value):
         self.ui.ring_inner_radius_doubleSpinBox.setValue(slider_value/100)
+        self.display_ring_marker()
 
     def ring_settings_inner_radius_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_inner_radius_slider.setValue(np.int(spin_box_value*100))
+        self.display_ring_marker()
