@@ -164,6 +164,7 @@ class Interface(QMainWindow):
         self.display_grid()
 
     def display_ring(self):
+        print("starting display_ring")
         x_central_pixel = np.float(str(self.ui.circle_x.text()))
         y_central_pixel = np.float(str(self.ui.circle_y.text()))
 
@@ -176,15 +177,14 @@ class Interface(QMainWindow):
         pixel_mask = np.zeros((image_height, image_width))
         for pixel_y in np.arange(image_height):
             for pixel_x in np.arange(image_width):
-                distance_center_to_xypixel = get_distance_between_two_points(from_pixel={'x': x_central_pixel,
-                                                                                         'y': y_central_pixel},
-                                                                             to_pixel={'x': pixel_x,
-                                                                                       'y': pixel_y})
-
-
-
-
-
+                distance_center_to_xypixel = get_distance_between_two_points(from_x= x_central_pixel,
+                                                                             from_y= y_central_pixel,
+                                                                             to_x= pixel_x,
+                                                                             to_y= pixel_y)
+                if (distance_center_to_xypixel > (ring_radius + ring_thickness)) or \
+                    (distance_center_to_xypixel < ring_radius):
+                    pixel_mask[pixel_y, pixel_x] = 1
+        print("done with  display_ring")
 
     # Event handler
     def manual_circle_center_changed(self):
@@ -260,16 +260,12 @@ class Interface(QMainWindow):
 
     def ring_settings_thickness_slider_changed(self, slider_value):
         self.ui.ring_thickness_doubleSpinBox.setValue(slider_value/100)
-        self.display_ring()
 
     def ring_settings_thickness_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_thickness_slider.setValue(np.int(spin_box_value*100))
-        self.display_ring()
 
     def ring_settings_inner_radius_slider_changed(self, slider_value):
         self.ui.ring_inner_radius_doubleSpinBox.setValue(slider_value/100)
-        self.display_ring()
 
     def ring_settings_inner_radius_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_inner_radius_slider.setValue(np.int(spin_box_value*100))
-        self.display_ring()
