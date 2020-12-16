@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1237</width>
-    <height>875</height>
+    <width>1650</width>
+    <height>912</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -464,7 +464,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1237</width>
+     <width>1650</width>
      <height>22</height>
     </rect>
    </property>
@@ -480,8 +480,8 @@ p, li { white-space: pre-wrap; }
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1198</x>
-     <y>836</y>
+     <x>1564</x>
+     <y>866</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -769,7 +769,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>58</x>
-     <y>823</y>
+     <y>847</y>
     </hint>
     <hint type="destinationlabel">
      <x>100</x>
@@ -785,7 +785,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>156</x>
-     <y>660</y>
+     <y>686</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -797,7 +797,7 @@ p, li { white-space: pre-wrap; }
    <sender>ring_inner_radius_slider</sender>
    <signal>sliderMoved(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>ring_settings_changed()</slot>
+   <slot>ring_settings_inner_radius_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1153</x>
@@ -813,7 +813,7 @@ p, li { white-space: pre-wrap; }
    <sender>ring_thickness_slider</sender>
    <signal>sliderMoved(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>ring_settings_changed()</slot>
+   <slot>ring_settings_thickness_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1034</x>
@@ -829,10 +829,10 @@ p, li { white-space: pre-wrap; }
    <sender>ring_inner_radius_doubleSpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>MainWindow</receiver>
-   <slot>ring_settings_double_spin_box_changed()</slot>
+   <slot>ring_settings_inner_radius_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
+     <x>641</x>
      <y>405</y>
     </hint>
     <hint type="destinationlabel">
@@ -845,10 +845,10 @@ p, li { white-space: pre-wrap; }
    <sender>ring_thickness_doubleSpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>MainWindow</receiver>
-   <slot>ring_settings_double_spin_box_changed()</slot>
+   <slot>ring_settings_thickness_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>534</x>
+     <x>641</x>
      <y>443</y>
     </hint>
     <hint type="destinationlabel">
@@ -878,7 +878,9 @@ p, li { white-space: pre-wrap; }
   <slot>export_profiles_clicked()</slot>
   <slot>help_button_clicked()</slot>
   <slot>slider_image_changed()</slot>
-  <slot>ring_settings_changed()</slot>
-  <slot>ring_settings_double_spin_box_changed()</slot>
+  <slot>ring_settings_inner_radius_double_spin_box_changed()</slot>
+  <slot>ring_settings_inner_radius_slider_changed()</slot>
+  <slot>ring_settings_thickness_double_spin_box_changed()</slot>
+  <slot>ring_settings_thickness_slider_changed()</slot>
  </slots>
 </ui>

@@ -6,6 +6,7 @@ import numpy as np
 
 from __code import load_ui
 from __code.decorators import wait_cursor
+from __code._utilities.math import get_distance_between_two_points
 
 
 class InterfaceHandler:
@@ -80,6 +81,20 @@ class Interface(QMainWindow):
         self.ui.guide_blue_slider.setValue(self.guide_color_slider['blue'])
         self.ui.guide_alpha_slider.setValue(self.guide_color_slider['alpha'])
 
+        # ring settings
+        max_ring_value = self.width
+        default_inner_ring_value = np.int(self.width/2)
+        default_ring_thickness = 20
+        self.ui.ring_inner_radius_slider.setMaximum(max_ring_value*100)  # *100 because slider is int
+        self.ui.ring_inner_radius_slider.setValue(default_inner_ring_value*100)
+        self.ui.ring_inner_radius_doubleSpinBox.setMaximum(max_ring_value)
+        self.ui.ring_inner_radius_doubleSpinBox.setSingleStep(0.01)
+        self.ui.ring_inner_radius_doubleSpinBox.setValue(default_inner_ring_value)
+        self.ui.ring_thickness_slider.setMaximum(max_ring_value*100)
+        self.ui.ring_thickness_slider.setValue(default_ring_thickness*100)
+        self.ui.ring_thickness_doubleSpinBox.setMaximum(max_ring_value)
+        self.ui.ring_thickness_doubleSpinBox.setValue(default_ring_thickness)
+
     def display_grid(self):
         [width, height] = [self.width, self.height]
         # bin_size = float(str(self.ui.lineEdit.text()))
@@ -151,7 +166,25 @@ class Interface(QMainWindow):
     def display_ring(self):
         x_central_pixel = np.float(str(self.ui.circle_x.text()))
         y_central_pixel = np.float(str(self.ui.circle_y.text()))
-        #ring_radius =
+
+        ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
+        ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
+
+        image_width = self.width
+        image_height = self.height
+
+        pixel_mask = np.zeros((image_height, image_width))
+        for pixel_y in np.arange(image_height):
+            for pixel_x in np.arange(image_width):
+                distance_center_to_xypixel = get_distance_between_two_points(from_pixel={'x': x_central_pixel,
+                                                                                         'y': y_central_pixel},
+                                                                             to_pixel={'x': pixel_x,
+                                                                                       'y': pixel_y})
+
+
+
+
+
 
     # Event handler
     def manual_circle_center_changed(self):
@@ -205,7 +238,6 @@ class Interface(QMainWindow):
         pass
 
     def slider_image_changed(self, new_index=0):
-
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
         _state = _view_box.getState()
@@ -226,12 +258,18 @@ class Interface(QMainWindow):
             _histo_widget.setLevels(self.histogram_level[0],
                                     self.histogram_level[1])
 
-    def ring_settings_changed(self, slider_value):
-        pass
+    def ring_settings_thickness_slider_changed(self, slider_value):
+        self.ui.ring_thickness_doubleSpinBox.setValue(slider_value/100)
+        self.display_ring()
 
-    def ring_settings_changed(self, slider_value):
-        pass
+    def ring_settings_thickness_double_spin_box_changed(self, spin_box_value):
+        self.ui.ring_thickness_slider.setValue(np.int(spin_box_value*100))
+        self.display_ring()
 
-    def ring_settings_double_spin_box_changed(self, spin_box_value):
-        pass
-    
+    def ring_settings_inner_radius_slider_changed(self, slider_value):
+        self.ui.ring_inner_radius_doubleSpinBox.setValue(slider_value/100)
+        self.display_ring()
+
+    def ring_settings_inner_radius_double_spin_box_changed(self, spin_box_value):
+        self.ui.ring_inner_radius_slider.setValue(np.int(spin_box_value*100))
+        self.display_ring()
