@@ -174,17 +174,13 @@ class Interface(QMainWindow):
         image_width = self.width
         image_height = self.height
 
-        pixel_mask = np.zeros((image_height, image_width))
-        for pixel_y in np.arange(image_height):
-            for pixel_x in np.arange(image_width):
-                distance_center_to_xypixel = get_distance_between_two_points(from_x= x_central_pixel,
-                                                                             from_y= y_central_pixel,
-                                                                             to_x= pixel_x,
-                                                                             to_y= pixel_y)
-                if (distance_center_to_xypixel > (ring_radius + ring_thickness)) or \
-                    (distance_center_to_xypixel < ring_radius):
-                    pixel_mask[pixel_y, pixel_x] = 1
-        print("done with  display_ring")
+        x = np.arange(image_width) + 0.5
+        y = np.arange(image_height) + 0.5
+
+        xv, yv = np.meshgrid(x, y)
+        distances_power_2 = (np.power(yv - y_central_pixel, 2) + np.power(xv - x_central_pixel, 2))
+
+        mask_ring = np.where(distances_power_2 < ring_radius) and (distances_power_2 > (ring_radius + ring_thickness))
 
     # Event handler
     def manual_circle_center_changed(self):
