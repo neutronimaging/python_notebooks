@@ -50,6 +50,7 @@ class Interface(QMainWindow):
     outer_ring_roi = None
 
     max_ring_thickness = 200
+    ring_pen = None
 
     def __init__(self, parent=None, data=None, working_dir=None):
 
@@ -69,6 +70,7 @@ class Interface(QMainWindow):
         self.slider_image_changed(new_index=0)
         self.init_crosshair()
         self.display_grid()
+        self.display_ring()
 
     def init_crosshair(self):
         x0 = float(str(self.ui.circle_x.text()))
@@ -84,6 +86,14 @@ class Interface(QMainWindow):
         self.ui.image_view.addItem(self.hLine, ignoreBounds=False)
 
     def init_widgets(self):
+
+        list_ui = [self.ui.ring_inner_radius_doubleSpinBox,
+                   self.ui.ring_inner_radius_slider,
+                   self.ui.ring_thickness_doubleSpinBox,
+                   self.ui.ring_thickness_slider]
+        self.block_signals(list_ui=list_ui,
+                           block_status=True)
+
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
@@ -107,7 +117,7 @@ class Interface(QMainWindow):
         # ring settings
         max_ring_value = self.width
         default_inner_ring_value = np.int(self.width/4)
-        default_ring_thickness = 20
+        default_ring_thickness = 100
         self.ui.ring_inner_radius_slider.setMaximum(max_ring_value*100)  # *100 because slider is int
         self.ui.ring_inner_radius_slider.setValue(default_inner_ring_value*100)
         self.ui.ring_inner_radius_doubleSpinBox.setMaximum(max_ring_value)
@@ -117,6 +127,14 @@ class Interface(QMainWindow):
         self.ui.ring_thickness_slider.setValue(default_ring_thickness*100)
         self.ui.ring_thickness_doubleSpinBox.setMaximum(self.max_ring_thickness)
         self.ui.ring_thickness_doubleSpinBox.setValue(default_ring_thickness)
+
+        _pen = QtGui.QPen()
+        _pen.setColor(QtGui.QColor(255, 255, 255))
+        _pen.setWidth(0.01)
+        self.ring_pen = _pen
+
+        self.block_signals(list_ui=list_ui,
+                           block_status=False)
 
     def display_grid(self):
         [width, height] = [self.width, self.height]
@@ -188,6 +206,8 @@ class Interface(QMainWindow):
 
     def display_ring(self):
 
+        print("display ring")
+
         if self.inner_ring_roi:
             self.ui.image_view.removeItem(self.inner_ring_roi)
             self.ui.image_view.removeItem(self.outer_ring_roi)
@@ -214,102 +234,228 @@ class Interface(QMainWindow):
         # mask_ring2 = np.where(distances_power < (ring_radius + ring_thickness))
         # mask_ring = np.where(mask_ring1 and mask_ring2)
 
-        _pen = QtGui.QPen()
-        _pen.setColor(QtGui.QColor(255, 255, 255))
-        _pen.setWidth(0.01)
         inner_ring_circle_width = 2 * ring_radius
         self.inner_ring_roi = pg.CircleROI([x_central_pixel - ring_radius,
                                             y_central_pixel - ring_radius],
                                            [inner_ring_circle_width, inner_ring_circle_width],
-                                           movable=False,
-                                           pen=_pen)
+                                           movable=True,
+                                           pen=self.ring_pen)
         self.ui.image_view.addItem(self.inner_ring_roi)
-        self.inner_ring_roi.sigRegionChanged.connect(self.manual_ring_changed)
+        self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
 
         outer_ring_circle_width = 2 * (ring_radius + ring_thickness)
         self.outer_ring_roi = pg.CircleROI([x_central_pixel - ring_radius - ring_thickness,
                                             y_central_pixel - ring_radius - ring_thickness],
                                            [outer_ring_circle_width, outer_ring_circle_width],
-                                           movable=False,
-                                           pen=_pen)
-        self.ui.image_view.addItem(self.outer_ring_roi)
-        self.outer_ring_roi.sigRegionChanged.connect(self.manual_ring_changed)
+                                           movable=True,
+                                           resizable=False,
+                                           pen=self.ring_pen)
+        self.remove_handles(ring_ui=self.outer_ring_roi)
+        self.outer_ring_roi.sigRegionChanged.connect(self.manual_outer_ring_changed)
 
-    def display_ring_marker(self):
+    # def display_ring_marker(self):
+    #
+    #     if self.ring_markers:
+    #         self.ui.image_view.removeItem(self.ring_markers)
+    #
+    #     x_central_pixel = np.float(str(self.ui.circle_x.text()))
+    #     y_central_pixel = np.float(str(self.ui.circle_y.text()))
+    #
+    #     ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
+    #     ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
+    #
+    #     pos = []
+    #     adj = []
+    #
+    #     x1_inner_left = x_central_pixel - ring_radius
+    #     pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_left]))
+    #     pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_left]))
+    #     adj.append([0, 1])
+    #
+    #     x2_outer_left = x1_inner_left - ring_thickness
+    #     pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_left]))
+    #     pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_left]))
+    #     adj.append([2, 3])
+    #
+    #     x1_inner_right = x_central_pixel + ring_radius
+    #     pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_right]))
+    #     pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_right]))
+    #     adj.append([4, 5])
+    #
+    #     x2_outer_right = x1_inner_right + ring_thickness
+    #     pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_right]))
+    #     pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_right]))
+    #     adj.append([6, 7])
+    #
+    #     y1_inner_top = y_central_pixel - ring_radius
+    #     pos.append(np.flip([y1_inner_top, x_central_pixel - INNER_RING_MARKER_LENGTH]))
+    #     pos.append(np.flip([y1_inner_top, x_central_pixel + INNER_RING_MARKER_LENGTH]))
+    #     adj.append([8, 9])
+    #
+    #     y2_outer_top = y1_inner_top - ring_thickness
+    #     pos.append(np.flip([y2_outer_top, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
+    #     pos.append(np.flip([y2_outer_top, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
+    #     adj.append([10, 11])
+    #
+    #     y1_inner_bottom = y_central_pixel + ring_radius
+    #     pos.append(np.flip([y1_inner_bottom, x_central_pixel - INNER_RING_MARKER_LENGTH]))
+    #     pos.append(np.flip([y1_inner_bottom, x_central_pixel + INNER_RING_MARKER_LENGTH]))
+    #     adj.append([12, 13])
+    #
+    #     y2_outer_bottom = y1_inner_bottom + ring_thickness
+    #     pos.append(np.flip([y2_outer_bottom, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
+    #     pos.append(np.flip([y2_outer_bottom, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
+    #     adj.append([14, 15])
+    #
+    #     pos = np.array(pos)
+    #     adj = np.array(adj)
+    #
+    #     line_color = (self.ring_markers_color['red'],
+    #                   self.ring_markers_color['green'],
+    #                   self.ring_markers_color['blue'],
+    #                   self.ring_markers_color['alpha'], 1)
+    #     lines = np.array([line_color for n in np.arange(len(pos))],
+    #                      dtype=[('red', np.ubyte), ('green', np.ubyte),
+    #                             ('blue', np.ubyte), ('alpha', np.ubyte),
+    #                             ('width', float)])
+    #
+    #     self.ring_markers = pg.GraphItem()
+    #     self.ui.image_view.addItem(self.ring_markers)
+    #     self.ring_markers.setData(pos=pos,
+    #                               adj=adj,
+    #                               pen=lines,
+    #                               symbol=None,
+    #                               pxMode=False)
 
-        if self.ring_markers:
-            self.ui.image_view.removeItem(self.ring_markers)
-
-        x_central_pixel = np.float(str(self.ui.circle_x.text()))
-        y_central_pixel = np.float(str(self.ui.circle_y.text()))
-
-        ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
-        ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
-
-        pos = []
-        adj = []
-
-        x1_inner_left = x_central_pixel - ring_radius
-        pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_left]))
-        pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_left]))
-        adj.append([0, 1])
-
-        x2_outer_left = x1_inner_left - ring_thickness
-        pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_left]))
-        pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_left]))
-        adj.append([2, 3])
-
-        x1_inner_right = x_central_pixel + ring_radius
-        pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_right]))
-        pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_right]))
-        adj.append([4, 5])
-
-        x2_outer_right = x1_inner_right + ring_thickness
-        pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_right]))
-        pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_right]))
-        adj.append([6, 7])
-
-        y1_inner_top = y_central_pixel - ring_radius
-        pos.append(np.flip([y1_inner_top, x_central_pixel - INNER_RING_MARKER_LENGTH]))
-        pos.append(np.flip([y1_inner_top, x_central_pixel + INNER_RING_MARKER_LENGTH]))
-        adj.append([8, 9])
-
-        y2_outer_top = y1_inner_top - ring_thickness
-        pos.append(np.flip([y2_outer_top, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
-        pos.append(np.flip([y2_outer_top, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
-        adj.append([10, 11])
-
-        y1_inner_bottom = y_central_pixel + ring_radius
-        pos.append(np.flip([y1_inner_bottom, x_central_pixel - INNER_RING_MARKER_LENGTH]))
-        pos.append(np.flip([y1_inner_bottom, x_central_pixel + INNER_RING_MARKER_LENGTH]))
-        adj.append([12, 13])
-
-        y2_outer_bottom = y1_inner_bottom + ring_thickness
-        pos.append(np.flip([y2_outer_bottom, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
-        pos.append(np.flip([y2_outer_bottom, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
-        adj.append([14, 15])
-
-        pos = np.array(pos)
-        adj = np.array(adj)
-
-        line_color = (self.ring_markers_color['red'],
-                      self.ring_markers_color['green'],
-                      self.ring_markers_color['blue'],
-                      self.ring_markers_color['alpha'], 1)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
-
-        self.ring_markers = pg.GraphItem()
-        self.ui.image_view.addItem(self.ring_markers)
-        self.ring_markers.setData(pos=pos,
-                                  adj=adj,
-                                  pen=lines,
-                                  symbol=None,
-                                  pxMode=False)
+    def remove_handles(self, ring_ui=None):
+        self.ui.image_view.addItem(ring_ui)
+        handles = ring_ui.getHandles()
+        for _handle in handles:
+            ring_ui.removeHandle(_handle)
 
     # Event handler
+    def manual_inner_ring_changed(self):
+
+        self.ui.image_view.removeItem(self.outer_ring_roi)
+
+        list_ui = [self.ui.ring_inner_radius_doubleSpinBox,
+                   self.ui.ring_inner_radius_slider]
+        self.block_signals(list_ui=list_ui,
+                           block_status=True)
+
+        region = self.inner_ring_roi.getArraySlice(self.current_live_image,
+                                                   self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+
+        ring_radius = np.int(x1 - x0)/2
+
+        x_central_pixel = np.mean([x1, x0])
+        y_central_pixel = np.mean([y1, y0])
+
+        self.ui.circle_x.setText(str(x_central_pixel))
+        self.ui.circle_y.setText(str(y_central_pixel))
+
+        ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
+        outer_ring_circle_width = 2 * (ring_radius + ring_thickness)
+        self.outer_ring_roi = pg.CircleROI([x_central_pixel - ring_radius - ring_thickness,
+                                            y_central_pixel - ring_radius - ring_thickness],
+                                           [outer_ring_circle_width, outer_ring_circle_width],
+                                           movable=True,
+                                           resizable=False,
+                                           pen=self.ring_pen)
+        self.ui.image_view.addItem(self.outer_ring_roi)
+        self.remove_handles(ring_ui=self.outer_ring_roi)
+        self.outer_ring_roi.sigRegionChanged.connect(self.manual_outer_ring_changed)
+
+        self.vLine.setValue(x_central_pixel)
+        self.hLine.setValue(y_central_pixel)
+
+    def manual_outer_ring_changed(self):
+
+        list_ui = [self.ui.ring_inner_radius_doubleSpinBox,
+                   self.ui.ring_inner_radius_slider,
+                   self.ui.ring_thickness_doubleSpinBox,
+                   self.ui.ring_thickness_slider]
+        self.block_signals(list_ui=list_ui,
+                           block_status=True)
+
+        # outer ring
+        region = self.outer_ring_roi.getArraySlice(self.current_live_image,
+                                                   self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].stop
+        outer_radius = np.int(x1 - x0) / 2
+        x_central_pixel = np.mean([x1, x0])
+        y_central_pixel = np.mean([y1, y0])
+
+        # inner ring
+        region = self.inner_ring_roi.getArraySlice(self.current_live_image,
+                                                   self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        inner_radius = np.int(x1 - x0) / 2
+
+        thickness = np.abs(inner_radius - outer_radius)
+        self.ui.circle_x.setText(str(x_central_pixel))
+        self.ui.circle_y.setText(str(y_central_pixel))
+
+        self.ui.image_view.removeItem(self.inner_ring_roi)
+        inner_ring_radius = inner_radius
+        inner_ring_circle_width = 2 * inner_ring_radius
+        self.inner_ring_roi = pg.CircleROI([x_central_pixel - inner_ring_radius,
+                                            y_central_pixel - inner_ring_radius],
+                                           [inner_ring_circle_width, inner_ring_circle_width],
+                                           movable=True,
+                                           pen=self.ring_pen)
+        self.ui.image_view.addItem(self.inner_ring_roi)
+        self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
+
+        self.ui.ring_thickness_doubleSpinBox.setValue(thickness)
+        self.ui.ring_thickness_slider.setValue(thickness*100)
+
+        # # outer ring
+        # region = self.outer_ring_roi.getArraySlice(self.current_live_image,
+        #                                            self.ui.image_view.imageItem)
+        # x0 = region[0][0].start
+        # x1 = region[0][0].stop
+        # y0 = region[0][1].start
+        # y1 = region[0][1].stop
+        # outer_radius = np.int(x1 - x0) / 2
+        #
+        # #radius_inner = np.min([radius_1, radius_2])
+        # #radius_outer = np.max([radius_1, radius_2])
+        # thickness = np.abs(inner_radius - outer_radius)
+        #
+        # x_central_pixel = np.mean([x1, x0])
+        # y_central_pixel = np.mean([y1, y0])
+        #
+        # self.ui.circle_x.setText(str(x_central_pixel))
+        # self.ui.circle_y.setText(str(y_central_pixel))
+        #
+        # self.ui.ring_thickness_doubleSpinBox.setValue(thickness)
+        # self.ui.ring_thickness_slider.setValue(thickness*100)
+        #
+        # inner_ring_radius = inner_radius
+        # inner_ring_circle_width = 2 * inner_ring_radius
+        # self.inner_ring_roi = pg.CircleROI([x_central_pixel - inner_ring_radius,
+        #                                     y_central_pixel - inner_ring_radius],
+        #                                    [inner_ring_circle_width, inner_ring_circle_width],
+        #                                    movable=True,
+        #                                    pen=self.ring_pen)
+        # self.ui.image_view.addItem(self.inner_ring_roi)
+        # self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
+
+        self.vLine.setValue(x_central_pixel)
+        self.hLine.setValue(y_central_pixel)
+
+        self.block_signals(list_ui=list_ui,
+                           block_status=False)
+
     def manual_ring_changed(self):
 
         list_ui = [self.ui.ring_inner_radius_doubleSpinBox,
