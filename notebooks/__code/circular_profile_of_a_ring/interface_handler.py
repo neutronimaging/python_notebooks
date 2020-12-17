@@ -49,6 +49,8 @@ class Interface(QMainWindow):
     inner_ring_roi = None
     outer_ring_roi = None
 
+    max_ring_thickness = 200
+
     def __init__(self, parent=None, data=None, working_dir=None):
 
         self.data = data
@@ -104,7 +106,6 @@ class Interface(QMainWindow):
 
         # ring settings
         max_ring_value = self.width
-        max_ring_thickness = 100
         default_inner_ring_value = np.int(self.width/4)
         default_ring_thickness = 20
         self.ui.ring_inner_radius_slider.setMaximum(max_ring_value*100)  # *100 because slider is int
@@ -112,9 +113,9 @@ class Interface(QMainWindow):
         self.ui.ring_inner_radius_doubleSpinBox.setMaximum(max_ring_value)
         self.ui.ring_inner_radius_doubleSpinBox.setSingleStep(0.01)
         self.ui.ring_inner_radius_doubleSpinBox.setValue(default_inner_ring_value)
-        self.ui.ring_thickness_slider.setMaximum(max_ring_thickness*100)
+        self.ui.ring_thickness_slider.setMaximum(self.max_ring_thickness*100)
         self.ui.ring_thickness_slider.setValue(default_ring_thickness*100)
-        self.ui.ring_thickness_doubleSpinBox.setMaximum(max_ring_thickness)
+        self.ui.ring_thickness_doubleSpinBox.setMaximum(self.max_ring_thickness)
         self.ui.ring_thickness_doubleSpinBox.setValue(default_ring_thickness)
 
     def display_grid(self):
@@ -234,49 +235,6 @@ class Interface(QMainWindow):
         self.ui.image_view.addItem(self.outer_ring_roi)
         self.outer_ring_roi.sigRegionChanged.connect(self.manual_ring_changed)
 
-        # pos = []
-        # adj = []
-        # index_adj = 0
-        #
-        # y_values = mask_ring[0]
-        # x_values = mask_ring[1]
-        # for y, x in zip(y_values, x_values):
-        #     pos.append([y, x])
-        #     pos.append([y+1, x])
-        #     pos.append([y+1, x+1])
-        #     pos.append([y, x+1])
-        #     adj.append([index_adj, index_adj+1])
-        #     adj.append([index_adj+1, index_adj+2])
-        #     adj.append([index_adj+2, index_adj+3])
-        #     adj.append([index_adj+3, index_adj])
-        #     index_adj += 4
-        #
-        # pos = np.array(pos)
-        # adj = np.array(adj)
-        #
-        # line_color = (self.ring_color['red'],
-        #               self.ring_color['green'],
-        #               self.ring_color['blue'],
-        #               self.ring_color['alpha'], 0.5)
-        # lines = np.array([line_color for n in np.arange(len(pos))],
-        #                  dtype=[('red', np.ubyte), ('green', np.ubyte),
-        #                         ('blue', np.ubyte), ('alpha', np.ubyte),
-        #                         ('width', float)])
-        #
-        # ring_lines = pg.GraphItem()
-        # self.ui.image_view.addItem(ring_lines)
-        # ring_lines.setData(pos=pos,
-        #                    adj=adj,
-        #                    pen=lines,
-        #                    symbol=None,
-        #                    pxMode=False)
-        #
-        # self.ring = ring_lines
-        #
-        # print("end display ring")
-        #
-        # self.clear_full_ring_pushButton.setEnabled(True)
-
     def display_ring_marker(self):
 
         if self.ring_markers:
@@ -353,10 +311,48 @@ class Interface(QMainWindow):
 
     # Event handler
     def manual_ring_changed(self):
-        print("manual ring changed")
-        outer_ring_roi = self.outer_ring_roi
-        inner_ring_roi = self.inner_ring_roi
 
+        list_ui = [self.ui.ring_inner_radius_doubleSpinBox,
+                   self.ui.ring_inner_radius_slider,
+                   self.ui.ring_thickness_doubleSpinBox,
+                   self.ui.ring_thickness_slider]
+        self.block_signals(list_ui=list_ui,
+                           block_status=True)
+
+        # inner ring
+        region = self.inner_ring_roi.getArraySlice(self.current_live_image,
+                                                   self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        radius_1 = np.int(x1 - x0)/2
+
+        # outer ring
+        region = self.outer_ring_roi.getArraySlice(self.current_live_image,
+                                                   self.ui.image_view.imageItem)
+        x0 = region[0][0].start
+        x1 = region[0][0].stop
+        radius_2 = np.int(x1 - x0)/2
+
+        radius_inner = np.min([radius_1, radius_2])
+        radius_outer = np.max([radius_1, radius_2])
+        thickness = np.abs(radius_1 - radius_2)
+
+        self.ui.ring_inner_radius_doubleSpinBox.setValue(radius_inner)
+        self.ui.ring_inner_radius_slider.setValue(radius_inner*100)
+        self.ui.ring_thickness_doubleSpinBox.setValue(thickness)
+        self.ui.ring_thickness_slider.setValue(thickness*100)
+
+        if radius_outer > self.max_ring_thickness:
+            self.max_ring_thickness = radius_outer - radius_inner
+            self.ui.ring_thickness_slider.setMaximum(self.max_ring_thickness*100)
+            self.ui.ring_thickness_doubleSpinBox.setMaximum(self.max_ring_thickness)
+
+        self.block_signals(list_ui=list_ui,
+                           block_status=False)
+
+    def block_signals(self, list_ui=None, block_status=True):
+        for _ui in list_ui:
+            _ui.blockSignals(block_status)
 
     def manual_circle_center_changed(self):
         new_x0 = np.float(self.vLine.value())
@@ -365,7 +361,7 @@ class Interface(QMainWindow):
         new_y0 = np.float(self.hLine.value())
         self.ui.circle_y.setText("{:.2f}".format(new_y0))
 
-        self.display_ring_marker()
+        #self.display_ring_marker()
         self.display_ring()
 
     def help_button_clicked(self):
@@ -434,22 +430,22 @@ class Interface(QMainWindow):
 
     def ring_settings_thickness_slider_changed(self, slider_value):
         self.ui.ring_thickness_doubleSpinBox.setValue(slider_value/100)
-        self.display_ring_marker()
+        # self.display_ring_marker()
         self.display_ring()
 
     def ring_settings_thickness_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_thickness_slider.setValue(np.int(spin_box_value*100))
-        self.display_ring_marker()
+        # self.display_ring_marker()
         self.display_ring()
 
     def ring_settings_inner_radius_slider_changed(self, slider_value):
         self.ui.ring_inner_radius_doubleSpinBox.setValue(slider_value/100)
-        self.display_ring_marker()
+        # self.display_ring_marker()
         self.display_ring()
 
     def ring_settings_inner_radius_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_inner_radius_slider.setValue(np.int(spin_box_value*100))
-        self.display_ring_marker()
+        # self.display_ring_marker()
         self.display_ring()
 
     def clear_full_ring_clicked(self):
