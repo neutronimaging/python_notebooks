@@ -303,13 +303,6 @@
                  </item>
                 </layout>
                </item>
-               <item>
-                <widget class="QPushButton" name="update_ring_pushButton">
-                 <property name="text">
-                  <string>Update Ring</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -864,22 +857,6 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>update_ring_pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>display_ring()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>552</x>
-     <y>484</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>9</x>
-     <y>511</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -906,5 +883,6 @@ p, li { white-space: pre-wrap; }
   <slot>ring_settings_thickness_double_spin_box_changed()</slot>
   <slot>ring_settings_thickness_slider_changed()</slot>
   <slot>display_ring()</slot>
+  <slot>clear_full_ring_clicked()</slot>
  </slots>
 </ui>

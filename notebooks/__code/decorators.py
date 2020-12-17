@@ -42,4 +42,3 @@ def wait_cursor(function):
         QtGui.QGuiApplication.processEvents()
 
     return wrapper
-
