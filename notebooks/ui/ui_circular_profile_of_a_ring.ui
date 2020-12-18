@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1650</width>
-    <height>912</height>
+    <width>1383</width>
+    <height>964</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -319,6 +319,63 @@
               </property>
              </spacer>
             </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="title">
+               <string>Profile Generator</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Angles bin (degrees)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="angle_bin_horizontalSlider">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="angle_bin_value">
+                 <property name="text">
+                  <string>N/A</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="angle_bin_units">
+                 <property name="text">
+                  <string>degrees</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QPushButton" name="calculate_profiles_pushButton">
+                 <property name="text">
+                  <string>Calculate Profiles</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -396,13 +453,6 @@ p, li { white-space: pre-wrap; }
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QPushButton" name="calculate_profiles_button">
-          <property name="text">
-           <string>Calculate Profiles</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QWidget" name="widget_profile" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -464,7 +514,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1650</width>
+     <width>1383</width>
      <height>22</height>
     </rect>
    </property>
@@ -496,7 +546,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
@@ -512,7 +562,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>243</y>
     </hint>
     <hint type="destinationlabel">
@@ -528,7 +578,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>277</y>
     </hint>
     <hint type="destinationlabel">
@@ -544,7 +594,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>311</y>
     </hint>
     <hint type="destinationlabel">
@@ -560,7 +610,7 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>345</y>
     </hint>
     <hint type="destinationlabel">
@@ -576,7 +626,7 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>345</y>
     </hint>
     <hint type="destinationlabel">
@@ -592,7 +642,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
@@ -608,7 +658,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
@@ -624,7 +674,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>243</y>
     </hint>
     <hint type="destinationlabel">
@@ -640,7 +690,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>243</y>
     </hint>
     <hint type="destinationlabel">
@@ -656,7 +706,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>277</y>
     </hint>
     <hint type="destinationlabel">
@@ -672,7 +722,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>277</y>
     </hint>
     <hint type="destinationlabel">
@@ -688,7 +738,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>311</y>
     </hint>
     <hint type="destinationlabel">
@@ -704,7 +754,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>311</y>
     </hint>
     <hint type="destinationlabel">
@@ -720,28 +770,12 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
+     <x>620</x>
      <y>345</y>
     </hint>
     <hint type="destinationlabel">
      <x>689</x>
      <y>475</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>calculate_profiles_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>calculate_profiles_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>689</x>
-     <y>72</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>790</x>
-     <y>25</y>
     </hint>
    </hints>
   </connection>
@@ -832,8 +866,8 @@ p, li { white-space: pre-wrap; }
    <slot>ring_settings_inner_radius_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>641</x>
-     <y>405</y>
+     <x>583</x>
+     <y>419</y>
     </hint>
     <hint type="destinationlabel">
      <x>1233</x>
@@ -848,12 +882,28 @@ p, li { white-space: pre-wrap; }
    <slot>ring_settings_thickness_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>641</x>
-     <y>443</y>
+     <x>583</x>
+     <y>455</y>
     </hint>
     <hint type="destinationlabel">
      <x>1234</x>
      <y>514</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calculate_profiles_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calculate_profiles_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1037</x>
+     <y>686</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1644</x>
+     <y>690</y>
     </hint>
    </hints>
   </connection>
@@ -884,5 +934,6 @@ p, li { white-space: pre-wrap; }
   <slot>ring_settings_thickness_slider_changed()</slot>
   <slot>display_ring()</slot>
   <slot>clear_full_ring_clicked()</slot>
+  <slot>slot1()</slot>
  </slots>
 </ui>

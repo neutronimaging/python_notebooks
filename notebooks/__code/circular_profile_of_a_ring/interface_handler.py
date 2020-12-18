@@ -7,7 +7,7 @@ from qtpy import QtGui
 
 from __code import load_ui
 from __code.decorators import wait_cursor
-from __code._utilities.math import get_distance_between_two_points
+from __code.circular_profile_of_a_ring.calculate_profiles import CalculateProfiles
 
 INNER_RING_MARKER_LENGTH = 30  # number of pixels
 OUTER_RING_MARKER_LENGTH = 50  # number of pixels
@@ -51,6 +51,10 @@ class Interface(QMainWindow):
 
     max_ring_thickness = 200
     ring_pen = None
+
+    angle_bin = {'minimum': 0.01,
+                 'maximum': 5,
+                 'value': 1}
 
     def __init__(self, parent=None, data=None, working_dir=None):
 
@@ -136,14 +140,19 @@ class Interface(QMainWindow):
         self.block_signals(list_ui=list_ui,
                            block_status=False)
 
+        self.ui.angle_bin_horizontalSlider.setMinimum(self.angle_bin['minimum'])
+        self.ui.angle_bin_horizontalSlider.setMaximum(self.angle_bin['maximum'])
+        self.ui.angle_bin_horizontalSlider.setValue(self.angle_bin['value'])
+
+        self.ui.angle_bin_units.setText(u"\u2103")
+        self.ui.angle_bin_value.setText(str(self.angle_bin['value']))
+
     def display_grid(self):
         [width, height] = [self.width, self.height]
         # bin_size = float(str(self.ui.lineEdit.text()))
         bin_size = self.ui.grid_size_slider.value()
         x0 = 0
         y0 = 0
-
-        # pos_adj_dict = {}
 
         nbr_height_bins = np.float(height) / np.float(bin_size)
         real_height = y0 + np.int(nbr_height_bins) * np.int(bin_size)
@@ -611,8 +620,6 @@ class Interface(QMainWindow):
 
         new_y0 = np.float(self.hLine.value())
         self.ui.circle_y.setText("{:.2f}".format(new_y0))
-
-        #self.display_ring_marker()
         self.display_ring()
 
     def help_button_clicked(self):
@@ -655,9 +662,6 @@ class Interface(QMainWindow):
     def cancel_clicked(self):
         pass
 
-    def calculate_profiles_clicked(self):
-        pass
-
     def slider_image_changed(self, new_index=0):
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
@@ -673,33 +677,34 @@ class Interface(QMainWindow):
         _image = np.transpose(data)
         self.ui.image_view.setImage(_image)
         self.current_live_image = _image
-
         _view_box.setState(_state)
+
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0],
                                     self.histogram_level[1])
 
     def ring_settings_thickness_slider_changed(self, slider_value):
         self.ui.ring_thickness_doubleSpinBox.setValue(slider_value/100)
-        # self.display_ring_marker()
         self.display_ring()
 
     def ring_settings_thickness_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_thickness_slider.setValue(np.int(spin_box_value*100))
-        # self.display_ring_marker()
         self.display_ring()
 
     def ring_settings_inner_radius_slider_changed(self, slider_value):
         self.ui.ring_inner_radius_doubleSpinBox.setValue(slider_value/100)
-        # self.display_ring_marker()
         self.display_ring()
 
     def ring_settings_inner_radius_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_inner_radius_slider.setValue(np.int(spin_box_value*100))
-        # self.display_ring_marker()
         self.display_ring()
 
     def clear_full_ring_clicked(self):
         if self.ring:
             self.ui.image_view.removeItem(self.ring)
         self.clear_full_ring_pushButton.setEnabled(False)
+
+    def calculate_profiles_clicked(self):
+        o_cal = CalculateProfiles(parent=self)
+        o_cal.run()
+
