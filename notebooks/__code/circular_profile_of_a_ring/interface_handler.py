@@ -52,9 +52,9 @@ class Interface(QMainWindow):
     max_ring_thickness = 200
     ring_pen = None
 
-    angle_bin = {'minimum': 0.01,
-                 'maximum': 5,
-                 'value': 1}
+    angle_bin = {'minimum': 1,
+                 'maximum': 500,
+                 'value': 100}
 
     def __init__(self, parent=None, data=None, working_dir=None):
 
@@ -145,7 +145,7 @@ class Interface(QMainWindow):
         self.ui.angle_bin_horizontalSlider.setValue(self.angle_bin['value'])
 
         self.ui.angle_bin_units.setText(u"\u2103")
-        self.ui.angle_bin_value.setText(str(self.angle_bin['value']))
+        self.ui.angle_bin_value.setText("{:.2f}".format(self.angle_bin['value']/100))
 
     def display_grid(self):
         [width, height] = [self.width, self.height]
@@ -708,3 +708,6 @@ class Interface(QMainWindow):
         o_cal = CalculateProfiles(parent=self)
         o_cal.run()
 
+    def angle_bin_slider_moved(self, slider_value):
+        real_bin_value = slider_value/100
+        self.ui.angle_bin_value.setText("{:.2f}".format(real_bin_value))

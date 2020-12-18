@@ -530,8 +530,8 @@ p, li { white-space: pre-wrap; }
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1564</x>
-     <y>866</y>
+     <x>1297</x>
+     <y>918</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -546,7 +546,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
@@ -562,7 +562,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>243</y>
     </hint>
     <hint type="destinationlabel">
@@ -578,7 +578,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>277</y>
     </hint>
     <hint type="destinationlabel">
@@ -594,7 +594,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>311</y>
     </hint>
     <hint type="destinationlabel">
@@ -610,7 +610,7 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>345</y>
     </hint>
     <hint type="destinationlabel">
@@ -626,7 +626,7 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>345</y>
     </hint>
     <hint type="destinationlabel">
@@ -642,7 +642,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
@@ -658,7 +658,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
@@ -674,7 +674,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>243</y>
     </hint>
     <hint type="destinationlabel">
@@ -690,7 +690,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>243</y>
     </hint>
     <hint type="destinationlabel">
@@ -706,7 +706,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>277</y>
     </hint>
     <hint type="destinationlabel">
@@ -722,7 +722,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>277</y>
     </hint>
     <hint type="destinationlabel">
@@ -738,7 +738,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>311</y>
     </hint>
     <hint type="destinationlabel">
@@ -754,7 +754,7 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>311</y>
     </hint>
     <hint type="destinationlabel">
@@ -770,7 +770,7 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>620</x>
+     <x>558</x>
      <y>345</y>
     </hint>
     <hint type="destinationlabel">
@@ -787,7 +787,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>662</x>
-     <y>799</y>
+     <y>851</y>
     </hint>
     <hint type="destinationlabel">
      <x>688</x>
@@ -803,7 +803,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>58</x>
-     <y>847</y>
+     <y>899</y>
     </hint>
     <hint type="destinationlabel">
      <x>100</x>
@@ -819,7 +819,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>156</x>
-     <y>686</y>
+     <y>738</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -866,7 +866,7 @@ p, li { white-space: pre-wrap; }
    <slot>ring_settings_inner_radius_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>583</x>
+     <x>521</x>
      <y>419</y>
     </hint>
     <hint type="destinationlabel">
@@ -882,7 +882,7 @@ p, li { white-space: pre-wrap; }
    <slot>ring_settings_thickness_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>583</x>
+     <x>521</x>
      <y>455</y>
     </hint>
     <hint type="destinationlabel">
@@ -898,12 +898,28 @@ p, li { white-space: pre-wrap; }
    <slot>calculate_profiles_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1037</x>
-     <y>686</y>
+     <x>1337</x>
+     <y>729</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1644</x>
+     <x>1382</x>
      <y>690</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>angle_bin_horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>angle_bin_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>592</x>
+     <y>733</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1379</x>
+     <y>754</y>
     </hint>
    </hints>
   </connection>
@@ -934,6 +950,6 @@ p, li { white-space: pre-wrap; }
   <slot>ring_settings_thickness_slider_changed()</slot>
   <slot>display_ring()</slot>
   <slot>clear_full_ring_clicked()</slot>
-  <slot>slot1()</slot>
+  <slot>angle_bin_slider_moved()</slot>
  </slots>
 </ui>
