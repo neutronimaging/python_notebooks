@@ -352,6 +352,9 @@ class Interface(QMainWindow):
 
         ring_radius = np.int(x1 - x0)/2
 
+        self.ui.ring_inner_radius_doubleSpinBox.setValue(ring_radius)
+        self.ui.ring_inner_radius_slider.setValue(100*ring_radius)
+
         x_central_pixel = np.mean([x1, x0])
         y_central_pixel = np.mean([y1, y0])
 
@@ -394,13 +397,14 @@ class Interface(QMainWindow):
         y_central_pixel = np.mean([y1, y0])
 
         # inner ring
-        region = self.inner_ring_roi.getArraySlice(self.current_live_image,
-                                                   self.ui.image_view.imageItem)
-        x0 = region[0][0].start
-        x1 = region[0][0].stop
-        inner_radius = np.int(x1 - x0) / 2
+        # region = self.inner_ring_roi.getArraySlice(self.current_live_image,
+        #                                            self.ui.image_view.imageItem)
+        # x0 = region[0][0].start
+        # x1 = region[0][0].stop
+        # inner_radius = np.int(x1 - x0) / 2
+        inner_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
 
-        thickness = np.abs(inner_radius - outer_radius)
+        # thickness = np.abs(inner_radius - outer_radius)
         self.ui.circle_x.setText(str(x_central_pixel))
         self.ui.circle_y.setText(str(y_central_pixel))
 
@@ -415,8 +419,8 @@ class Interface(QMainWindow):
         self.ui.image_view.addItem(self.inner_ring_roi)
         self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
 
-        self.ui.ring_thickness_doubleSpinBox.setValue(thickness)
-        self.ui.ring_thickness_slider.setValue(thickness*100)
+        # self.ui.ring_thickness_doubleSpinBox.setValue(thickness)
+        # self.ui.ring_thickness_slider.setValue(thickness*100)
 
         # # outer ring
         # region = self.outer_ring_roi.getArraySlice(self.current_live_image,
