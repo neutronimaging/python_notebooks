@@ -206,8 +206,6 @@ class Interface(QMainWindow):
 
     def display_ring(self):
 
-        print("display ring")
-
         if self.inner_ring_roi:
             self.ui.image_view.removeItem(self.inner_ring_roi)
             self.ui.image_view.removeItem(self.outer_ring_roi)
@@ -375,6 +373,10 @@ class Interface(QMainWindow):
 
         self.vLine.setValue(x_central_pixel)
         self.hLine.setValue(y_central_pixel)
+
+        self.block_signals(list_ui=list_ui,
+                           block_status=False)
+
 
     def manual_outer_ring_changed(self):
 
