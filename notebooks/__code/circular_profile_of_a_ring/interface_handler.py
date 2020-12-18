@@ -377,9 +377,41 @@ class Interface(QMainWindow):
         self.block_signals(list_ui=list_ui,
                            block_status=False)
 
+    def replot_outer_ring(self, x0=None, y0=None, x1=None, y1=None):
+        ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
+        x_central_pixel = np.mean([x1, x0])
+        y_central_pixel = np.mean([y1, y0])
+        ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
+        outer_ring_circle_width = 2 * (ring_radius + ring_thickness)
+        self.ui.image_view.removeItem(self.outer_ring_roi)
+        self.outer_ring_roi = pg.CircleROI([x_central_pixel - ring_radius - ring_thickness,
+                                            y_central_pixel - ring_radius - ring_thickness],
+                                           [outer_ring_circle_width, outer_ring_circle_width],
+                                           movable=True,
+                                           resizable=False,
+                                           pen=self.ring_pen)
+        self.ui.image_view.addItem(self.outer_ring_roi)
+        self.remove_handles(ring_ui=self.outer_ring_roi)
+        self.outer_ring_roi.sigRegionChanged.connect(self.manual_outer_ring_changed)
+
+    def replot_inner_ring(self, x0=None, y0=None, x1=None, y1=None):
+        ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
+        x_central_pixel = np.mean([x1, x0])
+        y_central_pixel = np.mean([y1, y0])
+        self.ui.image_view.removeItem(self.inner_ring_roi)
+        inner_ring_radius = ring_radius
+        inner_ring_circle_width = 2 * inner_ring_radius
+        self.ui.image_view.removeItem(self.inner_ring_roi)
+        self.inner_ring_roi = pg.CircleROI([x_central_pixel - inner_ring_radius,
+                                            y_central_pixel - inner_ring_radius],
+                                           [inner_ring_circle_width, inner_ring_circle_width],
+                                           movable=True,
+                                           pen=self.ring_pen)
+        self.ui.image_view.addItem(self.inner_ring_roi)
+        self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
+
 
     def manual_outer_ring_changed(self):
-
         list_ui = [self.ui.ring_inner_radius_doubleSpinBox,
                    self.ui.ring_inner_radius_slider,
                    self.ui.ring_thickness_doubleSpinBox,
@@ -395,6 +427,16 @@ class Interface(QMainWindow):
         y0 = region[0][1].start
         y1 = region[0][1].stop
         outer_radius = np.int(x1 - x0) / 2
+
+        if x0 <= 0:
+            self.replot_outer_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+        if x1 >= self.width:
+            self.replot_outer_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+        if y0 <= 0:
+            self.replot_outer_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+        if y1 >= self.height:
+            self.replot_outer_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+
         x_central_pixel = np.mean([x1, x0])
         y_central_pixel = np.mean([y1, y0])
 
@@ -476,7 +518,20 @@ class Interface(QMainWindow):
                                                    self.ui.image_view.imageItem)
         x0 = region[0][0].start
         x1 = region[0][0].stop
+        y0 = region[0][1].start
+        y1 = region[0][1].end
         radius_1 = np.int(x1 - x0)/2
+
+        if x0 <= 0:
+            self.replot_inner_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+        if x1 >= self.width:
+            self.replot_inner_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+        if y0 <= 0:
+            self.replot_inner_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+        if y1 >= self.height:
+            self.replot_inner_ring(x0=x0, y0=y0, x1=x1, y1=y1)
+
+
 
         # outer ring
         region = self.outer_ring_roi.getArraySlice(self.current_live_image,
