@@ -8,6 +8,18 @@ class CalculateProfiles:
         self.parent = parent
 
     def run(self):
+        self.calculate_matrix(display=False)
+
+        # working for first image only for now
+        first_image = self.parent.data[0]
+
+        # create profile_dictionary
+        angle_bin = self.parent.angle_bin_horizontalSlider.value()
+
+        profile_dictionary = OrderedDict()
+        list_angles = np.arange(0, 360, angle_bin)
+
+    def calculate_matrix(self, display=True):
         x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
         y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
 
@@ -24,40 +36,26 @@ class CalculateProfiles:
         xv, yv = np.meshgrid(x, y)
         distances_power = np.sqrt((np.power(yv - y_central_pixel, 2) + np.power(xv - x_central_pixel, 2)))
 
-        print(f"np.shape(distances_power):{np.shape(distances_power)}")
-
         mask_ring = np.where((distances_power > inner_radius) & (distances_power < (inner_radius + thickness)))
 
-        # create profile_dictionary
-        angle_bin = self.parent.angle_bin_horizontalSlider.value()
-
-        profile_dictionary = OrderedDict()
-        list_angles = np.arange(0, 360, angle_bin)
-
         # find angles of all the pixels
-        angles_matrix = self._build_angles_matrix(image_width=image_width, image_height=image_height,
-                                                  x_central_pixel=x_central_pixel, y_central_pixel=y_central_pixel)
-
-        # working for first image only for now
-        first_image = self.parent.data[0]
-
-        # for debugging only
-        #self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
-
+        angles_matrix = CalculateProfiles._build_angles_matrix(image_width=image_width,
+                                                               image_height=image_height,
+                                                               x_central_pixel=x_central_pixel,
+                                                               y_central_pixel=y_central_pixel)
         self.parent.debug_mask = mask_ring
 
         y_mask = mask_ring[0]
         x_mask = mask_ring[1]
 
-        print(f"np.shape(angles_matrix):{np.shape(angles_matrix)}")
-
-
         for y, x in zip(y_mask, x_mask):
-            # print(f"y:{y} and x:{x}")
             angles_matrix[y, x] = 0
-        self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
 
-    def _build_angles_matrix(self, image_width=None, image_height=None,
+        if display:
+            self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
+
+    @staticmethod
+    def _build_angles_matrix(image_width=None, image_height=None,
                              x_central_pixel=None, y_central_pixel=None):
 
         full_angles_matrix = np.zeros((image_height, image_width))
@@ -71,11 +69,12 @@ class CalculateProfiles:
 
         xv_right_bottom, yv_right_bottom = np.meshgrid(x_right_bottom, y_right_bottom)
 
-        angles_right_bottom = 90 + np.rad2deg(np.arctan(((yv_right_bottom - y_central_pixel)) /
+        angles_right_bottom = 90 + np.rad2deg(np.arctan((yv_right_bottom - y_central_pixel) /
                                                         (xv_right_bottom - x_central_pixel)))
 
         full_angles_matrix[np.int(y_right_bottom[0]): np.int(y_right_bottom[0]) + len(y_right_bottom),
-                           np.int(x_right_bottom[0]): np.int(x_right_bottom[0]) + len(x_right_bottom)] = angles_right_bottom
+                           np.int(x_right_bottom[0]): np.int(x_right_bottom[0]) + len(x_right_bottom)] = \
+            angles_right_bottom
 
         # top right corner of matrix
         right_top_corner_width = np.int(image_width - x_central_pixel)
@@ -94,7 +93,7 @@ class CalculateProfiles:
 
         # top left corner
         left_top_corner_width = np.int(x_central_pixel)
-        left_top_corner_height = np.int(y_central_pixel)
+        # left_top_corner_height = np.int(y_central_pixel)
 
         x_left_top = np.arange(left_top_corner_width)
         y_left_top = np.arange(y_central_pixel)

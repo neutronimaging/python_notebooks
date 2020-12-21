@@ -84,7 +84,9 @@ class Interface(QMainWindow):
         self.hLine = pg.InfiniteLine(pos=y0, angle=0, movable=True)
 
         self.vLine.sigDragged.connect(self.manual_circle_center_changed)
+        self.vLine.sigPositionChangeFinished.connect(self.manual_circle_center_changed_finished)
         self.hLine.sigDragged.connect(self.manual_circle_center_changed)
+        self.hLine.sigPositionChangeFinished.connect(self.manual_circle_center_changed_finished)
 
         self.ui.image_view.addItem(self.vLine, ignoreBounds=False)
         self.ui.image_view.addItem(self.hLine, ignoreBounds=False)
@@ -208,10 +210,6 @@ class Interface(QMainWindow):
                                   pxMode=False)
 
         self.line_view_binning = line_view_binning
-
-    def grid_size_changed(self):
-        self.ui.image_view.removeItem(self.line_view_binning)
-        self.display_grid()
 
     def display_ring(self):
 
@@ -343,6 +341,7 @@ class Interface(QMainWindow):
                                            pen=self.ring_pen)
         self.ui.image_view.addItem(self.inner_ring_roi)
         self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
+        self.inner_ring_roi.sigRegionChangeFinished.connect(self.manual_inner_ring_change_finished)
 
         if self.outer_ring_roi:
             self.ui.image_view.removeItem(self.outer_ring_roi)
@@ -353,6 +352,7 @@ class Interface(QMainWindow):
                                            pen=self.ring_pen)
         self.remove_handles(ring_ui=self.outer_ring_roi)
         self.outer_ring_roi.sigRegionChanged.connect(self.manual_outer_ring_changed)
+        self.outer_ring_roi.sigRegionChangeFinished.connect(self.manual_outer_ring_change_finished)
 
     def remove_handles(self, ring_ui=None):
         self.ui.image_view.addItem(ring_ui)
@@ -361,6 +361,14 @@ class Interface(QMainWindow):
             ring_ui.removeHandle(_handle)
 
     # Event handler
+    def grid_size_changed(self):
+        self.ui.image_view.removeItem(self.line_view_binning)
+        self.display_grid()
+
+    def manual_inner_ring_change_finished(self):
+        self.manual_inner_ring_changed()
+        self.display_mode_changed()
+
     def manual_inner_ring_changed(self):
 
         self.ui.image_view.removeItem(self.outer_ring_roi)
@@ -417,6 +425,7 @@ class Interface(QMainWindow):
         self.ui.image_view.addItem(self.outer_ring_roi)
         self.remove_handles(ring_ui=self.outer_ring_roi)
         self.outer_ring_roi.sigRegionChanged.connect(self.manual_outer_ring_changed)
+        self.outer_ring_roi.sigRegionChangeFinished.connect(self.manual_outer_ring_change_finished)
 
         self.vLine.setValue(x_central_pixel)
         self.hLine.setValue(y_central_pixel)
@@ -456,6 +465,10 @@ class Interface(QMainWindow):
                                            pen=self.ring_pen)
         self.ui.image_view.addItem(self.inner_ring_roi)
         self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
+
+    def manual_outer_ring_change_finished(self):
+        self.manual_outer_ring_changed()
+        self.display_mode_changed()
 
     def manual_outer_ring_changed(self):
         list_ui = [self.ui.ring_inner_radius_doubleSpinBox,
@@ -614,6 +627,10 @@ class Interface(QMainWindow):
         for _ui in list_ui:
             _ui.blockSignals(block_status)
 
+    def manual_circle_center_changed_finished(self):
+        self.display_mode_changed()
+        self.manual_circle_center_changed()
+
     def manual_circle_center_changed(self):
         new_x0 = np.float(self.vLine.value())
         self.ui.circle_x.setText("{:.2f}".format(new_x0))
@@ -662,42 +679,59 @@ class Interface(QMainWindow):
     def cancel_clicked(self):
         pass
 
-    def slider_image_changed(self, new_index=0):
-        _view = self.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
+    def refresh_image(self):
+        self.ui.image_view.clear()
+        image_index = self.ui.image_slider.value()
+        self.slider_image_changed(new_index=image_index)
 
-        first_update = False
-        if self.histogram_level is None:
-            first_update = True
-        _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget.getLevels()
+    def slider_image_changed(self, new_index=0):
+        # _view = self.ui.image_view.getView()
+        # _view_box = _view.getViewBox()
+        # _state = _view_box.getState()
+        #
+        # first_update = False
+        # if self.histogram_level is None:
+        #     first_update = True
+        # _histo_widget = self.ui.image_view.getHistogramWidget()
+        # self.histogram_level = _histo_widget.getLevels()
 
         data = self.data[new_index]
         _image = np.transpose(data)
         self.ui.image_view.setImage(_image)
         self.current_live_image = _image
-        _view_box.setState(_state)
+        # _view_box.setState(_state)
 
-        if not first_update:
-            _histo_widget.setLevels(self.histogram_level[0],
-                                    self.histogram_level[1])
+        # if not first_update:
+        #     _histo_widget.setLevels(self.histogram_level[0],
+        #                             self.histogram_level[1])
 
     def ring_settings_thickness_slider_changed(self, slider_value):
         self.ui.ring_thickness_doubleSpinBox.setValue(slider_value/100)
         self.display_ring()
 
+    def ring_settings_thickness_slider_released(self):
+        self.display_mode_changed()
+
     def ring_settings_thickness_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_thickness_slider.setValue(np.int(spin_box_value*100))
         self.display_ring()
+
+    def ring_settings_thickness_double_spin_box_finished(self):
+        self.display_mode_changed()
 
     def ring_settings_inner_radius_slider_changed(self, slider_value):
         self.ui.ring_inner_radius_doubleSpinBox.setValue(slider_value/100)
         self.display_ring()
 
+    def ring_settings_inner_radius_slider_released(self):
+        self.display_mode_changed()
+
     def ring_settings_inner_radius_double_spin_box_changed(self, spin_box_value):
         self.ui.ring_inner_radius_slider.setValue(np.int(spin_box_value*100))
         self.display_ring()
+
+    def ring_settings_inner_radius_double_spin_box_finished(self):
+        self.display_mode_changed()
 
     def clear_full_ring_clicked(self):
         if self.ring:
@@ -711,3 +745,17 @@ class Interface(QMainWindow):
     def angle_bin_slider_moved(self, slider_value):
         real_bin_value = slider_value/100
         self.ui.angle_bin_value.setText("{:.2f}".format(real_bin_value))
+
+    def display_mode_changed(self):
+        if self.ui.display_radiographs_radioButton.isChecked():
+            self.ui.image_view.clear()
+            image_index = self.ui.image_slider.value()
+            self.slider_image_changed(new_index=image_index)
+        elif self.ui.display_angles_matrix_radioButton.isChecked():
+            o_cal = CalculateProfiles(parent=self)
+            o_cal.calculate_matrix(display=True)
+        else:
+            raise NotImplementedError("Display mode not implemented!")
+
+
+
