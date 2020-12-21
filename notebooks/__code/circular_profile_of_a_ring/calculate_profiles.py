@@ -11,28 +11,22 @@ class CalculateProfiles:
         x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
         y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
 
-        print(f"x_central_pixel: {x_central_pixel}")
-        print(f"y_central_pixel: {y_central_pixel}")
-
         inner_radius = self.parent.ui.ring_inner_radius_doubleSpinBox.value()
         thickness = self.parent.ui.ring_thickness_doubleSpinBox.value()
 
         image_width = self.parent.width
         image_height = self.parent.height
 
-        print(f"image_width: {image_width}")
-        print(f"image_height: {image_height}")
-
         x = np.arange(image_width) + 0.5
         y = np.arange(image_height) + 0.5
 
         # find all the pixels that are within the ring
-        xv, yv = np.meshgrid(y, x)
+        xv, yv = np.meshgrid(x, y)
         distances_power = np.sqrt((np.power(yv - y_central_pixel, 2) + np.power(xv - x_central_pixel, 2)))
 
-        mask_ring1 = np.where(distances_power > inner_radius)
-        mask_ring2 = np.where(distances_power < (inner_radius + thickness))
-        mask_ring = np.where(mask_ring1 and mask_ring2)
+        print(f"np.shape(distances_power):{np.shape(distances_power)}")
+
+        mask_ring = np.where((distances_power > inner_radius) & (distances_power < (inner_radius + thickness)))
 
         # create profile_dictionary
         angle_bin = self.parent.angle_bin_horizontalSlider.value()
@@ -48,8 +42,20 @@ class CalculateProfiles:
         first_image = self.parent.data[0]
 
         # for debugging only
-        self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
+        #self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
 
+        self.parent.debug_mask = mask_ring
+
+        y_mask = mask_ring[0]
+        x_mask = mask_ring[1]
+
+        print(f"np.shape(angles_matrix):{np.shape(angles_matrix)}")
+
+
+        for y, x in zip(y_mask, x_mask):
+            # print(f"y:{y} and x:{x}")
+            angles_matrix[y, x] = 0
+        self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
 
     def _build_angles_matrix(self, image_width=None, image_height=None,
                              x_central_pixel=None, y_central_pixel=None):
