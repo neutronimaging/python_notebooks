@@ -4,6 +4,12 @@ import pyqtgraph as pg
 from qtpy.QtWidgets import QVBoxLayout
 import numpy as np
 from qtpy import QtGui
+import matplotlib
+
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
+from __code.panoramic_stitching.mplcanvas import MplCanvas
 
 from __code import load_ui
 from __code.decorators import wait_cursor
@@ -17,7 +23,7 @@ class InterfaceHandler:
 
     def __init__(self, working_dir=None, o_norm=None):
         o_interface = Interface(data=o_norm.data['sample']['data'],
-                                list_files=o_norm.data['sample']['filename'],
+                                list_files=o_norm.data['sample']['file_name'],
                                 working_dir=working_dir)
         o_interface.show()
 
@@ -73,10 +79,25 @@ class Interface(QMainWindow):
         self.setWindowTitle("Circular Profile of a Ring")
 
         self.init_widgets()
+        self.init_matplotlib()
         self.slider_image_changed(new_index=0)
         self.init_crosshair()
         self.display_grid()
         self.display_ring()
+
+    def init_matplotlib(self):
+        def _matplotlib(parent=None, widget=None):
+            sc = MplCanvas(parent, width=5, height=4, dpi=100)
+            # sc.axes.plot([0,1,2,3,4,5], [10, 1, 20 ,3, 40, 50])
+            toolbar = NavigationToolbar(sc, parent)
+            layout = QVBoxLayout()
+            layout.addWidget(toolbar)
+            layout.addWidget(sc)
+            widget.setLayout(layout)
+            return sc
+
+        self.profile_plot = _matplotlib(parent=self,
+                                        widget=self.ui.widget_profile)
 
     def init_crosshair(self):
         x0 = float(str(self.ui.circle_x.text()))
@@ -110,7 +131,7 @@ class Interface(QMainWindow):
         self.ui.widget.setLayout(image_layout)
 
         self.ui.splitter.setSizes([500, 200])
-        self.ui.profile_splitter([500, 100])
+        self.ui.profile_splitter.setSizes([500, 100])
 
         nbr_files = len(self.data)
         self.ui.image_slider.setMaximum(nbr_files-1)
