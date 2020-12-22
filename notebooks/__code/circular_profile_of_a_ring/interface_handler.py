@@ -100,6 +100,11 @@ class Interface(QMainWindow):
         self.profile_plot = _matplotlib(parent=self,
                                         widget=self.ui.widget_profile)
 
+        self.profile_plot.mpl_connect('button_press_event', self.click_on_profile_plot)
+
+    def click_on_profile_plot(self, event):
+        print(f"event.x: {event.xdata}")
+
     def init_crosshair(self):
         x0 = float(str(self.ui.circle_x.text()))
         y0 = float(str(self.ui.circle_y.text()))
