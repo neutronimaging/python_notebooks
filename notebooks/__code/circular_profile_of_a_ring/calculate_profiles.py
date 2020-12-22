@@ -145,6 +145,15 @@ class CalculateProfiles:
 
         return full_angles_matrix
 
+    def plot_profiles(self):
+        pass
+        # y_axis = np.mean(y_axis_of_profile, axis=dim_to_keep)
+        # plot_ui.axes.plot(x_axis_of_profile, y_axis, color=color)
+        # # plot_ui.axes.set_xlabel("Pixel")
+        # # plot_ui.axes.set_ylabel("Average counts")
+
+    plot_ui.draw()
+
     @staticmethod
     def get_corresponding_bin_angle(angle=None, list_angles=None):
         index = np.abs(np.array(list_angles) - angle)
