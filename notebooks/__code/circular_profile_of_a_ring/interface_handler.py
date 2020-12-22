@@ -62,6 +62,7 @@ class Interface(QMainWindow):
     angle_bin = {'minimum': 1,
                  'maximum': 500,
                  'value': 100}
+    angle_line = None
 
     def __init__(self, parent=None, data=None, list_files=None, working_dir=None):
 
@@ -103,7 +104,26 @@ class Interface(QMainWindow):
         self.profile_plot.mpl_connect('button_press_event', self.click_on_profile_plot)
 
     def click_on_profile_plot(self, event):
-        print(f"event.x: {event.xdata}")
+        angle = event.xdata
+        x0 = np.float(str(self.ui.circle_x.text()))
+        y0 = np.float(str(self.ui.circle_y.text()))
+
+        if self.angle_line:
+            self.ui.image_view.removeItem(self.angle_line)
+
+        _pen = QtGui.QPen()
+        _pen.setColor(QtGui.QColor(255, 0, 0))
+        _pen.setWidth(0.01)
+
+        self.angle_line = pg.InfiniteLine([x0, y0],
+                                          pen=_pen,
+                                          label="{:.2f}".format(angle),
+                                          angle=angle-90,
+                                          span=(0, 1),
+                                          labelOpts={'position': 0.9})
+        # self.angle_line.addMarker('o', size=15)
+        self.ui.image_view.addItem(self.angle_line)
+
 
     def init_crosshair(self):
         x0 = float(str(self.ui.circle_x.text()))
