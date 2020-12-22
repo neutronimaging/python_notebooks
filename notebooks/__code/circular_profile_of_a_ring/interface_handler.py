@@ -133,6 +133,7 @@ class Interface(QMainWindow):
 
         self.ui.splitter.setSizes([500, 200])
         self.ui.profile_splitter.setSizes([500, 100])
+        self.ui.top_splitter.setSizes([800, 0])
 
         nbr_files = len(self.data)
         self.ui.image_slider.setMaximum(nbr_files-1)
@@ -769,6 +770,7 @@ class Interface(QMainWindow):
         o_cal = CalculateProfiles(parent=self)
         o_cal.run()
         o_cal.plot_profiles()
+        self.ui.top_splitter.setSizes([400, 400])
 
     def angle_bin_slider_moved(self, slider_value):
         real_bin_value = slider_value/100
