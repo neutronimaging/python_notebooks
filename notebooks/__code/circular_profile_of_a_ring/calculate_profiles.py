@@ -8,7 +8,9 @@ class CalculateProfiles:
         self.parent = parent
 
     def run(self):
-        self.calculate_matrix(display=False)
+        matrices = self.calculate_matrices(display=False)
+        angle_matrix = matrices['angles_matrix']
+        mask_ring = matrices['mask_ring']
 
         # working for first image only for now
         first_image = self.parent.data[0]
@@ -18,8 +20,29 @@ class CalculateProfiles:
 
         profile_dictionary = OrderedDict()
         list_angles = np.arange(0, 360, angle_bin)
+        for _angle in list_angles:
+            profile_dictionary[_angle] = []
 
-    def calculate_matrix(self, display=True):
+        image_width = self.parent.width
+        image_height = self.parent.height
+
+        for y in np.arange(image_height):
+            for x in np.arange(image_width):
+                if mask_ring[y, x]:
+                    angle = angle_matrix[y, x]
+                    bin_angle = CalculateProfiles.get_corresponding_bin_angle(angle=angle,
+                                                                              list_angles=list_angles)
+                    profile_dictionary[bin_angle] = first_image[y, x]
+
+        y_profile = []
+        x_profile = list_angles
+        for _key in profile_dictionary.keys():
+            y_profile.append(np.mean(profile_dictionary[_key]))
+
+
+
+
+    def calculate_matrices(self, display=True):
         x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
         y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
 
@@ -43,8 +66,6 @@ class CalculateProfiles:
                                                                image_height=image_height,
                                                                x_central_pixel=x_central_pixel,
                                                                y_central_pixel=y_central_pixel)
-        self.parent.debug_mask = mask_ring
-
         y_mask = mask_ring[0]
         x_mask = mask_ring[1]
 
@@ -53,6 +74,9 @@ class CalculateProfiles:
 
         if display:
             self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
+
+        return {'angles_matrix': angles_matrix,
+                'mask_ring': mask_ring}
 
     @staticmethod
     def _build_angles_matrix(image_width=None, image_height=None,
@@ -120,3 +144,8 @@ class CalculateProfiles:
                            np.int(x_left_bottom[0]): np.int(x_left_bottom[0]) + len(x_left_bottom)] = angles_left_bottom
 
         return full_angles_matrix
+
+    @staticmethod
+    def get_corresponding_bin_angle(angle=None, list_angles=None):
+        index = np.abs(np.array(list_angles) - angle)
+        return index.argmin()

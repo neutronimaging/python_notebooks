@@ -17,6 +17,7 @@ class InterfaceHandler:
 
     def __init__(self, working_dir=None, o_norm=None):
         o_interface = Interface(data=o_norm.data['sample']['data'],
+                                list_files=o_norm.data['sample']['filename'],
                                 working_dir=working_dir)
         o_interface.show()
 
@@ -56,9 +57,10 @@ class Interface(QMainWindow):
                  'maximum': 500,
                  'value': 100}
 
-    def __init__(self, parent=None, data=None, working_dir=None):
+    def __init__(self, parent=None, data=None, list_files=None, working_dir=None):
 
         self.data = data
+        self.list_files = list_files
         [self.height, self.width] = np.shape(data[0])
         self.working_dir = working_dir
 
@@ -108,6 +110,7 @@ class Interface(QMainWindow):
         self.ui.widget.setLayout(image_layout)
 
         self.ui.splitter.setSizes([500, 200])
+        self.ui.profile_splitter([500, 100])
 
         nbr_files = len(self.data)
         self.ui.image_slider.setMaximum(nbr_files-1)
@@ -148,6 +151,9 @@ class Interface(QMainWindow):
 
         self.ui.angle_bin_units.setText(u"\u2103")
         self.ui.angle_bin_value.setText("{:.2f}".format(self.angle_bin['value']/100))
+
+        # add list of files here to ui=self.ui.profile_list_images
+        # FIXME
 
     def display_grid(self):
         [width, height] = [self.width, self.height]
