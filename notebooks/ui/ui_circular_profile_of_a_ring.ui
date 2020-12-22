@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -1120,6 +1120,22 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>profile_list_images</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>profile_list_images_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1178</x>
+     <y>296</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1375</x>
+     <y>321</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1153,5 +1169,6 @@ p, li { white-space: pre-wrap; }
   <slot>ring_settings_thickness_slider_released()</slot>
   <slot>ring_settings_inner_radius_double_spin_box_finished()</slot>
   <slot>ring_settings_thickness_double_spin_box_finished()</slot>
+  <slot>profile_list_images_selection_changed()</slot>
  </slots>
 </ui>

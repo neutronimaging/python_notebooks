@@ -20,7 +20,7 @@ class CircularProfileOfARing:
         list_folder_widget.show()
 
     def folder_selected(self, folder_selected):
-        list_files = glob.glob(folder_selected + '/*.tif')
+        list_files = glob.glob(folder_selected + '/*.tif*')
         list_files.sort()
         self.load_data(list_files=list_files)
 

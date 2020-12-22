@@ -1,11 +1,17 @@
 import numpy as np
 from collections import OrderedDict
+import copy
 
 
 class CalculateProfiles:
 
+    x_profile = None
+    y_profile = None
+
     def __init__(self, parent=None):
         self.parent = parent
+        self.x_profile = None
+        self.y_profile = None
 
     def run(self):
         matrices = self.calculate_matrices(display=False)
@@ -16,31 +22,32 @@ class CalculateProfiles:
         first_image = self.parent.data[0]
 
         # create profile_dictionary
-        angle_bin = self.parent.angle_bin_horizontalSlider.value()
+        angle_bin = self.parent.angle_bin_horizontalSlider.value()/100
 
         profile_dictionary = OrderedDict()
         list_angles = np.arange(0, 360, angle_bin)
         for _angle in list_angles:
-            profile_dictionary[_angle] = []
+            profile_dictionary[_angle] = np.NaN
 
-        image_width = self.parent.width
-        image_height = self.parent.height
+        # image_width = self.parent.width
+        # image_height = self.parent.height
 
-        for y in np.arange(image_height):
-            for x in np.arange(image_width):
-                if mask_ring[y, x]:
-                    angle = angle_matrix[y, x]
-                    bin_angle = CalculateProfiles.get_corresponding_bin_angle(angle=angle,
-                                                                              list_angles=list_angles)
-                    profile_dictionary[bin_angle] = first_image[y, x]
+        y_mask = mask_ring[0]
+        x_mask = mask_ring[1]
+        for y, x in zip(y_mask, x_mask):
+            angle = angle_matrix[y, x]
+            bin_angle = CalculateProfiles.get_corresponding_bin_angle(angle=angle,
+                                                                      list_angles=list_angles)
+            # print(f"angle:{angle} -> bin_angle:{bin_angle}")
+            profile_dictionary[bin_angle] = first_image[y, x]
 
         y_profile = []
-        x_profile = list_angles
+        x_profile = copy.deepcopy(list_angles)
         for _key in profile_dictionary.keys():
             y_profile.append(np.mean(profile_dictionary[_key]))
 
-
-
+        self.x_profile = x_profile
+        self.y_profile = y_profile
 
     def calculate_matrices(self, display=True):
         x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
@@ -69,13 +76,14 @@ class CalculateProfiles:
         y_mask = mask_ring[0]
         x_mask = mask_ring[1]
 
+        ring_angles_matrix = np.zeros(np.shape(angles_matrix))
         for y, x in zip(y_mask, x_mask):
-            angles_matrix[y, x] = 0
+            ring_angles_matrix[y, x] = angles_matrix[y, x]
 
         if display:
-            self.parent.ui.image_view.setImage(np.transpose(angles_matrix))
+            self.parent.ui.image_view.setImage(np.transpose(ring_angles_matrix))
 
-        return {'angles_matrix': angles_matrix,
+        return {'angles_matrix': ring_angles_matrix,
                 'mask_ring': mask_ring}
 
     @staticmethod
@@ -146,15 +154,22 @@ class CalculateProfiles:
         return full_angles_matrix
 
     def plot_profiles(self):
-        pass
+        x_profile = self.x_profile
+        y_profile = self.y_profile
+
+        self.parent.profile_plot.axes.clear()
+        self.parent.profile_plot.axes.plot(x_profile, y_profile, 'r')
+        self.parent.profile_plot.draw()
+
         # y_axis = np.mean(y_axis_of_profile, axis=dim_to_keep)
         # plot_ui.axes.plot(x_axis_of_profile, y_axis, color=color)
         # # plot_ui.axes.set_xlabel("Pixel")
         # # plot_ui.axes.set_ylabel("Average counts")
 
-    plot_ui.draw()
+        #plot_ui.draw()
 
     @staticmethod
     def get_corresponding_bin_angle(angle=None, list_angles=None):
         index = np.abs(np.array(list_angles) - angle)
-        return index.argmin()
+        argmin = index.argmin()
+        return list_angles[argmin]

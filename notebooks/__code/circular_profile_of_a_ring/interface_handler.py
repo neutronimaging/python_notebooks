@@ -67,6 +67,7 @@ class Interface(QMainWindow):
 
         self.data = data
         self.list_files = list_files
+        self.list_short_files = [os.path.basename(_file) for _file in list_files]
         [self.height, self.width] = np.shape(data[0])
         self.working_dir = working_dir
 
@@ -173,8 +174,7 @@ class Interface(QMainWindow):
         self.ui.angle_bin_units.setText(u"\u2103")
         self.ui.angle_bin_value.setText("{:.2f}".format(self.angle_bin['value']/100))
 
-        # add list of files here to ui=self.ui.profile_list_images
-        # FIXME
+        self.ui.profile_list_images.addItems(self.list_short_files)
 
     def display_grid(self):
         [width, height] = [self.width, self.height]
@@ -768,6 +768,7 @@ class Interface(QMainWindow):
     def calculate_profiles_clicked(self):
         o_cal = CalculateProfiles(parent=self)
         o_cal.run()
+        o_cal.plot_profiles()
 
     def angle_bin_slider_moved(self, slider_value):
         real_bin_value = slider_value/100
@@ -780,9 +781,9 @@ class Interface(QMainWindow):
             self.slider_image_changed(new_index=image_index)
         elif self.ui.display_angles_matrix_radioButton.isChecked():
             o_cal = CalculateProfiles(parent=self)
-            o_cal.calculate_matrix(display=True)
+            o_cal.calculate_matrices(display=True)
         else:
             raise NotImplementedError("Display mode not implemented!")
 
-
-
+    def profile_list_images_selection_changed(self):
+        pass
