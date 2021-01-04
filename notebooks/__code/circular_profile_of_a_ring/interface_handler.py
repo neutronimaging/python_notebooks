@@ -827,7 +827,11 @@ class Interface(QMainWindow):
             raise NotImplementedError("Display mode not implemented!")
 
     def profile_list_images_selection_changed(self):
-        pass
+        list_selection = self.ui.profile_list_images.selectedIndexes()
+        row_selected = []
+        for selection in list_selection:
+            row_selected.append(selection.row())
+        row_selected.sort()
 
     def load_configuration(self):
         o_config = ConfigurationHandler(parent=self)
