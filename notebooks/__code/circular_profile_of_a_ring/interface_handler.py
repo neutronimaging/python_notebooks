@@ -39,6 +39,9 @@ class Interface(QMainWindow):
     vLine = None
     hLine = None
 
+    x_profile = None
+    y_profile = None
+
     guide_color_slider = {'red': 255,
                           'green': 0,
                           'blue': 255,
@@ -833,3 +836,7 @@ class Interface(QMainWindow):
     def save_configuration(self):
         o_config = ConfigurationHandler(parent=self)
         o_config.save()
+
+    def profile_plot_axis_type_changed(self):
+        o_cal = CalculateProfiles(parent=self)
+        o_cal.plot_profiles()

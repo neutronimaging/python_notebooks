@@ -5,13 +5,8 @@ import copy
 
 class CalculateProfiles:
 
-    x_profile = None
-    y_profile = None
-
     def __init__(self, parent=None):
         self.parent = parent
-        self.x_profile = None
-        self.y_profile = None
 
     def run(self):
         matrices = self.calculate_matrices(display=False)
@@ -46,8 +41,8 @@ class CalculateProfiles:
         for _key in profile_dictionary.keys():
             y_profile.append(np.mean(profile_dictionary[_key]))
 
-        self.x_profile = x_profile
-        self.y_profile = y_profile
+        self.parent.x_profile = x_profile
+        self.parent.y_profile = y_profile
 
     def calculate_matrices(self, display=True):
         x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
@@ -154,12 +149,20 @@ class CalculateProfiles:
         return full_angles_matrix
 
     def plot_profiles(self):
-        x_profile = self.x_profile
-        y_profile = self.y_profile
+        x_profile = self.parent.x_profile
+        y_profile = self.parent.y_profile
 
-        self.parent.profile_plot.axes.clear()
-        self.parent.profile_plot.axes.plot(x_profile, y_profile, 'r')
-        self.parent.profile_plot.draw()
+        if not (x_profile is None):
+
+            plot_type = 'r'
+            if self.parent.ui.point_radioButton.isChecked():
+                plot_type += '.'
+            elif self.parent.ui.plus_radioButton.isChecked():
+                plot_type += '+'
+
+            self.parent.profile_plot.axes.clear()
+            self.parent.profile_plot.axes.plot(x_profile, y_profile, plot_type)
+            self.parent.profile_plot.draw()
 
         # y_axis = np.mean(y_axis_of_profile, axis=dim_to_keep)
         # plot_ui.axes.plot(x_axis_of_profile, y_axis, color=color)
