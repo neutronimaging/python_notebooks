@@ -817,9 +817,9 @@ class Interface(QMainWindow):
         pass
 
     def load_configuration(self):
-        print("loading configuration")
+        o_config = ConfigurationHandler(parent=self)
+        o_config.load()
 
     def save_configuration(self):
         o_config = ConfigurationHandler(parent=self)
         o_config.save()
-

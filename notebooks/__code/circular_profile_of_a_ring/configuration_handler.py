@@ -10,7 +10,46 @@ class ConfigurationHandler:
         self.parent = parent
 
     def load(self):
-        pass
+        working_dir = os.path.abspath(os.path.dirname(self.parent.working_dir))
+        config_file_name = QFileDialog.getOpenFileName(self.parent,
+                                                       caption="Select config file name ...",
+                                                       directory=working_dir,
+                                                       filter="config(*.config)",
+                                                       initialFilter='config')
+
+        if config_file_name[0]:
+            with open(config_file_name[0]) as json_file:
+                data = json.load(json_file)
+
+                x_central_pixel = data['ring']['central_pixel']['x']
+                y_central_pixel = data['ring']['central_pixel']['y']
+                ring_radius = data['ring']['radius']
+                ring_thickness = data['ring']['thickness']
+
+                bin_size = data['grid']['bin_size']
+                red = data['grid']['red']
+                green = data['grid']['green']
+                blue = data['grid']['blue']
+                alpha = data['grid']['alpha']
+
+            self.parent.ui.circle_x.setText(str(x_central_pixel))
+            self.parent.ui.circle_y.setText(str(y_central_pixel))
+            self.parent.ui.ring_inner_radius_doubleSpinBox.setValue(ring_radius)
+            self.parent.ui.ring_thickness_doubleSpinBox.setValue(ring_thickness)
+            self.parent.ui.grid_size_slider.setValue(bin_size)
+
+            self.parent.ui.guide_red_slider.setValue(red)
+            self.parent.ui.guide_green_slider.setValue(green)
+            self.parent.ui.guide_blue_slider.setValue(blue)
+            self.parent.ui.guide_alpha_slider.setValue(alpha)
+
+            self.parent.guide_color_changed(-1)
+            self.parent.display_mode_changed()
+
+            message = "{} ... Loaded!".format(os.path.basename(config_file_name[0]))
+            self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
+            self.parent.ui.statusbar.setStyleSheet("color: green")
+
 
     def save(self):
         default_file_name = os.path.abspath(os.path.basename(self.parent.working_dir)) + "_configuration.cfg"
@@ -22,7 +61,7 @@ class ConfigurationHandler:
                                                        filter="config(*.config)",
                                                        initialFilter='config')
 
-        if config_file_name:
+        if config_file_name[0]:
             # ring
             x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
             y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
@@ -46,3 +85,10 @@ class ConfigurationHandler:
                                     'blue'    : blue,
                                     'alpha'   : alpha},
                            }
+
+            with open(config_file_name[0], 'w') as outfile:
+                json.dump(config_dict, outfile)
+
+            message = "{} ... Saved!".format(os.path.basename(config_file_name[0]))
+            self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
+            self.parent.ui.statusbar.setStyleSheet("color: green")
