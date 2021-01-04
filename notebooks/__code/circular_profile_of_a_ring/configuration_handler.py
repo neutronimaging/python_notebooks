@@ -35,9 +35,11 @@ class ConfigurationHandler:
             self.parent.ui.circle_x.setText(str(x_central_pixel))
             self.parent.ui.circle_y.setText(str(y_central_pixel))
             self.parent.ui.ring_inner_radius_doubleSpinBox.setValue(ring_radius)
+            self.parent.ui.ring_inner_radius_slider.setValue(ring_radius*100)
             self.parent.ui.ring_thickness_doubleSpinBox.setValue(ring_thickness)
-            self.parent.ui.grid_size_slider.setValue(bin_size)
+            self.parent.ui.ring_thickness_slider.setValue(ring_thickness*100)
 
+            self.parent.ui.grid_size_slider.setValue(bin_size)
             self.parent.ui.guide_red_slider.setValue(red)
             self.parent.ui.guide_green_slider.setValue(green)
             self.parent.ui.guide_blue_slider.setValue(blue)
@@ -49,7 +51,6 @@ class ConfigurationHandler:
             message = "{} ... Loaded!".format(os.path.basename(config_file_name[0]))
             self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
             self.parent.ui.statusbar.setStyleSheet("color: green")
-
 
     def save(self):
         default_file_name = os.path.abspath(os.path.basename(self.parent.working_dir)) + "_configuration.cfg"
@@ -77,13 +78,13 @@ class ConfigurationHandler:
 
             config_dict = {'ring': {'central_pixel': {'x': x_central_pixel,
                                                       'y': y_central_pixel},
-                                    'radius'       : ring_radius,
-                                    'thickness'    : ring_thickness},
+                                    'radius': ring_radius,
+                                    'thickness': ring_thickness},
                            'grid': {'bin_size': bin_size,
-                                    'red'     : red,
-                                    'green'   : green,
-                                    'blue'    : blue,
-                                    'alpha'   : alpha},
+                                    'red': red,
+                                    'green': green,
+                                    'blue': blue,
+                                    'alpha': alpha},
                            }
 
             with open(config_file_name[0], 'w') as outfile:
