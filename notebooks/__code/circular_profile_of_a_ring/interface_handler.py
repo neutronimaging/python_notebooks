@@ -814,3 +814,9 @@ class Interface(QMainWindow):
 
     def profile_list_images_selection_changed(self):
         pass
+
+    def load_configuration(self):
+        print("loading configuration")
+
+    def save_configuration(self):
+        print("saving configuration")
