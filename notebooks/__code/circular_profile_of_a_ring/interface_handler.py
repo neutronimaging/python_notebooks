@@ -14,6 +14,7 @@ from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code import load_ui
 from __code.decorators import wait_cursor
 from __code.circular_profile_of_a_ring.calculate_profiles import CalculateProfiles
+from __code.circular_profile_of_a_ring.configuration_handler import ConfigurationHandler
 
 INNER_RING_MARKER_LENGTH = 30  # number of pixels
 OUTER_RING_MARKER_LENGTH = 50  # number of pixels
@@ -70,7 +71,7 @@ class Interface(QMainWindow):
         self.list_files = list_files
         self.list_short_files = [os.path.basename(_file) for _file in list_files]
         [self.height, self.width] = np.shape(data[0])
-        self.working_dir = working_dir
+        self.working_dir = working_dir if working_dir else "./"
 
         super(Interface, self).__init__(parent)
 
@@ -819,4 +820,6 @@ class Interface(QMainWindow):
         print("loading configuration")
 
     def save_configuration(self):
-        print("saving configuration")
+        o_config = ConfigurationHandler(parent=self)
+        o_config.save()
+
