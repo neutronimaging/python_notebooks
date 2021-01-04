@@ -13,8 +13,26 @@ class CalculateProfiles:
         angle_matrix = matrices['angles_matrix']
         mask_ring = matrices['mask_ring']
 
-        # working for first image only for now
-        first_image = self.parent.data[0]
+        self.parent.eventProgress.setMaximum(len(self.parent.data))
+        self.parent.eventProgress.setValue(0)
+        self.parent.eventProgress.setVisible(True)
+
+        dict_profile = {}
+        _index = 0
+        for _row, _image in enumerate(self.parent.data):
+
+            x_profile, y_profile = self.get_profile(image=_image,
+                                                    angle_matrix=angle_matrix,
+                                                    mask_ring=mask_ring)
+            dict_profile[_row] = {'x_profile': x_profile,
+                                  'y_profile': y_profile}
+            _index += 1
+            self.parent.eventProgress.setValue(_index)
+
+        self.parent.dict_profile = dict_profile
+        self.parent.eventProgress.setVisible(False)
+
+    def get_profile(self, image=None,angle_matrix=None, mask_ring=None):
 
         # create profile_dictionary
         angle_bin = self.parent.angle_bin_horizontalSlider.value()/100
@@ -24,9 +42,6 @@ class CalculateProfiles:
         for _angle in list_angles:
             profile_dictionary[_angle] = np.NaN
 
-        # image_width = self.parent.width
-        # image_height = self.parent.height
-
         y_mask = mask_ring[0]
         x_mask = mask_ring[1]
         for y, x in zip(y_mask, x_mask):
@@ -34,15 +49,14 @@ class CalculateProfiles:
             bin_angle = CalculateProfiles.get_corresponding_bin_angle(angle=angle,
                                                                       list_angles=list_angles)
             # print(f"angle:{angle} -> bin_angle:{bin_angle}")
-            profile_dictionary[bin_angle] = first_image[y, x]
+            profile_dictionary[bin_angle] = image[y, x]
 
         y_profile = []
         x_profile = copy.deepcopy(list_angles)
         for _key in profile_dictionary.keys():
             y_profile.append(np.mean(profile_dictionary[_key]))
 
-        self.parent.x_profile = x_profile
-        self.parent.y_profile = y_profile
+        return x_profile, y_profile
 
     def calculate_matrices(self, display=True):
         x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
@@ -149,18 +163,20 @@ class CalculateProfiles:
         return full_angles_matrix
 
     def plot_profiles(self):
-        x_profile = self.parent.x_profile
-        y_profile = self.parent.y_profile
+        plot_type = 'r'
+        if self.parent.ui.point_radioButton.isChecked():
+            plot_type += '.'
+        elif self.parent.ui.plus_radioButton.isChecked():
+            plot_type += '+'
 
-        if not (x_profile is None):
+        self.parent.profile_plot.axes.clear()
 
-            plot_type = 'r'
-            if self.parent.ui.point_radioButton.isChecked():
-                plot_type += '.'
-            elif self.parent.ui.plus_radioButton.isChecked():
-                plot_type += '+'
+        for _row in self.get_profile_row_selected():
+            _profile = self.parent.dict_profile[_row]
 
-            self.parent.profile_plot.axes.clear()
+            x_profile = _profile['x_profile']
+            y_profile = _profile['y_profile']
+
             self.parent.profile_plot.axes.plot(x_profile, y_profile, plot_type)
             self.parent.profile_plot.draw()
 
@@ -171,8 +187,17 @@ class CalculateProfiles:
 
         #plot_ui.draw()
 
+    def get_profile_row_selected(self):
+        list_selection = self.parent.ui.profile_list_images.selectedIndexes()
+        row_selected = []
+        for selection in list_selection:
+            row_selected.append(selection.row())
+        row_selected.sort()
+        return row_selected
+
     @staticmethod
     def get_corresponding_bin_angle(angle=None, list_angles=None):
         index = np.abs(np.array(list_angles) - angle)
         argmin = index.argmin()
         return list_angles[argmin]
+

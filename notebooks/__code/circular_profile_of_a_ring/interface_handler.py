@@ -1,7 +1,6 @@
 import os
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar
 import pyqtgraph as pg
-from qtpy.QtWidgets import QVBoxLayout
 import numpy as np
 from qtpy import QtGui
 import matplotlib
@@ -41,6 +40,14 @@ class Interface(QMainWindow):
 
     x_profile = None
     y_profile = None
+
+    # {0: {'x_profile': None,
+    #      'y_profile': None},
+    #  1: {'x_profile': None,
+    #      'y_profile':None},
+    #  ...,
+    #  }
+    dict_profile = None
 
     guide_color_slider = {'red': 255,
                           'green': 0,
@@ -93,6 +100,12 @@ class Interface(QMainWindow):
         self.init_crosshair()
         self.display_grid()
         self.display_ring()
+        self.init_statusbar()
+
+    def init_statusbar(self):
+        self.eventProgress = QProgressBar(self.ui.statusbar)
+        self.eventProgress.setVisible(False)
+        self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
     def init_matplotlib(self):
         def _matplotlib(parent=None, widget=None):
@@ -827,11 +840,8 @@ class Interface(QMainWindow):
             raise NotImplementedError("Display mode not implemented!")
 
     def profile_list_images_selection_changed(self):
-        list_selection = self.ui.profile_list_images.selectedIndexes()
-        row_selected = []
-        for selection in list_selection:
-            row_selected.append(selection.row())
-        row_selected.sort()
+        o_cal = CalculateProfiles(parent=self)
+        o_cal.plot_profiles()
 
     def load_configuration(self):
         o_config = ConfigurationHandler(parent=self)
