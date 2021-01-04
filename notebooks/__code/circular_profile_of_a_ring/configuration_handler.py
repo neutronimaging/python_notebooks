@@ -45,7 +45,11 @@ class ConfigurationHandler:
             self.parent.ui.guide_blue_slider.setValue(blue)
             self.parent.ui.guide_alpha_slider.setValue(alpha)
 
+            # clear plot
+            self.parent.clear_image_view()
+
             self.parent.guide_color_changed(-1)
+            self.parent.init_crosshair()
             self.parent.display_mode_changed()
 
             message = "{} ... Loaded!".format(os.path.basename(config_file_name[0]))

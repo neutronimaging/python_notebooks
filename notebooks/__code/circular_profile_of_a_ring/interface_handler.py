@@ -36,6 +36,9 @@ class Interface(QMainWindow):
     histogram_level = None
     current_live_image = None
 
+    vLine = None
+    hLine = None
+
     guide_color_slider = {'red': 255,
                           'green': 0,
                           'blue': 255,
@@ -125,10 +128,17 @@ class Interface(QMainWindow):
         # self.angle_line.addMarker('o', size=15)
         self.ui.image_view.addItem(self.angle_line)
 
+    def clear_image_view(self):
+        if self.angle_line:
+            self.ui.image_view.removeItem(self.angle_line)
 
     def init_crosshair(self):
         x0 = float(str(self.ui.circle_x.text()))
         y0 = float(str(self.ui.circle_y.text()))
+
+        if self.vLine:
+            self.ui.image_view.removeItem(self.vLine)
+            self.ui.image_view.removeItem(self.hLine)
 
         self.vLine = pg.InfiniteLine(pos=x0, angle=90, movable=True)
         self.hLine = pg.InfiniteLine(pos=y0, angle=0, movable=True)
