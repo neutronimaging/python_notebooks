@@ -1,6 +1,8 @@
 import numpy as np
 from collections import OrderedDict
+from qtpy import QtGui
 import copy
+import os
 
 
 class CalculateProfiles:
@@ -16,6 +18,7 @@ class CalculateProfiles:
         self.parent.eventProgress.setMaximum(len(self.parent.data))
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
+        QtGui.QGuiApplication.processEvents()
 
         dict_profile = {}
         _index = 0
@@ -28,6 +31,7 @@ class CalculateProfiles:
                                   'y_profile': y_profile}
             _index += 1
             self.parent.eventProgress.setValue(_index)
+            QtGui.QGuiApplication.processEvents()
 
         self.parent.dict_profile = dict_profile
         self.parent.eventProgress.setVisible(False)
@@ -163,22 +167,26 @@ class CalculateProfiles:
         return full_angles_matrix
 
     def plot_profiles(self):
-        plot_type = 'r'
+        plot_type = '-'
         if self.parent.ui.point_radioButton.isChecked():
-            plot_type += '.'
+            plot_type = '.'
         elif self.parent.ui.plus_radioButton.isChecked():
-            plot_type += '+'
+            plot_type = '+'
 
         self.parent.profile_plot.axes.clear()
+        list_files = self.parent.list_files
 
         for _row in self.get_profile_row_selected():
             _profile = self.parent.dict_profile[_row]
 
+            file = os.path.basename(list_files[_row])
             x_profile = _profile['x_profile']
             y_profile = _profile['y_profile']
 
-            self.parent.profile_plot.axes.plot(x_profile, y_profile, plot_type)
+            self.parent.profile_plot.axes.plot(x_profile, y_profile, plot_type, label=file)
+            self.parent.profile_plot.axes.legend()
             self.parent.profile_plot.draw()
+            # QtGui.QGuiApplication.processEvents()
 
         # y_axis = np.mean(y_axis_of_profile, axis=dim_to_keep)
         # plot_ui.axes.plot(x_axis_of_profile, y_axis, color=color)

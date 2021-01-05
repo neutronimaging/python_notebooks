@@ -1,8 +1,8 @@
 import os
-from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar
+from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
 import pyqtgraph as pg
 import numpy as np
-from qtpy import QtGui
+from qtpy import QtGui, QtCore
 import matplotlib
 
 matplotlib.use('Qt5Agg')
@@ -819,10 +819,20 @@ class Interface(QMainWindow):
         self.clear_full_ring_pushButton.setEnabled(False)
 
     def calculate_profiles_clicked(self):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        QtGui.QGuiApplication.processEvents()
+        self.ui.setEnabled(False)
+        self.ui.statusbar.showMessage("Calculating profiles ... IN PROGRESS")
+        self.ui.statusbar.setStyleSheet("color: blue")
         o_cal = CalculateProfiles(parent=self)
         o_cal.run()
         o_cal.plot_profiles()
         self.ui.top_splitter.setSizes([400, 400])
+        self.ui.setEnabled(True)
+        self.ui.statusbar.showMessage("Calculating profiles ... Done!", 10000)
+        self.ui.statusbar.setStyleSheet("color: green")
+        QApplication.restoreOverrideCursor()
+        QtGui.QGuiApplication.processEvents()
 
     def angle_bin_slider_moved(self, slider_value):
         real_bin_value = slider_value/100

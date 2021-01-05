@@ -32,7 +32,6 @@ def wait_cursor(function):
     """
     Add a wait cursor during the running of the function
     """
-
     def wrapper(*args, **kwargs):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         QtGui.QGuiApplication.processEvents()
