@@ -14,6 +14,7 @@ from __code import load_ui
 from __code.decorators import wait_cursor
 from __code.circular_profile_of_a_ring.calculate_profiles import CalculateProfiles
 from __code.circular_profile_of_a_ring.configuration_handler import ConfigurationHandler
+from __code.circular_profile_of_a_ring.export_profiles import ExportProfiles
 
 INNER_RING_MARKER_LENGTH = 30  # number of pixels
 OUTER_RING_MARKER_LENGTH = 50  # number of pixels
@@ -754,7 +755,8 @@ class Interface(QMainWindow):
         self.grid_size_changed()
 
     def export_profiles_clicked(self):
-        print("clicked")
+        o_export = ExportProfiles(parent=self)
+        o_export.run()
 
     def cancel_clicked(self):
         pass

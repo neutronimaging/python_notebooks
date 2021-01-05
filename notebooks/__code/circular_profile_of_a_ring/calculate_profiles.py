@@ -204,6 +204,9 @@ class CalculateProfiles:
         row_selected.sort()
         return row_selected
 
+    def export(self):
+        pass
+
     @staticmethod
     def get_corresponding_bin_angle(angle=None, list_angles=None):
         index = np.abs(np.array(list_angles) - angle)
