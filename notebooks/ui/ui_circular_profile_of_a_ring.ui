@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1443</width>
-    <height>1088</height>
+    <width>1477</width>
+    <height>1091</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -473,6 +473,16 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="export_profiles_button">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Export Profiles ...</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </widget>
@@ -610,7 +620,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1443</width>
+     <width>1477</width>
      <height>22</height>
     </rect>
    </property>
@@ -923,7 +933,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>168</x>
-     <y>649</y>
+     <y>683</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1130,7 +1140,7 @@
    <slot>profile_list_images_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1178</x>
+     <x>1205</x>
      <y>296</y>
     </hint>
     <hint type="destinationlabel">
@@ -1178,8 +1188,8 @@
    <slot>profile_plot_axis_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>969</x>
-     <y>637</y>
+     <x>993</x>
+     <y>671</y>
     </hint>
     <hint type="destinationlabel">
      <x>1432</x>
@@ -1194,8 +1204,8 @@
    <slot>profile_plot_axis_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1026</x>
-     <y>642</y>
+     <x>1050</x>
+     <y>676</y>
     </hint>
     <hint type="destinationlabel">
      <x>1435</x>
@@ -1210,12 +1220,28 @@
    <slot>profile_plot_axis_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1067</x>
-     <y>641</y>
+     <x>1091</x>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>1438</x>
      <y>1035</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>export_profiles_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_profiles_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>727</x>
+     <y>671</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>19</x>
+     <y>731</y>
     </hint>
    </hints>
   </connection>

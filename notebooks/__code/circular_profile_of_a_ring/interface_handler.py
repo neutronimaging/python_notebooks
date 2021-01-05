@@ -754,7 +754,7 @@ class Interface(QMainWindow):
         self.grid_size_changed()
 
     def export_profiles_clicked(self):
-        pass
+        print("clicked")
 
     def cancel_clicked(self):
         pass

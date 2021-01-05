@@ -35,6 +35,7 @@ class CalculateProfiles:
 
         self.parent.dict_profile = dict_profile
         self.parent.eventProgress.setVisible(False)
+        self.parent.ui.export_profiles_button.setEnabled(True)
 
     def get_profile(self, image=None,angle_matrix=None, mask_ring=None):
 
