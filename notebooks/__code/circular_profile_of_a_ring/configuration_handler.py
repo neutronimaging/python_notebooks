@@ -26,6 +26,8 @@ class ConfigurationHandler:
                 ring_radius = data['ring']['radius']
                 ring_thickness = data['ring']['thickness']
 
+                angle_bin_size = data['angle_bin_size']
+
                 bin_size = data['grid']['bin_size']
                 red = data['grid']['red']
                 green = data['grid']['green']
@@ -38,6 +40,9 @@ class ConfigurationHandler:
             self.parent.ui.ring_inner_radius_slider.setValue(ring_radius*100)
             self.parent.ui.ring_thickness_doubleSpinBox.setValue(ring_thickness)
             self.parent.ui.ring_thickness_slider.setValue(ring_thickness*100)
+
+            self.parent.ui.angle_bin_horizontalSlider.setValue(angle_bin_size)
+            self.parent.angle_bin_slider_moved(angle_bin_size)
 
             self.parent.ui.grid_size_slider.setValue(bin_size)
             self.parent.ui.guide_red_slider.setValue(red)
@@ -89,10 +94,14 @@ class ConfigurationHandler:
         blue = self.parent.guide_color_slider['blue']
         alpha = self.parent.guide_color_slider['alpha']
 
+        # angle bin size
+        angle_bin_size = self.parent.ui.angle_bin_horizontalSlider.value()
+
         config_dict = {'ring': {'central_pixel': {'x': x_central_pixel,
                                                   'y': y_central_pixel},
                                 'radius': ring_radius,
                                 'thickness': ring_thickness},
+                       'angle_bin_size': angle_bin_size,
                        'grid': {'bin_size': bin_size,
                                 'red': red,
                                 'green': green,

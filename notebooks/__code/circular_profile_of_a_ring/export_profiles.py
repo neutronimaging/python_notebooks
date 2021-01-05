@@ -24,13 +24,13 @@ class ExportProfiles:
 
         if export_file_name[0]:
 
-            self.ui.statusbar.showMessage("Saving {} ... IN PROGRESS".format(os.path.basename(export_file_name)))
-            self.ui.statusbar.setStyleSheet("color: blue")
+            export_file_name = export_file_name[0]
+            self.parent.ui.statusbar.showMessage("Saving {} ... IN PROGRESS".format(os.path.basename(export_file_name)))
+            self.parent.ui.statusbar.setStyleSheet("color: blue")
 
             QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             QtGui.QGuiApplication.processEvents()
 
-            export_file_name = export_file_name[0]
             dict_profile = self.parent.dict_profile
 
             _config = ConfigurationHandler(parent=self.parent)
@@ -67,8 +67,8 @@ class ExportProfiles:
                             output_file_name=export_file_name,
                             dim='1d')
 
-            self.ui.statusbar.showMessage("{} ... Saved!".format(os.path.basename(export_file_name)), 10000)
-            self.ui.statusbar.setStyleSheet("color: green")
+            self.parent.ui.statusbar.showMessage("{} ... Saved!".format(os.path.basename(export_file_name)), 10000)
+            self.parent.ui.statusbar.setStyleSheet("color: green")
 
             QApplication.restoreOverrideCursor()
             QtGui.QGuiApplication.processEvents()
