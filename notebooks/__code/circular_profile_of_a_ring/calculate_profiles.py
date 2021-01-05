@@ -183,6 +183,7 @@ class CalculateProfiles:
             plot_type = '+'
 
         self.parent.profile_plot.axes.clear()
+        self.parent.profile_plot.draw()
         list_files = self.parent.list_files
 
         for _row in self.get_profile_row_selected():

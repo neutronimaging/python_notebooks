@@ -867,3 +867,18 @@ class Interface(QMainWindow):
     def profile_plot_axis_type_changed(self):
         o_cal = CalculateProfiles(parent=self)
         o_cal.plot_profiles()
+
+    def list_images_right_click(self, position=None):
+        menu = QtGui.QMenu(self)
+        display_image_of_this_row = menu.addAction("Display this radiograph")
+        menu.addSeparator()
+        select_only_this_row = menu.addAction("Select only this image")
+        unselect_all = menu.addAction("Unselect all")
+        action = menu.exec_(QtGui.QCursor.pos())
+
+        if action == display_image_of_this_row:
+            pass
+        elif action == select_only_this_row:
+            pass
+        elif action == unselect_all:
+            pass

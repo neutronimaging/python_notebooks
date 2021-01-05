@@ -569,6 +569,9 @@
          </item>
          <item>
           <widget class="QListWidget" name="profile_list_images">
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::MultiSelection</enum>
            </property>
@@ -1245,6 +1248,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>profile_list_images</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>list_images_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1293</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1473</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1282,5 +1301,6 @@
   <slot>load_configuration()</slot>
   <slot>save_configuration()</slot>
   <slot>profile_plot_axis_type_changed()</slot>
+  <slot>list_images_right_click()</slot>
  </slots>
 </ui>
