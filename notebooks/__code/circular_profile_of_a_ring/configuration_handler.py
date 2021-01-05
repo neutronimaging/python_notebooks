@@ -67,33 +67,37 @@ class ConfigurationHandler:
                                                        initialFilter='config')
 
         if config_file_name[0]:
-            # ring
-            x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
-            y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
-            ring_radius = self.parent.ui.ring_inner_radius_doubleSpinBox.value()
-            ring_thickness = self.parent.ui.ring_thickness_doubleSpinBox.value()
-
-            # grid
-            bin_size = self.parent.ui.grid_size_slider.value()
-            red = self.parent.guide_color_slider['red']
-            green = self.parent.guide_color_slider['green']
-            blue = self.parent.guide_color_slider['blue']
-            alpha = self.parent.guide_color_slider['alpha']
-
-            config_dict = {'ring': {'central_pixel': {'x': x_central_pixel,
-                                                      'y': y_central_pixel},
-                                    'radius': ring_radius,
-                                    'thickness': ring_thickness},
-                           'grid': {'bin_size': bin_size,
-                                    'red': red,
-                                    'green': green,
-                                    'blue': blue,
-                                    'alpha': alpha},
-                           }
-
+            config_dict = self.get_config_dict()
             with open(config_file_name[0], 'w') as outfile:
                 json.dump(config_dict, outfile)
 
             message = "{} ... Saved!".format(os.path.basename(config_file_name[0]))
             self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
             self.parent.ui.statusbar.setStyleSheet("color: green")
+
+    def get_config_dict(self):
+        # ring
+        x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
+        y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
+        ring_radius = self.parent.ui.ring_inner_radius_doubleSpinBox.value()
+        ring_thickness = self.parent.ui.ring_thickness_doubleSpinBox.value()
+
+        # grid
+        bin_size = self.parent.ui.grid_size_slider.value()
+        red = self.parent.guide_color_slider['red']
+        green = self.parent.guide_color_slider['green']
+        blue = self.parent.guide_color_slider['blue']
+        alpha = self.parent.guide_color_slider['alpha']
+
+        config_dict = {'ring': {'central_pixel': {'x': x_central_pixel,
+                                                  'y': y_central_pixel},
+                                'radius': ring_radius,
+                                'thickness': ring_thickness},
+                       'grid': {'bin_size': bin_size,
+                                'red': red,
+                                'green': green,
+                                'blue': blue,
+                                'alpha': alpha},
+                       }
+
+        return config_dict

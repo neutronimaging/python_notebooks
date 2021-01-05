@@ -20,15 +20,24 @@ class CalculateProfiles:
         self.parent.eventProgress.setVisible(True)
         QtGui.QGuiApplication.processEvents()
 
+        # create profile_dictionary
+        angle_bin = self.parent.angle_bin_horizontalSlider.value() / 100
+        profile_dictionary = OrderedDict()
+        list_angles = np.arange(0, 360, angle_bin)
+        self.parent.list_angles = list_angles
+        for _angle in list_angles:
+            profile_dictionary[_angle] = np.NaN
+
         dict_profile = {}
         _index = 0
         for _row, _image in enumerate(self.parent.data):
 
-            x_profile, y_profile = self.get_profile(image=_image,
-                                                    angle_matrix=angle_matrix,
-                                                    mask_ring=mask_ring)
-            dict_profile[_row] = {'x_profile': x_profile,
-                                  'y_profile': y_profile}
+            y_profile = self.get_profile(image=_image,
+                                         angle_matrix=angle_matrix,
+                                         mask_ring=mask_ring,
+                                         list_angles=list_angles,
+                                         profile_dictionary=copy.deepcopy(profile_dictionary))
+            dict_profile[_row] = {'y_profile': y_profile}
             _index += 1
             self.parent.eventProgress.setValue(_index)
             QtGui.QGuiApplication.processEvents()
@@ -37,15 +46,15 @@ class CalculateProfiles:
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.export_profiles_button.setEnabled(True)
 
-    def get_profile(self, image=None,angle_matrix=None, mask_ring=None):
+    def get_profile(self, image=None, angle_matrix=None, mask_ring=None, list_angles=None, profile_dictionary=None):
 
-        # create profile_dictionary
-        angle_bin = self.parent.angle_bin_horizontalSlider.value()/100
-
-        profile_dictionary = OrderedDict()
-        list_angles = np.arange(0, 360, angle_bin)
-        for _angle in list_angles:
-            profile_dictionary[_angle] = np.NaN
+        # # create profile_dictionary
+        # angle_bin = self.parent.angle_bin_horizontalSlider.value()/100
+        #
+        # profile_dictionary = OrderedDict()
+        # list_angles = np.arange(0, 360, angle_bin)
+        # for _angle in list_angles:
+        #     profile_dictionary[_angle] = np.NaN
 
         y_mask = mask_ring[0]
         x_mask = mask_ring[1]
@@ -57,11 +66,10 @@ class CalculateProfiles:
             profile_dictionary[bin_angle] = image[y, x]
 
         y_profile = []
-        x_profile = copy.deepcopy(list_angles)
         for _key in profile_dictionary.keys():
             y_profile.append(np.mean(profile_dictionary[_key]))
 
-        return x_profile, y_profile
+        return y_profile
 
     def calculate_matrices(self, display=True):
         x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
@@ -181,7 +189,7 @@ class CalculateProfiles:
             _profile = self.parent.dict_profile[_row]
 
             file = os.path.basename(list_files[_row])
-            x_profile = _profile['x_profile']
+            x_profile = self.parent.list_angles
             y_profile = _profile['y_profile']
 
             self.parent.profile_plot.axes.plot(x_profile, y_profile, plot_type, label=file)

@@ -78,6 +78,7 @@ class Interface(QMainWindow):
                  'maximum': 500,
                  'value': 100}
     angle_line = None
+    list_angles = None
 
     def __init__(self, parent=None, data=None, list_files=None, working_dir=None):
 
