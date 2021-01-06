@@ -19,7 +19,9 @@ class EventHandler:
             self.unselect_all()
 
     def display_radiograph_of_this_row(self):
-        pass
+        row_selected = self.parent.ui.profile_list_images.currentIndex().row()
+        self.parent.ui.image_slider.setValue(row_selected)
+        self.parent.slider_image_changed(new_index=row_selected)
 
     def unselect_all(self):
         self.parent.ui.profile_list_images.clearSelection()
