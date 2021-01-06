@@ -14,7 +14,7 @@ class ConfigurationHandler:
         config_file_name = QFileDialog.getOpenFileName(self.parent,
                                                        caption="Select config file name ...",
                                                        directory=working_dir,
-                                                       filter="config(*.config)",
+                                                       filter="config(*.cfg)",
                                                        initialFilter='config')
 
         if config_file_name[0]:
