@@ -15,6 +15,7 @@ from __code.decorators import wait_cursor
 from __code.circular_profile_of_a_ring.calculate_profiles import CalculateProfiles
 from __code.circular_profile_of_a_ring.configuration_handler import ConfigurationHandler
 from __code.circular_profile_of_a_ring.export_profiles import ExportProfiles
+from __code.circular_profile_of_a_ring.event_handler import EventHandler
 
 INNER_RING_MARKER_LENGTH = 30  # number of pixels
 OUTER_RING_MARKER_LENGTH = 50  # number of pixels
@@ -869,16 +870,5 @@ class Interface(QMainWindow):
         o_cal.plot_profiles()
 
     def list_images_right_click(self, position=None):
-        menu = QtGui.QMenu(self)
-        display_image_of_this_row = menu.addAction("Display this radiograph")
-        menu.addSeparator()
-        select_only_this_row = menu.addAction("Select only this image")
-        unselect_all = menu.addAction("Unselect all")
-        action = menu.exec_(QtGui.QCursor.pos())
-
-        if action == display_image_of_this_row:
-            pass
-        elif action == select_only_this_row:
-            pass
-        elif action == unselect_all:
-            pass
+        o_event = EventHandler(parent=self)
+        o_event.list_images_right_click()
