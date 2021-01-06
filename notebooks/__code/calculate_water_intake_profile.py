@@ -145,7 +145,7 @@ class CalculateWaterIntakeProfile(object):
             ax_img.axvline(x=_real_peak, color='r')
 
         _ = interact(display_intake_vs_profile,
-                     file_index = widgets.IntSlider(min=0,
+                     file_index=widgets.IntSlider(min=0,
                                                     max=len(list_files)-1,
                                                     value=0,
                                                     description='File Index'))
