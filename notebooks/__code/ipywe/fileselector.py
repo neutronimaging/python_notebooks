@@ -12,6 +12,7 @@ except Exception:
     # only used if testing in this directory without installing
     from _utils import js_alert
 
+
 class FileSelectorPanel:
 
     """Files and directories selector"""
@@ -21,7 +22,7 @@ class FileSelectorPanel:
     #doesn't appear to work in earlier versions.
     select_layout = ipyw.Layout(width="99%", height="260px")
     select_multiple_layout = ipyw.Layout(
-        width="99%", height="260px") # , display="flex", flex_flow="column")
+        width="99%", height="260px")  # , display="flex", flex_flow="column")
     button_layout = ipyw.Layout(margin="5px 40px", border='1px solid gray')
     toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px", border='1px solid gray')
     toolbar_box_layout=ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px', width='100%')
@@ -228,7 +229,11 @@ class FileSelectorPanel:
         curdir = self.curdir
         cur_filter = self.filter_widget.value
         searching_tool = "*{}*".format(self.searching_string)
-        list_files = glob.glob(os.path.join(curdir, searching_tool + cur_filter[0]))
+
+        if type(cur_filter) is list:
+            cur_filter = cur_filter[0]
+
+        list_files = glob.glob(os.path.join(curdir, searching_tool + cur_filter))
         # filter out dirs, they will be added below
         list_files = filter(lambda o: not os.path.isdir(o), list_files)
         list_files = list( map(os.path.basename, list_files) )
@@ -283,7 +288,7 @@ class FileSelectorPanel:
         p = os.path.abspath(os.path.join(self.curdir, v))
         if os.path.isdir(p):
             # update first search text
-            self.searching_string =  self.search_text.value.strip()
+            self.searching_string = self.search_text.value.strip()
             self.changeDir(p)
         return
 
