@@ -1,8 +1,10 @@
 from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
 import os
+import numpy as np
 
 from __code import load_ui
 from __code.hfir_reactor_element_analysis.initialization import Initialization
+from __code.hfir_reactor_element_analysis.event_handler import EventHandler
 
 
 class InterfaceHandler:
@@ -34,4 +36,25 @@ class Interface(QMainWindow):
         o_init.widgets()
 
     def list_of_images_selection_changed(self):
-        print("here")
+        selection = self.ui.listWidget.selectedItems()
+        list_file_selected = [_item.text() for _item in selection]
+        pandas_obj = self.o_selection.pandas_obj
+
+        x_axis = np.array(pandas_obj.index)
+        list_y_axis = []
+        for _file in list_file_selected:
+            _y_axis = np.array(pandas_obj[_file])
+            list_y_axis.append(_y_axis)
+
+        self.top_plot.axes.clear()
+        self.top_plot.draw()
+
+        for _index, _y_axis in enumerate(list_y_axis):
+            self.top_plot.axes.plot(x_axis, _y_axis, label=list_file_selected[_index])
+            self.top_plot.axes.legend()
+            self.top_plot.draw()
+
+
+    def list_of_images_right_click(self, position=None):
+        o_event = EventHandler(parent=self)
+        o_event.list_of_images_right_click()

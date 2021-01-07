@@ -1,4 +1,5 @@
 from qtpy import QtGui
+from qtpy.QtWidgets import QMenu
 
 
 class EventHandler:
@@ -7,7 +8,7 @@ class EventHandler:
         self.parent = parent
 
     def list_images_right_click(self):
-        menu = QtGui.QMenu(self.parent)
+        menu = QMenu(self.parent)
         display_selected_radiographs = menu.addAction("Display first radiograph selected")
         menu.addSeparator()
         unselect_all = menu.addAction("Unselect all")

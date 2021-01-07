@@ -47,24 +47,24 @@ class HfirReactorElementAnalysis:
                                       dtype=np.float,
                                       index_col=0)
 
-    def display_data(self):
-
-        x_axis = self.pandas_obj[0]
-
-        def plot(image_index):
-            y_axis = self.pandas_obj[image_index]
-
-            figure = plt.figure(figsize=(10, 10))
-            ax_img = plt.subplot(111)
-            ax_img.plot(x_axis, y_axis)
-            ax_img.set_xlabel("Angle (degrees)")
-            ax_img.set_ylabel("Average counts")
-            plt.show()
-
-        preview = interact(plot,
-                           image_index=widgets.IntSlider(min=0,
-                                                         max=len(self.column_labels)-2,
-                                                         step=1,
-                                                         value=0,
-                                                         description="Column index",
-                                                         continuous_update=False))
+    # def display_data(self):
+    #
+    #     x_axis = self.pandas_obj[0]
+    #
+    #     def plot(image_index):
+    #         y_axis = self.pandas_obj[image_index]
+    #
+    #         figure = plt.figure(figsize=(10, 10))
+    #         ax_img = plt.subplot(111)
+    #         ax_img.plot(x_axis, y_axis)
+    #         ax_img.set_xlabel("Angle (degrees)")
+    #         ax_img.set_ylabel("Average counts")
+    #         plt.show()
+    #
+    #     preview = interact(plot,
+    #                        image_index=widgets.IntSlider(min=0,
+    #                                                      max=len(self.column_labels)-2,
+    #                                                      step=1,
+    #                                                      value=0,
+    #                                                      description="Column index",
+    #                                                      continuous_update=False))

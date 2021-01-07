@@ -35,6 +35,9 @@
          </item>
          <item>
           <widget class="QListWidget" name="listWidget">
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::MultiSelection</enum>
            </property>
@@ -557,8 +560,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>listWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>list_of_images_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>305</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
+  <slot>list_of_images_right_click()</slot>
  </slots>
 </ui>
