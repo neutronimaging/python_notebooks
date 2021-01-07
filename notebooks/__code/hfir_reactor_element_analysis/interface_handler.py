@@ -35,31 +35,10 @@ class Interface(QMainWindow):
         o_init.matplotlib()
         o_init.widgets()
 
+    # event handler
     def list_of_images_selection_changed(self):
-        selection = self.ui.listWidget.selectedItems()
-        list_file_selected = [_item.text() for _item in selection]
-        pandas_obj = self.o_selection.pandas_obj
-
-        x_axis = np.array(pandas_obj.index)
-        list_y_axis = []
-        for _file in list_file_selected:
-            _y_axis = np.array(pandas_obj[_file])
-            list_y_axis.append(_y_axis)
-
-        self.top_plot.axes.clear()
-        self.top_plot.draw()
-
-        plot_type = '-'
-        if self.ui.plus_radioButton.isChecked():
-            plot_type = '+'
-        elif self.ui.point_radioButton.isChecked():
-            plot_type = "."
-
-        for _index, _y_axis in enumerate(list_y_axis):
-            self.top_plot.axes.plot(x_axis, _y_axis, plot_type, label=list_file_selected[_index])
-            self.top_plot.axes.legend()
-            self.top_plot.axes.set_title("Profile of selected images")
-            self.top_plot.draw()
+        o_event = EventHandler(parent=self)
+        o_event.list_of_images_selection_changed()
 
     def plot_type_changed(self):
         self.list_of_images_selection_changed()
@@ -67,3 +46,6 @@ class Interface(QMainWindow):
     def list_of_images_right_click(self, position=None):
         o_event = EventHandler(parent=self)
         o_event.list_of_images_right_click()
+
+    def automatic_fit_clicked(self):
+        pass

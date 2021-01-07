@@ -166,14 +166,23 @@
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
              <widget class="QLabel" name="label_22">
+              <property name="minimumSize">
+               <size>
+                <width>90</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="maximumSize">
                <size>
-                <width>50</width>
+                <width>90</width>
                 <height>16777215</height>
                </size>
               </property>
               <property name="text">
-               <string>File:</string>
+               <string>File index:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
@@ -182,14 +191,23 @@
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_24">
+              <property name="minimumSize">
+               <size>
+                <width>90</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="maximumSize">
                <size>
-                <width>50</width>
+                <width>90</width>
                 <height>16777215</height>
                </size>
               </property>
               <property name="text">
-               <string>Angle:</string>
+               <string>Angle: index</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
@@ -218,7 +236,7 @@
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QPushButton" name="pushButton_3">
+              <widget class="QPushButton" name="automatic_fit_pushButton">
                <property name="text">
                 <string>FIT</string>
                </property>
@@ -549,6 +567,9 @@
                  <layout class="QHBoxLayout" name="horizontalLayout_2">
                   <item>
                    <widget class="QPushButton" name="pushButton_4">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="text">
                      <string>Import parameters from auto mode</string>
                     </property>
@@ -573,7 +594,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="manual_fit_pushButton">
                <property name="text">
                 <string>FIT</string>
                </property>
@@ -697,10 +718,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>automatic_fit_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_fit_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1170</x>
+     <y>245</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1499</x>
+     <y>294</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
   <slot>list_of_images_right_click()</slot>
   <slot>plot_type_changed()</slot>
+  <slot>automatic_fit_clicked()</slot>
  </slots>
 </ui>
