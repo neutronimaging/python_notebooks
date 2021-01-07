@@ -49,11 +49,20 @@ class Interface(QMainWindow):
         self.top_plot.axes.clear()
         self.top_plot.draw()
 
+        plot_type = '-'
+        if self.ui.plus_radioButton.isChecked():
+            plot_type = '+'
+        elif self.ui.point_radioButton.isChecked():
+            plot_type = "."
+
         for _index, _y_axis in enumerate(list_y_axis):
-            self.top_plot.axes.plot(x_axis, _y_axis, label=list_file_selected[_index])
+            self.top_plot.axes.plot(x_axis, _y_axis, plot_type, label=list_file_selected[_index])
             self.top_plot.axes.legend()
+            self.top_plot.axes.set_title("Profile of selected images")
             self.top_plot.draw()
 
+    def plot_type_changed(self):
+        self.list_of_images_selection_changed()
 
     def list_of_images_right_click(self, position=None):
         o_event = EventHandler(parent=self)

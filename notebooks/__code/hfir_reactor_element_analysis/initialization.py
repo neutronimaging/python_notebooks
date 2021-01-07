@@ -56,3 +56,5 @@ class Initialization:
         list_of_images = self.parent.o_selection.column_labels[1:]
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)
+
+        self.parent.ui.splitter.setSizes([500, 0])
