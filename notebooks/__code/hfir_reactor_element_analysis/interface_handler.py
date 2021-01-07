@@ -55,4 +55,11 @@ class Interface(QMainWindow):
         list_of_files = self.o_selection.column_labels[1:]
         list_of_file_to_use = list_of_files[file_range[0]: file_range[1]+1]
 
-        print(f"list_of_files_to_use: {list_of_file_to_use}")
+        data_to_use = []
+        pandas_obj = self.o_selection.pandas_obj
+        for _file in list_of_file_to_use:
+            _data = np.array(pandas_obj[_file])
+            _data = _data[angle_range[0]: angle_range[1]+1]
+            data_to_use.append(_data)
+
+        print(f"np.shape(data_to_use): {np.shape(data_to_use)}")
