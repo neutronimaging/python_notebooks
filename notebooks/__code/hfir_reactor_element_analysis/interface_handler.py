@@ -48,4 +48,11 @@ class Interface(QMainWindow):
         o_event.list_of_images_right_click()
 
     def automatic_fit_clicked(self):
-        pass
+        # range of files to use to fit
+        file_range = self.ui.file_range_slider.getRange()
+        angle_range = self.ui.angle_range_slider.getRange()
+
+        list_of_files = self.o_selection.column_labels[1:]
+        list_of_file_to_use = list_of_files[file_range[0]: file_range[1]+1]
+
+        print(f"list_of_files_to_use: {list_of_file_to_use}")

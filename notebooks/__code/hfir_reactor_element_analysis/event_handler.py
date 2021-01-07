@@ -20,7 +20,7 @@ class EventHandler:
         self.parent.ui.listWidget.clearSelection()
 
     def list_of_images_selection_changed(self):
-        selection = self.parent.parent.ui.listWidget.selectedItems()
+        selection = self.parent.ui.listWidget.selectedItems()
         list_file_selected = [_item.text() for _item in selection]
         pandas_obj = self.parent.o_selection.pandas_obj
 
