@@ -34,7 +34,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QListWidget" name="listWidget"/>
+          <widget class="QListWidget" name="listWidget">
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -43,7 +50,11 @@
          <enum>Qt::Vertical</enum>
         </property>
         <widget class="QWidget" name="top_widget" native="true"/>
-        <widget class="QWidget" name="bottom_widget" native="true"/>
+        <widget class="QWidget" name="bottom_widget" native="true">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox">
@@ -529,5 +540,25 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>listWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>list_of_images_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>164</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>list_of_images_selection_changed()</slot>
+ </slots>
 </ui>

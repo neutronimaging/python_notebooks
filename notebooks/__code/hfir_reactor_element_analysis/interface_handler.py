@@ -7,8 +7,8 @@ from __code.hfir_reactor_element_analysis.initialization import Initialization
 
 class InterfaceHandler:
 
-    def __init__(self, working_dir=None, o_pandas=None):
-        o_interface = Interface(o_pandas=o_pandas,
+    def __init__(self, working_dir=None, o_selection=None):
+        o_interface = Interface(o_selection=o_selection,
                                 working_dir=working_dir)
         o_interface.show()
         self.o_interface = o_interface
@@ -16,9 +16,10 @@ class InterfaceHandler:
 
 class Interface(QMainWindow):
 
-    def __init__(self, parent=None, o_pandas=None, working_dir=None):
-        self.o_pandas = o_pandas
-        self.workind_dir = working_dir
+    def __init__(self, parent=None, o_selection=None, working_dir=None):
+        self.o_selection = o_selection
+        self.o_pandas = o_selection.pandas_obj
+        self.working_dir = working_dir
 
         super(Interface, self).__init__(parent)
 
@@ -30,3 +31,7 @@ class Interface(QMainWindow):
 
         o_init = Initialization(parent=self)
         o_init.matplotlib()
+        o_init.widgets()
+
+    def list_of_images_selection_changed(self):
+        print("here")
