@@ -4,7 +4,6 @@ import pyqtgraph as pg
 import numpy as np
 from qtpy import QtGui, QtCore
 import matplotlib
-
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 

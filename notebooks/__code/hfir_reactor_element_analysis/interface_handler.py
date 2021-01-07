@@ -1,6 +1,8 @@
 from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
 import os
+
 from __code import load_ui
+from __code.hfir_reactor_element_analysis.initialization import Initialization
 
 
 class InterfaceHandler:
@@ -26,5 +28,5 @@ class Interface(QMainWindow):
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Data fitting")
 
-    def cancel_clicked(self):
-        pass
+        o_init = Initialization(parent=self)
+        o_init.matplotlib()
