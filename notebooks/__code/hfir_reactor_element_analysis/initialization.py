@@ -59,6 +59,6 @@ class Initialization:
         self.parent.ui.splitter.setSizes([500, 0])
 
     def fitting(self):
-        self.parent.automatic_a_value_estimate_button_clicked()
-        self.parent.automatic_b_value_estimate_button_clicked()
+        self.parent.automatic_a_value_estimate()
+        self.parent.automatic_b_value_estimate()
         self.parent.check_status_of_automatic_fit()

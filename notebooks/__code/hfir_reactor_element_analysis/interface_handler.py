@@ -101,11 +101,13 @@ class Interface(QMainWindow):
         print("b changed")
         self.check_status_of_automatic_fit()
 
-    def automatic_a_value_estimate_button_clicked(self):
-        print("clicked a")
+    def automatic_a_value_estimate(self):
+        o_event = EventHandler(parent=self)
+        o_event.calculate_a_value_estimate()
 
-    def automatic_b_value_estimate_button_clicked(self):
-        print("clicked b")
+    def automatic_b_value_estimate(self):
+        o_event = EventHandler(parent=self)
+        o_event.calculate_b_value_estimate()
 
     def check_status_of_automatic_fit(self):
         enabled_automatic_button = self.get_check_status_of_automatic_fit()
