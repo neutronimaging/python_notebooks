@@ -1,10 +1,12 @@
 from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
 import os
 import numpy as np
+from lmfit import Model
 
 from __code import load_ui
 from __code.hfir_reactor_element_analysis.initialization import Initialization
 from __code.hfir_reactor_element_analysis.event_handler import EventHandler
+from __code.hfir_reactor_element_analysis.fitting_functions import sin_fit
 
 
 class InterfaceHandler:
@@ -34,6 +36,7 @@ class Interface(QMainWindow):
         o_init = Initialization(parent=self)
         o_init.matplotlib()
         o_init.widgets()
+        o_init.fitting()
 
     # event handler
     def list_of_images_selection_changed(self):
@@ -62,4 +65,77 @@ class Interface(QMainWindow):
             _data = _data[angle_range[0]: angle_range[1]+1]
             data_to_use.append(_data)
 
-        print(f"np.shape(data_to_use): {np.shape(data_to_use)}")
+        data_to_fit = np.mean(data_to_use, axis=0)
+
+        x_axis = pandas_obj.index[angle_range[0]: angle_range[1]+1]
+        y_axis = data_to_fit
+
+        gmodel = Model(sin_fit, missing='drop', nan_policy='propagate')
+        params = gmodel.make_params()
+        params.add('a', value=1, vary=True)
+        params.add('m', value=1, vary=True)
+        params.add('p', value=1, vary=True)
+        params.add('b', value=1, vary=True)
+
+        result = gmodel.fit(y_axis, params, angle=x_axis)
+        print(f"result: {result}")
+
+        print(f"a: {result.params['a'].value}")
+        print(f"m: {result.params['m'].value}")
+        print(f"p: {result.params['p'].value}")
+        print(f"b: {result.params['b'].value}")
+
+    def automatic_a_value_changed(self, text):
+        print("a changed")
+        self.check_status_of_automatic_fit()
+
+    def automatic_m_value_changed(self, text):
+        print("m changed")
+        self.check_status_of_automatic_fit()
+
+    def automatic_p_value_changed(self, text):
+        print("p changed")
+        self.check_status_of_automatic_fit()
+
+    def automatic_b_value_changed(self, text):
+        print("b changed")
+        self.check_status_of_automatic_fit()
+
+    def automatic_a_value_estimate_button_clicked(self):
+        print("clicked a")
+
+    def automatic_b_value_estimate_button_clicked(self):
+        print("clicked b")
+
+    def check_status_of_automatic_fit(self):
+        enabled_automatic_button = self.get_check_status_of_automatic_fit()
+        self.ui.automatic_fit_pushButton.setEnabled(enabled_automatic_button)
+
+    def get_check_status_of_automatic_fit(self):
+        a_value = str(self.ui.automatic_initial_guess_a_lineEdit.text()).strip()
+        if a_value == "":
+            return False
+
+        m_value = str(self.ui.automatic_initial_guess_m_lineEdit.text()).strip()
+        if m_value == "":
+            return False
+
+        p_value = str(self.ui.automatic_initial_guess_p_lineEdit.text()).strip()
+        if p_value == "":
+            return False
+
+        b_value = str(self.ui.automatic_initial_guess_b_lineEdit.text()).strip()
+        if b_value == "":
+            return False
+
+        a_lock = self.ui.auto_a_lock_checkBox.isChecked()
+        m_lock = self.ui.auto_m_lock_checkBox.isChecked()
+        p_lock = self.ui.auto_p_lock_checkBox.isChecked()
+        b_lock = self.ui.auto_b_lock_checkBox.isChecked()
+        if a_lock and m_lock and p_lock and b_lock:
+            return False
+
+        return True
+
+    def automatic_fit_lock_value_clicked(self):
+        self.check_status_of_automatic_fit()

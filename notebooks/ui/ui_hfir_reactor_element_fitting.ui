@@ -236,7 +236,203 @@
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
+              <widget class="QGroupBox" name="groupBox_8">
+               <property name="title">
+                <string>Initial guess</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_5">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_34">
+                  <property name="font">
+                   <font>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Parameter</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLabel" name="label_35">
+                  <property name="font">
+                   <font>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Value</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QLabel" name="label_36">
+                  <property name="font">
+                   <font>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Lock value</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_37">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>a</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="automatic_initial_guess_a_lineEdit"/>
+                </item>
+                <item row="1" column="3">
+                 <widget class="QCheckBox" name="auto_a_lock_checkBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_38">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>m</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="automatic_initial_guess_m_lineEdit">
+                  <property name="text">
+                   <string>369</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Number of elements</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="3">
+                 <widget class="QCheckBox" name="auto_m_lock_checkBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_39">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>p</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLineEdit" name="automatic_initial_guess_p_lineEdit">
+                  <property name="text">
+                   <string>1</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="2">
+                 <widget class="QLabel" name="label_7">
+                  <property name="text">
+                   <string>Offset along x-axis</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="3">
+                 <widget class="QCheckBox" name="auto_p_lock_checkBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="label_40">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>b</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QLineEdit" name="automatic_initial_guess_b_lineEdit"/>
+                </item>
+                <item row="4" column="3">
+                 <widget class="QCheckBox" name="auto_b_lock_checkBox">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>Amplititude of signal</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="2">
+                 <widget class="QLabel" name="label_5">
+                  <property name="text">
+                   <string>Offset along y-axis</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="automatic_fit_pushButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>FIT</string>
                </property>
@@ -248,23 +444,67 @@
                 <string>Results</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_2">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_9">
-                  <property name="font">
-                   <font>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
+                <item row="2" column="1">
+                 <widget class="QLabel" name="label_15">
                   <property name="text">
-                   <string>Parameter</string>
+                   <string>N/A</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="1">
+                <item row="4" column="1">
+                 <widget class="QLabel" name="label_17">
+                  <property name="text">
+                   <string>N/A</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLabel" name="label_16">
+                  <property name="text">
+                   <string>N/A</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_12">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>m</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="label_13">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>p</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
                  <widget class="QLabel" name="label_10">
                   <property name="font">
                    <font>
@@ -280,7 +520,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="0">
+                <item row="2" column="0">
                  <widget class="QLabel" name="label_11">
                   <property name="font">
                    <font>
@@ -295,67 +535,23 @@
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1">
-                 <widget class="QLabel" name="label_15">
-                  <property name="text">
-                   <string>N/A</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label_12">
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_9">
                   <property name="font">
                    <font>
-                    <italic>true</italic>
+                    <weight>75</weight>
+                    <bold>true</bold>
                    </font>
                   </property>
                   <property name="text">
-                   <string>m</string>
+                   <string>Parameter</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
-                 <widget class="QLabel" name="label_16">
-                  <property name="text">
-                   <string>N/A</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="label_13">
-                  <property name="font">
-                   <font>
-                    <italic>true</italic>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>p</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QLabel" name="label_17">
-                  <property name="text">
-                   <string>N/A</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="0">
+                <item row="5" column="0">
                  <widget class="QLabel" name="label_14">
                   <property name="font">
                    <font>
@@ -370,7 +566,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="4" column="1">
+                <item row="5" column="1">
                  <widget class="QLabel" name="label_18">
                   <property name="text">
                    <string>N/A</string>
@@ -726,11 +922,139 @@
    <hints>
     <hint type="sourcelabel">
      <x>1170</x>
-     <y>245</y>
+     <y>447</y>
     </hint>
     <hint type="destinationlabel">
      <x>1499</x>
      <y>294</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>automatic_initial_guess_a_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_a_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1154</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1496</x>
+     <y>258</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>automatic_initial_guess_m_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_m_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1190</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1500</x>
+     <y>365</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>automatic_initial_guess_p_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_p_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1136</x>
+     <y>365</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1498</x>
+     <y>410</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>automatic_initial_guess_b_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_b_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1211</x>
+     <y>388</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1495</x>
+     <y>495</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>auto_a_lock_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_fit_lock_value_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1387</x>
+     <y>294</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1498</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>auto_m_lock_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_fit_lock_value_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1388</x>
+     <y>329</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1491</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>auto_p_lock_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_fit_lock_value_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1388</x>
+     <y>355</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1495</x>
+     <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>auto_b_lock_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>automatic_fit_lock_value_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1388</x>
+     <y>390</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1497</x>
+     <y>555</y>
     </hint>
    </hints>
   </connection>
@@ -740,5 +1064,12 @@
   <slot>list_of_images_right_click()</slot>
   <slot>plot_type_changed()</slot>
   <slot>automatic_fit_clicked()</slot>
+  <slot>automatic_a_value_changed()</slot>
+  <slot>automatic_m_value_changed()</slot>
+  <slot>automatic_p_value_changed()</slot>
+  <slot>automatic_b_value_changed()</slot>
+  <slot>automatic_a_value_estimate_button_clicked()</slot>
+  <slot>automatic_b_value_estimate_button_clicked()</slot>
+  <slot>automatic_fit_lock_value_clicked()</slot>
  </slots>
 </ui>
