@@ -51,17 +51,31 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.list_of_images_right_click()
 
+    def get_list_file_index_selected(self):
+        nbr_row = self.ui.listWidget.count()
+        list_file_selected = []
+        for _row in np.arange(nbr_row):
+            _item = self.ui.listWidget.item(_row)
+            if _item.isSelected():
+                list_file_selected.append(_row)
+        return list_file_selected
+
+    def get_angle_range_index(self):
+        from_angle_index = self.ui.from_angle_slider.value()
+        to_angle_index = self.ui.to_angle_slider.value()
+        return [from_angle_index, to_angle_index]
+
     def automatic_fit_clicked(self):
         # range of files to use to fit
-        file_range = self.ui.file_range_slider.getRange()
-        angle_range = self.ui.angle_range_slider.getRange()
+        list_file_index_selected = self.get_list_file_index_selected()
+        angle_range = self.get_angle_range_index()
 
         list_of_files = self.o_selection.column_labels[1:]
-        list_of_file_to_use = list_of_files[file_range[0]: file_range[1]+1]
 
         data_to_use = []
         pandas_obj = self.o_selection.pandas_obj
-        for _file in list_of_file_to_use:
+        for _file_index  in list_file_index_selected:
+            _file = list_of_files[_file_index]
             _data = np.array(pandas_obj[_file])
             _data = _data[angle_range[0]: angle_range[1]+1]
             data_to_use.append(_data)
@@ -90,16 +104,17 @@ class Interface(QMainWindow):
                    value=np.float(str(self.ui.automatic_initial_guess_b_lineEdit.text())),
                    vary=not self.ui.auto_b_lock_checkBox.isChecked())
 
+        
         print(f"x_axis: {x_axis}")
         print(f"y_axis: {y_axis}")
 
-        result = gmodel.fit(y_axis, params, angle=x_axis)
-        print(f"result: {result}")
-
-        print(f"a: {result.params['a'].value}")
-        print(f"m: {result.params['m'].value}")
-        print(f"p: {result.params['p'].value}")
-        print(f"b: {result.params['b'].value}")
+        # result = gmodel.fit(y_axis, params, angle=x_axis)
+        # print(f"result: {result}")
+        #
+        # print(f"a: {result.params['a'].value}")
+        # print(f"m: {result.params['m'].value}")
+        # print(f"p: {result.params['p'].value}")
+        # print(f"b: {result.params['b'].value}")
 
     def automatic_a_value_changed(self, text):
         self.check_status_of_automatic_fit()
