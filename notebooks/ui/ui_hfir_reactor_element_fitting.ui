@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1503</width>
-    <height>960</height>
+    <width>1679</width>
+    <height>1079</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QLabel" name="label">
@@ -52,7 +52,7 @@
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -163,9 +163,31 @@
            <property name="title">
             <string>Ranges to use for fitting</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_4">
+           <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_22">
+             <widget class="QLabel" name="label_24">
+              <property name="minimumSize">
+               <size>
+                <width>110</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>90</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>From N/A degrees</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="to_angle_label">
               <property name="minimumSize">
                <size>
                 <width>90</width>
@@ -179,40 +201,26 @@
                </size>
               </property>
               <property name="text">
-               <string>File index:</string>
+               <string>to N/A degrees</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QSlider" name="to_angle_slider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QWidget" name="file_range_widget" native="true"/>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_24">
-              <property name="minimumSize">
-               <size>
-                <width>90</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>90</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Angle: index</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <widget class="QSlider" name="from_angle_slider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
              </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QWidget" name="angle_range_widget" native="true"/>
             </item>
            </layout>
           </widget>
@@ -227,8 +235,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>478</width>
-              <height>651</height>
+              <width>795</width>
+              <height>790</height>
              </rect>
             </property>
             <attribute name="label">
@@ -328,6 +336,9 @@
                 </item>
                 <item row="2" column="1">
                  <widget class="QLineEdit" name="automatic_initial_guess_m_lineEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="text">
                    <string>369</string>
                   </property>
@@ -346,7 +357,7 @@
                    <string/>
                   </property>
                   <property name="checked">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -599,8 +610,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>478</width>
-              <height>651</height>
+              <width>795</width>
+              <height>790</height>
              </rect>
             </property>
             <attribute name="label">
@@ -804,7 +815,7 @@
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
-                 <height>355</height>
+                 <height>460</height>
                 </size>
                </property>
               </spacer>
@@ -825,7 +836,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1503</width>
+     <width>1679</width>
      <height>22</height>
     </rect>
    </property>
@@ -873,8 +884,8 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>715</x>
-     <y>52</y>
+     <x>623</x>
+     <y>57</y>
     </hint>
     <hint type="destinationlabel">
      <x>626</x>
@@ -889,8 +900,8 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>751</x>
-     <y>47</y>
+     <x>667</x>
+     <y>57</y>
     </hint>
     <hint type="destinationlabel">
      <x>728</x>
@@ -905,8 +916,8 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>796</x>
-     <y>46</y>
+     <x>706</x>
+     <y>57</y>
     </hint>
     <hint type="destinationlabel">
      <x>821</x>
@@ -921,8 +932,8 @@
    <slot>automatic_fit_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1170</x>
-     <y>447</y>
+     <x>1645</x>
+     <y>435</y>
     </hint>
     <hint type="destinationlabel">
      <x>1499</x>
@@ -937,8 +948,8 @@
    <slot>automatic_a_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1154</x>
-     <y>298</y>
+     <x>1410</x>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
      <x>1496</x>
@@ -953,8 +964,8 @@
    <slot>automatic_m_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1190</x>
-     <y>335</y>
+     <x>1410</x>
+     <y>316</y>
     </hint>
     <hint type="destinationlabel">
      <x>1500</x>
@@ -969,8 +980,8 @@
    <slot>automatic_p_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1136</x>
-     <y>365</y>
+     <x>1410</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
      <x>1498</x>
@@ -985,8 +996,8 @@
    <slot>automatic_b_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1211</x>
-     <y>388</y>
+     <x>1410</x>
+     <y>378</y>
     </hint>
     <hint type="destinationlabel">
      <x>1495</x>
@@ -1001,8 +1012,8 @@
    <slot>automatic_fit_lock_value_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1387</x>
-     <y>294</y>
+     <x>1633</x>
+     <y>284</y>
     </hint>
     <hint type="destinationlabel">
      <x>1498</x>
@@ -1017,8 +1028,8 @@
    <slot>automatic_fit_lock_value_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1388</x>
-     <y>329</y>
+     <x>1633</x>
+     <y>315</y>
     </hint>
     <hint type="destinationlabel">
      <x>1491</x>
@@ -1033,8 +1044,8 @@
    <slot>automatic_fit_lock_value_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1388</x>
-     <y>355</y>
+     <x>1633</x>
+     <y>346</y>
     </hint>
     <hint type="destinationlabel">
      <x>1495</x>
@@ -1049,8 +1060,8 @@
    <slot>automatic_fit_lock_value_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1388</x>
-     <y>390</y>
+     <x>1633</x>
+     <y>377</y>
     </hint>
     <hint type="destinationlabel">
      <x>1497</x>

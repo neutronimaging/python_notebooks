@@ -1,4 +1,6 @@
 from qtpy.QtWidgets import QVBoxLayout
+from qtpy.QtCore import Slot as pyqtSlot
+from PyQt5 import QtCore
 import numpy as np
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -31,26 +33,12 @@ class Initialization:
                                               widget=self.parent.ui.bottom_widget)
 
     def widgets(self):
-        file_range_slider = QRangeSlider()
-        # file_range_slider.setWindowTitle('example 1')
-        file_range_slider.setRange(0, 50)
-        file_range_slider.setMin(0)
-        file_range_slider.setMax(len(self.parent.o_selection.column_labels)-3)
-        layout = QVBoxLayout()
-        layout.addWidget(file_range_slider)
-        self.parent.ui.file_range_slider = file_range_slider
-        self.parent.ui.file_range_widget.setLayout(layout)
-        
-        angle_range_slider = QRangeSlider()
-        angle_range_slider.setRange(0, 10)
-        angle_range_slider.setMin(0)
-        angle_range_slider.setMax(100)
-        # angle_range_slider.setBackgroundStyle('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);')
-        angle_range_slider.setSpanStyle('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);')
-        layout = QVBoxLayout()
-        layout.addWidget(angle_range_slider)
-        self.parent.ui.angle_range_slider = angle_range_slider
-        self.parent.ui.angle_range_widget.setLayout(layout)
+        pandas_obj = self.parent.o_pandas
+        nbr_angles = len(pandas_obj.index)
+        self.parent.ui.to_angle_slider.setMaximum(nbr_angles-1)
+        self.parent.ui.from_angle_slider.setMaximum(nbr_angles-20)
+        self.parent.ui.to_angle_slider.setValue(nbr_angles-1)
+        self.parent.ui.from_angle_slider.setValue(0)
 
         list_of_images = self.parent.o_selection.column_labels[1:]
         self.parent.ui.listWidget.addItems(list_of_images)
@@ -62,3 +50,7 @@ class Initialization:
         self.parent.automatic_a_value_estimate()
         self.parent.automatic_b_value_estimate()
         self.parent.check_status_of_automatic_fit()
+
+    # @QtCore.pyqtSlot(int)
+    # def max_value_changed(self, value):
+    #     print(f"value changed and is now {value}")

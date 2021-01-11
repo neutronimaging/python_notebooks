@@ -45,13 +45,19 @@ class EventHandler:
             self.parent.top_plot.axes.set_title("Profile of selected images")
             self.parent.top_plot.draw()
 
-    def calculate_a_value_estimate(self):
+    def get_profile_of_mid_file(self):
         pandas_obj = self.parent.o_pandas
         mid_file_name = self.parent.o_pandas.columns[np.int(len(self.parent.o_pandas.columns)/2)]
         profile_of_mid_file_name = pandas_obj[mid_file_name]
+        return profile_of_mid_file_name
+
+    def calculate_a_value_estimate(self):
+        profile_of_mid_file_name = self.get_profile_of_mid_file()
         max_y = np.max(profile_of_mid_file_name)
         min_y = np.min(profile_of_mid_file_name)
-        self.parent.ui.automatic_initial_guess_a_lineEdit.setText(str(max_y - min_y))
+        self.parent.ui.automatic_initial_guess_a_lineEdit.setText("{:.2f}".format(max_y - min_y))
 
     def calculate_b_value_estimate(self):
-        self.parent.ui.automatic_initial_guess_b_lineEdit.setText("work in progress!")
+        profile_of_mid_file_name = self.get_profile_of_mid_file()
+        mean_y = np.mean(profile_of_mid_file_name)
+        self.parent.ui.automatic_initial_guess_b_lineEdit.setText("{:.2f}".format(mean_y))

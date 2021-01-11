@@ -72,10 +72,25 @@ class Interface(QMainWindow):
 
         gmodel = Model(sin_fit, missing='drop', nan_policy='propagate')
         params = gmodel.make_params()
-        params.add('a', value=1, vary=True)
-        params.add('m', value=1, vary=True)
-        params.add('p', value=1, vary=True)
-        params.add('b', value=1, vary=True)
+
+        params.add('a',
+                   value=np.float(str(self.ui.automatic_initial_guess_a_lineEdit.text())),
+                   vary=not self.ui.auto_a_lock_checkBox.isChecked())
+
+        params.add('m',
+                   value=np.float(str(self.ui.automatic_initial_guess_m_lineEdit.text())),
+                   vary=not self.ui.auto_m_lock_checkBox.isChecked())
+
+        params.add('p',
+                   value=np.float(str(self.ui.automatic_initial_guess_p_lineEdit.text())),
+                   vary=not self.ui.auto_p_lock_checkBox.isChecked())
+
+        params.add('b',
+                   value=np.float(str(self.ui.automatic_initial_guess_b_lineEdit.text())),
+                   vary=not self.ui.auto_b_lock_checkBox.isChecked())
+
+        print(f"x_axis: {x_axis}")
+        print(f"y_axis: {y_axis}")
 
         result = gmodel.fit(y_axis, params, angle=x_axis)
         print(f"result: {result}")
@@ -86,19 +101,15 @@ class Interface(QMainWindow):
         print(f"b: {result.params['b'].value}")
 
     def automatic_a_value_changed(self, text):
-        print("a changed")
         self.check_status_of_automatic_fit()
 
     def automatic_m_value_changed(self, text):
-        print("m changed")
         self.check_status_of_automatic_fit()
 
     def automatic_p_value_changed(self, text):
-        print("p changed")
         self.check_status_of_automatic_fit()
 
     def automatic_b_value_changed(self, text):
-        print("b changed")
         self.check_status_of_automatic_fit()
 
     def automatic_a_value_estimate(self):
