@@ -1,0 +1,10 @@
+{
+    "vertical_motor_pv": {
+        "key": 65040,
+        "name": "MotLiftTable.RBV"
+    },
+    "horizontal_motor_pv": {
+        "key": 65044,
+        "name": "MotLongAxis.RBV"
+    }
+}

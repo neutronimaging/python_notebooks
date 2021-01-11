@@ -9,3 +9,10 @@ __pycache__/*
 /build/*
 .cache/*
 .idea/workspace.xml
+.idea*
+build/*
+dist/*
+.pytest_cache/*
+.idea/*
+
+notebooks/tests/data
