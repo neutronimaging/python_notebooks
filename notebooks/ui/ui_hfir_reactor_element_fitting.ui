@@ -165,7 +165,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_24">
+             <widget class="QLabel" name="from_angle_label">
               <property name="minimumSize">
                <size>
                 <width>110</width>
@@ -1069,6 +1069,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>from_angle_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>from_angle_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1179</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1674</x>
+     <y>181</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>to_angle_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>to_angle_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1419</x>
+     <y>127</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1675</x>
+     <y>133</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -1082,5 +1114,7 @@
   <slot>automatic_a_value_estimate_button_clicked()</slot>
   <slot>automatic_b_value_estimate_button_clicked()</slot>
   <slot>automatic_fit_lock_value_clicked()</slot>
+  <slot>from_angle_slider_moved()</slot>
+  <slot>to_angle_slider_moved()</slot>
  </slots>
 </ui>

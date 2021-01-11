@@ -24,6 +24,7 @@ class Interface(QMainWindow):
         self.o_selection = o_selection
         self.o_pandas = o_selection.pandas_obj
         self.working_dir = working_dir
+        self.list_angles = self.o_pandas.index
 
         super(Interface, self).__init__(parent)
 
@@ -152,3 +153,21 @@ class Interface(QMainWindow):
 
     def automatic_fit_lock_value_clicked(self):
         self.check_status_of_automatic_fit()
+
+    def from_angle_slider_moved(self, from_angle):
+        self.ui.from_angle_label.setText("From {:.2f}".format(self.list_angles[from_angle]) + u"\u00B0")
+        # make sure the to_angle stays larger by at least 20
+        to_angle = self.ui.to_angle_slider.value()
+        if from_angle > (to_angle - 20):
+            to_angle = from_angle + 20
+            self.to_angle_slider.setValue(to_angle)
+            self.to_angle_slider_moved(to_angle)
+
+    def to_angle_slider_moved(self, to_angle):
+        self.ui.to_angle_label.setText("To {:.2f}".format(self.list_angles[to_angle]) + u"\u00B0")
+        # make sure the from angle stays smaller by at least 20
+        from_angle = self.ui.from_angle_slider.value()
+        if to_angle < (from_angle + 20):
+            from_angle = to_angle - 20
+            self.from_angle_slider.setValue(from_angle)
+            self.from_angle_slider_moved(from_angle)

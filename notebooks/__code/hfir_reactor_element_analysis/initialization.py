@@ -37,6 +37,7 @@ class Initialization:
         nbr_angles = len(pandas_obj.index)
         self.parent.ui.to_angle_slider.setMaximum(nbr_angles-1)
         self.parent.ui.from_angle_slider.setMaximum(nbr_angles-20)
+        self.parent.ui.to_angle_slider.setMinimum(20)
         self.parent.ui.to_angle_slider.setValue(nbr_angles-1)
         self.parent.ui.from_angle_slider.setValue(0)
 
@@ -45,6 +46,12 @@ class Initialization:
         self.parent.ui.listWidget.setCurrentRow(0)
 
         self.parent.ui.splitter.setSizes([500, 0])
+
+        from_angle = self.parent.ui.from_angle_slider.value()
+        self.parent.from_angle_slider_moved(from_angle)
+
+        to_angle = self.parent.ui.to_angle_slider.value()
+        self.parent.to_angle_slider_moved(to_angle)
 
     def fitting(self):
         self.parent.automatic_a_value_estimate()
