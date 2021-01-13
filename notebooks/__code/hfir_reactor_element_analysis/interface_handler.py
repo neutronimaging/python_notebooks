@@ -104,9 +104,13 @@ class Interface(QMainWindow):
                    value=np.float(str(self.ui.automatic_initial_guess_b_lineEdit.text())),
                    vary=not self.ui.auto_b_lock_checkBox.isChecked())
 
-        
-        print(f"x_axis: {x_axis}")
-        print(f"y_axis: {y_axis}")
+        # # for debugging
+        # import json
+        # debug_fit = {'x_axis': list(x_axis),
+        #              'y_axis': list(y_axis)}
+        # output_file = "/Users/j35/Desktop/debug_fit.json"
+        # with open(output_file, 'w') as json_file:
+        #     json.dump(debug_fit, json_file)
 
         # result = gmodel.fit(y_axis, params, angle=x_axis)
         # print(f"result: {result}")

@@ -30,8 +30,11 @@ def get_n_random_int_of_max_value_m(n=1, max=10):
 
 
 def reject_outliers(array=None):
-    min_index = np.where(array == np.min(array))
-    max_index = np.where(array == np.max(array))
-    new_array = [_value for _value in array if (not (_value == np.min(array)))
-                                            and (not (_value == np.max(array)))]
+    if len(array) < 3:
+        return array
+
+    new_array = [_value
+                 for _value in array
+                 if (not (_value == np.min(array)))
+                 and (not (_value == np.max(array)))]
     return new_array
