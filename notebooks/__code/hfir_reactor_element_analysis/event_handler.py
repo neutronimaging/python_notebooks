@@ -58,9 +58,7 @@ class EventHandler:
 
     def get_profile_of_selected_files(self):
         list_file_index_selected = self.parent.get_list_file_index_selected()
-        list_of_files = self.parent.o_selection.column_labels[1:]
         list_profiles = []
-        pandas_obj = self.parent.o_selection.pandas_obj
         for _file_index in list_file_index_selected:
             _profile = self.get_profile_of_file_index(_file_index)
             list_profiles.append(_profile)
@@ -95,11 +93,5 @@ class EventHandler:
 
         # 360 -> NUMBER_OF_FUEL_ELEMENTS
         # (to_angle - from_angle) -> x
-
-        print(f"from_angle: {from_angle}")
-        print(f"to_angle: {to_angle}")
-        print(f"(to_angle - from_angle) * NUMBER_OF_FUEL_ELEMENTS) / 360= "
-              f"{((to_angle - from_angle) * NUMBER_OF_FUEL_ELEMENTS) / 360}")
-
         new_number_of_elements = np.int(((to_angle - from_angle) * NUMBER_OF_FUEL_ELEMENTS) / 360)
         self.parent.ui.automatic_initial_guess_m_lineEdit.setText(str(new_number_of_elements))
