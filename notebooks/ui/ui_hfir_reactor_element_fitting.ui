@@ -337,7 +337,7 @@
                 <item row="2" column="1">
                  <widget class="QLineEdit" name="automatic_initial_guess_m_lineEdit">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>369</string>
@@ -456,7 +456,7 @@
                </property>
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="2" column="1">
-                 <widget class="QLabel" name="label_15">
+                 <widget class="QLabel" name="auto_result_a">
                   <property name="text">
                    <string>N/A</string>
                   </property>
@@ -466,7 +466,7 @@
                  </widget>
                 </item>
                 <item row="4" column="1">
-                 <widget class="QLabel" name="label_17">
+                 <widget class="QLabel" name="auto_result_p">
                   <property name="text">
                    <string>N/A</string>
                   </property>
@@ -476,7 +476,7 @@
                  </widget>
                 </item>
                 <item row="3" column="1">
-                 <widget class="QLabel" name="label_16">
+                 <widget class="QLabel" name="auto_result_m">
                   <property name="text">
                    <string>N/A</string>
                   </property>
@@ -486,7 +486,7 @@
                  </widget>
                 </item>
                 <item row="3" column="0">
-                 <widget class="QLabel" name="label_12">
+                 <widget class="QLabel" name="m">
                   <property name="font">
                    <font>
                     <italic>true</italic>
@@ -532,7 +532,7 @@
                  </widget>
                 </item>
                 <item row="2" column="0">
-                 <widget class="QLabel" name="label_11">
+                 <widget class="QLabel" name="a">
                   <property name="font">
                    <font>
                     <italic>true</italic>
@@ -578,7 +578,7 @@
                  </widget>
                 </item>
                 <item row="5" column="1">
-                 <widget class="QLabel" name="label_18">
+                 <widget class="QLabel" name="auto_result_b">
                   <property name="text">
                    <string>N/A</string>
                   </property>

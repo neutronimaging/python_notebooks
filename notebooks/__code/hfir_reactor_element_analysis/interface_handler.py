@@ -85,8 +85,15 @@ class Interface(QMainWindow):
 
         data_to_fit = np.mean(data_to_use, axis=0)
 
-        x_axis = pandas_obj.index[angle_range[0]: angle_range[1]+1]
+        x_axis = np.array(pandas_obj.index[angle_range[0]: angle_range[1]+1])
         y_axis = data_to_fit
+
+        import json
+        debug_fit = {'x_axis': list(x_axis),
+                     'y_axis': list(y_axis)}
+        output_file = "/Users/j35/Desktop/debug_fit.json"
+        with open(output_file, 'w') as json_file:
+            json.dump(debug_fit, json_file)
 
         gmodel = Model(sin_fit, missing='drop', nan_policy='propagate')
         params = gmodel.make_params()
@@ -107,21 +114,33 @@ class Interface(QMainWindow):
                    value=np.float(str(self.ui.automatic_initial_guess_b_lineEdit.text())),
                    vary=not self.ui.auto_b_lock_checkBox.isChecked())
 
-        # # for debugging
-        # import json
-        # debug_fit = {'x_axis': list(x_axis),
-        #              'y_axis': list(y_axis)}
-        # output_file = "/Users/j35/Desktop/debug_fit.json"
-        # with open(output_file, 'w') as json_file:
-        #     json.dump(debug_fit, json_file)
+        print(f"x_axis: {x_axis}")
+        print(f"y_axis: {y_axis}")
 
-        # result = gmodel.fit(y_axis, params, angle=x_axis)
-        # print(f"result: {result}")
-        #
-        # print(f"a: {result.params['a'].value}")
-        # print(f"m: {result.params['m'].value}")
-        # print(f"p: {result.params['p'].value}")
-        # print(f"b: {result.params['b'].value}")
+
+        result = gmodel.fit(y_axis, params, angle=x_axis)
+
+        a = result.params['a'].value
+        m = result.params['m'].value
+        p = result.params['p'].value
+        b = result.params['b'].value
+
+        print(f"a:{a}, m:{m}, p:{p}, b:{b}")
+
+        a_err = result.params['a'].stderr
+        m_err = result.params['m'].stderr
+        p_err = result.params['p'].stderr
+        b_err = result.params['b'].stderr
+
+        print(f"a_err:{a_err}, m_err:{m_err}, p_err:{p_err}, b_err:{b_err}")
+
+        def format_string(value, error):
+            return "{:.2f} +/- {:.2f}".format(value, error)
+
+        self.ui.auto_result_a.setText(format_string(a, a_err))
+        self.ui.auto_result_m.setText(format_string(m, m_err))
+        self.ui.auto_result_p.setText(format_string(p, p_err))
+        self.ui.auto_result_b.setText(format_string(b, b_err))
 
     def automatic_a_value_changed(self, text):
         self.check_status_of_automatic_fit()
