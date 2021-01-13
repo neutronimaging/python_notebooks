@@ -50,14 +50,6 @@ class EventHandler:
         self.parent.automatic_a_value_estimate()
         self.parent.automatic_b_value_estimate()
 
-    def get_profile_of_n_random_files(self, n=5):
-        list_profiles = []
-        list_random_index = get_n_random_int_of_max_value_m(n=n, max=len(self.parent.o_pandas.columns))
-        for _index in np.arange(n):
-            _profile = self.get_profile_of_file_index(list_random_index[_index])
-            list_profiles.append(_profile)
-        return list_profiles
-
     def get_profile_of_file_index(self, file_index):
         pandas_obj = self.parent.o_pandas
         file_index_name = self.parent.o_pandas.columns[file_index]
@@ -70,21 +62,15 @@ class EventHandler:
         list_profiles = []
         pandas_obj = self.parent.o_selection.pandas_obj
         for _file_index in list_file_index_selected:
-            _file = list_of_files[_file_index]
-            _data = np.array(pandas_obj[_file])
-            list_profiles.append(_data)
+            _profile = self.get_profile_of_file_index(_file_index)
+            list_profiles.append(_profile)
         return list_profiles
 
     def calculate_a_value_estimate(self):
-        # list_profile_of_n_random_files = self.get_profile_of_n_random_files(n=1)
         list_profile_of_selected_files = self.get_profile_of_selected_files()
-
-        print(f"len(list_profile_of_selected_files): {len(list_profile_of_selected_files)}")
 
         list_max_y = [np.nanmax(_array) for _array in list_profile_of_selected_files]
         list_min_y = [np.nanmin(_array) for _array in list_profile_of_selected_files]
-
-        print(f"list_max_y: {list_max_y}")
 
         list_max_y_without_outliers = reject_outliers(array=list_max_y)
         max_y = np.nanmean(list_max_y_without_outliers)
@@ -95,8 +81,8 @@ class EventHandler:
         self.parent.ui.automatic_initial_guess_a_lineEdit.setText("{:.2f}".format(max_y - min_y))
 
     def calculate_b_value_estimate(self):
-        list_profile_of_n_random_files = self.get_profile_of_n_random_files(n=10)
-        list_mean_y = [np.nanmean(_array) for _array in list_profile_of_n_random_files]
+        list_profile_of_selected_files = self.get_profile_of_selected_files()
+        list_mean_y = [np.nanmean(_array) for _array in list_profile_of_selected_files]
         list_mean_y_without_outliers = reject_outliers(array=list_mean_y)
         mean_y = np.nanmean(list_mean_y_without_outliers)
         self.parent.ui.automatic_initial_guess_b_lineEdit.setText("{:.2f}".format(mean_y))
