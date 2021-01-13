@@ -86,3 +86,20 @@ class EventHandler:
         list_mean_y_without_outliers = reject_outliers(array=list_mean_y)
         mean_y = np.nanmean(list_mean_y_without_outliers)
         self.parent.ui.automatic_initial_guess_b_lineEdit.setText("{:.2f}".format(mean_y))
+
+    def calculate_m_value_estimate(self):
+        """ m being the number of elements, or peak in the signal"""
+        NUMBER_OF_FUEL_ELEMENTS = self.parent.NUMBER_OF_FUEL_ELEMENTS
+        from_angle = self.parent.list_angles[self.parent.ui.from_angle_slider.value()]
+        to_angle = self.parent.list_angles[self.parent.ui.to_angle_slider.value()]
+
+        # 360 -> NUMBER_OF_FUEL_ELEMENTS
+        # (to_angle - from_angle) -> x
+
+        print(f"from_angle: {from_angle}")
+        print(f"to_angle: {to_angle}")
+        print(f"(to_angle - from_angle) * NUMBER_OF_FUEL_ELEMENTS) / 360= "
+              f"{((to_angle - from_angle) * NUMBER_OF_FUEL_ELEMENTS) / 360}")
+
+        new_number_of_elements = np.int(((to_angle - from_angle) * NUMBER_OF_FUEL_ELEMENTS) / 360)
+        self.parent.ui.automatic_initial_guess_m_lineEdit.setText(str(new_number_of_elements))

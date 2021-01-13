@@ -20,6 +20,9 @@ class InterfaceHandler:
 
 class Interface(QMainWindow):
 
+    NUMBER_OF_FUEL_ELEMENTS = 369
+    MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS = 50
+
     def __init__(self, parent=None, o_selection=None, working_dir=None):
         self.o_selection = o_selection
         self.o_pandas = o_selection.pandas_obj
@@ -175,18 +178,22 @@ class Interface(QMainWindow):
 
     def from_angle_slider_moved(self, from_angle):
         self.ui.from_angle_label.setText("From {:.2f}".format(self.list_angles[from_angle]) + u"\u00B0")
-        # make sure the to_angle stays larger by at least 20
+        # make sure the to_angle stays larger by at least MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS
         to_angle = self.ui.to_angle_slider.value()
-        if from_angle > (to_angle - 20):
-            to_angle = from_angle + 20
+        if from_angle > (to_angle - self.MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS):
+            to_angle = from_angle + self.MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS
             self.to_angle_slider.setValue(to_angle)
             self.to_angle_slider_moved(to_angle)
+        o_event = EventHandler(parent=self)
+        o_event.calculate_m_value_estimate()
 
     def to_angle_slider_moved(self, to_angle):
         self.ui.to_angle_label.setText("To {:.2f}".format(self.list_angles[to_angle]) + u"\u00B0")
-        # make sure the from angle stays smaller by at least 20
+        # make sure the from angle stays smaller by at least MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS
         from_angle = self.ui.from_angle_slider.value()
-        if to_angle < (from_angle + 20):
-            from_angle = to_angle - 20
+        if to_angle < (from_angle + self.MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS):
+            from_angle = to_angle - self.MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS
             self.from_angle_slider.setValue(from_angle)
             self.from_angle_slider_moved(from_angle)
+        o_event = EventHandler(parent=self)
+        o_event.calculate_m_value_estimate()
