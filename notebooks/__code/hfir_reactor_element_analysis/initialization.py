@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QVBoxLayout
+from qtpy.QtWidgets import QVBoxLayout, QProgressBar
 import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -58,3 +58,10 @@ class Initialization:
         self.parent.ui.listWidget.setCurrentRow(0)
 
         self.parent.ui.splitter.setSizes([200, 500])
+
+    def statusbar(self):
+        self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
+        self.parent.eventProgress.setMinimumSize(20, 14)
+        self.parent.eventProgress.setMaximumSize(540, 100)
+        self.parent.eventProgress.setVisible(False)
+        self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)

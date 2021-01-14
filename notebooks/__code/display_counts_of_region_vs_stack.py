@@ -231,4 +231,3 @@ class ImageWindow(QMainWindow):
 
     def closeEvent(self, event=None):
         pass
-    

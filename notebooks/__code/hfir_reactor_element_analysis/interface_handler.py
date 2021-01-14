@@ -41,6 +41,7 @@ class Interface(QMainWindow):
         o_init = Initialization(parent=self)
         o_init.matplotlib()
         o_init.widgets()
+        o_init.statusbar()
 
     # event handler
     def list_of_images_selection_changed(self):
@@ -64,8 +65,10 @@ class Interface(QMainWindow):
         return list_file_selected
 
     def calculate_elements_position_clicked(self):
+        self.ui.setEnabled(False)
         o_event = EventHandler(parent=self)
         o_event.calculate_elements_position()
+        self.ui.setEnabled(True)
 
     def high_threshold_moved(self, value):
         o_event = EventHandler(parent=self)
