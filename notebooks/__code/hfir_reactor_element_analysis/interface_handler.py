@@ -23,6 +23,7 @@ class Interface(QMainWindow):
 
     profiles_plot = None
     elements_position_plot = None
+    global_list_of_xy_max = None
 
     def __init__(self, parent=None, o_selection=None, working_dir=None):
         self.o_selection = o_selection

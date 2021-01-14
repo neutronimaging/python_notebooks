@@ -44,6 +44,12 @@ class EventHandler:
             self.parent.profiles_plot.axes.legend()
             self.parent.profiles_plot.axes.set_title("Profile of selected images")
 
+        if self.parent.global_list_of_xy_max:
+            for _file in list_file_selected:
+                x_max = self.parent.global_list_of_xy_max[_file]['x']
+                y_max = self.parent.global_list_of_xy_max[_file]['y']
+                self.parent.profiles_plot.axes.plot(x_max, y_max, '*r')
+
         # thresholds
         high_threshold = self.parent.ui.high_threshold_slider.value()
         low_threshold = self.parent.ui.low_threshold_slider.value()
@@ -85,7 +91,7 @@ class EventHandler:
         high_threshold = self.parent.ui.high_threshold_slider.value()
 
         list_of_images = self.parent.o_selection.column_labels[1:]
-        global_list_of_local_max = []
+        global_list_of_xy_max = {}
 
         self.parent.eventProgress.setMaximum(len(list_of_images))
         self.parent.eventProgress.setValue(0)
@@ -95,17 +101,19 @@ class EventHandler:
         working_x_axis = np.array(pandas_obj.index)
         for _file_index, _file in enumerate(list_of_images):
             working_y_axis = np.array(pandas_obj[_file])
-            _local_max = self.calculate_list_of_local_max(file_index=_file_index,
-                                                          low_threshold=low_threshold,
-                                                          high_threshold=high_threshold,
-                                                          working_x_axis=working_x_axis,
-                                                          working_y_axis=working_y_axis)
-            global_list_of_local_max.append(_local_max)
+            _dict = self.calculate_list_of_local_max(file_index=_file_index,
+                                                     low_threshold=low_threshold,
+                                                     high_threshold=high_threshold,
+                                                     working_x_axis=working_x_axis,
+                                                     working_y_axis=working_y_axis)
+            _dict = {'x': _dict['x'],
+                     'y': _dict['y']}
+            global_list_of_xy_max[_file] = _dict
 
             self.parent.eventProgress.setValue(_file_index+1)
             QtGui.QGuiApplication.processEvents()
 
-        self.global_list_of_local_max = global_list_of_local_max
+        self.parent.global_list_of_xy_max = global_list_of_xy_max
         self.parent.eventProgress.setVisible(False)
 
     def calculate_list_of_local_max(self, file_index=0,
@@ -178,4 +186,5 @@ class EventHandler:
 
                     we_were_in_high_region = True
 
-        return list_of_x_of_local_max
+        return {'x': list_of_x_of_local_max,
+                'y': list_of_y_max}
