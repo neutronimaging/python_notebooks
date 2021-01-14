@@ -2,8 +2,10 @@ from qtpy.QtWidgets import QVBoxLayout
 import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import numpy as np
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
+from __code._utilities.array import get_n_random_int_of_max_value_m
 
 
 class Initialization:
@@ -29,11 +31,30 @@ class Initialization:
                                                    widget=self.parent.ui.elements_position_widget)
 
     def widgets(self):
-        pandas_obj = self.parent.o_pandas
-
         list_of_images = self.parent.o_selection.column_labels[1:]
+        list_n_random_int = get_n_random_int_of_max_value_m(n=10, max=len(list_of_images))
+        pandas_obj = self.parent.o_pandas
+        list_max = []
+        list_min = []
+        for _file_index in list_n_random_int:
+            _file = list_of_images[_file_index]
+            _y_axis = np.array(pandas_obj[_file])
+            list_max.append(np.nanmax(_y_axis))
+            list_min.append(np.nanmin(_y_axis))
+
+        global_max = np.int(np.nanmax(list_max))
+        global_min = np.int(np.nanmin(list_min))
+
+        self.parent.ui.high_threshold_slider.setMaximum(global_max)
+        self.parent.ui.high_threshold_slider.setMinimum(global_min)
+        self.parent.ui.low_threshold_slider.setMaximum(global_max)
+        self.parent.ui.low_threshold_slider.setMinimum(global_min)
+
+        delta_global = (global_max - global_min)/3
+        self.parent.ui.high_threshold_slider.setValue(np.int(2*delta_global))
+        self.parent.ui.low_threshold_slider.setValue(np.int(delta_global))
+
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)
 
         self.parent.ui.splitter.setSizes([200, 500])
-

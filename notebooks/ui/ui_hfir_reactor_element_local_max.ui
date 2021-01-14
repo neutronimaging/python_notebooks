@@ -104,7 +104,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QSlider" name="verticalSlider_2">
+                      <widget class="QSlider" name="high_threshold_slider">
                        <property name="layoutDirection">
                         <enum>Qt::LeftToRight</enum>
                        </property>
@@ -158,7 +158,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QSlider" name="verticalSlider_3">
+                      <widget class="QSlider" name="low_threshold_slider">
                        <property name="layoutDirection">
                         <enum>Qt::LeftToRight</enum>
                        </property>
@@ -251,6 +251,29 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_2">
+                  <property name="title">
+                   <string>Remarks</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_10">
+                   <item>
+                    <widget class="QLabel" name="label_2">
+                     <property name="text">
+                      <string>High threshold: only counts above this value will be considered</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_5">
+                     <property name="text">
+                      <string>Low threshold: Threshold to cross both ways to move on to next peak</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </widget>
                 </item>
                </layout>
@@ -400,11 +423,45 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>high_threshold_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>high_threshold_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>785</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1674</x>
+     <y>342</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>low_threshold_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>low_threshold_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>783</x>
+     <y>604</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1674</x>
+     <y>637</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
   <slot>list_of_images_right_click()</slot>
   <slot>plot_type_changed()</slot>
   <slot>calculate_elements_position_clicked()</slot>
+  <slot>high_threshold_moved()</slot>
+  <slot>low_threshold_moved()</slot>
  </slots>
 </ui>

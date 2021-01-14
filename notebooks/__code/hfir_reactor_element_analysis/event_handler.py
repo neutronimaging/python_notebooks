@@ -2,8 +2,6 @@ from qtpy import QtGui
 from qtpy.QtWidgets import QMenu
 import numpy as np
 
-from __code._utilities.array import get_n_random_int_of_max_value_m, reject_outliers
-
 
 class EventHandler:
 
@@ -45,13 +43,20 @@ class EventHandler:
             self.parent.profiles_plot.axes.plot(x_axis, _y_axis, plot_type, label=list_file_selected[_index])
             self.parent.profiles_plot.axes.legend()
             self.parent.profiles_plot.axes.set_title("Profile of selected images")
-            self.parent.profiles_plot.draw()
+
+        # thresholds
+        high_threshold = self.parent.ui.high_threshold_slider.value()
+        low_threshold = self.parent.ui.low_threshold_slider.value()
+
+        self.parent.profiles_plot.axes.axhline(high_threshold, linestyle='-.', color='orange')
+        self.parent.profiles_plot.axes.axhline(low_threshold, linestyle='--', color='red')
+        self.parent.profiles_plot.draw()
 
     def get_profile_of_file_index(self, file_index):
         pandas_obj = self.parent.o_pandas
         file_index_name = self.parent.o_pandas.columns[file_index]
-        profile_of_mid_file_name = pandas_obj[file_index_name]
-        return profile_of_mid_file_name
+        profile_of_file = pandas_obj[file_index_name]
+        return profile_of_file
 
     def get_profile_of_selected_files(self):
         list_file_index_selected = self.parent.get_list_file_index_selected()
@@ -60,3 +65,17 @@ class EventHandler:
             _profile = self.get_profile_of_file_index(_file_index)
             list_profiles.append(_profile)
         return list_profiles
+
+    def high_threshold_moved(self, value):
+        high_value = value
+        low_value = self.parent.ui.low_threshold_slider.value()
+        if high_value < low_value:
+            self.parent.ui.low_threshold_slider.setValue(high_value)
+        self.parent.list_of_images_selection_changed()
+
+    def low_threshold_moved(self, value):
+        low_value = value
+        high_value = self.parent.ui.high_threshold_slider.value()
+        if low_value > high_value:
+            self.parent.ui.high_threshold_slider.setValue(low_value)
+        self.parent.list_of_images_selection_changed()

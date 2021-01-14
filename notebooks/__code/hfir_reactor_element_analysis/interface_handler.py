@@ -66,3 +66,13 @@ class Interface(QMainWindow):
     def calculate_elements_position_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.calculate_elements_position()
+
+    def high_threshold_moved(self, value):
+        o_event = EventHandler(parent=self)
+        o_event.high_threshold_moved(value=value)
+        self.list_of_images_selection_changed()
+
+    def low_threshold_moved(self, value):
+        o_event = EventHandler(parent=self)
+        o_event.low_threshold_moved(value=value)
+        self.list_of_images_selection_changed()
