@@ -32,8 +32,8 @@ class EventHandler:
             _y_axis = np.array(pandas_obj[_file])
             list_y_axis.append(_y_axis)
 
-        self.parent.top_plot.axes.clear()
-        self.parent.top_plot.draw()
+        self.parent.profiles_plot.axes.clear()
+        self.parent.profiles_plot.draw()
 
         plot_type = '-'
         if self.parent.ui.plus_radioButton.isChecked():
@@ -42,13 +42,10 @@ class EventHandler:
             plot_type = "."
 
         for _index, _y_axis in enumerate(list_y_axis):
-            self.parent.top_plot.axes.plot(x_axis, _y_axis, plot_type, label=list_file_selected[_index])
-            self.parent.top_plot.axes.legend()
-            self.parent.top_plot.axes.set_title("Profile of selected images")
-            self.parent.top_plot.draw()
-
-        self.parent.automatic_a_value_estimate()
-        self.parent.automatic_b_value_estimate()
+            self.parent.profiles_plot.axes.plot(x_axis, _y_axis, plot_type, label=list_file_selected[_index])
+            self.parent.profiles_plot.axes.legend()
+            self.parent.profiles_plot.axes.set_title("Profile of selected images")
+            self.parent.profiles_plot.draw()
 
     def get_profile_of_file_index(self, file_index):
         pandas_obj = self.parent.o_pandas
@@ -63,35 +60,3 @@ class EventHandler:
             _profile = self.get_profile_of_file_index(_file_index)
             list_profiles.append(_profile)
         return list_profiles
-
-    def calculate_a_value_estimate(self):
-        list_profile_of_selected_files = self.get_profile_of_selected_files()
-
-        list_max_y = [np.nanmax(_array) for _array in list_profile_of_selected_files]
-        list_min_y = [np.nanmin(_array) for _array in list_profile_of_selected_files]
-
-        list_max_y_without_outliers = reject_outliers(array=list_max_y)
-        max_y = np.nanmean(list_max_y_without_outliers)
-
-        list_min_y_without_outliers = reject_outliers(array=list_min_y)
-        min_y = np.nanmean(list_min_y_without_outliers)
-
-        self.parent.ui.automatic_initial_guess_a_lineEdit.setText("{:.2f}".format(max_y - min_y))
-
-    def calculate_b_value_estimate(self):
-        list_profile_of_selected_files = self.get_profile_of_selected_files()
-        list_mean_y = [np.nanmean(_array) for _array in list_profile_of_selected_files]
-        list_mean_y_without_outliers = reject_outliers(array=list_mean_y)
-        mean_y = np.nanmean(list_mean_y_without_outliers)
-        self.parent.ui.automatic_initial_guess_b_lineEdit.setText("{:.2f}".format(mean_y))
-
-    def calculate_m_value_estimate(self):
-        """ m being the number of elements, or peak in the signal"""
-        NUMBER_OF_FUEL_ELEMENTS = self.parent.NUMBER_OF_FUEL_ELEMENTS
-        from_angle = self.parent.list_angles[self.parent.ui.from_angle_slider.value()]
-        to_angle = self.parent.list_angles[self.parent.ui.to_angle_slider.value()]
-
-        # 360 -> NUMBER_OF_FUEL_ELEMENTS
-        # (to_angle - from_angle) -> x
-        new_number_of_elements = np.int(((to_angle - from_angle) * NUMBER_OF_FUEL_ELEMENTS) / 360)
-        self.parent.ui.automatic_initial_guess_m_lineEdit.setText(str(new_number_of_elements))

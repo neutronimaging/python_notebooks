@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -244,7 +244,7 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QWidget" name="top_widget" native="true">
+                 <widget class="QWidget" name="profiles_widget" native="true">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                     <horstretch>0</horstretch>
@@ -280,7 +280,7 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWidget" name="widget" native="true"/>
+          <widget class="QWidget" name="elements_position_widget" native="true"/>
           <widget class="QTableWidget" name="tableWidget"/>
          </widget>
         </item>
@@ -343,8 +343,8 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
-     <y>57</y>
+     <x>1216</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
      <x>626</x>
@@ -359,8 +359,8 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>667</x>
-     <y>57</y>
+     <x>1260</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
      <x>728</x>
@@ -375,12 +375,28 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>706</x>
-     <y>57</y>
+     <x>1299</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
      <x>821</x>
      <y>26</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>calculate_elements_position_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1196</x>
+     <y>1006</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1673</x>
+     <y>1001</y>
     </hint>
    </hints>
   </connection>
@@ -389,15 +405,6 @@
   <slot>list_of_images_selection_changed()</slot>
   <slot>list_of_images_right_click()</slot>
   <slot>plot_type_changed()</slot>
-  <slot>automatic_fit_clicked()</slot>
-  <slot>automatic_a_value_changed()</slot>
-  <slot>automatic_m_value_changed()</slot>
-  <slot>automatic_p_value_changed()</slot>
-  <slot>automatic_b_value_changed()</slot>
-  <slot>automatic_a_value_estimate_button_clicked()</slot>
-  <slot>automatic_b_value_estimate_button_clicked()</slot>
-  <slot>automatic_fit_lock_value_clicked()</slot>
-  <slot>from_angle_slider_moved()</slot>
-  <slot>to_angle_slider_moved()</slot>
+  <slot>calculate_elements_position_clicked()</slot>
  </slots>
 </ui>
