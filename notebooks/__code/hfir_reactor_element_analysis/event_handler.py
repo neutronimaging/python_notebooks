@@ -76,9 +76,6 @@ class EventHandler:
         self.parent.list_of_images_selection_changed()
 
     def calculate_elements_position(self):
-        low_threshold = self.parent.ui.low_threshold_slider.value()
-        high_threshold = self.parent.ui.high_threshold_slider.value()
-
         list_of_images = self.parent.o_selection.column_labels[1:]
         global_list_of_xy_max = {}
 
@@ -87,14 +84,11 @@ class EventHandler:
         self.parent.eventProgress.setVisible(True)
 
         pandas_obj = self.parent.o_selection.pandas_obj
-        working_x_axis = np.array(pandas_obj.index)
+        self.working_x_axis = np.array(pandas_obj.index)
+
         for _file_index, _file in enumerate(list_of_images):
             working_y_axis = np.array(pandas_obj[_file])
-            _dict = self.calculate_list_of_local_max(file_index=_file_index,
-                                                     low_threshold=low_threshold,
-                                                     high_threshold=high_threshold,
-                                                     working_x_axis=working_x_axis,
-                                                     working_y_axis=working_y_axis)
+            _dict = self.calculate_list_of_local_max(working_y_axis=working_y_axis)
             _dict = {'x': _dict['x'],
                      'y': _dict['y']}
             global_list_of_xy_max[_file] = _dict
@@ -105,75 +99,37 @@ class EventHandler:
         self.parent.global_list_of_xy_max = global_list_of_xy_max
         self.parent.eventProgress.setVisible(False)
 
-    def calculate_list_of_local_max(self, file_index=0,
-                                    low_threshold=0, high_threshold=0,
-                                    working_x_axis=None, working_y_axis=None):
-        we_are_in_high_region = False
-        we_are_in_low_region = False
-        we_are_in_threshold_region = False
+    def calculate_list_of_local_max(self, working_y_axis=None):
 
-        we_were_in_high_region = False
-        we_were_in_low_region = False
-        we_were_in_threshold_region = False
+        working_x_axis = self.working_x_axis
+        threshold = self.parent.ui.threshold_slider.value()
 
         list_of_x_of_local_max = []
         list_of_y_max = []
         local_y_max = 0
         x_of_local_max = 0
+        minimum_number_of_points_to_high_region = 7
+        number_of_points_in_current_high_region = 0
         for _x_value, _y_value in zip(working_x_axis, working_y_axis):
 
-            #     if _x_value > 2.5:
-            #         pdb.set_trace()
-
-            if _y_value < low_threshold:
-                # in low region, nothing to record
-                we_are_in_low_region = True
-                we_are_in_high_region = False
-                we_are_in_threshold_region = False
-
-                we_were_in_low_region = True
+            if _y_value < threshold:
 
                 if local_y_max != 0:
-                    list_of_x_of_local_max.append(x_of_local_max)
-                    list_of_y_max.append(local_y_max)
-                    local_y_max = 0
-
-                continue
-
-            if _y_value > low_threshold:
-
-                if _y_value < high_threshold:
-                    # in threshold region
-
-                    if we_were_in_low_region:
-                        # we are coming back up
-                        we_are_in_low_region = False
-                        we_are_in_threshold_region = True
-                        continue
-
-                    if we_were_in_high_region:
-                        # we are going down, we need to record the xmax we found before leaving the region
+                    if number_of_points_in_current_high_region >= minimum_number_of_points_to_high_region:
                         list_of_x_of_local_max.append(x_of_local_max)
                         list_of_y_max.append(local_y_max)
-                        we_are_in_high_region = False
-                        we_are_in_threshold_region = True
+                        local_y_max = 0
 
-                        local_y_max = 0  # reset local y max
+                number_of_points_in_current_high_region = 0
+                continue
 
-                        continue
+            else:
 
-                if _y_value > high_threshold:
-                    # in top region
+                if _y_value > local_y_max:
+                    x_of_local_max = _x_value
+                    local_y_max = _y_value
 
-                    we_are_in_high_region = True
-                    we_are_in_low_region = False
-                    we_are_in_threshold_region = False
-
-                    if _y_value > local_y_max:
-                        x_of_local_max = _x_value
-                        local_y_max = _y_value
-
-                    we_were_in_high_region = True
+                number_of_points_in_current_high_region += 1
 
         return {'x': list_of_x_of_local_max,
                 'y': list_of_y_max}

@@ -69,6 +69,7 @@ class Interface(QMainWindow):
         self.ui.setEnabled(False)
         o_event = EventHandler(parent=self)
         o_event.calculate_elements_position()
+        self.list_of_images_selection_changed()
         self.ui.setEnabled(True)
 
     def threshold_moved(self, value):
@@ -77,7 +78,7 @@ class Interface(QMainWindow):
         self.list_of_images_selection_changed()
 
     def threshold_clicked(self):
-        value = self.ui.high_threshold_slider.value()
+        value = self.ui.threshold_slider.value()
         o_event = EventHandler(parent=self)
         o_event.threshold_moved(value=value)
         self.list_of_images_selection_changed()
