@@ -12,10 +12,31 @@ class EventHandler:
     def list_of_images_right_click(self):
         menu = QMenu(self.parent)
         unsellect_all = menu.addAction("Unselect all")
+        remove_selected_rows = menu.addAction("Remove selected row(s)")
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == unsellect_all:
             self.unselect_all()
+        elif action == remove_selected_rows:
+            self.remove_selected_rows()
+
+    def remove_selected_rows(self):
+        selection = self.parent.ui.listWidget.selectedItems()
+        list_file_selected = [_item.text() for _item in selection]
+        pandas_obj = self.parent.o_selection.pandas_obj
+
+        pandas_obj.drop(list_file_selected, axis=1)
+
+        self.parent.o_selection.pandas_obj = pandas_obj
+        list_of_images = pandas_obj.columns[1:]
+        self.parent.list_of_images = list_of_images
+        self.update_list_of_images_table()
+
+    def update_list_of_images_table(self):
+        list_of_images = self.parent.list_of_images
+        self.parent.ui.listWidget.clear()
+        self.parent.ui.listWidget.addItems(list_of_images)
+        self.parent.ui.listWidget.setCurrentRow(0)
 
     def unselect_all(self):
         self.parent.ui.listWidget.clearSelection()

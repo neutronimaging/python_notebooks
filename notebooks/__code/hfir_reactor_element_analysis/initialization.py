@@ -31,7 +31,7 @@ class Initialization:
                                                    widget=self.parent.ui.elements_position_widget)
 
     def widgets(self):
-        list_of_images = self.parent.o_selection.column_labels[1:]
+        list_of_images = self.parent.list_of_images
         list_n_random_int = get_n_random_int_of_max_value_m(n=10, max=len(list_of_images))
         pandas_obj = self.parent.o_pandas
         list_max = []

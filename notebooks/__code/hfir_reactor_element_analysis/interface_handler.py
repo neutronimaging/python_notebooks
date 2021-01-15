@@ -31,6 +31,7 @@ class Interface(QMainWindow):
         self.o_pandas = o_selection.pandas_obj
         self.working_dir = working_dir
         self.list_angles = self.o_pandas.index
+        self.list_of_images = [_image.strip() for _image in o_selection.column_labels[1:]]
 
         super(Interface, self).__init__(parent)
 
