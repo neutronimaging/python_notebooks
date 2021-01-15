@@ -6,6 +6,7 @@ import numpy as np
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.array import get_n_random_int_of_max_value_m
+from __code._utilities.table_handler import TableHandler
 
 
 class Initialization:
@@ -56,6 +57,12 @@ class Initialization:
 
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)
+
+        # list of images tableWidget
+        o_table = TableHandler(table_ui=self.parent.ui.list_of_images_tableWidget)
+        for _row, _file in enumerate(list_of_images):
+            o_table.insert_empty_row(row=_row)
+            o_table.insert_item(row=_row, column=0, value=_file, editable=False)
 
         self.parent.ui.splitter.setSizes([200, 500])
 
