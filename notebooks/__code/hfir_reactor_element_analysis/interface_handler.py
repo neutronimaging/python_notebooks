@@ -70,6 +70,7 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.calculate_elements_position()
         self.list_of_images_selection_changed()
+        o_event.populate_elements_position_tab()
         self.ui.setEnabled(True)
 
     def threshold_moved(self, value):

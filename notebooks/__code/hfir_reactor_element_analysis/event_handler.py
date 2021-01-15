@@ -108,7 +108,7 @@ class EventHandler:
         list_of_y_max = []
         local_y_max = 0
         x_of_local_max = 0
-        minimum_number_of_points_to_high_region = 7
+        minimum_number_of_points_to_high_region = self.parent.ui.minimum_number_of_points_spinBox.value()
         number_of_points_in_current_high_region = 0
         for _x_value, _y_value in zip(working_x_axis, working_y_axis):
 
@@ -133,3 +133,19 @@ class EventHandler:
 
         return {'x': list_of_x_of_local_max,
                 'y': list_of_y_max}
+
+    def populate_elements_position_tab(self):
+        global_list_of_xy_max = self.parent.global_list_of_xy_max
+        list_of_images = self.parent.o_selection.column_labels[1:]
+
+        self.parent.elements_position.axes.clear()
+        self.parent.elements_position.draw()
+
+        plot_type = "."
+
+        for _file_index, _file in enumerate(list_of_images):
+            x_axis = global_list_of_xy_max[_file]['x']
+            y_axis = np.ones((len(x_axis)))*(_file_index+1)
+            self.parent.elements_position.axes.plot(x_axis, y_axis, plot_type)
+
+        self.parent.elements_position.draw()
