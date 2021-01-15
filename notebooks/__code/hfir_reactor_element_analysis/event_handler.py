@@ -1,6 +1,7 @@
 from qtpy import QtGui
 from qtpy.QtWidgets import QMenu
 import numpy as np
+from __code._utilities.table_handler import TableHandler
 
 
 class EventHandler:
@@ -159,3 +160,12 @@ class EventHandler:
         global_list_of_xy_max = self.parent.global_list_of_xy_max
         list_of_images = self.parent.o_selection.column_labels[1:]
 
+        o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
+        o_table.remove_all_rows()
+        for _row, _file in enumerate(list_of_images):
+            o_table.insert_empty_row(_row)
+            x_axis = global_list_of_xy_max[_file]['x']
+            for _column, _value in enumerate(x_axis):
+                if _row == 0:
+                    o_table.insert_column(_column)
+                o_table.insert_item(row=_row, column=_column, value=_value, format_str="{:2f}", editable=False)

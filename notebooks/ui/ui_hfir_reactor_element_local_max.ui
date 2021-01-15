@@ -250,8 +250,39 @@
            <enum>Qt::Vertical</enum>
           </property>
           <widget class="QWidget" name="elements_position_widget" native="true"/>
-          <widget class="QTableWidget" name="elements_position_tableWidget"/>
+          <widget class="QTableWidget" name="elements_position_tableWidget">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="export_table_data_pushButton">
+            <property name="text">
+             <string>Export table data ...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -401,6 +432,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>export_table_data_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_table_data_pushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1591</x>
+     <y>1007</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1672</x>
+     <y>964</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -411,5 +458,6 @@
   <slot>threshold_clicked()</slot>
   <slot>list_of_images_tableWidget_right_clicked()</slot>
   <slot>list_of_images_tableWidget_selection_changed()</slot>
+  <slot>export_table_data_pushButton_clicked()</slot>
  </slots>
 </ui>

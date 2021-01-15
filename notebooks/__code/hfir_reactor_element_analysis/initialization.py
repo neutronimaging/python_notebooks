@@ -6,7 +6,6 @@ import numpy as np
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.array import get_n_random_int_of_max_value_m
-from __code._utilities.table_handler import TableHandler
 
 
 class Initialization:

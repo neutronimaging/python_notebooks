@@ -5,6 +5,7 @@ import numpy as np
 from __code import load_ui
 from __code.hfir_reactor_element_analysis.initialization import Initialization
 from __code.hfir_reactor_element_analysis.event_handler import EventHandler
+from __code.hfir_reactor_element_analysis.export_data import ExportData
 
 
 class InterfaceHandler:
@@ -84,8 +85,6 @@ class Interface(QMainWindow):
         o_event.threshold_moved(value=value)
         self.list_of_images_selection_changed()
 
-    def list_of_images_tableWidget_right_clicked(self, position):
-        print("here")
-
-    def list_of_images_tableWidget_selection_changed(self):
-        print("selection changed")
+    def export_table_data_pushButton_clicked(self):
+        o_export = ExportData(parent=self)
+        o_export.run()
