@@ -71,27 +71,19 @@ class Interface(QMainWindow):
         o_event.calculate_elements_position()
         self.ui.setEnabled(True)
 
-    def high_threshold_moved(self, value):
+    def threshold_moved(self, value):
         o_event = EventHandler(parent=self)
-        o_event.high_threshold_moved(value=value)
+        o_event.threshold_moved(value=value)
         self.list_of_images_selection_changed()
 
-    def high_threshold_clicked(self):
+    def threshold_clicked(self):
         value = self.ui.high_threshold_slider.value()
         o_event = EventHandler(parent=self)
-        o_event.high_threshold_moved(value=value)
-        self.list_of_images_selection_changed()
-
-    def low_threshold_moved(self, value):
-        o_event = EventHandler(parent=self)
-        o_event.low_threshold_moved(value=value)
-        self.list_of_images_selection_changed()
-
-    def low_threshold_clicked(self):
-        value = self.ui.low_threshold_slider.value()
-        o_event = EventHandler(parent=self)
-        o_event.low_threshold_moved(value=value)
+        o_event.threshold_moved(value=value)
         self.list_of_images_selection_changed()
 
     def list_of_images_tableWidget_right_clicked(self, position):
         print("here")
+
+    def list_of_images_tableWidget_selection_changed(self):
+        print("selection changed")

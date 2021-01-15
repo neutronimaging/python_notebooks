@@ -51,11 +51,8 @@ class EventHandler:
                 self.parent.profiles_plot.axes.plot(x_max, y_max, '*r')
 
         # thresholds
-        high_threshold = self.parent.ui.high_threshold_slider.value()
-        low_threshold = self.parent.ui.low_threshold_slider.value()
-
-        self.parent.profiles_plot.axes.axhline(high_threshold, linestyle='-.', color='orange')
-        self.parent.profiles_plot.axes.axhline(low_threshold, linestyle='--', color='red')
+        threshold = self.parent.ui.threshold_slider.value()
+        self.parent.profiles_plot.axes.axhline(threshold, linestyle='--', color='red')
         self.parent.profiles_plot.draw()
 
     def get_profile_of_file_index(self, file_index):
@@ -72,18 +69,10 @@ class EventHandler:
             list_profiles.append(_profile)
         return list_profiles
 
-    def high_threshold_moved(self, value):
-        high_value = value
-        low_value = self.parent.ui.low_threshold_slider.value()
-        if high_value < low_value:
-            self.parent.ui.low_threshold_slider.setValue(high_value)
+    def threshold_clicked(self):
         self.parent.list_of_images_selection_changed()
 
-    def low_threshold_moved(self, value):
-        low_value = value
-        high_value = self.parent.ui.high_threshold_slider.value()
-        if low_value > high_value:
-            self.parent.ui.high_threshold_slider.setValue(low_value)
+    def threshold_moved(self, value):
         self.parent.list_of_images_selection_changed()
 
     def calculate_elements_position(self):

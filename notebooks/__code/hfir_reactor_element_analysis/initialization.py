@@ -46,23 +46,21 @@ class Initialization:
         global_max = np.int(np.nanmax(list_max))
         global_min = np.int(np.nanmin(list_min))
 
-        self.parent.ui.high_threshold_slider.setMaximum(global_max)
-        self.parent.ui.high_threshold_slider.setMinimum(global_min)
-        self.parent.ui.low_threshold_slider.setMaximum(global_max)
-        self.parent.ui.low_threshold_slider.setMinimum(global_min)
+        self.parent.ui.threshold_slider.setMaximum(global_max)
+        self.parent.ui.threshold_slider.setMinimum(global_min)
 
         delta_global = (global_max - global_min)/3
-        self.parent.ui.high_threshold_slider.setValue(np.int(2*delta_global))
-        self.parent.ui.low_threshold_slider.setValue(np.int(delta_global))
+        self.parent.ui.threshold_slider.setValue(np.int(2*delta_global))
 
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)
 
-        # list of images tableWidget
-        o_table = TableHandler(table_ui=self.parent.ui.list_of_images_tableWidget)
-        for _row, _file in enumerate(list_of_images):
-            o_table.insert_empty_row(row=_row)
-            o_table.insert_item(row=_row, column=0, value=_file, editable=False)
+        # # list of images tableWidget
+        # o_table = TableHandler(table_ui=self.parent.ui.list_of_images_tableWidget)
+        # for _row, _file in enumerate(list_of_images):
+        #     o_table.insert_empty_row(row=_row)
+        #     o_table.insert_item(row=_row, column=0, value=_file, editable=False)
+        # o_table.set_column_sizes(column_sizes=[200, 50, 50])
 
         self.parent.ui.splitter.setSizes([200, 500])
 
