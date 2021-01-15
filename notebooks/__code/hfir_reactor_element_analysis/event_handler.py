@@ -135,6 +135,10 @@ class EventHandler:
                 'y': list_of_y_max}
 
     def populate_elements_position_tab(self):
+        self.populate_elements_position_plot()
+        self.populate_elements_position_table()
+
+    def populate_elements_position_plot(self):
         global_list_of_xy_max = self.parent.global_list_of_xy_max
         list_of_images = self.parent.o_selection.column_labels[1:]
 
@@ -148,4 +152,10 @@ class EventHandler:
             y_axis = np.ones((len(x_axis)))*(_file_index+1)
             self.parent.elements_position.axes.plot(x_axis, y_axis, plot_type)
 
+        self.parent.elements_position.axes.invert_yaxis()
         self.parent.elements_position.draw()
+
+    def populate_elements_position_table(self):
+        global_list_of_xy_max = self.parent.global_list_of_xy_max
+        list_of_images = self.parent.o_selection.column_labels[1:]
+
