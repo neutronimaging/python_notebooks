@@ -24,9 +24,7 @@ class EventHandler:
         selection = self.parent.ui.listWidget.selectedItems()
         list_file_selected = [_item.text() for _item in selection]
         pandas_obj = self.parent.o_selection.pandas_obj
-
-        pandas_obj.drop(list_file_selected, axis=1)
-
+        pandas_obj = pandas_obj.drop(list_file_selected, axis=1)
         self.parent.o_selection.pandas_obj = pandas_obj
         list_of_images = pandas_obj.columns[1:]
         self.parent.list_of_images = list_of_images
@@ -98,7 +96,7 @@ class EventHandler:
         self.parent.list_of_images_selection_changed()
 
     def calculate_elements_position(self):
-        list_of_images = self.parent.o_selection.column_labels[1:]
+        list_of_images = self.parent.list_of_images
         global_list_of_xy_max = {}
 
         self.parent.eventProgress.setMaximum(len(list_of_images))
@@ -162,7 +160,7 @@ class EventHandler:
 
     def populate_elements_position_plot(self):
         global_list_of_xy_max = self.parent.global_list_of_xy_max
-        list_of_images = self.parent.o_selection.column_labels[1:]
+        list_of_images = self.parent.list_of_images
 
         self.parent.elements_position.axes.clear()
         self.parent.elements_position.draw()
@@ -179,7 +177,7 @@ class EventHandler:
 
     def populate_elements_position_table(self):
         global_list_of_xy_max = self.parent.global_list_of_xy_max
-        list_of_images = self.parent.o_selection.column_labels[1:]
+        list_of_images = self.parent.list_of_images
 
         o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
         o_table.remove_all_rows()
