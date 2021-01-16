@@ -26,7 +26,7 @@ class EventHandler:
         pandas_obj = self.parent.o_selection.pandas_obj
         pandas_obj = pandas_obj.drop(list_file_selected, axis=1)
         self.parent.o_selection.pandas_obj = pandas_obj
-        list_of_images = pandas_obj.columns[1:]
+        list_of_images = pandas_obj.columns
         self.parent.list_of_images = list_of_images
         self.update_list_of_images_table()
 
