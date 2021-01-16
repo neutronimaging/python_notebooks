@@ -265,26 +265,26 @@
           <item>
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Tolerance value:</string>
+             <string>File name:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="tolerance_value_lineEdit">
+           <widget class="QLabel" name="elements_position_file_name_label">
             <property name="minimumSize">
              <size>
-              <width>100</width>
+              <width>400</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>100</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>0.1</string>
+             <string>N/A</string>
             </property>
            </widget>
           </item>
@@ -471,22 +471,6 @@
     <hint type="destinationlabel">
      <x>1672</x>
      <y>964</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tolerance_value_lineEdit</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>elements_position_tolerance_value_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>174</x>
-     <y>1008</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>7</x>
-     <y>989</y>
     </hint>
    </hints>
   </connection>

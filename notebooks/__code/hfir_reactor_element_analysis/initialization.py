@@ -28,7 +28,9 @@ class Initialization:
                                            widget=self.parent.ui.profiles_widget)
 
         self.parent.elements_position = _matplotlib(parent=self.parent,
-                                                   widget=self.parent.ui.elements_position_widget)
+                                                    widget=self.parent.ui.elements_position_widget)
+
+        self.parent.elements_position.mpl_connect('button_press_event', self.parent.click_on_elements_position_plot)
 
     def widgets(self):
         list_of_images = self.parent.list_of_images

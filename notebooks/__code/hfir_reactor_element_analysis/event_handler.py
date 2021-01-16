@@ -158,7 +158,7 @@ class EventHandler:
 
     def populate_elements_position_tab(self):
         self.populate_elements_position_plot()
-        self.calculate_average_x_for_each_element()
+        # self.calculate_average_x_for_each_element()
         self.populate_elements_position_table()
 
     def populate_elements_position_plot(self):
@@ -180,9 +180,8 @@ class EventHandler:
 
     def populate_elements_position_table(self):
         global_list_of_xy_max = self.parent.global_list_of_xy_max
-        global_list_of_xy_mean = self.parent.global_list_of_xy_mean
+        # global_list_of_xy_mean = self.parent.global_list_of_xy_mean
         list_of_images = self.parent.list_of_images
-        tolerance_value = np.float(np.str(self.parent.ui.tolerance_value_lineEdit.text()))
 
         o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
         o_table.remove_all_rows()
@@ -193,22 +192,21 @@ class EventHandler:
                 if _row == 0:
                     o_table.insert_column(_column)
                 o_table.insert_item(row=_row, column=_column, value=_value, format_str="{:2f}", editable=False)
-                if (_value - global_list_of_xy_mean[_column]) > tolerance_value:
-                    o_table.set_background_color(row=_row, column=_column, qcolor=QtGui.QColor(255, 0, 0))
 
-    def calculate_average_x_for_each_element(self):
-        """
-        This will remove the n outliers on either end and then calculate the average x for each element
-        and then will display the background of all the cells that are outside a tolerance range
-        """
-        global_list_of_xy_max = self.parent.global_list_of_xy_max
-        list_of_images = self.parent.list_of_images
-        # x_axis = global_list_of_xy_max[_file]['x']
-        global_list_of_xy_mean = []
-        for _file in list_of_images:
-            x_axis = global_list_of_xy_max[_file]['x']
-            x_axis_without_outliers = reject_n_outliers(array=x_axis, n=self.parent.ELEMENTS_POSITION_OUTLIERS)
-            mean_value = np.mean(x_axis_without_outliers)
-            global_list_of_xy_mean.append(mean_value)
-
-        self.parent.global_list_of_xy_mean = global_list_of_xy_mean
+    # def calculate_average_x_for_each_element(self):
+    #     """
+    #     This will remove the n outliers on either end and then calculate the average x for each element
+    #     and then will display the background of all the cells that are outside a tolerance range
+    #     """
+    #     global_list_of_xy_max = self.parent.global_list_of_xy_max
+    #     list_of_images = self.parent.list_of_images
+    #     # x_axis = global_list_of_xy_max[_file]['x']
+    #     global_list_of_xy_mean = []
+    #
+    #     for _file in list_of_images:
+    #         x_axis = global_list_of_xy_max[_file]['x']
+    #         x_axis_without_outliers = reject_n_outliers(array=x_axis, n=self.parent.ELEMENTS_POSITION_OUTLIERS)
+    #         mean_value = np.mean(x_axis_without_outliers)
+    #         global_list_of_xy_mean.append(mean_value)
+    #
+    #     self.parent.global_list_of_xy_mean = global_list_of_xy_mean

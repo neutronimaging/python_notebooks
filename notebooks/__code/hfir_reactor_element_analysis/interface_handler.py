@@ -93,5 +93,10 @@ class Interface(QMainWindow):
 
     def elements_position_tolerance_value_changed(self):
         o_event = EventHandler(parent=self)
-        o_event.calculate_average_x_for_each_element()
+        # o_event.calculate_average_x_for_each_element()
         o_event.populate_elements_position_table()
+
+    def click_on_elements_position_plot(self, event):
+        file_index = np.int(event.ydata)
+        list_of_images = self.list_of_images
+        self.ui.elements_position_file_name_label.setText(list_of_images[file_index])
