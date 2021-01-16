@@ -21,6 +21,7 @@ class Interface(QMainWindow):
 
     NUMBER_OF_FUEL_ELEMENTS = 369
     MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS = 50
+    ELEMENTS_POSITION_OUTLIERS = 10  #  number of data points to remove before calculating mean x position
 
     profiles_plot = None
     elements_position_plot = None
@@ -89,3 +90,8 @@ class Interface(QMainWindow):
     def export_table_data_pushButton_clicked(self):
         o_export = ExportData(parent=self)
         o_export.run()
+
+    def elements_position_tolerance_value_changed(self):
+        o_event = EventHandler(parent=self)
+        o_event.calculate_average_x_for_each_element()
+        o_event.populate_elements_position_table()

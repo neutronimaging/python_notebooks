@@ -263,6 +263,32 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Tolerance value:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="tolerance_value_lineEdit">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0.1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -448,6 +474,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tolerance_value_lineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>elements_position_tolerance_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>1008</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>989</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -459,5 +501,6 @@
   <slot>list_of_images_tableWidget_right_clicked()</slot>
   <slot>list_of_images_tableWidget_selection_changed()</slot>
   <slot>export_table_data_pushButton_clicked()</slot>
+  <slot>elements_position_tolerance_value_changed()</slot>
  </slots>
 </ui>

@@ -38,3 +38,8 @@ def reject_outliers(array=None):
                  if (not (_value == np.min(array)))
                  and (not (_value == np.max(array)))]
     return new_array
+
+def reject_n_outliers(array=None, n=1):
+    set_array = list(array)
+    set_array.sort()
+    return set_array[n: -n]

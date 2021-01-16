@@ -10,3 +10,15 @@ def test_reject_outliers():
     returned_array = array.reject_outliers(array=my_array)
     for _exp, _ret in zip(expected_array, returned_array):
         assert _exp == _ret
+
+
+def test_reject_n_outliers():
+    my_array = np.arange(20)
+    n = 5
+    expected_array = np.arange(5, 15, 1)
+    returned_array = array.reject_n_outliers(array=my_array, n=5)
+    returned_array.sort()
+
+    assert len(returned_array) == len(expected_array)
+    for _exp, _ret in zip(expected_array, returned_array):
+        assert _exp == _ret
