@@ -30,8 +30,9 @@ install:
   # - conda env create -n book -f environment.yml
   # - conda init zsh
   # - source /home/travis/miniconda/etc/profile.d/conda.sh
-
-
+  - conda create -n neutron_imaging python=3
+  - conda activate neutron_imaging
+  - bash config_conda_env.sh
 
 script:
   - ls 
