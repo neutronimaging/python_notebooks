@@ -29,12 +29,12 @@ class OverlayImages:
         self.working_dir = os.path.dirname(folder_selected)
         list_files = glob.glob(folder_selected + '/*.tif*')
         list_files.sort()
-        self.load_data(list_files=list_files)
+        self.load_data(list_files=list_files, data_type=self.current_data_type)
 
-    def load_data(self, list_files=None):
+    def load_data(self, list_files=None, data_type='high resolution'):
         o_norm = Normalization()
         o_norm.load(file=list_files, notebook=True)
-        if self.current_data_type == 'high resolution':
+        if data_type == 'high resolution':
             self.o_norm_high_reso = o_norm
         else:
             self.o_norm_low_reso = o_norm

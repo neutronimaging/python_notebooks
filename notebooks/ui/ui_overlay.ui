@@ -150,16 +150,22 @@
        </spacer>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="overlay_pushButton">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>Overlay stack of images</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="export_pushButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Export overlaid images</string>
           </property>
