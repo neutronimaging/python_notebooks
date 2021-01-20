@@ -31,7 +31,6 @@ install:
   - conda create -n neutron_imaging python=$TRAVIS_PYTHON_VERSION
   - source activate neutron_imaging
   - bash config_conda_env.sh
-  - pip install -e .
   - cd notebooks
   - export PYTHONPATH=$PWD:$PYTHONPATH
 
