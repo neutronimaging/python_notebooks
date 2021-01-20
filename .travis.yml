@@ -5,9 +5,9 @@ python:
   - 3.6
   - 3.7
 
-branches:
-  only:
-    - master
+#branches:
+#  only:
+#    - master
 
 addons:
   apt:
