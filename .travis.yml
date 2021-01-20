@@ -32,6 +32,8 @@ install:
   - source activate neutron_imaging
   - bash config_conda_env.sh
   - pip install -e .
+  - cd notebooks
+  - export PYTHONPATH=$PWD:$PYTHONPATH
 
 script:
   - pytest -v

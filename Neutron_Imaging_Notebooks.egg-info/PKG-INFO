@@ -1,0 +1,18 @@
+Metadata-Version: 1.1
+Name: Neutron-Imaging-Notebooks
+Version: 1.0.0
+Summary: Set of jupyter notebooks for neutron imaging work
+Home-page: https://neutronimaging.pages.ornl.gov/tutorial/notebooks/
+Author: Jean Bilheux
+Author-email: bilheuxjm@ornl.gov
+License: BSD
+Description: See the full tutorial of the notebooks on https://neutronimaging.pages.ornl.gov/tutorial/notebooks/
+Keywords: neutron analysis imaging
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
