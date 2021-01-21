@@ -6,6 +6,7 @@ from qtpy import QtGui, QtCore
 
 from __code import load_ui
 from __code.decorators import wait_cursor
+from __code._utilities.table_handler import TableHandler
 
 from __code.overlay_images.initialization import Initialization
 
@@ -33,6 +34,9 @@ class Interface(QMainWindow):
     #   .... }
     dict_images_offset = None
 
+    current_high_resolution_live_image = None
+    current_low_resolution_live_image = None
+
     def __init__(self, parent=None, o_norm_high_reso=None, o_norm_low_reso=None, working_dir=None):
 
         self.o_norm_high_reso = o_norm_high_reso
@@ -51,10 +55,27 @@ class Interface(QMainWindow):
         o_init.dictionaries()
         o_init.statusbar()
         o_init.widgets()
+        o_init.pyqtgraph()
 
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        o_table.select_row(row=0)
 
+    # Event handler
+    def update_previews(self, row_selected=-1):
+        high_res_data = self.o_norm_high_reso.data['sample']['data'][row_selected]
+        _high_res_image = np.transpose(high_res_data)
+        self.ui.high_resolution_image_view.setImage(_high_res_image)
+        self.current_high_resolution_live_image = _high_res_image
 
+        low_res_data = self.o_norm_low_reso.data['sample']['data'][row_selected]
+        _low_res_image = np.transpose(low_res_data)
+        self.ui.low_resolution_image_view.setImage(_low_res_image)
+        self.current_low_resolution_live_image = _low_res_image
 
+    def list_files_table_selection_changed(self):
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        self.update_previews(row_selected=row_selected)
 
 
 

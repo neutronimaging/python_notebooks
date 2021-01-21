@@ -1,6 +1,7 @@
 from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
 import os
 from collections import OrderedDict
+import pyqtgraph as pg
 
 from __code._utilities.table_handler import TableHandler
 
@@ -50,4 +51,19 @@ class Initialization:
 
         o_table.set_column_sizes(column_sizes=[200, 200, 50, 50])
 
-        self.parent.ui.splitter_2.setSizes([300, 500])
+        self.parent.ui.splitter_2.setSizes([200, 500])
+
+    def pyqtgraph(self):
+        self.parent.ui.high_resolution_image_view = pg.ImageView(view=pg.PlotItem())
+        self.parent.ui.high_resolution_image_view.ui.roiBtn.hide()
+        self.parent.ui.high_resolution_image_view.ui.menuBtn.hide()
+        image_layout = QVBoxLayout()
+        image_layout.addWidget(self.parent.ui.high_resolution_image_view)
+        self.parent.ui.high_res_widget.setLayout(image_layout)
+
+        self.parent.ui.low_resolution_image_view = pg.ImageView(view=pg.PlotItem())
+        self.parent.ui.low_resolution_image_view.ui.roiBtn.hide()
+        self.parent.ui.low_resolution_image_view.ui.menuBtn.hide()
+        image_layout = QVBoxLayout()
+        image_layout.addWidget(self.parent.ui.low_resolution_image_view)
+        self.parent.ui.low_res_widget.setLayout(image_layout)

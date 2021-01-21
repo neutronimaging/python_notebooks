@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1392</width>
-    <height>954</height>
+    <width>1865</width>
+    <height>878</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -191,7 +191,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1392</width>
+     <width>1865</width>
      <height>22</height>
     </rect>
    </property>
@@ -199,5 +199,27 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>list_files_table_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>list_files_table_clicked()</slot>
+  <slot>slot1()</slot>
+  <slot>list_files_table_selection_changed()</slot>
+ </slots>
 </ui>
