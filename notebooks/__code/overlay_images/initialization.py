@@ -1,10 +1,12 @@
 from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
 from qtpy import QtGui
 import os
+import numpy as np
 from collections import OrderedDict
 import pyqtgraph as pg
 
 from __code._utilities.table_handler import TableHandler
+from __code.overlay_images.event_handler import EventHandler
 
 
 class Initialization:
@@ -31,6 +33,7 @@ class Initialization:
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def widgets(self):
+
         # list of files table
         list_high_res_files = self.parent.o_norm_high_res.data['sample']['file_name']
         list_low_res_files = self.parent.o_norm_low_res.data['sample']['file_name']
@@ -81,26 +84,38 @@ class Initialization:
         blue_pen.setColor(QtGui.QColor(0, 0, 255, 255))
         blue_pen.setWidthF(0.05)
 
-        x = self.parent.markers['high_res']['1']['x']
-        y = self.parent.markers['high_res']['1']['y']
-        self.parent.markers['high_res']['1']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=red_pen)
-        self.parent.ui.high_resolution_image_view.addItem(self.parent.markers['high_res']['1']['ui'])
-        self.parent.markers['high_res']['1']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
+        def design_marker(x=0, y=0, pen=None, image_view=None, method=None):
+            ui = pg.ROI([x, y], [width, height], scaleSnap=True, pen=pen)
+            image_view.addItem(ui)
+            ui.sigRegionChanged.connect(method)
+            return ui
 
-        x = self.parent.markers['high_res']['2']['x']
-        y = self.parent.markers['high_res']['2']['y']
-        self.parent.markers['high_res']['2']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=blue_pen)
-        self.parent.ui.high_resolution_image_view.addItem(self.parent.markers['high_res']['2']['ui'])
-        self.parent.markers['high_res']['2']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
+        self.parent.markers['high_res']['1']['ui'] = design_marker(x=self.parent.markers['high_res']['1']['x'],
+                                                                   y=self.parent.markers['high_res']['1']['y'],
+                                                                   pen=red_pen,
+                                                                   image_view=self.parent.ui.high_resolution_image_view,
+                                                                   method=self.parent.markers_changed)
 
-        x = self.parent.markers['low_res']['1']['x']
-        y = self.parent.markers['low_res']['1']['y']
-        self.parent.markers['low_res']['1']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=red_pen)
-        self.parent.ui.low_resolution_image_view.addItem(self.parent.markers['low_res']['1']['ui'])
-        self.parent.markers['low_res']['1']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
+        self.parent.markers['high_res']['2']['ui'] = design_marker(x=self.parent.markers['high_res']['2']['x'],
+                                                                   y=self.parent.markers['high_res']['2']['y'],
+                                                                   pen=blue_pen,
+                                                                   image_view=self.parent.ui.high_resolution_image_view,
+                                                                   method=self.parent.markers_changed)
 
-        x = self.parent.markers['low_res']['2']['x']
-        y = self.parent.markers['low_res']['2']['y']
-        self.parent.markers['low_res']['2']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=blue_pen)
-        self.parent.ui.low_resolution_image_view.addItem(self.parent.markers['low_res']['2']['ui'])
-        self.parent.markers['low_res']['2']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
+        self.parent.markers['low_res']['1']['ui'] = design_marker(x=self.parent.markers['low_res']['1']['x'],
+                                                                  y=self.parent.markers['low_res']['1']['y'],
+                                                                  pen=red_pen,
+                                                                  image_view=self.parent.ui.low_resolution_image_view,
+                                                                  method=self.parent.markers_changed)
+
+        self.parent.markers['low_res']['2']['ui'] = design_marker(x=self.parent.markers['low_res']['2']['x'],
+                                                                  y=self.parent.markers['low_res']['2']['y'],
+                                                                  pen=blue_pen,
+                                                                  image_view=self.parent.ui.low_resolution_image_view,
+                                                                  method=self.parent.markers_changed)
+
+        o_event = EventHandler(parent=self.parent)
+        o_event.update_target(image_resolution='high_res', target_index='1',
+                              image_view=self.parent.ui.high_resolution_image_view)
+
+

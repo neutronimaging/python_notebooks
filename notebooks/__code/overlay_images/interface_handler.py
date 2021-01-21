@@ -38,14 +38,17 @@ class Interface(QMainWindow):
     current_high_resolution_live_image = None
     current_low_resolution_live_image = None
 
-    markers = {'high_res': {'1': {'x': 100, 'y': 50, 'ui': None},
-                            '2': {'x': 300, 'y': 50, 'ui': None},
+    markers = {'high_res': {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
+                            '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},
                             },
-               'low_res':  {'1': {'x': 100, 'y': 50, 'ui': None},
-                            '2': {'x': 300, 'y': 50, 'ui': None},
+               'low_res':  {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
+                            '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},
                             },
                'width': 50,
                'height': 50,
+               'target': {'length': 10,
+                          'border': 10,
+                          'color': (255, 0, 255, 255, 1)},
                }
 
     high_histogram_level = None

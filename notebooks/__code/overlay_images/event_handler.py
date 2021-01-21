@@ -1,4 +1,5 @@
 import numpy as np
+import pyqtgraph as pg
 
 
 class EventHandler:
@@ -40,3 +41,51 @@ class EventHandler:
             histo_widget.setLevels(histogram_level[0],
                                    histogram_level[1])
 
+    def update_target(self, image_resolution='high_res', target_index='1', image_view=None):
+
+        if not (self.parent.markers[image_resolution][target_index]['target_ui'] is None):
+            image_view.removeItem(self.parent.markers[image_resolution][target_index]['target_ui'])
+
+        width = self.parent.markers['width']
+        height = self.parent.markers['height']
+
+        pos = []
+        adj = []
+
+        x = self.parent.markers['high_res']['1']['x']
+        y = self.parent.markers['high_res']['1']['y']
+        target_length = self.parent.markers['target']['length']
+        target_border = self.parent.markers['target']['border']
+
+        pos.append([np.int(x + width / 2), y + target_border])
+        pos.append([np.int(x + width / 2), y + target_border + target_length])
+        adj.append([0, 1])
+
+        pos.append([np.int(x + width / 2), y + height - target_length - target_border])
+        pos.append([np.int(x + width / 2), y + height - target_border])
+        adj.append([2, 3])
+
+        pos.append([x + target_border, np.int(y + height / 2)])
+        pos.append([x + target_border + target_length, np.int(y + height / 2)])
+        adj.append([4, 5])
+
+        pos.append([x + width - target_border - target_length, np.int(y + height / 2)])
+        pos.append([x + width - target_border, np.int(y + height / 2)])
+        adj.append([6, 7])
+
+        pos = np.array(pos)
+        adj = np.array(adj)
+
+        line_color = self.parent.markers['target']['color']
+        lines = np.array([line_color for _ in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+        line_view_binning = pg.GraphItem()
+        image_view.addItem(line_view_binning)
+        line_view_binning.setData(pos=pos,
+                                  adj=adj,
+                                  pen=lines,
+                                  symbol=None,
+                                  pxMode=False)
+        self.parent.markers[image_resolution][target_index]['target_ui'] = line_view_binning
