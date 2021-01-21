@@ -9,6 +9,7 @@ from __code.decorators import wait_cursor
 from __code._utilities.table_handler import TableHandler
 
 from __code.overlay_images.initialization import Initialization
+from __code.overlay_images.event_handler import EventHandler
 
 
 class InterfaceHandler:
@@ -48,11 +49,12 @@ class Interface(QMainWindow):
                }
 
     high_histogram_level = None
+    low_histogram_level = None
 
     def __init__(self, parent=None, o_norm_high_reso=None, o_norm_low_reso=None, working_dir=None):
 
-        self.o_norm_high_reso = o_norm_high_reso
-        self.o_norm_low_reso = o_norm_low_reso
+        self.o_norm_high_res = o_norm_high_reso
+        self.o_norm_low_res = o_norm_low_reso
         self.working_dir = working_dir if working_dir else "./"
 
         super(Interface, self).__init__(parent)
@@ -75,33 +77,8 @@ class Interface(QMainWindow):
 
     # Event handler
     def update_previews(self, row_selected=-1):
-
-        # high resolution
-        _high_res_view = self.ui.high_resolution_image_view.getView()
-        _high_res_view_box = _high_res_view.getViewBox()
-        _high_state = _high_res_view_box.getState()
-
-        first_update = False
-        if self.high_histogram_level is None:
-            first_update = True
-        _high_histo_widget = self.ui.high_resolution_image_view.getHistogramWidget()
-        self.high_histogram_level = _high_histo_widget.getLevels()
-
-        high_res_data = self.o_norm_high_reso.data['sample']['data'][row_selected]
-        _high_res_image = np.transpose(high_res_data)
-        self.ui.high_resolution_image_view.setImage(_high_res_image)
-        self.current_high_resolution_live_image = _high_res_image
-
-        _high_res_view_box.setState(_high_state)
-        if not first_update:
-            _high_histo_widget.setLevels(self.high_histogram_level[0],
-                                         self.high_histogram_level[1])
-
-        # low resolution
-        low_res_data = self.o_norm_low_reso.data['sample']['data'][row_selected]
-        _low_res_image = np.transpose(low_res_data)
-        self.ui.low_resolution_image_view.setImage(_low_res_image)
-        self.current_low_resolution_live_image = _low_res_image
+        o_event = EventHandler(parent=self)
+        o_event.update_views(row_selected=row_selected)
 
     def list_files_table_selection_changed(self):
         o_table = TableHandler(table_ui=self.ui.tableWidget)
