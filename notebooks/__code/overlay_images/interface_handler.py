@@ -49,11 +49,12 @@ class Interface(QMainWindow):
                'height': 50,
                'target': {'length': 10,
                           'border': 10,
-                          'color': (255, 0, 255, 255, 1)},
+                          'color': {'1': (255, 0, 0, 255, 1),
+                                    '2': (0, 0, 255, 255, 1)},
+                          },
                }
 
-    high_histogram_level = None
-    low_histogram_level = None
+    histogram_level = {'high_res': None, 'low_res': None}
 
     def __init__(self, parent=None, o_norm_high_reso=None, o_norm_low_reso=None, working_dir=None):
 
@@ -90,13 +91,44 @@ class Interface(QMainWindow):
         self.update_previews(row_selected=row_selected)
 
     def markers_changed(self):
+
         o_get = Get(parent=self)
         high_res_1_dict = o_get.marker_location(image_resolution='high_res', target_index='1')
         self.markers['high_res']['1']['x'] = high_res_1_dict['x']
         self.markers['high_res']['1']['y'] = high_res_1_dict['y']
 
+        high_res_2_dict = o_get.marker_location(image_resolution='high_res', target_index='2')
+        self.markers['high_res']['2']['x'] = high_res_2_dict['x']
+        self.markers['high_res']['2']['y'] = high_res_2_dict['y']
+
+        low_res_1_dict = o_get.marker_location(image_resolution='low_res', target_index='1')
+        self.markers['low_res']['1']['x'] = low_res_1_dict['x']
+        self.markers['low_res']['1']['y'] = low_res_1_dict['y']
+
+        low_res_2_dict = o_get.marker_location(image_resolution='low_res', target_index='2')
+        self.markers['low_res']['2']['x'] = low_res_2_dict['x']
+        self.markers['low_res']['2']['y'] = low_res_2_dict['y']
+
         o_event = EventHandler(parent=self)
         o_event.update_target(image_resolution='high_res', target_index='1')
+        o_event.update_target(image_resolution='high_res', target_index='2')
+
+        o_event.update_target(image_resolution='low_res', target_index='1')
+        o_event.update_target(image_resolution='low_res', target_index='2')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -9,34 +9,34 @@ class EventHandler:
 
     def update_views(self, row_selected=0):
 
-        self.update_view(image_view=self.parent.image_view['high_res'],
-                         histogram_level=self.parent.high_histogram_level,
-                         live_image=self.parent.current_live_image['high_res'],
+        self.update_view(image_resolution='high_res',
                          data=self.parent.o_norm_high_res.data['sample']['data'][row_selected])
 
-
-        self.update_view(image_view=self.parent.image_view['low_res'],
-                         histogram_level=self.parent.low_histogram_level,
-                         live_image=self.parent.current_live_image['low_res'],
+        self.update_view(image_resolution='low_res',
                          data=self.parent.o_norm_low_res.data['sample']['data'][row_selected])
 
-    def update_view(self, image_view=None, histogram_level=None, live_image=None, data=None):
+    def update_view(self, image_resolution='high_res', data=None):
+
+        image_view = self.parent.image_view[image_resolution]
+        histogram_level = self.parent.histogram_level[image_resolution]
+
         # high resolution
-        _high_res_view = image_view.getView()
-        _high_res_view_box = _high_res_view.getViewBox()
-        _high_state = _high_res_view_box.getState()
+        _res_view = image_view.getView()
+        _res_view_box = _res_view.getViewBox()
+        _state = _res_view_box.getState()
 
         first_update = False
         if histogram_level is None:
             first_update = True
         histo_widget = image_view.getHistogramWidget()
         histogram_level = histo_widget.getLevels()
+        self.parent.histogram_level[image_resolution] = histogram_level
 
-        _high_res_image = np.transpose(data)
-        image_view.setImage(_high_res_image)
-        live_image = _high_res_image
+        _image = np.transpose(data)
+        image_view.setImage(_image)
+        self.parent.current_live_image[image_resolution] = _image
 
-        _high_res_view_box.setState(_high_state)
+        _res_view_box.setState(_state)
         if not first_update:
             histo_widget.setLevels(histogram_level[0],
                                    histogram_level[1])
@@ -78,7 +78,7 @@ class EventHandler:
         pos = np.array(pos)
         adj = np.array(adj)
 
-        line_color = self.parent.markers['target']['color']
+        line_color = self.parent.markers['target']['color'][target_index]
         lines = np.array([line_color for _ in np.arange(len(pos))],
                          dtype=[('red', np.ubyte), ('green', np.ubyte),
                                 ('blue', np.ubyte), ('alpha', np.ubyte),

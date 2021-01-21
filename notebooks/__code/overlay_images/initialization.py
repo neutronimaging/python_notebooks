@@ -90,7 +90,6 @@ class Initialization:
         return ui
 
     def markers(self):
-
         red_pen = QtGui.QPen()
         red_pen.setColor(QtGui.QColor(255, 0, 0, 255))
         red_pen.setWidthF(0.05)
@@ -116,7 +115,7 @@ class Initialization:
 
         self.parent.markers['low_res']['2']['ui'] = self._design_marker(image_resolution='low_res',
                                                                         target_index='2',
-                                                                        pen=red_pen,
+                                                                        pen=blue_pen,
                                                                         method=self.parent.markers_changed)
 
         o_event = EventHandler(parent=self.parent)
