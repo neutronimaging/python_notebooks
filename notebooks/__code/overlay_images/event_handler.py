@@ -9,15 +9,15 @@ class EventHandler:
 
     def update_views(self, row_selected=0):
 
-        self.update_view(image_view=self.parent.ui.high_resolution_image_view,
+        self.update_view(image_view=self.parent.image_view['high_res'],
                          histogram_level=self.parent.high_histogram_level,
-                         live_image=self.parent.current_high_resolution_live_image,
+                         live_image=self.parent.current_live_image['high_res'],
                          data=self.parent.o_norm_high_res.data['sample']['data'][row_selected])
 
 
-        self.update_view(image_view=self.parent.ui.low_resolution_image_view,
+        self.update_view(image_view=self.parent.image_view['low_res'],
                          histogram_level=self.parent.low_histogram_level,
-                         live_image=self.parent.current_low_resolution_live_image,
+                         live_image=self.parent.current_live_image['low_res'],
                          data=self.parent.o_norm_low_res.data['sample']['data'][row_selected])
 
     def update_view(self, image_view=None, histogram_level=None, live_image=None, data=None):
@@ -41,7 +41,9 @@ class EventHandler:
             histo_widget.setLevels(histogram_level[0],
                                    histogram_level[1])
 
-    def update_target(self, image_resolution='high_res', target_index='1', image_view=None):
+    def update_target(self, image_resolution='high_res', target_index='1'):
+
+        image_view = self.parent.image_view[image_resolution]
 
         if not (self.parent.markers[image_resolution][target_index]['target_ui'] is None):
             image_view.removeItem(self.parent.markers[image_resolution][target_index]['target_ui'])
@@ -52,8 +54,8 @@ class EventHandler:
         pos = []
         adj = []
 
-        x = self.parent.markers['high_res']['1']['x']
-        y = self.parent.markers['high_res']['1']['y']
+        x = self.parent.markers[image_resolution][target_index]['x']
+        y = self.parent.markers[image_resolution][target_index]['y']
         target_length = self.parent.markers['target']['length']
         target_border = self.parent.markers['target']['border']
 

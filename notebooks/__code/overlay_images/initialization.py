@@ -58,23 +58,38 @@ class Initialization:
         self.parent.ui.splitter_2.setSizes([200, 500])
 
     def pyqtgraph(self):
-        self.parent.ui.high_resolution_image_view = pg.ImageView(view=pg.PlotItem())
-        self.parent.ui.high_resolution_image_view.ui.roiBtn.hide()
-        self.parent.ui.high_resolution_image_view.ui.menuBtn.hide()
+        
+        self.parent.image_view['high_res'] = pg.ImageView(view=pg.PlotItem())
+        self.parent.image_view['high_res'].ui.roiBtn.hide()
+        self.parent.image_view['high_res'].ui.menuBtn.hide()
         image_layout = QVBoxLayout()
-        image_layout.addWidget(self.parent.ui.high_resolution_image_view)
+        image_layout.addWidget(self.parent.image_view['high_res'])
         self.parent.ui.high_res_widget.setLayout(image_layout)
 
-        self.parent.ui.low_resolution_image_view = pg.ImageView(view=pg.PlotItem())
-        self.parent.ui.low_resolution_image_view.ui.roiBtn.hide()
-        self.parent.ui.low_resolution_image_view.ui.menuBtn.hide()
+        self.parent.image_view['low_res'] = pg.ImageView(view=pg.PlotItem())
+        self.parent.image_view['low_res'].ui.roiBtn.hide()
+        self.parent.image_view['low_res'].ui.menuBtn.hide()
         image_layout = QVBoxLayout()
-        image_layout.addWidget(self.parent.ui.low_resolution_image_view)
+        image_layout.addWidget(self.parent.image_view['low_res'])
         self.parent.ui.low_res_widget.setLayout(image_layout)
 
-    def markers(self):
+    def _design_marker(self, image_resolution=None,
+                       target_index=None,
+                       pen=None, image_view=None,
+                       method=None):
+        x = self.parent.markers[image_resolution][target_index]['x']
+        y = self.parent.markers[image_resolution][target_index]['y']
+        image_view = self.parent.image_view[image_resolution]
+
         width = self.parent.markers['width']
         height = self.parent.markers['height']
+
+        ui = pg.ROI([x, y], [width, height], scaleSnap=True, pen=pen)
+        image_view.addItem(ui)
+        ui.sigRegionChanged.connect(method)
+        return ui
+
+    def markers(self):
 
         red_pen = QtGui.QPen()
         red_pen.setColor(QtGui.QColor(255, 0, 0, 255))
@@ -84,38 +99,28 @@ class Initialization:
         blue_pen.setColor(QtGui.QColor(0, 0, 255, 255))
         blue_pen.setWidthF(0.05)
 
-        def design_marker(x=0, y=0, pen=None, image_view=None, method=None):
-            ui = pg.ROI([x, y], [width, height], scaleSnap=True, pen=pen)
-            image_view.addItem(ui)
-            ui.sigRegionChanged.connect(method)
-            return ui
+        self.parent.markers['high_res']['1']['ui'] = self._design_marker(image_resolution='high_res',
+                                                                         target_index='1',
+                                                                         pen=red_pen,
+                                                                         method=self.parent.markers_changed)
 
-        self.parent.markers['high_res']['1']['ui'] = design_marker(x=self.parent.markers['high_res']['1']['x'],
-                                                                   y=self.parent.markers['high_res']['1']['y'],
-                                                                   pen=red_pen,
-                                                                   image_view=self.parent.ui.high_resolution_image_view,
-                                                                   method=self.parent.markers_changed)
+        self.parent.markers['high_res']['2']['ui'] = self._design_marker(image_resolution='high_res',
+                                                                         target_index='2',
+                                                                         pen=blue_pen,
+                                                                         method=self.parent.markers_changed)
 
-        self.parent.markers['high_res']['2']['ui'] = design_marker(x=self.parent.markers['high_res']['2']['x'],
-                                                                   y=self.parent.markers['high_res']['2']['y'],
-                                                                   pen=blue_pen,
-                                                                   image_view=self.parent.ui.high_resolution_image_view,
-                                                                   method=self.parent.markers_changed)
+        self.parent.markers['low_res']['1']['ui'] = self._design_marker(image_resolution='low_res',
+                                                                        target_index='1',
+                                                                        pen=red_pen,
+                                                                        method=self.parent.markers_changed)
 
-        self.parent.markers['low_res']['1']['ui'] = design_marker(x=self.parent.markers['low_res']['1']['x'],
-                                                                  y=self.parent.markers['low_res']['1']['y'],
-                                                                  pen=red_pen,
-                                                                  image_view=self.parent.ui.low_resolution_image_view,
-                                                                  method=self.parent.markers_changed)
-
-        self.parent.markers['low_res']['2']['ui'] = design_marker(x=self.parent.markers['low_res']['2']['x'],
-                                                                  y=self.parent.markers['low_res']['2']['y'],
-                                                                  pen=blue_pen,
-                                                                  image_view=self.parent.ui.low_resolution_image_view,
-                                                                  method=self.parent.markers_changed)
+        self.parent.markers['low_res']['2']['ui'] = self._design_marker(image_resolution='low_res',
+                                                                        target_index='2',
+                                                                        pen=red_pen,
+                                                                        method=self.parent.markers_changed)
 
         o_event = EventHandler(parent=self.parent)
-        o_event.update_target(image_resolution='high_res', target_index='1',
-                              image_view=self.parent.ui.high_resolution_image_view)
-
-
+        o_event.update_target(image_resolution='high_res', target_index='1')
+        o_event.update_target(image_resolution='high_res', target_index='2')
+        o_event.update_target(image_resolution='low_res', target_index='1')
+        o_event.update_target(image_resolution='low_res', target_index='2')

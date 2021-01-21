@@ -10,6 +10,7 @@ from __code._utilities.table_handler import TableHandler
 
 from __code.overlay_images.initialization import Initialization
 from __code.overlay_images.event_handler import EventHandler
+from __code.overlay_images.get import Get
 
 
 class InterfaceHandler:
@@ -35,8 +36,8 @@ class Interface(QMainWindow):
     #   .... }
     dict_images_offset = None
 
-    current_high_resolution_live_image = None
-    current_low_resolution_live_image = None
+    current_live_image = {'high_res': None, 'low_res': None}
+    image_view = {'high_res': None, 'low_res': None}
 
     markers = {'high_res': {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
                             '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},
@@ -89,8 +90,13 @@ class Interface(QMainWindow):
         self.update_previews(row_selected=row_selected)
 
     def markers_changed(self):
-        pass
+        o_get = Get(parent=self)
+        high_res_1_dict = o_get.marker_location(image_resolution='high_res', target_index='1')
+        self.markers['high_res']['1']['x'] = high_res_1_dict['x']
+        self.markers['high_res']['1']['y'] = high_res_1_dict['y']
 
+        o_event = EventHandler(parent=self)
+        o_event.update_target(image_resolution='high_res', target_index='1')
 
 
 
