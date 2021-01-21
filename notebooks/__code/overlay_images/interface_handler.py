@@ -26,6 +26,13 @@ class InterfaceHandler:
 
 class Interface(QMainWindow):
 
+    # {'file_high_reso_1.tif': {'offset': {'x': 0, 'y': 0},
+    #                           'low_resolution_filename': 'file_low_reso_1.tif'},
+    #  'file_high_reso_2.tif': {'offset': {'x': 0, 'y': 0},
+    #                           'low_resolution_filename': 'file_low_reso_2.tif'},
+    #   .... }
+    dict_images_offset = None
+
     def __init__(self, parent=None, o_norm_high_reso=None, o_norm_low_reso=None, working_dir=None):
 
         self.o_norm_high_reso = o_norm_high_reso
@@ -41,6 +48,7 @@ class Interface(QMainWindow):
         self.setWindowTitle("Overlay images with scaling")
 
         o_init = Initialization(parent=self)
+        o_init.dictionaries()
         o_init.statusbar()
         o_init.widgets()
 
