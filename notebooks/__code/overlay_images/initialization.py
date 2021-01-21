@@ -1,4 +1,5 @@
 from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
+from qtpy import QtGui
 import os
 from collections import OrderedDict
 import pyqtgraph as pg
@@ -67,3 +68,39 @@ class Initialization:
         image_layout = QVBoxLayout()
         image_layout.addWidget(self.parent.ui.low_resolution_image_view)
         self.parent.ui.low_res_widget.setLayout(image_layout)
+
+    def markers(self):
+        width = self.parent.markers['width']
+        height = self.parent.markers['height']
+
+        red_pen = QtGui.QPen()
+        red_pen.setColor(QtGui.QColor(255, 0, 0, 255))
+        red_pen.setWidthF(0.05)
+
+        blue_pen = QtGui.QPen()
+        blue_pen.setColor(QtGui.QColor(0, 0, 255, 255))
+        blue_pen.setWidthF(0.05)
+
+        x = self.parent.markers['high_res']['1']['x']
+        y = self.parent.markers['high_res']['1']['y']
+        self.parent.markers['high_res']['1']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=red_pen)
+        self.parent.ui.high_resolution_image_view.addItem(self.parent.markers['high_res']['1']['ui'])
+        self.parent.markers['high_res']['1']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
+
+        x = self.parent.markers['high_res']['2']['x']
+        y = self.parent.markers['high_res']['2']['y']
+        self.parent.markers['high_res']['2']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=blue_pen)
+        self.parent.ui.high_resolution_image_view.addItem(self.parent.markers['high_res']['2']['ui'])
+        self.parent.markers['high_res']['2']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
+
+        x = self.parent.markers['low_res']['1']['x']
+        y = self.parent.markers['low_res']['1']['y']
+        self.parent.markers['low_res']['1']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=red_pen)
+        self.parent.ui.low_resolution_image_view.addItem(self.parent.markers['low_res']['1']['ui'])
+        self.parent.markers['low_res']['1']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
+
+        x = self.parent.markers['low_res']['2']['x']
+        y = self.parent.markers['low_res']['2']['y']
+        self.parent.markers['low_res']['2']['ui'] = pg.ROI([x, y], [width, height], scaleSnap=True, pen=blue_pen)
+        self.parent.ui.low_resolution_image_view.addItem(self.parent.markers['low_res']['2']['ui'])
+        self.parent.markers['low_res']['2']['ui'].sigRegionChanged.connect(self.parent.markers_changed)
