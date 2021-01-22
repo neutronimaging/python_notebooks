@@ -27,7 +27,6 @@ class InterfaceHandler:
                                 list_files=o_norm.data['sample']['file_name'],
                                 working_dir=working_dir)
         o_interface.show()
-
         self.o_interface = o_interface
 
 

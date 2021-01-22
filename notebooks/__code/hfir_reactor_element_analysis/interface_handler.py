@@ -21,7 +21,7 @@ class Interface(QMainWindow):
 
     NUMBER_OF_FUEL_ELEMENTS = 369
     MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS = 50
-    ELEMENTS_POSITION_OUTLIERS = 10  #  number of data points to remove before calculating mean x position
+    ELEMENTS_POSITION_OUTLIERS = 10  # number of data points to remove before calculating mean x position
 
     profiles_plot = None
     elements_position_plot = None
