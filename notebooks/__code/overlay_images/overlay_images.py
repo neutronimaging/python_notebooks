@@ -35,6 +35,6 @@ class OverlayImages:
         o_norm = Normalization()
         o_norm.load(file=list_files, notebook=True)
         if data_type == 'high resolution':
-            self.o_norm_high_reso = o_norm
+            self.o_norm_high_res = o_norm
         else:
-            self.o_norm_low_reso = o_norm
+            self.o_norm_low_res = o_norm

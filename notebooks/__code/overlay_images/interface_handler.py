@@ -15,12 +15,12 @@ from __code.overlay_images.get import Get
 
 class InterfaceHandler:
 
-    def __init__(self, working_dir=None, o_norm_high_reso=None, o_norm_low_reso=None):
+    def __init__(self, working_dir=None, o_norm_high_res=None, o_norm_low_res=None):
 
-        assert len(o_norm_low_reso.data['sample']['file_name']) == len(o_norm_high_reso.data['sample']['file_name'])
+        assert len(o_norm_low_res.data['sample']['file_name']) == len(o_norm_high_res.data['sample']['file_name'])
 
-        o_interface = Interface(o_norm_high_reso=o_norm_high_reso,
-                                o_norm_low_reso=o_norm_low_reso,
+        o_interface = Interface(o_norm_high_res=o_norm_high_res,
+                                o_norm_low_res=o_norm_low_res,
                                 working_dir=working_dir)
         o_interface.show()
 
@@ -56,10 +56,10 @@ class Interface(QMainWindow):
 
     histogram_level = {'high_res': None, 'low_res': None}
 
-    def __init__(self, parent=None, o_norm_high_reso=None, o_norm_low_reso=None, working_dir=None):
+    def __init__(self, parent=None, o_norm_high_res=None, o_norm_low_res=None, working_dir=None):
 
-        self.o_norm_high_res = o_norm_high_reso
-        self.o_norm_low_res = o_norm_low_reso
+        self.o_norm_high_res = o_norm_high_res
+        self.o_norm_low_res = o_norm_low_res
         self.working_dir = working_dir if working_dir else "./"
 
         super(Interface, self).__init__(parent)
