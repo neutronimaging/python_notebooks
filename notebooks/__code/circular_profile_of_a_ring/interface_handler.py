@@ -225,7 +225,7 @@ class Interface(QMainWindow):
         self.ui.angle_bin_horizontalSlider.setMaximum(self.angle_bin['maximum'])
         self.ui.angle_bin_horizontalSlider.setValue(self.angle_bin['value'])
 
-        self.ui.angle_bin_units.setText(u"\u2103")
+        self.ui.angle_bin_units.setText(u"\u00b0")
         self.ui.angle_bin_value.setText("{:.2f}".format(self.angle_bin['value']/100))
 
         self.ui.profile_list_images.addItems(self.list_short_files)

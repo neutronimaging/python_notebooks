@@ -412,7 +412,7 @@
             <item>
              <widget class="QLabel" name="label_4">
               <property name="text">
-               <string>Angles bin (degrees)</string>
+               <string>Angles bin</string>
               </property>
              </widget>
             </item>

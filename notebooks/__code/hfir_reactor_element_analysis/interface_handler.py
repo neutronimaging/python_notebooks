@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
+from qtpy.QtWidgets import QMainWindow
 import os
 import numpy as np
 
