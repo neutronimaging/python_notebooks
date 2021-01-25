@@ -3,7 +3,7 @@ from qtpy.QtWidgets import QMenu
 import numpy as np
 
 from __code._utilities.table_handler import TableHandler
-from __code._utilities.array import reject_n_outliers
+from __code._utilities.array import reject_n_outliers, get_closest_index
 
 
 class EventHandler:
@@ -205,19 +205,34 @@ class EventHandler:
         nbr_column = np.int(median_number_of_elements)
         elements_position_error_table = np.zeros((nbr_row, nbr_column))
         # mean_angle_offset_between_elements = self.get_mean_angle_offset_between_elements()
+        self.parent.list_mean_position_of_elements = self.get_list_mean_position_of_elements()
         self.tolerance_value = self.parent.ui.tolerance_value_doubleSpinBox.value()
 
         for _row_index in np.arange(nbr_row):
-            for _col_index, _col_value in enumerate(self.parent.elements_position_formatted_raw_table):
+            for _col_index, _col_value in enumerate(self.parent.elements_position_formatted_raw_table[_row_index]):
                 col_index = self.where_value_found_within_expected_tolerance(value=_col_value)
                 if col_index >= 0:
-                    elements_position_error_table[_row_index, col_index] += 1
+                    elements_position_error_table[_row_index, col_index] += 1  # we found an element at that position
+                    # if a value > 1 is found later on when checking the table, an error will be displayed for that
+                    # cell
                 elif col_index == -1:
-                    closer_col_index = self.get_closest_value_index(value=_col_value)
+                    closer_col_index = get_closest_index(value=_col_value,
+                                                         array=self.parent.list_mean_position_of_elements)
+                    elements_position_error_table[_row_index, closer_col_index] = -10  # very low value to make sure
+                    # an error will show up in this cell
 
+        o_table = TableHandler(table_ui=self.parent.error_tableWidget)
+        o_table.full_reset()
 
-
-    def get_closest_value_index(self):
+        for _row_index in np.arange(nbr_row):
+            for _col_index in np.arange(nbr_column):
+                if _row_index == 0:
+                    o_table.insert_empty_column(_col_index)
+                o_table.insert_empty_row(_row_index)
+                _value = elements_position_error_table[_row_index, _col_index]
+                o_table.insert_item_with_float(row=_row_index,
+                                               column=_col_index,
+                                               float_value=_value)
 
 
     def where_value_found_within_expected_tolerance(self, value=np.NaN):
@@ -229,8 +244,8 @@ class EventHandler:
         list_of_ideal_elements_position = self.parent.list_mean_position_of_elements
 
         for _index, ideal_position in enumerate(list_of_ideal_elements_position):
-            if (value >= ideal_position - tolerance_value) and \
-               (value <= ideal_position + tolerance_value):
+            if (value >= (ideal_position - tolerance_value)) and \
+               (value <= (ideal_position + tolerance_value)):
                 return _index
 
         return -1
@@ -253,6 +268,19 @@ class EventHandler:
         delta_value = right_array - left_array
 
         return np.mean(delta_value)
+
+    def get_list_mean_position_of_elements(self):
+        table = self.parent.elements_position_formatted_raw_table
+        [nbr_row, nbr_column] = np.shape(table)
+
+        number_of_outliers_to_reject = np.int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
+        list_mean_value = []
+        for _column_index in np.arange(nbr_column):
+            _col_value = table[:, _column_index]
+            _col_value_without_outliers = reject_n_outliers(array=_col_value, n=number_of_outliers_to_reject)
+            list_mean_value.append(np.nanmean(_col_value))
+
+        return list_mean_value
 
     def get_median_number_of_elements(self):
         table = self.parent.elements_position_raw_table
