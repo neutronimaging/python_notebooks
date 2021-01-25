@@ -200,6 +200,54 @@ class EventHandler:
 
     def populate_error_table(self):
         median_number_of_elements = self.get_median_number_of_elements()
+        nbr_row = len(self.parent.list_of_images)
+        nbr_column = np.int(median_number_of_elements)
+        elements_position_error_table = np.zeros((nbr_row, nbr_column))
+        list_mean_position_of_elements = self.get_list_mean_position_of_elements()
+        self.tolerance_value = self.parent.ui.tolerance_value_doubleSpinBox.value()
+        mean_angle_offset_between_elements = self.get_mean_angle_offset_between_elements()
+        list_positions = np.arange(list_mean_position_of_elements[0],
+                                   nbr_column*mean_angle_offset_between_elements,
+                                   mean_angle_offset_between_elements)
+
+        # elements_position_ideal_table = np.broadcast_to(list_positions, (nbr_row, nbr_column))
+        # o_table = TableHandler(table_ui=self.parent.error_tableWidget)
+        # o_table.remove_all_rows()
+        # for _row in np.arange(nbr_row):
+        #     o_table.insert_empty_row(_row)
+        #     for _col in np.arange(nbr_column):
+        #         if _row == 0:
+        #             o_table.insert_column(_col)
+        #         _value = elements_position_ideal_table[_row, _col]
+        #         o_table.insert_item(row=_row, column=_col, value=_value, format_str="{:2f}", editable=False)
+
+        global_list_of_xy_max = self.parent.global_list_of_xy_max
+        # global_list_of_xy_mean = self.parent.global_list_of_xy_mean
+        list_of_images = self.parent.list_of_images
+
+        o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
+        raw_table = []
+        for _row, _file in enumerate(list_of_images):
+            x_axis = global_list_of_xy_max[_file]['x']
+            raw_table.append(x_axis)
+            for _column, _value in enumerate(x_axis):
+                if not self.is_value_within_expected_tolerance(value_to_check=_value,
+                                                           value_expected=list_positions[_column]):
+                    o_table.set_background_color(row=_row,
+                                                 column=_column,
+                                                 qcolor=QtGui.QColor(255, 0, 0))
+
+        # for _row in np.arange(nbr_row):
+        #     _row_value = self.parent.elements_position_formatted_raw_table[_row, :]
+        #     for _col, _cell_value in enumerate(_row_value):
+        #         if not self.is_value_within_expected_tolerance(value_to_check=_cell_value,
+        #                                                    value_expected=list_positions[_col]):
+        #             o_table.set_background_color(row=_row,
+        #                                          column=_col,
+        #                                          qcolor=QtGui.QColor(255, 0, 0))
+
+    def populate_error_table_backup(self):
+        median_number_of_elements = self.get_median_number_of_elements()
 
         nbr_row = len(self.parent.list_of_images)
         nbr_column = np.int(median_number_of_elements)
@@ -234,6 +282,14 @@ class EventHandler:
                                                column=_col_index,
                                                float_value=_value)
 
+
+    def is_value_within_expected_tolerance(self, value_to_check=None,
+                                           value_expected=None):
+        tolerance_value = self.tolerance_value
+        if (value_to_check >= (value_expected - tolerance_value)) and \
+            (value_to_check <= (value_expected + tolerance_value)):
+            return True
+        return False
 
     def where_value_found_within_expected_tolerance(self, value=np.NaN):
         """
