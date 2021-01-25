@@ -27,6 +27,8 @@ class Interface(QMainWindow):
     elements_position_plot = None
     global_list_of_xy_max = None
 
+    elements_position_raw_table = None
+
     def __init__(self, parent=None, o_selection=None, working_dir=None):
         self.o_selection = o_selection
         self.o_pandas = o_selection.pandas_obj
@@ -100,3 +102,6 @@ class Interface(QMainWindow):
         file_index = np.int(event.ydata)
         list_of_images = self.list_of_images
         self.ui.elements_position_file_name_label.setText(list_of_images[file_index])
+
+    def tolerance_value_changed(self, new_tolerance_value):
+        pass

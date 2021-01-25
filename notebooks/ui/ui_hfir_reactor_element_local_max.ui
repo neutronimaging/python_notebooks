@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -47,7 +47,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -243,20 +243,82 @@
        <attribute name="title">
         <string>Elements Position</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_9">
+       <layout class="QVBoxLayout" name="verticalLayout_10">
         <item>
          <widget class="QSplitter" name="splitter_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
           <widget class="QWidget" name="elements_position_widget" native="true"/>
-          <widget class="QTableWidget" name="elements_position_tableWidget">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QTabWidget" name="tabWidget_2">
+           <property name="currentIndex">
+            <number>0</number>
            </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
+           <widget class="QWidget" name="tab_3">
+            <attribute name="title">
+             <string>Raw table of elements</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QTableWidget" name="elements_position_tableWidget">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="selectionBehavior">
+                <enum>QAbstractItemView::SelectRows</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_4">
+            <attribute name="title">
+             <string>Table of possible issues</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QTableWidget" name="tableWidget"/>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>Tolerance:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="tolerance_value_doubleSpinBox">
+                 <property name="value">
+                  <double>0.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="tolerance_units">
+                 <property name="text">
+                  <string>degrees</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </widget>
         </item>
@@ -289,7 +351,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_4">
+           <spacer name="horizontalSpacer_5">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -369,7 +431,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1216</x>
+     <x>1044</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -385,7 +447,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1260</x>
+     <x>1088</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -401,7 +463,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1299</x>
+     <x>1127</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -433,8 +495,8 @@
    <slot>threshold_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>785</x>
-     <y>288</y>
+     <x>442</x>
+     <y>378</y>
     </hint>
     <hint type="destinationlabel">
      <x>1674</x>
@@ -449,8 +511,8 @@
    <slot>threshold_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>782</x>
-     <y>410</y>
+     <x>442</x>
+     <y>500</y>
     </hint>
     <hint type="destinationlabel">
      <x>1673</x>
@@ -474,6 +536,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tolerance_value_doubleSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>tolerance_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>997</x>
+     <y>996</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1675</x>
+     <y>892</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -486,5 +564,6 @@
   <slot>list_of_images_tableWidget_selection_changed()</slot>
   <slot>export_table_data_pushButton_clicked()</slot>
   <slot>elements_position_tolerance_value_changed()</slot>
+  <slot>tolerance_value_changed()</slot>
  </slots>
 </ui>
