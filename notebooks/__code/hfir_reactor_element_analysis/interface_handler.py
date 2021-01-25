@@ -28,6 +28,10 @@ class Interface(QMainWindow):
     global_list_of_xy_max = None
 
     elements_position_raw_table = None
+    elements_position_formatted_raw_table = None
+    list_mean_position_of_elements = None
+
+    percent_of_outliers_to_reject = 10   # %
 
     def __init__(self, parent=None, o_selection=None, working_dir=None):
         self.o_selection = o_selection
