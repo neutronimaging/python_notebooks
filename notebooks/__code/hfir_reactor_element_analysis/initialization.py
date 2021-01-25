@@ -56,6 +56,8 @@ class Initialization:
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)
 
+        self.parent.ui.tolerance_units.setText(u"degrees (\u00b0)")
+
         # # list of images tableWidget
         # o_table = TableHandler(table_ui=self.parent.ui.list_of_images_tableWidget)
         # for _row, _file in enumerate(list_of_images):

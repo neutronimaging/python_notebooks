@@ -193,6 +193,15 @@ class EventHandler:
                     o_table.insert_column(_column)
                 o_table.insert_item(row=_row, column=_column, value=_value, format_str="{:2f}", editable=False)
 
+    def tolerance_value_changed(self, tolerance_value=0):
+        # isolate data by columns and remove n outliers
+
+        # calculate average of column
+
+        # using tolerance value, check if values are within tolerance of their column
+
+        pass
+
     # def calculate_average_x_for_each_element(self):
     #     """
     #     This will remove the n outliers on either end and then calculate the average x for each element

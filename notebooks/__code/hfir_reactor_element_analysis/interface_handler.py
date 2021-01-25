@@ -100,3 +100,7 @@ class Interface(QMainWindow):
         file_index = np.int(event.ydata)
         list_of_images = self.list_of_images
         self.ui.elements_position_file_name_label.setText(list_of_images[file_index])
+
+    def tolerance_value_changed(self, tolerance_value):
+        o_event = EventHandler(parent=self)
+        o_event.tolerance_value_changed(tolerance_value=tolerance_value)

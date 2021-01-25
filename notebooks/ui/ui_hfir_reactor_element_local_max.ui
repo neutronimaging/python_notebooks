@@ -403,7 +403,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1216</x>
+     <x>1044</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -419,7 +419,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1260</x>
+     <x>1088</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -435,7 +435,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1299</x>
+     <x>1127</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -467,8 +467,8 @@
    <slot>threshold_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>785</x>
-     <y>288</y>
+     <x>442</x>
+     <y>378</y>
     </hint>
     <hint type="destinationlabel">
      <x>1674</x>
@@ -483,8 +483,8 @@
    <slot>threshold_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>782</x>
-     <y>410</y>
+     <x>442</x>
+     <y>500</y>
     </hint>
     <hint type="destinationlabel">
      <x>1673</x>
@@ -508,6 +508,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tolerance_value_doubleSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>tolerance_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>997</x>
+     <y>996</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1675</x>
+     <y>892</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -520,5 +536,6 @@
   <slot>list_of_images_tableWidget_selection_changed()</slot>
   <slot>export_table_data_pushButton_clicked()</slot>
   <slot>elements_position_tolerance_value_changed()</slot>
+  <slot>tolerance_value_changed()</slot>
  </slots>
 </ui>
