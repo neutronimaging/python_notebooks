@@ -27,6 +27,8 @@ class Interface(QMainWindow):
     elements_position_plot = None
     global_list_of_xy_max = None
 
+    elements_position_raw_table = None
+
     def __init__(self, parent=None, o_selection=None, working_dir=None):
         self.o_selection = o_selection
         self.o_pandas = o_selection.pandas_obj

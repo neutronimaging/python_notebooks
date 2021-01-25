@@ -158,8 +158,8 @@ class EventHandler:
 
     def populate_elements_position_tab(self):
         self.populate_elements_position_plot()
-        # self.calculate_average_x_for_each_element()
         self.populate_elements_position_table()
+        self.populate_error_table()
 
     def populate_elements_position_plot(self):
         global_list_of_xy_max = self.parent.global_list_of_xy_max
@@ -185,22 +185,30 @@ class EventHandler:
 
         o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
         o_table.remove_all_rows()
+        raw_table = []
         for _row, _file in enumerate(list_of_images):
             o_table.insert_empty_row(_row)
             x_axis = global_list_of_xy_max[_file]['x']
+            raw_table.append(x_axis)
             for _column, _value in enumerate(x_axis):
                 if _row == 0:
                     o_table.insert_column(_column)
                 o_table.insert_item(row=_row, column=_column, value=_value, format_str="{:2f}", editable=False)
+        self.parent.elements_position_raw_table = raw_table
 
-    def tolerance_value_changed(self, tolerance_value=0):
-        # isolate data by columns and remove n outliers
+    def populate_error_table(self):
+        median_number_of_elements = self.get_median_number_of_elements()
+        print(f"median_number_of_elements: {median_number_of_elements}")
 
-        # calculate average of column
 
-        # using tolerance value, check if values are within tolerance of their column
+    def get_median_number_of_elements(self):
+        table = self.parent.elements_position_raw_table
+        list_number_of_elements = []
+        for _row in table:
+            nbr_elements = len(_row)
+            list_number_of_elements.append(nbr_elements)
 
-        pass
+        return np.median(list_number_of_elements)
 
     # def calculate_average_x_for_each_element(self):
     #     """
