@@ -29,7 +29,6 @@ class GroupImagesByCycle:
         list_key_value = self.list_of_metadata_key_value_number
         master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(list_files=self.list_of_files,
                                                                            list_key=list_key_value)
-
         clean_master_dictionary = OrderedDict()
         list_metadata_key = []
         for _index, _file in enumerate(master_dictionary.keys()):
