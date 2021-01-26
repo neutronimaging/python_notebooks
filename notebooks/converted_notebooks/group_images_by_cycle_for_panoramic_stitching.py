@@ -33,6 +33,8 @@ o_group = GroupImages(working_dir=system.System.get_working_dir())
 o_group.select_input_folder()
 # -
 
+o_group.list_images
+
 # # Sort files 
 
 o_group.how_to_sort_files()
