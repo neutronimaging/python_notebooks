@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -243,7 +243,7 @@
        <attribute name="title">
         <string>Elements Position</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_9">
+       <layout class="QVBoxLayout" name="verticalLayout_11">
         <item>
          <widget class="QSplitter" name="splitter_2">
           <property name="orientation">
@@ -251,15 +251,39 @@
           </property>
           <widget class="QWidget" name="elements_position_widget" native="true"/>
           <widget class="QWidget" name="">
-           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QTableWidget" name="elements_position_tableWidget">
-              <property name="enabled">
-               <bool>true</bool>
+             <widget class="QTabWidget" name="missing_peaks_tabWidget">
+              <property name="currentIndex">
+               <number>0</number>
               </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
+              <widget class="QWidget" name="tab_3">
+               <attribute name="title">
+                <string>All peaks found</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QTableWidget" name="elements_position_tableWidget">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="selectionBehavior">
+                   <enum>QAbstractItemView::SelectRows</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab_4">
+               <attribute name="title">
+                <string>Missing Peaks</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_9">
+                <item>
+                 <widget class="QTableWidget" name="tableWidget"/>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </item>
             <item>
