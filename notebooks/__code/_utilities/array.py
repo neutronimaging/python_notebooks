@@ -39,7 +39,13 @@ def reject_outliers(array=None):
                  and (not (_value == np.max(array)))]
     return new_array
 
+
 def reject_n_outliers(array=None, n=1):
     set_array = list(array)
     set_array.sort()
     return set_array[n: -n]
+
+
+def find_nearest_index(array, value):
+    idx = (np.abs(np.array(array) - value)).argmin()
+    return idx
