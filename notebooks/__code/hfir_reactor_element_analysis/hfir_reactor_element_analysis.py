@@ -6,9 +6,12 @@ from IPython.core.display import display, clear_output
 from __code.ipywe import fileselector
 from __code.file_handler import read_ascii
 
+
 class HfirReactorElementAnalysis:
 
     pandas_obj = None
+    metadata = None
+    column_labels = None
 
     def __init__(self, working_dir=""):
         self.working_dir = working_dir
@@ -32,6 +35,8 @@ class HfirReactorElementAnalysis:
             if _line_contain == "#":
                 break
         metadata = formatted_ascii_contain[:_line_number]
+        self.metadata = metadata
+
         column_labels = ["Angle (degrees)"]
         for _text in metadata:
             if _text.startswith("# column "):

@@ -52,6 +52,7 @@ class Interface(QMainWindow):
         o_init.matplotlib()
         o_init.widgets()
         o_init.statusbar()
+        o_init.table_of_metadata()
 
     # event handler
     def list_of_images_selection_changed(self):
@@ -81,6 +82,7 @@ class Interface(QMainWindow):
         self.list_of_images_selection_changed()
         o_event.populate_elements_position_tab()
         self.ui.setEnabled(True)
+        self.ui.tabWidget.setTabEnabled(1, True)
 
     def threshold_moved(self, value):
         o_event = EventHandler(parent=self)

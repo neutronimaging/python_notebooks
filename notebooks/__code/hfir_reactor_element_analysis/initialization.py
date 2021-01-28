@@ -58,14 +58,9 @@ class Initialization:
 
         self.parent.ui.tolerance_units.setText(u"degrees (\u00b0)")
 
-        # # list of images tableWidget
-        # o_table = TableHandler(table_ui=self.parent.ui.list_of_images_tableWidget)
-        # for _row, _file in enumerate(list_of_images):
-        #     o_table.insert_empty_row(row=_row)
-        #     o_table.insert_item(row=_row, column=0, value=_file, editable=False)
-        # o_table.set_column_sizes(column_sizes=[200, 50, 50])
-
-        self.parent.ui.splitter.setSizes([200, 500])
+        self.parent.ui.splitter.setSizes([500, 100])
+        self.parent.ui.splitter_3.setSizes([200, 500])
+        self.parent.ui.tabWidget.setTabEnabled(1, False)
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
@@ -73,3 +68,7 @@ class Initialization:
         self.parent.eventProgress.setMaximumSize(540, 100)
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
+
+    def table_of_metadata(self):
+        metadata = self.parent.o_selection.metadata
+

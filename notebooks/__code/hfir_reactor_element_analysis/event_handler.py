@@ -258,6 +258,16 @@ class EventHandler:
 
             error_table.append(_error_row)
 
+        o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
+        (nbr_row, nbr_column) = np.shape(data)
+        for _row in np.arange(nbr_row):
+            for _column, _state in enumerate(error_table[_row]):
+                if _state == 0:
+                    o_table.set_background_color(row=_row,
+                                                 column=_column,
+                                                 qcolor=QtGui.QColor(150, 0, 0))
+
+
         #
         #
         #
