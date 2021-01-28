@@ -159,7 +159,7 @@ class EventHandler:
     def populate_elements_position_tab(self):
         self.populate_elements_position_plot()
         self.populate_elements_position_table()
-        self.populate_error_table()
+        self.populate_error_tables()
 
     def populate_elements_position_plot(self):
         global_list_of_xy_max = self.parent.global_list_of_xy_max
@@ -198,44 +198,104 @@ class EventHandler:
         self.parent.elements_position_raw_table = raw_table
         self.parent.elements_position_formatted_raw_table = self.format_table(raw_table)
 
-    def populate_error_table(self):
+    def populate_error_tables(self):
         median_number_of_elements = self.get_median_number_of_elements()
         nbr_row = len(self.parent.list_of_images)
         nbr_column = np.int(median_number_of_elements)
-        elements_position_error_table = np.zeros((nbr_row, nbr_column))
+
+        ideal_table_data_error = np.zeros((nbr_row, nbr_column))
+        error_table = list()
+
         list_mean_position_of_elements = self.get_list_mean_position_of_elements()
-        self.tolerance_value = self.parent.ui.tolerance_value_doubleSpinBox.value()
+        tolerance = self.parent.ui.tolerance_value_doubleSpinBox.value()
+
         mean_angle_offset_between_elements = self.get_mean_angle_offset_between_elements()
-        list_positions = np.arange(list_mean_position_of_elements[0],
-                                   nbr_column*mean_angle_offset_between_elements,
-                                   mean_angle_offset_between_elements)
+        list_average = np.arange(list_mean_position_of_elements[0],
+                                 nbr_column*mean_angle_offset_between_elements,
+                                 mean_angle_offset_between_elements)
 
-        # elements_position_ideal_table = np.broadcast_to(list_positions, (nbr_row, nbr_column))
-        # o_table = TableHandler(table_ui=self.parent.error_tableWidget)
-        # o_table.remove_all_rows()
-        # for _row in np.arange(nbr_row):
-        #     o_table.insert_empty_row(_row)
-        #     for _col in np.arange(nbr_column):
-        #         if _row == 0:
-        #             o_table.insert_column(_col)
-        #         _value = elements_position_ideal_table[_row, _col]
-        #         o_table.insert_item(row=_row, column=_col, value=_value, format_str="{:2f}", editable=False)
+        data = self.parent.elements_position_formatted_raw_table
 
-        global_list_of_xy_max = self.parent.global_list_of_xy_max
-        # global_list_of_xy_mean = self.parent.global_list_of_xy_mean
-        list_of_images = self.parent.list_of_images
+        data_filename = '/Users/j35/Desktop/data_file'
+        np.save(data_filename, data, allow_pickle=True)
 
-        o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
-        raw_table = []
-        for _row, _file in enumerate(list_of_images):
-            x_axis = global_list_of_xy_max[_file]['x']
-            raw_table.append(x_axis)
-            for _column, _value in enumerate(x_axis):
-                if not self.is_value_within_expected_tolerance(value_to_check=_value,
-                                                           value_expected=list_positions[_column]):
-                    o_table.set_background_color(row=_row,
-                                                 column=_column,
-                                                 qcolor=QtGui.QColor(255, 0, 0))
+        for _row_index, _row in enumerate(data):
+            _reference_index_element = 0
+            _error_row = []
+
+            for _index_element, _element_position in enumerate(_row):
+                found_flag = True
+
+                if _reference_index_element == len(list_average):
+                    # we are done for this row
+                    _error_row.append(0)
+                    break
+
+                while ((_element_position < (list_average[_reference_index_element] - tolerance)) or
+                       (_element_position > (list_average[_reference_index_element] + tolerance))):
+
+                    if _element_position < list_average[_reference_index_element]:
+                        _error_row.append(0)
+                        found_flag = False
+                        break
+
+                    _reference_index_element += 1
+                    if _reference_index_element > len(list_average) - 1:
+                        _error_row.append(0)
+                        found_flag = False
+                        break
+
+                if found_flag:
+                    # find the closest place where this _element_position goes
+                    nearest_index = get_closest_index(array=list_average,
+                                                      value=_element_position)
+                    ideal_table_data_error[_row_index, nearest_index] = 1
+
+                    _reference_index_element += 1
+                    _error_row.append(1)
+                if not found_flag:
+                    pass
+
+            error_table.append(_error_row)
+
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        # elements_position_error_table = np.zeros((nbr_row, nbr_column))
+        # list_mean_position_of_elements = self.get_list_mean_position_of_elements()
+        # self.tolerance_value = self.parent.ui.tolerance_value_doubleSpinBox.value()
+        # mean_angle_offset_between_elements = self.get_mean_angle_offset_between_elements()
+        # list_positions = np.arange(list_mean_position_of_elements[0],
+        #                            nbr_column*mean_angle_offset_between_elements,
+        #                            mean_angle_offset_between_elements)
+        #
+        # global_list_of_xy_max = self.parent.global_list_of_xy_max
+        # # global_list_of_xy_mean = self.parent.global_list_of_xy_meana
+        # list_of_images = self.parent.list_of_images
+        #
+        # o_table = TableHandler(table_ui=self.parent.elements_position_tableWidget)
+        # raw_table = []
+        # for _row, _file in enumerate(list_of_images):
+        #     x_axis = global_list_of_xy_max[_file]['x']
+        #     raw_table.append(x_axis)
+        #     for _column, _value in enumerate(x_axis):
+        #         if not self.is_value_within_expected_tolerance(value_to_check=_value,
+        #                                                    value_expected=list_positions[_column]):
+        #             o_table.set_background_color(row=_row,
+        #                                          column=_column,
+        #                                          qcolor=QtGui.QColor(255, 0, 0))
+
+
+
+
+
+
 
         # for _row in np.arange(nbr_row):
         #     _row_value = self.parent.elements_position_formatted_raw_table[_row, :]
