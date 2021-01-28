@@ -6,6 +6,7 @@ import numpy as np
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.array import get_n_random_int_of_max_value_m
+from __code._utilities.table_handler import TableHandler
 
 
 class Initialization:
@@ -62,6 +63,9 @@ class Initialization:
         self.parent.ui.splitter_3.setSizes([200, 500])
         self.parent.ui.tabWidget.setTabEnabled(1, False)
 
+        o_table = TableHandler(table_ui=self.parent.ui.metadata_tableWidget)
+        o_table.set_column_sizes(column_sizes=[200, 200])
+
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
         self.parent.eventProgress.setMinimumSize(20, 14)
@@ -72,3 +76,28 @@ class Initialization:
     def table_of_metadata(self):
         metadata = self.parent.o_selection.metadata
 
+        formatted_data = []
+        for _text in metadata:
+            if "column 2" in _text:
+                break
+            elif "column 1" in _text:
+                _, right_text = _text.split(":")
+                formatted_data.append(["First file loaded", right_text])
+                continue
+            elif "columns" in _text:
+                continue
+
+            _left, _right = _text.split(":")
+            formatted_data.append([_left, _right])
+
+        _, _right = metadata[-1].split(":")
+        formatted_data.append(["Last file loaded", _right])
+
+        o_table = TableHandler(table_ui=self.parent.ui.metadata_tableWidget)
+        for _row_index, _row_value in enumerate(formatted_data):
+            o_table.insert_empty_row(_row_index)
+            for _col_index, _value in enumerate(_row_value):
+                o_table.insert_item(row=_row_index,
+                                    column=_col_index,
+                                    value=_value,
+                                    editable=False)

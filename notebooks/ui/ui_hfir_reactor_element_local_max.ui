@@ -58,7 +58,27 @@
               </widget>
              </item>
              <item>
-              <widget class="QTableWidget" name="tableWidget_2"/>
+              <widget class="QTableWidget" name="metadata_tableWidget">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::NoSelection</enum>
+               </property>
+               <column>
+                <property name="text">
+                 <string>Name</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Value</string>
+                </property>
+               </column>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -266,7 +286,7 @@
            <enum>Qt::Vertical</enum>
           </property>
           <widget class="QWidget" name="elements_position_widget" native="true"/>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
              <widget class="QTabWidget" name="missing_peaks_tabWidget">
