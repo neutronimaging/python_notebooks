@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -291,7 +291,7 @@
             <item>
              <widget class="QTabWidget" name="missing_peaks_tabWidget">
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="tab_3">
                <attribute name="title">
@@ -303,8 +303,11 @@
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
+                  <property name="alternatingRowColors">
+                   <bool>true</bool>
+                  </property>
                   <property name="selectionBehavior">
-                   <enum>QAbstractItemView::SelectRows</enum>
+                   <enum>QAbstractItemView::SelectItems</enum>
                   </property>
                  </widget>
                 </item>
@@ -361,6 +364,9 @@
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="tolerance_value_doubleSpinBox">
+                  <property name="singleStep">
+                   <double>0.010000000000000</double>
+                  </property>
                   <property name="value">
                    <double>0.500000000000000</double>
                   </property>
@@ -370,6 +376,13 @@
                  <widget class="QLabel" name="tolerance_units">
                   <property name="text">
                    <string>degrees</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="refresh_table_pushButton">
+                  <property name="text">
+                   <string>Refresh Table</string>
                   </property>
                  </widget>
                 </item>
@@ -441,8 +454,8 @@
    <slot>list_of_images_selection_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>146</x>
-     <y>613</y>
+     <x>161</x>
+     <y>507</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -457,8 +470,8 @@
    <slot>list_of_images_right_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>150</x>
-     <y>713</y>
+     <x>165</x>
+     <y>507</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -579,18 +592,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>tolerance_value_doubleSpinBox</sender>
-   <signal>valueChanged(double)</signal>
+   <sender>refresh_table_pushButton</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>tolerance_value_changed()</slot>
+   <slot>refresh_table_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>997</x>
-     <y>996</y>
+     <x>794</x>
+     <y>990</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1675</x>
-     <y>892</y>
+     <x>1671</x>
+     <y>820</y>
     </hint>
    </hints>
   </connection>
@@ -607,5 +620,6 @@
   <slot>export_table_data_pushButton_clicked()</slot>
   <slot>elements_position_tolerance_value_changed()</slot>
   <slot>tolerance_value_changed()</slot>
+  <slot>refresh_table_clicked()</slot>
  </slots>
 </ui>

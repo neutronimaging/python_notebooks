@@ -118,6 +118,11 @@ class TableHandler:
             _item = QTableWidgetItem(_text)
             self.table_ui.setItem(row, column, _item)
 
+    def is_item(self, row=0, column=0):
+        if self.table_ui.item(row, column):
+            return True
+        return False
+
     def get_widget(self, row=-1, column=-1):
         _widget = self.table_ui.cellWidget(row, column)
         return _widget

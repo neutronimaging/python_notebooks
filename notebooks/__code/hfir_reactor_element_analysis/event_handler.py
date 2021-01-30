@@ -263,9 +263,10 @@ class EventHandler:
         for _row in np.arange(nbr_row):
             for _column, _state in enumerate(error_table[_row]):
                 if _state == 0:
-                    o_table.set_background_color(row=_row,
-                                                 column=_column,
-                                                 qcolor=QtGui.QColor(150, 0, 0))
+                    if o_table.is_item(row=_row, column=_column):
+                        o_table.set_background_color(row=_row,
+                                                     column=_column,
+                                                     qcolor=QtGui.QColor(150, 0, 0))
 
 
         #
@@ -427,22 +428,3 @@ class EventHandler:
             for _column, _value in enumerate(_list):
                 formatted_table[_row, _column] = _value
         return formatted_table
-
-
-    # def calculate_average_x_for_each_element(self):
-    #     """
-    #     This will remove the n outliers on either end and then calculate the average x for each element
-    #     and then will display the background of all the cells that are outside a tolerance range
-    #     """
-    #     global_list_of_xy_max = self.parent.global_list_of_xy_max
-    #     list_of_images = self.parent.list_of_images
-    #     # x_axis = global_list_of_xy_max[_file]['x']
-    #     global_list_of_xy_mean = []
-    #
-    #     for _file in list_of_images:
-    #         x_axis = global_list_of_xy_max[_file]['x']
-    #         x_axis_without_outliers = reject_n_outliers(array=x_axis, n=self.parent.ELEMENTS_POSITION_OUTLIERS)
-    #         mean_value = np.mean(x_axis_without_outliers)
-    #         global_list_of_xy_mean.append(mean_value)
-    #
-    #     self.parent.global_list_of_xy_mean = global_list_of_xy_mean
