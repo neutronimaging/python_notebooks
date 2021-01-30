@@ -47,7 +47,6 @@ class Export:
         for _group_index, _group_name in enumerate(data_dictionary.keys()):
 
             self.parent.ui.statusbar.showMessage("Creating panoramic image of {} in progress...".format(_group_name))
-
             panoramic_image = np.zeros((panoramic_height, panoramic_width))
 
             data_dictionary_of_group = data_dictionary[_group_name]
