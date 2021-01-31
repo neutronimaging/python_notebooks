@@ -290,8 +290,11 @@
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
              <widget class="QTabWidget" name="missing_peaks_tabWidget">
+              <property name="contextMenuPolicy">
+               <enum>Qt::DefaultContextMenu</enum>
+              </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="tab_3">
                <attribute name="title">
@@ -337,7 +340,23 @@
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_9">
                 <item>
-                 <widget class="QTableWidget" name="missing_peaks_tableWidget"/>
+                 <widget class="QTableWidget" name="missing_peaks_tableWidget">
+                  <property name="contextMenuPolicy">
+                   <enum>Qt::CustomContextMenu</enum>
+                  </property>
+                  <attribute name="horizontalHeaderVisible">
+                   <bool>false</bool>
+                  </attribute>
+                  <attribute name="horizontalHeaderHighlightSections">
+                   <bool>false</bool>
+                  </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
+                  </attribute>
+                  <attribute name="verticalHeaderHighlightSections">
+                   <bool>false</bool>
+                  </attribute>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -641,6 +660,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>missing_peaks_tableWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>missing_peaks_table_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1150</x>
+     <y>293</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1673</x>
+     <y>380</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -656,5 +691,6 @@
   <slot>tolerance_value_changed()</slot>
   <slot>refresh_table_clicked()</slot>
   <slot>all_peaks_found_table_right_click()</slot>
+  <slot>missing_peaks_table_right_click()</slot>
  </slots>
 </ui>

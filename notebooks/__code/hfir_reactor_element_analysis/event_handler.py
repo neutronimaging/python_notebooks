@@ -412,7 +412,6 @@ class EventHandler:
         nbr_elements = 369
         angle_step = np.float(360) / np.float(nbr_elements)
         list_mean_value = np.arange(list_mean_value[0], 360, angle_step)
-        print(f"nbr elements is: {len(list_mean_value)}")
 
         return list_mean_value
 

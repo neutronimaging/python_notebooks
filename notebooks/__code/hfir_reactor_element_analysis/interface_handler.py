@@ -7,6 +7,7 @@ from __code.hfir_reactor_element_analysis.initialization import Initialization
 from __code.hfir_reactor_element_analysis.event_handler import EventHandler
 from __code.hfir_reactor_element_analysis.export_data import ExportData
 from __code.hfir_reactor_element_analysis.all_peaks_found_event_handler import AllPeaksFoundEventHandler
+from __code.hfir_reactor_element_analysis.missing_peaks_event_handler import MissingPeaksEventHandler
 
 
 class InterfaceHandler:
@@ -117,4 +118,8 @@ class Interface(QMainWindow):
 
     def all_peaks_found_table_right_click(self, position):
         o_event = AllPeaksFoundEventHandler(parent=self)
+        o_event.right_click()
+
+    def missing_peaks_table_right_click(self, position):
+        o_event = MissingPeaksEventHandler(parent=self)
         o_event.right_click()
