@@ -200,10 +200,10 @@ class EventHandler:
             x_axis = global_list_of_xy_max[_file]['x']
             raw_table.append(x_axis)
             if len(x_axis) > nbr_column: nbr_column = len(x_axis)
-            for _column, _value in enumerate(x_axis):
+            for _column in np.arange(len(x_axis)):
                 if _row == 0:
                     o_table.insert_column(_column)
-                o_table.insert_item(row=_row, column=_column, value=_value, format_str="{:2f}", editable=False)
+                o_table.insert_item(row=_row, column=_column, value="", editable=False)
 
         nbr_row = len(list_of_images)
 
@@ -412,6 +412,7 @@ class EventHandler:
         nbr_elements = 369
         angle_step = np.float(360) / np.float(nbr_elements)
         list_mean_value = np.arange(list_mean_value[0], 360, angle_step)
+        print(f"nbr elements is: {len(list_mean_value)}")
 
         return list_mean_value
 
