@@ -291,7 +291,7 @@
             <item>
              <widget class="QTabWidget" name="missing_peaks_tabWidget">
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab_3">
                <attribute name="title">
@@ -303,8 +303,14 @@
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
+                  <property name="contextMenuPolicy">
+                   <enum>Qt::CustomContextMenu</enum>
+                  </property>
                   <property name="alternatingRowColors">
                    <bool>true</bool>
+                  </property>
+                  <property name="selectionMode">
+                   <enum>QAbstractItemView::SingleSelection</enum>
                   </property>
                   <property name="selectionBehavior">
                    <enum>QAbstractItemView::SelectItems</enum>
@@ -319,7 +325,7 @@
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_9">
                 <item>
-                 <widget class="QTableWidget" name="tableWidget"/>
+                 <widget class="QTableWidget" name="missing_peaks_tableWidget"/>
                 </item>
                </layout>
               </widget>
@@ -607,6 +613,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>elements_position_tableWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>all_peaks_found_table_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>904</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1670</x>
+     <y>458</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -621,5 +643,6 @@
   <slot>elements_position_tolerance_value_changed()</slot>
   <slot>tolerance_value_changed()</slot>
   <slot>refresh_table_clicked()</slot>
+  <slot>all_peaks_found_table_right_click()</slot>
  </slots>
 </ui>

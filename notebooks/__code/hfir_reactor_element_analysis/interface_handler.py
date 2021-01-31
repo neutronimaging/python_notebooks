@@ -6,6 +6,7 @@ from __code import load_ui
 from __code.hfir_reactor_element_analysis.initialization import Initialization
 from __code.hfir_reactor_element_analysis.event_handler import EventHandler
 from __code.hfir_reactor_element_analysis.export_data import ExportData
+from __code.hfir_reactor_element_analysis.all_peaks_found_event_handler import AllPeaksFoundEventHandler
 
 
 class InterfaceHandler:
@@ -29,6 +30,7 @@ class Interface(QMainWindow):
 
     elements_position_raw_table = None
     elements_position_formatted_raw_table = None
+    ideal_table_data_error = None  # missing elements
     list_mean_position_of_elements = None
 
     percent_of_outliers_to_reject = 10   # %
@@ -46,7 +48,7 @@ class Interface(QMainWindow):
                                     os.path.join('ui',
                                                  'ui_hfir_reactor_element_local_max.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
-        self.setWindowTitle("Data fitting")
+        self.setWindowTitle("Elements Position")
 
         o_init = Initialization(parent=self)
         o_init.matplotlib()
@@ -112,3 +114,7 @@ class Interface(QMainWindow):
     def refresh_table_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.populate_elements_position_tab()
+
+    def all_peaks_found_table_right_click(self, position):
+        o_event = AllPeaksFoundEventHandler(parent=self)
+        o_event.right_click()

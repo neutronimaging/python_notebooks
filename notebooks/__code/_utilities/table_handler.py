@@ -103,6 +103,9 @@ class TableHandler:
         for _col, _size in enumerate(column_sizes):
             self.table_ui.setColumnWidth(_col, _size)
 
+    def set_column_width(self, column_width=None):
+        self.set_column_sizes(column_sizes=column_width)
+
     def set_row_height(self, row_height=None):
         for _row, _height in enumerate(row_height):
             self.table_ui.setRowHeight(_row, _height)
