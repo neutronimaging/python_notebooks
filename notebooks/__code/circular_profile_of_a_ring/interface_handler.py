@@ -102,6 +102,7 @@ class Interface(QMainWindow):
         self.display_grid()
         self.display_ring()
         self.init_statusbar()
+        self.angle_cursor_dial_moved(180)
 
     def init_statusbar(self):
         self.eventProgress = QProgressBar(self.ui.statusbar)
@@ -139,7 +140,7 @@ class Interface(QMainWindow):
         self.angle_line = pg.InfiniteLine([x0, y0],
                                           pen=_pen,
                                           label="{:.2f}".format(angle),
-                                          angle=angle-90,
+                                          angle=angle-90.,
                                           span=(0, 1),
                                           labelOpts={'position': 0.9})
         # self.angle_line.addMarker('o', size=15)
@@ -747,10 +748,49 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.list_images_right_click()
 
-    def angle_cursor_dial_moved(self, value):
+    @staticmethod
+    def format_angle_degrees(value):
+        value = np.float(value)
         if value >= 180:
             value -= 180
         else:
             value += 180
+        return value
 
-        self.ui.angle_cursor_value.setText(str(value))
+    @staticmethod
+    def format_angle_minutes(value):
+        value = np.float(value)
+        if value >= 50:
+            value -= 50
+        else:
+            value += 50
+        return value
+
+    def angle_cursor_dial_moved(self, value):
+        value = Interface.format_angle_degrees(value)
+
+        right_comma_value = self.ui.angle_cursor_dial_2.value()
+        right_comma_formatted = Interface.format_angle_minutes(right_comma_value)/100.
+        full_value = value + right_comma_formatted
+        self.ui.angle_cursor_value.setText(str(full_value))
+
+        o_event = Event(value=full_value)
+        self.click_on_profile_plot(o_event)
+
+    def angle_cursor_dial2_moved(self, value):
+        value = Interface.format_angle_minutes(value)
+        left_comma_value = Interface.format_angle_degrees(self.ui.angle_cursor_dial.value())
+
+        full_value = np.float(left_comma_value + value/100.)
+        self.ui.angle_cursor_value.setText(str(full_value))
+
+        o_event = Event(value=full_value)
+        self.click_on_profile_plot(o_event)
+
+
+class Event:
+
+    xdata = 0.
+
+    def __init__(self, value):
+        self.xdata = value
