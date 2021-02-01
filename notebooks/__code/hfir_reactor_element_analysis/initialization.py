@@ -66,6 +66,8 @@ class Initialization:
         o_table = TableHandler(table_ui=self.parent.ui.metadata_tableWidget)
         o_table.set_column_sizes(column_sizes=[200, 200])
 
+        self.parent.ui.number_of_elements_spinBox.setValue(self.parent.NUMBER_OF_FUEL_ELEMENTS)
+
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
         self.parent.eventProgress.setMinimumSize(20, 14)

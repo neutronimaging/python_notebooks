@@ -123,3 +123,9 @@ class Interface(QMainWindow):
     def missing_peaks_table_right_click(self, position):
         o_event = MissingPeaksEventHandler(parent=self)
         o_event.right_click()
+
+    def display_ideal_positions_of_elements_on_profiles_plot(self):
+        pass
+
+    def number_of_elements_editing_finished(self):
+        pass

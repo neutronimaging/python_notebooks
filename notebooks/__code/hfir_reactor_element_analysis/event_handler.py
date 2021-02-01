@@ -354,7 +354,6 @@ class EventHandler:
                                                column=_col_index,
                                                float_value=_value)
 
-
     def is_value_within_expected_tolerance(self, value_to_check=None,
                                            value_expected=None):
         tolerance_value = self.tolerance_value
@@ -379,39 +378,48 @@ class EventHandler:
         return -1
 
     def get_mean_angle_offset_between_elements(self):
-        table = self.parent.elements_position_formatted_raw_table
-        [nbr_row, nbr_column] = np.shape(table)
+        list_mean_position = self.get_list_mean_position_of_elements()
+        return list_mean_position[1] - list_mean_position[0]
 
-        number_of_outliers_to_reject = np.int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
-        list_mean_value = []
-        for _column_index in np.arange(nbr_column):
-            _col_value = table[:, _column_index]
-            _col_value_without_outliers = reject_n_outliers(array=_col_value, n=number_of_outliers_to_reject)
-            list_mean_value.append(np.nanmean(_col_value))
-
-        self.parent.list_mean_position_of_elements = list_mean_value
-
-        left_array = np.array(list_mean_value[:-1])
-        right_array = np.array(list_mean_value[1:])
-        delta_value = right_array - left_array
-
-        return np.mean(delta_value)
+        # table = self.parent.elements_position_formatted_raw_table
+        # [nbr_row, nbr_column] = np.shape(table)
+        #
+        # number_of_outliers_to_reject = np.int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
+        # list_mean_value = []
+        # for _column_index in np.arange(nbr_column):
+        #     _col_value = table[:, _column_index]
+        #     _col_value_without_outliers = reject_n_outliers(array=_col_value, n=number_of_outliers_to_reject)
+        #     list_mean_value.append(np.nanmean(_col_value))
+        #
+        # self.parent.list_mean_position_of_elements = list_mean_value
+        #
+        # left_array = np.array(list_mean_value[:-1])
+        # right_array = np.array(list_mean_value[1:])
+        # delta_value = right_array - left_array
+        #
+        # return np.mean(delta_value)
 
     def get_list_mean_position_of_elements(self):
         table = self.parent.elements_position_formatted_raw_table
         [nbr_row, nbr_column] = np.shape(table)
 
         number_of_outliers_to_reject = np.int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
-        list_mean_value = []
-        for _column_index in np.arange(nbr_column):
-            _col_value = table[:, _column_index]
-            _col_value_without_outliers = reject_n_outliers(array=_col_value, n=number_of_outliers_to_reject)
-            list_mean_value.append(np.nanmean(_col_value))
+        # list_mean_value = []
+        # for _column_index in np.arange(nbr_column):
+        #     _col_value = table[:, _column_index]
+        #     _col_value_without_outliers = reject_n_outliers(array=_col_value, n=number_of_outliers_to_reject)
+        #     list_mean_value.append(np.nanmean(_col_value))
+
+        # mean of first element
+        _col_value = table[:, 0]
+        _col_value_without_outliers = reject_n_outliers(array=_col_value,
+                                                        n=number_of_outliers_to_reject)
+        mean_first_element = np.nanmean(_col_value)
 
         # trying to calculate manually ideal list mean
-        nbr_elements = 369
+        nbr_elements = self.parent.ui.number_of_elements_spinBox.value()
         angle_step = np.float(360) / np.float(nbr_elements)
-        list_mean_value = np.arange(list_mean_value[0], 360, angle_step)
+        list_mean_value = np.arange(mean_first_element, 360, angle_step)
 
         return list_mean_value
 

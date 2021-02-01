@@ -454,6 +454,70 @@
           </widget>
          </item>
          <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Angle cursor</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QDial" name="angle_cursor_dial">
+              <property name="maximum">
+               <number>360</number>
+              </property>
+              <property name="value">
+               <number>180</number>
+              </property>
+              <property name="invertedAppearance">
+               <bool>false</bool>
+              </property>
+              <property name="invertedControls">
+               <bool>false</bool>
+              </property>
+              <property name="wrapping">
+               <bool>true</bool>
+              </property>
+              <property name="notchTarget">
+               <double>5.000000000000000</double>
+              </property>
+              <property name="notchesVisible">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="angle_cursor_value">
+              <property name="text">
+               <string>0</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="angle_cursor_units">
+              <property name="text">
+               <string>degrees</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -632,7 +696,7 @@
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>203</y>
     </hint>
     <hint type="destinationlabel">
@@ -648,7 +712,7 @@
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>237</y>
     </hint>
     <hint type="destinationlabel">
@@ -664,7 +728,7 @@
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>271</y>
     </hint>
     <hint type="destinationlabel">
@@ -680,7 +744,7 @@
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>305</y>
     </hint>
     <hint type="destinationlabel">
@@ -696,7 +760,7 @@
    <slot>grid_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>339</y>
     </hint>
     <hint type="destinationlabel">
@@ -712,7 +776,7 @@
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>339</y>
     </hint>
     <hint type="destinationlabel">
@@ -728,7 +792,7 @@
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>203</y>
     </hint>
     <hint type="destinationlabel">
@@ -744,7 +808,7 @@
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>203</y>
     </hint>
     <hint type="destinationlabel">
@@ -760,7 +824,7 @@
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>237</y>
     </hint>
     <hint type="destinationlabel">
@@ -776,7 +840,7 @@
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>237</y>
     </hint>
     <hint type="destinationlabel">
@@ -792,7 +856,7 @@
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>271</y>
     </hint>
     <hint type="destinationlabel">
@@ -808,7 +872,7 @@
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>271</y>
     </hint>
     <hint type="destinationlabel">
@@ -824,7 +888,7 @@
    <slot>guide_color_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>305</y>
     </hint>
     <hint type="destinationlabel">
@@ -840,7 +904,7 @@
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>305</y>
     </hint>
     <hint type="destinationlabel">
@@ -856,7 +920,7 @@
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>851</x>
+     <x>844</x>
      <y>339</y>
     </hint>
     <hint type="destinationlabel">
@@ -872,8 +936,8 @@
    <slot>slider_image_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>168</x>
-     <y>683</y>
+     <x>180</x>
+     <y>1050</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -888,8 +952,8 @@
    <slot>ring_settings_inner_radius_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>863</x>
-     <y>428</y>
+     <x>856</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
      <x>1231</x>
@@ -904,8 +968,8 @@
    <slot>ring_settings_thickness_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>863</x>
-     <y>464</y>
+     <x>856</x>
+     <y>461</y>
     </hint>
     <hint type="destinationlabel">
      <x>1228</x>
@@ -920,8 +984,8 @@
    <slot>ring_settings_inner_radius_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>663</x>
-     <y>429</y>
+     <x>690</x>
+     <y>426</y>
     </hint>
     <hint type="destinationlabel">
      <x>1233</x>
@@ -936,8 +1000,8 @@
    <slot>ring_settings_thickness_double_spin_box_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>663</x>
-     <y>465</y>
+     <x>690</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>1234</x>
@@ -952,8 +1016,8 @@
    <slot>calculate_profiles_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>884</x>
-     <y>650</y>
+     <x>877</x>
+     <y>1017</y>
     </hint>
     <hint type="destinationlabel">
      <x>1382</x>
@@ -968,8 +1032,8 @@
    <slot>angle_bin_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>692</x>
-     <y>537</y>
+     <x>672</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>1379</x>
@@ -1016,8 +1080,8 @@
    <slot>ring_settings_inner_radius_slider_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>863</x>
-     <y>428</y>
+     <x>856</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
      <x>1377</x>
@@ -1032,8 +1096,8 @@
    <slot>ring_settings_thickness_slider_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>863</x>
-     <y>464</y>
+     <x>856</x>
+     <y>461</y>
     </hint>
     <hint type="destinationlabel">
      <x>1376</x>
@@ -1048,8 +1112,8 @@
    <slot>ring_settings_inner_radius_double_spin_box_finished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>663</x>
-     <y>429</y>
+     <x>690</x>
+     <y>426</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -1064,8 +1128,8 @@
    <slot>ring_settings_thickness_double_spin_box_finished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>663</x>
-     <y>465</y>
+     <x>690</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1128,8 +1192,8 @@
    <slot>profile_plot_axis_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>993</x>
-     <y>671</y>
+     <x>1003</x>
+     <y>1047</y>
     </hint>
     <hint type="destinationlabel">
      <x>1432</x>
@@ -1144,8 +1208,8 @@
    <slot>profile_plot_axis_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1050</x>
-     <y>676</y>
+     <x>1047</x>
+     <y>1047</y>
     </hint>
     <hint type="destinationlabel">
      <x>1435</x>
@@ -1160,8 +1224,8 @@
    <slot>profile_plot_axis_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>675</y>
+     <x>1086</x>
+     <y>1047</y>
     </hint>
     <hint type="destinationlabel">
      <x>1438</x>
@@ -1176,8 +1240,8 @@
    <slot>export_profiles_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>727</x>
-     <y>671</y>
+     <x>877</x>
+     <y>1051</y>
     </hint>
     <hint type="destinationlabel">
      <x>19</x>
@@ -1198,6 +1262,22 @@
     <hint type="destinationlabel">
      <x>1473</x>
      <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>angle_cursor_dial</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>angle_cursor_dial_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>570</x>
+     <y>777</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>463</x>
+     <y>1062</y>
     </hint>
    </hints>
   </connection>
@@ -1239,5 +1319,6 @@
   <slot>save_configuration()</slot>
   <slot>profile_plot_axis_type_changed()</slot>
   <slot>list_images_right_click()</slot>
+  <slot>angle_cursor_dial_moved()</slot>
  </slots>
 </ui>

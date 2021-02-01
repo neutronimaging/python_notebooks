@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -238,6 +238,43 @@
                 </property>
                 <property name="value">
                  <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton">
+                <property name="text">
+                 <string>Display ideal positions of </string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="number_of_elements_spinBox">
+                <property name="maximum">
+                 <number>999</number>
+                </property>
+                <property name="value">
+                 <number>369</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>elements</string>
                 </property>
                </widget>
               </item>
@@ -676,6 +713,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>display_ideal_positions_of_elements_on_profiles_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>797</x>
+     <y>999</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>830</x>
+     <y>1050</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>number_of_elements_spinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>number_of_elements_editing_finished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>902</x>
+     <y>1000</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1229</x>
+     <y>1046</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_of_images_selection_changed()</slot>
@@ -692,5 +761,7 @@
   <slot>refresh_table_clicked()</slot>
   <slot>all_peaks_found_table_right_click()</slot>
   <slot>missing_peaks_table_right_click()</slot>
+  <slot>display_ideal_positions_of_elements_on_profiles_plot()</slot>
+  <slot>number_of_elements_editing_finished()</slot>
  </slots>
 </ui>
