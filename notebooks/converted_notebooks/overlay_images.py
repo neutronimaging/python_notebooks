@@ -1,0 +1,91 @@
+# ---
+# jupyter:
+#   jupytext:
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.5.0
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/overlay_images/)
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# <img src='__docs/__all/notebook_rules.png' />
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # Select Your IPTS
+
+# + run_control={"frozen": false, "read_only": false}
+import warnings
+warnings.filterwarnings('ignore')
+
+from __code.overlay_images.interface_handler import InterfaceHandler
+from __code.overlay_images.overlay_images import OverlayImages
+
+from __code import system
+system.System.select_working_dir()
+from __code.__all import custom_style
+custom_style.style()
+
+# + run_control={"frozen": false, "read_only": false}
+# %gui qt
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # Select folder containing high resolution images
+
+# + run_control={"frozen": false, "read_only": false}
+o_data = OverlayImages(working_dir=system.System.get_working_dir())
+o_data.select_input_folder(data_type='high resolution')
+# -
+
+# # Select folder containing low resolution images 
+
+o_data.select_input_folder(data_type='low resolution')
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # Launch User Interface
+
+# + run_control={"frozen": false, "read_only": false}
+o_interface = InterfaceHandler(o_norm_high_res=o_data.o_norm_high_res,
+                               o_norm_low_res=o_data.o_norm_low_res,
+                               working_dir=o_data.working_dir)
+# -
+
+
+
+
+
+# # DEBUGGING 
+
+# +
+from __code.overlay_images.interface_handler import InterfaceHandler
+from __code.overlay_images.overlay_images import OverlayImages
+import glob
+
+list_high_reso_images = glob.glob("/Users/j35/IPTS/Burkhard/Norm_Proj_high_resolution/*.tif")
+list_low_reso_images = glob.glob("/Users/j35/IPTS/Burkhard/Norm_Proj_low_resolution/*.tif")
+
+list_high_reso_images.sort()
+list_low_reso_images.sort()
+
+list_high_reso_images = list_high_reso_images[0:10]
+list_low_reso_images = list_low_reso_images[0:10]
+
+o_data = OverlayImages(working_dir="/Users/j35/IPTS/Burkhard/")
+o_data.load_data(list_files=list_high_reso_images)
+o_data.load_data(list_files=list_low_reso_images, data_type='low resolution')
+# -
+
+# %gui qt
+
+o_interface = InterfaceHandler(o_norm_high_reso=o_data.o_norm_high_res,
+                               o_norm_low_reso=o_data.o_norm_low_res,
+                               working_dir=o_data.working_dir)
+
+
