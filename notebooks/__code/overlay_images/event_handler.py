@@ -1,6 +1,7 @@
 import numpy as np
 import pyqtgraph as pg
 from PIL import Image
+from qtpy import QtGui
 
 from __code._utilities.table_handler import TableHandler
 
@@ -128,18 +129,25 @@ class EventHandler:
         y_1_l = region1['low_res']['y']
         distance_l = np.sqrt(np.power(x_2_l - x_1_l, 2) + np.power(y_2_l - y_1_l, 2))
 
-        scaling_factor = np.int(distance_h / distance_l)
-        self.parent.ui.scaling_factor_value.setText("{}".format(scaling_factor))
+        scaling_factor = distance_h / distance_l
+        self.parent.ui.scaling_factor_value.setText("{:.2f}".format(scaling_factor))
 
         [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
-        new_image_height = image_height * scaling_factor
-        new_image_width = image_width * scaling_factor
+        new_image_height = np.int(image_height * scaling_factor)
+        new_image_width = np.int(image_width * scaling_factor)
+
+        self.parent.eventProgress.setMaximum(len(self.parent.o_norm_high_res.data['sample']['data']))
+        self.parent.eventProgress.setValue(0)
+        self.parent.eventProgress.setVisible(True)
+        QtGui.QGuiApplication.processEvents()
 
         # resize low resolution images
         resize_and_overlay_images = []
         for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
             new_image = Image.fromarray(_low_res_image).resize((new_image_width, new_image_height))
             resize_and_overlay_images.append(new_image)
+            self.parent.eventProgress.setValue(_row+1)
+            QtGui.QGuiApplication.processEvents()
 
         self.parent.resize_and_overlay_images = resize_and_overlay_images
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
@@ -147,3 +155,9 @@ class EventHandler:
 
         self.parent.update_overlay_preview(row_selected=row_selected)
         self.parent.ui.tabWidget.setTabEnabled(1, True)
+        self.parent.eventProgress.setVisible(False)
+
+        message = "Overlay created using a scaling factor of {:.2f}!".format(scaling_factor)
+        self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
+        self.parent.ui.statusbar.setStyleSheet("color: green")
+
