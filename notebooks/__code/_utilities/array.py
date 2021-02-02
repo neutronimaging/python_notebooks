@@ -49,3 +49,12 @@ def reject_n_outliers(array=None, n=1):
 def find_nearest_index(array, value):
     idx = (np.abs(np.array(array) - value)).argmin()
     return idx
+
+
+def get_closest_index(array=None, value=None):
+    idx = (np.abs(np.array(array) - value)).argmin()
+    return idx
+
+
+def get_nearest_index(array=None, value=None):
+    return get_closest_index(array=array, value=value)

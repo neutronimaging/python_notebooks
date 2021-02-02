@@ -6,6 +6,7 @@ import numpy as np
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.array import get_n_random_int_of_max_value_m
+from __code._utilities.table_handler import TableHandler
 
 
 class Initialization:
@@ -56,14 +57,16 @@ class Initialization:
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)
 
-        # # list of images tableWidget
-        # o_table = TableHandler(table_ui=self.parent.ui.list_of_images_tableWidget)
-        # for _row, _file in enumerate(list_of_images):
-        #     o_table.insert_empty_row(row=_row)
-        #     o_table.insert_item(row=_row, column=0, value=_file, editable=False)
-        # o_table.set_column_sizes(column_sizes=[200, 50, 50])
+        self.parent.ui.tolerance_units.setText(u"degrees (\u00b0)")
 
-        self.parent.ui.splitter.setSizes([200, 500])
+        self.parent.ui.splitter.setSizes([500, 100])
+        self.parent.ui.splitter_3.setSizes([200, 500])
+        self.parent.ui.tabWidget.setTabEnabled(1, False)
+
+        o_table = TableHandler(table_ui=self.parent.ui.metadata_tableWidget)
+        o_table.set_column_sizes(column_sizes=[200, 200])
+
+        self.parent.ui.number_of_elements_spinBox.setValue(self.parent.NUMBER_OF_FUEL_ELEMENTS)
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
@@ -71,3 +74,32 @@ class Initialization:
         self.parent.eventProgress.setMaximumSize(540, 100)
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
+
+    def table_of_metadata(self):
+        metadata = self.parent.o_selection.metadata
+
+        formatted_data = []
+        for _text in metadata:
+            if "column 2" in _text:
+                break
+            elif "column 1" in _text:
+                _, right_text = _text.split(":")
+                formatted_data.append(["First file loaded", right_text])
+                continue
+            elif "columns" in _text:
+                continue
+
+            _left, _right = _text.split(":")
+            formatted_data.append([_left, _right])
+
+        _, _right = metadata[-1].split(":")
+        formatted_data.append(["Last file loaded", _right])
+
+        o_table = TableHandler(table_ui=self.parent.ui.metadata_tableWidget)
+        for _row_index, _row_value in enumerate(formatted_data):
+            o_table.insert_empty_row(_row_index)
+            for _col_index, _value in enumerate(_row_value):
+                o_table.insert_item(row=_row_index,
+                                    column=_col_index,
+                                    value=_value,
+                                    editable=False)
