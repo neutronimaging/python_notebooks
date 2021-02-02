@@ -125,7 +125,7 @@ class Interface(QMainWindow):
         o_event.right_click()
 
     def display_ideal_positions_of_elements_on_profiles_plot(self):
-        pass
+        self.list_of_images_selection_changed()
 
     def number_of_elements_editing_finished(self):
         pass

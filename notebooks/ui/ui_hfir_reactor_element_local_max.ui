@@ -255,7 +255,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QRadioButton" name="radioButton">
+               <widget class="QCheckBox" name="display_ideal_position_checkBox">
                 <property name="text">
                  <string>Display ideal positions of </string>
                 </property>
@@ -560,7 +560,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1044</x>
+     <x>1002</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -576,7 +576,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1088</x>
+     <x>1046</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -592,7 +592,7 @@
    <slot>plot_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1127</x>
+     <x>1085</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
@@ -624,8 +624,8 @@
    <slot>threshold_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>442</x>
-     <y>378</y>
+     <x>358</x>
+     <y>468</y>
     </hint>
     <hint type="destinationlabel">
      <x>1674</x>
@@ -640,8 +640,8 @@
    <slot>threshold_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>442</x>
-     <y>500</y>
+     <x>358</x>
+     <y>590</y>
     </hint>
     <hint type="destinationlabel">
      <x>1673</x>
@@ -688,8 +688,8 @@
    <slot>all_peaks_found_table_right_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>904</x>
-     <y>336</y>
+     <x>118</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>1670</x>
@@ -714,33 +714,33 @@
    </hints>
   </connection>
   <connection>
-   <sender>radioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>display_ideal_positions_of_elements_on_profiles_plot()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>797</x>
-     <y>999</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>830</x>
-     <y>1050</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>number_of_elements_spinBox</sender>
    <signal>editingFinished()</signal>
    <receiver>MainWindow</receiver>
    <slot>number_of_elements_editing_finished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>902</x>
-     <y>1000</y>
+     <x>886</x>
+     <y>1007</y>
     </hint>
     <hint type="destinationlabel">
      <x>1229</x>
+     <y>1046</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>display_ideal_position_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>display_ideal_positions_of_elements_on_profiles_plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>733</x>
+     <y>1003</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>776</x>
      <y>1046</y>
     </hint>
    </hints>

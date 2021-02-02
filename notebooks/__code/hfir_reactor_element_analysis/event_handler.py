@@ -72,6 +72,12 @@ class EventHandler:
                 y_max = self.parent.global_list_of_xy_max[_file]['y']
                 self.parent.profiles_plot.axes.plot(x_max, y_max, '*r')
 
+        if self.parent.ui.display_ideal_position_checkBox.isChecked():
+            list_mean_position_of_elements = self.get_list_mean_position_of_elements()
+            if not (list_mean_position_of_elements is None):
+                for _value in list_mean_position_of_elements:
+                    self.parent.profiles_plot.axes.axvline(_value, linestyle='-', color='blue')
+
         # thresholds
         threshold = self.parent.ui.threshold_slider.value()
         self.parent.profiles_plot.axes.axhline(threshold, linestyle='--', color='red')
@@ -401,6 +407,9 @@ class EventHandler:
 
     def get_list_mean_position_of_elements(self):
         table = self.parent.elements_position_formatted_raw_table
+        if table is None:
+            return None
+
         [nbr_row, nbr_column] = np.shape(table)
 
         number_of_outliers_to_reject = np.int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)

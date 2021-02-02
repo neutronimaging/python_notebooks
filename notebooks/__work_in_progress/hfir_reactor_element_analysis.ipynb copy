@@ -9,7 +9,7 @@
     }
    },
    "source": [
-    "[![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/circular_profile_of_a_ring/)"
+    "[![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/hfir_reactor_element_analysis/)"
    ]
   },
   {
@@ -38,7 +38,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 2,
    "metadata": {
     "run_control": {
      "frozen": false,
@@ -46,24 +46,6 @@
     }
    },
    "outputs": [
-    {
-     "data": {
-      "text/html": [
-       "\n",
-       "<style type=\"text/css\">\n",
-       ".jupyter-widgets select option {font-family: \"Lucida Console\", Monaco, monospace;}\n",
-       ".jupyter-widgets select {width: 98%;}\n",
-       "div.output_subarea {padding: 0px;}\n",
-       "div.output_subarea > div {margin: 0.4em;}\n",
-       "</style>\n"
-      ],
-      "text/plain": [
-       "<IPython.core.display.HTML object>"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    },
     {
      "data": {
       "text/html": [
@@ -94,7 +76,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "f0039f90ca8946edb35f30e28045de4f",
+       "model_id": "a9021c96daef4f73a5dce9d5d19e699a",
        "version_major": 2,
        "version_minor": 0
       },
@@ -240,7 +222,7 @@
        "<IPython.core.display.HTML object>"
       ]
      },
-     "execution_count": 1,
+     "execution_count": 2,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -249,8 +231,8 @@
     "import warnings\n",
     "warnings.filterwarnings('ignore')\n",
     "\n",
-    "from __code.circular_profile_of_a_ring.interface_handler import InterfaceHandler\n",
-    "from __code.circular_profile_of_a_ring.circular_profile_of_a_ring import CircularProfileOfARing\n",
+    "from __code.hfir_reactor_element_analysis.hfir_reactor_element_analysis import HfirReactorElementAnalysis\n",
+    "from __code.hfir_reactor_element_analysis.interface_handler import InterfaceHandler\n",
     "\n",
     "from __code import system\n",
     "system.System.select_working_dir()\n",
@@ -260,7 +242,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 3,
    "metadata": {
     "run_control": {
      "frozen": false,
@@ -281,63 +263,9 @@
     }
    },
    "source": [
-    "# Select folder containing reconstructed data"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 3,
-   "metadata": {
-    "run_control": {
-     "frozen": false,
-     "read_only": false
-    }
-   },
-   "outputs": [
-    {
-     "data": {
-      "application/vnd.jupyter.widget-view+json": {
-       "model_id": "",
-       "version_major": 2,
-       "version_minor": 0
-      },
-      "text/plain": [
-       "VBox(children=(Label(value='select input folder ...', layout=Layout(width='250px')), VBox(children=(HBox(child…"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    },
-    {
-     "data": {
-      "application/vnd.jupyter.widget-view+json": {
-       "model_id": "",
-       "version_major": 2,
-       "version_minor": 0
-      },
-      "text/plain": [
-       "HBox(children=(Label(value='Loading sample', layout=Layout(width='20%')), IntProgress(value=0, max=95), Label(…"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    }
-   ],
-   "source": [
-    "o_selection = CircularProfileOfARing(working_dir=system.System.get_working_dir())\n",
-    "o_selection.select_input_folder()"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {
-    "run_control": {
-     "frozen": false,
-     "read_only": false
-    }
-   },
-   "source": [
-    "# Launch User Interface"
+    "# Select ASCII file \n",
+    "\n",
+    "This file should have been created by the [circular_profile_of_a_ring](circular_profile_of_a_ring.ipynb) notebook."
    ]
   },
   {
@@ -349,10 +277,108 @@
      "read_only": false
     }
    },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<span style=\"font-size: 20px; color:green\">Loading data set ... DONE!</span>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "o_selection = HfirReactorElementAnalysis(working_dir=system.System.get_working_dir())\n",
+    "o_selection.select_ascii_file()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
    "outputs": [],
    "source": [
     "o_select = InterfaceHandler(working_dir=system.System.get_working_dir(), \n",
-    "                            o_norm=o_selection.o_norm)"
+    "                            o_selection=o_selection)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# DEBUG"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "<style type=\"text/css\">\n",
+       ".jupyter-widgets select option {font-family: \"Lucida Console\", Monaco, monospace;}\n",
+       ".jupyter-widgets select {width: 98%;}\n",
+       "div.output_subarea {padding: 0px;}\n",
+       "div.output_subarea > div {margin: 0.4em;}\n",
+       "</style>\n"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "from __code.hfir_reactor_element_analysis.hfir_reactor_element_analysis import HfirReactorElementAnalysis\n",
+    "from __code.hfir_reactor_element_analysis.interface_handler import InterfaceHandler\n",
+    "import os\n",
+    "\n",
+    "ascii_file_name = '/Users/j35/IPTS/HFIR-Reactor/HFIR-Reactor_profiles_top.csv'\n",
+    "assert os.path.exists(ascii_file_name)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%gui qt"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<span style=\"font-size: 20px; color:green\">Loading data set ... DONE!</span>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "o_selection = HfirReactorElementAnalysis(working_dir=\"/Users/j35/IPTS/HFIR-Reactor/\")\n",
+    "o_selection.load_ascii(ascii_file_name)\n",
+    "\n",
+    "o_select = InterfaceHandler(working_dir=\"/Users/j35/IPTS/HFIR-Reactor/\", \n",
+    "                            o_selection=o_selection)"
    ]
   },
   {
