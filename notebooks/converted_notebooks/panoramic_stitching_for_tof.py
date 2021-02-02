@@ -12,7 +12,7 @@
 #     name: python3
 # ---
 
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/panoramic_stitching/#activate-search)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/panoramic_stitching_for_tof/#activate-search)
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -22,7 +22,7 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-from __code.panoramic_stitching.panoramic_stitching import PanoramicStitching
+from __code.panoramic_stitching_for_tof.panoramic_stitching_for_tof import PanoramicStitching
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style
