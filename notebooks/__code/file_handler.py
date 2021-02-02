@@ -99,12 +99,12 @@ def load_data(filenames='', folder='', showing_progress=False):
         return stack
 
 
-def save_data(data=[], filename=''):
+def save_data(data=[], filename='', metadata=None):
     data_type = get_data_type(filename)
     if data_type == '.fits':
         make_fits(data=data, filename=filename)
     elif (data_type == '.tiff') or (data_type == '.tif'):
-        make_tiff(data=data, filename=filename)
+        make_tiff(data=data, filename=filename, metadata=metadata)
 
 
 def get_file_extension(filename):
@@ -138,9 +138,12 @@ def save_file(folder='', base_file_name='', suffix='', dictionary={}):
     return output_file
 
 
-def make_tiff(data=[], filename=''):
+def make_tiff(data=[], filename='', metadata=None):
     new_image = Image.fromarray(data)
-    new_image.save(filename)
+    if metadata:
+        new_image.save(filename, tiffinfo=metadata)
+    else:
+        new_image.save(filename)
 
 
 def make_fits(data=[], filename=''):

@@ -27,7 +27,6 @@ class InterfaceHandler:
                                 list_files=o_norm.data['sample']['file_name'],
                                 working_dir=working_dir)
         o_interface.show()
-
         self.o_interface = o_interface
 
 
@@ -103,6 +102,7 @@ class Interface(QMainWindow):
         self.display_grid()
         self.display_ring()
         self.init_statusbar()
+        self.angle_cursor_dial_moved(180)
 
     def init_statusbar(self):
         self.eventProgress = QProgressBar(self.ui.statusbar)
@@ -140,7 +140,7 @@ class Interface(QMainWindow):
         self.angle_line = pg.InfiniteLine([x0, y0],
                                           pen=_pen,
                                           label="{:.2f}".format(angle),
-                                          angle=angle-90,
+                                          angle=angle-90.,
                                           span=(0, 1),
                                           labelOpts={'position': 0.9})
         # self.angle_line.addMarker('o', size=15)
@@ -226,8 +226,9 @@ class Interface(QMainWindow):
         self.ui.angle_bin_horizontalSlider.setMaximum(self.angle_bin['maximum'])
         self.ui.angle_bin_horizontalSlider.setValue(self.angle_bin['value'])
 
-        self.ui.angle_bin_units.setText(u"\u2103")
+        self.ui.angle_bin_units.setText(u"\u00b0")
         self.ui.angle_bin_value.setText("{:.2f}".format(self.angle_bin['value']/100))
+        self.ui.angle_cursor_units.setText(u"\u00b0")
 
         self.ui.profile_list_images.addItems(self.list_short_files)
 
@@ -305,22 +306,6 @@ class Interface(QMainWindow):
         ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
         ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
 
-        # image_width = self.width
-        # image_height = self.height
-
-        # x = np.arange(image_width) + 0.5
-        # y = np.arange(image_height) + 0.5
-
-        # xv, yv = np.meshgrid(y, x)
-        # distances_power = np.sqrt((np.power(yv - y_central_pixel, 2) + np.power(xv - x_central_pixel, 2)))
-
-        # used to test calculation
-        #self.ui.image_view.setImage(np.transpose(distances_power))
-
-        # mask_ring1 = np.where(distances_power > ring_radius)
-        # mask_ring2 = np.where(distances_power < (ring_radius + ring_thickness))
-        # mask_ring = np.where(mask_ring1 and mask_ring2)
-
         inner_ring_circle_width = 2 * ring_radius
         inner_x0 = x_central_pixel - ring_radius
         inner_y0 = y_central_pixel - ring_radius
@@ -335,80 +320,6 @@ class Interface(QMainWindow):
                                           outer_x0=outer_x0,
                                           outer_y0=outer_y0,
                                           )
-
-    # def display_ring_marker(self):
-    #
-    #     if self.ring_markers:
-    #         self.ui.image_view.removeItem(self.ring_markers)
-    #
-    #     x_central_pixel = np.float(str(self.ui.circle_x.text()))
-    #     y_central_pixel = np.float(str(self.ui.circle_y.text()))
-    #
-    #     ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
-    #     ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
-    #
-    #     pos = []
-    #     adj = []
-    #
-    #     x1_inner_left = x_central_pixel - ring_radius
-    #     pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_left]))
-    #     pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_left]))
-    #     adj.append([0, 1])
-    #
-    #     x2_outer_left = x1_inner_left - ring_thickness
-    #     pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_left]))
-    #     pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_left]))
-    #     adj.append([2, 3])
-    #
-    #     x1_inner_right = x_central_pixel + ring_radius
-    #     pos.append(np.flip([y_central_pixel - INNER_RING_MARKER_LENGTH, x1_inner_right]))
-    #     pos.append(np.flip([y_central_pixel + INNER_RING_MARKER_LENGTH, x1_inner_right]))
-    #     adj.append([4, 5])
-    #
-    #     x2_outer_right = x1_inner_right + ring_thickness
-    #     pos.append(np.flip([y_central_pixel - OUTER_RING_MARKER_LENGTH, x2_outer_right]))
-    #     pos.append(np.flip([y_central_pixel + OUTER_RING_MARKER_LENGTH, x2_outer_right]))
-    #     adj.append([6, 7])
-    #
-    #     y1_inner_top = y_central_pixel - ring_radius
-    #     pos.append(np.flip([y1_inner_top, x_central_pixel - INNER_RING_MARKER_LENGTH]))
-    #     pos.append(np.flip([y1_inner_top, x_central_pixel + INNER_RING_MARKER_LENGTH]))
-    #     adj.append([8, 9])
-    #
-    #     y2_outer_top = y1_inner_top - ring_thickness
-    #     pos.append(np.flip([y2_outer_top, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
-    #     pos.append(np.flip([y2_outer_top, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
-    #     adj.append([10, 11])
-    #
-    #     y1_inner_bottom = y_central_pixel + ring_radius
-    #     pos.append(np.flip([y1_inner_bottom, x_central_pixel - INNER_RING_MARKER_LENGTH]))
-    #     pos.append(np.flip([y1_inner_bottom, x_central_pixel + INNER_RING_MARKER_LENGTH]))
-    #     adj.append([12, 13])
-    #
-    #     y2_outer_bottom = y1_inner_bottom + ring_thickness
-    #     pos.append(np.flip([y2_outer_bottom, x_central_pixel - OUTER_RING_MARKER_LENGTH]))
-    #     pos.append(np.flip([y2_outer_bottom, x_central_pixel + OUTER_RING_MARKER_LENGTH]))
-    #     adj.append([14, 15])
-    #
-    #     pos = np.array(pos)
-    #     adj = np.array(adj)
-    #
-    #     line_color = (self.ring_markers_color['red'],
-    #                   self.ring_markers_color['green'],
-    #                   self.ring_markers_color['blue'],
-    #                   self.ring_markers_color['alpha'], 1)
-    #     lines = np.array([line_color for n in np.arange(len(pos))],
-    #                      dtype=[('red', np.ubyte), ('green', np.ubyte),
-    #                             ('blue', np.ubyte), ('alpha', np.ubyte),
-    #                             ('width', float)])
-    #
-    #     self.ring_markers = pg.GraphItem()
-    #     self.ui.image_view.addItem(self.ring_markers)
-    #     self.ring_markers.setData(pos=pos,
-    #                               adj=adj,
-    #                               pen=lines,
-    #                               symbol=None,
-    #                               pxMode=False)
 
     def display_inner_and_outer_ring(self, inner_x0=None, inner_y0=None,
                                      inner_width_and_height=None,
@@ -603,41 +514,6 @@ class Interface(QMainWindow):
                                            pen=self.ring_pen)
         self.ui.image_view.addItem(self.inner_ring_roi)
         self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
-
-        # self.ui.ring_thickness_doubleSpinBox.setValue(thickness)
-        # self.ui.ring_thickness_slider.setValue(thickness*100)
-
-        # # outer ring
-        # region = self.outer_ring_roi.getArraySlice(self.current_live_image,
-        #                                            self.ui.image_view.imageItem)
-        # x0 = region[0][0].start
-        # x1 = region[0][0].stop
-        # y0 = region[0][1].start
-        # y1 = region[0][1].stop
-        # outer_radius = np.int(x1 - x0) / 2
-        #
-        # #radius_inner = np.min([radius_1, radius_2])
-        # #radius_outer = np.max([radius_1, radius_2])
-        # thickness = np.abs(inner_radius - outer_radius)
-        #
-        # x_central_pixel = np.mean([x1, x0])
-        # y_central_pixel = np.mean([y1, y0])
-        #
-        # self.ui.circle_x.setText(str(x_central_pixel))
-        # self.ui.circle_y.setText(str(y_central_pixel))
-        #
-        # self.ui.ring_thickness_doubleSpinBox.setValue(thickness)
-        # self.ui.ring_thickness_slider.setValue(thickness*100)
-        #
-        # inner_ring_radius = inner_radius
-        # inner_ring_circle_width = 2 * inner_ring_radius
-        # self.inner_ring_roi = pg.CircleROI([x_central_pixel - inner_ring_radius,
-        #                                     y_central_pixel - inner_ring_radius],
-        #                                    [inner_ring_circle_width, inner_ring_circle_width],
-        #                                    movable=True,
-        #                                    pen=self.ring_pen)
-        # self.ui.image_view.addItem(self.inner_ring_roi)
-        # self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
 
         self.vLine.setValue(x_central_pixel)
         self.hLine.setValue(y_central_pixel)
@@ -871,3 +747,50 @@ class Interface(QMainWindow):
     def list_images_right_click(self, position=None):
         o_event = EventHandler(parent=self)
         o_event.list_images_right_click()
+
+    @staticmethod
+    def format_angle_degrees(value):
+        value = np.float(value)
+        if value >= 180:
+            value -= 180
+        else:
+            value += 180
+        return value
+
+    @staticmethod
+    def format_angle_minutes(value):
+        value = np.float(value)
+        if value >= 50:
+            value -= 50
+        else:
+            value += 50
+        return value
+
+    def angle_cursor_dial_moved(self, value):
+        value = Interface.format_angle_degrees(value)
+
+        right_comma_value = self.ui.angle_cursor_dial_2.value()
+        right_comma_formatted = Interface.format_angle_minutes(right_comma_value)/100.
+        full_value = value + right_comma_formatted
+        self.ui.angle_cursor_value.setText(str(full_value))
+
+        o_event = Event(value=full_value)
+        self.click_on_profile_plot(o_event)
+
+    def angle_cursor_dial2_moved(self, value):
+        value = Interface.format_angle_minutes(value)
+        left_comma_value = Interface.format_angle_degrees(self.ui.angle_cursor_dial.value())
+
+        full_value = np.float(left_comma_value + value/100.)
+        self.ui.angle_cursor_value.setText(str(full_value))
+
+        o_event = Event(value=full_value)
+        self.click_on_profile_plot(o_event)
+
+
+class Event:
+
+    xdata = 0.
+
+    def __init__(self, value):
+        self.xdata = value

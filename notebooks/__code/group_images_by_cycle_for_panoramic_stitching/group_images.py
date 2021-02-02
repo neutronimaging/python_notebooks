@@ -66,6 +66,9 @@ class GroupImages:
         selected = os.path.abspath(selected)
         self.folder_selected = selected
         self.list_images = self.get_list_of_images()
+
+
+
         self.data_path = os.path.dirname(self.list_images[0])
         self.record_file_extension(filename=self.list_images[0])
 

@@ -24,6 +24,7 @@ def are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.01)
 
     return True
 
+
 def are_those_two_lists_of_lists_identical_within_tolerance(list1, list2, tolerance=0.01):
     """
     check that 2 lists composed of lists are identical
@@ -47,6 +48,7 @@ def are_those_two_lists_of_lists_identical_within_tolerance(list1, list2, tolera
             return False
 
     return True
+
 
 def is_this_list_already_in_those_lists_within_tolerance(list1, list2, tolerance=0.01):
     """

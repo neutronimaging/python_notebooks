@@ -392,6 +392,7 @@ class SequentialCombineImagesUsingMetadata(object):
                 o_load = Normalization()
                 o_load.load(file=list_of_files, notebook=True)
                 _data = o_load.data['sample']['data']
+                _metadata = o_load.data['sample']['metadata'][0]
 
                 combined_data = SequentialCombineImagesUsingMetadata._merging_algorithm(algorithm, _data)
 
@@ -400,7 +401,9 @@ class SequentialCombineImagesUsingMetadata(object):
                                                           position_label=_position)
                 output_file_name = os.path.join(output_folder, _new_name)
 
-                file_handler.save_data(data=combined_data, filename=output_file_name)
+                file_handler.save_data(data=combined_data,
+                                       filename=output_file_name,
+                                       metadata=_metadata)
 
             _run_index += 1
             progress_bar_ui.value = _run_index

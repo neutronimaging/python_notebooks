@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
+from qtpy.QtWidgets import QMainWindow
 import os
 import numpy as np
 
@@ -6,6 +6,8 @@ from __code import load_ui
 from __code.hfir_reactor_element_analysis.initialization import Initialization
 from __code.hfir_reactor_element_analysis.event_handler import EventHandler
 from __code.hfir_reactor_element_analysis.export_data import ExportData
+from __code.hfir_reactor_element_analysis.all_peaks_found_event_handler import AllPeaksFoundEventHandler
+from __code.hfir_reactor_element_analysis.missing_peaks_event_handler import MissingPeaksEventHandler
 
 
 class InterfaceHandler:
@@ -21,13 +23,18 @@ class Interface(QMainWindow):
 
     NUMBER_OF_FUEL_ELEMENTS = 369
     MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS = 50
-    ELEMENTS_POSITION_OUTLIERS = 10  #  number of data points to remove before calculating mean x position
+    ELEMENTS_POSITION_OUTLIERS = 10  # number of data points to remove before calculating mean x position
 
     profiles_plot = None
     elements_position_plot = None
     global_list_of_xy_max = None
 
     elements_position_raw_table = None
+    elements_position_formatted_raw_table = None
+    ideal_table_data_error = None  # missing elements
+    list_mean_position_of_elements = None
+
+    percent_of_outliers_to_reject = 10   # %
 
     def __init__(self, parent=None, o_selection=None, working_dir=None):
         self.o_selection = o_selection
@@ -42,12 +49,13 @@ class Interface(QMainWindow):
                                     os.path.join('ui',
                                                  'ui_hfir_reactor_element_local_max.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
-        self.setWindowTitle("Data fitting")
+        self.setWindowTitle("Elements Position")
 
         o_init = Initialization(parent=self)
         o_init.matplotlib()
         o_init.widgets()
         o_init.statusbar()
+        o_init.table_of_metadata()
 
     # event handler
     def list_of_images_selection_changed(self):
@@ -77,6 +85,7 @@ class Interface(QMainWindow):
         self.list_of_images_selection_changed()
         o_event.populate_elements_position_tab()
         self.ui.setEnabled(True)
+        self.ui.tabWidget.setTabEnabled(1, True)
 
     def threshold_moved(self, value):
         o_event = EventHandler(parent=self)
@@ -103,5 +112,20 @@ class Interface(QMainWindow):
         list_of_images = self.list_of_images
         self.ui.elements_position_file_name_label.setText(list_of_images[file_index])
 
-    def tolerance_value_changed(self, new_tolerance_value):
+    def refresh_table_clicked(self):
+        o_event = EventHandler(parent=self)
+        o_event.populate_elements_position_tab()
+
+    def all_peaks_found_table_right_click(self, position):
+        o_event = AllPeaksFoundEventHandler(parent=self)
+        o_event.right_click()
+
+    def missing_peaks_table_right_click(self, position):
+        o_event = MissingPeaksEventHandler(parent=self)
+        o_event.right_click()
+
+    def display_ideal_positions_of_elements_on_profiles_plot(self):
+        self.list_of_images_selection_changed()
+
+    def number_of_elements_editing_finished(self):
         pass

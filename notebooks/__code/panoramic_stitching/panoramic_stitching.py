@@ -2,9 +2,10 @@ from IPython.core.display import display
 from qtpy.QtWidgets import QMainWindow
 import os
 import copy
+import inflect
 
 from __code.ipywe import fileselector
-from __code._utilities.folder import get_list_of_folders_with_specified_file_type
+from __code._utilities.folder import get_list_of_folders_with_specified_file_type_and_same_number_of_files
 from __code._utilities.string import format_html_message
 from __code import load_ui
 
@@ -38,8 +39,11 @@ class PanoramicStitching:
         self.list_folder_widget.show()
 
     def folder_selected(self, folder_selected):
-        final_list_folders = get_list_of_folders_with_specified_file_type(list_of_folders_to_check=folder_selected,
-                                                                          file_extension=self.file_extension)
+        final_list_folders, list_folders_rejected = \
+            get_list_of_folders_with_specified_file_type_and_same_number_of_files(
+                list_of_folders_to_check=folder_selected,
+                file_extension=self.file_extension)
+
         if not final_list_folders:
 
             str_list_ext = ", ".join(self.file_extension)
@@ -54,10 +58,12 @@ class PanoramicStitching:
                                     spacer=""))
 
         # gui initialization
-        o_interface = Interface(list_folders=final_list_folders)
+        o_interface = Interface(list_folders=final_list_folders,
+                                list_folders_rejected=list_folders_rejected)
         o_interface.show()
         o_interface.load_data()
         o_interface.initialization_after_loading_data()
+
 
 class Interface(QMainWindow):
 
@@ -125,7 +131,7 @@ class Interface(QMainWindow):
                         'y1': 2000 + VERTICAL_MARGIN,
                         'width': width_profile['default']}
 
-    def __init__(self, parent=None, list_folders=None):
+    def __init__(self, parent=None, list_folders=None, list_folders_rejected=None):
 
         self.list_folders = list_folders
 
@@ -142,6 +148,18 @@ class Interface(QMainWindow):
         # gui initialization
         o_init = GuiInitialization(parent=self)
         o_init.before_loading_data()
+
+        if list_folders_rejected:
+
+            nbr_folders_rejected = len(list_folders_rejected)
+            if nbr_folders_rejected == 1:
+                have_string = " has"
+            else:
+                have_string = " have"
+            p = inflect.engine()
+            self.ui.statusbar.showMessage("{} ".format(nbr_folders_rejected) + p.plural("folder",
+                                          nbr_folders_rejected) + have_string + " been rejected and not loaded!", 10000)
+            self.ui.statusbar.setStyleSheet("color: red")
 
     def load_data(self):
         # load data and metadata
