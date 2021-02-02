@@ -36,8 +36,10 @@ class Interface(QMainWindow):
     #   .... }
     dict_images_offset = None
 
-    current_live_image = {'high_res': None, 'low_res': None}
-    image_view = {'high_res': None, 'low_res': None}
+    current_live_image = {'high_res': None, 'low_res': None, 'overlay': None}
+    image_view = {'high_res': None, 'low_res': None, 'overlay': None}
+
+    resize_and_overlay_images = []
 
     markers = {'high_res': {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
                             '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},
@@ -79,11 +81,16 @@ class Interface(QMainWindow):
 
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         o_table.select_row(row=0)
+        self.markers_changed()
 
     # Event handler
     def update_previews(self, row_selected=-1):
         o_event = EventHandler(parent=self)
         o_event.update_views(row_selected=row_selected)
+
+    def update_overlay_preview(self, row_selected=0):
+        o_event = EventHandler(parent=self)
+        o_event.update_overlay_view(row_selected=row_selected)
 
     def list_files_table_selection_changed(self):
         o_table = TableHandler(table_ui=self.ui.tableWidget)
@@ -91,7 +98,6 @@ class Interface(QMainWindow):
         self.update_previews(row_selected=row_selected)
 
     def markers_changed(self):
-
         o_get = Get(parent=self)
         high_res_1_dict = o_get.marker_location(image_resolution='high_res', target_index='1')
         self.markers['high_res']['1']['x'] = high_res_1_dict['x']
@@ -115,6 +121,10 @@ class Interface(QMainWindow):
 
         o_event.update_target(image_resolution='low_res', target_index='1')
         o_event.update_target(image_resolution='low_res', target_index='2')
+
+    def overlay_stack_of_images_clicked(self):
+        o_event = EventHandler(parent=self)
+        o_event.overlay_stack_of_images_clicked()
 
 
 

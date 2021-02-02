@@ -55,7 +55,8 @@ class Initialization:
 
         o_table.set_column_sizes(column_sizes=[200, 200, 50, 50])
 
-        self.parent.ui.splitter_2.setSizes([200, 500])
+        self.parent.ui.splitter_2.setSizes([50, 800])
+        self.parent.ui.tabWidget.setTabEnabled(1, False)
 
     def pyqtgraph(self):
         
@@ -72,6 +73,13 @@ class Initialization:
         image_layout = QVBoxLayout()
         image_layout.addWidget(self.parent.image_view['low_res'])
         self.parent.ui.low_res_widget.setLayout(image_layout)
+
+        self.parent.image_view['overlay'] = pg.ImageView(view=pg.PlotItem())
+        self.parent.image_view['overlay'].ui.roiBtn.hide()
+        self.parent.image_view['overlay'].ui.menuBtn.hide()
+        image_layout = QVBoxLayout()
+        image_layout.addWidget(self.parent.image_view['overlay'])
+        self.parent.ui.overlay_widget.setLayout(image_layout)
 
     def _design_marker(self, image_resolution=None,
                        target_index=None,

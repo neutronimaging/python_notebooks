@@ -1,5 +1,8 @@
 import numpy as np
 import pyqtgraph as pg
+from PIL import Image
+
+from __code._utilities.table_handler import TableHandler
 
 
 class EventHandler:
@@ -14,6 +17,12 @@ class EventHandler:
 
         self.update_view(image_resolution='low_res',
                          data=self.parent.o_norm_low_res.data['sample']['data'][row_selected])
+
+    def update_overlay_view(self, row_selected=0):
+        self.parent.image_view['overlay'].clear()
+        _image = np.transpose(self.parent.resize_and_overlay_images[row_selected])
+        self.parent.image_view['overlay'].setImage(_image)
+        self.parent.current_live_image['overlay'] = _image
 
     def update_view(self, image_resolution='high_res', data=None):
 
@@ -91,3 +100,47 @@ class EventHandler:
                                   symbol=None,
                                   pxMode=False)
         self.parent.markers[image_resolution][target_index]['target_ui'] = line_view_binning
+
+    def get_marker_index_parameters(self, region_index='1'):
+        region = {'high_res': {'x': self.parent.markers['high_res'][region_index]['x'],
+                               'y': self.parent.markers['high_res'][region_index]['y']},
+                  'low_res': {'x': self.parent.markers['low_res'][region_index]['x'],
+                               'y': self.parent.markers['low_res'][region_index]['y']},
+                  }
+        return region
+
+    def overlay_stack_of_images_clicked(self):
+        region1 = self.get_marker_index_parameters(region_index='1')
+        region2 = self.get_marker_index_parameters(region_index='2')
+
+        x_2_h = region2['high_res']['x']
+        x_1_h = region1['high_res']['x']
+        y_2_h = region2['high_res']['y']
+        y_1_h = region1['high_res']['y']
+        distance_h = np.sqrt(np.power(x_2_h - x_1_h, 2) + np.power(y_2_h - y_1_h, 2))
+
+        x_2_l = region2['low_res']['x']
+        x_1_l = region1['low_res']['x']
+        y_2_l = region2['low_res']['y']
+        y_1_l = region1['low_res']['y']
+        distance_l = np.sqrt(np.power(x_2_l - x_1_l, 2) + np.power(y_2_l - y_1_l, 2))
+
+        scaling_factor = np.int(distance_h / distance_l)
+        self.parent.ui.scaling_factor_value.setText("{}".format(scaling_factor))
+
+        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
+        new_image_height = image_height * scaling_factor
+        new_image_width = image_width * scaling_factor
+
+        # resize low resolution images
+        resize_and_overlay_images = []
+        for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
+            new_image = Image.fromarray(_low_res_image).resize((new_image_width, new_image_height))
+            resize_and_overlay_images.append(new_image)
+
+        self.parent.resize_and_overlay_images = resize_and_overlay_images
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
+        self.parent.update_overlay_preview(row_selected=row_selected)
+        self.parent.ui.tabWidget.setTabEnabled(1, True)
