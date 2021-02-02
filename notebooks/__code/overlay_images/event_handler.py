@@ -18,6 +18,9 @@ class EventHandler:
         self.update_view(image_resolution='low_res',
                          data=self.parent.o_norm_low_res.data['sample']['data'][row_selected])
 
+        if self.parent.resize_and_overlay_images:
+            self.update_overlay_view(row_selected=row_selected)
+
     def update_overlay_view(self, row_selected=0):
         self.parent.image_view['overlay'].clear()
         _image = np.transpose(self.parent.resize_and_overlay_images[row_selected])
