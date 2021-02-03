@@ -130,7 +130,7 @@ class EventHandler:
         distance_l = np.sqrt(np.power(x_2_l - x_1_l, 2) + np.power(y_2_l - y_1_l, 2))
 
         scaling_factor = distance_h / distance_l
-        self.parent.ui.scaling_factor_value.setText("{:.2f}".format(scaling_factor))
+        self.parent.ui.scaling_factor_lineEdit.setText("{:.2f}".format(scaling_factor))
 
         [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
         new_image_height = np.int(image_height * scaling_factor)
@@ -153,6 +153,8 @@ class EventHandler:
 
         x_index_array_resized_array = np.int(x_1_l * scaling_factor - x_1_h)
         y_index_array_resized_array = np.int(y_1_l * scaling_factor - y_1_h)
+        self.parent.ui.xoffset_lineEdit.setText(str(x_index_array_resized_array))
+        self.parent.ui.yoffset_lineEdit.setText(str(y_index_array_resized_array))
 
         resize_and_overlay_images = []
         high_res_images = self.parent.o_norm_high_res.data['sample']['data']

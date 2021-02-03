@@ -55,7 +55,7 @@ class Initialization:
 
         o_table.set_column_sizes(column_sizes=[200, 200, 50, 50])
 
-        self.parent.ui.splitter_2.setSizes([50, 800])
+        self.parent.ui.splitter_2.setSizes([200, 800])
         self.parent.ui.tabWidget.setTabEnabled(1, False)
 
     def pyqtgraph(self):

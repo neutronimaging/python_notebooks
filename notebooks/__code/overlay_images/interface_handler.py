@@ -126,9 +126,26 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.overlay_stack_of_images_clicked()
 
+    def scaling_factor_changed(self):
+        pass
 
+    def offset_changed(self):
+        pass
 
+    def xoffset_less_clicked(self):
+        pass
 
+    def xoffset_more_clicked(self):
+        pass
+
+    def yoffset_less_clicked(self):
+        pass
+
+    def yoffset_more_clicked(self):
+        pass
+
+    def manual_overlay_of_all_images_clicked(self):
+        pass
 
 
 
