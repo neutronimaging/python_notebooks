@@ -58,6 +58,7 @@ class Initialization:
 
         self.parent.ui.splitter_3.setSizes([400, 400])
         self.parent.ui.splitter_2.setSizes([800, 0])
+        self.parent.splitter_state = self.parent.ui.splitter_2.saveState()
         self.parent.ui.splitter_2.setHandleWidth(0)
         self.parent.ui.tabWidget.setTabEnabled(1, False)
         self.parent.splitter_closed_state = self.parent.ui.splitter_2.saveState()
