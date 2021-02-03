@@ -59,7 +59,7 @@ class Interface(QMainWindow):
                           },
                }
 
-    histogram_level = {'high_res': None, 'low_res': None}
+    histogram_level = {'high_res': None, 'low_res': None, 'overlay': None}
 
     def __init__(self, parent=None, o_norm_high_res=None, o_norm_low_res=None, working_dir=None):
 
@@ -69,7 +69,7 @@ class Interface(QMainWindow):
 
         self.high_res_image_height, self.high_res_image_width = np.shape(o_norm_high_res.data['sample']['data'][0])
         self.low_res_image_height, self.low_res_image_width = np.shape(o_norm_low_res.data['sample']['data'][0])
-        self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = None, None
+        self.rescaled_low_res_height, self.rescaled_low_res_width = None, None
 
         super(Interface, self).__init__(parent)
 
@@ -134,43 +134,53 @@ class Interface(QMainWindow):
         o_event.overlay_stack_of_images_clicked()
 
     def scaling_factor_changed(self):
-        pass
+        self.manual_overlay_of_selected_image_only()
 
     def offset_changed(self):
-        pass
+        # checking value defined
+        self._xoffset_value_to_add()
+        self._yoffset_value_to_add()
+        self.manual_overlay_of_selected_image_only()
 
     def xoffset_minus_clicked(self):
         self._xoffset_value_to_add(to_add=-self.SINGLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def xoffset_minus_minus_clicked(self):
         self._xoffset_value_to_add(to_add=-self.DOUBLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def xoffset_plus_clicked(self):
         self._xoffset_value_to_add(to_add=self.SINGLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def xoffset_plus_plus_clicked(self):
         self._xoffset_value_to_add(to_add=self.DOUBLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def yoffset_minus_clicked(self):
         self._yoffset_value_to_add(to_add=-self.SINGLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def yoffset_minus_minus_clicked(self):
         self._yoffset_value_to_add(to_add=-self.DOUBLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def yoffset_plus_clicked(self):
         self._yoffset_value_to_add(to_add=self.SINGLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def yoffset_plus_plus_clicked(self):
         self._yoffset_value_to_add(to_add=self.DOUBLE_OFFSET)
+        self.manual_overlay_of_selected_image_only()
 
     def _xoffset_value_to_add(self, to_add=0):
         current_value = np.int(str(self.ui.xoffset_lineEdit.text()))
         new_value = current_value + to_add
         if new_value < 0:
             new_value = 0
-        if new_value > self.parent.rescaled_low_res_width - self.parent.high_res_image_width:
-            new_value = self.parent.rescaled_low_res_width - self.parent.high_res_image_width
-
+        if new_value > self.rescaled_low_res_width - self.high_res_image_width:
+            new_value = self.rescaled_low_res_width - self.high_res_image_width
         self.ui.xoffset_lineEdit.setText(str(new_value))
 
     def _yoffset_value_to_add(self, to_add=0):
@@ -178,8 +188,9 @@ class Interface(QMainWindow):
         new_value = current_value + to_add
         if new_value < 0:
             new_value = 0
-        if new_value > self.parent.rescaled_low_res_height - self.parent.high_res_image_height:
-            new_value = self.parent.rescaled_low_res_height - self.parent.high_res_image_height
+
+        if new_value > self.rescaled_low_res_height - self.high_res_image_height:
+            new_value = self.rescaled_low_res_height - self.high_res_image_height
 
         self.ui.yoffset_lineEdit.setText(str(new_value))
 
@@ -187,8 +198,13 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.check_offset_manual_button_status()
 
+    def manual_overlay_of_selected_image_only(self):
+        o_event = EventHandler(parent=self)
+        o_event.manual_overlay_of_selected_image_only()
+
     def manual_overlay_of_all_images_clicked(self):
-        pass
+        o_event = EventHandler(parent=self)
+        o_event.manual_overlay_stack_of_images_clicked()
 
 
 

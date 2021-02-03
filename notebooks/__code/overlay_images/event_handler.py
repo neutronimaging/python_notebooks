@@ -23,17 +23,34 @@ class EventHandler:
             self.update_overlay_view(row_selected=row_selected)
 
     def update_overlay_view(self, row_selected=0):
-        self.parent.image_view['overlay'].clear()
+        image_view = self.parent.image_view['overlay']
+        histogram_level = self.parent.histogram_level['overlay']
+
+        _res_view = image_view.getView()
+        _res_view_box = _res_view.getViewBox()
+        _state = _res_view_box.getState()
+
+        first_update = False
+        if histogram_level is None:
+            first_update = True
+        histo_widget = image_view.getHistogramWidget()
+        histogram_level = histo_widget.getLevels()
+        self.parent.histogram_level['overlay'] = histogram_level
+
         _image = np.transpose(self.parent.resize_and_overlay_images[row_selected])
         self.parent.image_view['overlay'].setImage(_image)
         self.parent.current_live_image['overlay'] = _image
+
+        _res_view_box.setState(_state)
+        if not first_update:
+            histo_widget.setLevels(histogram_level[0],
+                                   histogram_level[1])
 
     def update_view(self, image_resolution='high_res', data=None):
 
         image_view = self.parent.image_view[image_resolution]
         histogram_level = self.parent.histogram_level[image_resolution]
 
-        # high resolution
         _res_view = image_view.getView()
         _res_view_box = _res_view.getViewBox()
         _state = _res_view_box.getState()
@@ -177,14 +194,81 @@ class EventHandler:
         self.parent.update_overlay_preview(row_selected=row_selected)
         self.parent.ui.tabWidget.setTabEnabled(1, True)
         self.parent.eventProgress.setVisible(False)
+        self.check_offset_manual_button_status()
 
         message = "Overlay created using a scaling factor of {:.2f}!".format(scaling_factor)
         self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
         self.parent.ui.statusbar.setStyleSheet("color: green")
 
+    def manual_overlay_of_selected_image_only(self):
+        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
+        new_image_height = np.int(image_height * scaling_factor)
+        new_image_width = np.int(image_width * scaling_factor)
+        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
+        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+
+        resize_and_overlay_images = self.parent.resize_and_overlay_images
+        _high_res_image = self.parent.o_norm_high_res.data['sample']['data'][row_selected]
+        _low_res_image = self.parent.o_norm_low_res.data['sample']['data'][row_selected]
+        new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+        # self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
+
+        # add high resolution image
+        new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+        x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
+        resize_and_overlay_images.append(new_image)
+        QtGui.QGuiApplication.processEvents()
+
+        self.parent.resize_and_overlay_images = resize_and_overlay_images
+        self.parent.update_overlay_preview(row_selected=row_selected)
+
+    def manual_overlay_stack_of_images_clicked(self):
+        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+
+        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
+        new_image_height = np.int(image_height * scaling_factor)
+        new_image_width = np.int(image_width * scaling_factor)
+
+        self.parent.eventProgress.setMaximum(len(self.parent.o_norm_high_res.data['sample']['data']))
+        self.parent.eventProgress.setValue(0)
+        self.parent.eventProgress.setVisible(True)
+        QtGui.QGuiApplication.processEvents()
+
+        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
+        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+
+        resize_and_overlay_images = []
+        high_res_images = self.parent.o_norm_high_res.data['sample']['data']
+        for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
+            new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+            if _row == 0:
+                self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
+
+            # add high resolution image
+            new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+            x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
+            resize_and_overlay_images.append(new_image)
+            self.parent.eventProgress.setValue(_row+1)
+            QtGui.QGuiApplication.processEvents()
+
+        self.parent.resize_and_overlay_images = resize_and_overlay_images
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
+        self.parent.update_overlay_preview(row_selected=row_selected)
+        self.parent.ui.tabWidget.setTabEnabled(1, True)
+        self.parent.eventProgress.setVisible(False)
+
+        message = "Overlay created using manual settings!".format(scaling_factor)
+        self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
+        self.parent.ui.statusbar.setStyleSheet("color: green")
+
     def check_offset_manual_button_status(self):
         self.check_xoffset_manual_button_status()
-
+        self.check_yoffset_manual_button_status()
 
     def check_xoffset_manual_button_status(self):
         status_minus_button = True
@@ -202,6 +286,34 @@ class EventHandler:
             status_plus_button = False
             status_plus_plus_button = False
         elif xoffset_value > (self.parent.rescaled_low_res_width -
-                              self.parent.high_res_image_width - self.parent.DOUBLE_OFFSET)):
+                              self.parent.high_res_image_width - self.parent.DOUBLE_OFFSET):
             status_plus_plus_button = False
 
+        self.parent.ui.xoffset_minus_minus_pushButton.setEnabled(status_minus_minus_button)
+        self.parent.ui.xoffset_minus_pushButton.setEnabled(status_minus_button)
+        self.parent.ui.xoffset_plus_pushButton.setEnabled(status_plus_button)
+        self.parent.ui.xoffset_plus_plus_pushButton.setEnabled(status_plus_plus_button)
+
+    def check_yoffset_manual_button_status(self):
+        status_minus_button = True
+        status_minus_minus_button = True
+        status_plus_button = True
+        status_plus_plus_button = True
+
+        yoffset_value = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+        if yoffset_value == 0:
+            status_minus_button = False
+            status_minus_minus_button = False
+        elif yoffset_value < self.parent.DOUBLE_OFFSET:
+            status_minus_minus_button = False
+        elif yoffset_value == (self.parent.rescaled_low_res_height - self.parent.high_res_image_height):
+            status_plus_button = False
+            status_plus_plus_button = False
+        elif yoffset_value > (self.parent.rescaled_low_res_height -
+                              self.parent.high_res_image_height - self.parent.DOUBLE_OFFSET):
+            status_plus_plus_button = False
+
+        self.parent.ui.yoffset_minus_minus_pushButton.setEnabled(status_minus_minus_button)
+        self.parent.ui.yoffset_minus_pushButton.setEnabled(status_minus_button)
+        self.parent.ui.yoffset_plus_pushButton.setEnabled(status_plus_button)
+        self.parent.ui.yoffset_plus_plus_pushButton.setEnabled(status_plus_plus_button)
