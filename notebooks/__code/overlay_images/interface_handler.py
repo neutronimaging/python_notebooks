@@ -29,6 +29,9 @@ class InterfaceHandler:
 
 class Interface(QMainWindow):
 
+    SINGLE_OFFSET = 1  # pixels
+    DOUBLE_OFFSET = 5  # pixels
+
     # {'file_high_reso_1.tif': {'offset': {'x': 0, 'y': 0},
     #                           'low_resolution_filename': 'file_low_reso_1.tif'},
     #  'file_high_reso_2.tif': {'offset': {'x': 0, 'y': 0},
@@ -132,17 +135,41 @@ class Interface(QMainWindow):
     def offset_changed(self):
         pass
 
-    def xoffset_less_clicked(self):
-        pass
+    def xoffset_minus_clicked(self):
+        self._xoffset_value_to_add(to_add=-self.SINGLE_OFFSET)
 
-    def xoffset_more_clicked(self):
-        pass
+    def xoffset_minus_minus_clicked(self):
+        self._xoffset_value_to_add(to_add=-self.DOUBLE_OFFSET)
 
-    def yoffset_less_clicked(self):
-        pass
+    def xoffset_plus_clicked(self):
+        self._xoffset_value_to_add(to_add=self.SINGLE_OFFSET)
 
-    def yoffset_more_clicked(self):
-        pass
+    def xoffset_plus_plus_clicked(self):
+        self._xoffset_value_to_add(to_add=self.DOUBLE_OFFSET)
+
+    def yoffset_minus_clicked(self):
+        self._yoffset_value_to_add(to_add=-self.SINGLE_OFFSET)
+
+    def yoffset_minus_minus_clicked(self):
+        self._yoffset_value_to_add(to_add=-self.DOUBLE_OFFSET)
+
+    def yoffset_plus_clicked(self):
+        self._yoffset_value_to_add(to_add=self.SINGLE_OFFSET)
+
+    def yoffset_plus_plus_clicked(self):
+        self._yoffset_value_to_add(to_add=self.DOUBLE_OFFSET)
+
+    def _xoffset_value_to_add(self, to_add=0):
+        current_value = np.int(str(self.ui.xoffset_lineEdit.text()))
+        new_value = str(current_value + to_add)
+        self.ui.xoffset_lineEdit.setText(new_value)
+
+    def _yoffset_value_to_add(self, to_add=0):
+        current_value = np.int(str(self.ui.yoffset_lineEdit.text()))
+        new_value = str(current_value + to_add)
+        self.ui.yoffset_lineEdit.setText(new_value)
+
+    
 
     def manual_overlay_of_all_images_clicked(self):
         pass

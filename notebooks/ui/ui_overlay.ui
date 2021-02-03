@@ -207,16 +207,41 @@
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <item>
-                  <widget class="QPushButton" name="xoffset_less_pushButton">
+                  <widget class="QPushButton" name="xoffset_minus_minus_pushButton">
                    <property name="minimumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>- -</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="xoffset_minus_pushButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
@@ -251,16 +276,16 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="xoffset_plut_pushButton">
+                  <widget class="QPushButton" name="xoffset_plus_pushButton">
                    <property name="minimumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
@@ -272,6 +297,31 @@
                    </property>
                    <property name="text">
                     <string>+</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="xoffset_plus_plus_pushButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>+ +</string>
                    </property>
                   </widget>
                  </item>
@@ -298,16 +348,41 @@
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_3">
                  <item>
-                  <widget class="QPushButton" name="yoffset_less_pushButton">
+                  <widget class="QPushButton" name="yoffset_minus_minus_pushButton">
                    <property name="minimumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>- - </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="yoffset_minus_pushButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
@@ -342,16 +417,16 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="yoffset_more_pushButton">
+                  <widget class="QPushButton" name="yoffset_plus_pushButton">
                    <property name="minimumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>30</width>
+                     <width>50</width>
                      <height>30</height>
                     </size>
                    </property>
@@ -363,6 +438,31 @@
                    </property>
                    <property name="text">
                     <string>+</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="yoffset_plus_plus_pushButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>+ +</string>
                    </property>
                   </widget>
                  </item>
@@ -464,8 +564,8 @@
    <slot>scaling_factor_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>109</x>
-     <y>912</y>
+     <x>942</x>
+     <y>841</y>
     </hint>
     <hint type="destinationlabel">
      <x>233</x>
@@ -480,8 +580,8 @@
    <slot>offset_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>911</y>
+     <x>1173</x>
+     <y>840</y>
     </hint>
     <hint type="destinationlabel">
      <x>486</x>
@@ -496,8 +596,8 @@
    <slot>offset_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>544</x>
-     <y>911</y>
+     <x>1474</x>
+     <y>840</y>
     </hint>
     <hint type="destinationlabel">
      <x>740</x>
@@ -506,14 +606,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>xoffset_less_pushButton</sender>
+   <sender>xoffset_minus_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>xoffset_less_clicked()</slot>
+   <slot>xoffset_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>911</y>
+     <x>1101</x>
+     <y>840</y>
     </hint>
     <hint type="destinationlabel">
      <x>418</x>
@@ -522,14 +622,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>xoffset_plut_pushButton</sender>
+   <sender>xoffset_plus_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>xoffset_more_clicked()</slot>
+   <slot>xoffset_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>372</x>
-     <y>907</y>
+     <x>1228</x>
+     <y>836</y>
     </hint>
     <hint type="destinationlabel">
      <x>611</x>
@@ -538,14 +638,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>yoffset_less_pushButton</sender>
+   <sender>yoffset_minus_minus_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>yoffset_less_clicked()</slot>
+   <slot>yoffset_minus_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>482</x>
-     <y>909</y>
+     <x>1360</x>
+     <y>838</y>
     </hint>
     <hint type="destinationlabel">
      <x>892</x>
@@ -554,14 +654,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>yoffset_more_pushButton</sender>
+   <sender>yoffset_plus_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>yoffset_more_clicked()</slot>
+   <slot>yoffset_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>614</x>
-     <y>905</y>
+     <x>1544</x>
+     <y>834</y>
     </hint>
     <hint type="destinationlabel">
      <x>871</x>
@@ -576,12 +676,76 @@
    <slot>manual_overlay_of_all_images_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>814</x>
-     <y>906</y>
+     <x>1766</x>
+     <y>835</y>
     </hint>
     <hint type="destinationlabel">
      <x>1084</x>
      <y>947</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>xoffset_minus_minus_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>xoffset_minus_minus_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1064</x>
+     <y>844</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1137</x>
+     <y>942</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>xoffset_plus_plus_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>xoffset_plus_plus_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1276</x>
+     <y>843</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1377</x>
+     <y>942</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>yoffset_minus_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>yoffset_minus_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1413</x>
+     <y>838</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1599</x>
+     <y>942</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>yoffset_plus_plus_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>yoffset_plus_plus_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1585</x>
+     <y>840</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1823</x>
+     <y>946</y>
     </hint>
    </hints>
   </connection>
@@ -597,5 +761,13 @@
   <slot>yoffset_less_clicked()</slot>
   <slot>yoffset_more_clicked()</slot>
   <slot>manual_overlay_of_all_images_clicked()</slot>
+  <slot>xoffset_minus_minus_clicked()</slot>
+  <slot>xoffset_minus_clicked()</slot>
+  <slot>xoffset_plus_clicked()</slot>
+  <slot>xoffset_plus_plus_clicked()</slot>
+  <slot>yoffset_minus_clicked()</slot>
+  <slot>yoffset_minus_minus_clicked()</slot>
+  <slot>yoffset_plus_clicked()</slot>
+  <slot>yoffset_plus_plus_clicked()</slot>
  </slots>
 </ui>
