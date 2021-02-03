@@ -160,6 +160,9 @@ class EventHandler:
         high_res_images = self.parent.o_norm_high_res.data['sample']['data']
         for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
             new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+            if _row == 0:
+                self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
+
             # add high resolution image
             new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
             x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
@@ -178,3 +181,27 @@ class EventHandler:
         message = "Overlay created using a scaling factor of {:.2f}!".format(scaling_factor)
         self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
         self.parent.ui.statusbar.setStyleSheet("color: green")
+
+    def check_offset_manual_button_status(self):
+        self.check_xoffset_manual_button_status()
+
+
+    def check_xoffset_manual_button_status(self):
+        status_minus_button = True
+        status_minus_minus_button = True
+        status_plus_button = True
+        status_plus_plus_button = True
+
+        xoffset_value = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
+        if xoffset_value == 0:
+            status_minus_button = False
+            status_minus_minus_button = False
+        elif xoffset_value < self.parent.DOUBLE_OFFSET:
+            status_minus_minus_button = False
+        elif xoffset_value == (self.parent.rescaled_low_res_width - self.parent.high_res_image_width):
+            status_plus_button = False
+            status_plus_plus_button = False
+        elif xoffset_value > (self.parent.rescaled_low_res_width -
+                              self.parent.high_res_image_width - self.parent.DOUBLE_OFFSET)):
+            status_plus_plus_button = False
+

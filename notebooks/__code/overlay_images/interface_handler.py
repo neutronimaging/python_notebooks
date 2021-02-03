@@ -67,6 +67,10 @@ class Interface(QMainWindow):
         self.o_norm_low_res = o_norm_low_res
         self.working_dir = working_dir if working_dir else "./"
 
+        self.high_res_image_height, self.high_res_image_width = np.shape(o_norm_high_res.data['sample']['data'][0])
+        self.low_res_image_height, self.low_res_image_width = np.shape(o_norm_low_res.data['sample']['data'][0])
+        self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = None, None
+
         super(Interface, self).__init__(parent)
 
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -161,15 +165,27 @@ class Interface(QMainWindow):
 
     def _xoffset_value_to_add(self, to_add=0):
         current_value = np.int(str(self.ui.xoffset_lineEdit.text()))
-        new_value = str(current_value + to_add)
-        self.ui.xoffset_lineEdit.setText(new_value)
+        new_value = current_value + to_add
+        if new_value < 0:
+            new_value = 0
+        if new_value > self.parent.rescaled_low_res_width - self.parent.high_res_image_width:
+            new_value = self.parent.rescaled_low_res_width - self.parent.high_res_image_width
+
+        self.ui.xoffset_lineEdit.setText(str(new_value))
 
     def _yoffset_value_to_add(self, to_add=0):
         current_value = np.int(str(self.ui.yoffset_lineEdit.text()))
-        new_value = str(current_value + to_add)
-        self.ui.yoffset_lineEdit.setText(new_value)
+        new_value = current_value + to_add
+        if new_value < 0:
+            new_value = 0
+        if new_value > self.parent.rescaled_low_res_height - self.parent.high_res_image_height:
+            new_value = self.parent.rescaled_low_res_height - self.parent.high_res_image_height
 
-    
+        self.ui.yoffset_lineEdit.setText(str(new_value))
+
+    def check_offset_manual_buttons_status(self):
+        o_event = EventHandler(parent=self)
+        o_event.check_offset_manual_button_status()
 
     def manual_overlay_of_all_images_clicked(self):
         pass
