@@ -56,10 +56,10 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QWidget" name="widget" native="true"/>
+          <widget class="QWidget" name="horizontal_profile_widget" native="true"/>
          </item>
          <item>
-          <widget class="QWidget" name="widget_2" native="true"/>
+          <widget class="QWidget" name="vertical_profile_widget" native="true"/>
          </item>
         </layout>
        </widget>
@@ -166,6 +166,13 @@
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QCheckBox" name="profile_tool_checkBox">
+                <property name="text">
+                 <string>Profile tool</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <spacer name="horizontalSpacer_5">
                 <property name="orientation">
@@ -581,7 +588,7 @@
    <slot>scaling_factor_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>608</x>
+     <x>676</x>
      <y>841</y>
     </hint>
     <hint type="destinationlabel">
@@ -597,7 +604,7 @@
    <slot>offset_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>944</x>
+     <x>989</x>
      <y>840</y>
     </hint>
     <hint type="destinationlabel">
@@ -629,7 +636,7 @@
    <slot>xoffset_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>852</x>
+     <x>897</x>
      <y>840</y>
     </hint>
     <hint type="destinationlabel">
@@ -645,7 +652,7 @@
    <slot>xoffset_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>999</x>
+     <x>1044</x>
      <y>836</y>
     </hint>
     <hint type="destinationlabel">
@@ -661,7 +668,7 @@
    <slot>yoffset_minus_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1235</x>
+     <x>1258</x>
      <y>838</y>
     </hint>
     <hint type="destinationlabel">
@@ -677,7 +684,7 @@
    <slot>yoffset_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1439</x>
+     <x>1462</x>
      <y>834</y>
     </hint>
     <hint type="destinationlabel">
@@ -709,7 +716,7 @@
    <slot>xoffset_minus_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>815</x>
+     <x>860</x>
      <y>844</y>
     </hint>
     <hint type="destinationlabel">
@@ -725,7 +732,7 @@
    <slot>xoffset_plus_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1067</x>
+     <x>1112</x>
      <y>843</y>
     </hint>
     <hint type="destinationlabel">
@@ -741,7 +748,7 @@
    <slot>yoffset_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1288</x>
+     <x>1311</x>
      <y>838</y>
     </hint>
     <hint type="destinationlabel">
@@ -782,6 +789,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>profile_tool_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>profile_tool_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>469</x>
+     <y>833</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>50</x>
+     <y>943</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_files_table_clicked()</slot>
@@ -803,5 +826,6 @@
   <slot>yoffset_plus_clicked()</slot>
   <slot>yoffset_plus_plus_clicked()</slot>
   <slot>tab_index_changed()</slot>
+  <slot>profile_tool_clicked()</slot>
  </slots>
 </ui>

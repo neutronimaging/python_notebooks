@@ -4,7 +4,11 @@ import os
 import numpy as np
 from collections import OrderedDict
 import pyqtgraph as pg
+import matplotlib
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
+from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.table_handler import TableHandler
 from __code.overlay_images.event_handler import EventHandler
 
@@ -62,6 +66,26 @@ class Initialization:
         self.parent.ui.splitter_2.setHandleWidth(0)
         self.parent.ui.tabWidget.setTabEnabled(1, False)
         self.parent.splitter_closed_state = self.parent.ui.splitter_2.saveState()
+
+    def matplotlib(self):
+
+        def _matplotlib(parent=None, widget=None):
+            sc = MplCanvas(parent, width=5, height=4, dpi=100)
+            # sc.axes.plot([0,1,2,3,4,5], [10, 1, 20 ,3, 40, 50])
+            toolbar = NavigationToolbar(sc, parent)
+            layout = QVBoxLayout()
+            layout.addWidget(toolbar)
+            layout.addWidget(sc)
+            widget.setLayout(layout)
+            return sc
+
+        self.parent.horizontal_profile_plot = _matplotlib(parent=self.parent,
+                                        widget=self.parent.ui.horizontal_profile_widget)
+        self.parent.vertical_profile_plot = _matplotlib(parent=self.parent,
+                                        widget=self.parent.ui.vertical_profile_widget)
+
+        # self.profile_plot.mpl_connect('button_press_event', self.click_on_profile_plot)
+
 
     def pyqtgraph(self):
         

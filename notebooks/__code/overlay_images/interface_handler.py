@@ -35,6 +35,9 @@ class Interface(QMainWindow):
     splitter_closed_state = None
     splitter_state = None
 
+    horizontal_profile_plot = None
+    vertical_profile_plot = None
+
     # {'file_high_reso_1.tif': {'offset': {'x': 0, 'y': 0},
     #                           'low_resolution_filename': 'file_low_reso_1.tif'},
     #  'file_high_reso_2.tif': {'offset': {'x': 0, 'y': 0},
@@ -89,6 +92,7 @@ class Interface(QMainWindow):
         o_init.widgets()
         o_init.pyqtgraph()
         o_init.markers()
+        o_init.matplotlib()
 
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         o_table.select_row(row=0)
@@ -219,7 +223,12 @@ class Interface(QMainWindow):
             self.ui.splitter_2.setHandleWidth(10)
             self.ui.splitter_2.restoreState(self.splitter_state)
 
-
+    def profile_tool_clicked(self):
+        _with_profile = self.ui.profile_tool_checkBox.isChecked()
+        if _with_profile:
+            self.ui.splitter_2.setSizes([300, 500])
+        else:
+            self.ui.splitter_2.setSizes([800, 0])
 
 
 
