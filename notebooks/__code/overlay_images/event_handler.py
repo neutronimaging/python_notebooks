@@ -142,9 +142,25 @@ class EventHandler:
         QtGui.QGuiApplication.processEvents()
 
         # resize low resolution images
+        # position the high resolution image inside
+        x_2_l_scaled = x_2_l * scaling_factor
+        x_1_l_scaled = x_1_l * scaling_factor
+        y_2_l_scaled = y_2_l * scaling_factor
+        y_1_l_scaled = y_1_l * scaling_factor
+
+        x_1_h = region1['high_res']['x']
+        y_1_h = region1['high_res']['y']
+
+        x_index_array_resized_array = np.int(x_1_l * scaling_factor - x_1_h)
+        y_index_array_resized_array = np.int(y_1_l * scaling_factor - y_1_h)
+
         resize_and_overlay_images = []
+        high_res_images = self.parent.o_norm_high_res.data['sample']['data']
         for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
-            new_image = Image.fromarray(_low_res_image).resize((new_image_width, new_image_height))
+            new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+            # add high resolution image
+            new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+            x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
             resize_and_overlay_images.append(new_image)
             self.parent.eventProgress.setValue(_row+1)
             QtGui.QGuiApplication.processEvents()
@@ -160,4 +176,3 @@ class EventHandler:
         message = "Overlay created using a scaling factor of {:.2f}!".format(scaling_factor)
         self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
         self.parent.ui.statusbar.setStyleSheet("color: green")
-
