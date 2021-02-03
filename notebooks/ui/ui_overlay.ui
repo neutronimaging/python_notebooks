@@ -16,52 +16,64 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="splitter_3">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QTableWidget" name="tableWidget">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::SingleSelection</enum>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-          <column>
-           <property name="text">
-            <string>High resolution files</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Low resolution files</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Overlay Mode</string>
-           </property>
-          </column>
-         </widget>
-        </item>
-       </layout>
+      <widget class="QSplitter" name="splitter_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QTableWidget" name="tableWidget">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <column>
+         <property name="text">
+          <string>High resolution files</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Low resolution files</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Overlay Mode</string>
+         </property>
+        </column>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string>Profiles</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QWidget" name="widget" native="true"/>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_2" native="true"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
-         <string>Define scaling parameters</string>
+         <string>Coarse alignment</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
@@ -133,7 +145,7 @@
        </widget>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
-         <string>Overlay images</string>
+         <string>Fine alignment</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
@@ -569,7 +581,7 @@
    <slot>scaling_factor_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>942</x>
+     <x>608</x>
      <y>841</y>
     </hint>
     <hint type="destinationlabel">
@@ -585,7 +597,7 @@
    <slot>offset_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1173</x>
+     <x>944</x>
      <y>840</y>
     </hint>
     <hint type="destinationlabel">
@@ -601,7 +613,7 @@
    <slot>offset_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1474</x>
+     <x>1369</x>
      <y>840</y>
     </hint>
     <hint type="destinationlabel">
@@ -617,7 +629,7 @@
    <slot>xoffset_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1101</x>
+     <x>852</x>
      <y>840</y>
     </hint>
     <hint type="destinationlabel">
@@ -633,7 +645,7 @@
    <slot>xoffset_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1228</x>
+     <x>999</x>
      <y>836</y>
     </hint>
     <hint type="destinationlabel">
@@ -649,7 +661,7 @@
    <slot>yoffset_minus_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1360</x>
+     <x>1235</x>
      <y>838</y>
     </hint>
     <hint type="destinationlabel">
@@ -665,7 +677,7 @@
    <slot>yoffset_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1544</x>
+     <x>1439</x>
      <y>834</y>
     </hint>
     <hint type="destinationlabel">
@@ -697,7 +709,7 @@
    <slot>xoffset_minus_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1064</x>
+     <x>815</x>
      <y>844</y>
     </hint>
     <hint type="destinationlabel">
@@ -713,7 +725,7 @@
    <slot>xoffset_plus_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1276</x>
+     <x>1067</x>
      <y>843</y>
     </hint>
     <hint type="destinationlabel">
@@ -729,7 +741,7 @@
    <slot>yoffset_minus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1413</x>
+     <x>1288</x>
      <y>838</y>
     </hint>
     <hint type="destinationlabel">
@@ -745,12 +757,28 @@
    <slot>yoffset_plus_plus_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1585</x>
+     <x>1500</x>
      <y>840</y>
     </hint>
     <hint type="destinationlabel">
      <x>1823</x>
      <y>946</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>tab_index_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1012</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1096</x>
+     <y>-6</y>
     </hint>
    </hints>
   </connection>
@@ -774,5 +802,6 @@
   <slot>yoffset_minus_minus_clicked()</slot>
   <slot>yoffset_plus_clicked()</slot>
   <slot>yoffset_plus_plus_clicked()</slot>
+  <slot>tab_index_changed()</slot>
  </slots>
 </ui>

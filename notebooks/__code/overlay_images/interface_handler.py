@@ -32,6 +32,9 @@ class Interface(QMainWindow):
     SINGLE_OFFSET = 1  # pixels
     DOUBLE_OFFSET = 5  # pixels
 
+    splitter_closed_state = None
+    splitter_state = None
+
     # {'file_high_reso_1.tif': {'offset': {'x': 0, 'y': 0},
     #                           'low_resolution_filename': 'file_low_reso_1.tif'},
     #  'file_high_reso_2.tif': {'offset': {'x': 0, 'y': 0},
@@ -206,6 +209,15 @@ class Interface(QMainWindow):
     def manual_overlay_of_all_images_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.manual_overlay_stack_of_images_clicked()
+
+    def tab_index_changed(self, tab_index):
+        if tab_index == 0:
+            self.splitter_state = self.ui.splitter_2.saveState()
+            self.ui.splitter_2.setHandleWidth(0)
+            self.ui.splitter_2.restoreState(self.splitter_closed_state)
+        elif tab_index == 1:
+            self.ui.splitter_2.setHandleWidth(10)
+            self.ui.splitter_2.restoreState(self.splitter_state)
 
 
 

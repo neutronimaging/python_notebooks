@@ -56,8 +56,11 @@ class Initialization:
         o_table.set_column_sizes(column_sizes=[200, 200, 100])
         self.parent.resize_and_overlay_modes = resize_and_overlay_modes
 
-        self.parent.ui.splitter_2.setSizes([400, 400])
+        self.parent.ui.splitter_3.setSizes([400, 400])
+        self.parent.ui.splitter_2.setSizes([800, 0])
+        self.parent.ui.splitter_2.setHandleWidth(0)
         self.parent.ui.tabWidget.setTabEnabled(1, False)
+        self.parent.splitter_closed_state = self.parent.ui.splitter_2.saveState()
 
     def pyqtgraph(self):
         
