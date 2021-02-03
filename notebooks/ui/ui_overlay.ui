@@ -43,6 +43,11 @@
             <string>Low resolution files</string>
            </property>
           </column>
+          <column>
+           <property name="text">
+            <string>Overlay Mode</string>
+           </property>
+          </column>
          </widget>
         </item>
        </layout>

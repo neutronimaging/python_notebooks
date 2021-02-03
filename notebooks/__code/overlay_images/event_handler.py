@@ -174,12 +174,17 @@ class EventHandler:
         self.parent.ui.yoffset_lineEdit.setText(str(y_index_array_resized_array))
 
         resize_and_overlay_images = []
+        resize_and_overlay_modes = []
         high_res_images = self.parent.o_norm_high_res.data['sample']['data']
+
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+
         for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
             new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
             if _row == 0:
                 self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
-
+            resize_and_overlay_modes.append("Auto")
+            o_table.set_item_with_str(row=_row, column=2, cell_str="Auto")
             # add high resolution image
             new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
             x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
@@ -188,6 +193,8 @@ class EventHandler:
             QtGui.QGuiApplication.processEvents()
 
         self.parent.resize_and_overlay_images = resize_and_overlay_images
+        self.parent.resize_and_overlay_modes = resize_and_overlay_modes
+
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
 
@@ -202,8 +209,12 @@ class EventHandler:
 
     def manual_overlay_of_selected_image_only(self):
         scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
+        self.parent.resize_and_overlay_modes[row_selected] = "Manual"
+        o_table.set_item_with_str(row=row_selected, column=2, cell_str="Manual")
+
         [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
         new_image_height = np.int(image_height * scaling_factor)
         new_image_width = np.int(image_width * scaling_factor)
@@ -219,7 +230,7 @@ class EventHandler:
         # add high resolution image
         new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
         x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
-        resize_and_overlay_images.append(new_image)
+        resize_and_overlay_images[row_selected] = new_image
         QtGui.QGuiApplication.processEvents()
 
         self.parent.resize_and_overlay_images = resize_and_overlay_images
@@ -241,11 +252,16 @@ class EventHandler:
         y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
 
         resize_and_overlay_images = []
+        resize_and_overlay_modes = []
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+
         high_res_images = self.parent.o_norm_high_res.data['sample']['data']
         for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
             new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
             if _row == 0:
                 self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
+            resize_and_overlay_modes.append("Manual")
+            o_table.set_item_with_str(row=_row, column=2, cell_str="Manual")
 
             # add high resolution image
             new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
@@ -255,7 +271,8 @@ class EventHandler:
             QtGui.QGuiApplication.processEvents()
 
         self.parent.resize_and_overlay_images = resize_and_overlay_images
-        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        self.parent.resize_and_overlay_modes = resize_and_overlay_modes
+
         row_selected = o_table.get_row_selected()
 
         self.parent.update_overlay_preview(row_selected=row_selected)

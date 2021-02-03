@@ -43,6 +43,7 @@ class Interface(QMainWindow):
     image_view = {'high_res': None, 'low_res': None, 'overlay': None}
 
     resize_and_overlay_images = []
+    resize_and_overlay_modes = []
 
     markers = {'high_res': {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
                             '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},

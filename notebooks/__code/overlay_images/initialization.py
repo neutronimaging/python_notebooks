@@ -41,7 +41,7 @@ class Initialization:
         list_high_res_files_basename = [os.path.basename(_file) for _file in list_high_res_files]
         list_low_res_files_basename = [os.path.basename(_file) for _file in list_low_res_files]
 
-        dict_images_offset = self.parent.dict_images_offset
+        resize_and_overlay_modes = []
 
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         _row = 0
@@ -49,13 +49,14 @@ class Initialization:
             o_table.insert_empty_row(row=_row)
             o_table.insert_item(row=_row, column=0, value=_high_res_file, editable=False)
             o_table.insert_item(row=_row, column=1, value=_low_res_file, editable=False)
-            o_table.insert_item(row=_row, column=2, value=dict_images_offset[_high_res_file]['offset']['x'])
-            o_table.insert_item(row=_row, column=3, value=dict_images_offset[_high_res_file]['offset']['y'])
+            o_table.insert_item(row=_row, column=2, value="None")
+            resize_and_overlay_modes.append("None")
             _row += 1
 
-        o_table.set_column_sizes(column_sizes=[200, 200, 50, 50])
+        o_table.set_column_sizes(column_sizes=[200, 200, 100])
+        self.parent.resize_and_overlay_modes = resize_and_overlay_modes
 
-        self.parent.ui.splitter_2.setSizes([200, 800])
+        self.parent.ui.splitter_2.setSizes([400, 400])
         self.parent.ui.tabWidget.setTabEnabled(1, False)
 
     def pyqtgraph(self):
