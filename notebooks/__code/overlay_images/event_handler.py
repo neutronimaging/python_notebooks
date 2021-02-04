@@ -76,6 +76,9 @@ class EventHandler:
 
         if with_profile:
 
+            if not (self.parent.markers['overlay']['1']['target_ui'] is None):
+                image_view.removeItem(self.parent.markers['overlay']['1']['target_ui'])
+
             width = self.parent.markers['width']
             height = self.parent.markers['height']
             length = self.parent.markers['overlay']['1']['length']
@@ -103,8 +106,8 @@ class EventHandler:
 
             x = self.parent.markers['overlay']['1']['x']
             y = self.parent.markers['overlay']['1']['y']
-            target_length = self.parent.markers['target']['length']
-            target_border = self.parent.markers['target']['border']
+            # target_length = self.parent.markers['target']['length']
+            # target_border = self.parent.markers['target']['border']
 
             pos.append([np.int(x + width / 2), y - length - np.int(height/2)])
             pos.append([np.int(x + width / 2), y + length + np.int(height/2)])

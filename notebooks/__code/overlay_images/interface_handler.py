@@ -237,8 +237,13 @@ class Interface(QMainWindow):
         o_event.update_profile_markers_and_target(with_profile=_with_profile)
 
     def profile_region_moved(self):
-        print("profile region moved")
+        o_get = Get(parent=self)
+        overlay_1_dict = o_get.marker_location(image_resolution='overlay', target_index='1')
+        self.markers['overlay']['1']['x'] = overlay_1_dict['x']
+        self.markers['overlay']['1']['y'] = overlay_1_dict['y']
 
+        o_event = EventHandler(parent=self)
+        o_event.update_profile_markers_and_target(with_profile=True)
 
 
 
