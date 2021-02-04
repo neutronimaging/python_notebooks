@@ -84,8 +84,8 @@ o_data.load_data(list_files=list_low_reso_images, data_type='low resolution')
 
 # %gui qt
 
-o_interface = InterfaceHandler(o_norm_high_reso=o_data.o_norm_high_res,
-                               o_norm_low_reso=o_data.o_norm_low_res,
+o_interface = InterfaceHandler(o_norm_high_res=o_data.o_norm_high_res,
+                               o_norm_low_res=o_data.o_norm_low_res,
                                working_dir=o_data.working_dir)
 
 

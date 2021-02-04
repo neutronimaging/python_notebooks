@@ -48,3 +48,27 @@ o_selection.select_ascii_file()
 
 o_select = InterfaceHandler(working_dir=system.System.get_working_dir(), 
                             o_selection=o_selection)
+
+
+# # DEBUG 
+
+# +
+from __code.hfir_reactor_element_analysis.hfir_reactor_element_analysis import HfirReactorElementAnalysis
+from __code.hfir_reactor_element_analysis.interface_handler import InterfaceHandler
+import os
+
+ascii_file_name = '/Users/j35/IPTS/HFIR-Reactor/HFIR-Reactor_profiles_top.csv'
+assert os.path.exists(ascii_file_name)
+# -
+
+# %gui qt
+
+# +
+o_selection = HfirReactorElementAnalysis(working_dir="/Users/j35/IPTS/HFIR-Reactor/")
+o_selection.load_ascii(ascii_file_name)
+
+o_select = InterfaceHandler(working_dir="/Users/j35/IPTS/HFIR-Reactor/", 
+                            o_selection=o_selection)
+# -
+
+
