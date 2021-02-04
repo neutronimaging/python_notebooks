@@ -46,6 +46,7 @@ class Interface(QMainWindow):
     image_view = {'high_res': None, 'low_res': None, 'overlay': None}
 
     resize_and_overlay_images = []
+    resize_hres_lres_images = {'hres': None, 'lres': None}
     resize_and_overlay_modes = []
 
     markers = {'high_res': {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
@@ -68,6 +69,7 @@ class Interface(QMainWindow):
                }
 
     histogram_level = {'high_res': None, 'low_res': None, 'overlay': None}
+    transparency = 0
 
     def __init__(self, parent=None, o_norm_high_res=None, o_norm_low_res=None, working_dir=None):
 
@@ -252,7 +254,19 @@ class Interface(QMainWindow):
         o_event.update_profile_markers_and_target(with_profile=True)
         o_event.update_profile_plots()
 
+    def transparency_slider_clicked(self):
+        self.transparency = self.ui.transparency_slider.value()
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        o_event = EventHandler(parent=self)
+        o_event.update_overlay_view(row_selected=row_selected)
 
+    def transparency_slider_moved(self, value):
+        self.transparency = value
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        o_event = EventHandler(parent=self)
+        o_event.update_overlay_view(row_selected=row_selected)
 
 
 

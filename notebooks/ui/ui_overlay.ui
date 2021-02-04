@@ -69,7 +69,7 @@
         <bool>true</bool>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -172,7 +172,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QSlider" name="horizontalSlider_2">
+             <widget class="QSlider" name="transparency_slider">
               <property name="maximum">
                <number>100</number>
               </property>
@@ -841,6 +841,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>transparency_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>transparency_slider_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1222</x>
+     <y>731</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1894</x>
+     <y>743</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>transparency_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>transparency_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1470</x>
+     <y>728</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1893</x>
+     <y>669</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_files_table_clicked()</slot>
@@ -863,5 +895,7 @@
   <slot>yoffset_plus_plus_clicked()</slot>
   <slot>tab_index_changed()</slot>
   <slot>profile_tool_clicked()</slot>
+  <slot>transparency_slider_clicked()</slot>
+  <slot>transparency_slider_moved()</slot>
  </slots>
 </ui>

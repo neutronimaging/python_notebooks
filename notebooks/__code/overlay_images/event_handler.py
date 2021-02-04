@@ -38,9 +38,17 @@ class EventHandler:
         histogram_level = histo_widget.getLevels()
         self.parent.histogram_level['overlay'] = histogram_level
 
-        _image = np.transpose(self.parent.resize_and_overlay_images[row_selected])
-        self.parent.image_view['overlay'].setImage(_image)
-        self.parent.current_live_image['overlay'] = _image
+        # _image = np.transpose(self.parent.resize_and_overlay_images[row_selected])
+
+        hres_image = self.parent.resize_hres_lres_images['hres'][row_selected]
+        lres_image = self.parent.resize_hres_lres_images['lres'][row_selected]
+        transparency = np.float(self.parent.transparency) / 100
+
+        image = transparency * hres_image + (1 - transparency) * lres_image
+        image = np.transpose(image)
+
+        self.parent.image_view['overlay'].setImage(image)
+        self.parent.current_live_image['overlay'] = image
 
         _res_view_box.setState(_state)
         if not first_update:
@@ -196,7 +204,7 @@ class EventHandler:
         region = {'high_res': {'x': self.parent.markers['high_res'][region_index]['x'],
                                'y': self.parent.markers['high_res'][region_index]['y']},
                   'low_res': {'x': self.parent.markers['low_res'][region_index]['x'],
-                               'y': self.parent.markers['low_res'][region_index]['y']},
+                              'y': self.parent.markers['low_res'][region_index]['y']},
                   }
         return region
 
@@ -249,20 +257,36 @@ class EventHandler:
 
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
 
+        resize_hres_images = []
+        resize_lres_images = []
+
         for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
             new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+            resize_lres_images.append(new_image)
+
+            high_res_image = np.ones((new_image_height, new_image_width))
+            high_res_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+                           x_index_array_resized_array: x_index_array_resized_array + image_width] = \
+                high_res_images[_row]
+            resize_hres_images.append(high_res_image)
+
             if _row == 0:
                 self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
             resize_and_overlay_modes.append("Auto")
             o_table.set_item_with_str(row=_row, column=2, cell_str="Auto")
             # add high resolution image
-            new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
-            x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
-            resize_and_overlay_images.append(new_image)
+
+            # new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+            # x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
+
+            # resize_and_overlay_images.append(new_image)
             self.parent.eventProgress.setValue(_row+1)
             QtGui.QGuiApplication.processEvents()
 
-        self.parent.resize_and_overlay_images = resize_and_overlay_images
+        self.parent.resize_hres_lres_images = {'lres': resize_lres_images,
+                                               'hres': resize_hres_images}
+
+        # self.parent.resize_and_overlay_images = resize_and_overlay_images
         self.parent.resize_and_overlay_modes = resize_and_overlay_modes
 
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
@@ -297,10 +321,18 @@ class EventHandler:
         new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
         # self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
 
-        # add high resolution image
-        new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
-        x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
-        resize_and_overlay_images[row_selected] = new_image
+        self.parent.resize_hres_lres_images['hres'][row_selected] = new_image
+
+        high_res_image = np.ones((new_image_height, new_image_width))
+        high_res_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+                       x_index_array_resized_array: x_index_array_resized_array + image_width] = \
+            _high_res_image
+        self.parent.resize_hres_lres_images['lres'][row_selected] = high_res_image
+
+        # # add high resolution image
+        # new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+        # x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
+        # resize_and_overlay_images[row_selected] = new_image
         QtGui.QGuiApplication.processEvents()
 
         self.parent.resize_and_overlay_images = resize_and_overlay_images
@@ -325,23 +357,37 @@ class EventHandler:
         resize_and_overlay_modes = []
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
 
+        resize_hres_images = []
+        resize_lres_images = []
+
         high_res_images = self.parent.o_norm_high_res.data['sample']['data']
         for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data['sample']['data']):
             new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+
+            resize_lres_images.append(new_image)
             if _row == 0:
                 self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
             resize_and_overlay_modes.append("Manual")
             o_table.set_item_with_str(row=_row, column=2, cell_str="Manual")
 
-            # add high resolution image
-            new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
-            x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
-            resize_and_overlay_images.append(new_image)
+            high_res_image = np.ones((new_image_height, new_image_width))
+            high_res_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+                           x_index_array_resized_array: x_index_array_resized_array + image_width] = \
+                high_res_images[_row]
+            resize_hres_images.append(high_res_image)
+
+            # # add high resolution image
+            # new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+            # x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
+            # resize_and_overlay_images.append(new_image)
             self.parent.eventProgress.setValue(_row+1)
             QtGui.QGuiApplication.processEvents()
 
-        self.parent.resize_and_overlay_images = resize_and_overlay_images
+        # self.parent.resize_and_overlay_images = resize_and_overlay_images
         self.parent.resize_and_overlay_modes = resize_and_overlay_modes
+
+        self.parent.resize_hres_lres_images = {'lres': resize_lres_images,
+                                               'hres': resize_hres_images}
 
         row_selected = o_table.get_row_selected()
 
@@ -420,24 +466,28 @@ class EventHandler:
         center_x = overlay_1_dict['x'] + np.int(width/2)
         center_y = overlay_1_dict['y'] + np.int(height/2)
 
-        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+        # scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
 
-        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
-        new_image_height = np.int(image_height * scaling_factor)
-        new_image_width = np.int(image_width * scaling_factor)
+        # [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
+        # new_image_height = np.int(image_height * scaling_factor)
+        # new_image_width = np.int(image_width * scaling_factor)
 
-        _high_res_image = self.parent.o_norm_high_res.data['sample']['data'][row_selected]
-        _low_res_image = self.parent.o_norm_low_res.data['sample']['data'][row_selected]
+        # _high_res_image = self.parent.o_norm_high_res.data['sample']['data'][row_selected]
+        # _low_res_image = self.parent.o_norm_low_res.data['sample']['data'][row_selected]
 
         x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
         y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
 
-        low_res_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
-        high_res_image = np.ones((new_image_height, new_image_width))
-        high_res_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
-                       x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
+        # low_res_image = self.parent.np.array(Image.fromarray(_low_res_image).resize((new_image_width,
+        #                                                                              new_image_height)))
+        low_res_image = self.parent.resize_hres_lres_images['lres'][row_selected]
+        high_res_image = self.parent.resize_hres_lres_images['hres'][row_selected]
+
+        # high_res_image = np.ones((new_image_height, new_image_width))
+        # high_res_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+        #                x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
 
         # horizontal profile
         from_x = center_x - length
