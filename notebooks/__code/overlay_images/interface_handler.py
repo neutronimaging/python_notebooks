@@ -206,14 +206,20 @@ class Interface(QMainWindow):
     def check_offset_manual_buttons_status(self):
         o_event = EventHandler(parent=self)
         o_event.check_offset_manual_button_status()
+        o_event = EventHandler(parent=self)
+        o_event.update_profile_plots()
 
     def manual_overlay_of_selected_image_only(self):
         o_event = EventHandler(parent=self)
         o_event.manual_overlay_of_selected_image_only()
+        o_event = EventHandler(parent=self)
+        o_event.update_profile_plots()
 
     def manual_overlay_of_all_images_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.manual_overlay_stack_of_images_clicked()
+        o_event = EventHandler(parent=self)
+        o_event.update_profile_plots()
 
     def tab_index_changed(self, tab_index):
         if tab_index == 0:
@@ -223,6 +229,8 @@ class Interface(QMainWindow):
         elif tab_index == 1:
             self.ui.splitter_2.setHandleWidth(10)
             self.ui.splitter_2.restoreState(self.splitter_state)
+        o_event = EventHandler(parent=self)
+        o_event.update_profile_plots()
 
     def profile_tool_clicked(self):
         _with_profile = self.ui.profile_tool_checkBox.isChecked()
@@ -232,6 +240,7 @@ class Interface(QMainWindow):
         else:
             self.ui.splitter_2.setSizes([800, 0])
         o_event.update_profile_markers_and_target(with_profile=_with_profile)
+        o_event.update_profile_plots()
 
     def profile_region_moved(self):
         o_get = Get(parent=self)

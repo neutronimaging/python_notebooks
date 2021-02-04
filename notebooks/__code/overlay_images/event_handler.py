@@ -406,6 +406,10 @@ class EventHandler:
         self.parent.ui.yoffset_plus_plus_pushButton.setEnabled(status_plus_plus_button)
 
     def update_profile_plots(self):
+        _with_profile = self.parent.ui.profile_tool_checkBox.isChecked()
+        if not _with_profile:
+            return
+
         o_get = Get(parent=self.parent)
         overlay_1_dict = o_get.marker_location(image_resolution='overlay', target_index='1')
 
@@ -431,9 +435,9 @@ class EventHandler:
         y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
 
         low_res_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
-        high_res_image = np.zeros((new_image_height, new_image_width))
+        high_res_image = np.ones((new_image_height, new_image_width))
         high_res_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
-        x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
+                       x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
 
         # horizontal profile
         from_x = center_x - length
@@ -462,7 +466,7 @@ class EventHandler:
         self.parent.vertical_profile_plot.draw()
         self.parent.vertical_profile_plot.axes.plot(y_axis, vertical_profile_high_res,
                                                     '-r', label='high resolution')
-        self.parent.vertical_profile_plot.axes.plot(x_axis, vertical_profile_low_res,
+        self.parent.vertical_profile_plot.axes.plot(y_axis, vertical_profile_low_res,
                                                     '--r', label='low resolution')
         self.parent.vertical_profile_plot.axes.legend()
         self.parent.vertical_profile_plot.draw()
