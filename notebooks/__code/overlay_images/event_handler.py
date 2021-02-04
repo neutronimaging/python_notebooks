@@ -71,6 +71,72 @@ class EventHandler:
             histo_widget.setLevels(histogram_level[0],
                                    histogram_level[1])
 
+    def update_profile_markers_and_target(self, with_profile=False):
+        image_view = self.parent.image_view['overlay']
+
+        if with_profile:
+
+            width = self.parent.markers['width']
+            height = self.parent.markers['height']
+            length = self.parent.markers['overlay']['1']['length']
+
+            if self.parent.markers['overlay']['1']['ui']:
+                image_view.addItem(self.parent.markers['overlay']['1']['ui'])
+
+            else:
+                x = self.parent.markers['overlay']['1']['x']
+                y = self.parent.markers['overlay']['1']['y']
+                image_view = self.parent.image_view['overlay']
+
+                pen = QtGui.QPen()
+                pen.setColor(QtGui.QColor(255, 0, 255, 255))
+                pen.setWidthF(0.05)
+
+                ui = pg.ROI([x, y], [width, height], scaleSnap=True, pen=pen)
+                image_view.addItem(ui)
+                ui.sigRegionChanged.connect(self.parent.profile_region_moved)
+
+                self.parent.markers['overlay']['1']['ui'] = ui
+
+            pos = []
+            adj = []
+
+            x = self.parent.markers['overlay']['1']['x']
+            y = self.parent.markers['overlay']['1']['y']
+            target_length = self.parent.markers['target']['length']
+            target_border = self.parent.markers['target']['border']
+
+            pos.append([np.int(x + width / 2), y - length - np.int(height/2)])
+            pos.append([np.int(x + width / 2), y + length + np.int(height/2)])
+            adj.append([0, 1])
+
+            pos.append([x - length - np.int(width/2), np.int(y + height / 2)])
+            pos.append([x + length + np.int(width/2), np.int(y + height / 2)])
+            adj.append([2, 3])
+
+            pos = np.array(pos)
+            adj = np.array(adj)
+
+            line_color = self.parent.markers['target']['color']['vertical']
+            lines = np.array([line_color for _ in np.arange(len(adj))],
+                             dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                    ('blue', np.ubyte), ('alpha', np.ubyte),
+                                    ('width', float)])
+            lines[0] = self.parent.markers['target']['color']['horizontal']
+
+            line_view_binning = pg.GraphItem()
+            image_view.addItem(line_view_binning)
+            line_view_binning.setData(pos=pos,
+                                      adj=adj,
+                                      pen=lines,
+                                      symbol=None,
+                                      pxMode=False)
+            self.parent.markers['overlay']['1']['target_ui'] = line_view_binning
+        else:
+            if self.parent.markers['overlay']['1']['target_ui']:
+                image_view.removeItem(self.parent.markers['overlay']['1']['ui'])
+                image_view.removeItem(self.parent.markers['overlay']['1']['target_ui'])
+
     def update_target(self, image_resolution='high_res', target_index='1'):
 
         image_view = self.parent.image_view[image_resolution]

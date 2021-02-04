@@ -160,3 +160,6 @@ class Initialization:
         o_event.update_target(image_resolution='high_res', target_index='2')
         o_event.update_target(image_resolution='low_res', target_index='1')
         o_event.update_target(image_resolution='low_res', target_index='2')
+
+    def update_profile_markers(self, with_profile=True):
+        pass

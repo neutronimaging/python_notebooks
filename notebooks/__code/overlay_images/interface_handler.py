@@ -57,12 +57,16 @@ class Interface(QMainWindow):
                'low_res':  {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
                             '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},
                             },
+               'overlay': {'1': {'x': 500, 'y': 500, 'ui': None, 'target_ui': None, 'length': 200},
+                           },
                'width': 50,
                'height': 50,
                'target': {'length': 10,
                           'border': 10,
                           'color': {'1': (255, 0, 0, 255, 1),
-                                    '2': (0, 0, 255, 255, 1)},
+                                    '2': (0, 0, 255, 255, 1),
+                                    'horizontal': (255, 0, 0, 255, 2),
+                                    'vertical': (0, 0, 255, 255, 2)},
                           },
                }
 
@@ -225,13 +229,15 @@ class Interface(QMainWindow):
 
     def profile_tool_clicked(self):
         _with_profile = self.ui.profile_tool_checkBox.isChecked()
+        o_event = EventHandler(parent=self)
         if _with_profile:
             self.ui.splitter_2.setSizes([300, 500])
         else:
             self.ui.splitter_2.setSizes([800, 0])
+        o_event.update_profile_markers_and_target(with_profile=_with_profile)
 
-
-
+    def profile_region_moved(self):
+        print("profile region moved")
 
 
 
