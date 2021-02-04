@@ -42,9 +42,23 @@ class EventHandler:
 
         hres_image = self.parent.resize_hres_lres_images['hres'][row_selected]
         lres_image = self.parent.resize_hres_lres_images['lres'][row_selected]
-        transparency = np.float(self.parent.transparency) / 100
+        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
 
-        image = transparency * hres_image + (1 - transparency) * lres_image
+        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+
+        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
+        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+
+        if self.parent.ui.transparency_checkBox.isChecked():
+            transparency = np.float(self.parent.transparency) / 100
+            image = transparency * hres_image + (1 - transparency) * lres_image
+        else:
+            image = lres_image
+            image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+                           x_index_array_resized_array: x_index_array_resized_array + image_width] = \
+            hres_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+                           x_index_array_resized_array: x_index_array_resized_array + image_width]
+
         image = np.transpose(image)
 
         self.parent.image_view['overlay'].setImage(image)

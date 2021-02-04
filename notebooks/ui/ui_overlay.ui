@@ -161,9 +161,26 @@
          <item>
           <widget class="QGroupBox" name="groupBox_6">
            <property name="title">
-            <string>Transparency</string>
+            <string/>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QCheckBox" name="transparency_checkBox">
+              <property name="text">
+               <string>Transparency</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="QLabel" name="label_5">
               <property name="text">
@@ -177,7 +194,7 @@
                <number>100</number>
               </property>
               <property name="value">
-               <number>100</number>
+               <number>50</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -873,6 +890,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>transparency_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>transparency_checkBox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>520</x>
+     <y>737</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>721</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_files_table_clicked()</slot>
@@ -897,5 +930,6 @@
   <slot>profile_tool_clicked()</slot>
   <slot>transparency_slider_clicked()</slot>
   <slot>transparency_slider_moved()</slot>
+  <slot>transparency_checkBox_clicked()</slot>
  </slots>
 </ui>
