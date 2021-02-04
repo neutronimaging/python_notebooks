@@ -433,6 +433,7 @@ class NormalizationHandler(object):
             self.o_norm.df_correction()
             self.o_norm.normalization(notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
+            self.metadata = self.o_norm.data['sample']['metadata'][0]
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
             #                'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
@@ -465,6 +466,7 @@ class NormalizationHandler(object):
                 self.o_norm.normalization(notebook=True)
 
             self.normalized_data_array = self.o_norm.get_normalized_data()
+            self.metadata = self.o_norm.data['sample']['metadata'][0]
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
             #                 'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
@@ -526,7 +528,9 @@ class NormalizationHandler(object):
             basename = os.path.basename(_file)
             _base, _ext = os.path.splitext(basename)
             output_file_name = os.path.join(output_folder, _base + '.tiff')
-            file_handler.make_tiff(filename=output_file_name, data=self.normalized_data_array[_index])
+            file_handler.make_tiff(filename=output_file_name,
+                                   data=self.normalized_data_array[_index],
+                                   metadata=self.metadata)
 
             w.value = _index + 1
 
