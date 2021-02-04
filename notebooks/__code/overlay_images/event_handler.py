@@ -4,6 +4,7 @@ from PIL import Image
 from qtpy import QtGui
 
 from __code._utilities.table_handler import TableHandler
+from __code.overlay_images.get import Get
 
 
 class EventHandler:
@@ -403,3 +404,65 @@ class EventHandler:
         self.parent.ui.yoffset_minus_pushButton.setEnabled(status_minus_button)
         self.parent.ui.yoffset_plus_pushButton.setEnabled(status_plus_button)
         self.parent.ui.yoffset_plus_plus_pushButton.setEnabled(status_plus_plus_button)
+
+    def update_profile_plots(self):
+        o_get = Get(parent=self.parent)
+        overlay_1_dict = o_get.marker_location(image_resolution='overlay', target_index='1')
+
+        width = self.parent.markers['width']
+        height = self.parent.markers['height']
+        length = self.parent.markers['overlay']['1']['length']
+
+        center_x = overlay_1_dict['x'] + np.int(width/2)
+        center_y = overlay_1_dict['y'] + np.int(height/2)
+
+        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
+        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
+        new_image_height = np.int(image_height * scaling_factor)
+        new_image_width = np.int(image_width * scaling_factor)
+
+        _high_res_image = self.parent.o_norm_high_res.data['sample']['data'][row_selected]
+        _low_res_image = self.parent.o_norm_low_res.data['sample']['data'][row_selected]
+
+        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
+        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+
+        low_res_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+        high_res_image = np.zeros((new_image_height, new_image_width))
+        high_res_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+        x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
+
+        # horizontal profile
+        from_x = center_x - length
+        to_x = center_x + length
+        horizontal_profile_low_res = low_res_image[center_y, from_x:to_x]
+        horizontal_profile_high_res = high_res_image[center_y, from_x:to_x]
+        x_axis = np.arange(from_x, to_x)
+
+        self.parent.horizontal_profile_plot.axes.clear()
+        self.parent.horizontal_profile_plot.draw()
+        self.parent.horizontal_profile_plot.axes.plot(x_axis, horizontal_profile_high_res,
+                                                      '-b', label='high resolution')
+        self.parent.horizontal_profile_plot.axes.plot(x_axis, horizontal_profile_low_res,
+                                                      '--b', label='low resolution')
+        self.parent.horizontal_profile_plot.axes.legend()
+        self.parent.horizontal_profile_plot.draw()
+
+        # vertical profile
+        from_y = center_y - length
+        to_y = center_y + length
+        vertical_profile_low_res = low_res_image[from_y:to_y, center_x]
+        vertical_profile_high_res = high_res_image[from_y:to_y, center_x]
+        y_axis = np.arange(from_y, to_y)
+
+        self.parent.vertical_profile_plot.axes.clear()
+        self.parent.vertical_profile_plot.draw()
+        self.parent.vertical_profile_plot.axes.plot(y_axis, vertical_profile_high_res,
+                                                    '-r', label='high resolution')
+        self.parent.vertical_profile_plot.axes.plot(x_axis, vertical_profile_low_res,
+                                                    '--r', label='low resolution')
+        self.parent.vertical_profile_plot.axes.legend()
+        self.parent.vertical_profile_plot.draw()
