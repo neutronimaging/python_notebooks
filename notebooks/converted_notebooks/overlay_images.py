@@ -58,34 +58,3 @@ o_interface = InterfaceHandler(o_norm_high_res=o_data.o_norm_high_res,
 # -
 
 
-
-
-
-# # DEBUGGING 
-
-# +
-from __code.overlay_images.interface_handler import InterfaceHandler
-from __code.overlay_images.overlay_images import OverlayImages
-import glob
-
-list_high_reso_images = glob.glob("/Users/j35/IPTS/Burkhard/Norm_Proj_high_resolution/*.tif")
-list_low_reso_images = glob.glob("/Users/j35/IPTS/Burkhard/Norm_Proj_low_resolution/*.tif")
-
-list_high_reso_images.sort()
-list_low_reso_images.sort()
-
-list_high_reso_images = list_high_reso_images[0:10]
-list_low_reso_images = list_low_reso_images[0:10]
-
-o_data = OverlayImages(working_dir="/Users/j35/IPTS/Burkhard/")
-o_data.load_data(list_files=list_high_reso_images)
-o_data.load_data(list_files=list_low_reso_images, data_type='low resolution')
-# -
-
-# %gui qt
-
-o_interface = InterfaceHandler(o_norm_high_res=o_data.o_norm_high_res,
-                               o_norm_low_res=o_data.o_norm_low_res,
-                               working_dir=o_data.working_dir)
-
-
