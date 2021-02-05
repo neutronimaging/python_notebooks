@@ -534,3 +534,11 @@ class EventHandler:
                                                     '--r', label='low resolution')
         self.parent.vertical_profile_plot.axes.legend()
         self.parent.vertical_profile_plot.draw()
+
+    def transparency_widgets_status(self):
+        transparency_checkbox_status = self.parent.ui.transparency_checkBox.isChecked()
+        list_ui = [self.parent.ui.low_resolution_label,
+                   self.parent.ui.high_resolution_label,
+                   self.parent.ui.transparency_slider]
+        for _ui in list_ui:
+            _ui.setEnabled(transparency_checkbox_status)

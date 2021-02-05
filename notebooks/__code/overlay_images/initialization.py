@@ -67,6 +67,11 @@ class Initialization:
         self.parent.ui.tabWidget.setTabEnabled(1, False)
         self.parent.splitter_closed_state = self.parent.ui.splitter_2.saveState()
 
+        self.parent.ui.low_resolution_label.setEnabled(False)
+        self.parent.ui.high_resolution_label.setEnabled(False)
+        self.parent.ui.transparency_slider.setEnabled(False)
+        self.parent.ui.transparency_checkBox.setChecked(False)
+
     def matplotlib(self):
 
         def _matplotlib(parent=None, widget=None):

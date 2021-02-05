@@ -272,6 +272,7 @@ class Interface(QMainWindow):
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         row_selected = o_table.get_row_selected()
         o_event = EventHandler(parent=self)
+        o_event.transparency_widgets_status()
         o_event.update_overlay_view(row_selected=row_selected)
 
     # def clear_image_view(self):

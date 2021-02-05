@@ -182,7 +182,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_5">
+             <widget class="QLabel" name="low_resolution_label">
               <property name="text">
                <string>Low resolution</string>
               </property>
@@ -202,7 +202,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_6">
+             <widget class="QLabel" name="high_resolution_label">
               <property name="text">
                <string>High resolution</string>
               </property>
