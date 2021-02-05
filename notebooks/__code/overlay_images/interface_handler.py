@@ -83,6 +83,9 @@ class Interface(QMainWindow):
         self.rescaled_low_res_height, self.rescaled_low_res_width = None, None
         self.list_of_high_res_filename = o_norm_high_res.data['sample']['file_name']
 
+        self.high_res_input_folder = os.path.dirname(o_norm_high_res.data['sample']['file_name'][0])
+        self.low_res_input_folder = os.path.dirname(o_norm_low_res.data['sample']['file_name'][0])
+
         super(Interface, self).__init__(parent)
 
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),

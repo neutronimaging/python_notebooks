@@ -1,7 +1,10 @@
 from qtpy.QtWidgets import QFileDialog, QApplication
 from qtpy import QtGui
 import os
+
 from NeuNorm.normalization import Normalization
+
+from __code.file_handler import make_or_reset_folder
 
 
 class Export:
@@ -16,6 +19,15 @@ class Export:
                                                          directory=working_dir)
 
         if export_folder:
+
+            # make own folder where the data will be exported
+            short_high_res_input_folder = os.path.basename(self.parent.high_res_input_folder)
+            short_low_res_input_folder = os.path.basename(self.parent.low_res_input_folder)
+            output_folder = "{}_and_{}_overlaid".format(short_low_res_input_folder,
+                                                        short_high_res_input_folder)
+            full_output_folder = os.path.join(export_folder, output_folder)
+            make_or_reset_folder(full_output_folder)
+
             resize_and_overlay_images = self.parent.resize_and_overlay_images
 
             message = "Exporting overlaid images ... IN PROGRESS"
@@ -34,13 +46,13 @@ class Export:
                 o_norm = Normalization()
                 o_norm.load(data=_overlay_image)
                 o_norm.data['sample']['file_name'] = [_short_filemame]
-                o_norm.export(folder=export_folder,
+                o_norm.export(folder=full_output_folder,
                               data_type='sample')
                 self.parent.eventProgress.setValue(_index + 1)
                 QtGui.QGuiApplication.processEvents()
 
             self.parent.eventProgress.setVisible(False)
 
-            message = "Overlaid images exported in {}".format(export_folder)
-            self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
+            message = "Overlaid images exported in {}".format(full_output_folder)
+            self.parent.ui.statusbar.showMessage(message, 20000)  # 20s
             self.parent.ui.statusbar.setStyleSheet("color: green")
