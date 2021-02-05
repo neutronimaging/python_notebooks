@@ -81,6 +81,7 @@ class Interface(QMainWindow):
         self.high_res_image_height, self.high_res_image_width = np.shape(o_norm_high_res.data['sample']['data'][0])
         self.low_res_image_height, self.low_res_image_width = np.shape(o_norm_low_res.data['sample']['data'][0])
         self.rescaled_low_res_height, self.rescaled_low_res_width = None, None
+        self.list_of_high_res_filename = o_norm_high_res.data['sample']['file_name']
 
         super(Interface, self).__init__(parent)
 
