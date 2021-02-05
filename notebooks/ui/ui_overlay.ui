@@ -574,7 +574,7 @@
          <item>
           <widget class="QPushButton" name="export_pushButton">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Export overlaid images</string>
@@ -906,6 +906,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>export_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_overlaid_images_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1151</x>
+     <y>911</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1376</x>
+     <y>24</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_files_table_clicked()</slot>
@@ -931,5 +947,6 @@
   <slot>transparency_slider_clicked()</slot>
   <slot>transparency_slider_moved()</slot>
   <slot>transparency_checkBox_clicked()</slot>
+  <slot>export_overlaid_images_clicked()</slot>
  </slots>
 </ui>

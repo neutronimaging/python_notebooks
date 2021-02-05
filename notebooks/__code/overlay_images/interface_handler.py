@@ -8,6 +8,7 @@ from __code._utilities.table_handler import TableHandler
 from __code.overlay_images.initialization import Initialization
 from __code.overlay_images.event_handler import EventHandler
 from __code.overlay_images.get import Get
+from __code.overlay_images.export import Export
 
 
 class InterfaceHandler:
@@ -276,6 +277,9 @@ class Interface(QMainWindow):
         o_event.transparency_widgets_status()
         o_event.update_overlay_view(row_selected=row_selected)
 
+    def export_overlaid_images_clicked(self):
+        o_export = Export(parent=self)
+        o_export.run()
 
 
 
