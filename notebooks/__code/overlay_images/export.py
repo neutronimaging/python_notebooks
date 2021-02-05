@@ -39,6 +39,14 @@ class Export:
             self.parent.eventProgress.setVisible(True)
             QtGui.QGuiApplication.processEvents()
 
+            sf = self.parent.parameters_used_on_all_images['scaling_factor']
+            xoffset = self.parent.parameters_used_on_all_images['xoffset']
+            yoffset = self.parent.parameters_used_on_all_images['yoffset']
+            metadata = {1000: 'scaling_factor: {}'.format(sf),
+                        1001: 'xoffset: {}'.format(xoffset),
+                        1002: 'yoffset: {}'.format(yoffset),
+                        }
+
             list_of_filename = self.parent.list_of_high_res_filename
             for _index, _overlay_image in enumerate(resize_and_overlay_images):
 
@@ -46,6 +54,7 @@ class Export:
                 o_norm = Normalization()
                 o_norm.load(data=_overlay_image)
                 o_norm.data['sample']['file_name'] = [_short_filemame]
+                o_norm.data['sample']['metadata'] = [metadata]
                 o_norm.export(folder=full_output_folder,
                               data_type='sample')
                 self.parent.eventProgress.setValue(_index + 1)
