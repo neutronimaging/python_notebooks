@@ -43,23 +43,13 @@ class EventHandler:
 
         hres_image = self.parent.resize_hres_lres_images['hres'][row_selected]
         lres_image = self.parent.resize_hres_lres_images['lres'][row_selected]
-        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
-
-        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
-
-        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
-        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+        # [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
 
         if self.parent.ui.transparency_checkBox.isChecked():
             transparency = np.float(self.parent.transparency) / 100
             image = transparency * hres_image + (1 - transparency) * lres_image
         else:
             image = self.parent.resize_and_overlay_images[row_selected]
-            # image = lres_image
-            # image[y_index_array_resized_array: y_index_array_resized_array + image_height,
-            #                x_index_array_resized_array: x_index_array_resized_array + image_width] = \
-            # hres_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
-            #                x_index_array_resized_array: x_index_array_resized_array + image_width]
 
         image = np.transpose(image)
 
@@ -280,9 +270,10 @@ class EventHandler:
             new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
             resize_lres_images.append(copy.deepcopy(new_image))
 
-            high_res_image = self.get_full_high_res_image(high_res_images[_row], image_height, image_width,
-                                                          new_image_height,
-                                                          new_image_width, x_index_array_resized_array,
+            high_res_image = self.get_full_high_res_image(high_res_images[_row],
+                                                          image_height, image_width,
+                                                          new_image_height, new_image_width,
+                                                          x_index_array_resized_array,
                                                           y_index_array_resized_array)
             resize_hres_images.append(high_res_image)
 
@@ -292,10 +283,11 @@ class EventHandler:
             o_table.set_item_with_str(row=_row, column=2, cell_str="Auto")
 
             # add high resolution image
-            new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+            new_working_image = copy.deepcopy(new_image)
+            new_working_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
             x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
 
-            resize_and_overlay_images.append(new_image)
+            resize_and_overlay_images.append(new_working_image)
             self.parent.eventProgress.setValue(_row+1)
             QtGui.QGuiApplication.processEvents()
 
@@ -344,9 +336,10 @@ class EventHandler:
         self.parent.resize_hres_lres_images['lres'][row_selected] = high_res_image
 
         # image for none transparency mode
-        new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+        new_working_image = copy.deepcopy(new_image)
+        new_working_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
             x_index_array_resized_array: x_index_array_resized_array + image_width] = _high_res_image
-        resize_and_overlay_images[row_selected] = new_image
+        resize_and_overlay_images[row_selected] = new_working_image
         QtGui.QGuiApplication.processEvents()
 
         self.parent.resize_and_overlay_images = resize_and_overlay_images
@@ -405,9 +398,10 @@ class EventHandler:
             resize_hres_images.append(high_res_image)
 
             # add high resolution image
-            new_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
+            new_working_image = copy.deepcopy(new_image)
+            new_working_image[y_index_array_resized_array: y_index_array_resized_array + image_height,
                       x_index_array_resized_array: x_index_array_resized_array + image_width] = high_res_images[_row]
-            resize_and_overlay_images.append(new_image)
+            resize_and_overlay_images.append(new_working_image)
             self.parent.eventProgress.setValue(_row+1)
             QtGui.QGuiApplication.processEvents()
 
