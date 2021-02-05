@@ -550,3 +550,29 @@ class EventHandler:
                    self.parent.ui.transparency_slider]
         for _ui in list_ui:
             _ui.setEnabled(transparency_checkbox_status)
+
+    def save_overlay_parameters(self):
+        sf = str(self.parent.ui.scaling_factor_lineEdit.text())
+        xoffset = str(self.parent.ui.xoffset_lineEdit.text())
+        yoffset = str(self.parent.ui.yoffset_lineEdit.text())
+        self.parent.parameters_used_on_all_images = {'scaling_factor': sf,
+                                                     'xoffset': xoffset,
+                                                     'yoffset': yoffset}
+        self.parent.ui.export_pushButton.setEnabled(True)
+
+    def check_export_button_status(self):
+        export_button_status = self._can_we_enable_export_button()
+        self.parent.ui.export_pushButton.setEnabled(export_button_status)
+
+    def _can_we_enable_export_button(self):
+        sf = str(self.parent.ui.scaling_factor_lineEdit.text())
+        if not (sf == self.parent.parameters_used_on_all_images['scaling_factor']):
+            return False
+        xoffset = str(self.parent.ui.xoffset_lineEdit.text())
+        if not (xoffset == self.parent.parameters_used_on_all_images['xoffset']):
+            return False
+        yoffset = str(self.parent.ui.yoffset_lineEdit.text())
+        if not (yoffset == self.parent.parameters_used_on_all_images['yoffset']):
+            return False
+
+        return True

@@ -72,6 +72,11 @@ class Interface(QMainWindow):
     histogram_level = {'high_res': None, 'low_res': None, 'overlay': None}
     transparency = 0
 
+    # if any of the current parameter is different from this, the EXPORT button becomes unavailable
+    parameters_used_on_all_images = {'scaling_factor': 0,
+                                     'xoffset': 0,
+                                     'yoffset': 0}
+
     def __init__(self, parent=None, o_norm_high_res=None, o_norm_low_res=None, working_dir=None):
 
         self.o_norm_high_res = o_norm_high_res
@@ -148,6 +153,7 @@ class Interface(QMainWindow):
     def overlay_stack_of_images_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.overlay_stack_of_images_clicked()
+        o_event.save_overlay_parameters()
 
     def scaling_factor_changed(self):
         self.manual_overlay_of_selected_image_only()
@@ -157,38 +163,47 @@ class Interface(QMainWindow):
         self._xoffset_value_to_add()
         self._yoffset_value_to_add()
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def xoffset_minus_clicked(self):
         self._xoffset_value_to_add(to_add=-self.SINGLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def xoffset_minus_minus_clicked(self):
         self._xoffset_value_to_add(to_add=-self.DOUBLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def xoffset_plus_clicked(self):
         self._xoffset_value_to_add(to_add=self.SINGLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def xoffset_plus_plus_clicked(self):
         self._xoffset_value_to_add(to_add=self.DOUBLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def yoffset_minus_clicked(self):
         self._yoffset_value_to_add(to_add=-self.SINGLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def yoffset_minus_minus_clicked(self):
         self._yoffset_value_to_add(to_add=-self.DOUBLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def yoffset_plus_clicked(self):
         self._yoffset_value_to_add(to_add=self.SINGLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def yoffset_plus_plus_clicked(self):
         self._yoffset_value_to_add(to_add=self.DOUBLE_OFFSET)
         self.manual_overlay_of_selected_image_only()
+        self.check_export_button_status()
 
     def _xoffset_value_to_add(self, to_add=0):
         current_value = np.int(str(self.ui.xoffset_lineEdit.text()))
@@ -221,12 +236,15 @@ class Interface(QMainWindow):
         o_event.manual_overlay_of_selected_image_only()
         o_event = EventHandler(parent=self)
         o_event.update_profile_plots()
+        self.check_export_button_status()
 
     def manual_overlay_of_all_images_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.manual_overlay_stack_of_images_clicked()
         o_event = EventHandler(parent=self)
         o_event.update_profile_plots()
+        o_event.save_overlay_parameters()
+        self.check_export_button_status()
 
     def tab_index_changed(self, tab_index):
         if tab_index == 0:
@@ -285,6 +303,9 @@ class Interface(QMainWindow):
         o_export = Export(parent=self)
         o_export.run()
 
+    def check_export_button_status(self):
+        o_event = EventHandler(parent=self)
+        o_event.check_export_button_status()
 
 
 
