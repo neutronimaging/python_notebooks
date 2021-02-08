@@ -35,8 +35,10 @@ pip install \
     sectorizedradialprofile \
     inflect \
     ImagingReso \
+    ipywidgets \
     $PYONCAT_LOCATION
 
 # build Jupyter lab
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
+jupyter nbextension enable --py widgetsnbextension
 jupyter lab build
