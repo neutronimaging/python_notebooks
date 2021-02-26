@@ -17,6 +17,7 @@ RUN conda install --quiet --yes \
     qtpy              \
     pyqt              \
     pyqtgraph         \
+    pyerfa            \
     astropy           \
     && \
     conda install -c conda-forge --quiet --yes \
