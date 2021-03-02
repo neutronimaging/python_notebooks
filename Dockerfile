@@ -1,15 +1,16 @@
 FROM jupyter/scipy-notebook:latest
+
 LABEL version="0.0.1" \
       maintainer="KedoKudo <zhangc@ornl.gov>" \
       lastupdate="2020-09-28"
-USER  root
+
 EXPOSE 8888
 
 ENV PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl"
 
 # Since we are using Jupyter official image, the 
 # majority of the dependencies are already resolved
-RUN conda install --quiet --yes \
+RUN conda install --yes \
     requests          \
     requests-oauthlib \
     plotly            \
@@ -20,7 +21,7 @@ RUN conda install --quiet --yes \
     pyerfa            \
     astropy           \
     && \
-    conda install -c conda-forge --quiet --yes \
+    conda install -c conda-forge --yes \
     ipywe \
     lmfit \
     && \
@@ -34,12 +35,9 @@ RUN conda install --quiet --yes \
     ImagingReso \
     $PYONCAT_LOCATION \
     && \
-    conda clean --all --yes \
-    && \
-    npm cache clean --force
+    conda clean --all --yes
 
 # Directly inherit the CMD from the base image
-
 
 # -- USER INSTRUCTION --
 # Use the following command to start the notebook
