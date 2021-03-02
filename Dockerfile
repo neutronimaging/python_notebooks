@@ -37,6 +37,8 @@ RUN conda install --yes \
     && \
     conda clean --all --yes
 
+COPY ./notebooks/ /home/jovyan/notebooks
+
 # Directly inherit the CMD from the base image
 
 # -- USER INSTRUCTION --
