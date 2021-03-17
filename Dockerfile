@@ -6,7 +6,8 @@ LABEL version="0.0.1" \
 
 EXPOSE 8888
 
-ENV PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl"
+ENV JUPYTER_ENABLE_LAB=yes \
+    PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl"
 
 # Since we are using Jupyter official image, the 
 # majority of the dependencies are already resolved
@@ -37,7 +38,7 @@ RUN conda install --yes \
     && \
     conda clean --all --yes
 
-COPY ./notebooks/ /home/jovyan/notebooks
+COPY ./notebooks/ /home/jovyan/work
 
 # Directly inherit the CMD from the base image
 
