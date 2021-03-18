@@ -7,7 +7,8 @@ LABEL version="0.0.1" \
 EXPOSE 8888
 
 ENV JUPYTER_ENABLE_LAB=yes \
-    PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl"
+    PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl" \
+    LIBGL_ALWAYS_INDIRECT=1
 
 # Since we are using Jupyter official image, the 
 # majority of the dependencies are already resolved
@@ -29,6 +30,7 @@ RUN conda install --yes \
     conda clean --all --yes \
     && \
     pip install \
+    PyQt5 \
     neutronbraggedge \
     NeuNorm \
     sectorizedradialprofile \
@@ -38,6 +40,10 @@ RUN conda install --yes \
     && \
     conda clean --all --yes
 
+USER root
+RUN echo jovyan ALL=NOPASSWD:ALL > /etc/sudoers.d/jovyan
+
+USER jovyan
 COPY ./notebooks/ /home/jovyan/work
 
 # Directly inherit the CMD from the base image
