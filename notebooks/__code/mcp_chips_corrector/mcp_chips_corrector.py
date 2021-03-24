@@ -1,5 +1,6 @@
 import glob
 import os
+import numpy as np
 from IPython.core.display import HTML
 from IPython.display import display
 
@@ -11,7 +12,6 @@ from __code.ipywe import fileselector
 class McpChipsCorrector:
 
     working_data = None
-    sum_img_data = None
 
     working_list_files = None
     sum_file = None
@@ -32,19 +32,15 @@ class McpChipsCorrector:
         full_list_files.sort()
 
         working_list_files = [file for file in full_list_files if not "_SummedImg.fits" in file]
-        summed_img_file = [file for file in full_list_files if "_SummedImg.fits" in file]
-
-        # o_norm = Normalization()
-        # o_norm.load(file=working_list_files, notebook=True)
-        #
-        # self.working_list_files = working_list_files
-        # self.working_data = o_norm.data['sample']['data']
 
         o_norm = Normalization()
-        o_norm.load(file=summed_img_file, notebook=True)
+        o_norm.load(file=working_list_files, notebook=True)
 
-        self.sum_file = summed_img_file[0]
-        self.sum_img_data = o_norm.data['sample']['data'][0]
+        self.working_list_files = working_list_files
+        self.working_data = o_norm.data['sample']['data']
+
+        # create integrated data set
+        self.integrated_data = np.sum(self.working_data, axis=0)
 
         display(HTML('<span style="font-size: 20px; color:blue">' + str(len(working_list_files)+1) + \
                      ' files have been loaded</span>'))

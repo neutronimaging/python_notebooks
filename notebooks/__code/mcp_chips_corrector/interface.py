@@ -51,7 +51,8 @@ class Interface(QMainWindow):
         pass
 
     def chips_index_changed(self, new_index):
-        pass
+        o_event = EventHandler(parent=self)
+        o_event.chips_index_changed()
 
 
 class Initialization:
