@@ -17,7 +17,7 @@ class EventHandler:
         self.parent.setup_image_view.setImage(_image)
 
     def chips_index_changed(self):
-        new_index = self.parent.ui.index_to_correct_comboBox.currentIndex()
+        new_index = self.get_index_of_chip_to_correct()
         self.display_chip_border(chip_index=new_index)
 
     def display_chip_border(self, chip_index=0):
@@ -52,3 +52,13 @@ class EventHandler:
 
         self.parent.setup_image_view.addItem(_roi_id)
         self.parent.contour_id = _roi_id
+
+    def get_index_of_chip_to_correct(self):
+        if self.parent.ui.chip1_radioButton.isChecked():
+            return 0
+        elif self.parent.ui.chip2_radioButton.isChecked():
+            return 1
+        elif self.parent.ui.chip3_radioButton.isChecked():
+            return 2
+        else:
+            return 3

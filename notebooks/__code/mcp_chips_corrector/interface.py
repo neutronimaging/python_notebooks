@@ -70,7 +70,7 @@ class Interface(QMainWindow):
     def profile_type_changed(self):
         pass
 
-    def chips_index_changed(self, new_index):
+    def chips_index_changed(self):
         o_event = EventHandler(parent=self)
         o_event.chips_index_changed()
 
@@ -84,7 +84,7 @@ class Initialization:
     def run_all(self):
         self.data()
         self.pyqtgraph()
-        self.parent.chips_index_changed(0)
+        self.parent.chips_index_changed()
 
     def pyqtgraph(self):
         # setup

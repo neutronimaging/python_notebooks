@@ -35,9 +35,22 @@
             <string>Profile</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            <set>Qt::AlignCenter</set>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item>
              <widget class="QRadioButton" name="horizontal_radioButton">
               <property name="text">
@@ -55,6 +68,19 @@
               </property>
              </widget>
             </item>
+            <item>
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </item>
@@ -69,52 +95,73 @@
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Chips index to correct</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="index_to_correct_comboBox">
-             <item>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Chips index to correct</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="chip1_radioButton">
               <property name="text">
                <string>1</string>
               </property>
-             </item>
-             <item>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="chip2_radioButton">
               <property name="text">
                <string>2</string>
               </property>
-             </item>
-             <item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="chip3_radioButton">
               <property name="text">
                <string>3</string>
               </property>
-             </item>
-             <item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="chip4_radioButton">
               <property name="text">
                <string>4</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -261,18 +308,66 @@
    </hints>
   </connection>
   <connection>
-   <sender>index_to_correct_comboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
+   <sender>chip1_radioButton</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>233</x>
+     <x>190</x>
+     <y>620</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>625</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chip2_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>chips_index_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>616</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chip3_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>chips_index_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>617</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chip4_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>chips_index_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>317</x>
      <y>623</y>
     </hint>
     <hint type="destinationlabel">
-     <x>3</x>
-     <y>618</y>
+     <x>5</x>
+     <y>491</y>
     </hint>
    </hints>
   </connection>
