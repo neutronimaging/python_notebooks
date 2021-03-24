@@ -48,5 +48,3 @@ class McpChipsCorrector:
 
         display(HTML('<span style="font-size: 20px; color:blue">' + str(len(working_list_files)+1) + \
                      ' files have been loaded</span>'))
-
-    
