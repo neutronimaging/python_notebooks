@@ -41,8 +41,8 @@ class Interface(QMainWindow):
     contour_id = None
 
     # profile ROI
-    profile = {'horizontal': {'x0': 0, 'y0': 0, 'width': 100, 'height': 10},
-               'vertical': {'x0': 0, 'y0': 0, 'width': 10, 'height': 100},
+    profile = {'horizontal': {'x0': 150, 'y0': 150, 'width': 100, 'height': 10},
+               'vertical': {'x0': 150, 'y0': 150, 'width': 10, 'height': 100},
                }
     profile_id = None
 

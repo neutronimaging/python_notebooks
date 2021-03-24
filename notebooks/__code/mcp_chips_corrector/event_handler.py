@@ -81,7 +81,13 @@ class EventHandler:
         self.parent.profile_id = profile_ui
 
     def profile_changed(self):
-        pass
+        roi_id = self.parent.profile_id
+        x_y_width_height = EventHandler.get_x_y_width_height_of_roi(roi_id=roi_id)
+        profile_type = self.get_profile_type()
+        self.parent.profile[profile_type] = {'x0': x_y_width_height['x'],
+                                             'y0': x_y_width_height['y'],
+                                             'width': x_y_width_height['width'],
+                                             'height': x_y_width_height['height']}
 
     def get_index_of_chip_to_correct(self):
         if self.parent.ui.chip1_radioButton.isChecked():
@@ -98,3 +104,12 @@ class EventHandler:
             return 'horizontal'
         else:
             return 'vertical'
+
+    @staticmethod
+    def get_x_y_width_height_of_roi(roi_id=None):
+        x, y = roi_id.pos()
+        width, height = roi_id.size()
+        return {'x'     : np.int(x),
+                'y'     : np.int(y),
+                'width' : np.int(width),
+                'height': np.int(height)}
