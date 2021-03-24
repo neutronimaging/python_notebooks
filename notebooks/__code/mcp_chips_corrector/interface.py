@@ -40,6 +40,12 @@ class Interface(QMainWindow):
     # chip contour
     contour_id = None
 
+    # profile ROI
+    profile = {'horizontal': {'x0': 0, 'y0': 0, 'width': 100, 'height': 10},
+               'vertical': {'x0': 0, 'y0': 0, 'width': 10, 'height': 100},
+               }
+    profile_id = None
+
     def __init__(self, parent=None, working_dir="", o_corrector=None):
         self.parent = parent
         self.working_dir = working_dir
@@ -68,11 +74,16 @@ class Interface(QMainWindow):
         o_event.display_setup_image()
 
     def profile_type_changed(self):
-        pass
+        o_event = EventHandler(parent=self)
+        o_event.profile_type_changed()
 
     def chips_index_changed(self):
         o_event = EventHandler(parent=self)
         o_event.chips_index_changed()
+
+    def profile_changed(self):
+        o_event = EventHandler(parent=self)
+        o_event.profile_changed()
 
 
 class Initialization:
@@ -86,6 +97,8 @@ class Initialization:
         self.pyqtgraph()
         self.parent.chips_index_changed()
         self.splitter()
+        self.parent.profile_type_changed()
+        self.parent.profile_changed()
 
     def pyqtgraph(self):
         # setup

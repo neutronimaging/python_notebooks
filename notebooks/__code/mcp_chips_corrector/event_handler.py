@@ -3,7 +3,7 @@ import pyqtgraph as pg
 from qtpy.QtGui import QPen, QColor
 
 COLOR_CONTOUR = QColor(255, 0, 0, 100)
-
+PROFILE_ROI = QColor(0, 255, 0, 100)
 
 class EventHandler:
 
@@ -53,6 +53,36 @@ class EventHandler:
         self.parent.setup_image_view.addItem(_roi_id)
         self.parent.contour_id = _roi_id
 
+    def profile_type_changed(self):
+
+        if self.parent.profile_id:
+            self.parent.setup_image_view.removeItem(self.parent.profile_id)
+
+        profile_type = self.get_profile_type()
+
+        x0 = self.parent.profile[profile_type]['x0']
+        y0 = self.parent.profile[profile_type]['y0']
+        width = self.parent.profile[profile_type]['width']
+        height = self.parent.profile[profile_type]['height']
+
+        pen = QPen()
+        pen.setColor(PROFILE_ROI)
+        pen.setWidthF(0.05)
+
+        profile_ui = pg.ROI([x0, y0],
+                            [width, height],
+                            scaleSnap=True,
+                            pen=pen)
+        profile_ui.addScaleHandle([0, 0.5], [0.5, 0])
+        profile_ui.addScaleHandle([0.5, 0], [0, 0])
+        self.parent.ui.setup_image_view.addItem(profile_ui)
+        profile_ui.sigRegionChanged.connect(self.parent.profile_changed)
+
+        self.parent.profile_id = profile_ui
+
+    def profile_changed(self):
+        pass
+
     def get_index_of_chip_to_correct(self):
         if self.parent.ui.chip1_radioButton.isChecked():
             return 0
@@ -62,3 +92,9 @@ class EventHandler:
             return 2
         else:
             return 3
+
+    def get_profile_type(self):
+        if self.parent.ui.horizontal_radioButton.isChecked():
+            return 'horizontal'
+        else:
+            return 'vertical'
