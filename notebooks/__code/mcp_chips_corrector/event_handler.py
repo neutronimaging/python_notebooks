@@ -14,3 +14,5 @@ class EventHandler:
 
     def chips_index_changed(self):
         new_index = self.parent.ui.index_to_correct_comboBox.currentIndex()
+
+        
