@@ -6,6 +6,7 @@ import pyqtgraph as pg
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 
 from __code import load_ui
+from __code.mcp_chips_corrector.event_handler import EventHandler
 
 
 class Interface(QMainWindow):
@@ -14,6 +15,10 @@ class Interface(QMainWindow):
     setup_image_view = None
     corrected_image_view = None
     profile_view = None
+
+    # live images
+    setup_live_image = None
+    corrected_live_image = None
 
     def __init__(self, parent=None, working_dir="", o_corrector=None):
         self.parent = parent
@@ -35,7 +40,13 @@ class Interface(QMainWindow):
         o_init = Initialization(parent=self)
         o_init.run_all()
 
+        self.display_setup_image()
+
     # Event handler
+    def display_setup_image(self):
+        o_event = EventHandler(parent=self)
+        o_event.display_setup_image()
+
     def profile_type_changed(self):
         pass
 
