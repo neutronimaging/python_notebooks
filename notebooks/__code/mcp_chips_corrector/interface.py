@@ -85,6 +85,7 @@ class Initialization:
         self.data()
         self.pyqtgraph()
         self.parent.chips_index_changed()
+        self.splitter()
 
     def pyqtgraph(self):
         # setup
@@ -115,3 +116,6 @@ class Initialization:
 
         [height, width] = np.shape(self.parent.integrated_data)
         self.parent.image_size = ImageSize(width=width, height=height)
+
+    def splitter(self):
+        self.parent.ui.splitter.setSizes([1, 1])
