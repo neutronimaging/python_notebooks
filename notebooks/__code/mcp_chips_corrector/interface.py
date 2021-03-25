@@ -76,14 +76,17 @@ class Interface(QMainWindow):
     def profile_type_changed(self):
         o_event = EventHandler(parent=self)
         o_event.profile_type_changed()
+        o_event.plot_profile()
 
     def chips_index_changed(self):
         o_event = EventHandler(parent=self)
         o_event.chips_index_changed()
+        o_event.plot_profile()
 
     def profile_changed(self):
         o_event = EventHandler(parent=self)
         o_event.profile_changed()
+        o_event.plot_profile()
 
 
 class Initialization:

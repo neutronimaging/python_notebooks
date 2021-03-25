@@ -2,8 +2,10 @@ import numpy as np
 import pyqtgraph as pg
 from qtpy.QtGui import QPen, QColor
 
-COLOR_CONTOUR = QColor(255, 0, 0, 100)
-PROFILE_ROI = QColor(0, 255, 0, 100)
+COLOR_CONTOUR = QColor(255, 0, 0, 255)
+PROFILE_ROI = QColor(255, 255, 255, 255)
+INTER_CHIPS = QColor(0, 255, 0, 255)
+
 
 class EventHandler:
 
@@ -88,6 +90,115 @@ class EventHandler:
                                              'y0': x_y_width_height['y'],
                                              'width': x_y_width_height['width'],
                                              'height': x_y_width_height['height']}
+
+    def plot_profile(self):
+        profile_type = self.get_profile_type()
+        x0 = self.parent.profile[profile_type]['x0']
+        y0 = self.parent.profile[profile_type]['y0']
+        width = self.parent.profile[profile_type]['width']
+        height = self.parent.profile[profile_type]['height']
+
+        data = self.parent.integrated_data[y0: y0+height, x0: x0+width]
+        if profile_type == 'horizontal':
+            axis = 0
+            start_value = x0
+            end_value = x0 + width
+        else:
+            axis = 1
+            start_value = y0
+            end_value = y0 + height
+
+        profile_data = np.mean(data, axis=axis)
+        x_axis = np.arange(start_value, end_value)
+        self.parent.profile_view.clear()
+
+        gap_index = np.int(self.parent.image_size.height/2)
+        where_is_gap_in_x_axis = np.where(x_axis == gap_index)
+        index_of_chip = self.get_index_of_chip_to_correct()
+
+        if len(where_is_gap_in_x_axis[0] > 0):
+            where_is_gap = where_is_gap_in_x_axis[0][0]
+            if index_of_chip == 0:
+                x_axis_working_chip = x_axis[0: where_is_gap]
+                y_axis_working_chip = profile_data[0: where_is_gap]
+                x_axis_other_chip = x_axis[where_is_gap:]
+                y_axis_other_chip = profile_data[where_is_gap:]
+            elif index_of_chip == 1:
+                if profile_type == 'horizontal':
+                    x_axis_working_chip = x_axis[where_is_gap:]
+                    y_axis_working_chip = profile_data[where_is_gap:]
+                    x_axis_other_chip = x_axis[0:where_is_gap]
+                    y_axis_other_chip = profile_data[0:where_is_gap]
+                else:
+                    x_axis_working_chip = x_axis[0: where_is_gap]
+                    y_axis_working_chip = profile_data[0: where_is_gap]
+                    x_axis_other_chip = x_axis[where_is_gap:]
+                    y_axis_other_chip = profile_data[where_is_gap:]
+            elif index_of_chip == 2:
+                if profile_type == 'horizontal':
+                    x_axis_working_chip = x_axis[0: where_is_gap]
+                    y_axis_working_chip = profile_data[0: where_is_gap]
+                    x_axis_other_chip = x_axis[where_is_gap:]
+                    y_axis_other_chip = profile_data[where_is_gap:]
+                else:
+                    x_axis_working_chip = x_axis[where_is_gap:]
+                    y_axis_working_chip = profile_data[where_is_gap:]
+                    x_axis_other_chip = x_axis[0:where_is_gap]
+                    y_axis_other_chip = profile_data[0:where_is_gap]
+            else:
+                x_axis_working_chip = x_axis[where_is_gap:]
+                y_axis_working_chip = profile_data[where_is_gap:]
+                x_axis_other_chip = x_axis[0:where_is_gap]
+                y_axis_other_chip = profile_data[0:where_is_gap]
+
+            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen='r')
+            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w')
+
+        else:
+
+            if index_of_chip == 0:
+                if x_axis[0] > gap_index:
+                    color_pen = 'w'
+                else:
+                    color_pen = 'r'
+            elif index_of_chip == 1:
+                if profile_type == 'horizontal':
+                    if x_axis[0] > gap_index:
+                        color_pen = 'r'
+                    else:
+                        color_pen = 'w'
+                else:
+                    if x_axis[0] > gap_index:
+                        color_pen = 'w'
+                    else:
+                        color_pen = 'r'
+            elif index_of_chip == 2:
+                if profile_type == 'horizontal':
+                    if x_axis[0] > gap_index:
+                        color_pen = 'w'
+                    else:
+                        color_pen = 'r'
+                else:
+                    if x_axis[0] > gap_index:
+                        color_pen = 'r'
+                    else:
+                        color_pen = 'w'
+            else:
+                if x_axis[0] > gap_index:
+                    color_pen = 'r'
+                else:
+                    color_pen = 'w'
+
+            self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen)
+
+        pen = QPen()
+        pen.setColor(INTER_CHIPS)
+        pen.setWidthF(0.3)
+        line = pg.InfiniteLine(pos=self.parent.image_size.width/2,
+                               angle=90,
+                               pen=pen,
+                               label="Inter Chips")
+        self.parent.profile_view.addItem(line)
 
     def get_index_of_chip_to_correct(self):
         if self.parent.ui.chip1_radioButton.isChecked():
