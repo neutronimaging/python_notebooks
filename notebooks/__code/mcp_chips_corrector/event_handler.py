@@ -151,43 +151,62 @@ class EventHandler:
                 x_axis_other_chip = x_axis[0:where_is_gap]
                 y_axis_other_chip = profile_data[0:where_is_gap]
 
-            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen='r')
-            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w')
+        if index_of_chip == 0:
+            if x_axis[0] > gap_index:
+                color_pen = 'w'
+            else:
+                if profile_type == 'horizontal':
+                    if y0 < gap_index:
+                        print("in r")
+                        color_pen = 'r'
+                    else:
+                        print("in w")
+                        color_pen = 'w'
+                else:
+                    if x0 < gap_index:
+                        color_pen = 'r'
+                    else:
+                        color_pen = 'w'
 
-        else:
-
-            if index_of_chip == 0:
+        elif index_of_chip == 1:
+            if profile_type == 'horizontal':
+                if x_axis[0] > gap_index:
+                    color_pen = 'r'
+                else:
+                    color_pen = 'w'
+            else:
                 if x_axis[0] > gap_index:
                     color_pen = 'w'
                 else:
                     color_pen = 'r'
-            elif index_of_chip == 1:
-                if profile_type == 'horizontal':
-                    if x_axis[0] > gap_index:
-                        color_pen = 'r'
-                    else:
-                        color_pen = 'w'
+        elif index_of_chip == 2:
+            if profile_type == 'horizontal':
+                if x_axis[0] > gap_index:
+                    color_pen = 'w'
                 else:
-                    if x_axis[0] > gap_index:
-                        color_pen = 'w'
-                    else:
-                        color_pen = 'r'
-            elif index_of_chip == 2:
-                if profile_type == 'horizontal':
-                    if x_axis[0] > gap_index:
-                        color_pen = 'w'
-                    else:
-                        color_pen = 'r'
-                else:
-                    if x_axis[0] > gap_index:
-                        color_pen = 'r'
-                    else:
-                        color_pen = 'w'
+                    color_pen = 'r'
             else:
                 if x_axis[0] > gap_index:
                     color_pen = 'r'
                 else:
                     color_pen = 'w'
+        else:
+            if x_axis[0] > gap_index:
+                color_pen = 'r'
+            else:
+                color_pen = 'w'
+
+        if len(where_is_gap_in_x_axis[0] > 0):
+
+            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen)
+            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w')
+
+        else:
+
+            color_pen = 'r'
+            if index_of_chip == 0:
+                if x_axis[-1] < gap_index:
+                    color_pen = 'r'
 
             self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen)
 
