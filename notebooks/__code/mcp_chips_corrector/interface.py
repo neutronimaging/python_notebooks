@@ -104,8 +104,22 @@ class Interface(QMainWindow):
         o_event.plot_mean()
 
     def coefficient_corrector_manually_changed(self):
+        self.ui.reset_pushButton.setVisible(True)
         o_event = EventHandler(parent=self)
         o_event.with_correction_tab()
+
+    def reset_button_pushed(self):
+        self.ui.reset_pushButton.setVisible(False)
+        o_event = EventHandler(parent=self)
+        o_event.profile_changed()
+        o_event.plot_profile()
+        o_event.calculate_coefficient_corrector()
+        o_event.with_correction_tab()
+        o_event.plot_mean()
+
+    def correct_all_images_pushed(self):
+        o_event = EventHandler(parent=self)
+        o_event.correct_all_images()
 
 
 class Initialization:
@@ -121,6 +135,8 @@ class Initialization:
         self.splitter()
         self.parent.profile_type_changed()
         self.parent.profile_changed()
+        self.widgets()
+        self.statusbar()
 
     def pyqtgraph(self):
         # setup
@@ -148,9 +164,20 @@ class Initialization:
     def data(self):
         self.parent.integrated_data = self.parent.o_corrector.integrated_data
         self.parent.working_data = self.parent.o_corrector.working_data
+        self.parent.working_list_files = self.parent.o_corrector.working_list_files
 
         [height, width] = np.shape(self.parent.integrated_data)
         self.parent.image_size = ImageSize(width=width, height=height)
 
     def splitter(self):
         self.parent.ui.splitter.setSizes([1, 1])
+
+    def widgets(self):
+        self.parent.ui.reset_pushButton.setVisible(False)
+
+    def statusbar(self):
+        self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
+        self.parent.eventProgress.setMinimumSize(20, 14)
+        self.parent.eventProgress.setMaximumSize(540, 100)
+        self.parent.eventProgress.setVisible(False)
+        self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)

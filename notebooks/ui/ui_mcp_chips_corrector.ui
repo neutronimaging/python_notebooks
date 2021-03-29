@@ -22,7 +22,7 @@
       </property>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -241,6 +241,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="reset_pushButton">
+            <property name="text">
+             <string>RESET</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -378,12 +385,44 @@
    <slot>coefficient_corrector_manually_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1137</x>
-     <y>642</y>
+     <x>1095</x>
+     <y>635</y>
     </hint>
     <hint type="destinationlabel">
      <x>1375</x>
      <y>625</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reset_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reset_button_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1190</x>
+     <y>634</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1375</x>
+     <y>555</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>perform_correction_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>correct_all_images_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>483</x>
+     <y>623</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>787</x>
+     <y>659</y>
     </hint>
    </hints>
   </connection>
@@ -392,5 +431,7 @@
   <slot>profile_type_changed()</slot>
   <slot>chips_index_changed()</slot>
   <slot>coefficient_corrector_manually_changed()</slot>
+  <slot>reset_button_pushed()</slot>
+  <slot>correct_all_images_pushed()</slot>
  </slots>
 </ui>

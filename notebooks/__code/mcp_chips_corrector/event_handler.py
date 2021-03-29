@@ -2,8 +2,13 @@ import numpy as np
 import pyqtgraph as pg
 from qtpy.QtGui import QPen, QColor
 import copy
+import os
+from qtpy.QtWidgets import QFileDialog
+
+from NeuNorm.normalization import Normalization
 
 from __code.mcp_chips_corrector.get import Get
+from __code.file_handler import get_file_extension
 
 COLOR_CONTOUR = QColor(255, 0, 0, 255)
 PROFILE_ROI = QColor(255, 255, 255, 255)
@@ -220,10 +225,14 @@ class EventHandler:
         else:
             self.parent.ui.tabWidget.setTabEnabled(1, True)
 
-        # calculate corrected chip
-        coefficient = np.float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
+        image_corrected = self.calculate_corrected_image(raw_image=self.parent.setup_live_image)
+        self.parent.corrected_live_image = image_corrected
+        self.display_corrected_image()
 
-        setup_image = copy.deepcopy(self.parent.setup_live_image)
+    def calculate_corrected_image(self, raw_image=None):
+        setup_image = copy.deepcopy(raw_image)
+
+        coefficient = np.float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
         index_of_chip_to_correct = self.o_get.get_index_of_chip_to_correct()
         gap_index = self.parent.image_size.gap_index
 
@@ -249,8 +258,8 @@ class EventHandler:
             to_y = self.parent.image_size.height
 
         setup_image[from_y: to_y, from_x: to_x] *= coefficient
-        self.parent.corrected_live_image = setup_image
-        self.display_corrected_image()
+
+        return setup_image
 
     def display_corrected_image(self):
 
@@ -273,3 +282,35 @@ class EventHandler:
         if not first_update:
             _histo_widget.setLevels(self.parent.corrected_histogram_level[0],
                                     self.parent.corrected_histogram_level[1])
+
+    def correct_all_images(self):
+        export_folder = QFileDialog.getExistingDirectory(self.parent,
+                                                         directory=self.parent.working_dir,
+                                                         caption="Select output folder",
+                                                         options=QFileDialog.ShowDirsOnly)
+        if export_folder:
+
+            working_data = self.parent.working_data
+            nbr_files = len(working_data)
+            self.parent.ui.statusbar.showMessage("Correcting all images ...")
+
+            self.parent.eventProgress.setMaximum(nbr_files)
+            self.parent.eventProgress.setVisible(True)
+            working_list_files = self.parent.working_list_files
+
+            for _index_file, _data in enumerate(working_data):
+
+                corrected_data = self.calculate_corrected_image(raw_image=_data)
+                o_norm = Normalization()
+                o_norm.load(data=corrected_data, notebook=False)
+
+                short_file_name = os.path.basename(working_list_files[_index_file])
+                file_extension = get_file_extension(short_file_name)
+                o_norm.data['sample']['file_name'] = [short_file_name]
+                o_norm.export(folder=export_folder,
+                              data_type='sample',
+                              file_type=file_extension)
+
+                self.parent.eventProgress.setValue(_index_file+1)
+
+            self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 1000)
