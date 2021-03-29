@@ -9,6 +9,9 @@ INTER_CHIPS = QColor(0, 255, 0, 255)
 
 class EventHandler:
 
+    y_axis_other_chip = None
+    y_axis_working_chip = None
+
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -130,15 +133,13 @@ class EventHandler:
                                             profile_type, where_is_gap_in_x_axis,
                                             x_axis)
 
+            self.y_axis_other_chip = y_axis_other_chip
+            self.y_axis_working_chip = y_axis_working_chip
+
             self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen)
             self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w')
 
         else:
-
-            # color_pen = 'r'
-            # if index_of_chip == 0:
-            #     if x_axis[-1] < gap_index:
-            #         color_pen = 'r'
 
             self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen)
 
@@ -150,6 +151,23 @@ class EventHandler:
                                pen=pen,
                                label="Inter Chips")
         self.parent.profile_view.addItem(line)
+
+    def calculate_coefficient_corrector(self):
+        coefficient_corrector = 0
+
+        if self.y_axis_other_chip is None:
+            coefficient_corrector_s = "N/A"
+        else:
+            y_axis_working_chip = self.y_axis_working_chip
+            y_axis_other_chip = self.y_axis_other_chip
+
+            y_axis_working_chip_mean = np.mean(y_axis_working_chip)
+            y_axis_other_chip_mean = np.mean(y_axis_other_chip)
+
+            coefficient_corrector = y_axis_other_chip_mean / y_axis_working_chip_mean
+            coefficient_corrector_s = "{:.2f}".format(coefficient_corrector)
+
+        self.parent.ui.coefficient_corrector_lineEdit.setText(coefficient_corrector_s)
 
     def get_index_of_chip_to_correct(self):
         if self.parent.ui.chip1_radioButton.isChecked():

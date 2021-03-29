@@ -77,16 +77,19 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.profile_type_changed()
         o_event.plot_profile()
+        o_event.calculate_coefficient_corrector()
 
     def chips_index_changed(self):
         o_event = EventHandler(parent=self)
         o_event.chips_index_changed()
         o_event.plot_profile()
+        o_event.calculate_coefficient_corrector()
 
     def profile_changed(self):
         o_event = EventHandler(parent=self)
         o_event.profile_changed()
         o_event.plot_profile()
+        o_event.calculate_coefficient_corrector()
 
 
 class Initialization:
