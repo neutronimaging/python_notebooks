@@ -1,6 +1,9 @@
 import numpy as np
 import pyqtgraph as pg
 from qtpy.QtGui import QPen, QColor
+import copy
+
+from __code.mcp_chips_corrector.get import Get
 
 COLOR_CONTOUR = QColor(255, 0, 0, 255)
 PROFILE_ROI = QColor(255, 255, 255, 255)
@@ -11,9 +14,13 @@ class EventHandler:
 
     y_axis_other_chip = None
     y_axis_working_chip = None
+    gap_index = 0       # width/2 (256)
+
+    o_get = None
 
     def __init__(self, parent=None):
         self.parent = parent
+        self.o_get = Get(parent=self.parent)
 
     def display_setup_image(self):
         setup_image = self.parent.o_corrector.integrated_data
@@ -22,7 +29,7 @@ class EventHandler:
         self.parent.setup_image_view.setImage(_image)
 
     def chips_index_changed(self):
-        new_index = self.get_index_of_chip_to_correct()
+        new_index = self.o_get.get_index_of_chip_to_correct()
         self.display_chip_border(chip_index=new_index)
 
     def display_chip_border(self, chip_index=0):
@@ -63,7 +70,7 @@ class EventHandler:
         if self.parent.profile_id:
             self.parent.setup_image_view.removeItem(self.parent.profile_id)
 
-        profile_type = self.get_profile_type()
+        profile_type = self.o_get.get_profile_type()
 
         x0 = self.parent.profile[profile_type]['x0']
         y0 = self.parent.profile[profile_type]['y0']
@@ -87,15 +94,15 @@ class EventHandler:
 
     def profile_changed(self):
         roi_id = self.parent.profile_id
-        x_y_width_height = EventHandler.get_x_y_width_height_of_roi(roi_id=roi_id)
-        profile_type = self.get_profile_type()
+        x_y_width_height = Get.get_x_y_width_height_of_roi(roi_id=roi_id)
+        profile_type = self.o_get.get_profile_type()
         self.parent.profile[profile_type] = {'x0': x_y_width_height['x'],
                                              'y0': x_y_width_height['y'],
                                              'width': x_y_width_height['width'],
                                              'height': x_y_width_height['height']}
 
     def plot_profile(self):
-        profile_type = self.get_profile_type()
+        profile_type = self.o_get.get_profile_type()
         x0 = self.parent.profile[profile_type]['x0']
         y0 = self.parent.profile[profile_type]['y0']
         width = self.parent.profile[profile_type]['width']
@@ -117,20 +124,22 @@ class EventHandler:
         self.parent.profile_view.clear()
 
         gap_index = np.int(self.parent.image_size.height/2)
+        self.gap_index = gap_index
         where_is_gap_in_x_axis = np.where(x_axis == gap_index)
-        index_of_chip = self.get_index_of_chip_to_correct()
+        index_of_chip = self.o_get.get_index_of_chip_to_correct()
 
-        color_pen = EventHandler.get_color_of_pen(gap_index=gap_index,
+        color_pen = Get.get_color_of_pen(gap_index=gap_index,
                                                   index_of_chip=index_of_chip,
                                                   profile_type=profile_type,
                                                   x0=x0, y0=y0,
                                                   x_axis=x_axis)
 
+        self.coefficient_corrector_can_be_calculated = False
         if len(where_is_gap_in_x_axis[0] > 0):
             "the inter chips space falls within the profile selected"
 
             x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip = \
-                EventHandler.get_x_y_ranges(index_of_chip, profile_data,
+                Get.get_x_y_ranges(index_of_chip, profile_data,
                                             profile_type, where_is_gap_in_x_axis,
                                             x_axis,
                                             nbr_pixels_to_exclude_on_each_side_of_chips_gap)
@@ -141,8 +150,10 @@ class EventHandler:
             self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen, symbol='o')
             self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w', symbol='o')
 
-        else:
+            if color_pen == 'r':
+                self.coefficient_corrector_can_be_calculated = True
 
+        else:
             self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen, symbol='o')
 
         pen = QPen()
@@ -158,165 +169,55 @@ class EventHandler:
 
         if self.y_axis_other_chip is None:
             coefficient_corrector_s = "N/A"
-        else:
+        elif self.coefficient_corrector_can_be_calculated:
+
             y_axis_working_chip = self.y_axis_working_chip
             y_axis_other_chip = self.y_axis_other_chip
 
-            y_axis_working_chip_mean = np.mean(y_axis_working_chip)
-            y_axis_other_chip_mean = np.mean(y_axis_other_chip)
+            y_axis_working_chip_mean = np.nanmean(y_axis_working_chip)
+            y_axis_other_chip_mean = np.nanmean(y_axis_other_chip)
 
             coefficient_corrector = y_axis_other_chip_mean / y_axis_working_chip_mean
             coefficient_corrector_s = "{:.2f}".format(coefficient_corrector)
+        else:
+            coefficient_corrector_s = "N/A"
 
         self.parent.ui.coefficient_corrector_lineEdit.setText(coefficient_corrector_s)
 
-    def get_index_of_chip_to_correct(self):
-        if self.parent.ui.chip1_radioButton.isChecked():
-            return 0
-        elif self.parent.ui.chip2_radioButton.isChecked():
-            return 1
-        elif self.parent.ui.chip3_radioButton.isChecked():
-            return 2
+    def with_correction_tab(self):
+        if str(self.parent.ui.coefficient_corrector_lineEdit.text()) == 'N/A':
+            self.parent.ui.tabWidget.setTabEnabled(1, False)
+            return
         else:
-            return 3
+            self.parent.ui.tabWidget.setTabEnabled(1, True)
 
-    def get_profile_type(self):
-        if self.parent.ui.horizontal_radioButton.isChecked():
-            return 'horizontal'
+        # calculate corrected chip
+        coefficient = np.float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
+
+        setup_image = copy.deepcopy(self.parent.setup_live_image)
+        index_of_chip_to_correct = self.o_get.get_index_of_chip_to_correct()
+
+        if index_of_chip_to_correct == 0:
+            from_x = 0
+            to_x = self.gap_index
+            from_y = 0
+            to_y = self.gap_index
+        elif index_of_chip_to_correct == 1:
+            from_x = self.gap_index
+            to_x = self.parent.image_size.width
+            from_y = 0
+            to_y = self.gap_index
+        elif index_of_chip_to_correct == 2:
+            from_x = 0
+            to_x = self.gap_index
+            from_y = self.gap_index
+            to_y = self.parent.image_size.height
         else:
-            return 'vertical'
+            from_x = self.gap_index
+            to_x = self.parent.image_size.width
+            from_y = self.gap_index
+            to_y = self.parent.image_size.height
 
-    @staticmethod
-    def get_x_y_ranges(index_of_chip,
-                       profile_data,
-                       profile_type,
-                       where_is_gap_in_x_axis,
-                       x_axis,
-                       nbr_pixels_to_exclude_on_each_side_of_chips_gap):
-
-        where_is_gap = where_is_gap_in_x_axis[0][0]
-        delta = nbr_pixels_to_exclude_on_each_side_of_chips_gap
-
-        if index_of_chip == 0:
-            x_axis_working_chip = x_axis[0: where_is_gap - delta]
-            y_axis_working_chip = profile_data[0: where_is_gap - delta]
-            x_axis_other_chip = x_axis[where_is_gap + delta:]
-            y_axis_other_chip = profile_data[where_is_gap + delta:]
-        elif index_of_chip == 1:
-            if profile_type == 'horizontal':
-                x_axis_working_chip = x_axis[where_is_gap + delta:]
-                y_axis_working_chip = profile_data[where_is_gap + delta:]
-                x_axis_other_chip = x_axis[0:where_is_gap - delta]
-                y_axis_other_chip = profile_data[0:where_is_gap - delta]
-            else:
-                x_axis_working_chip = x_axis[0: where_is_gap - delta]
-                y_axis_working_chip = profile_data[0: where_is_gap - delta]
-                x_axis_other_chip = x_axis[where_is_gap + delta:]
-                y_axis_other_chip = profile_data[where_is_gap + delta:]
-        elif index_of_chip == 2:
-            if profile_type == 'horizontal':
-                x_axis_working_chip = x_axis[0: where_is_gap - delta]
-                y_axis_working_chip = profile_data[0: where_is_gap - delta]
-                x_axis_other_chip = x_axis[where_is_gap + delta:]
-                y_axis_other_chip = profile_data[where_is_gap + delta:]
-            else:
-                x_axis_working_chip = x_axis[where_is_gap + delta :]
-                y_axis_working_chip = profile_data[where_is_gap + delta:]
-                x_axis_other_chip = x_axis[0:where_is_gap - delta]
-                y_axis_other_chip = profile_data[0:where_is_gap - delta]
-        elif index_of_chip == 3:
-            if profile_type == 'horizontal':
-                x_axis_working_chip = x_axis[where_is_gap + delta:]
-                y_axis_working_chip = profile_data[where_is_gap + delta:]
-                x_axis_other_chip = x_axis[0:where_is_gap - delta]
-                y_axis_other_chip = profile_data[0:where_is_gap - delta]
-            else:
-                x_axis_working_chip = x_axis[where_is_gap + delta:]
-                y_axis_working_chip = profile_data[where_is_gap + delta:]
-                x_axis_other_chip = x_axis[0:where_is_gap - delta]
-                y_axis_other_chip = profile_data[0:where_is_gap - delta]
-
-        return x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip
-
-    @staticmethod
-    def get_color_of_pen(gap_index=0, index_of_chip=0, profile_type='horizontal', x0=0, y0=0, x_axis=None):
-        """
-        This method will give the color of the pen to use 'w' (white) or 'r' (red) according to the position of
-        the profile.
-        For example, if the profile selected is outside the chip, color will be 'w'. Any data inside the chip
-        will be 'r'
-        """
-        if x_axis is None:
-            return 'w'
-
-        if index_of_chip == 0:
-            if x_axis[0] > gap_index:
-                return 'w'
-            else:
-                if profile_type == 'horizontal':
-                    if y0 < gap_index:
-                        return 'r'
-                    else:
-                        return 'w'
-                else:
-                    if x0 < gap_index:
-                        return 'r'
-                    else:
-                        return 'w'
-
-        elif index_of_chip == 1:
-            if profile_type == 'horizontal':
-                if x_axis[-1] < gap_index:
-                    return 'w'
-                if y0 > gap_index:
-                    return 'w'
-                else:
-                    return 'r'
-            else:
-                if x_axis[0] > gap_index:
-                    return 'w'
-                if x0 < gap_index:
-                    return 'r'
-                else:
-                    return 'w'
-
-        elif index_of_chip == 2:
-            if profile_type == 'horizontal':
-                if x_axis[0] > gap_index:
-                    return 'w'
-                if y0 < gap_index:
-                    return 'w'
-                else:
-                    return 'r'
-            else:
-                if x_axis[-1] < gap_index:
-                    return 'w'
-                if x0 > gap_index:
-                    return 'w'
-                else:
-                    return 'r'
-
-        elif index_of_chip == 3:
-            if profile_type == 'horizontal':
-                if x_axis[-1] < gap_index:
-                    return 'w'
-                if y0 < gap_index:
-                    return 'w'
-                else:
-                    return 'r'
-            else:
-                if x_axis[-1] < gap_index:
-                    return 'w'
-                if x0 < gap_index:
-                    return 'w'
-                else:
-                    return 'r'
-
-    @staticmethod
-    def get_x_y_width_height_of_roi(roi_id=None):
-        x, y = roi_id.pos()
-        width, height = roi_id.size()
-        return {'x'     : np.int(x),
-                'y'     : np.int(y),
-                'width' : np.int(width),
-                'height': np.int(height)}
+        setup_image[from_y: to_y, from_x: to_x] *= coefficient
+        _image = np.transpose(setup_image)
+        self.parent.corrected_image_view.setImage(_image)
