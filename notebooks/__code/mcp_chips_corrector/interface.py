@@ -46,6 +46,8 @@ class Interface(QMainWindow):
                }
     profile_id = None
 
+    nbr_pixels_to_exclude_on_each_side_of_chips_gap = 3
+
     def __init__(self, parent=None, working_dir="", o_corrector=None):
         self.parent = parent
         self.working_dir = working_dir

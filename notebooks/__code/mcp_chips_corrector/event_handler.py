@@ -100,6 +100,7 @@ class EventHandler:
         y0 = self.parent.profile[profile_type]['y0']
         width = self.parent.profile[profile_type]['width']
         height = self.parent.profile[profile_type]['height']
+        nbr_pixels_to_exclude_on_each_side_of_chips_gap = self.parent.nbr_pixels_to_exclude_on_each_side_of_chips_gap
 
         data = self.parent.integrated_data[y0: y0+height, x0: x0+width]
         if profile_type == 'horizontal':
@@ -131,17 +132,18 @@ class EventHandler:
             x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip = \
                 EventHandler.get_x_y_ranges(index_of_chip, profile_data,
                                             profile_type, where_is_gap_in_x_axis,
-                                            x_axis)
+                                            x_axis,
+                                            nbr_pixels_to_exclude_on_each_side_of_chips_gap)
 
             self.y_axis_other_chip = y_axis_other_chip
             self.y_axis_working_chip = y_axis_working_chip
 
-            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen)
-            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w')
+            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen, symbol='o')
+            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w', symbol='o')
 
         else:
 
-            self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen)
+            self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen, symbol='o')
 
         pen = QPen()
         pen.setColor(INTER_CHIPS)
@@ -153,7 +155,6 @@ class EventHandler:
         self.parent.profile_view.addItem(line)
 
     def calculate_coefficient_corrector(self):
-        coefficient_corrector = 0
 
         if self.y_axis_other_chip is None:
             coefficient_corrector_s = "N/A"
@@ -186,46 +187,54 @@ class EventHandler:
             return 'vertical'
 
     @staticmethod
-    def get_x_y_ranges(index_of_chip, profile_data, profile_type, where_is_gap_in_x_axis, x_axis):
+    def get_x_y_ranges(index_of_chip,
+                       profile_data,
+                       profile_type,
+                       where_is_gap_in_x_axis,
+                       x_axis,
+                       nbr_pixels_to_exclude_on_each_side_of_chips_gap):
+
         where_is_gap = where_is_gap_in_x_axis[0][0]
+        delta = nbr_pixels_to_exclude_on_each_side_of_chips_gap
+
         if index_of_chip == 0:
-            x_axis_working_chip = x_axis[0: where_is_gap]
-            y_axis_working_chip = profile_data[0: where_is_gap]
-            x_axis_other_chip = x_axis[where_is_gap:]
-            y_axis_other_chip = profile_data[where_is_gap:]
+            x_axis_working_chip = x_axis[0: where_is_gap - delta]
+            y_axis_working_chip = profile_data[0: where_is_gap - delta]
+            x_axis_other_chip = x_axis[where_is_gap + delta:]
+            y_axis_other_chip = profile_data[where_is_gap + delta:]
         elif index_of_chip == 1:
             if profile_type == 'horizontal':
-                x_axis_working_chip = x_axis[where_is_gap:]
-                y_axis_working_chip = profile_data[where_is_gap:]
-                x_axis_other_chip = x_axis[0:where_is_gap]
-                y_axis_other_chip = profile_data[0:where_is_gap]
+                x_axis_working_chip = x_axis[where_is_gap + delta:]
+                y_axis_working_chip = profile_data[where_is_gap + delta:]
+                x_axis_other_chip = x_axis[0:where_is_gap - delta]
+                y_axis_other_chip = profile_data[0:where_is_gap - delta]
             else:
-                x_axis_working_chip = x_axis[0: where_is_gap]
-                y_axis_working_chip = profile_data[0: where_is_gap]
-                x_axis_other_chip = x_axis[where_is_gap:]
-                y_axis_other_chip = profile_data[where_is_gap:]
+                x_axis_working_chip = x_axis[0: where_is_gap - delta]
+                y_axis_working_chip = profile_data[0: where_is_gap - delta]
+                x_axis_other_chip = x_axis[where_is_gap + delta:]
+                y_axis_other_chip = profile_data[where_is_gap + delta:]
         elif index_of_chip == 2:
             if profile_type == 'horizontal':
-                x_axis_working_chip = x_axis[0: where_is_gap]
-                y_axis_working_chip = profile_data[0: where_is_gap]
-                x_axis_other_chip = x_axis[where_is_gap:]
-                y_axis_other_chip = profile_data[where_is_gap:]
+                x_axis_working_chip = x_axis[0: where_is_gap - delta]
+                y_axis_working_chip = profile_data[0: where_is_gap - delta]
+                x_axis_other_chip = x_axis[where_is_gap + delta:]
+                y_axis_other_chip = profile_data[where_is_gap + delta:]
             else:
-                x_axis_working_chip = x_axis[where_is_gap:]
-                y_axis_working_chip = profile_data[where_is_gap:]
-                x_axis_other_chip = x_axis[0:where_is_gap]
-                y_axis_other_chip = profile_data[0:where_is_gap]
+                x_axis_working_chip = x_axis[where_is_gap + delta :]
+                y_axis_working_chip = profile_data[where_is_gap + delta:]
+                x_axis_other_chip = x_axis[0:where_is_gap - delta]
+                y_axis_other_chip = profile_data[0:where_is_gap - delta]
         elif index_of_chip == 3:
             if profile_type == 'horizontal':
-                x_axis_working_chip = x_axis[where_is_gap:]
-                y_axis_working_chip = profile_data[where_is_gap:]
-                x_axis_other_chip = x_axis[0:where_is_gap]
-                y_axis_other_chip = profile_data[0:where_is_gap]
+                x_axis_working_chip = x_axis[where_is_gap + delta:]
+                y_axis_working_chip = profile_data[where_is_gap + delta:]
+                x_axis_other_chip = x_axis[0:where_is_gap - delta]
+                y_axis_other_chip = profile_data[0:where_is_gap - delta]
             else:
-                x_axis_working_chip = x_axis[where_is_gap:]
-                y_axis_working_chip = profile_data[where_is_gap:]
-                x_axis_other_chip = x_axis[0:where_is_gap]
-                y_axis_other_chip = profile_data[0:where_is_gap]
+                x_axis_working_chip = x_axis[where_is_gap + delta:]
+                y_axis_working_chip = profile_data[where_is_gap + delta:]
+                x_axis_other_chip = x_axis[0:where_is_gap - delta]
+                y_axis_other_chip = profile_data[0:where_is_gap - delta]
 
         return x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip
 
