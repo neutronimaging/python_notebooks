@@ -116,40 +116,104 @@ class EventHandler:
         where_is_gap_in_x_axis = np.where(x_axis == gap_index)
         index_of_chip = self.get_index_of_chip_to_correct()
 
+        color_pen = EventHandler.get_color_of_pen(gap_index=gap_index,
+                                                  index_of_chip=index_of_chip,
+                                                  profile_type=profile_type,
+                                                  x0=x0, y0=y0,
+                                                  x_axis=x_axis)
+
         if len(where_is_gap_in_x_axis[0] > 0):
-            where_is_gap = where_is_gap_in_x_axis[0][0]
-            if index_of_chip == 0:
+            "the inter chips space falls within the profile selected"
+
+            x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip = \
+                EventHandler.get_x_y_ranges(index_of_chip, profile_data,
+                                            profile_type, where_is_gap_in_x_axis,
+                                            x_axis)
+
+            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen)
+            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w')
+
+        else:
+
+            # color_pen = 'r'
+            # if index_of_chip == 0:
+            #     if x_axis[-1] < gap_index:
+            #         color_pen = 'r'
+
+            self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen)
+
+        pen = QPen()
+        pen.setColor(INTER_CHIPS)
+        pen.setWidthF(0.3)
+        line = pg.InfiniteLine(pos=self.parent.image_size.width/2,
+                               angle=90,
+                               pen=pen,
+                               label="Inter Chips")
+        self.parent.profile_view.addItem(line)
+
+    def get_index_of_chip_to_correct(self):
+        if self.parent.ui.chip1_radioButton.isChecked():
+            return 0
+        elif self.parent.ui.chip2_radioButton.isChecked():
+            return 1
+        elif self.parent.ui.chip3_radioButton.isChecked():
+            return 2
+        else:
+            return 3
+
+    def get_profile_type(self):
+        if self.parent.ui.horizontal_radioButton.isChecked():
+            return 'horizontal'
+        else:
+            return 'vertical'
+
+    @staticmethod
+    def get_x_y_ranges(index_of_chip, profile_data, profile_type, where_is_gap_in_x_axis, x_axis):
+        where_is_gap = where_is_gap_in_x_axis[0][0]
+        if index_of_chip == 0:
+            x_axis_working_chip = x_axis[0: where_is_gap]
+            y_axis_working_chip = profile_data[0: where_is_gap]
+            x_axis_other_chip = x_axis[where_is_gap:]
+            y_axis_other_chip = profile_data[where_is_gap:]
+        elif index_of_chip == 1:
+            if profile_type == 'horizontal':
+                x_axis_working_chip = x_axis[where_is_gap:]
+                y_axis_working_chip = profile_data[where_is_gap:]
+                x_axis_other_chip = x_axis[0:where_is_gap]
+                y_axis_other_chip = profile_data[0:where_is_gap]
+            else:
                 x_axis_working_chip = x_axis[0: where_is_gap]
                 y_axis_working_chip = profile_data[0: where_is_gap]
                 x_axis_other_chip = x_axis[where_is_gap:]
                 y_axis_other_chip = profile_data[where_is_gap:]
-            elif index_of_chip == 1:
-                if profile_type == 'horizontal':
-                    x_axis_working_chip = x_axis[where_is_gap:]
-                    y_axis_working_chip = profile_data[where_is_gap:]
-                    x_axis_other_chip = x_axis[0:where_is_gap]
-                    y_axis_other_chip = profile_data[0:where_is_gap]
-                else:
-                    x_axis_working_chip = x_axis[0: where_is_gap]
-                    y_axis_working_chip = profile_data[0: where_is_gap]
-                    x_axis_other_chip = x_axis[where_is_gap:]
-                    y_axis_other_chip = profile_data[where_is_gap:]
-            elif index_of_chip == 2:
-                if profile_type == 'horizontal':
-                    x_axis_working_chip = x_axis[0: where_is_gap]
-                    y_axis_working_chip = profile_data[0: where_is_gap]
-                    x_axis_other_chip = x_axis[where_is_gap:]
-                    y_axis_other_chip = profile_data[where_is_gap:]
-                else:
-                    x_axis_working_chip = x_axis[where_is_gap:]
-                    y_axis_working_chip = profile_data[where_is_gap:]
-                    x_axis_other_chip = x_axis[0:where_is_gap]
-                    y_axis_other_chip = profile_data[0:where_is_gap]
+        elif index_of_chip == 2:
+            if profile_type == 'horizontal':
+                x_axis_working_chip = x_axis[0: where_is_gap]
+                y_axis_working_chip = profile_data[0: where_is_gap]
+                x_axis_other_chip = x_axis[where_is_gap:]
+                y_axis_other_chip = profile_data[where_is_gap:]
             else:
                 x_axis_working_chip = x_axis[where_is_gap:]
                 y_axis_working_chip = profile_data[where_is_gap:]
                 x_axis_other_chip = x_axis[0:where_is_gap]
                 y_axis_other_chip = profile_data[0:where_is_gap]
+        else:
+            x_axis_working_chip = x_axis[where_is_gap:]
+            y_axis_working_chip = profile_data[where_is_gap:]
+            x_axis_other_chip = x_axis[0:where_is_gap]
+            y_axis_other_chip = profile_data[0:where_is_gap]
+        return x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip
+
+    @staticmethod
+    def get_color_of_pen(gap_index=0, index_of_chip=0, profile_type='horizontal', x0=0, y0=0, x_axis=None):
+        """
+        This method will give the color of the pen to use 'w' (white) or 'r' (red) according to the position of
+        the profile.
+        For example, if the profile selected is outside the chip, color will be 'w'. Any data inside the chip
+        will be 'r'
+        """
+        if x_axis is None:
+            return 'w'
 
         if index_of_chip == 0:
             if x_axis[0] > gap_index:
@@ -157,16 +221,16 @@ class EventHandler:
             else:
                 if profile_type == 'horizontal':
                     if y0 < gap_index:
-                        print("in r")
                         color_pen = 'r'
                     else:
-                        print("in w")
                         color_pen = 'w'
                 else:
                     if x0 < gap_index:
                         color_pen = 'r'
                     else:
                         color_pen = 'w'
+
+            print(f"in chips 0: color_pen:{color_pen}")
 
         elif index_of_chip == 1:
             if profile_type == 'horizontal':
@@ -195,45 +259,7 @@ class EventHandler:
                 color_pen = 'r'
             else:
                 color_pen = 'w'
-
-        if len(where_is_gap_in_x_axis[0] > 0):
-
-            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen)
-            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w')
-
-        else:
-
-            color_pen = 'r'
-            if index_of_chip == 0:
-                if x_axis[-1] < gap_index:
-                    color_pen = 'r'
-
-            self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen)
-
-        pen = QPen()
-        pen.setColor(INTER_CHIPS)
-        pen.setWidthF(0.3)
-        line = pg.InfiniteLine(pos=self.parent.image_size.width/2,
-                               angle=90,
-                               pen=pen,
-                               label="Inter Chips")
-        self.parent.profile_view.addItem(line)
-
-    def get_index_of_chip_to_correct(self):
-        if self.parent.ui.chip1_radioButton.isChecked():
-            return 0
-        elif self.parent.ui.chip2_radioButton.isChecked():
-            return 1
-        elif self.parent.ui.chip3_radioButton.isChecked():
-            return 2
-        else:
-            return 3
-
-    def get_profile_type(self):
-        if self.parent.ui.horizontal_radioButton.isChecked():
-            return 'horizontal'
-        else:
-            return 'vertical'
+        return color_pen
 
     @staticmethod
     def get_x_y_width_height_of_roi(roi_id=None):
