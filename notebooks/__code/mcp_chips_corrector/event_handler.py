@@ -197,11 +197,18 @@ class EventHandler:
                 y_axis_working_chip = profile_data[where_is_gap:]
                 x_axis_other_chip = x_axis[0:where_is_gap]
                 y_axis_other_chip = profile_data[0:where_is_gap]
-        else:
-            x_axis_working_chip = x_axis[where_is_gap:]
-            y_axis_working_chip = profile_data[where_is_gap:]
-            x_axis_other_chip = x_axis[0:where_is_gap]
-            y_axis_other_chip = profile_data[0:where_is_gap]
+        elif index_of_chip == 3:
+            if profile_type == 'horizontal':
+                x_axis_working_chip = x_axis[where_is_gap:]
+                y_axis_working_chip = profile_data[where_is_gap:]
+                x_axis_other_chip = x_axis[0:where_is_gap]
+                y_axis_other_chip = profile_data[0:where_is_gap]
+            else:
+                x_axis_working_chip = x_axis[where_is_gap:]
+                y_axis_working_chip = profile_data[where_is_gap:]
+                x_axis_other_chip = x_axis[0:where_is_gap]
+                y_axis_other_chip = profile_data[0:where_is_gap]
+
         return x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip
 
     @staticmethod
@@ -263,12 +270,20 @@ class EventHandler:
                     return 'r'
 
         elif index_of_chip == 3:
-
-            if x_axis[0] > gap_index:
-                color_pen = 'r'
+            if profile_type == 'horizontal':
+                if x_axis[-1] < gap_index:
+                    return 'w'
+                if y0 < gap_index:
+                    return 'w'
+                else:
+                    return 'r'
             else:
-                color_pen = 'w'
-        return color_pen
+                if x_axis[-1] < gap_index:
+                    return 'w'
+                if x0 < gap_index:
+                    return 'w'
+                else:
+                    return 'r'
 
     @staticmethod
     def get_x_y_width_height_of_roi(roi_id=None):
