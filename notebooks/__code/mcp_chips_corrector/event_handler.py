@@ -220,5 +220,27 @@ class EventHandler:
             to_y = self.parent.image_size.height
 
         setup_image[from_y: to_y, from_x: to_x] *= coefficient
-        _image = np.transpose(setup_image)
+        self.parent.corrected_live_image = setup_image
+        self.display_corrected_image()
+
+    def display_corrected_image(self):
+
+        _view = self.parent.corrected_image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.parent.corrected_histogram_level is None:
+            first_update = True
+        _histo_widget = self.parent.corrected_image_view.getHistogramWidget()
+        self.parent.corrected_histogram_level = _histo_widget.getLevels()
+
+        corrected_image = self.parent.corrected_live_image
+        _image = np.transpose(corrected_image)
         self.parent.corrected_image_view.setImage(_image)
+
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.parent.corrected_histogram_level[0],
+                                    self.parent.corrected_histogram_level[1])

@@ -32,6 +32,7 @@ class Interface(QMainWindow):
     # live images
     setup_live_image = None
     corrected_live_image = None
+    corrected_histogram_level = None
 
     # data
     integrated_data = None   # [512, 512]
@@ -128,7 +129,7 @@ class Initialization:
         self.parent.ui.setup_widget.setLayout(setup_layout)
 
         # with correction
-        self.parent.corrected_image_view = pg.ImageView()
+        self.parent.corrected_image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.corrected_image_view.ui.roiBtn.hide()
         self.parent.corrected_image_view.ui.menuBtn.hide()
         correction_layout = QVBoxLayout()
