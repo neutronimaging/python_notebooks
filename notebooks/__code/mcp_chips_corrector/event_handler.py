@@ -217,32 +217,35 @@ class EventHandler:
 
         if index_of_chip == 0:
             if x_axis[0] > gap_index:
-                color_pen = 'w'
+                return 'w'
             else:
                 if profile_type == 'horizontal':
                     if y0 < gap_index:
-                        color_pen = 'r'
+                        return 'r'
                     else:
-                        color_pen = 'w'
+                        return 'w'
                 else:
                     if x0 < gap_index:
-                        color_pen = 'r'
+                        return 'r'
                     else:
-                        color_pen = 'w'
-
-            print(f"in chips 0: color_pen:{color_pen}")
+                        return 'w'
 
         elif index_of_chip == 1:
             if profile_type == 'horizontal':
-                if x_axis[0] > gap_index:
-                    color_pen = 'r'
+                if x_axis[-1] < gap_index:
+                    return 'w'
+                if y0 > gap_index:
+                    return 'w'
                 else:
-                    color_pen = 'w'
+                    return 'r'
             else:
                 if x_axis[0] > gap_index:
-                    color_pen = 'w'
+                    return 'w'
+                if x0 < gap_index:
+                    return 'r'
                 else:
-                    color_pen = 'r'
+                    return 'w'
+
         elif index_of_chip == 2:
             if profile_type == 'horizontal':
                 if x_axis[0] > gap_index:
