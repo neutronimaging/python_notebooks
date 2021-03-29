@@ -85,6 +85,7 @@ class Interface(QMainWindow):
         o_event.plot_profile()
         o_event.calculate_coefficient_corrector()
         o_event.with_correction_tab()
+        o_event.plot_mean()
 
     def chips_index_changed(self):
         o_event = EventHandler(parent=self)
@@ -92,6 +93,7 @@ class Interface(QMainWindow):
         o_event.plot_profile()
         o_event.calculate_coefficient_corrector()
         o_event.with_correction_tab()
+        o_event.plot_mean()
 
     def profile_changed(self):
         o_event = EventHandler(parent=self)
@@ -99,6 +101,7 @@ class Interface(QMainWindow):
         o_event.plot_profile()
         o_event.calculate_coefficient_corrector()
         o_event.with_correction_tab()
+        o_event.plot_mean()
 
     def coefficient_corrector_manually_changed(self):
         o_event = EventHandler(parent=self)

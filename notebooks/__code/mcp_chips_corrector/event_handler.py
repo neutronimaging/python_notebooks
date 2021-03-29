@@ -16,6 +16,12 @@ class EventHandler:
     y_axis_working_chip = None
     gap_index = 0       # width/2 (256)
 
+    y_axis_working_chip_mean = None
+    y_axis_other_chip_mean = None
+
+    x_axis_working_chip = None
+    y_axis_other_chip = None
+
     o_get = None
 
     def __init__(self, parent=None):
@@ -146,6 +152,8 @@ class EventHandler:
 
             self.y_axis_other_chip = y_axis_other_chip
             self.y_axis_working_chip = y_axis_working_chip
+            self.x_axis_working_chip = x_axis_working_chip
+            self.x_axis_other_chip = x_axis_other_chip
 
             self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen, symbol='o')
             self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen='w', symbol='o')
@@ -169,6 +177,7 @@ class EventHandler:
 
         if self.y_axis_other_chip is None:
             coefficient_corrector_s = "N/A"
+
         elif self.coefficient_corrector_can_be_calculated:
 
             y_axis_working_chip = self.y_axis_working_chip
@@ -179,10 +188,30 @@ class EventHandler:
 
             coefficient_corrector = y_axis_other_chip_mean / y_axis_working_chip_mean
             coefficient_corrector_s = "{:.2f}".format(coefficient_corrector)
+
+            self.y_axis_working_chip_mean = y_axis_working_chip_mean
+            self.y_axis_other_chip_mean = y_axis_other_chip_mean
+
         else:
             coefficient_corrector_s = "N/A"
 
         self.parent.ui.coefficient_corrector_lineEdit.setText(coefficient_corrector_s)
+
+    def plot_mean(self):
+        if self.y_axis_other_chip_mean is None:
+            return
+
+        y_axis_other_chip_mean = self.y_axis_other_chip_mean
+        y_axis_working_chip_mean = self.y_axis_working_chip_mean
+
+        x_axis_working_chip = self.x_axis_working_chip
+        x_axis_other_chip = self.x_axis_other_chip
+
+        y_axis_other = np.ones((len(x_axis_other_chip))) * y_axis_other_chip_mean
+        y_axis_working = np.ones((len(x_axis_working_chip))) * y_axis_working_chip_mean
+
+        self.parent.profile_view.plot(x_axis_other_chip, y_axis_other, pen='w')
+        self.parent.profile_view.plot(x_axis_working_chip, y_axis_working, pen='w')
 
     def with_correction_tab(self):
         if str(self.parent.ui.coefficient_corrector_lineEdit.text()) == 'N/A':
