@@ -282,8 +282,8 @@
    <slot>profile_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>99</y>
+     <x>350</x>
+     <y>102</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -314,8 +314,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>620</y>
+     <x>305</x>
+     <y>609</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -330,8 +330,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>228</x>
-     <y>616</y>
+     <x>343</x>
+     <y>605</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -346,8 +346,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>276</x>
-     <y>617</y>
+     <x>391</x>
+     <y>606</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -362,8 +362,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>623</y>
+     <x>432</x>
+     <y>612</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -371,9 +371,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>coefficient_corrector_lineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>coefficient_corrector_manually_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1137</x>
+     <y>642</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1375</x>
+     <y>625</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>profile_type_changed()</slot>
   <slot>chips_index_changed()</slot>
+  <slot>coefficient_corrector_manually_changed()</slot>
  </slots>
 </ui>

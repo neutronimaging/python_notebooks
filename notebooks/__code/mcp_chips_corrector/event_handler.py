@@ -123,8 +123,8 @@ class EventHandler:
         x_axis = np.arange(start_value, end_value)
         self.parent.profile_view.clear()
 
-        gap_index = np.int(self.parent.image_size.height/2)
-        self.gap_index = gap_index
+        gap_index = self.parent.image_size.gap_index
+
         where_is_gap_in_x_axis = np.where(x_axis == gap_index)
         index_of_chip = self.o_get.get_index_of_chip_to_correct()
 
@@ -196,26 +196,27 @@ class EventHandler:
 
         setup_image = copy.deepcopy(self.parent.setup_live_image)
         index_of_chip_to_correct = self.o_get.get_index_of_chip_to_correct()
+        gap_index = self.parent.image_size.gap_index
 
         if index_of_chip_to_correct == 0:
             from_x = 0
-            to_x = self.gap_index
+            to_x = gap_index
             from_y = 0
-            to_y = self.gap_index
+            to_y = gap_index
         elif index_of_chip_to_correct == 1:
-            from_x = self.gap_index
+            from_x = gap_index
             to_x = self.parent.image_size.width
             from_y = 0
-            to_y = self.gap_index
+            to_y = gap_index
         elif index_of_chip_to_correct == 2:
             from_x = 0
-            to_x = self.gap_index
-            from_y = self.gap_index
+            to_x = gap_index
+            from_y = gap_index
             to_y = self.parent.image_size.height
         else:
-            from_x = self.gap_index
+            from_x = gap_index
             to_x = self.parent.image_size.width
-            from_y = self.gap_index
+            from_y = gap_index
             to_y = self.parent.image_size.height
 
         setup_image[from_y: to_y, from_x: to_x] *= coefficient

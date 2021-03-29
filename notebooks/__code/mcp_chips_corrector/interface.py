@@ -13,8 +13,11 @@ from __code.mcp_chips_corrector.event_handler import EventHandler
 class ImageSize:
     height = 0
     width = 0
+    gap_index = 0
 
     def __init__(self, width=0, height=0):
+        gap_index = np.int(height/2)
+        self.gap_index = gap_index
         self.width = width
         self.height = height
 
@@ -94,6 +97,10 @@ class Interface(QMainWindow):
         o_event.profile_changed()
         o_event.plot_profile()
         o_event.calculate_coefficient_corrector()
+        o_event.with_correction_tab()
+
+    def coefficient_corrector_manually_changed(self):
+        o_event = EventHandler(parent=self)
         o_event.with_correction_tab()
 
 
