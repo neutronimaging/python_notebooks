@@ -314,3 +314,4 @@ class EventHandler:
                 self.parent.eventProgress.setValue(_index_file+1)
 
             self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 1000)
+            self.parent.eventProgress.setVisible(False)
