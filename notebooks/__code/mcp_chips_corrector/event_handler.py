@@ -1,6 +1,6 @@
 import numpy as np
 import pyqtgraph as pg
-from qtpy.QtGui import QPen, QColor
+from qtpy.QtGui import QPen, QColor, QGuiApplication
 import copy
 import os
 from qtpy.QtWidgets import QFileDialog
@@ -288,6 +288,9 @@ class EventHandler:
                                                          directory=self.parent.working_dir,
                                                          caption="Select output folder",
                                                          options=QFileDialog.ShowDirsOnly)
+
+        QGuiApplication.processEvents()  # to close QFileDialog
+
         if export_folder:
 
             working_data = self.parent.working_data
@@ -312,6 +315,7 @@ class EventHandler:
                               file_type=file_extension)
 
                 self.parent.eventProgress.setValue(_index_file+1)
+                QGuiApplication.processEvents()
 
             self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 1000)
             self.parent.eventProgress.setVisible(False)
