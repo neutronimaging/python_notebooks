@@ -12,31 +12,40 @@
 #     name: python3
 # ---
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/rename_files/)
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/mcp_chips_corrector)
+#
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.rename_files import NamingSchemaDefinition, FormatFileNameIndex
+import warnings
+warnings.filterwarnings('ignore')
+
 from __code import system
+from __code.mcp_chips_corrector.mcp_chips_corrector import McpChipsCorrector
+from __code.mcp_chips_corrector.interface import Interface
 system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
+# -
+
+# ## UI Setup 
+
+# %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Input Folder and define new naming schema
+# # Select MCP data corrected folder
 
 # + run_control={"frozen": false, "read_only": false}
-o_format = FormatFileNameIndex(working_dir=system.System.get_working_dir())
-o_format.select_input_folder()
+o_corrector = McpChipsCorrector(working_dir = system.System.get_working_dir())
+o_corrector.select_folder()
+# -
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Output Folder
+# # Launch UI 
 
-# + run_control={"frozen": false, "read_only": false}
-o_format.o_schema.select_export_folder()
+o_interface = Interface(o_corrector=o_corrector)
+o_interface.show()
+
+
