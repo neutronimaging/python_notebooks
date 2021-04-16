@@ -21,6 +21,11 @@ Here are the steps needed to build your own Conda env
 
 * Install [`Anaconda3`](https://www.anaconda.com/products/individual) or [`miniconda3`](https://docs.conda.io/en/latest/miniconda.html).
   > If one of the two is already installed, skip this step.
+
+## for Mac and linux
+
+* open a terminal session
+
 * Create a virtual environment for this repo, e.g.
   ```bash
   conda create -n neutron_imaging python=3
@@ -72,6 +77,11 @@ Here are the steps needed to build your own Conda env
   ```
   and you are ready to use the notebooks.
   > NOTE: For most terminals, you can also `Ctrl+click` or `CMD+click` on the link to open it in your default browser. 
+
+## for Windows
+
+
+
 
 ## How to contribute back
 
