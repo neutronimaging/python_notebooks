@@ -10,7 +10,7 @@ USER root
 RUN echo jovyan ALL=NOPASSWD:ALL > /etc/sudoers.d/jovyan
 
 USER jovyan
-COPY ./notebooks/ /home/jovyan/notebooks
+COPY ./notebooks/ /home/jovyan/work
 
 RUN conda install --yes requests requests-oauthlib plotly nodejs qtpy pyqt pyqtgraph pyerfa astropy; \
     conda install -c conda-forge --yes ipywe lmfit; \
