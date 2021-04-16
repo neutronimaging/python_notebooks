@@ -15,4 +15,4 @@ esac
 
 xhost +
 docker build -t neutron-imaging .
-docker run -v ${HOME}:/home/jovyan/local -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=${X11} -p 8888:8888 neutron-imaging
+docker run -v ${HOME}:/home/jovyan/work -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=${X11} -p 8888:8888 neutron-imaging
