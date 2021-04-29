@@ -273,7 +273,7 @@ class DFSelectionPanel(Panel):
     def next_button_clicked(self, event):
         self.remove()
         o_norm_handler = NormalizationHandler(files=self.files,
-                                                working_dir=self.working_dir,
+                                              working_dir=self.working_dir,
                                               gamma_threshold=self.gamma_threshold)
         o_norm_handler.load_data()
         self.top_object.o_norm_handler = o_norm_handler
@@ -319,7 +319,6 @@ class NormalizationHandler(object):
             #                  manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
             self.o_norm.load(file=list_df, data_type='df', notebook=True)
             self.data.df = self.o_norm.data['df']['data']
-
 
     def get_data(self, data_type='sample'):
         if data_type == 'sample':
@@ -433,7 +432,7 @@ class NormalizationHandler(object):
             self.o_norm.df_correction()
             self.o_norm.normalization(notebook=True)
             self.normalized_data_array = self.o_norm.get_normalized_data()
-            self.metadata = self.o_norm.data['sample']['metadata'][0]
+            self.normalized_metadata_array = self.o_norm.data['sample']['metadata']
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
             #                'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
@@ -466,7 +465,7 @@ class NormalizationHandler(object):
                 self.o_norm.normalization(notebook=True)
 
             self.normalized_data_array = self.o_norm.get_normalized_data()
-            self.metadata = self.o_norm.data['sample']['metadata'][0]
+            self.normalized_metadata_array = self.o_norm.data['sample']['metadata']
             #except:
             #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
             #                 'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
@@ -530,7 +529,7 @@ class NormalizationHandler(object):
             output_file_name = os.path.join(output_folder, _base + '.tiff')
             file_handler.make_tiff(filename=output_file_name,
                                    data=self.normalized_data_array[_index],
-                                   metadata=self.metadata)
+                                   metadata=self.normalized_metadata_array[_index])
 
             w.value = _index + 1
 
