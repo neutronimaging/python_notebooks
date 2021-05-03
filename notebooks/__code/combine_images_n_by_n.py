@@ -2,6 +2,8 @@ from scipy.stats.mstats import gmean
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
+from pathlib import Path, PurePath
+import os
 
 from NeuNorm.normalization import Normalization
 
@@ -15,7 +17,13 @@ class CombineImagesNByN(object):
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
 
-    def select_folder(self):
+        self.combine_method = None
+        self.folder_widget = None
+        self.bin_size_ui = None
+        self.bin_size_label = None
+        self.output_folder_widget = None
+
+def select_folder(self):
         self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
                                                             start_dir=self.working_dir,
                                                             type='directory',
@@ -24,6 +32,7 @@ class CombineImagesNByN(object):
         self.folder_widget.show()
 
     def _retrieve_number_of_files(self, folder_selected):
+        self.base_working_dir = str(PurePath(Path(folder_selected).parent).name)
         [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=folder_selected)
 
     def how_to_combine(self):
@@ -115,11 +124,11 @@ class CombineImagesNByN(object):
     def get_merging_algorithm(self):
         # get merging algorithm
         merging_algo = self.combine_method.value
-        algorithm = self.__add
+        algorithm = CombineImagesNByN.__add
         if merging_algo == 'arithmetic mean':
-            algorithm = self.__arithmetic_mean
+            algorithm = CombineImagesNByN.__arithmetic_mean
         elif merging_algo == 'geometric mean':
-            algorithm = self.__geo_mean
+            algorithm = CombineImagesNByN.__geo_mean
         return algorithm
 
     def merging(self, output_folder):
@@ -137,6 +146,12 @@ class CombineImagesNByN(object):
         global_slider = horizontal_layout.children[1]
         display(horizontal_layout)
 
+        output_folder_name = CombineImagesNByN.__create_output_folder_name(
+                output_folder=output_folder,
+                base_file_name=self.base_working_dir,
+                bin_value=self.bin_value)
+        file_handler.make_or_reset_folder(folder_name=output_folder_name)
+
         for _key in dict_list_files.keys():
             list_files = dict_list_files[_key]
             o_load = Normalization()
@@ -144,17 +159,15 @@ class CombineImagesNByN(object):
             _data = o_load.data['sample']['data']
             metadata = o_load.data['sample']['metadata']
 
-            combined_data = self.__merging_algorithm(algorithm, _data)
+            combined_data = CombineImagesNByN.__merging_algorithm(algorithm, _data)
             del o_load
 
-            output_file_name = self.__create_merged_file_name(bin_value=self.bin_value,
-                                                              list_files_names=list_files,
-                                                              index=_key)
+            output_file_name = CombineImagesNByN.__create_merged_file_name(index=_key)
             o_save = Normalization()
             o_save.load(data=combined_data)
             o_save.data['sample']['metadata'] = metadata
             o_save.data['sample']['file_name'] = [output_file_name]
-            o_save.export(folder=output_folder, data_type='sample')
+            o_save.export(folder=output_folder_name, data_type='sample')
             del o_save
 
             global_slider.value += 1
@@ -162,32 +175,33 @@ class CombineImagesNByN(object):
         global_slider.close()
 
         display(HTML('<span style="font-size: 20px; color:blue">' + str(nbr_of_files_to_create) +
-                     ' files have been created in ' + output_folder + '</span>'))
+                     ' files have been created in ' + output_folder_name + '</span>'))
 
-    def __create_merged_file_name(self, list_files_names=[], bin_value=2, index=0):
+    @staticmethod
+    def __create_output_folder_name(output_folder="./", base_file_name='', bin_value=2):
+        output_folder = os.path.abspath(output_folder)
+        output_folder_name = os.path.join(output_folder, "{}_files_combined_by_{:03d}".format(base_file_name,
+                                                                                              bin_value))
+        return output_folder_name
+
+    @staticmethod
+    def __create_merged_file_name(index=0):
         """Create the new base name using a combine name of all the input file
         """
-        # ext = ''
-        # list_base_name = []
-        # for _file in list_files_names:
-        #     basename = os.path.basename(_file)
-        #     [_name, ext] = os.path.splitext(basename)
-        #     list_base_name.append(_name)
-        #
-        # return ('_'.join(list_base_name), ext)
-        return '{}_files_combined_{:03d}.tiff'.format(bin_value, index)
+        return 'image_{:03d}.tiff'.format(index)
 
-    def __add(self, data_array):
+    @staticmethod
+    def __add(data_array):
         return np.sum(data_array, axis=0)
 
-    def __arithmetic_mean(self, data_array):
+    @staticmethod
+    def __arithmetic_mean(data_array):
         return np.mean(data_array, axis=0)
 
-    def __geo_mean(self, data_array):
+    @staticmethod
+    def __geo_mean(data_array):
         return gmean(data_array, axis=0)
 
-    def __merging_algorithm(self, function_, *args):
+    @staticmethod
+    def __merging_algorithm(function_, *args):
         return function_(*args)
-
-
-
