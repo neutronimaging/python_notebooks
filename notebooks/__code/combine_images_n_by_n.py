@@ -4,11 +4,14 @@ from IPython.core.display import display, HTML
 import numpy as np
 from pathlib import Path, PurePath
 import os
+import glob
 
 from NeuNorm.normalization import Normalization
 
 from __code import file_handler
 from __code.ipywe import fileselector
+
+FILE_PREFIX = "image"
 
 
 class CombineImagesNByN(object):
@@ -22,18 +25,32 @@ class CombineImagesNByN(object):
         self.bin_size_ui = None
         self.bin_size_label = None
         self.output_folder_widget = None
+        self.timespectra_file_name = None
 
-def select_folder(self):
-        self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
-                                                            start_dir=self.working_dir,
-                                                            type='directory',
-                                                            next=self._retrieve_number_of_files,
-                                                            multiple=False)
-        self.folder_widget.show()
+    def select_folder(self):
+            self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
+                                                                start_dir=self.working_dir,
+                                                                type='directory',
+                                                                next=self.post_select_folder,
+                                                                multiple=False)
+            self.folder_widget.show()
 
-    def _retrieve_number_of_files(self, folder_selected):
-        self.base_working_dir = str(PurePath(Path(folder_selected).parent).name)
-        [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=folder_selected)
+    def post_select_folder(self, folder_selected):
+        self.input_folder_selected = folder_selected
+        self._retrieve_number_of_files()
+        self._check_if_working_with_time_spectra()
+
+    def _retrieve_number_of_files(self):
+        self.base_working_dir = str(PurePath(Path(self.input_folder_selected).parent).name)
+        [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+                folder=self.input_folder_selected)
+
+    def _check_if_working_with_time_spectra(self):
+        input_folder = self.input_folder_selected
+        list_files = glob.glob(input_folder + '/*')
+        for _file in list_files:
+            if "_Spectra.txt" in _file:
+                self.timespectra_file_name = _file
 
     def how_to_combine(self):
         _file = open("__docs/combine_images/geometric_mean.png", 'rb')
@@ -124,11 +141,11 @@ def select_folder(self):
     def get_merging_algorithm(self):
         # get merging algorithm
         merging_algo = self.combine_method.value
-        algorithm = CombineImagesNByN.__add
+        algorithm = CombineImagesNByN.add
         if merging_algo == 'arithmetic mean':
-            algorithm = CombineImagesNByN.__arithmetic_mean
+            algorithm = CombineImagesNByN.arithmetic_mean
         elif merging_algo == 'geometric mean':
-            algorithm = CombineImagesNByN.__geo_mean
+            algorithm = CombineImagesNByN.geo_mean
         return algorithm
 
     def merging(self, output_folder):
@@ -152,6 +169,14 @@ def select_folder(self):
                 bin_value=self.bin_value)
         file_handler.make_or_reset_folder(folder_name=output_folder_name)
 
+        output_timespectra_file_name = os.path.join(output_folder_name,
+                                                    CombineImagesNByN.__create_timestamp_file_name())
+        CombineImagesNByN.combine_timespectra(input_timespectra_file_name=self.timespectra_file_name,
+                                              output_timespectra_file_name=output_timespectra_file_name,
+                                              output_folder_name=output_folder_name,
+                                              bin_value=self.bin_value,
+                                              merging_algorithm=algorithm)
+
         for _key in dict_list_files.keys():
             list_files = dict_list_files[_key]
             o_load = Normalization()
@@ -159,7 +184,7 @@ def select_folder(self):
             _data = o_load.data['sample']['data']
             metadata = o_load.data['sample']['metadata']
 
-            combined_data = CombineImagesNByN.__merging_algorithm(algorithm, _data)
+            combined_data = CombineImagesNByN.merging_algorithm(algorithm, _data)
             del o_load
 
             output_file_name = CombineImagesNByN.__create_merged_file_name(index=_key)
@@ -178,6 +203,37 @@ def select_folder(self):
                      ' files have been created in ' + output_folder_name + '</span>'))
 
     @staticmethod
+    def combine_timespectra(input_timespectra_file_name=None,
+                            output_timespectra_file_name=None,
+                            bin_value=2,
+                            merging_algorithm=None):
+        if input_timespectra_file_name is None:
+            return
+
+        data = np.genfromtxt(input_timespectra_file_name, delimiter='\t')
+        nbr_rows, nbr_columns = np.shape(data)
+
+        time_axis_binned = []
+        count_axis_binned = []
+
+        for index in np.arange(0, nbr_rows, bin_value):
+            right_threshold = index + bin_value
+            if right_threshold >= nbr_rows:
+                break
+
+            working_time_axis_to_bin = data[index: index + bin_value, 0]
+            working_count_axis_to_bin = data[index: index + bin_value, 1]
+
+            time_axis_binned.append(
+                CombineImagesNByN.merging_algorithm(CombineImagesNByN.arithmetic_mean,
+                                                    working_time_axis_to_bin))
+            count_axis_binned.append(CombineImagesNByN.merging_algorithm(merging_algorithm,
+                                                                         working_count_axis_to_bin))
+
+        new_timespectra = list(zip(time_axis_binned, count_axis_binned))
+        np.savetxt(output_timespectra_file_name, new_timespectra, delimiter="\t")
+
+    @staticmethod
     def __create_output_folder_name(output_folder="./", base_file_name='', bin_value=2):
         output_folder = os.path.abspath(output_folder)
         output_folder_name = os.path.join(output_folder, "{}_files_combined_by_{:03d}".format(base_file_name,
@@ -188,20 +244,24 @@ def select_folder(self):
     def __create_merged_file_name(index=0):
         """Create the new base name using a combine name of all the input file
         """
-        return 'image_{:03d}.tiff'.format(index)
+        return FILE_PREFIX + '_{:03d}.tiff'.format(index)
 
     @staticmethod
-    def __add(data_array):
+    def __create_timestamp_file_name():
+        return FILE_PREFIX + '_Spectra.txt'
+
+    @staticmethod
+    def add(data_array):
         return np.sum(data_array, axis=0)
 
     @staticmethod
-    def __arithmetic_mean(data_array):
+    def arithmetic_mean(data_array):
         return np.mean(data_array, axis=0)
 
     @staticmethod
-    def __geo_mean(data_array):
+    def geo_mean(data_array):
         return gmean(data_array, axis=0)
 
     @staticmethod
-    def __merging_algorithm(function_, *args):
+    def merging_algorithm(function_, *args):
         return function_(*args)
