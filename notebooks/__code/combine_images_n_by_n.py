@@ -173,7 +173,6 @@ class CombineImagesNByN(object):
                                                     CombineImagesNByN.__create_timestamp_file_name())
         CombineImagesNByN.combine_timespectra(input_timespectra_file_name=self.timespectra_file_name,
                                               output_timespectra_file_name=output_timespectra_file_name,
-                                              output_folder_name=output_folder_name,
                                               bin_value=self.bin_value,
                                               merging_algorithm=algorithm)
 
@@ -201,6 +200,9 @@ class CombineImagesNByN(object):
 
         display(HTML('<span style="font-size: 20px; color:blue">' + str(nbr_of_files_to_create) +
                      ' files have been created in ' + output_folder_name + '</span>'))
+        if self.timespectra_file_name:
+            display(HTML('<span style="font-size: 20px; color:blue"> A new _Spectra.txt file has been created: ' \
+                         + output_timespectra_file_name + '</span>'))
 
     @staticmethod
     def combine_timespectra(input_timespectra_file_name=None,
