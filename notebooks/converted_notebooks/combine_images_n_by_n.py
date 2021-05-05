@@ -55,32 +55,4 @@ o_merge.select_output_folder()
 
 
 
-import os
-import numpy as np
-
-# +
-timespectra_file_name = '/Volumes/G-DRIVE/IPTS/IPTS-strain-mapping/raw/Run13_OBs/Image013_Spectra.txt'
-assert os.path.exists(timespectra_file_name)
-
-data = np.genfromtxt(timespectra_file_name, delimiter='\t')
-bin_value = 2
-nbr_rows, nbr_columns = np.shape(data)
-
-# +
-time_axis_binned = []
-count_axis_binned = []
-
-for _index in np.arange(0, nbr_rows, bin_value):
-    right_threshold = _index + bin_value
-    if right_threshold >= nbr_rows:
-        break
-    working_time_axis_to_bin = data[_index: _index+bin_value, 0]
-    working_count_axis_to_bin = data[_index: _index+bin_value, 1]
-
-    time_axis_binned.append(CombineImages.merging_algorithm(CombineImages.arithmetic_mean, working_time_axis_to_bin))
-    count_axis_binned.append(CombineImages.merging_algorithm(CombineImages.add, working_count_axis_to_bin))
-    
-    
-# -
-
 
