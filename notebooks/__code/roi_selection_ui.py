@@ -1,8 +1,8 @@
 from IPython.core.display import HTML
 from IPython.display import display
 import numpy as np
+import random
 from collections import OrderedDict
-
 import pyqtgraph as pg
 
 try:
@@ -14,7 +14,8 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
-from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
+from __code.ui_roi_selection import Ui_MainWindow as UiMainWindow
+from __code.config import percentage_of_images_to_use_for_roi_selection
 
 
 class Interface(QMainWindow):
@@ -31,13 +32,17 @@ class Interface(QMainWindow):
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
-    def __init__(self, parent=None, o_norm=None):
+    def __init__(self, parent=None, o_norm=None, percentage_of_data_to_use=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
         if o_norm:
             self.o_norm = o_norm
+
+        if percentage_of_data_to_use is None:
+            percentage_of_data_to_use = percentage_of_images_to_use_for_roi_selection
+        self.percentage_of_data_to_use = percentage_of_data_to_use
 
         #self.list_files = self.o_norm.data['sample']['file_name']
         #self.list_data = self.o_norm.data['sample']['data']
@@ -106,7 +111,12 @@ class Interface(QMainWindow):
         display(HTML(html))
 
     def integrate_images(self):
-        self.integrated_image = np.mean(self.o_norm.data['sample']['data'], axis=0)
+        percentage_of_data_to_use = self.percentage_of_data_to_use
+        nbr_files = len(self.o_norm.data['sample']['data'])
+        nbr_files_to_use = np.int(percentage_of_data_to_use * nbr_files)
+        random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
+        list_data_to_use = [self.o_norm.data['sample']['data'][_index] for _index in random_list]
+        self.integrated_image = np.mean(list_data_to_use, axis=0)
         [_height, _width] = np.shape(self.integrated_image)
         self.integrated_image_size['height'] = _height
         self.integrated_image_size['width'] = _width
