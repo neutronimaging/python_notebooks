@@ -1,9 +1,11 @@
 import numpy as np
 import os
-from qtpy.QtWidgets import QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget
-from qtpy import QtCore
+from qtpy.QtWidgets import QHBoxLayout, QCheckBox, QSpacerItem, QSizePolicy, QWidget, QMenu, QFileDialog
+from qtpy.QtWidgets import QApplication
+from qtpy import QtCore, QtGui
 from qtpy.QtGui import QIcon
 import pyqtgraph as pg
+import json
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
@@ -11,6 +13,7 @@ from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching import config_buttons as config
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of
 from __code.panoramic_stitching.gui_handler import GuiHandler
+from __code.panoramic_stitching.status_message_config import StatusMessageStatus, show_status_message
 
 
 class EventHandler:
@@ -294,6 +297,53 @@ class EventHandler:
                    self.parent.ui.down_down_button]
         for _ui in list_ui:
             _ui.setEnabled(state)
+
+    def table_right_click(self):
+        top_menu = QMenu(self.parent)
+
+        load_table = top_menu.addAction("Load ...")
+        save_table = top_menu.addAction("Save ...")
+        top_menu.addSeparator()
+        reset_table = top_menu.addAction("Reset")
+
+        action = top_menu.exec_(QtGui.QCursor.pos())
+
+        if action == load_table:
+            print("loading table")
+        elif action == save_table:
+            self.export_table()
+        elif action == reset_table:
+            print("reset table")
+
+    def export_table(self):
+        table_file_name = QFileDialog.getSaveFileName(self.parent,
+                                                      caption="Enter or select file name to export table data ...",
+                                                      directory=self.parent.working_dir,
+                                                      filter="Table (*.json)",
+                                                      initialFilter="Table")
+        QApplication.processEvents()
+        table_file_name = table_file_name[0]
+
+        if table_file_name:
+            table_dict = self.make_table_dict()
+            with open(table_file_name, 'w') as json_file:
+                json.dump(table_dict, json_file)
+
+            show_status_message(parent=self.parent,
+                                message=f"Table saved in {table_file_name}",
+                                status=StatusMessageStatus.ready,
+                                duration_s=10)
+
+    def make_table_dict(self):
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        nbr_row = o_table.row_count()
+        nbr_column = 2
+        my_dictionary = {}
+        for _row in np.arange(nbr_row):
+            local_list = [o_table.get_item_str_from_cell(_row, _column)
+                          for _column in (np.arange(nbr_column)+1)]
+            my_dictionary[str(_row)] = local_list
+        return my_dictionary
 
     @staticmethod
     def button_pressed(ui=None, name='left'):

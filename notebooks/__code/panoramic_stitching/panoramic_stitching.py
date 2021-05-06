@@ -330,6 +330,10 @@ class Interface(QMainWindow):
     def down_button_released(self):
         EventHandler.button_released(ui=self.ui.down_button, name='down')
 
+    def table_right_clicked(self, position):
+        o_event = EventHandler(parent=self)
+        o_event.table_right_click()
+
     def automatically_stitch_all_other_images_button_clicked(self):
         o_auto = AutomaticallyStitch(parent=self)
         o_auto.run()

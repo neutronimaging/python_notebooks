@@ -16,6 +16,12 @@ class TableHandler:
         selection_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_column - 1)
         self.table_ui.setRangeSelected(selection_range, state)
 
+    def row_count(self):
+        return self.table_ui.rowCount()
+
+    def column_count(self):
+        return self.table_ui.columnCount()
+
     def select_rows(self, list_of_rows=None):
         self.table_ui.blockSignals(True)
         self.select_everything(False)

@@ -531,6 +531,9 @@
         </item>
         <item>
          <widget class="QTableWidget" name="tableWidget">
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
@@ -1065,6 +1068,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_right_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>349</x>
+     <y>747</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>912</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
@@ -1095,5 +1114,6 @@
   <slot>automatically_stitch_all_other_images_button_clicked()</slot>
   <slot>export_panoramic_images_button_clicked()</slot>
   <slot>reset_table_button_clicked()</slot>
+  <slot>table_right_clicked()</slot>
  </slots>
 </ui>
