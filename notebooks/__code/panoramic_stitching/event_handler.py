@@ -6,6 +6,7 @@ from qtpy import QtCore, QtGui
 from qtpy.QtGui import QIcon
 import pyqtgraph as pg
 import json
+import copy
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
@@ -14,6 +15,7 @@ from __code.panoramic_stitching import config_buttons as config
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of
 from __code.panoramic_stitching.gui_handler import GuiHandler
 from __code.panoramic_stitching.status_message_config import StatusMessageStatus, show_status_message
+from __code.panoramic_stitching.gui_initialization import GuiInitialization
 
 
 class EventHandler:
@@ -309,11 +311,44 @@ class EventHandler:
         action = top_menu.exec_(QtGui.QCursor.pos())
 
         if action == load_table:
-            print("loading table")
+            self.load_table()
         elif action == save_table:
             self.export_table()
         elif action == reset_table:
-            print("reset table")
+            self.reset_table()
+
+    def load_table(self):
+        table_file_name = QFileDialog.getOpenFileName(self.parent,
+                                                      directory=self.parent.working_dir,
+                                                      caption="Select table file ...",
+                                                      filter="Table (*.json)",
+                                                      initialFilter="Table")
+        QApplication.processEvents()
+        table_file_name = table_file_name[0]
+
+        if table_file_name:
+
+            with open(table_file_name, "r") as read_file:
+                table_data = json.load(read_file)
+
+            print(f"table_data is: {table_data}")
+
+            show_status_message(parent=self.parent,
+                                message=f"Loaded {table_file_name} ...",
+                                status=StatusMessageStatus.ready)
+
+
+    def reset_table(self):
+        self.offset_dictionary = copy.deepcopy(self.parent.offset_dictionary_for_reset)
+
+        o_init = GuiInitialization(parent=self)
+        o_init.after_loading_data()
+
+        self.check_status_of_from_to_checkbox()
+
+        o_image = ImageHandler(parent=self)
+        o_image.update_current_panoramic_image()
+        o_image.update_contour_plot()
 
     def export_table(self):
         table_file_name = QFileDialog.getSaveFileName(self.parent,
