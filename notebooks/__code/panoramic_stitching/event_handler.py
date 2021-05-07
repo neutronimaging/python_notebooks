@@ -9,6 +9,7 @@ import json
 import copy
 
 from __code._utilities.table_handler import TableHandler
+from __code._utilities.widgets_handler import WidgetsHandler
 from __code.panoramic_stitching.get import Get
 from __code.panoramic_stitching.image_handler import ImageHandler
 from __code.panoramic_stitching import config_buttons as config
@@ -331,12 +332,46 @@ class EventHandler:
             with open(table_file_name, "r") as read_file:
                 table_data = json.load(read_file)
 
-            print(f"table_data is: {table_data}")
+            o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+            table_ui_nbr_row = o_table.row_count()
+            input_table_nbr_row = len(table_data.keys())
+
+            if table_ui_nbr_row != input_table_nbr_row:
+                show_status_message(parent=self.parent,
+                                    message=f"Size of table and loaded file DO NOT MATCH!",
+                                    status=StatusMessageStatus.error,
+                                    duration_s=10)
+                return
+
+            WidgetsHandler.block_signals(ui=o_table.table_ui,
+                                         status=True)
+
+            for _row in np.arange(table_ui_nbr_row):
+                xoffset, yoffset = table_data[str(_row)]
+                o_table.set_item_with_str(row=_row,
+                                          column=1,
+                                          cell_str=xoffset)
+                self.save_table_offset_of_this_cell(_row, 1)
+                o_table.set_item_with_str(row=_row,
+                                          column=2,
+                                          cell_str=yoffset)
+                self.save_table_offset_of_this_cell(_row, 2)
+                QApplication.processEvents()
+
+            WidgetsHandler.block_signals(ui=o_table.table_ui,
+                                         status=False)
+
+            o_pano = ImageHandler(parent=self.parent)
+            o_pano.update_current_panoramic_image()
+            o_pano.update_contour_plot()
+
+            self.parent.horizontal_profile_changed()
+            self.parent.vertical_profile_changed()
 
             show_status_message(parent=self.parent,
                                 message=f"Loaded {table_file_name} ...",
-                                status=StatusMessageStatus.ready)
-
+                                status=StatusMessageStatus.ready,
+                                duration_s=10)
 
     def reset_table(self):
         self.offset_dictionary = copy.deepcopy(self.parent.offset_dictionary_for_reset)

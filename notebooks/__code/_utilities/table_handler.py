@@ -2,6 +2,8 @@ import numpy as np
 from qtpy import QtGui, QtCore
 from qtpy.QtWidgets import QTableWidgetItem, QTableWidgetSelectionRange
 
+from __code._utilities.widgets_handler import WidgetsHandler
+
 
 class TableHandler:
     cell_str_format = "{:.3f}"
@@ -184,7 +186,8 @@ class TableHandler:
         block_signals: block or not any signal emitted by the table
         """
         if block_signal:
-            self.table_ui.blockSignals(block_signal)
+            WidgetsHandler.block_signals(ui=self.table_ui,
+                                         status=True)
 
         self.remove_all_rows()
 
@@ -201,4 +204,5 @@ class TableHandler:
                                  editable=editable_flag)
 
         if block_signal:
-            self.table_ui.blockSignals(not block_signal)
+            WidgetsHandler.block_signals(ui=self.table_ui,
+                                         status=False)
