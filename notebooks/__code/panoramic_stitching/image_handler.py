@@ -122,12 +122,7 @@ class ImageHandler:
     def update_from_to_roi(self, state=False):
 
         if self.parent.from_roi_id:
-            self.parent.ui.image_view.removeItem(self.parent.from_roi_id)
-            self.parent.ui.image_view.removeItem(self.parent.to_roi_id)
-            self.parent.ui.image_view.removeItem(self.parent.from_label_id)
-            self.parent.ui.image_view.removeItem(self.parent.to_label_id)
-            self.parent.ui.image_view.removeItem(self.parent.from_roi_cross_id)
-            self.parent.ui.image_view.removeItem(self.parent.to_roi_cross_id)
+            self.remove_all_from_to_widgets()
 
         if state:
             from_roi = self.parent.from_roi
@@ -152,6 +147,14 @@ class ImageHandler:
             self.update_from_cross_line()
             self.update_to_label()
             self.update_to_cross_line()
+
+    def remove_all_from_to_widgets(self):
+        self.parent.ui.image_view.removeItem(self.parent.from_roi_id)
+        self.parent.ui.image_view.removeItem(self.parent.to_roi_id)
+        self.parent.ui.image_view.removeItem(self.parent.from_label_id)
+        self.parent.ui.image_view.removeItem(self.parent.to_label_id)
+        self.parent.ui.image_view.removeItem(self.parent.from_roi_cross_id)
+        self.parent.ui.image_view.removeItem(self.parent.to_roi_cross_id)
 
     def update_validity_of_from_to_button(self):
         # check that from ROI is inside the selected image

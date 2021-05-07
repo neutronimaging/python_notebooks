@@ -8,8 +8,10 @@ from notebooks.__code import load_ui
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of, set_widget_size
 from __code.panoramic_stitching.config_buttons import button
 from __code.panoramic_stitching.event_handler import EventHandler
+from __code.panoramic_stitching.image_handler import ImageHandler
 
 BORDER_RANGE = 50
+
 
 class RemoteControlHandler:
 
@@ -18,6 +20,7 @@ class RemoteControlHandler:
         if parent.remote_control_id is None:
             parent.remote_control_id = RemoteControlWindow(parent=parent)
             parent.remote_control_id.show()
+            parent.ui.remote_control_widget.setEnabled(False)
         else:
             parent.remote_control_id.setFocus()
             parent.remote_control_id.activateWindow()
@@ -49,6 +52,7 @@ class RemoteControlWindow(QMainWindow):
         EventHandler.button_released(ui=self.ui.bring_to_focus, name='bring_to_focus')
 
     def closeEvent(self, c):
+        self.parent.ui.remote_control_widget.setEnabled(True)
         self.parent.remote_control_id = None
 
     # handling
@@ -92,3 +96,20 @@ class RemoteControlWindow(QMainWindow):
 
         o_event = EventHandler(parent=self.parent)
         o_event.vertical_profile(enabled=is_vertical_profile_enabled)
+
+        o_image_handler = ImageHandler(parent=self.parent)
+
+        # from widgets
+        from_roi = self.parent.from_roi
+        from_roi['x'] = x0 + np.int((x1 - x0)/2)
+        from_roi['y'] = np.int((y1 - y0)/3) + y0
+        self.parent.from_roi = from_roi
+
+        # to widgets
+        to_roi = self.parent.to_roi
+        to_roi['x'] = x0 + np.int((x1 - x0)/2)
+        to_roi['y'] = 2 * np.int((y1 - y0)/3) + y0
+        self.parent.to_roi = to_roi
+
+        is_from_to_enabled = self.parent.ui.from_to_checkbox.isChecked()
+        o_image_handler.update_from_to_roi(state=is_from_to_enabled)
