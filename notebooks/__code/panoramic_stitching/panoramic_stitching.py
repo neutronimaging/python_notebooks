@@ -18,6 +18,7 @@ from __code.panoramic_stitching.profile import Profile
 from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
 from __code.panoramic_stitching.export import Export
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
+from __code.panoramic_stitching.remote_control_handler import RemoteControlHandler
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
 DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
@@ -66,6 +67,8 @@ class PanoramicStitching:
 
 
 class Interface(QMainWindow):
+
+    remote_control_id = None
 
     list_folders = None  # list of folders to work on
 
@@ -188,6 +191,7 @@ class Interface(QMainWindow):
     # event handler
     def remote_control_widget_pressed(self):
         EventHandler.button_pressed(ui=self.ui.remote_control_widget, name='remote_control')
+        RemoteControlHandler(parent=self)
 
     def remote_control_widget_released(self):
         EventHandler.button_released(ui=self.ui.remote_control_widget, name='remote_control')
@@ -347,3 +351,8 @@ class Interface(QMainWindow):
     def export_panoramic_images_button_clicked(self):
         o_export = Export(parent=self)
         o_export.run()
+
+    def closeEvent(self, c):
+        if self.remote_control_id:
+            self.remote_control_id.close()
+
