@@ -186,6 +186,12 @@ class Interface(QMainWindow):
         self.ui.setEnabled(True)
 
     # event handler
+    def remote_control_widget_pressed(self):
+        EventHandler.button_pressed(ui=self.ui.remote_control_widget, name='remote_control')
+
+    def remote_control_widget_released(self):
+        EventHandler.button_released(ui=self.ui.remote_control_widget, name='remote_control')
+
     def list_folder_combobox_value_changed(self, new_folder_selected=None):
         o_event = EventHandler(parent=self)
         o_event.list_folder_combobox_value_changed(new_folder_selected=new_folder_selected)
@@ -341,16 +347,3 @@ class Interface(QMainWindow):
     def export_panoramic_images_button_clicked(self):
         o_export = Export(parent=self)
         o_export.run()
-
-    def reset_table_button_clicked(self):
-        self.offset_dictionary = copy.deepcopy(self.offset_dictionary_for_reset)
-
-        o_init = GuiInitialization(parent=self)
-        o_init.after_loading_data()
-
-        o_event = EventHandler(parent=self)
-        o_event.check_status_of_from_to_checkbox()
-
-        o_image = ImageHandler(parent=self)
-        o_image.update_current_panoramic_image()
-        o_image.update_contour_plot()

@@ -79,6 +79,14 @@ class GuiInitialization:
         self.parent.ui.list_folders_combobox.addItems(list_folders)
         # hide error label
         self.parent.ui.from_to_error_label.setVisible(False)
+
+        # remote control
+        remote_control = make_full_file_name_to_static_folder_of("remote_control_released.png")
+        self.parent.ui.remote_control_widget.setIcon(QIcon(remote_control))
+        set_widgets_size(widgets=[self.parent.ui.remote_control_widget],
+                         width=self.button_size['single_arrow']['width'],
+                         height=self.button_size['single_arrow']['height'])
+
         # move buttons
         _file_path = os.path.dirname(__file__)
 

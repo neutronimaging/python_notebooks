@@ -424,3 +424,5 @@ class EventHandler:
     def button_released(ui=None, name='left'):
         full_file = make_full_file_name_to_static_folder_of(config.button[name]['released'])
         ui.setIcon(QIcon(full_file))
+
+

@@ -143,6 +143,22 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="remote_control_widget">
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: None</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -504,29 +520,6 @@
             </property>
            </widget>
           </item>
-          <item>
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Minimum</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="reset_table_button">
-            <property name="text">
-             <string>Reset Table</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -584,7 +577,7 @@
            <item>
             <widget class="QPushButton" name="export_panoramic_images_button">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="maximumSize">
               <size>
@@ -691,7 +684,7 @@
    <slot>from_to_button_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>695</x>
+     <x>653</x>
      <y>45</y>
     </hint>
     <hint type="destinationlabel">
@@ -708,7 +701,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>86</x>
-     <y>205</y>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -916,7 +909,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1623</x>
-     <y>213</y>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
      <x>1616</x>
@@ -948,7 +941,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1635</x>
-     <y>184</y>
+     <y>195</y>
     </hint>
     <hint type="destinationlabel">
      <x>1618</x>
@@ -1053,22 +1046,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>reset_table_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reset_table_button_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1540</x>
-     <y>541</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1662</x>
-     <y>508</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>tableWidget</sender>
    <signal>customContextMenuRequested(QPoint)</signal>
    <receiver>MainWindow</receiver>
@@ -1081,6 +1058,38 @@
     <hint type="destinationlabel">
      <x>4</x>
      <y>912</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>remote_control_widget</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>remote_control_widget_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1600</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1461</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>remote_control_widget</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>remote_control_widget_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1596</x>
+     <y>40</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1534</x>
+     <y>67</y>
     </hint>
    </hints>
   </connection>
@@ -1115,5 +1124,7 @@
   <slot>export_panoramic_images_button_clicked()</slot>
   <slot>reset_table_button_clicked()</slot>
   <slot>table_right_clicked()</slot>
+  <slot>remote_control_widget_pressed()</slot>
+  <slot>remote_control_widget_released()</slot>
  </slots>
 </ui>

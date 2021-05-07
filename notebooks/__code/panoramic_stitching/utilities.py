@@ -8,6 +8,17 @@ def make_full_file_name_to_static_folder_of(file_name):
     return full_path_file
 
 
-def set_widgets_size(widgets=[], width=10, height=10):
+def set_widgets_size(widgets=None, width=10, height=10):
+    if widgets is None:
+        return
+
+    if not type(widgets) == list:
+        raise TypeError("widgets parameter should be a list of widgets!")
+
     for _widget in widgets:
-        _widget.setIconSize(QSize(width, height))
+        set_widget_size(widget=_widget, width=width, height=height)
+
+
+def set_widget_size(widget=None, width=10, height=10):
+    if widget:
+        widget.setIconSize(QSize(width, height))

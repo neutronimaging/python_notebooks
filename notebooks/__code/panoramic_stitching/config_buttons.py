@@ -14,4 +14,6 @@ button = {'left': {'pressed': 'left_arrow_v2_pressed.png',
                     'released': 'up_up_arrow_v2_released.png'},
           'down_down': {'pressed': 'down_down_arrow_v2_pressed.png',
                         'released': 'down_down_arrow_v2_released.png'},
+          'remote_control': {'pressed': 'remote_control_pressed.png',
+                             'released': 'remote_control_released.png'}
           }
