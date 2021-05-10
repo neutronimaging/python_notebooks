@@ -84,8 +84,8 @@
    <slot>bring_to_focus_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>653</x>
-     <y>216</y>
+     <x>396</x>
+     <y>202</y>
     </hint>
     <hint type="destinationlabel">
      <x>809</x>
@@ -100,8 +100,8 @@
    <slot>bring_to_focus_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>707</x>
-     <y>182</y>
+     <x>396</x>
+     <y>202</y>
     </hint>
     <hint type="destinationlabel">
      <x>808</x>
@@ -109,9 +109,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>previous_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>98</x>
+     <y>69</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>100</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>next_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>next_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>292</x>
+     <y>67</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>77</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>bring_to_focus_pressed()</slot>
   <slot>bring_to_focus_released()</slot>
+  <slot>previous_button_clicked()</slot>
+  <slot>next_button_clicked()</slot>
  </slots>
 </ui>

@@ -128,3 +128,14 @@ class RemoteControlWindow(QMainWindow):
 
         is_from_to_enabled = self.parent.ui.from_to_checkbox.isChecked()
         o_image_handler.update_from_to_roi(state=is_from_to_enabled)
+
+    def previous_button_clicked(self):
+        self._select_row(row_offset=-1)
+
+    def next_button_clicked(self):
+        self._select_row(row_offset=1)
+
+    def _select_row(self, row_offset=1):
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        o_table.select_row(row_selected+row_offset)
