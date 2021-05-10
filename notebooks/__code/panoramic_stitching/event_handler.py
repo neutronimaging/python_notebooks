@@ -415,6 +415,10 @@ class EventHandler:
             my_dictionary[str(_row)] = local_list
         return my_dictionary
 
+    def update_remote_ui(self):
+        if self.parent.remote_control_id:
+            self.parent.remote_control_id.check_previous_next_buttons_status()
+
     @staticmethod
     def button_pressed(ui=None, name='left'):
         full_file = make_full_file_name_to_static_folder_of(config.button[name]['pressed'])

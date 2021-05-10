@@ -213,6 +213,7 @@ class Interface(QMainWindow):
     def table_of_offset_cell_changed(self, row, column):
         o_event = EventHandler(parent=self)
         o_event.save_table_offset_of_this_cell(row=row, column=column)
+        o_event.update_remote_ui()
 
         o_pano = ImageHandler(parent=self)
         o_pano.update_current_panoramic_image()
@@ -226,6 +227,7 @@ class Interface(QMainWindow):
         o_pano.update_contour_plot()
         o_event = EventHandler(parent=self)
         o_event.check_status_of_from_to_checkbox()
+        o_event.update_remote_ui()
 
     def from_to_checkbox_checked(self, state):
         o_event = EventHandler(parent=self)

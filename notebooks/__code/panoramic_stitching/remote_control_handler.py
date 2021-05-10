@@ -9,6 +9,7 @@ from __code.panoramic_stitching.utilities import make_full_file_name_to_static_f
 from __code.panoramic_stitching.config_buttons import button
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.image_handler import ImageHandler
+from __code._utilities.table_handler import TableHandler
 
 BORDER_RANGE = 50
 
@@ -43,6 +44,20 @@ class RemoteControlWindow(QMainWindow):
         bring_to_focus_released = make_full_file_name_to_static_folder_of(button['bring_to_focus']['released'])
         self.ui.bring_to_focus.setIcon(QIcon(bring_to_focus_released))
         set_widget_size(widget=self.ui.bring_to_focus, width=500, height=203)
+
+        self.check_previous_next_buttons_status()
+
+    def check_previous_next_buttons_status(self):
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        current_row_selected = o_table.get_row_selected()
+        number_of_rows = o_table.row_count()
+
+        self.ui.previous_pushButton.setEnabled(True)
+        self.ui.next_pushButton.setEnabled(True)
+        if current_row_selected == 0:
+            self.ui.previous_pushButton.setEnabled(False)
+        if current_row_selected == (number_of_rows-1):
+            self.ui.next_pushButton.setEnabled(False)
 
     def bring_to_focus_pressed(self):
         EventHandler.button_pressed(ui=self.ui.bring_to_focus, name='bring_to_focus')
