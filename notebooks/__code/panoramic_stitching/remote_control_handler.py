@@ -21,7 +21,7 @@ class RemoteControlHandler:
         if parent.remote_control_id is None:
             parent.remote_control_id = RemoteControlWindow(parent=parent)
             parent.remote_control_id.show()
-            parent.ui.remote_control_widget.setEnabled(False)
+            # parent.ui.remote_control_widget.setEnabled(False)
         else:
             parent.remote_control_id.setFocus()
             parent.remote_control_id.activateWindow()
@@ -67,7 +67,7 @@ class RemoteControlWindow(QMainWindow):
         EventHandler.button_released(ui=self.ui.bring_to_focus, name='bring_to_focus')
 
     def closeEvent(self, c):
-        self.parent.ui.remote_control_widget.setEnabled(True)
+        # self.parent.ui.remote_control_widget.setEnabled(True)
         self.parent.remote_control_id = None
 
     # handling

@@ -1,10 +1,11 @@
 import os
-from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QFileDialog, QDialog
 from qtpy import QtGui
 import numpy as np
 from collections import OrderedDict
 
 from NeuNorm.normalization import Normalization
+from notebooks.__code import load_ui
 
 from __code.file_handler import make_or_reset_folder
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
@@ -16,6 +17,11 @@ class Export:
         self.parent = parent
 
     def run(self):
+        self.parent.setEnabled(False)
+        o_dialog = SelectStitchingAlgorithm(parent=self.parent)
+        o_dialog.show()
+
+    def select_output_folder(self):
         output_folder = QFileDialog.getExistingDirectory(self.parent,
                                                          directory=self.parent.working_dir,
                                                          caption="Select where the folder containing the "
@@ -105,3 +111,21 @@ class Export:
         o_norm.data['sample']['filename'] = list_filename
         o_norm.export(new_output_folder_name, data_type='sample')
         self.parent.ui.statusbar.showMessage("{} has been created!".format(new_output_folder_name), 10000)  # 10s
+
+
+class SelectStitchingAlgorithm(QDialog):
+
+    def __init__(self, parent=None):
+        self.parent = parent
+        QDialog.__init__(self, parent=parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui', 'ui_panoramic_stitching_algorithms.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
+
+    def closeEvent(self, c):
+        self.parent.setEnabled(True)
+
+    def exit(self):
+        self.closeEvent(None)
+        self.close()
+
