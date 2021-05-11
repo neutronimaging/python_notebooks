@@ -46,6 +46,16 @@
      </widget>
     </item>
     <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Press button to bring into focus all the stitching TOOLS</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QPushButton" name="bring_to_focus">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -62,12 +72,12 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Press button to bring into focus all the stitching TOOLS</string>
+     <widget class="QPushButton" name="move_active_image_pushButton">
+      <property name="enabled">
+       <bool>false</bool>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
+      <property name="text">
+       <string>Move active image FROM -&gt; TO</string>
       </property>
      </widget>
     </item>
@@ -151,11 +161,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>move_active_image_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>move_active_image_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>303</x>
+     <y>283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>487</x>
+     <y>242</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>bring_to_focus_pressed()</slot>
   <slot>bring_to_focus_released()</slot>
   <slot>previous_button_clicked()</slot>
   <slot>next_button_clicked()</slot>
+  <slot>move_active_image_button_clicked()</slot>
  </slots>
 </ui>

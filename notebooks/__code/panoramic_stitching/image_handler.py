@@ -159,8 +159,8 @@ class ImageHandler:
     def update_validity_of_from_to_button(self):
         # check that from ROI is inside the selected image
         from_roi = self.parent.from_roi
-        x = from_roi['x']
-        y = from_roi['y']
+        x = from_roi['x'] + ROI_WIDTH/2
+        y = from_roi['y'] + ROI_HEIGHT/2
 
         o_get = Get(parent=self.parent)
         folder_selected = o_get.get_combobox_folder_selected()
@@ -184,6 +184,9 @@ class ImageHandler:
             from_to_error_label = False
         self.parent.ui.from_to_button.setEnabled(from_to_button_status)
         self.parent.ui.from_to_error_label.setVisible(from_to_error_label)
+
+        if self.parent.remote_control_id:
+            self.parent.remote_control_id.ui.move_active_image_pushButton.setEnabled(from_to_button_status)
 
     def update_from_to_line_label_changed(self):
         from_to_roi = self.parent.from_to_roi

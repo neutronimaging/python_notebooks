@@ -129,6 +129,8 @@ class EventHandler:
         if state is False:
             self.parent.ui.from_to_button.setEnabled(False)
             self.parent.ui.from_to_error_label.setVisible(False)
+            if self.parent.remote_control_id:
+                self.parent.remote_control_id.ui.move_active_image_pushButton.setEnabled(False)
         else:
             if row_selected == 0:
                 state = False
@@ -171,6 +173,8 @@ class EventHandler:
 
     def from_to_button_pushed(self):
         self.parent.ui.tableWidget.blockSignals(True)
+        self.parent.ui.from_to_button.setEnabled(False)
+        QApplication.processEvents()
 
         from_roi = self.parent.from_roi
         to_roi = self.parent.to_roi
@@ -201,6 +205,7 @@ class EventHandler:
         o_pano = ImageHandler(parent=self.parent)
         o_pano.update_current_panoramic_image()
         o_pano.update_contour_plot()
+        o_pano.update_validity_of_from_to_button()
 
     def horizontal_profile(self, enabled=True):
         o_gui = GuiHandler(parent=self.parent)

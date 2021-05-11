@@ -52,6 +52,9 @@
       </item>
       <item>
        <widget class="QRadioButton" name="use_linear_integration_radioButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>use linear integration of counts</string>
         </property>

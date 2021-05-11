@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1667</width>
-    <height>1181</height>
+    <width>1711</width>
+    <height>1239</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,7 +55,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Move image of active row FROM -&gt; TO</string>
+         <string>Move active image FROM -&gt; TO</string>
         </property>
        </widget>
       </item>
@@ -604,7 +604,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1667</width>
+     <width>1711</width>
      <height>22</height>
     </rect>
    </property>
@@ -700,8 +700,8 @@
    <slot>enable_horizontal_profile_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>86</x>
-     <y>216</y>
+     <x>107</x>
+     <y>214</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -908,8 +908,8 @@
    <slot>up_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1623</x>
-     <y>224</y>
+     <x>1638</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>1616</x>
@@ -940,8 +940,8 @@
    <slot>up_up_button_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1635</x>
-     <y>195</y>
+     <x>1638</x>
+     <y>189</y>
     </hint>
     <hint type="destinationlabel">
      <x>1618</x>
@@ -1068,8 +1068,8 @@
    <slot>remote_control_widget_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1600</x>
-     <y>51</y>
+     <x>1653</x>
+     <y>55</y>
     </hint>
     <hint type="destinationlabel">
      <x>1461</x>
@@ -1084,8 +1084,8 @@
    <slot>remote_control_widget_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1596</x>
-     <y>40</y>
+     <x>1653</x>
+     <y>55</y>
     </hint>
     <hint type="destinationlabel">
      <x>1534</x>

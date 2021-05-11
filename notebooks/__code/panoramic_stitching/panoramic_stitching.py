@@ -247,6 +247,7 @@ class Interface(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.from_to_button_pushed()
         self.horizontal_profile_changed()
+        self.vertical_profile_changed()
 
     def enable_horizontal_profile_checked(self, state):
         o_event = EventHandler(parent=self)

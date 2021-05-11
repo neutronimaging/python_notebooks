@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QApplication
 import os
 from qtpy.QtGui import QIcon
 import numpy as np
@@ -21,7 +21,9 @@ class RemoteControlHandler:
         if parent.remote_control_id is None:
             parent.remote_control_id = RemoteControlWindow(parent=parent)
             parent.remote_control_id.show()
-            # parent.ui.remote_control_widget.setEnabled(False)
+            o_image = ImageHandler(parent=parent)
+            o_image.update_validity_of_from_to_button()
+
         else:
             parent.remote_control_id.setFocus()
             parent.remote_control_id.activateWindow()
@@ -44,7 +46,6 @@ class RemoteControlWindow(QMainWindow):
         bring_to_focus_released = make_full_file_name_to_static_folder_of(button['bring_to_focus']['released'])
         self.ui.bring_to_focus.setIcon(QIcon(bring_to_focus_released))
         set_widget_size(widget=self.ui.bring_to_focus, width=500, height=203)
-
         self.check_previous_next_buttons_status()
 
     def check_previous_next_buttons_status(self):
@@ -129,6 +130,9 @@ class RemoteControlWindow(QMainWindow):
         is_from_to_enabled = self.parent.ui.from_to_checkbox.isChecked()
         o_image_handler.update_from_to_roi(state=is_from_to_enabled)
 
+        o_event = EventHandler(parent=self.parent)
+        o_event.check_status_of_from_to_checkbox()
+
     def previous_button_clicked(self):
         self._select_row(row_offset=-1)
 
@@ -139,3 +143,8 @@ class RemoteControlWindow(QMainWindow):
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
         o_table.select_row(row_selected+row_offset)
+
+    def move_active_image_button_clicked(self):
+        self.ui.move_active_image_pushButton.setEnabled(False)
+        QApplication.processEvents()
+        self.parent.from_to_button_pushed()
