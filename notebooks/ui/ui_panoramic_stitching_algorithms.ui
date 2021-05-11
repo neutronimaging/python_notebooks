@@ -125,8 +125,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>preview_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>preview_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>331</x>
+     <y>194</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ok_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>ok_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>562</x>
+     <y>224</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>497</x>
+     <y>225</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>exit()</slot>
+  <slot>preview_pushed()</slot>
+  <slot>ok_pushed()</slot>
  </slots>
 </ui>

@@ -9,6 +9,7 @@ from notebooks.__code import load_ui
 
 from __code.file_handler import make_or_reset_folder
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
+from __code.panoramic_stitching.stitching_algorithms import StitchingAlgorithmType
 
 
 class Export:
@@ -18,7 +19,7 @@ class Export:
 
     def run(self):
         self.parent.setEnabled(False)
-        o_dialog = SelectStitchingAlgorithm(parent=self.parent)
+        o_dialog = SelectStitchingAlgorithm(top_parent=self.parent, parent=self)
         o_dialog.show()
 
     def select_output_folder(self):
@@ -115,17 +116,40 @@ class Export:
 
 class SelectStitchingAlgorithm(QDialog):
 
-    def __init__(self, parent=None):
+    stitching_algorithm = StitchingAlgorithmType.minimum
+
+    def __init__(self, top_parent=None, parent=None):
         self.parent = parent
-        QDialog.__init__(self, parent=parent)
+        self.top_parent = top_parent
+        QDialog.__init__(self, parent=top_parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui', 'ui_panoramic_stitching_algorithms.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
     def closeEvent(self, c):
-        self.parent.setEnabled(True)
+        self.top_parent.setEnabled(True)
 
     def exit(self):
         self.closeEvent(None)
         self.close()
 
+    def ok_pushed(self):
+        self.top_parent.stitching_algorithm = self._get_stitching_algorithm_selected()
+        self.close()
+        self.top_parent.setEnabled(True)
+        self.parent.select_output_folder()
+
+    def preview_pushed(self):
+        self.top_parent.stitching_algorithm = self._get_stitching_algorithm_selected()
+
+    def _get_stitching_algorithm_selected(self):
+        if self.ui.use_minimum_radioButton.isChecked():
+            return StitchingAlgorithmType.minimum
+        elif self.ui.use_maximum_radioButton.isChecked():
+            return StitchingAlgorithmType.maximum
+        elif self.ui.use_mean_radioButton.isChecked():
+            return StitchingAlgorithmType.mean
+        elif self.ui.use_linear_integration_radioButton.isChecked():
+            return StitchingAlgorithmType.linear_integration
+        else:
+            raise NotImplementedError("Stitching algorithm has not been implemented yet!")

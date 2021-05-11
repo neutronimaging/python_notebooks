@@ -19,6 +19,7 @@ from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
 from __code.panoramic_stitching.export import Export
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 from __code.panoramic_stitching.remote_control_handler import RemoteControlHandler
+from __code.panoramic_stitching.stitching_algorithms import StitchingAlgorithmType
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
 DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
@@ -69,6 +70,7 @@ class PanoramicStitching:
 class Interface(QMainWindow):
 
     remote_control_id = None
+    stitching_algorithm = StitchingAlgorithmType.minimum
 
     list_folders = None  # list of folders to work on
 
