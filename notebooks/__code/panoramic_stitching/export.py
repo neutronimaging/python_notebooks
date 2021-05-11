@@ -50,10 +50,13 @@ class Export:
         image_width = self.parent.image_width
 
         panoramic_images_dict = OrderedDict()
+        stitching_algorithm = self.parent.stitching_algorithm
 
         for _group_index, _group_name in enumerate(data_dictionary.keys()):
 
-            self.parent.ui.statusbar.showMessage("Creating panoramic image of {} in progress...".format(_group_name))
+            self.parent.ui.statusbar.showMessage("Creating panoramic image of {} using algo. {} in progress...".format(
+                    _group_name, self.parent.stitching_algorithm))
+            QtGui.QGuiApplication.processEvents()
             panoramic_image = np.zeros((panoramic_height, panoramic_width))
 
             data_dictionary_of_group = data_dictionary[_group_name]
@@ -78,10 +81,26 @@ class Export:
                 where_temp_big_image_has_value_only = np.where((temp_big_image != 0) & (panoramic_image == 0))
                 where_both_images_overlap = np.where((panoramic_image != 0) & (temp_big_image != 0))
 
-                panoramic_image[where_temp_big_image_has_value_only] = \
-                    temp_big_image[where_temp_big_image_has_value_only]
-                panoramic_image[where_both_images_overlap] = (panoramic_image[where_both_images_overlap] +
-                                                              temp_big_image[where_both_images_overlap]) / 2
+                if stitching_algorithm == StitchingAlgorithmType.minimum:
+
+                    panoramic_image[where_temp_big_image_has_value_only] = \
+                        temp_big_image[where_temp_big_image_has_value_only]
+                    panoramic_image[where_both_images_overlap] = np.minimum(panoramic_image[where_both_images_overlap],
+                                                                            temp_big_image[where_both_images_overlap])
+
+                elif stitching_algorithm == StitchingAlgorithmType.maximum:
+
+                    panoramic_image[where_temp_big_image_has_value_only] = \
+                        temp_big_image[where_temp_big_image_has_value_only]
+                    panoramic_image[where_both_images_overlap] = np.maximum(panoramic_image[where_both_images_overlap],
+                                                                            temp_big_image[where_both_images_overlap])
+
+                elif stitching_algorithm == StitchingAlgorithmType.mean:
+
+                    panoramic_image[where_temp_big_image_has_value_only] = \
+                        temp_big_image[where_temp_big_image_has_value_only]
+                    panoramic_image[where_both_images_overlap] = (panoramic_image[where_both_images_overlap] +
+                                                                  temp_big_image[where_both_images_overlap])/2
 
             panoramic_images_dict[_group_name] = panoramic_image
 
@@ -94,8 +113,10 @@ class Export:
 
     def export_images(self, output_folder=None):
 
-        new_folder_name = os.path.basename(self.parent.working_dir) + "_panoramic"
+        stitching_algorithm = self.parent.stitching_algorithm
+        new_folder_name = os.path.basename(self.parent.working_dir) + "_panoramic_{}".format(stitching_algorithm)
         self.parent.ui.statusbar.showMessage("Exporting images in folder {}".format(new_folder_name))
+        QtGui.QGuiApplication.processEvents()
         new_output_folder_name = os.path.join(output_folder, new_folder_name)
 
         make_or_reset_folder(new_output_folder_name)

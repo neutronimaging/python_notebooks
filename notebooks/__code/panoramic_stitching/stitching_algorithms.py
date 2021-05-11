@@ -1,6 +1,6 @@
 class StitchingAlgorithmType:
 
-    minimum = 0
-    maximum = 1
-    mean = 2
-    linear_integration = 3
+    minimum = "minimum counts"
+    maximum = "maximum counts"
+    mean = "mean counts"
+    linear_integration = "linear integration between images"
