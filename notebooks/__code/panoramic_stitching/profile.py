@@ -106,7 +106,10 @@ class Profile:
             # plot_ui.axes.set_xlabel("Pixel")
             # plot_ui.axes.set_ylabel("Average counts")
 
-        plot_ui.draw()
+        try:
+            plot_ui.draw()
+        except ValueError:
+            pass
 
     @staticmethod
     def get_x_y_width_height_of_roi(roi_id=None):

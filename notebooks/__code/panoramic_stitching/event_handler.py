@@ -229,7 +229,7 @@ class EventHandler:
             if horizontal_profile['id']:
                 self.parent.ui.image_view.removeItem(horizontal_profile['id'])
             self.parent.horizontal_profile_plot.axes.clear()
-            self.parent.horizontal_profile_plot.draw()
+            #self.parent.horizontal_profile_plot.draw()
 
     def horizontal_slider_width_changed(self, width=1):
         self.parent.horizontal_profile['width'] = width
@@ -263,7 +263,7 @@ class EventHandler:
             if vertical_profile['id']:
                 self.parent.ui.image_view.removeItem(vertical_profile['id'])
             self.parent.vertical_profile_plot.axes.clear()
-            self.parent.vertical_profile_plot.draw()
+            #self.parent.vertical_profile_plot.draw()
 
     def vertical_slider_width_changed(self, width=1):
         self.parent.vertical_profile['width'] = width
