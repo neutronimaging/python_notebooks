@@ -260,11 +260,10 @@ class SelectStitchingAlgorithm(QDialog):
         mean_layout.addWidget(self.ui.mean_image_view)
         self.ui.mean_counts_widget.setLayout(mean_layout)
 
-        self.ui.minimum_image_view.view.getViewBox().setXLink("maximum")
         self.ui.minimum_image_view.view.getViewBox().setYLink("maximum")
-
-        self.ui.maximum_image_view.view.getViewBox().setXLink("mean")
         self.ui.maximum_image_view.view.getViewBox().setYLink("mean")
+        self.ui.minimum_image_view.view.getViewBox().setXLink("maximum")
+        self.ui.maximum_image_view.view.getViewBox().setXLink("mean")
 
     def use_minimum_counts_clicked(self):
         self.activate_radio_button(button_to_activate='minimum_counts')
