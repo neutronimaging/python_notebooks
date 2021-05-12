@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>624</width>
-    <height>258</height>
+    <width>1302</width>
+    <height>1057</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,52 +19,112 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>How to use counts of overlapping images</string>
+    <widget class="QSplitter" name="splitter_3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QRadioButton" name="use_minimum_radioButton">
-        <property name="text">
-         <string>use minimum counts</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="use_maximum_radioButton">
-        <property name="text">
-         <string>use maximum counts</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="use_mean_radioButton">
-        <property name="text">
-         <string>use  mean counts</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>For more informations -&gt; neutronimaging.pages.ornl.gov/tutorial/notebooks/panoramic_stitching</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="preview_pushButton">
-     <property name="text">
-      <string>Preview</string>
-     </property>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QRadioButton" name="use_minimum_radioButton">
+          <property name="text">
+           <string>use minimum counts</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="minimum_counts_widget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QRadioButton" name="use_maximum_radioButton">
+          <property name="text">
+           <string>use maximum counts</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="maximum_counts_widget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QFrame" name="frame_3">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QRadioButton" name="use_mean_radioButton">
+          <property name="text">
+           <string>use  mean counts</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="mean_counts_widget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="frame_4">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QRadioButton" name="use_mean_radioButton_2">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>TBD</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="tbd_widget" native="true">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </widget>
    </item>
    <item>
@@ -109,28 +169,12 @@
    <slot>exit()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>54</x>
-     <y>231</y>
+     <x>66</x>
+     <y>1044</y>
     </hint>
     <hint type="destinationlabel">
      <x>148</x>
      <y>228</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>preview_pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Dialog</receiver>
-   <slot>preview_pushed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>331</x>
-     <y>194</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>333</x>
-     <y>224</y>
     </hint>
    </hints>
   </connection>
@@ -141,12 +185,60 @@
    <slot>ok_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>562</x>
-     <y>224</y>
+     <x>1289</x>
+     <y>1044</y>
     </hint>
     <hint type="destinationlabel">
      <x>497</x>
      <y>225</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>use_minimum_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>use_minimum_counts_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>31</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>49</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>use_maximum_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>use_maximum_counts_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>811</x>
+     <y>36</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1294</x>
+     <y>73</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>use_mean_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>use_mean_counts_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>91</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>565</y>
     </hint>
    </hints>
   </connection>
@@ -155,5 +247,8 @@
   <slot>exit()</slot>
   <slot>preview_pushed()</slot>
   <slot>ok_pushed()</slot>
+  <slot>use_minimum_counts_clicked()</slot>
+  <slot>use_maximum_counts_clicked()</slot>
+  <slot>use_mean_counts_clicked()</slot>
  </slots>
 </ui>

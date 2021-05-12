@@ -1,5 +1,5 @@
 import os
-from qtpy.QtWidgets import QFileDialog, QDialog
+from qtpy.QtWidgets import QFileDialog, QDialog, QMainWindow
 from qtpy import QtGui
 import numpy as np
 from collections import OrderedDict
@@ -147,6 +147,26 @@ class SelectStitchingAlgorithm(QDialog):
                                     os.path.join('ui', 'ui_panoramic_stitching_algorithms.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
+    def use_minimum_counts_clicked(self):
+        self.activate_radio_button(button_to_activate='minimum_counts')
+
+    def use_maximum_counts_clicked(self):
+        self.activate_radio_button(button_to_activate='maximum_counts')
+
+    def use_mean_counts_clicked(self):
+        self.activate_radio_button(button_to_activate='mean_counts')
+
+    def activate_radio_button(self, button_to_activate='minimum_counts'):
+        self.ui.use_minimum_radioButton.setChecked(False)
+        self.ui.use_maximum_radioButton.setChecked(False)
+        self.ui.use_mean_radioButton.setChecked(False)
+        if button_to_activate == 'minimum_counts':
+            self.ui.use_minimum_radioButton.setChecked(True)
+        elif button_to_activate == 'maximum_counts':
+            self.ui.use_maximum_radioButton.setChecked(True)
+        elif button_to_activate == 'mean_counts':
+            self.ui.use_mean_radioButton.setChecked(True)
+
     def closeEvent(self, c):
         self.top_parent.setEnabled(True)
 
@@ -159,9 +179,6 @@ class SelectStitchingAlgorithm(QDialog):
         self.close()
         self.top_parent.setEnabled(True)
         self.parent.select_output_folder()
-
-    def preview_pushed(self):
-        self.top_parent.stitching_algorithm = self._get_stitching_algorithm_selected()
 
     def _get_stitching_algorithm_selected(self):
         if self.ui.use_minimum_radioButton.isChecked():
