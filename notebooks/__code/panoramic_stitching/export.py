@@ -154,6 +154,9 @@ class SelectStitchingAlgorithm(QDialog):
 
     def display_plot(self):
 
+        self.top_parent.ui.statusbar.showMessage("Calculating previews of current working group ...")
+        QtGui.QGuiApplication.processEvents()
+
         o_get = Get(parent=self.top_parent)
         folder_selected = o_get.get_combobox_folder_selected()
 
@@ -222,10 +225,14 @@ class SelectStitchingAlgorithm(QDialog):
         self.ui.mean_image_view.setImage(np.transpose(mean_panoramic_image))
         self.top_parent.eventProgress.setVisible(False)
 
+        self.top_parent.ui.statusbar.showMessage("")
+        QtGui.QGuiApplication.processEvents()
+
     def init_widgets(self):
-        self.ui.top_splitter.setSizes([50, 50])
-        self.ui.bottom_splitter.setSizes([1, 160])
-        
+
+        self.reset_frame_background()
+        self.ui.minimum_frame.setStyleSheet("background-color: blue;")
+
         # minimum pyqtgraph
         self.ui.minimum_image_view = pg.ImageView(view=pg.PlotItem(),
                                                   name='minimum')
@@ -268,16 +275,26 @@ class SelectStitchingAlgorithm(QDialog):
     def use_mean_counts_clicked(self):
         self.activate_radio_button(button_to_activate='mean_counts')
 
+    def reset_frame_background(self):
+        self.ui.minimum_frame.setStyleSheet("")
+        self.ui.maximum_frame.setStyleSheet("")
+        self.ui.mean_frame.setStyleSheet("")
+
     def activate_radio_button(self, button_to_activate='minimum_counts'):
         self.ui.use_minimum_radioButton.setChecked(False)
         self.ui.use_maximum_radioButton.setChecked(False)
         self.ui.use_mean_radioButton.setChecked(False)
+        self.reset_frame_background()
+
         if button_to_activate == 'minimum_counts':
             self.ui.use_minimum_radioButton.setChecked(True)
+            self.ui.minimum_frame.setStyleSheet("background-color: blue;")
         elif button_to_activate == 'maximum_counts':
             self.ui.use_maximum_radioButton.setChecked(True)
+            self.ui.maximum_frame.setStyleSheet("background-color: blue;")
         elif button_to_activate == 'mean_counts':
             self.ui.use_mean_radioButton.setChecked(True)
+            self.ui.mean_frame.setStyleSheet("background-color: blue;")
 
     def closeEvent(self, c):
         self.top_parent.setEnabled(True)

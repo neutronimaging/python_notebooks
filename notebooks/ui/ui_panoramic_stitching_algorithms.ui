@@ -19,17 +19,14 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QSplitter" name="main_splitter">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <widget class="QSplitter" name="top_splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QFrame" name="frame_2">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QFrame" name="minimum_frame">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -48,36 +45,20 @@
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="minimum_counts_widget" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QFrame" name="frame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QRadioButton" name="use_maximum_radioButton">
-          <property name="text">
-           <string>use maximum counts</string>
+         <widget class="QWidget" name="minimum_counts_widget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QWidget" name="maximum_counts_widget" native="true"/>
-        </item>
        </layout>
       </widget>
-     </widget>
-     <widget class="QSplitter" name="bottom_splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QFrame" name="frame_3">
+     </item>
+     <item row="0" column="1">
+      <widget class="QFrame" name="maximum_frame">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -86,18 +67,27 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QRadioButton" name="use_mean_radioButton">
+         <widget class="QRadioButton" name="use_maximum_radioButton">
           <property name="text">
-           <string>use  mean counts</string>
+           <string>use maximum counts</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="mean_counts_widget" native="true"/>
+         <widget class="QWidget" name="maximum_counts_widget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QFrame" name="frame_4">
+     </item>
+     <item row="1" column="0">
+      <widget class="QFrame" name="mean_frame">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -105,6 +95,35 @@
         <enum>QFrame::Raised</enum>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QRadioButton" name="use_mean_radioButton">
+          <property name="text">
+           <string>use  mean counts</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="mean_counts_widget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QFrame" name="frame_4">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QRadioButton" name="use_mean_radioButton_2">
           <property name="enabled">
@@ -120,12 +139,18 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
          </widget>
         </item>
        </layout>
       </widget>
-     </widget>
-    </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
