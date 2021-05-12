@@ -42,5 +42,3 @@ o_stitch.select_input_folders()
 # -
 
 
-
-
