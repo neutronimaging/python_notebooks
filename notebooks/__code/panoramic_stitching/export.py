@@ -4,6 +4,7 @@ from qtpy import QtGui
 import numpy as np
 from collections import OrderedDict
 import pyqtgraph as pg
+import copy
 
 from NeuNorm.normalization import Normalization
 from notebooks.__code import load_ui
@@ -11,6 +12,7 @@ from notebooks.__code import load_ui
 from __code.file_handler import make_or_reset_folder
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 from __code.panoramic_stitching.stitching_algorithms import StitchingAlgorithmType
+from __code.panoramic_stitching.get import Get
 
 
 class Export:
@@ -147,8 +149,78 @@ class SelectStitchingAlgorithm(QDialog):
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui', 'ui_panoramic_stitching_algorithms.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
-
         self.init_widgets()
+        self.display_plot()
+
+    def display_plot(self):
+
+        o_get = Get(parent=self.top_parent)
+        folder_selected = o_get.get_combobox_folder_selected()
+
+        data_dictionary = self.top_parent.data_dictionary
+        offset_dictionary = self.top_parent.offset_dictionary
+        data_dictionary_of_group = data_dictionary[folder_selected]
+        offset_dictionary_of_group = offset_dictionary[folder_selected]
+
+        panoramic_width, panoramic_height = np.shape(self.top_parent.current_live_image)
+        minimum_panoramic_image = np.zeros((panoramic_height, panoramic_width))
+        maximum_panoramic_image = np.zeros((panoramic_height, panoramic_width))
+        mean_panoramic_image = np.zeros((panoramic_height, panoramic_width))
+
+        image_height = self.top_parent.image_height
+        image_width = self.top_parent.image_width
+
+        self.top_parent.eventProgress.setMaximum(len(data_dictionary_of_group.keys()))
+        self.top_parent.eventProgress.setValue(0)
+        self.top_parent.eventProgress.setVisible(True)
+
+        for _file_index, _file in enumerate(data_dictionary_of_group.keys()):
+
+            yoffset = offset_dictionary_of_group[_file]['yoffset']
+            xoffset = offset_dictionary_of_group[_file]['xoffset']
+            image = data_dictionary_of_group[_file].data
+
+            if _file_index == 0:
+                minimum_panoramic_image[yoffset + VERTICAL_MARGIN: yoffset + image_height + VERTICAL_MARGIN,
+                xoffset + HORIZONTAL_MARGIN: xoffset + image_width + HORIZONTAL_MARGIN] = image
+                maximum_panoramic_image[yoffset + VERTICAL_MARGIN: yoffset + image_height + VERTICAL_MARGIN,
+                xoffset + HORIZONTAL_MARGIN: xoffset + image_width + HORIZONTAL_MARGIN] = image
+                mean_panoramic_image[yoffset + VERTICAL_MARGIN: yoffset + image_height + VERTICAL_MARGIN,
+                xoffset + HORIZONTAL_MARGIN: xoffset + image_width + HORIZONTAL_MARGIN] = image
+                continue
+
+            temp_big_image = np.zeros((panoramic_height, panoramic_width))
+            temp_big_image[yoffset + VERTICAL_MARGIN: yoffset + image_height + VERTICAL_MARGIN,
+            xoffset + HORIZONTAL_MARGIN: xoffset + image_width + HORIZONTAL_MARGIN] = image
+
+            # where_panoramic_image_has_value_only = np.where((panoramic_image != 0) & (temp_big_image == 0))
+            where_temp_big_image_has_value_only = np.where((temp_big_image != 0) & (minimum_panoramic_image == 0))
+            where_both_images_overlap = np.where((minimum_panoramic_image != 0) & (temp_big_image != 0))
+
+            # minimum algorithm
+            minimum_panoramic_image[where_temp_big_image_has_value_only] = \
+                temp_big_image[where_temp_big_image_has_value_only]
+            minimum_panoramic_image[where_both_images_overlap] = np.minimum(minimum_panoramic_image[
+                                                                                where_both_images_overlap],
+                                                                    temp_big_image[where_both_images_overlap])
+            # maximum algorithm
+            maximum_panoramic_image[where_temp_big_image_has_value_only] = \
+                temp_big_image[where_temp_big_image_has_value_only]
+            maximum_panoramic_image[where_both_images_overlap] = np.maximum(maximum_panoramic_image[where_both_images_overlap],
+                                                                    temp_big_image[where_both_images_overlap])
+            # mean algorithm
+            mean_panoramic_image[where_temp_big_image_has_value_only] = \
+                temp_big_image[where_temp_big_image_has_value_only]
+            mean_panoramic_image[where_both_images_overlap] = (mean_panoramic_image[where_both_images_overlap] +
+                                                          temp_big_image[where_both_images_overlap]) / 2
+
+            self.top_parent.eventProgress.setValue(_file_index + 1)
+            QtGui.QGuiApplication.processEvents()
+
+        self.ui.minimum_image_view.setImage(np.transpose(minimum_panoramic_image))
+        self.ui.maximum_image_view.setImage(np.transpose(maximum_panoramic_image))
+        self.ui.mean_image_view.setImage(np.transpose(mean_panoramic_image))
+        self.top_parent.eventProgress.setVisible(False)
 
     def init_widgets(self):
         self.ui.top_splitter.setSizes([50, 50])
