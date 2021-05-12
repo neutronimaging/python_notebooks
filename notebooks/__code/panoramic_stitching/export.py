@@ -1,8 +1,9 @@
 import os
-from qtpy.QtWidgets import QFileDialog, QDialog, QMainWindow
+from qtpy.QtWidgets import QFileDialog, QDialog, QVBoxLayout
 from qtpy import QtGui
 import numpy as np
 from collections import OrderedDict
+import pyqtgraph as pg
 
 from NeuNorm.normalization import Normalization
 from notebooks.__code import load_ui
@@ -146,6 +147,45 @@ class SelectStitchingAlgorithm(QDialog):
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui', 'ui_panoramic_stitching_algorithms.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
+
+        self.init_widgets()
+
+    def init_widgets(self):
+        self.ui.top_splitter.setSizes([50, 50])
+        self.ui.bottom_splitter.setSizes([1, 160])
+        
+        # minimum pyqtgraph
+        self.ui.minimum_image_view = pg.ImageView(view=pg.PlotItem(),
+                                                  name='minimum')
+        self.ui.minimum_image_view.ui.roiBtn.hide()
+        self.ui.minimum_image_view.ui.menuBtn.hide()
+        minimum_layout = QVBoxLayout()
+        minimum_layout.addWidget(self.ui.minimum_image_view)
+        self.ui.minimum_counts_widget.setLayout(minimum_layout)
+        
+        # maximum pyqtgraph
+        self.ui.maximum_image_view = pg.ImageView(view=pg.PlotItem(),
+                                                  name='maximum')
+        self.ui.maximum_image_view.ui.roiBtn.hide()
+        self.ui.maximum_image_view.ui.menuBtn.hide()
+        maximum_layout = QVBoxLayout()
+        maximum_layout.addWidget(self.ui.maximum_image_view)
+        self.ui.maximum_counts_widget.setLayout(maximum_layout)
+
+        # minimum pyqtgraph
+        self.ui.mean_image_view = pg.ImageView(view=pg.PlotItem(),
+                                               name='mean')
+        self.ui.mean_image_view.ui.roiBtn.hide()
+        self.ui.mean_image_view.ui.menuBtn.hide()
+        mean_layout = QVBoxLayout()
+        mean_layout.addWidget(self.ui.mean_image_view)
+        self.ui.mean_counts_widget.setLayout(mean_layout)
+
+        self.ui.minimum_image_view.view.getViewBox().setXLink("maximum")
+        self.ui.minimum_image_view.view.getViewBox().setYLink("maximum")
+
+        self.ui.maximum_image_view.view.getViewBox().setXLink("mean")
+        self.ui.maximum_image_view.view.getViewBox().setYLink("mean")
 
     def use_minimum_counts_clicked(self):
         self.activate_radio_button(button_to_activate='minimum_counts')
