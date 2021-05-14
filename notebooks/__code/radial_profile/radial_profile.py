@@ -1,31 +1,24 @@
 from IPython.core.display import HTML
 from IPython.display import display
-
-import matplotlib.pyplot as plt
+from qtpy.QtWidgets import (QMainWindow, QFileDialog, QApplication, QProgressBar, QVBoxLayout, QHBoxLayout,
+                            QLabel, QSlider, QWidget, QSpacerItem, QSizePolicy)
+from qtpy import QtCore, QtGui
 
 import numpy as np
 import os
-
 import pyqtgraph as pg
 
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+from __code import load_ui
 
 from __code import file_handler
-from __code.color import  Color
+from __code.color import Color
 from __code.ui_radial_profile import Ui_MainWindow as UiMainWindow
-from __code.file_folder_browser import FileFolderBrowser
+# from __code.file_folder_browser import FileFolderBrowser
 
 from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
 
-class RadialProfile():
+class RadialProfile:
 
     nbr_files = 0
     images_dimension = {'height': 0,
@@ -183,9 +176,11 @@ class SelectRadialParameters(QMainWindow):
         # self.height = o_profile.images_dimension['height']
         # self.width = o_profile.images_dimension['width']
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+        super(QMainWindow, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_radial_profile.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.init_statusbar()
         self.setWindowTitle("Define center and sector of profile")
 
@@ -205,26 +200,26 @@ class SelectRadialParameters(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
 
-        bottom_layout = QtGui.QHBoxLayout()
+        bottom_layout = QHBoxLayout()
 
         # file index slider
-        label_1 = QtGui.QLabel("File Index")
-        self.ui.slider = QtGui.QSlider(QtCore.Qt.Horizontal)
+        label_1 = QLabel("File Index")
+        self.ui.slider = QSlider(QtCore.Qt.Horizontal)
         self.ui.slider.setMaximum(len(self.list_images) - 1)
         self.ui.slider.setMinimum(0)
         self.ui.slider.valueChanged.connect(self.file_index_changed)
 
         # spacer
-        spacer = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         bottom_layout.addWidget(label_1)
         bottom_layout.addWidget(self.ui.slider)
         bottom_layout.addItem(spacer)
 
-        bottom_widget = QtGui.QWidget()
+        bottom_widget = QWidget()
         bottom_widget.setLayout(bottom_layout)
 
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.ui.image_view)
         vertical_layout.addWidget(bottom_widget)
 
@@ -232,7 +227,7 @@ class SelectRadialParameters(QMainWindow):
 
         # profile
         self.ui.profile_plot = pg.PlotWidget()
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.ui.profile_plot)
         self.ui.widget_profile.setLayout(vertical_layout)
 
@@ -271,7 +266,7 @@ class SelectRadialParameters(QMainWindow):
         self.sector_radio_button_changed()
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(20, 14)
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
@@ -470,7 +465,7 @@ class SelectRadialParameters(QMainWindow):
                                                           directory=self.working_dir,
                                                           caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
-        QtGui.QGuiApplication.processEvents()
+        QApplication.processEvents()
         if _export_folder:
             o_profile = self.o_profile
             o_profile.export(output_folder=_export_folder)
