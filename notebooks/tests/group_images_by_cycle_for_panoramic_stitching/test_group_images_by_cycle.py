@@ -1,5 +1,5 @@
 from pathlib import Path
-from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
+from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
 import glob
 
 

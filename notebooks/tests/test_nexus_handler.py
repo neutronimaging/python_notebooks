@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from __code import nexus_handler
+from notebooks.__code import nexus_handler
 
 
 class TestGetListEntries:

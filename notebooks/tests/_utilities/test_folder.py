@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from __code._utilities import folder
+from notebooks.__code._utilities import folder
 
 
 class TestFolders:

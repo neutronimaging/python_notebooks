@@ -1,6 +1,6 @@
 import pytest
 
-from __code.selection_region_utilities import SelectionRegionUtilities
+from notebooks.__code.selection_region_utilities import SelectionRegionUtilities
 
 
 class TestSelectionRegionUtilities:

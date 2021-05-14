@@ -1,6 +1,6 @@
 import pytest
 
-from __code._utilities import list
+from notebooks.__code._utilities import list
 
 
 def test_are_those_two_lists_identical_within_tolerance():

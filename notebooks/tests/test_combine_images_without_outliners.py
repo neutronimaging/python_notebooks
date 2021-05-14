@@ -20,9 +20,9 @@ class TestCombineImagesWithOutliners:
             CombineImagesAlgorithm.check_arrays_have_same_size_and_dimensions(list_array=list_array)
 
     def test_make_sure_arrays_have_the_same_dimensions(self):
-        list_array = [np.array([[1, 2, 3], [1, 2, 3]]),
-                      np.array([[1, 2, 3], [1, 2, 3]]),
-                      np.array([[1, 2, 3], [1, 2]])]
+        list_array = [np.array([[1, 2, 3], [1, 2, 3]], dtype=object),
+                      np.array([[1, 2, 3], [1, 2, 3]], dtype=object),
+                      np.array([[1, 2, 3], [1, 2]], dtype=object)]
         with pytest.raises(ValueError):
             CombineImagesAlgorithm.check_arrays_have_same_size_and_dimensions(list_array=list_array)
 

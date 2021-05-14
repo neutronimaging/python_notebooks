@@ -1,8 +1,8 @@
 from pathlib import Path
 import glob
 
-from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
-from __code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import SortImagesWithinEachCycle
+from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
+from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import SortImagesWithinEachCycle
 
 
 class TestSortImagesWithinCycles:

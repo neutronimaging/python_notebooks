@@ -1,6 +1,6 @@
 import pytest
 
-from __code._utilities import math
+from notebooks.__code._utilities import math
 
 
 class TestMath:

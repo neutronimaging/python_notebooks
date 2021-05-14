@@ -1,6 +1,6 @@
 import pytest
 
-from __code._utilities import string
+from notebooks.__code._utilities import string
 
 
 class TestGetBeginningCommonPartOfStringFromList:

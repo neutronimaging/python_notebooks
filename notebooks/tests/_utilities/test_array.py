@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from __code._utilities import array
+from notebooks.__code._utilities import array
 
 
 def test_reject_outliers():

@@ -2,7 +2,7 @@ import pytest
 from pathlib import Path
 import numpy as np
 
-from __code.file_handler import read_bragg_edge_fitting_ascii_format
+from notebooks.__code.file_handler import read_bragg_edge_fitting_ascii_format
 
 
 class TestReadBraggEdgeFittingAsciiFormat:

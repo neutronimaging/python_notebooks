@@ -1,6 +1,5 @@
-import pytest
 from pathlib import Path
-from __code.metadata_handler import MetadataHandler
+from notebooks.__code.metadata_handler import MetadataHandler
 import glob
 
 

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from __code.interpolation_utilities import Interpolation
+from notebooks.__code.interpolation_utilities import Interpolation
 
 EPS = 1e-6
 
