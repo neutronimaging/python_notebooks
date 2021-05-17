@@ -7,15 +7,12 @@ from qtpy import QtCore, QtGui
 import numpy as np
 import os
 import pyqtgraph as pg
+from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
 from __code import load_ui
 
 from __code import file_handler
 from __code.color import Color
-from __code.ui_radial_profile import Ui_MainWindow as UiMainWindow
-# from __code.file_folder_browser import FileFolderBrowser
-
-from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
 
 class RadialProfile:
@@ -46,6 +43,9 @@ class RadialProfile:
         self.center = center
         self.angle_range = angle_range
 
+        center = tuple([center['x0'], center['y0']])
+        angle_range = tuple([angle_range['from'], angle_range['to']])
+
         nbr_files = len(self.working_data)
 
         self.parent_ui.eventProgress.setMinimum(1)
@@ -65,19 +65,24 @@ class RadialProfile:
         QtGui.QGuiApplication.processEvents()
 
         for _index in np.arange(nbr_files):
-            o_calculation =  CalculateRadialProfile(data=self.working_data[_index], center=center, angle_range=angle_range)
+            o_calculation = CalculateRadialProfile(data=self.working_data[_index])
+            o_calculation.add_params(center=center,
+                                     angle_range=angle_range)
             o_calculation.calculate()
 
             _short_file_name = self.short_list_files[_index]
 
-            _profile = o_calculation.radial_profile
-            _array_profile.append(_profile)
+            _df = o_calculation.radial_profile
 
+            radius = np.array(_df.index)
+            profile = np.array(_df["mean"])
+
+            _array_profile.append(profile)
             self.parent_ui.eventProgress.setValue(_index+1)
 
             # display
             _color = self.list_rgb_profile_color[_index]
-            self.plot(_profile, _short_file_name, _color)
+            self.plot(radius, profile, _short_file_name, _color)
 
             QtGui.QGuiApplication.processEvents()
 
@@ -87,8 +92,8 @@ class RadialProfile:
 
         QApplication.restoreOverrideCursor()
 
-    def plot(self, data, label, color):
-        self.parent_ui.ui.profile_plot.plot(data, name=label, pen=color)
+    def plot(self, xaxis, data, label, color):
+        self.parent_ui.ui.profile_plot.plot(xaxis, data, name=label, pen=color)
 
     def export(self, output_folder=''):
         if output_folder:
@@ -245,7 +250,9 @@ class SelectRadialParameters(QMainWindow):
         self.ui.image_view.addItem(self.hLine, ignoreBounds=False)
 
     def init_widgets(self):
-        self.ui.circle_y.setText(str(np.int(self.width / 2)))
+        #self.ui.circle_y.setText(str(np.int(self.width / 2)))
+        self.ui.circle_y.setText(str(600))
+
         self.ui.circle_x.setText(str(np.int(self.height / 2)))
         # self.ui.lineEdit.setText(str(self.grid_size))
 
