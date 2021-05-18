@@ -1,3 +1,6 @@
+import numpy as np
+import pyqtgraph as pg
+
 from __code._utilities.parent import Parent
 
 
@@ -38,3 +41,168 @@ class EventHandler(Parent):
 
         self.parent.ui.image_view.removeItem(self.parent.line_view_binning)
         self.parent.display_grid()
+
+    def circle_center_changed(self):
+        if self.parent.ui.sector_full_circle.isChecked():
+            if self.parent.sector_g:
+                self.parent.ui.image_view.removeItem(self.parent.sector_g)
+            return
+
+        x0 = float(self.parent.ui.circle_x.text())
+        y0 = float(self.parent.ui.circle_y.text())
+        from_angle = np.float(str(self.parent.ui.sector_from_value.text()))
+        to_angle = np.float(str(self.parent.ui.sector_to_value.text()))
+
+        self.calculate_corners_angles()
+        self.parent.update_angle_label_position()
+
+        [y1, x1] = self.calculate_sector_xy_position(angle=from_angle, x0=x0, y0=y0)
+        [y2, x2] = self.calculate_sector_xy_position(angle=to_angle, x0=x0, y0=y0)
+
+        pos = np.array([[x0, y0], [x1, y1], [x2, y2]])
+        adj = np.array([[0, 1], [1, 2], [2, 0]])
+
+        symbols = ['+', 'o', 'o']
+
+        lines = np.array([(255, 0, 0, 255, 2), (255, 0, 0, 0, 1), (255, 0, 0, 255, 2)],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte), ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+
+        if self.parent.sector_g:
+            self.parent.ui.image_view.removeItem(self.parent.sector_g)
+        self.parent.sector_g = pg.GraphItem()
+        self.parent.ui.image_view.addItem(self.parent.sector_g)
+        self.parent.sector_g.setData(pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False)
+        
+    def calculate_sector_xy_position(self, angle=0, x0=0, y0=0):
+        x = np.NaN
+        y = np.NaN
+
+        angle_top_right = self.parent.corners['top_right']
+        angle_bottom_right = self.parent.corners['bottom_right']
+        angle_bottom_left = self.parent.corners['bottom_left']
+        angle_top_left = self.parent.corners['top_left']
+
+        # print("angle_top_right: {}".format(angle_top_right))
+        # print("angle_bottom_right: {}".format(angle_bottom_right))
+        # print("angle_bottom_left: {}".format(angle_bottom_left))
+        # print("angle_top_left: {}".format(angle_top_left))
+
+        if (angle_top_right <= angle) and \
+                (angle <= angle_bottom_right):
+            # right
+
+            # get x
+            x = self.parent.height
+
+            # get y
+            _angle = np.abs(90 - angle)
+
+            if angle == 90:
+                y = 0
+            else:
+                angle_rad = np.deg2rad(_angle)
+                y = np.tan(angle_rad) * (self.parent.height - x0)
+
+            if angle <= 90:
+                y = y0 - y
+            else:
+                y = y0 + y
+
+        elif angle_bottom_right < angle < angle_bottom_left:
+            # bottom
+
+            # get y
+            y = self.parent.width
+
+            # get x
+            _angle = np.abs(180 - angle)
+
+            if angle == 180:
+                x = 0
+            else:
+                angle_rad = np.deg2rad(_angle)
+                x = (y - y0) * np.tan(angle_rad)
+
+            if angle <= 180:
+                x = x0 + x
+            else:
+                x = x0 - x
+
+        elif angle_bottom_left <= angle <= angle_top_left:
+            # left
+
+            # get x
+            x = 0
+
+            # get y
+            _angle = np.abs(270 - angle)
+
+            if angle == 270:
+                y = 0
+            else:
+                angle_rad = np.deg2rad(_angle)
+                y = np.tan(angle_rad) * x0
+
+            if angle <= 270:
+                y = y0 + y
+            else:
+                y = y0 - y
+
+        else:
+            # top
+
+            # get y
+            y = 0
+
+            # get x
+            b_right_part = True
+            if angle > angle_top_left:
+                angle = np.abs(360 - angle)
+                b_right_part = False
+
+            if angle == 0:
+                x = 0
+            else:
+                angle_rad = np.deg2rad(angle)
+                x = y0 * np.tan(angle_rad)
+
+            if b_right_part:
+                x = x0 + x
+            else:
+                x = x0 - x
+
+        return [y, x]
+    
+    def calculate_corners_angles(self):
+        '''top vertical being angle 0'''
+
+        x0 = float(str(self.parent.ui.circle_x.text()))
+        y0 = float(str(self.parent.ui.circle_y.text()))
+
+        width = self.parent.width
+        height = self.parent.height
+        #        width = self.parent.height
+        #        height = self.parent.width
+
+        theta_tr = np.NaN  # angle top right
+        theta_br = np.NaN  # bottom right
+        theta_bl = np.NaN  # bottom left
+        theta_tl = np.NaN  # top left
+
+        theta_tr = np.arctan((width - x0) / y0)
+        theta_tr_deg = np.rad2deg(theta_tr)
+
+        theta_br = np.pi - np.arctan((width - x0) / (height - y0))
+        theta_br_deg = np.rad2deg(theta_br)
+
+        theta_bl = np.pi + np.arctan(x0 / (height - y0))
+        theta_bl_deg = np.rad2deg(theta_bl)
+
+        theta_tl = 2 * np.pi - np.arctan(x0 / y0)
+        theta_tl_deg = np.rad2deg(theta_tl)
+
+        self.parent.corners['top_right'] = theta_tr_deg
+        self.parent.corners['bottom_right'] = theta_br_deg
+        self.parent.corners['bottom_left'] = theta_bl_deg
+        self.parent.corners['top_left'] = theta_tl_deg
