@@ -304,3 +304,10 @@ class EventHandler(Parent):
 
         max_distance = np.max([top_left, top_right, bottom_left, bottom_right])
         return max_distance
+
+    def update_max_radius_value(self):
+        max_radius = self.retrieve_max_radius_possible()
+        current_radius_value = self.parent.ui.max_radius_slider.value()
+        if current_radius_value > max_radius:
+            self.parent.ui.max_radius_slider.setValue(max_radius)
+        self.parent.ui.max_radius_slider.setMaximum(max_radius)
