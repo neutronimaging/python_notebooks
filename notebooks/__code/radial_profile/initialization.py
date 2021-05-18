@@ -4,6 +4,7 @@ import pyqtgraph as pg
 import numpy as np
 
 from __code._utilities.parent import Parent
+from __code.radial_profile.event_handler import EventHandler
 
 
 class Initialization(Parent):
@@ -79,6 +80,11 @@ class Initialization(Parent):
         self.parent.ui.to_angle_slider.setValue(self.parent.sector_range['to'])
 
         self.parent.sector_radio_button_changed()
+
+        # defines the maximum value of the radius slider
+        o_event = EventHandler(parent=self.parent)
+        max_radius = o_event.retrieve_max_radius_possible()
+        self.parent.ui.max_radius_slider.setMaximum(max_radius)
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)

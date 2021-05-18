@@ -267,3 +267,40 @@ class EventHandler(Parent):
         self.parent.angle_90 = None
         self.parent.angle_180 = None
         self.parent.angle_270 = None
+
+    def max_radius_handler(self, is_max_radius_selected=None):
+        if not is_max_radius_selected:
+            if self.parent.max_radius_item:
+                self.parent.ui.image_view.removeItem(self.parent.max_radius_item)
+
+    def retrieve_max_radius_possible(self):
+        x0 = float(str(self.parent.ui.circle_x.text()))
+        y0 = float(str(self.parent.ui.circle_y.text()))
+        width = self.parent.width
+        height = self.parent.height
+
+        def lenght_is(x=0, y=0):
+            return np.sqrt(x**2 + y**2)
+
+        # to top left distance
+        x = x0
+        y = y0
+        top_left = lenght_is(x=x, y=y)
+
+        # to top right distance
+        x = width - x0
+        y = y0
+        top_right = lenght_is(x=x, y=y)
+
+        # to bottom left corner
+        x = x0
+        y = height - y0
+        bottom_left = lenght_is(x=x, y=y)
+
+        # to bottom right corner
+        x = width - x0
+        y = height - y0
+        bottom_right = lenght_is(x=x, y=y)
+
+        max_distance = np.max([top_left, top_right, bottom_left, bottom_right])
+        return max_distance

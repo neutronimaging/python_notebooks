@@ -136,6 +136,8 @@ class SelectRadialParameters(QMainWindow):
     from_angle_line = None
     to_angle_line = None
 
+    max_radius_item = None
+
     guide_color_slider = {'red': 255,
                           'green': 0,
                           'blue': 255,
@@ -352,6 +354,8 @@ class SelectRadialParameters(QMainWindow):
     def max_radius_button_clicked(self):
         is_max_radius_selected = self.ui.max_radius_radioButton.isChecked()
         self.ui.max_radius_slider.setEnabled(is_max_radius_selected)
+        o_event = EventHandler(parent=self)
+        o_event.max_radius_handler(is_max_radius_selected=is_max_radius_selected)
 
     def max_radius_slider_pressed(self):
         pass
