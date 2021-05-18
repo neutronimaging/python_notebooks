@@ -94,6 +94,8 @@ class RadialProfile:
 
     def plot(self, xaxis, data, label, color):
         self.parent_ui.ui.profile_plot.plot(xaxis, data, name=label, pen=color)
+        self.parent_ui.ui.profile_plot.setLabel('left', "Average counts")
+        self.parent_ui.ui.profile_plot.setLabel('bottom', "Radius (pixel)")
 
     def export(self, output_folder=''):
         if output_folder:
