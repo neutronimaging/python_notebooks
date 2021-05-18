@@ -2,6 +2,7 @@ import numpy as np
 import pyqtgraph as pg
 
 from __code._utilities.parent import Parent
+from __code.radial_profile.display import Display
 
 
 class EventHandler(Parent):
@@ -28,7 +29,7 @@ class EventHandler(Parent):
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
 
-    def guide_color_changed(self, index):
+    def guide_color_changed(self):
         red = self.parent.ui.guide_red_slider.value()
         green = self.parent.ui.guide_green_slider.value()
         blue = self.parent.ui.guide_blue_slider.value()
@@ -37,10 +38,12 @@ class EventHandler(Parent):
         self.parent.guide_color_slider['green'] = green
         self.parent.guide_color_slider['blue'] = blue
         self.parent.guide_color_slider['alpha'] = alpha
-        self.parent.circle_center_changed()
+        self.circle_center_changed()
 
         self.parent.ui.image_view.removeItem(self.parent.line_view_binning)
-        self.parent.display_grid()
+
+        o_display = Display(parent=self.parent)
+        o_display.grid()
 
     def circle_center_changed(self):
         if self.parent.ui.sector_full_circle.isChecked():
@@ -54,7 +57,7 @@ class EventHandler(Parent):
         to_angle = np.float(str(self.parent.ui.sector_to_value.text()))
 
         self.calculate_corners_angles()
-        self.parent.update_angle_label_position()
+        self.update_angle_label_position()
 
         [y1, x1] = self.calculate_sector_xy_position(angle=from_angle, x0=x0, y0=y0)
         [y2, x2] = self.calculate_sector_xy_position(angle=to_angle, x0=x0, y0=y0)
@@ -73,6 +76,27 @@ class EventHandler(Parent):
         self.parent.sector_g = pg.GraphItem()
         self.parent.ui.image_view.addItem(self.parent.sector_g)
         self.parent.sector_g.setData(pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False)
+        
+    def update_angle_label_position(self):
+        x0 = np.int(str(self.parent.ui.circle_x.text()))
+        y0 = np.int(str(self.parent.ui.circle_y.text()))
+
+        # add angle 0, 90, 180 and 270 labels
+        if self.parent.angle_0 is None:
+            self.parent.angle_0 = pg.TextItem(text=u'0\u00b0', anchor=(0, 1))
+            self.parent.angle_90 = pg.TextItem(text=u'90\u00b0', anchor=(0, 1))
+            self.parent.angle_180 = pg.TextItem(text=u'180\u00b0', anchor=(0, 0))
+            self.parent.angle_270 = pg.TextItem(text=u'270\u00b0', anchor=(1, 1))
+
+            self.parent.ui.image_view.addItem(self.parent.angle_0)
+            self.parent.ui.image_view.addItem(self.parent.angle_90)
+            self.parent.ui.image_view.addItem(self.parent.angle_180)
+            self.parent.ui.image_view.addItem(self.parent.angle_270)
+
+        self.parent.angle_0.setPos(np.int(x0), 0)
+        self.parent.angle_90.setPos(self.parent.height, y0)
+        self.parent.angle_180.setPos(x0, self.parent.width)
+        self.parent.angle_270.setPos(0, y0)
         
     def calculate_sector_xy_position(self, angle=0, x0=0, y0=0):
         x = np.NaN
@@ -206,3 +230,40 @@ class EventHandler(Parent):
         self.parent.corners['bottom_right'] = theta_br_deg
         self.parent.corners['bottom_left'] = theta_bl_deg
         self.parent.corners['top_left'] = theta_tl_deg
+        
+    def sector_radio_button_changed(self):
+        is_full_circle = self.parent.ui.sector_full_circle.isChecked()
+        if is_full_circle:
+            _status_sector = False
+            self.remove_angle_label()
+        else:
+            _status_sector = True
+            self.update_angle_label_position()
+
+        self.parent.ui.sector_from_label.setEnabled(_status_sector)
+        self.parent.ui.sector_from_value.setEnabled(_status_sector)
+        self.parent.ui.sector_from_units.setEnabled(_status_sector)
+        self.parent.ui.sector_to_label.setEnabled(_status_sector)
+        self.parent.ui.sector_to_value.setEnabled(_status_sector)
+        self.parent.ui.sector_to_units.setEnabled(_status_sector)
+        self.parent.ui.from_angle_slider.setEnabled(_status_sector)
+        self.parent.ui.to_angle_slider.setEnabled(_status_sector)
+        self.parent.sector_changed()
+
+    def remove_angle_label(self):
+        if self.parent.angle_0:
+            self.parent.ui.image_view.removeItem(self.parent.angle_0)
+
+        if self.parent.angle_90:
+            self.parent.ui.image_view.removeItem(self.parent.angle_90)
+
+        if self.parent.angle_180:
+            self.parent.ui.image_view.removeItem(self.parent.angle_180)
+
+        if self.parent.angle_270:
+            self.parent.ui.image_view.removeItem(self.parent.angle_270)
+
+        self.parent.angle_0 = None
+        self.parent.angle_90 = None
+        self.parent.angle_180 = None
+        self.parent.angle_270 = None

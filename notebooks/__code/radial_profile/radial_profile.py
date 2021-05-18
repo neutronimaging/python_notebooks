@@ -13,6 +13,7 @@ from __code import file_handler
 from __code.color import Color
 from __code.radial_profile.event_handler import EventHandler
 from __code.radial_profile.initialization import Initialization
+from __code.radial_profile.display import Display
 
 
 class RadialProfile:
@@ -194,95 +195,13 @@ class SelectRadialParameters(QMainWindow):
         o_init.statusbar()
         o_init.pyqtgraph()
         o_init.widgets()
-        self.display_grid()
+
+        o_display = Display(parent=self)
+        o_display.grid()
         self.file_index_changed()
         o_init.crosshair()
 
         self.apply_clicked()
-
-    # initialization -------------------
-
-    # def init_pyqtgraph(self):
-    #
-    #     self.ui.image_view = pg.ImageView(view=pg.PlotItem())
-    #     self.ui.image_view.ui.roiBtn.hide()
-    #     self.ui.image_view.ui.menuBtn.hide()
-    #
-    #     bottom_layout = QHBoxLayout()
-    #
-    #     # file index slider
-    #     label_1 = QLabel("File Index")
-    #     self.ui.slider = QSlider(QtCore.Qt.Horizontal)
-    #     self.ui.slider.setMaximum(len(self.list_images) - 1)
-    #     self.ui.slider.setMinimum(0)
-    #     self.ui.slider.valueChanged.connect(self.file_index_changed)
-    #
-    #     # spacer
-    #     spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-    #
-    #     bottom_layout.addWidget(label_1)
-    #     bottom_layout.addWidget(self.ui.slider)
-    #     bottom_layout.addItem(spacer)
-    #
-    #     bottom_widget = QWidget()
-    #     bottom_widget.setLayout(bottom_layout)
-    #
-    #     vertical_layout = QVBoxLayout()
-    #     vertical_layout.addWidget(self.ui.image_view)
-    #     vertical_layout.addWidget(bottom_widget)
-    #
-    #     self.ui.widget.setLayout(vertical_layout)
-    #
-    #     # profile
-    #     self.ui.profile_plot = pg.PlotWidget()
-    #     vertical_layout = QVBoxLayout()
-    #     vertical_layout.addWidget(self.ui.profile_plot)
-    #     self.ui.widget_profile.setLayout(vertical_layout)
-
-    # def init_crosshair(self):
-    #     x0 = float(str(self.ui.circle_x.text()))
-    #     y0 = float(str(self.ui.circle_y.text()))
-    #
-    #     self.vLine = pg.InfiniteLine(pos=x0, angle=90, movable=True)
-    #     self.hLine = pg.InfiniteLine(pos=y0, angle=0, movable=True)
-    #
-    #     self.vLine.sigDragged.connect(self.manual_circle_center_changed)
-    #     self.hLine.sigDragged.connect(self.manual_circle_center_changed)
-    #
-    #     self.ui.image_view.addItem(self.vLine, ignoreBounds=False)
-    #     self.ui.image_view.addItem(self.hLine, ignoreBounds=False)
-    #
-    # def init_widgets(self):
-    #     #self.ui.circle_y.setText(str(np.int(self.width / 2)))
-    #     self.ui.circle_y.setText(str(600))
-    #
-    #     self.ui.circle_x.setText(str(np.int(self.height / 2)))
-    #     # self.ui.lineEdit.setText(str(self.grid_size))
-    #
-    #     self.ui.guide_red_slider.setValue(self.guide_color_slider['red'])
-    #     self.ui.guide_green_slider.setValue(self.guide_color_slider['green'])
-    #     self.ui.guide_blue_slider.setValue(self.guide_color_slider['blue'])
-    #     self.ui.guide_alpha_slider.setValue(self.guide_color_slider['alpha'])
-    #
-    #     self.ui.sector_from_value.setText(str(self.sector_range['from']))
-    #     self.ui.sector_to_value.setText(str(self.sector_range['to']))
-    #
-    #     self.ui.sector_from_units.setText(u"\u00B0")
-    #     self.ui.sector_to_units.setText(u"\u00B0")
-    #
-    #     self.ui.from_angle_slider.setValue(self.sector_range['from'])
-    #     self.ui.to_angle_slider.setValue(self.sector_range['to'])
-    #
-    #     self.sector_radio_button_changed()
-    #
-    # def init_statusbar(self):
-    #     self.eventProgress = QProgressBar(self.ui.statusbar)
-    #     self.eventProgress.setMinimumSize(20, 14)
-    #     self.eventProgress.setMaximumSize(540, 100)
-    #     self.eventProgress.setVisible(False)
-    #     self.ui.statusbar.addPermanentWidget(self.eventProgress)
-
-    # Event Handler ----------------------
 
     def help_button_clicked(self):
         import webbrowser
@@ -294,63 +213,11 @@ class SelectRadialParameters(QMainWindow):
     def grid_slider_pressed(self):
         self.grid_size_changed()
 
-    def update_angle_label_position(self):
-
-        x0 = np.int(str(self.ui.circle_x.text()))
-        y0 = np.int(str(self.ui.circle_y.text()))
-
-        # add angle 0, 90, 180 and 270 labels
-        if self.angle_0 is None:
-            self.angle_0 = pg.TextItem(text=u'0\u00b0', anchor=(0, 1))
-            self.angle_90 = pg.TextItem(text=u'90\u00b0', anchor=(0, 1))
-            self.angle_180 = pg.TextItem(text=u'180\u00b0', anchor=(0, 0))
-            self.angle_270 = pg.TextItem(text=u'270\u00b0', anchor=(1, 1))
-
-            self.ui.image_view.addItem(self.angle_0)
-            self.ui.image_view.addItem(self.angle_90)
-            self.ui.image_view.addItem(self.angle_180)
-            self.ui.image_view.addItem(self.angle_270)
-
-        self.angle_0.setPos(np.int(x0), 0)
-        self.angle_90.setPos(self.height, y0)
-        self.angle_180.setPos(x0, self.width)
-        self.angle_270.setPos(0, y0)
-
-    def remove_angle_label(self):
-
-        if self.angle_0:
-            self.ui.image_view.removeItem(self.angle_0)
-            self.ui.image_view.removeItem(self.angle_90)
-            self.ui.image_view.removeItem(self.angle_180)
-            self.ui.image_view.removeItem(self.angle_270)
-
-            self.angle_0 = None
-            self.angle_90 = None
-            self.angle_180 = None
-            self.angle_270 = None
-
     def sector_radio_button_changed(self):
-
-        is_full_circle = self.ui.sector_full_circle.isChecked()
-        if is_full_circle:
-            _status_sector = False
-            self.remove_angle_label()
-        else:
-            _status_sector = True
-            self.update_angle_label_position()
-
-        self.ui.sector_from_label.setEnabled(_status_sector)
-        self.ui.sector_from_value.setEnabled(_status_sector)
-        self.ui.sector_from_units.setEnabled(_status_sector)
-        self.ui.sector_to_label.setEnabled(_status_sector)
-        self.ui.sector_to_value.setEnabled(_status_sector)
-        self.ui.sector_to_units.setEnabled(_status_sector)
-        self.ui.from_angle_slider.setEnabled(_status_sector)
-        self.ui.to_angle_slider.setEnabled(_status_sector)
-        self.sector_changed()
+        o_event = EventHandler(parent=self)
+        o_event.sector_radio_button_changed()
 
     # from and to angles sliders
-
     def sector_from_angle_moved(self, value):
         self.ui.sector_from_value.setText(str(value))
         self.check_from_to_angle(do_not_touch='from')
@@ -382,78 +249,16 @@ class SelectRadialParameters(QMainWindow):
         else:
             return self.working_data
 
-    def display_grid(self):
-        [width, height] = self.get_image_dimension(self.working_data)
-        # bin_size = float(str(self.ui.lineEdit.text()))
-        bin_size = self.ui.grid_size_slider.value()
-        x0 = 0
-        y0 = 0
-
-        pos_adj_dict = {}
-
-        nbr_height_bins = np.float(height) / np.float(bin_size)
-        real_height = y0 + np.int(nbr_height_bins) * np.int(bin_size)
-
-        nbr_width_bins = np.float(width) / np.float(bin_size)
-        read_width = x0 + np.int(nbr_width_bins) * np.int(bin_size)
-
-        # pos (each matrix is one side of the lines)
-        pos = []
-        adj = []
-
-        # vertical lines
-        x = x0
-        index = 0
-        while (x <= x0 + width):
-            one_edge = [x, y0]
-            other_edge = [x, real_height]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            x += bin_size
-            index += 2
-
-        # horizontal lines
-        y = y0
-        while (y <= y0 + height):
-            one_edge = [x0, y]
-            other_edge = [read_width, y]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            y += bin_size
-            index += 2
-
-        pos = np.array(pos)
-        adj = np.array(adj)
-
-        line_color = (self.guide_color_slider['red'],
-                      self.guide_color_slider['green'],
-                      self.guide_color_slider['blue'],
-                      self.guide_color_slider['alpha'], 0.5)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
-
-        line_view_binning = pg.GraphItem()
-        self.ui.image_view.addItem(line_view_binning)
-        line_view_binning.setData(pos=pos,
-                                  adj=adj,
-                                  pen=lines,
-                                  symbol=None,
-                                  pxMode=False)
-
-        self.line_view_binning = line_view_binning
-
     def sector_changed(self):
         o_event = EventHandler(parent=self)
         o_event.circle_center_changed()
         self.apply_clicked()
 
     def grid_size_changed(self):
-        self.ui.image_view.removeItem(self.line_view_binning)
-        self.display_grid()
+        if self.line_view_binning:
+            self.ui.image_view.removeItem(self.line_view_binning)
+        o_display = Display(parent=self)
+        o_display.grid()
 
     def calculate_profiles_clicked(self):
         o_profile = RadialProfile(parent_ui=self,
@@ -510,11 +315,11 @@ class SelectRadialParameters(QMainWindow):
 
     def guide_color_clicked(self):
         o_event = EventHandler(parent=self)
-        o_event.guide_color_changed(-1)
+        o_event.guide_color_changed()
 
     def guide_color_released(self):
         o_event = EventHandler(parent=self)
-        o_event.guide_color_changed(-1)
+        o_event.guide_color_changed()
 
     def guide_color_changed(self, index):
         o_event = EventHandler(parent=self)
@@ -560,6 +365,3 @@ class SelectRadialParameters(QMainWindow):
 
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")
-
-
-
