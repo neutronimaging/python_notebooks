@@ -3,16 +3,16 @@ from IPython.display import display
 from qtpy.QtWidgets import (QMainWindow, QFileDialog, QApplication, QProgressBar, QVBoxLayout, QHBoxLayout,
                             QLabel, QSlider, QWidget, QSpacerItem, QSizePolicy)
 from qtpy import QtCore, QtGui
-
 import numpy as np
 import os
 import pyqtgraph as pg
+
 from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
 from __code import load_ui
-
 from __code import file_handler
 from __code.color import Color
+from __code.radial_profile.event_handler import EventHandler
 
 
 class RadialProfile:
@@ -678,24 +678,12 @@ class SelectRadialParameters(QMainWindow):
         self.sector_g.setData(pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False)
 
     def guide_color_clicked(self):
-        self.guide_color_changed(-1)
+        o_event = EventHandler(parent=self)
+        o_event.guide_color_changed(-1)
 
     def guide_color_released(self):
-        self.guide_color_changed(-1)
-
-    def guide_color_changed(self, index):
-        red = self.ui.guide_red_slider.value()
-        green = self.ui.guide_green_slider.value()
-        blue = self.ui.guide_blue_slider.value()
-        alpha = self.ui.guide_alpha_slider.value()
-        self.guide_color_slider['red'] = red
-        self.guide_color_slider['green'] = green
-        self.guide_color_slider['blue'] = blue
-        self.guide_color_slider['alpha'] = alpha
-        self.circle_center_changed()
-
-        self.ui.image_view.removeItem(self.line_view_binning)
-        self.display_grid()
+        o_event = EventHandler(parent=self)
+        o_event.guide_color_changed(-1)
 
     def apply_clicked(self):
         _center = {}
@@ -718,27 +706,18 @@ class SelectRadialParameters(QMainWindow):
         self.close()
 
     def file_index_changed(self):
-        file_index = self.ui.slider.value()
-        live_image = self.get_selected_image(file_index)
+        o_event = EventHandler(parent=self)
+        o_event.file_index_changed()
 
-        _view = self.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
+    def max_radius_button_clicked(self):
+        is_max_radius_selected = self.ui.max_radius_radioButton.isChecked()
+        self.ui.max_radius_slider.setEnabled(is_max_radius_selected)
 
-        first_update = False
-        if self.histogram_level == []:
-            first_update = True
-        _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget.getLevels()
+    def max_radius_slider_pressed(self):
+        pass
 
-        _image = np.transpose(live_image)
-        self.ui.image_view.setImage(_image)
-        self.live_image = _image
-        _view_box.setState(_state)
-
-        if not first_update:
-            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
-
+    def max_radius_slider_changed(self, value):
+        pass
 
     def display_image(self, image):
         image = np.transpose(image)

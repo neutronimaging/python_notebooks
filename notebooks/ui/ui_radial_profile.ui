@@ -147,13 +147,6 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>or</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QRadioButton" name="sector_sector">
                  <property name="text">
                   <string>Sector</string>
@@ -378,6 +371,56 @@
              </widget>
             </item>
             <item>
+             <widget class="QGroupBox" name="groupBox_6">
+              <property name="maximumSize">
+               <size>
+                <width>250</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="title">
+               <string>Max radius</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <widget class="QRadioButton" name="no_radius_radioButton">
+                 <property name="text">
+                  <string>no radius limitation</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="max_radius_radioButton">
+                 <property name="text">
+                  <string>max radius</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>         </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSlider" name="max_radius_slider">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -583,8 +626,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_radio_button_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>739</x>
-     <y>231</y>
+     <x>859</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>
@@ -615,8 +658,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>377</y>
+     <x>863</x>
+     <y>376</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -631,8 +674,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>411</y>
+     <x>863</x>
+     <y>410</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -647,8 +690,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>445</y>
+     <x>863</x>
+     <y>444</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -663,8 +706,8 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>783</x>
-     <y>482</y>
+     <x>863</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>823</x>
@@ -695,8 +738,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>723</x>
-     <y>251</y>
+     <x>798</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>807</x>
@@ -711,8 +754,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>703</x>
-     <y>279</y>
+     <x>798</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
      <x>809</x>
@@ -727,8 +770,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>705</x>
-     <y>247</y>
+     <x>798</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>749</x>
@@ -743,8 +786,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>691</x>
-     <y>280</y>
+     <x>798</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
      <x>748</x>
@@ -759,8 +802,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>678</x>
-     <y>251</y>
+     <x>798</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>794</x>
@@ -775,8 +818,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>273</y>
+     <x>798</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
      <x>769</x>
@@ -807,8 +850,8 @@ p, li { white-space: pre-wrap; }
    <slot>guide_color_released()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>764</x>
-     <y>343</y>
+     <x>863</x>
+     <y>342</y>
     </hint>
     <hint type="destinationlabel">
      <x>734</x>
@@ -919,8 +962,8 @@ p, li { white-space: pre-wrap; }
    <slot>grid_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>775</x>
-     <y>483</y>
+     <x>863</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>689</x>
@@ -935,8 +978,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_from_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>775</x>
-     <y>252</y>
+     <x>798</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>1234</x>
@@ -951,8 +994,8 @@ p, li { white-space: pre-wrap; }
    <slot>sector_to_angle_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>781</x>
-     <y>278</y>
+     <x>798</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
      <x>1232</x>
@@ -1008,6 +1051,70 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>no_radius_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>max_radius_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>721</x>
+     <y>538</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1231</x>
+     <y>582</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>max_radius_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>max_radius_button_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>686</x>
+     <y>556</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1235</x>
+     <y>652</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>max_radius_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>max_radius_slider_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>706</x>
+     <y>584</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1234</x>
+     <y>721</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>max_radius_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>max_radius_slider_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>769</x>
+     <y>578</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1233</x>
+     <y>533</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
@@ -1028,5 +1135,8 @@ p, li { white-space: pre-wrap; }
   <slot>calculate_profiles_clicked()</slot>
   <slot>export_profiles_clicked()</slot>
   <slot>help_button_clicked()</slot>
+  <slot>max_radius_button_clicked()</slot>
+  <slot>max_radius_slider_pressed()</slot>
+  <slot>max_radius_slider_changed()</slot>
  </slots>
 </ui>
