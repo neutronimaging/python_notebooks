@@ -359,10 +359,12 @@ class SelectRadialParameters(QMainWindow):
         o_event.max_radius_handler(is_max_radius_selected=is_max_radius_selected)
 
     def max_radius_slider_pressed(self):
-        pass
+        o_event = EventHandler(parent=self)
+        o_event.update_max_radius_item()
 
     def max_radius_slider_changed(self, value):
-        pass
+        o_event = EventHandler(parent=self)
+        o_event.update_max_radius_item()
 
     def display_image(self, image):
         image = np.transpose(image)

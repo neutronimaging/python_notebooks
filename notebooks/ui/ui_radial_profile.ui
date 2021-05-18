@@ -410,6 +410,9 @@
                  </item>
                  <item>
                   <widget class="QSlider" name="max_radius_slider">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>

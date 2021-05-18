@@ -1,5 +1,6 @@
 import numpy as np
 import pyqtgraph as pg
+from qtpy import QtGui
 
 from __code._utilities.parent import Parent
 from __code.radial_profile.display import Display
@@ -268,10 +269,33 @@ class EventHandler(Parent):
         self.parent.angle_180 = None
         self.parent.angle_270 = None
 
+    def update_max_radius_item(self):
+        is_max_radius_selected = self.parent.ui.max_radius_radioButton.isChecked()
+        self.max_radius_handler(is_max_radius_selected=is_max_radius_selected)
+
     def max_radius_handler(self, is_max_radius_selected=None):
-        if not is_max_radius_selected:
-            if self.parent.max_radius_item:
-                self.parent.ui.image_view.removeItem(self.parent.max_radius_item)
+        if self.parent.max_radius_item:
+            self.parent.ui.image_view.removeItem(self.parent.max_radius_item)
+
+        if is_max_radius_selected:
+            x0 = float(str(self.parent.ui.circle_x.text()))
+            y0 = float(str(self.parent.ui.circle_y.text()))
+            max_radius = self.parent.ui.max_radius_slider.value()
+
+            _pen = QtGui.QPen()
+            _pen.setColor(QtGui.QColor(0, 0, 255))
+            _pen.setWidth(0.4)
+
+            self.parent.max_radius_item = pg.CircleROI([x0 - max_radius, y0 - max_radius],
+                                            [2*max_radius, 2*max_radius],
+                                            movable=False,
+                                            resizable=False,
+                                            pen=_pen)
+            handles = self.parent.max_radius_item.getHandles()
+            self.parent.ui.image_view.addItem(self.parent.max_radius_item)
+            for _handle in handles:
+                self.parent.max_radius_item.removeHandle(_handle)
+
 
     def retrieve_max_radius_possible(self):
         x0 = float(str(self.parent.ui.circle_x.text()))
