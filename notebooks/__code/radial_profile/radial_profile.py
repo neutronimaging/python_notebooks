@@ -37,7 +37,7 @@ class RadialProfile:
         color = Color()
         self.list_rgb_profile_color = color.get_list_rgb(nbr_color=len(self.working_data))
 
-    def calculate(self, center={}, angle_range={}):
+    def calculate(self, center={}, angle_range={}, max_radius=None):
 
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
@@ -68,7 +68,8 @@ class RadialProfile:
         for _index in np.arange(nbr_files):
             o_calculation = CalculateRadialProfile(data=self.working_data[_index])
             o_calculation.add_params(center=center,
-                                     angle_range=angle_range)
+                                     angle_range=angle_range,
+                                     radius=max_radius)
             o_calculation.calculate()
 
             _short_file_name = self.short_list_files[_index]
@@ -266,8 +267,10 @@ class SelectRadialParameters(QMainWindow):
         o_profile = RadialProfile(parent_ui=self,
                                   data=self.working_data,
                                   list_files=self.list_images)
+        radius = self.ui.max_radius_slider.value() if self.ui.max_radius_radioButton.isChecked() else None
         o_profile.calculate(center=self.center,
-                            angle_range=self.angle_range)
+                            angle_range=self.angle_range,
+                            max_radius=radius)
 
         self.profile_data = o_profile.profile_data
         self.o_profile = o_profile

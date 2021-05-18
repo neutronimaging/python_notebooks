@@ -296,7 +296,6 @@ class EventHandler(Parent):
             for _handle in handles:
                 self.parent.max_radius_item.removeHandle(_handle)
 
-
     def retrieve_max_radius_possible(self):
         x0 = float(str(self.parent.ui.circle_x.text()))
         y0 = float(str(self.parent.ui.circle_y.text()))
