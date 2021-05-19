@@ -28,6 +28,8 @@ conda install -y -c conda-forge \
     ipywe \
     lmfit 
 
+conda install -c conda-forge nbstripout
+
 # install additional from pip
 pip install \
     neutronbraggedge \
