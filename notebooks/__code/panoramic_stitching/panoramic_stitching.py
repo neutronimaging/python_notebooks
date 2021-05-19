@@ -1,7 +1,6 @@
 from IPython.core.display import display
 from qtpy.QtWidgets import QMainWindow
 import os
-import copy
 import inflect
 
 from __code.ipywe import fileselector
