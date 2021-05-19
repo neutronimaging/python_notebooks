@@ -113,7 +113,7 @@ class RadialProfile:
                 output_file_name += ".txt"
                 output_file_name = os.path.abspath(output_file_name)
 
-                text = list("# source image: {}".format(_file))
+                text = ["# source image: {}".format(_file)]
                 text.append("# center [x0, y0]: [{},{}]".format(self.center['x0'], self.center['y0']))
                 text.append(
                     "# angular range from {}degrees to {}degrees".format(self.angle_range['from'], self.angle_range['to']))
