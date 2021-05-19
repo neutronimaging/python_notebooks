@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from __code.ipywe import fileselector
 
@@ -24,7 +25,17 @@ class WaveFrontDynamics:
         if list_of_ascii_files is None:
             return
 
+        list_of_ascii_files.sort()
         self.list_of_ascii_files = list_of_ascii_files
+        list_of_data = []
         for _file in list_of_ascii_files:
-            pass
+            _data = pd.read_csv(_file,
+                                skiprows=5,
+                                delimiter=",",
+                                names=['pixel', 'mean counts'],
+                                dtype=np.float,
+                                index_col=0)
+            list_of_data.append(_data)
+        self.list_of_data = list_of_data
 
+    
