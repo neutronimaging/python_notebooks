@@ -202,7 +202,7 @@ class SelectRadialParameters(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/radial_profile/")
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/tutorial/notebooks/radial_profile/")
 
     def grid_slider_moved(self, value):
         self.grid_size_changed()
