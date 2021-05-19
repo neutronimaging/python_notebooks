@@ -3,7 +3,7 @@ import os
 from qtpy.QtGui import QIcon
 import numpy as np
 
-from notebooks.__code import load_ui
+from __code import load_ui
 
 from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of, set_widget_size
 from __code.panoramic_stitching.config_buttons import button

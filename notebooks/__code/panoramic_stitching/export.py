@@ -7,7 +7,7 @@ import pyqtgraph as pg
 import copy
 
 from NeuNorm.normalization import Normalization
-from notebooks.__code import load_ui
+from __code import load_ui
 
 from __code.file_handler import make_or_reset_folder
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
