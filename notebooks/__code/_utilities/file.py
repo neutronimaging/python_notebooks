@@ -241,7 +241,7 @@ def retrieve_metadata_value_from_ascii_file(filename=None, metadata_name=None):
             if not line:
                 break
 
-            if metadata_name in line:
+            if metadata_name in line:#
                 divided_parts = line.split(":")
                 if len(divided_parts) > 1:
                     value = ":".join(divided_parts[1:])

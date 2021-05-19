@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import os
 
 from __code.ipywe import fileselector
+from __code._utilities.file import retrieve_metadata_value_from_ascii_file
 
 
 class WaveFrontDynamics:
@@ -33,6 +34,7 @@ class WaveFrontDynamics:
         list_of_ascii_files.sort()
         self.list_of_ascii_files = list_of_ascii_files
         list_of_data = []
+        list_of_original_image_files = []
         for _file in list_of_ascii_files:
             _data = pd.read_csv(_file,
                                 skiprows=5,
@@ -41,14 +43,18 @@ class WaveFrontDynamics:
                                 dtype=np.float,
                                 index_col=0)
             list_of_data.append(_data)
+            _original_image_file = retrieve_metadata_value_from_ascii_file(filename=_file,
+                                                                           metadata_name="# source image")
+            list_of_original_image_files.append(_original_image_file)
 
         self.list_of_data = list_of_data
+        self.list_of_original_image_files = list_of_original_image_files
 
     def display_data(self):
 
         def plot_data(index):
             plt.figure(figsize=(10, 10))
-            plt.title(os.path.basename(self.list_of_ascii_files[index]))
+            plt.title(os.path.basename(self.list_of_original_image_files[index]))
             plt.plot(self.list_of_data[index])
             plt.xlabel("Pixel")
             plt.ylabel("Mean Counts")
