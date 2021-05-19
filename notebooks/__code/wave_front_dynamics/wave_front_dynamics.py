@@ -1,7 +1,12 @@
+import pandas as pd
+
 from __code.ipywe import fileselector
 
 
 class WaveFrontDynamics:
+
+    list_of_ascii_files = None
+    list_of_data = None
 
     def __init__(self, working_dir="~/"):
         self.working_dir = working_dir
@@ -19,4 +24,7 @@ class WaveFrontDynamics:
         if list_of_ascii_files is None:
             return
 
-        print(f"list_of_ascii_files: {list_of_ascii_files}")
+        self.list_of_ascii_files = list_of_ascii_files
+        for _file in list_of_ascii_files:
+            pass
+
