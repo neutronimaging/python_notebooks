@@ -85,6 +85,7 @@ class Initialization(Parent):
         o_event = EventHandler(parent=self.parent)
         max_radius = o_event.retrieve_max_radius_possible()
         self.parent.ui.max_radius_slider.setMaximum(max_radius)
+        self.parent.ui.max_radius_slider.setValue(np.int(max_radius/2))
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
@@ -92,3 +93,4 @@ class Initialization(Parent):
         self.parent.eventProgress.setMaximumSize(540, 100)
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
+        

@@ -4,7 +4,6 @@ from qtpy.QtWidgets import QMainWindow, QFileDialog, QApplication
 from qtpy import QtCore, QtGui
 import numpy as np
 import os
-import pyqtgraph as pg
 
 from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
@@ -43,6 +42,7 @@ class RadialProfile:
 
         self.center = center
         self.angle_range = angle_range
+        self.max_radius = max_radius
 
         center = tuple([center['x0'], center['y0']])
         angle_range = tuple([angle_range['from'], angle_range['to']])
@@ -105,13 +105,15 @@ class RadialProfile:
 
                 [input_image_base_name, ext] = os.path.splitext(os.path.basename(_file))
                 output_file_name = os.path.join(output_folder,
-                                                input_image_base_name + '_profile_c_x{}_y{}_angle_{}_to_{}.txt'.format(
-                                                    self.center['x0'], self.center['y0'],
-                                                    self.angle_range['from'], self.angle_range['to']))
+                                                input_image_base_name + '_profile_c_x{}_y{}_angle_{}_to_{}'.format(
+                                                        self.center['x0'], self.center['y0'],
+                                                        self.angle_range['from'], self.angle_range['to']))
+                if self.max_radius:
+                    output_file_name += "_max_radius_of_{}_pixels".format(self.max_radius)
+                output_file_name += ".txt"
                 output_file_name = os.path.abspath(output_file_name)
 
-                text = []
-                text.append("# source image: {}".format(_file))
+                text = list("# source image: {}".format(_file))
                 text.append("# center [x0, y0]: [{},{}]".format(self.center['x0'], self.center['y0']))
                 text.append(
                     "# angular range from {}degrees to {}degrees".format(self.angle_range['from'], self.angle_range['to']))
@@ -120,8 +122,6 @@ class RadialProfile:
                 data = list(zip(np.arange(len(self.profile_data[_index])), self.profile_data[_index]))
 
                 file_handler.make_ascii_file(metadata=text, data=data, output_file_name=output_file_name)
-
-                # display(HTML('<span style="font-size: 20px; color:blue">File created: ' + output_file_name + '</span>'))
 
         self.parent_ui.ui.statusbar.showMessage("Profiles Exported in {}!".format(output_folder), 10000)
         self.parent_ui.ui.statusbar.setStyleSheet("color: green")
@@ -180,12 +180,6 @@ class SelectRadialParameters(QMainWindow):
         self.working_dir = working_dir
         # self.rotated_working_data = data_dict['data']
         [self.height, self.width] = np.shape(self.working_data[0])
-
-        # self.rotated_working_data = o_profile.working_data
-        # self.working_data = o_profile.working_data
-        # self.list_images = o_profile.list_images
-        # self.height = o_profile.images_dimension['height']
-        # self.width = o_profile.images_dimension['width']
 
         super(QMainWindow, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
