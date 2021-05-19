@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+from ipywidgets.widgets import interact
+from ipywidgets import widgets
+import matplotlib.pyplot as plt
+import os
 
 from __code.ipywe import fileselector
 
@@ -7,6 +11,7 @@ from __code.ipywe import fileselector
 class WaveFrontDynamics:
 
     list_of_ascii_files = None
+    list_of_original_image_files = None
     list_of_data = None
 
     def __init__(self, working_dir="~/"):
@@ -36,6 +41,19 @@ class WaveFrontDynamics:
                                 dtype=np.float,
                                 index_col=0)
             list_of_data.append(_data)
+
         self.list_of_data = list_of_data
 
-    
+    def display_data(self):
+
+        def plot_data(index):
+            plt.figure(figsize=(10, 10))
+            plt.title(os.path.basename(self.list_of_ascii_files[index]))
+            plt.plot(self.list_of_data[index])
+            plt.xlabel("Pixel")
+            plt.ylabel("Mean Counts")
+
+        self.display = interact(plot_data,
+                                index=widgets.IntSlider(min=0,
+                                                        max=len(self.list_of_ascii_files)-1,
+                                                        continuous_update=False))
