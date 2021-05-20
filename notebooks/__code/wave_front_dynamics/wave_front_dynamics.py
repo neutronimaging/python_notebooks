@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from ipywidgets.widgets import interact
 from ipywidgets import widgets
+from IPython.core.display import display
 import matplotlib.pyplot as plt
 import os
 
@@ -14,6 +15,7 @@ class WaveFrontDynamics:
     list_of_ascii_files = None
     list_of_original_image_files = None
     list_of_data = None
+    list_of_data_prepared = None
 
     def __init__(self, working_dir="~/"):
         self.working_dir = working_dir
@@ -50,28 +52,29 @@ class WaveFrontDynamics:
         self.list_of_data = list_of_data
         self.list_of_original_image_files = list_of_original_image_files
 
+    def bin_data(self, data=None, bin_value=1, bin_type='Mean'):
+        numpy_data = np.array(data).flatten()
+        if bin_value == 1:
+            return numpy_data
+
+        nbr_bin = np.int(len(numpy_data) / bin_value)
+        data_to_rebinned = numpy_data[0: nbr_bin * bin_value]
+        binned_array_step1 = np.reshape(data_to_rebinned, [nbr_bin, bin_value])
+        if bin_type == "Mean":
+            binned_array = np.mean(binned_array_step1, axis=1)
+        else:
+            binned_array = np.median(binned_array_step1, axis=1)
+        return binned_array
+
     def display_data(self):
-
-        def bin_data(data, bin_value, bin_type):
-
-            numpy_data = np.array(data).flatten()
-            if bin_value == 1:
-                return numpy_data
-
-            nbr_bin = np.int(len(numpy_data) / bin_value)
-            data_to_rebinned = numpy_data[0: nbr_bin*bin_value]
-            binned_array_step1 = np.reshape(data_to_rebinned, [nbr_bin, bin_value])
-            if bin_type == "Mean":
-                binned_array = np.mean(binned_array_step1, axis=1)
-            else:
-                binned_array = np.median(binned_array_step1, axis=1)
-            return binned_array
 
         def plot_data(index, bin_value, bin_type):
             plt.figure(figsize=(5, 5))
             plt.title(os.path.basename(self.list_of_original_image_files[index]))
 
-            _data = bin_data(self.list_of_data[index], bin_value, bin_type)
+            _data = self.bin_data(data=self.list_of_data[index],
+                                  bin_value=bin_value,
+                                  bin_type=bin_type)
             plt.plot(_data)
             plt.xlabel("Pixel")
             plt.ylabel("Mean Counts")
@@ -84,3 +87,27 @@ class WaveFrontDynamics:
                                                             max=30,
                                                             continuous_update=False),
                                 bin_type=widgets.RadioButtons(options=['Mean', 'Median']))
+
+    def select_algorithm(self):
+        self.algo_choice_ui = widgets.RadioButtons(options=['sliding average',
+                                                            'error function',
+                                                            'change point'])
+        display(self.algo_choice_ui)
+
+    def prepare_data(self):
+        bin_value = self.display.widget.children[1].value
+        bin_type = self.display.widget.children[2].value
+
+        list_of_data_prepared = []
+        for _data in self.list_of_data:
+            _prepared_data = self.bin_data(data=_data,
+                                           bin_value=bin_value,
+                                           bin_type=bin_type)
+            list_of_data_prepared.append(_prepared_data)
+
+        self.list_of_data_prepared = list_of_data_prepared
+
+    def calculate(self):
+        algorithm_selected = self.algo_choice_ui.value
+        self.prepare_data()
+        list_of_data_prepared = self.list_of_data_prepared
