@@ -8,6 +8,7 @@ import os
 
 from __code.ipywe import fileselector
 from __code._utilities.file import retrieve_metadata_value_from_ascii_file
+from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
 
 
 class WaveFrontDynamics:
@@ -107,7 +108,37 @@ class WaveFrontDynamics:
 
         self.list_of_data_prepared = list_of_data_prepared
 
+    def get_algorithm_selected(self):
+        algorithm_name = self.algo_choice_ui.value
+        if algorithm_name == ListAlgorithm.sliding_average:
+            return ListAlgorithm.sliding_average
+        elif algorithm_name == ListAlgorithm.error_function:
+            return ListAlgorithm.error_function
+        elif algorithm_name == ListAlgorithm.change_point:
+            return ListAlgorithm.change_point
+        else:
+            raise NotImplementedError("Algorithm not implemented yet!")
+
     def calculate(self):
-        algorithm_selected = self.algo_choice_ui.value
+        algorithm_selected = self.get_algorithm_selected()
         self.prepare_data()
         list_of_data_prepared = self.list_of_data_prepared
+
+        o_algo = Algorithms(list_data=list_of_data_prepared,
+                            ignore_first_dataset=False,
+                            algorithm_selected=algorithm_selected)
+        peak_value_array = o_algo.get_peak_value_array(algorithm_selected=algorithm_selected)
+
+        def plot_data(index):
+            plt.figure(figsize=(5, 5))
+            plt.title(os.path.basename(self.list_of_original_image_files[index]))
+
+            print(f"peak_value_array: {peak_value_array[index]}")
+            plt.plot(list_of_data_prepared[index])
+            plt.xlabel("Pixel")
+            plt.ylabel("Mean Counts")
+
+        self.display = interact(plot_data,
+                                index=widgets.IntSlider(min=0,
+                                                        max=len(self.list_of_ascii_files) - 1,
+                                                        continuous_update=False))

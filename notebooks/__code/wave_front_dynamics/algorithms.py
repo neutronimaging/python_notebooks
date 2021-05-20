@@ -3,6 +3,14 @@ from scipy.special import erf
 from scipy.optimize import curve_fit
 from changepy import pelt
 from changepy.costs import normal_var
+from ipywidgets import widgets
+from IPython.core.display import display
+
+
+class ListAlgorithm:
+    sliding_average = "sliding average"
+    error_function = "error function"
+    change_point = "change_point"
 
 
 class MeanRangeCalculation(object):
@@ -26,11 +34,13 @@ class MeanRangeCalculation(object):
 
 
 class Algorithms:
-    """This class calculates the water intake position of a set of profiles"""
+    """This class calculates the front edge position of a set of profiles"""
 
-    dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
+    # dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
 
-    water_intake_peak_sliding_average = []
+    list_data = None
+    peak_sliding_average_data = None
+
     water_intake_peak_erf = []
     water_intake_deltatime = []
 
@@ -39,16 +49,16 @@ class Algorithms:
     # fitting by error function requires that the signal goes from max to min values
     is_data_from_max_to_min = True
 
-    def __init__(self, dict_profiles={}, ignore_first_dataset=True, algorithm_selected='sliding_average'):
+    def __init__(self, list_data=None, ignore_first_dataset=True, algorithm_selected='sliding_average'):
 
-        self.dict_profiles = dict_profiles
+        self.list_data = list_data
         self.ignore_first_dataset = ignore_first_dataset
 
-        if algorithm_selected == 'sliding_average':
+        if algorithm_selected == ListAlgorithm.sliding_average:
             self.calculate_using_sliding_average()
-        elif algorithm_selected == 'error_function':
+        elif algorithm_selected == ListAlgorithm.error_function:
             self.calculate_using_erf()
-        elif algorithm_selected == 'change_point':
+        elif algorithm_selected == ListAlgorithm.change_point:
             self.calculate_change_point()
         else:
             raise ValueError("algorithm not implemented yet!")
@@ -165,9 +175,10 @@ class Algorithms:
         return (popt, pcov)
 
     def calculate_using_sliding_average(self):
-        _dict_profiles = self.dict_profiles
-        nbr_pixels = len(_dict_profiles['1']['data'])
-        nbr_files = len(_dict_profiles.keys())
+
+        list_data = self.list_data
+        nbr_pixels = len(list_data[0])
+        nbr_files = len(list_data)
 
         if self.ignore_first_dataset:
             _start_file = 1
@@ -176,12 +187,14 @@ class Algorithms:
             _start_file = 0
             _end_file = nbr_files
 
-        water_intake_deltatime = []
-        water_intake_peak = []
+        widget_slider = widgets.IntProgress(value=_start_file,
+                                            min=0,
+                                            max=nbr_files)
+        display(widget_slider)
+
+        peak_sliding_average_data = []
         for _index_file in np.arange(_start_file, _end_file):
-            _profile = _dict_profiles[str(_index_file)]
-            _profile_data = _profile['data']
-            _delta_time = _profile['delta_time']
+            _profile_data = list_data[_index_file]
             delta_array = []
             _o_range = MeanRangeCalculation(data=_profile_data)
             for _pixel in np.arange(0, nbr_pixels-5):
@@ -189,9 +202,19 @@ class Algorithms:
                 _o_range.calculate_delta_mean_square()
                 delta_array.append(_o_range.delta_square)
 
-            peak_value = delta_array.index(max(delta_array[0: nbr_pixels -5]))
-            water_intake_peak.append(peak_value)
-            water_intake_deltatime.append(_delta_time)
+            peak_value = delta_array.index(max(delta_array[0: nbr_pixels - 5]))
+            peak_sliding_average_data.append(peak_value)
+            widget_slider.value = _index_file+1
 
-        self.water_intake_peak_sliding_average = water_intake_peak
-        self.water_intake_deltatime = water_intake_deltatime
+        self.peak_sliding_average_data = peak_sliding_average_data
+        widget_slider.close()
+
+    def get_peak_value_array(self, algorithm_selected='sliding_average'):
+        if algorithm_selected == ListAlgorithm.sliding_average:
+            return self.peak_sliding_average_data
+        elif algorithm_selected == ListAlgorithm.change_point:
+            return None
+        elif algorithm_selected == ListAlgorithm.error_function:
+            return None
+        else:
+            raise ValueError("algorithm not implemented yet!")
