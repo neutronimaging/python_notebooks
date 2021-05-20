@@ -52,14 +52,31 @@ class WaveFrontDynamics:
 
     def display_data(self):
 
-        def plot_data(index):
-            plt.figure(figsize=(10, 10))
+        def bin_data(data, bin_value):
+
+            numpy_data = np.array(data).flatten()
+            if bin_value == 1:
+                return numpy_data
+
+            nbr_bin = np.int(len(numpy_data) / bin_value)
+            data_to_rebinned = numpy_data[0: nbr_bin*bin_value]
+            binned_array_step1 = np.reshape(data_to_rebinned, [nbr_bin, bin_value])
+            binned_array = np.mean(binned_array_step1, axis=1)
+            return binned_array
+
+        def plot_data(index, bin_value):
+            plt.figure(figsize=(5, 5))
             plt.title(os.path.basename(self.list_of_original_image_files[index]))
-            plt.plot(self.list_of_data[index])
+
+            _data = bin_data(self.list_of_data[index], bin_value)
+            plt.plot(_data)
             plt.xlabel("Pixel")
             plt.ylabel("Mean Counts")
 
         self.display = interact(plot_data,
                                 index=widgets.IntSlider(min=0,
                                                         max=len(self.list_of_ascii_files)-1,
-                                                        continuous_update=False))
+                                                        continuous_update=False),
+                                bin_value=widgets.IntSlider(min=1,
+                                                            max=30,
+                                                            continuous_update=False))
