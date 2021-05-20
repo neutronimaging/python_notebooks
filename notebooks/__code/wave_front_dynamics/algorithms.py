@@ -5,6 +5,7 @@ from changepy import pelt
 from changepy.costs import normal_var
 from ipywidgets import widgets
 from IPython.core.display import display
+from tqdm import tqdm
 
 
 class ListAlgorithm:
@@ -187,13 +188,13 @@ class Algorithms:
             _start_file = 0
             _end_file = nbr_files
 
-        widget_slider = widgets.IntProgress(value=_start_file,
-                                            min=0,
-                                            max=nbr_files)
-        display(widget_slider)
+        # widget_slider = widgets.IntProgress(value=_start_file,
+        #                                     min=0,
+        #                                     max=nbr_files)
+        # display(widget_slider)
 
         peak_sliding_average_data = []
-        for _index_file in np.arange(_start_file, _end_file):
+        for _index_file in tqdm(np.arange(_start_file, _end_file)):
             _profile_data = list_data[_index_file]
             delta_array = []
             _o_range = MeanRangeCalculation(data=_profile_data)
@@ -204,10 +205,10 @@ class Algorithms:
 
             peak_value = delta_array.index(max(delta_array[0: nbr_pixels - 5]))
             peak_sliding_average_data.append(peak_value)
-            widget_slider.value = _index_file+1
+            # widget_slider.value = _index_file+1
 
         self.peak_sliding_average_data = peak_sliding_average_data
-        widget_slider.close()
+        # widget_slider.close()
 
     def get_peak_value_array(self, algorithm_selected='sliding_average'):
         if algorithm_selected == ListAlgorithm.sliding_average:

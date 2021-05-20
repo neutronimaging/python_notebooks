@@ -17,6 +17,9 @@ class WaveFrontDynamics:
     list_of_original_image_files = None
     list_of_data = None
     list_of_data_prepared = None
+    peak_value_arrays = {ListAlgorithm.sliding_average: None,
+                         ListAlgorithm.change_point: None,
+                         ListAlgorithm.error_function: None}
 
     def __init__(self, working_dir="~/"):
         self.working_dir = working_dir
@@ -128,17 +131,28 @@ class WaveFrontDynamics:
                             ignore_first_dataset=False,
                             algorithm_selected=algorithm_selected)
         peak_value_array = o_algo.get_peak_value_array(algorithm_selected=algorithm_selected)
+        self.peak_value_arrays[algorithm_selected] = peak_value_array
 
         def plot_data(index):
             plt.figure(figsize=(5, 5))
             plt.title(os.path.basename(self.list_of_original_image_files[index]))
-
-            print(f"peak_value_array: {peak_value_array[index]}")
+            peak_value = peak_value_array[index]
+            plt.axvline(peak_value, color='red')
             plt.plot(list_of_data_prepared[index])
             plt.xlabel("Pixel")
             plt.ylabel("Mean Counts")
 
-        self.display = interact(plot_data,
-                                index=widgets.IntSlider(min=0,
-                                                        max=len(self.list_of_ascii_files) - 1,
-                                                        continuous_update=False))
+        display = interact(plot_data,
+                           index=widgets.IntSlider(min=0,
+                                                   max=len(self.list_of_ascii_files) - 1,
+                                                   continuous_update=False))
+
+    def wave_front_vs_file_index(self):
+        algorithm_selected = self.get_algorithm_selected()
+        peak_value_array = self.peak_value_arrays[algorithm_selected]
+
+        plt.figure(figsize=(5, 5))
+        plt.title(f"Wave front for algorithm {algorithm_selected}")
+        plt.plot(peak_value_array, '*')
+        plt.xlabel("File index")
+        plt.ylabel("Wave front position (pixel)")
