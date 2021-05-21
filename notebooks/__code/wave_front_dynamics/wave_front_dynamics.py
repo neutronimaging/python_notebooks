@@ -13,6 +13,7 @@ from __code.ipywe import fileselector
 from __code._utilities.file import retrieve_metadata_value_from_ascii_file
 from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
 from __code.wave_front_dynamics.initialization import Initialization
+from __code.wave_front_dynamics.event_handler import EventHandler
 
 
 class WaveFrontDynamics:
@@ -70,7 +71,6 @@ class WaveFrontDynamicsUI(QMainWindow):
     # matplotlib
     prepare_data_plot = None
 
-
     def __init__(self, parent=None, working_dir="./", wave_front_dynamics=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Launched UI! '
@@ -78,6 +78,9 @@ class WaveFrontDynamicsUI(QMainWindow):
 
         self.working_dir = working_dir
         self.wave_front_dynamics = wave_front_dynamics
+
+        self.list_of_data = wave_front_dynamics.list_of_data
+        self.nbr_files = len(self.list_of_data)
 
         super(QMainWindow, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -89,6 +92,21 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_init = Initialization(parent=self)
         o_init.widgets()
         o_init.matplotlib()
+
+        self.prepare_data_file_index_pressed()
+
+    # event handler
+    def prepare_data_file_index_pressed(self):
+        o_event = EventHandler(parent=self)
+        o_event.prepare_data_file_index_slider_changed(slider_value=None)
+
+    def prepare_data_file_index_moved(self, value):
+        o_event = EventHandler(parent=self)
+        o_event.prepare_data_file_index_slider_changed(slider_value=value)
+
+    def update_prepare_data_plot(self):
+        o_event = EventHandler(parent=self)
+        o_event.update_prepare_data_plot()
 
     def bin_data(self, data=None, bin_value=1, bin_type='Mean'):
         numpy_data = np.array(data).flatten()

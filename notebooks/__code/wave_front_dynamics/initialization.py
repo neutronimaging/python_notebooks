@@ -10,7 +10,8 @@ from __code._utilities.parent import Parent
 class Initialization(Parent):
 
     def widgets(self):
-        pass
+        self.parent.ui.file_index_horizontalSlider.setMaximum(self.parent.nbr_files)
+        self.parent.ui.file_index_value_label.setText(str(0))
 
     def matplotlib(self):
 

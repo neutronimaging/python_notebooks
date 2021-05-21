@@ -149,6 +149,9 @@
             <property name="text">
              <string>Sliding Average</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
@@ -260,5 +263,42 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>file_index_horizontalSlider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_file_index_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>884</x>
+     <y>659</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1091</x>
+     <y>769</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_index_horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_file_index_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>947</x>
+     <y>658</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1088</x>
+     <y>675</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>prepare_data_file_index_pressed()</slot>
+  <slot>prepare_data_file_index_moved()</slot>
+ </slots>
 </ui>
