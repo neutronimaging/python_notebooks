@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QVBoxLayout
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.parent import Parent
+from __code.wave_front_dynamics import MAX_BIN_SIZE
 
 
 class Initialization(Parent):
@@ -12,6 +13,9 @@ class Initialization(Parent):
     def widgets(self):
         self.parent.ui.file_index_horizontalSlider.setMaximum(self.parent.nbr_files)
         self.parent.ui.file_index_value_label.setText(str(0))
+
+        self.parent.ui.bin_value_horizontalSlider.setMinimum(1)
+        self.parent.ui.bin_value_horizontalSlider.setMaximum(MAX_BIN_SIZE)
 
     def matplotlib(self):
 

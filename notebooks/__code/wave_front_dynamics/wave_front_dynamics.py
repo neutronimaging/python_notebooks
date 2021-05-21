@@ -94,15 +94,28 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_init.matplotlib()
 
         self.prepare_data_file_index_pressed()
+        self.prepare_data_bin_size_pressed()
 
     # event handler
     def prepare_data_file_index_pressed(self):
         o_event = EventHandler(parent=self)
         o_event.prepare_data_file_index_slider_changed(slider_value=None)
+        o_event.update_prepare_data_plot()
 
     def prepare_data_file_index_moved(self, value):
         o_event = EventHandler(parent=self)
         o_event.prepare_data_file_index_slider_changed(slider_value=value)
+        o_event.update_prepare_data_plot()
+
+    def prepare_data_bin_size_pressed(self):
+        o_event = EventHandler(parent=self)
+        o_event.prepare_data_bin_size_changed(slider_value=None)
+        o_event.update_prepare_data_plot()
+
+    def prepare_data_bin_size_moved(self, value):
+        o_event = EventHandler(parent=self)
+        o_event.prepare_data_bin_size_changed(slider_value=value)
+        o_event.update_prepare_data_plot()
 
     def update_prepare_data_plot(self):
         o_event = EventHandler(parent=self)

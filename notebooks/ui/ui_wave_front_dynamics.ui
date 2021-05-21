@@ -94,14 +94,14 @@
               </widget>
              </item>
              <item>
-              <widget class="QRadioButton" name="radioButton">
+              <widget class="QRadioButton" name="prepare_data_bin_type_mean">
                <property name="text">
                 <string>Mean</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QRadioButton" name="radioButton_2">
+              <widget class="QRadioButton" name="prepare_data_bin_type_median">
                <property name="text">
                 <string>Median</string>
                </property>
@@ -296,9 +296,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>bin_value_horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_bin_size_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>718</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>724</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bin_value_horizontalSlider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_bin_size_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>179</x>
+     <y>717</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>691</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>prepare_data_file_index_pressed()</slot>
   <slot>prepare_data_file_index_moved()</slot>
+  <slot>prepare_data_bin_size_pressed()</slot>
+  <slot>prepare_data_bin_size_moved()</slot>
  </slots>
 </ui>

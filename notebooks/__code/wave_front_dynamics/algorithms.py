@@ -219,3 +219,19 @@ class Algorithms:
             return None
         else:
             raise ValueError("algorithm not implemented yet!")
+
+
+    @staticmethod
+    def bin_data(data=None, bin_size=1, bin_type='median'):
+        numpy_data = np.array(data).flatten()
+        if bin_size == 1:
+            return numpy_data
+
+        nbr_bin = np.int(len(numpy_data) / bin_size)
+        data_to_rebinned = numpy_data[0: nbr_bin * bin_size]
+        binned_array_step1 = np.reshape(data_to_rebinned, [nbr_bin, bin_size])
+        if bin_type == "Mean":
+            binned_array = np.mean(binned_array_step1, axis=1)
+        else:
+            binned_array = np.median(binned_array_step1, axis=1)
+        return binned_array
