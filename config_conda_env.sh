@@ -38,6 +38,8 @@ pip install \
     inflect \
     ImagingReso \
     ipywidgets \
+    changepy \
+    tqdm \
     $PYONCAT_LOCATION
 
 # build Jupyter lab
