@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -145,7 +145,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_3">
+           <widget class="QRadioButton" name="edge_calculation_sliding_average">
             <property name="text">
              <string>Sliding Average</string>
             </property>
@@ -155,14 +155,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_4">
+           <widget class="QRadioButton" name="edge_calculation_error_function">
             <property name="text">
              <string>Error Function</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_5">
+           <widget class="QRadioButton" name="edge_calculation_change_point">
             <property name="text">
              <string>Change Point</string>
             </property>
@@ -184,7 +184,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="edge_calculation_calculate_button">
           <property name="text">
            <string>Calculate</string>
           </property>
@@ -222,23 +222,32 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
-           <widget class="QLabel" name="label_4">
+           <widget class="QLabel" name="edge_calculation_file_index_label">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>File index</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="horizontalSlider">
+           <widget class="QSlider" name="edge_calculation_file_index_slider">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_5">
+           <widget class="QLabel" name="edge_calculation_file_index_value">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="text">
-             <string>N/A</string>
+             <string>0</string>
             </property>
            </widget>
           </item>
@@ -360,6 +369,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>edge_calculation_calculate_button</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edge_calculation_calculate_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>523</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>146</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>edge_calculation_file_index_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edge_calculation_file_index_slider_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>661</x>
+     <y>767</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1089</x>
+     <y>798</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>edge_calculation_file_index_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edge_calculation_file_index_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>586</x>
+     <y>768</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1090</x>
+     <y>764</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>prepare_data_file_index_pressed()</slot>
@@ -367,5 +424,8 @@
   <slot>prepare_data_bin_size_pressed()</slot>
   <slot>prepare_data_bin_size_moved()</slot>
   <slot>prepare_data_bin_type_changed()</slot>
+  <slot>edge_calculation_calculate_pressed()</slot>
+  <slot>edge_calculation_file_index_slider_pressed()</slot>
+  <slot>edge_calculation_file_index_slider_moved()</slot>
  </slots>
 </ui>

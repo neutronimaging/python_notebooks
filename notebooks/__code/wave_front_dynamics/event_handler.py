@@ -1,9 +1,11 @@
 import numpy as np
 import copy
+import time
+from qtpy import QtGui
 
 from __code._utilities.parent import Parent
 from __code.wave_front_dynamics.get import Get
-from __code.wave_front_dynamics.algorithms import Algorithms
+from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
 
 
 class EventHandler(Parent):
@@ -32,3 +34,28 @@ class EventHandler(Parent):
             slider_value = self.parent.ui.bin_value_horizontalSlider.value()
 
         self.parent.ui.bin_value_label.setText(str(slider_value))
+
+    def calculate_edge_position(self):
+        list_of_data = self.parent.list_of_data
+        o_get = Get(parent=self.parent)
+        edge_calculation_algorithm = o_get.edge_calculation_algorithms()
+
+        self.parent.event_progress.setMaximum(len(list_of_data))
+        self.parent.event_progress.setValue(0)
+        self.parent.event_progress.setVisible(True)
+        QtGui.QGuiApplication.processEvents()
+
+        for _data_index, _data in enumerate(list_of_data):
+
+            time.sleep(1)
+            self.parent.event_progress.setValue(_data_index+1)
+            QtGui.QGuiApplication.processEvents()
+
+        self.parent.event_progress.setVisible(False)
+        QtGui.QGuiApplication.processEvents()
+
+    def edge_calculation_file_index_slider_changed(self, slider_value=None):
+        if slider_value is None:
+            slider_value = self.parent.ui.edge_calculation_file_index_slider.value()
+
+        self.parent.ui.edge_calculation_file_index_value.setText(str(slider_value))
