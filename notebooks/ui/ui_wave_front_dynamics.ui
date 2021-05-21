@@ -198,7 +198,7 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QWidget" name="widget" native="true">
+          <widget class="QWidget" name="calculated_edges_widget" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -206,7 +206,7 @@
             </sizepolicy>
            </property>
           </widget>
-          <widget class="QWidget" name="widget_2" native="true">
+          <widget class="QWidget" name="recap_edges_widget" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>

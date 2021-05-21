@@ -12,6 +12,7 @@ from __code import load_ui
 from __code.ipywe import fileselector
 from __code._utilities.file import retrieve_metadata_value_from_ascii_file
 from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
+from __code.wave_front_dynamics.initialization import Initialization
 
 
 class WaveFrontDynamics:
@@ -66,6 +67,10 @@ class WaveFrontDynamicsUI(QMainWindow):
                          ListAlgorithm.change_point   : None,
                          ListAlgorithm.error_function : None}
 
+    # matplotlib
+    prepare_data_plot = None
+
+
     def __init__(self, parent=None, working_dir="./", wave_front_dynamics=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Launched UI! '
@@ -80,6 +85,10 @@ class WaveFrontDynamicsUI(QMainWindow):
                                                  'ui_wave_front_dynamics.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Define center and sector of profile")
+
+        o_init = Initialization(parent=self)
+        o_init.widgets()
+        o_init.matplotlib()
 
     def bin_data(self, data=None, bin_value=1, bin_type='Mean'):
         numpy_data = np.array(data).flatten()
