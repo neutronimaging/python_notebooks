@@ -328,11 +328,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>prepare_data_bin_type_mean</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_bin_type_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>123</x>
+     <y>759</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>771</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>prepare_data_bin_type_median</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_bin_type_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>755</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>800</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>prepare_data_file_index_pressed()</slot>
   <slot>prepare_data_file_index_moved()</slot>
   <slot>prepare_data_bin_size_pressed()</slot>
   <slot>prepare_data_bin_size_moved()</slot>
+  <slot>prepare_data_bin_type_changed()</slot>
  </slots>
 </ui>

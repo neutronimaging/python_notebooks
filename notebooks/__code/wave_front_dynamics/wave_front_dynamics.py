@@ -117,6 +117,10 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_event.prepare_data_bin_size_changed(slider_value=value)
         o_event.update_prepare_data_plot()
 
+    def prepare_data_bin_type_changed(self):
+        o_event = EventHandler(parent=self)
+        o_event.update_prepare_data_plot()
+
     def update_prepare_data_plot(self):
         o_event = EventHandler(parent=self)
         o_event.update_prepare_data_plot()
