@@ -1,3 +1,4 @@
+from IPython.core.display import HTML
 import pandas as pd
 import numpy as np
 from ipywidgets.widgets import interact
@@ -5,7 +6,9 @@ from ipywidgets import widgets
 from IPython.core.display import display
 import matplotlib.pyplot as plt
 import os
+from qtpy.QtWidgets import QMainWindow
 
+from __code import load_ui
 from __code.ipywe import fileselector
 from __code._utilities.file import retrieve_metadata_value_from_ascii_file
 from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
@@ -16,10 +19,6 @@ class WaveFrontDynamics:
     list_of_ascii_files = None
     list_of_original_image_files = None
     list_of_data = None
-    list_of_data_prepared = None
-    peak_value_arrays = {ListAlgorithm.sliding_average: None,
-                         ListAlgorithm.change_point: None,
-                         ListAlgorithm.error_function: None}
 
     def __init__(self, working_dir="~/"):
         self.working_dir = working_dir
@@ -55,6 +54,32 @@ class WaveFrontDynamics:
 
         self.list_of_data = list_of_data
         self.list_of_original_image_files = list_of_original_image_files
+
+
+class WaveFrontDynamicsUI(QMainWindow):
+
+    list_of_ascii_files = None
+    list_of_original_image_files = None
+    list_of_data = None
+    list_of_data_prepared = None
+    peak_value_arrays = {ListAlgorithm.sliding_average: None,
+                         ListAlgorithm.change_point   : None,
+                         ListAlgorithm.error_function : None}
+
+    def __init__(self, parent=None, working_dir="./", wave_front_dynamics=None):
+
+        display(HTML('<span style="font-size: 20px; color:blue">Launched UI! '
+                     '(maybe hidden behind this browser!)</span>'))
+
+        self.working_dir = working_dir
+        self.wave_front_dynamics = wave_front_dynamics
+
+        super(QMainWindow, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_wave_front_dynamics.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
+        self.setWindowTitle("Define center and sector of profile")
 
     def bin_data(self, data=None, bin_value=1, bin_type='Mean'):
         numpy_data = np.array(data).flatten()
