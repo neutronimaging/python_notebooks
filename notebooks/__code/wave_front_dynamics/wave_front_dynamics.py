@@ -137,10 +137,16 @@ class WaveFrontDynamicsUI(QMainWindow):
     def edge_calculation_file_index_slider_pressed(self):
         o_event = EventHandler(parent=self)
         o_event.edge_calculation_file_index_slider_changed()
+        o_display = Display(parent=self)
+        o_display.display_current_selected_profile_and_edge_position()
+        o_display.display_all_edge_positions()
 
     def edge_calculation_file_index_slider_moved(self, value):
         o_event = EventHandler(parent=self)
-        o_event.edge_calculation_file_index_slider_changed(slider_value=value)
+        o_event.edge_calculation_file_index_slider_changed(value)
+        o_display = Display(parent=self)
+        o_display.display_current_selected_profile_and_edge_position()
+        o_display.display_all_edge_positions()
 
        # def prepare_data(self):
     #     bin_value = self.display.widget.children[1].value

@@ -24,10 +24,12 @@ class Display(Parent):
     def display_all_edge_positions(self):
         o_get = Get(parent=self.parent)
         edge_calculation_algorithm = o_get.edge_calculation_algorithms()
-        park_value_array = self.parent.peak_value_arrays[edge_calculation_algorithm]
+        peak_value_array = self.parent.peak_value_arrays[edge_calculation_algorithm]
+        file_index_selected = o_get.edge_calculation_file_index_selected()
 
         self.parent.ui.recap_edges_plot.axes.clear()
-        self.parent.ui.recap_edges_plot.axes.plot(park_value_array, '*')
+        self.parent.ui.recap_edges_plot.axes.plot(peak_value_array, '*')
+        self.parent.ui.recap_edges_plot.axes.plot(file_index_selected, peak_value_array[file_index_selected], 'r*')
         self.parent.ui.recap_edges_plot.axes.set_xlabel("File index")
         self.parent.ui.recap_edges_plot.axes.set_ylabel("Wave front position (relative pixel position)")
         self.parent.ui.recap_edges_plot.draw()

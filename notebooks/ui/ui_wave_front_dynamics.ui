@@ -231,7 +231,7 @@
           <item>
            <widget class="QLabel" name="edge_calculation_file_index_label">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>File index:</string>
@@ -298,7 +298,7 @@
   </connection>
   <connection>
    <sender>file_index_horizontalSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>prepare_data_file_index_moved()</slot>
    <hints>
@@ -314,7 +314,7 @@
   </connection>
   <connection>
    <sender>bin_value_horizontalSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>prepare_data_bin_size_moved()</slot>
    <hints>
@@ -410,7 +410,7 @@
   </connection>
   <connection>
    <sender>edge_calculation_file_index_slider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>edge_calculation_file_index_slider_moved()</slot>
    <hints>
