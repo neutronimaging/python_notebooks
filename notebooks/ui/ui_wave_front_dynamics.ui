@@ -424,6 +424,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>edge_calculation_sliding_average</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edge_calculation_algorithms_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>169</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>94</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>edge_calculation_error_function</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edge_calculation_algorithms_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>299</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>61</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>edge_calculation_change_point</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edge_calculation_algorithms_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>390</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>prepare_data_file_index_pressed()</slot>
@@ -434,5 +482,6 @@
   <slot>edge_calculation_calculate_pressed()</slot>
   <slot>edge_calculation_file_index_slider_pressed()</slot>
   <slot>edge_calculation_file_index_slider_moved()</slot>
+  <slot>edge_calculation_algorithms_changed()</slot>
  </slots>
 </ui>

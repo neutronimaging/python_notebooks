@@ -168,6 +168,10 @@ class Algorithms:
 
             error = np.sqrt(np.diag(pcov))
             _peak = np.int(popt[0] + (popt[1]/np.sqrt(2)))
+
+            if not is_data_from_max_to_min:
+                _peak = len(ydata) - _peak
+
             peak_error_function_data.append(_peak)
 
             for _i, _err in enumerate(error):

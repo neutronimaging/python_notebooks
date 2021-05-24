@@ -144,3 +144,8 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_display = Display(parent=self)
         o_display.display_current_selected_profile_and_edge_position()
         o_display.display_all_edge_positions()
+
+    def edge_calculation_algorithms_changed(self):
+        o_display = Display(parent=self)
+        o_display.display_current_selected_profile_and_edge_position()
+        o_display.display_all_edge_positions()
