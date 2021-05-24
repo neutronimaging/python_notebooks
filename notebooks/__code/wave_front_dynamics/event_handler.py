@@ -23,6 +23,28 @@ class EventHandler(Parent):
         self.parent.ui.prepare_data_plot.axes.plot(new_data)
         self.parent.ui.prepare_data_plot.draw()
 
+    def prepare_all_data(self):
+        list_of_data = self.parent.list_of_data
+        o_get = Get(parent=self.parent)
+        bin_size = o_get.prepare_data_bin_size()
+        bin_type = o_get.prepare_data_bin_type()
+
+        self.parent.event_progress.setMaximum(len(list_of_data))
+        self.parent.event_progress.setValue(0)
+        self.parent.event_progress.setVisible(True)
+        QtGui.QGuiApplication.processEvents()
+
+        list_of_data_prepared = []
+        for _index, _data in enumerate(list_of_data):
+            prepared_data = Algorithms.bin_data(data=_data, bin_size=bin_size, bin_type=bin_type)
+            list_of_data_prepared.append(prepared_data)
+            self.parent.event_progress.setValue(_index + 1)
+            QtGui.QGuiApplication.processEvents()
+
+        self.parent.list_of_data_prepared = list_of_data_prepared
+        self.parent.event_progress.setVisible(False)
+        QtGui.QGuiApplication.processEvents()
+
     def prepare_data_file_index_slider_changed(self, slider_value=None):
         if slider_value is None:
             slider_value = self.parent.ui.file_index_horizontalSlider.value()
@@ -36,23 +58,21 @@ class EventHandler(Parent):
         self.parent.ui.bin_value_label.setText(str(slider_value))
 
     def calculate_edge_position(self):
-        list_of_data = self.parent.list_of_data
         o_get = Get(parent=self.parent)
         edge_calculation_algorithm = o_get.edge_calculation_algorithms()
+        list_of_data_prepared = self.parent.list_of_data_prepared
 
-        self.parent.event_progress.setMaximum(len(list_of_data))
+        self.parent.event_progress.setMaximum(len(list_of_data_prepared))
         self.parent.event_progress.setValue(0)
         self.parent.event_progress.setVisible(True)
         QtGui.QGuiApplication.processEvents()
 
-        for _data_index, _data in enumerate(list_of_data):
-
-            time.sleep(1)
-            self.parent.event_progress.setValue(_data_index+1)
-            QtGui.QGuiApplication.processEvents()
-
-        self.parent.event_progress.setVisible(False)
-        QtGui.QGuiApplication.processEvents()
+        o_algo = Algorithms(list_data=list_of_data_prepared,
+                            ignore_first_dataset=False,
+                            algorithm_selected=edge_calculation_algorithm,
+                            progress_bar_ui=self.parent.event_progress)
+        self.parent.peak_value_arrays[edge_calculation_algorithm] = \
+            o_algo.get_peak_value_array(algorithm_selected=edge_calculation_algorithm)
 
     def edge_calculation_file_index_slider_changed(self, slider_value=None):
         if slider_value is None:

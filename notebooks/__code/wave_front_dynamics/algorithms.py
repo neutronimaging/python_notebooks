@@ -5,7 +5,6 @@ from changepy import pelt
 from changepy.costs import normal_var
 from ipywidgets import widgets
 from IPython.core.display import display
-from tqdm import tqdm
 import copy
 
 
@@ -48,13 +47,19 @@ class Algorithms:
 
     dict_error_function_parameters = {}
 
+    progress_bar_ui = None  # progress bar ui
+
     # fitting by error function requires that the signal goes from max to min values
     is_data_from_max_to_min = True
 
-    def __init__(self, list_data=None, ignore_first_dataset=True, algorithm_selected='sliding_average'):
+    def __init__(self, list_data=None,
+                 ignore_first_dataset=True,
+                 algorithm_selected='sliding_average',
+                 progress_bar_ui=None):
 
         self.list_data = list_data
         self.ignore_first_dataset = ignore_first_dataset
+        self.progress_bar_ui = progress_bar_ui
 
         if algorithm_selected == ListAlgorithm.sliding_average:
             self.calculate_using_sliding_average()
@@ -177,7 +182,6 @@ class Algorithms:
         return (popt, pcov)
 
     def calculate_using_sliding_average(self):
-
         list_data = self.list_data
         nbr_pixels = len(list_data[0])
         nbr_files = len(list_data)
@@ -189,13 +193,12 @@ class Algorithms:
             _start_file = 0
             _end_file = nbr_files
 
-        # widget_slider = widgets.IntProgress(value=_start_file,
-        #                                     min=0,
-        #                                     max=nbr_files)
-        # display(widget_slider)
+        if self.progress_bar_ui:
+            self.progress_bar_ui.setMaximum(len(list_data))
+            self.progress_bar_ui.setVisible(True)
 
         peak_sliding_average_data = []
-        for _index_file in tqdm(np.arange(_start_file, _end_file)):
+        for _index_file in np.arange(_start_file, _end_file):
             _profile_data = list_data[_index_file]
             delta_array = []
             _o_range = MeanRangeCalculation(data=_profile_data)
@@ -206,10 +209,13 @@ class Algorithms:
 
             peak_value = delta_array.index(max(delta_array[0: nbr_pixels - 5]))
             peak_sliding_average_data.append(peak_value)
-            # widget_slider.value = _index_file+1
+
+            if self.progress_bar_ui:
+                self.progress_bar_ui.setValue(_index_file+1)
 
         self.peak_sliding_average_data = peak_sliding_average_data
-        # widget_slider.close()
+        if self.progress_bar_ui:
+            self.progress_bar_ui.setVisible(False)
 
     def get_peak_value_array(self, algorithm_selected='sliding_average'):
         if algorithm_selected == ListAlgorithm.sliding_average:
@@ -220,7 +226,6 @@ class Algorithms:
             return None
         else:
             raise ValueError("algorithm not implemented yet!")
-
 
     @staticmethod
     def bin_data(data=None, bin_size=1, bin_type='median'):
@@ -239,5 +244,3 @@ class Algorithms:
             raise NotImplementedError("bin data type not supported!")
 
         return binned_array
-
-
