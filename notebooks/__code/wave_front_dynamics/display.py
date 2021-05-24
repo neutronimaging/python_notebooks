@@ -21,10 +21,6 @@ class Display(Parent):
         edge_position = peak_value_array[file_index_selected]
         data_to_plot = list_of_data_prepared[file_index_selected]
 
-        # if self.parent.data_have_been_reversed_in_calculation and \
-        #         edge_calculation_algorithm==ListAlgorithm.error_function:
-        #     data_to_plot = data_to_plot[::-1]
-
         self.parent.ui.calculated_edges_plot.axes.clear()
         self.parent.ui.calculated_edges_plot.axes.plot(data_to_plot, '*')
         self.parent.ui.calculated_edges_plot.axes.axvline(edge_position, color='red')
