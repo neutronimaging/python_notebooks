@@ -3,9 +3,7 @@ from scipy.special import erf
 from scipy.optimize import curve_fit
 from changepy import pelt
 from changepy.costs import normal_var
-from ipywidgets import widgets
-from IPython.core.display import display
-import copy
+from qtpy import QtGui
 
 
 class ListAlgorithm:
@@ -50,13 +48,14 @@ class Algorithms:
     peak_error_function_data = None
     peak_error_function_data_error = None
 
+    peak_change_point_data = None
+
     water_intake_peak_erf = []
     water_intake_deltatime = []
 
     dict_error_function_parameters = {}
 
     progress_bar_ui = None  # progress bar ui
-
 
     def __init__(self, list_data=None,
                  ignore_first_dataset=True,
@@ -96,8 +95,8 @@ class Algorithms:
             return False
 
     def calculate_change_point(self):
-        _dict_profiles = self.dict_profiles
-        nbr_files = len(_dict_profiles.keys())
+        list_data = self.list_data
+        nbr_files = len(list_data)
 
         if self.ignore_first_dataset:
             _start_file = 1
@@ -106,13 +105,15 @@ class Algorithms:
             _start_file = 0
             _end_file = nbr_files
 
+        if self.progress_bar_ui:
+            self.progress_bar_ui.setMaximum(len(list_data))
+            self.progress_bar_ui.setVisible(True)
+            QtGui.QGuiApplication.processEvents()
+
         water_intake_peaks = []
         water_intake_deltatime = []
         for _index_file in np.arange(_start_file, _end_file):
-            _profile = _dict_profiles[str(_index_file)]
-            ydata = _profile['data']
-            xdata = _profile['delta_time']
-
+            ydata = list_data[_index_file]
             var = np.mean(ydata)
             result = pelt(normal_var(ydata, var), len(ydata))
             if len(result) > 2:
@@ -120,10 +121,17 @@ class Algorithms:
             else:
                 peak = np.mean(result[1:])
             water_intake_peaks.append(peak)
-            water_intake_deltatime.append(xdata)
 
-        self.water_intake_peaks_change_point = water_intake_peaks
-        self.water_intake_deltatime = water_intake_deltatime
+            if self.progress_bar_ui:
+                self.progress_bar_ui.setValue(_index_file+1)
+                QtGui.QGuiApplication.processEvents()
+
+        self.peak_change_point_data = water_intake_peaks
+        # self.water_intake_deltatime = water_intake_deltatime
+
+        if self.progress_bar_ui:
+            self.progress_bar_ui.setVisible(False)
+            QtGui.QGuiApplication.processEvents()
 
     def calculate_using_erf(self):
         list_data = self.list_data
@@ -139,6 +147,7 @@ class Algorithms:
         if self.progress_bar_ui:
             self.progress_bar_ui.setMaximum(len(list_data))
             self.progress_bar_ui.setVisible(True)
+            QtGui.QGuiApplication.processEvents()
 
         # dict_error_function_parameters = dict()
         # water_intake_peaks_erf = []
@@ -189,6 +198,7 @@ class Algorithms:
 
             if self.progress_bar_ui:
                 self.progress_bar_ui.setValue(_index_file+1)
+                QtGui.QGuiApplication.processEvents()
 
         self.peak_error_function_data = peak_error_function_data
         self.dict_error_function_parameters = dict_error_function_parameters
@@ -197,6 +207,7 @@ class Algorithms:
 
         if self.progress_bar_ui:
             self.progress_bar_ui.setVisible(False)
+            QtGui.QGuiApplication.processEvents()
 
     def fitting_algorithm(self, ydata):
         fitting_xdata = np.arange(len(ydata))
@@ -218,6 +229,7 @@ class Algorithms:
         if self.progress_bar_ui:
             self.progress_bar_ui.setMaximum(len(list_data))
             self.progress_bar_ui.setVisible(True)
+            QtGui.QGuiApplication.processEvents()
 
         peak_sliding_average_data = []
         for _index_file in np.arange(_start_file, _end_file):
@@ -234,16 +246,18 @@ class Algorithms:
 
             if self.progress_bar_ui:
                 self.progress_bar_ui.setValue(_index_file+1)
+                QtGui.QGuiApplication.processEvents()
 
         self.peak_sliding_average_data = peak_sliding_average_data
         if self.progress_bar_ui:
             self.progress_bar_ui.setVisible(False)
+            QtGui.QGuiApplication.processEvents()
 
     def get_peak_value_array(self, algorithm_selected='sliding_average'):
         if algorithm_selected == ListAlgorithm.sliding_average:
             return self.peak_sliding_average_data
         elif algorithm_selected == ListAlgorithm.change_point:
-            return None
+            return self.peak_change_point_data
         elif algorithm_selected == ListAlgorithm.error_function:
             return self.peak_error_function_data
         else:

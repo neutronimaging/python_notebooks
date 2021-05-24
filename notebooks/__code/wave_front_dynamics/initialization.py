@@ -16,7 +16,7 @@ class Initialization(Parent):
         self.statusbar()
 
     def widgets(self):
-        self.parent.ui.file_index_horizontalSlider.setMaximum(self.parent.nbr_files)
+        self.parent.ui.file_index_horizontalSlider.setMaximum(self.parent.nbr_files-1)
         self.parent.ui.file_index_value_label.setText(str(0))
 
         self.parent.ui.bin_value_horizontalSlider.setMinimum(1)
@@ -25,7 +25,7 @@ class Initialization(Parent):
         self.parent.ui.recap_edges_widget.setEnabled(False)
         self.parent.ui.calculated_edges_widget.setEnabled(False)
 
-        self.parent.ui.edge_calculation_file_index_slider.setMaximum(self.parent.nbr_files)
+        self.parent.ui.edge_calculation_file_index_slider.setMaximum(self.parent.nbr_files-1)
 
     def matplotlib(self):
 
