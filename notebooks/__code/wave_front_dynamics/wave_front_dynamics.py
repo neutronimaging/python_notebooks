@@ -131,7 +131,8 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_event.prepare_all_data()
         o_event.calculate_edge_position()
         o_display = Display(parent=self)
-        o_display.display_edge_position()
+        o_display.display_current_selected_profile_and_edge_position()
+        o_display.display_all_edge_positions()
 
     def edge_calculation_file_index_slider_pressed(self):
         o_event = EventHandler(parent=self)

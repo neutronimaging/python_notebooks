@@ -27,3 +27,6 @@ class Get(Parent):
             return ListAlgorithm.change_point
         else:
             raise NotImplementedError("edge calculation algorithms not implemented yet!")
+
+    def edge_calculation_file_index_selected(self):
+        return self.parent.ui.edge_calculation_file_index_slider.value()
