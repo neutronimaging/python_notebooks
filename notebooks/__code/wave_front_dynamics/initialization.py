@@ -11,8 +11,8 @@ from __code.wave_front_dynamics import MAX_BIN_SIZE
 class Initialization(Parent):
 
     def all(self):
-        self.widgets()
         self.matplotlib()
+        self.widgets()
         self.statusbar()
 
     def widgets(self):
