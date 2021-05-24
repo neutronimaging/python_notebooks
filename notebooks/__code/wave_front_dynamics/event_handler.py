@@ -73,6 +73,7 @@ class EventHandler(Parent):
                             progress_bar_ui=self.parent.event_progress)
         self.parent.peak_value_arrays[edge_calculation_algorithm] = \
             o_algo.get_peak_value_array(algorithm_selected=edge_calculation_algorithm)
+        self.parent.data_have_been_reversed_in_calculation = o_algo.data_have_been_reversed_in_calculation
 
     def edge_calculation_file_index_slider_changed(self, slider_value=None):
         if slider_value is None:

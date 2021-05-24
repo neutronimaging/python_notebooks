@@ -40,7 +40,15 @@ class Algorithms:
     # dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
 
     list_data = None
+
+    data_have_been_reversed_in_calculation = False
+
     peak_sliding_average_data = None
+
+    # fitting by error function requires that the signal goes from max to min values
+    is_data_from_max_to_min = True
+    peak_error_function_data = None
+    peak_error_function_data_error = None
 
     water_intake_peak_erf = []
     water_intake_deltatime = []
@@ -49,8 +57,6 @@ class Algorithms:
 
     progress_bar_ui = None  # progress bar ui
 
-    # fitting by error function requires that the signal goes from max to min values
-    is_data_from_max_to_min = True
 
     def __init__(self, list_data=None,
                  ignore_first_dataset=True,
@@ -120,8 +126,8 @@ class Algorithms:
         self.water_intake_deltatime = water_intake_deltatime
 
     def calculate_using_erf(self):
-        _dict_profiles = self.dict_profiles
-        nbr_files = len(_dict_profiles.keys())
+        list_data = self.list_data
+        nbr_files = len(list_data)
 
         if self.ignore_first_dataset:
             _start_file = 1
@@ -130,19 +136,27 @@ class Algorithms:
             _start_file = 0
             _end_file = nbr_files
 
-        dict_error_function_parameters = dict()
-        water_intake_peaks_erf = []
-        water_intake_peaks_erf_error = []
-        delta_time = []
+        if self.progress_bar_ui:
+            self.progress_bar_ui.setMaximum(len(list_data))
+            self.progress_bar_ui.setVisible(True)
 
+        # dict_error_function_parameters = dict()
+        # water_intake_peaks_erf = []
+        # water_intake_peaks_erf_error = []
+        # delta_time = []
+
+        peak_error_function_data = []
+        peak_error_function_data_error = []
+        dict_error_function_parameters = dict()
         for _index_file in np.arange(_start_file, _end_file):
-            _profile = _dict_profiles[str(_index_file)]
-            ydata = _profile['data']
-            xdata = _profile['delta_time']
+            ydata = list_data[_index_file]
+            # ydata = _profile['data']
+            # xdata = _profile['delta_time']
 
             is_data_from_max_to_min = self.are_data_from_max_to_min(ydata)
             self.is_data_from_max_to_min = is_data_from_max_to_min
             if not is_data_from_max_to_min:
+                self.data_have_been_reversed_in_calculation = True
                 ydata = ydata[::-1]
 
             (popt, pcov) = self.fitting_algorithm(ydata)
@@ -154,7 +168,7 @@ class Algorithms:
 
             error = np.sqrt(np.diag(pcov))
             _peak = np.int(popt[0] + (popt[1]/np.sqrt(2)))
-            water_intake_peaks_erf.append(_peak)
+            peak_error_function_data.append(_peak)
 
             for _i, _err in enumerate(error):
                 if np.isnan(_err):
@@ -166,15 +180,19 @@ class Algorithms:
 
             _peak_error = np.int(error[0] + (error[1]/np.sqrt(2)))
 
-            water_intake_peaks_erf_error.append(_peak_error)
-            delta_time.append(xdata)
-
+            peak_error_function_data_error.append(_peak_error)
             dict_error_function_parameters[str(_index_file)] = _local_dict
 
-        self.water_intake_peaks_erf = water_intake_peaks_erf
+            if self.progress_bar_ui:
+                self.progress_bar_ui.setValue(_index_file+1)
+
+        self.peak_error_function_data = peak_error_function_data
         self.dict_error_function_parameters = dict_error_function_parameters
-        self.dict_error_function_parameters_error = water_intake_peaks_erf_error
-        self.water_intake_deltatime = delta_time
+        self.peak_error_function_data_error = peak_error_function_data_error
+        # self.water_intake_deltatime = delta_time
+
+        if self.progress_bar_ui:
+            self.progress_bar_ui.setVisible(False)
 
     def fitting_algorithm(self, ydata):
         fitting_xdata = np.arange(len(ydata))
@@ -223,7 +241,7 @@ class Algorithms:
         elif algorithm_selected == ListAlgorithm.change_point:
             return None
         elif algorithm_selected == ListAlgorithm.error_function:
-            return None
+            return self.peak_error_function_data
         else:
             raise ValueError("algorithm not implemented yet!")
 
