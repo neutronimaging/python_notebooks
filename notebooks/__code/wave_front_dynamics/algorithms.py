@@ -10,6 +10,7 @@ class ListAlgorithm:
     sliding_average = "sliding average"
     error_function = "error function"
     change_point = "change_point"
+    all = "all"
 
 
 class MeanRangeCalculation(object):

@@ -25,8 +25,20 @@ class Get(Parent):
             return ListAlgorithm.error_function
         elif self.parent.ui.edge_calculation_change_point.isChecked():
             return ListAlgorithm.change_point
+        elif self.parent.ui.edge_calculation_all.isChecked():
+            return ListAlgorithm.all
         else:
             raise NotImplementedError("edge calculation algorithms not implemented yet!")
 
     def edge_calculation_file_index_selected(self):
         return self.parent.ui.edge_calculation_file_index_slider.value()
+
+    def edge_calculation_algorithms_to_plot(self):
+        to_plot = []
+        if self.parent.ui.plot_edge_calculation_sliding_average.isChecked():
+            to_plot.append(ListAlgorithm.sliding_average)
+        if self.parent.ui.plot_edge_calculation_error_function.isChecked():
+            to_plot.append(ListAlgorithm.error_function)
+        if self.parent.ui.plot_edge_calculation_change_point.isChecked():
+            to_plot.append(ListAlgorithm.change_point)
+        return to_plot
