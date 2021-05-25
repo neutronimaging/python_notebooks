@@ -56,6 +56,7 @@ class Display(Parent):
         if not list_edge_calculation_algorithm:
             return
 
+        relative_timestamp = self.parent.list_relative_timestamp
         for edge_calculation_algorithm in list_edge_calculation_algorithm:
 
             peak_value_array = self.parent.peak_value_arrays[edge_calculation_algorithm]
@@ -66,15 +67,16 @@ class Display(Parent):
 
             color = algorithms_colors[edge_calculation_algorithm]
 
-            self.parent.ui.recap_edges_plot.axes.plot(peak_value_array,
+            self.parent.ui.recap_edges_plot.axes.plot(relative_timestamp,
+                                                      peak_value_array,
                                                       '*',
                                                       color=color,
                                                       label=edge_calculation_algorithm)
-            self.parent.ui.recap_edges_plot.axes.plot(file_index_selected,
+            self.parent.ui.recap_edges_plot.axes.plot(relative_timestamp[file_index_selected],
                                                       peak_value_array[file_index_selected],
                                                       '+')
 
-        self.parent.ui.recap_edges_plot.axes.set_xlabel("File index")
+        self.parent.ui.recap_edges_plot.axes.set_xlabel("Relative time (s)")
         self.parent.ui.recap_edges_plot.axes.set_ylabel("Wave front position (relative pixel position)")
         self.parent.ui.recap_edges_plot.axes.legend()
         self.parent.ui.recap_edges_plot.draw()

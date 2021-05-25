@@ -41,9 +41,10 @@ class WaveFrontDynamics:
         self.list_of_ascii_files = list_of_ascii_files
         list_of_data = []
         list_of_original_image_files = []
+        list_of_timestamp = []
         for _file in list_of_ascii_files:
             _data = pd.read_csv(_file,
-                                skiprows=5,
+                                skiprows=6,
                                 delimiter=",",
                                 names=['pixel', 'mean counts'],
                                 dtype=np.float,
@@ -52,7 +53,11 @@ class WaveFrontDynamics:
             _original_image_file = retrieve_metadata_value_from_ascii_file(filename=_file,
                                                                            metadata_name="# source image")
             list_of_original_image_files.append(_original_image_file)
+            _time_stamp = retrieve_metadata_value_from_ascii_file(filename=_file,
+                                                                  metadata_name="# timestamp")
+            list_of_timestamp.append(_time_stamp)
 
+        self.list_timestamp = list_of_timestamp
         self.list_of_data = list_of_data
         self.list_of_original_image_files = list_of_original_image_files
 
@@ -79,6 +84,15 @@ class WaveFrontDynamicsUI(QMainWindow):
         self.wave_front_dynamics = wave_front_dynamics
 
         self.list_of_data = wave_front_dynamics.list_of_data
+        self.list_timestamp = wave_front_dynamics.list_timestamp
+
+        # first file used as reference
+
+        print(f"self.timestamp: {self.list_timestamp}")
+
+        t0 = np.float(self.list_timestamp[0])
+        self.list_relative_timestamp = [np.float(_time) - t0 for _time in self.list_timestamp]
+
         self.nbr_files = len(self.list_of_data)
 
         super(QMainWindow, self).__init__(parent)
