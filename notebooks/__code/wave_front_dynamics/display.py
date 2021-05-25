@@ -1,6 +1,5 @@
 from __code._utilities.parent import Parent
 from __code.wave_front_dynamics.get import Get
-from __code.wave_front_dynamics.algorithms import ListAlgorithm
 
 from __code.wave_front_dynamics import algorithms_colors, algorithms_symbol
 
@@ -47,15 +46,29 @@ class Display(Parent):
         self.parent.ui.recap_edges_plot.draw()
 
         o_get = Get(parent=self.parent)
-        edge_calculation_algorithm = o_get.edge_calculation_algorithms()
-        peak_value_array = self.parent.peak_value_arrays[edge_calculation_algorithm]
-        if peak_value_array is None:
+        list_edge_calculation_algorithm = o_get.edge_calculation_algorithms_to_plot()
+        if not list_edge_calculation_algorithm:
             return
 
-        file_index_selected = o_get.edge_calculation_file_index_selected()
+        for edge_calculation_algorithm in list_edge_calculation_algorithm:
 
-        self.parent.ui.recap_edges_plot.axes.plot(peak_value_array, '*')
-        self.parent.ui.recap_edges_plot.axes.plot(file_index_selected, peak_value_array[file_index_selected], 'r*')
+            peak_value_array = self.parent.peak_value_arrays[edge_calculation_algorithm]
+            if peak_value_array is None:
+                return
+
+            file_index_selected = o_get.edge_calculation_file_index_selected()
+
+            color = algorithms_colors[edge_calculation_algorithm]
+
+            self.parent.ui.recap_edges_plot.axes.plot(peak_value_array,
+                                                      '*',
+                                                      color=color,
+                                                      label=edge_calculation_algorithm)
+            self.parent.ui.recap_edges_plot.axes.plot(file_index_selected,
+                                                      peak_value_array[file_index_selected],
+                                                      '+')
+
         self.parent.ui.recap_edges_plot.axes.set_xlabel("File index")
         self.parent.ui.recap_edges_plot.axes.set_ylabel("Wave front position (relative pixel position)")
+        self.parent.ui.recap_edges_plot.axes.legend()
         self.parent.ui.recap_edges_plot.draw()

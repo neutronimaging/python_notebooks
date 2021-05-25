@@ -1,9 +1,8 @@
-import numpy as np
 import copy
-import time
 from qtpy import QtGui
 
 from __code._utilities.parent import Parent
+from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.wave_front_dynamics.get import Get
 from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
 
@@ -72,6 +71,11 @@ class EventHandler(Parent):
 
     def running_algo(self, algorithm=None):
         list_of_data_prepared = self.parent.list_of_data_prepared
+
+        show_status_message(parent=self.parent,
+                            message=f"Running {algorithm} ...",
+                            status=StatusMessageStatus.working)
+
         o_algo = Algorithms(list_data=list_of_data_prepared,
                             ignore_first_dataset=False,
                             algorithm_selected=algorithm,
@@ -79,6 +83,11 @@ class EventHandler(Parent):
         self.parent.peak_value_arrays[algorithm] = \
             o_algo.get_peak_value_array(algorithm_selected=algorithm)
         self.parent.data_have_been_reversed_in_calculation = o_algo.data_have_been_reversed_in_calculation
+
+        show_status_message(parent=self.parent,
+                            message=f"Running {algorithm}: Done",
+                            status=StatusMessageStatus.ready,
+                            duration_s=10)
 
     def edge_calculation_file_index_slider_changed(self, slider_value=None):
         if slider_value is None:
