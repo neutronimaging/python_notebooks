@@ -12,6 +12,7 @@ from __code.wave_front_dynamics.algorithms import ListAlgorithm
 from __code.wave_front_dynamics.initialization import Initialization
 from __code.wave_front_dynamics.event_handler import EventHandler
 from __code.wave_front_dynamics.display import Display
+from __code.wave_front_dynamics.export import Export
 
 
 class WaveFrontDynamics:
@@ -155,3 +156,7 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_display = Display(parent=self)
         o_display.display_current_selected_profile_and_edge_position()
         o_display.display_all_edge_positions()
+
+    def edge_calculation_export_button_pressed(self):
+        o_export = Export(parent=self)
+        o_export.run()

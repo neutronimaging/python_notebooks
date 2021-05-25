@@ -6,6 +6,12 @@ from __code.wave_front_dynamics import algorithms_colors, algorithms_symbol
 
 class Display(Parent):
 
+    def clear_plots(self):
+        self.parent.ui.calculated_edges_plot.axes.clear()
+        self.parent.ui.calculated_edges_plot.draw()
+        self.parent.ui.recap_edges_plot.axes.clear()
+        self.parent.ui.recap_edges_plot.draw()
+
     def display_current_selected_profile_and_edge_position(self):
 
         self.parent.ui.calculated_edges_plot.axes.clear()

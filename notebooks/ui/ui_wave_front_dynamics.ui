@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -753,6 +753,30 @@
           </item>
          </layout>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="export_button">
+            <property name="text">
+             <string>Export ...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -893,7 +917,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>661</x>
-     <y>767</y>
+     <y>725</y>
     </hint>
     <hint type="destinationlabel">
      <x>1089</x>
@@ -909,7 +933,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>586</x>
-     <y>768</y>
+     <y>726</y>
     </hint>
     <hint type="destinationlabel">
      <x>1090</x>
@@ -925,7 +949,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>434</x>
-     <y>732</y>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>
@@ -941,7 +965,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>558</x>
-     <y>735</y>
+     <y>693</y>
     </hint>
     <hint type="destinationlabel">
      <x>517</x>
@@ -957,11 +981,27 @@
    <hints>
     <hint type="sourcelabel">
      <x>697</x>
-     <y>738</y>
+     <y>696</y>
     </hint>
     <hint type="destinationlabel">
      <x>600</x>
      <y>811</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>export_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edge_calculation_export_button_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1017</x>
+     <y>770</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>947</x>
+     <y>813</y>
     </hint>
    </hints>
   </connection>
@@ -977,5 +1017,6 @@
   <slot>edge_calculation_file_index_slider_moved()</slot>
   <slot>edge_calculation_algorithms_changed()</slot>
   <slot>edge_calculation_algorithm_to_plot_changed()</slot>
+  <slot>edge_calculation_export_button_pressed()</slot>
  </slots>
 </ui>

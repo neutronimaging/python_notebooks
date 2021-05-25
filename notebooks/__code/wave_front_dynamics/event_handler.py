@@ -5,6 +5,7 @@ from __code._utilities.parent import Parent
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.wave_front_dynamics.get import Get
 from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
+from __code.wave_front_dynamics.display import Display
 
 
 class EventHandler(Parent):
@@ -61,11 +62,19 @@ class EventHandler(Parent):
         edge_calculation_algorithm = o_get.edge_calculation_algorithms()
 
         if edge_calculation_algorithm == ListAlgorithm.all:
+
+            o_display = Display(parent=self.parent)
+            o_display.clear_plots()
+            self.reset_peak_value_arrays()
+
             list_algo = [ListAlgorithm.sliding_average,
                          ListAlgorithm.error_function,
                          ListAlgorithm.change_point]
             for _algo in list_algo:
                 self.running_algo(algorithm=_algo)
+                self.check_status_of_edge_calculation_checkboxes()
+                o_display.display_current_selected_profile_and_edge_position()
+                o_display.display_all_edge_positions()
         else:
             self.running_algo(algorithm=edge_calculation_algorithm)
 
@@ -116,3 +125,8 @@ class EventHandler(Parent):
             self.parent.ui.plot_edge_calculation_change_point.setChecked(True)
         if enable_error_function_button:
             self.parent.ui.plot_edge_calculation_error_function.setChecked(True)
+
+    def reset_peak_value_arrays(self):
+        self.parent.peak_value_arrays = {ListAlgorithm.sliding_average: None,
+                                         ListAlgorithm.change_point: None,
+                                         ListAlgorithm.error_function: None}
