@@ -13,6 +13,7 @@ from __code.color import Color
 from __code.radial_profile.event_handler import EventHandler
 from __code.radial_profile.initialization import Initialization
 from __code.radial_profile.display import Display
+from __code._utilities.metadata_handler import MetadataHandler
 
 
 class RadialProfile:
@@ -26,7 +27,7 @@ class RadialProfile:
     list_images = []
     profile_data = []
 
-    def __init__(self, parent_ui=None, data=[], list_files=[]):
+    def __init__(self, parent_ui=None, data=None, list_files=None):
         self.working_data = data
         self.parent_ui = parent_ui
         self.list_images = list_files
@@ -36,7 +37,7 @@ class RadialProfile:
         color = Color()
         self.list_rgb_profile_color = color.get_list_rgb(nbr_color=len(self.working_data))
 
-    def calculate(self, center={}, angle_range={}, max_radius=None):
+    def calculate(self, center=None, angle_range=None, max_radius=None):
 
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
@@ -103,6 +104,7 @@ class RadialProfile:
         if output_folder:
             for _index, _file in enumerate(self.list_images):
 
+                time_stamp_of_that_file = MetadataHandler.get_time_stamp(file_name=_file)
                 [input_image_base_name, ext] = os.path.splitext(os.path.basename(_file))
                 output_file_name = os.path.join(output_folder,
                                                 input_image_base_name + '_profile_c_x{}_y{}_angle_{}_to_{}'.format(
@@ -114,9 +116,11 @@ class RadialProfile:
                 output_file_name = os.path.abspath(output_file_name)
 
                 text = ["# source image: {}".format(_file)]
+                text.append("# timestamp: {}".format(time_stamp_of_that_file))
                 text.append("# center [x0, y0]: [{},{}]".format(self.center['x0'], self.center['y0']))
                 text.append(
-                    "# angular range from {}degrees to {}degrees".format(self.angle_range['from'], self.angle_range['to']))
+                    "# angular range from {}degrees to {}degrees".format(self.angle_range['from'],
+                                                                         self.angle_range['to']))
                 text.append('')
                 text.append('#pixel_from_center, Average_counts')
                 data = list(zip(np.arange(len(self.profile_data[_index])), self.profile_data[_index]))
@@ -168,15 +172,19 @@ class SelectRadialParameters(QMainWindow):
     profile_data = []
     legend = None
 
+    dict_files_timestamp = {}
+
     # def __init__(self, parent=None, o_profile=None):
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
-        display(HTML('<span style="font-size: 20px; color:blue">Select the center of the circle and the angular sector in the UI that poped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Select the center of the circle and the angular '
+                     'sector in the UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
         # o_profile.load_images()
         self.list_images = data_dict['file_name']
         self.working_data = data_dict['data']
+        self.metadata = data_dict['metadata']
         self.working_dir = working_dir
         # self.rotated_working_data = data_dict['data']
         [self.height, self.width] = np.shape(self.working_data[0])
