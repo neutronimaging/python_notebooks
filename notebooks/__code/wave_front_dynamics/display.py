@@ -46,6 +46,7 @@ class Display(Parent):
         self.parent.ui.calculated_edges_plot.axes.set_xlabel("Pixel (relative position) ")
         self.parent.ui.calculated_edges_plot.axes.set_ylabel("Mean counts")
         self.parent.ui.calculated_edges_plot.draw()
+        self.parent.ui.calculated_edges_widget.setEnabled(True)
 
     def display_all_edge_positions(self):
         self.parent.ui.recap_edges_plot.axes.clear()
@@ -80,3 +81,4 @@ class Display(Parent):
         self.parent.ui.recap_edges_plot.axes.set_ylabel("Wave front position (relative pixel position)")
         self.parent.ui.recap_edges_plot.axes.legend()
         self.parent.ui.recap_edges_plot.draw()
+        self.parent.ui.recap_edges_widget.setEnabled(True)

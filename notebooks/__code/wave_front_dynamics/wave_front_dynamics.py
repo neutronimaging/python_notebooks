@@ -87,9 +87,6 @@ class WaveFrontDynamicsUI(QMainWindow):
         self.list_timestamp = wave_front_dynamics.list_timestamp
 
         # first file used as reference
-
-        print(f"self.timestamp: {self.list_timestamp}")
-
         t0 = np.float(self.list_timestamp[0])
         self.list_relative_timestamp = [np.float(_time) - t0 for _time in self.list_timestamp]
 
