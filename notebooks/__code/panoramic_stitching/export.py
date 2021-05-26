@@ -4,7 +4,6 @@ from qtpy import QtGui
 import numpy as np
 from collections import OrderedDict
 import pyqtgraph as pg
-import copy
 
 from NeuNorm.normalization import Normalization
 from __code import load_ui
@@ -29,7 +28,7 @@ class Export:
         output_folder = QFileDialog.getExistingDirectory(self.parent,
                                                          directory=self.parent.working_dir,
                                                          caption="Select where the folder containing the "
-                                                                   "panoramic images will be created!",
+                                                                 "panoramic images will be created!",
                                                          options=QFileDialog.ShowDirsOnly)
         if output_folder:
             self.parent.ui.setEnabled(False)
@@ -57,6 +56,7 @@ class Export:
 
         for _group_index, _group_name in enumerate(data_dictionary.keys()):
 
+            self.parent.ui.statusbar.setStyleSheet("color: blue")
             self.parent.ui.statusbar.showMessage("Creating panoramic image of {} using algo. {} in progress...".format(
                     _group_name, self.parent.stitching_algorithm))
             QtGui.QGuiApplication.processEvents()
@@ -118,6 +118,7 @@ class Export:
 
         stitching_algorithm = self.parent.stitching_algorithm
         new_folder_name = os.path.basename(self.parent.working_dir) + "_panoramic_{}".format(stitching_algorithm)
+        self.parent.ui.statusbar.setStyleSheet("color: blue")
         self.parent.ui.statusbar.showMessage("Exporting images in folder {}".format(new_folder_name))
         QtGui.QGuiApplication.processEvents()
         new_output_folder_name = os.path.join(output_folder, new_folder_name)
@@ -135,6 +136,7 @@ class Export:
         o_norm.load(data=list_data)
         o_norm.data['sample']['filename'] = list_filename
         o_norm.export(new_output_folder_name, data_type='sample')
+        self.parent.ui.statusbar.setStyleSheet("color: green")
         self.parent.ui.statusbar.showMessage("{} has been created!".format(new_output_folder_name), 10000)  # 10s
 
 
@@ -154,6 +156,7 @@ class SelectStitchingAlgorithm(QDialog):
 
     def display_plot(self):
 
+        self.parent.ui.statusbar.setStyleSheet("color: blue")
         self.top_parent.ui.statusbar.showMessage("Calculating previews of current working group ...")
         QtGui.QGuiApplication.processEvents()
 
