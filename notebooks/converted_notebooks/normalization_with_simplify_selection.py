@@ -20,7 +20,7 @@
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.normalization_with_simplify_selection import NormalizationWithSimplifySelection
+from __code.normalization.normalization_with_simplify_selection import NormalizationWithSimplifySelection
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style

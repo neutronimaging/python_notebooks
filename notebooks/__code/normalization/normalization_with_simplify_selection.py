@@ -512,9 +512,16 @@ class NormalizationWithSimplifySelection(object):
         def _make_list_basename_file(list_name='list_sample'):
             return [os.path.basename(_entry['filename']) for _entry in dict_config[list_name]]
 
-        list_sample = _make_list_basename_file(list_name='list_sample')
-        list_ob = _make_list_basename_file(list_name='list_ob')
-        list_df = _make_list_basename_file(list_name='list_df')
+        def _make_full_file_name(list_name='list_sample'):
+            return [_entry['filename'] for _entry in dict_config[list_name]]
+
+        # list_sample = _make_list_basename_file(list_name='list_sample')
+        # list_ob = _make_list_basename_file(list_name='list_ob')
+        # list_df = _make_list_basename_file(list_name='list_df')
+
+        list_sample = _make_full_file_name(list_name='list_sample')
+        list_ob = _make_full_file_name(list_name='list_ob')
+        list_df = _make_full_file_name(list_name='list_df')
 
         # normalize or not this configuration
         use_this_config_widget = widgets.Checkbox(description="Normalize this configuration",
@@ -524,11 +531,10 @@ class NormalizationWithSimplifySelection(object):
         config_widgets_id_dict['use_this_config'] = use_this_config_widget
 
         # use custom time range check box
-        check_box_user_time_range = widgets.Checkbox(description="Use custom time range",
+        check_box_user_time_range = widgets.Checkbox(description="Use selected OB & DF from custom time range",
                                                      value=False,
                                                      layout=widgets.Layout(width="35%"))
         config_widgets_id_dict['use_custom_time_range_checkbox'] = check_box_user_time_range
-
         check_box_user_time_range.observe(self.update_config_widgets, names='value')
 
         [max_time_elapse_before_experiment,
@@ -575,28 +581,30 @@ class NormalizationWithSimplifySelection(object):
         # table of metadata
         [metadata_table_label, metadata_table] = self.populate_metadata_table(dict_config)
 
-        select_width = '300px'
-        sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs",
+        select_width = '100%'
+        sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs (ALL WILL BE USED!)",
                                                           layout=widgets.Layout(width='100%')),
                                             widgets.Select(options=list_sample,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
-                                           layout=widgets.Layout(width="360px"))
+                                           layout=widgets.Layout(width="100%"))
         # self.list_of_runs_ui = box0.children[1]
-        ob_list_of_runs = widgets.VBox([widgets.Label("List of OB",
+        ob_list_of_runs = widgets.VBox([widgets.Label("List of OB (ONLY SELECTED ONE ARE USED!)",
                                                       layout=widgets.Layout(width='100%')),
-                                        widgets.Select(options=list_ob,
-                                                       layout=widgets.Layout(width=select_width,
+                                        widgets.SelectMultiple(options=list_ob,
+                                                               value=list_ob,
+                                                               layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
-                                       layout=widgets.Layout(width="360px"))
-        df_list_of_runs = widgets.VBox([widgets.Label("List of DF",
+                                       layout=widgets.Layout(width="100%"))
+        df_list_of_runs = widgets.VBox([widgets.Label("List of DF (ONLY SELECTED ONE ARE USED!)",
                                                       layout=widgets.Layout(width='100%')),
-                                        widgets.Select(options=list_df,
-                                                       layout=widgets.Layout(width=select_width,
+                                        widgets.SelectMultiple(options=list_df,
+                                                               value=list_df,
+                                                               layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
-                                       layout=widgets.Layout(width="360px"))
+                                       layout=widgets.Layout(width="100%"))
 
-        list_runs_layout = widgets.HBox([sample_list_of_runs,
+        list_runs_layout = widgets.VBox([sample_list_of_runs,
                                          ob_list_of_runs,
                                          df_list_of_runs])
         config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
@@ -788,8 +796,10 @@ class NormalizationWithSimplifySelection(object):
 
     def update_list_of_ob_for_current_config_tab(self, list_ob=[]):
         [active_acquisition, active_config] = self.get_active_tabs()
-        short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
-        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = short_version_list_ob
+        # short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = list_ob
+        # select everything by default
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].valuelist_ob
 
     def update_time_range_message(self, value):
         if value is None:
@@ -831,8 +841,7 @@ class NormalizationWithSimplifySelection(object):
         self.normalization_recap()
 
     def create_final_json(self):
-        # go through each of the acquisition tab and into each of the config to create the list of sample, ob and df
-        # to use
+
         _final_full_master_dict = self.final_full_master_dict
         _config_tab_dict = self.config_tab_dict
         _final_json_dict = {}
@@ -843,47 +852,77 @@ class NormalizationWithSimplifySelection(object):
             _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
             _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
             for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
+
                 this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
                 normalize_flag = this_config_tab_dict['use_this_config']
 
-                _dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
-
-                list_sample = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_sample']]
-                list_df = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_df']]
-
-                list_ob = _dict_of_this_acquisition_this_config['list_ob']
-                use_custom_time_range_checkbox_id = this_config_tab_dict["use_custom_time_range_checkbox"]
-                if not use_custom_time_range_checkbox_id.value:
-                    list_ob_to_keep = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_ob']]
-                else:
-                    # retrieve first and last sample file for this config and for this acquisition
-                    first_sample_image_time_stamp = _dict_of_this_acquisition_this_config['first_images']['sample'][
-                        'time_stamp']
-                    last_sample_images_time_stamp = _dict_of_this_acquisition_this_config['last_images']['sample'][
-                        'time_stamp']
-
-                    [time_before_selected, time_after_selected] = \
-                        self.get_time_before_and_after_of_this_config(current_config=this_config_tab_dict)
-
-                    # calculate list of ob that are within that time range
-                    list_ob_to_keep = []
-                    for _ob_file in list_ob:
-                        _ob_time_stamp = _ob_file['time_stamp']
-                        if (_ob_time_stamp < first_sample_image_time_stamp) and \
-                                ((first_sample_image_time_stamp - _ob_time_stamp) <= np.abs(time_before_selected)):
-                            list_ob_to_keep.append(_ob_file['filename'])
-                        elif (_ob_time_stamp > last_sample_images_time_stamp) and \
-                                ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
-                            list_ob_to_keep.append(_ob_file['filename'])
+                list_sample = this_config_tab_dict['list_of_sample_runs'].options
+                list_ob = this_config_tab_dict['list_of_ob'].value
+                list_df = this_config_tab_dict['list_of_df'].value
 
                 _final_json_for_this_acquisition[_config] = {'list_sample'          : list_sample,
                                                              'list_df'              : list_df,
-                                                             'list_ob'              : list_ob_to_keep,
+                                                             'list_ob'              : list_ob,
                                                              'normalize_this_config': normalize_flag}
 
             _final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
         self.final_json_dict = _final_json_dict
+
+    # def create_final_json2(self):
+    #     # go through each of the acquisition tab and into each of the config to create the list of sample, ob and df
+    #     # to use
+    #     _final_full_master_dict = self.final_full_master_dict
+    #     _config_tab_dict = self.config_tab_dict
+    #     _final_json_dict = {}
+    #
+    #     for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
+    #
+    #         _final_json_for_this_acquisition = {}
+    #         _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
+    #         _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
+    #         for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
+    #             this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
+    #             normalize_flag = this_config_tab_dict['use_this_config']
+    #
+    #             _dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
+    #
+    #             list_sample = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_sample']]
+    #             list_df = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_df']]
+    #
+    #             list_ob = _dict_of_this_acquisition_this_config['list_ob']
+    #             use_custom_time_range_checkbox_id = this_config_tab_dict["use_custom_time_range_checkbox"]
+    #             if not use_custom_time_range_checkbox_id.value:
+    #                 list_ob_to_keep = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_ob']]
+    #             else:
+    #                 # retrieve first and last sample file for this config and for this acquisition
+    #                 first_sample_image_time_stamp = _dict_of_this_acquisition_this_config['first_images']['sample'][
+    #                     'time_stamp']
+    #                 last_sample_images_time_stamp = _dict_of_this_acquisition_this_config['last_images']['sample'][
+    #                     'time_stamp']
+    #
+    #                 [time_before_selected, time_after_selected] = \
+    #                     self.get_time_before_and_after_of_this_config(current_config=this_config_tab_dict)
+    #
+    #                 # calculate list of ob that are within that time range
+    #                 list_ob_to_keep = []
+    #                 for _ob_file in list_ob:
+    #                     _ob_time_stamp = _ob_file['time_stamp']
+    #                     if (_ob_time_stamp < first_sample_image_time_stamp) and \
+    #                             ((first_sample_image_time_stamp - _ob_time_stamp) <= np.abs(time_before_selected)):
+    #                         list_ob_to_keep.append(_ob_file['filename'])
+    #                     elif (_ob_time_stamp > last_sample_images_time_stamp) and \
+    #                             ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
+    #                         list_ob_to_keep.append(_ob_file['filename'])
+    #
+    #             _final_json_for_this_acquisition[_config] = {'list_sample'          : list_sample,
+    #                                                          'list_df'              : list_df,
+    #                                                          'list_ob'              : list_ob_to_keep,
+    #                                                          'normalize_this_config': normalize_flag}
+    #
+    #         _final_json_dict[_acquisition] = _final_json_for_this_acquisition
+    #
+    #     self.final_json_dict = _final_json_dict
 
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,
@@ -945,7 +984,7 @@ class NormalizationWithSimplifySelection(object):
                 _current_config = _current_acquisition_dict[_name_config]
 
                 list_ob = _current_config['list_ob']
-                if list_ob == []:
+                if len(list_ob) == 0:
                     normalization_progress.value += 1
                     continue
 
@@ -964,9 +1003,11 @@ class NormalizationWithSimplifySelection(object):
                 list_df = _current_config['list_df']
 
                 o_load = Normalization()
-                o_load.load(file=list_sample, notebook=True)
-                o_load.load(file=list_ob, data_type='ob')
-                o_load.load(file=list_df, data_type='df')
+                o_load.load(file=list(list_sample), notebook=True)
+                o_load.load(file=list(list_ob), data_type='ob')
+
+                if len(list_df) > 0:
+                    o_load.load(file=list(list_df), data_type='df')
 
                 o_load.normalization()
                 o_load.export(folder=full_output_normalization_folder_name, file_type='tif')
