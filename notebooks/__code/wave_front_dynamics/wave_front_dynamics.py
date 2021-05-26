@@ -134,6 +134,12 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.update_prepare_data_plot()
 
+    def prepare_data_data_range_changed(self, value):
+        pass
+
+    def prepare_data_data_range_clicked(self):
+        pass
+
     # event handler - edge calculation tab
     def edge_calculation_calculate_pressed(self):
         o_event = EventHandler(parent=self)

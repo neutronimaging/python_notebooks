@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -33,6 +33,56 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="title">
+           <string>Data range to use</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Left</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="left_range_slider">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>180</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QSlider" name="right_range_slider">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Right</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
@@ -1005,6 +1055,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>left_range_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_data_range_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>229</x>
+     <y>608</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>607</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_range_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_data_range_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>857</x>
+     <y>602</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1091</x>
+     <y>628</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>left_range_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_data_range_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>602</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>561</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>right_range_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepare_data_data_range_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>807</x>
+     <y>607</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1092</x>
+     <y>587</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>prepare_data_file_index_pressed()</slot>
@@ -1018,5 +1132,7 @@
   <slot>edge_calculation_algorithms_changed()</slot>
   <slot>edge_calculation_algorithm_to_plot_changed()</slot>
   <slot>edge_calculation_export_button_pressed()</slot>
+  <slot>prepare_data_data_range_changed()</slot>
+  <slot>prepare_data_data_range_clicked()</slot>
  </slots>
 </ui>

@@ -27,6 +27,12 @@ class Initialization(Parent):
 
         self.parent.ui.edge_calculation_file_index_slider.setMaximum(self.parent.nbr_files-1)
 
+        data_0 = self.parent.list_of_data[0]
+        nbr_points = len(data_0)
+        self.parent.ui.left_range_slider.setMaximum(nbr_points-1)
+        self.parent.ui.right_range_slider.setMaximum(nbr_points-1)
+        self.parent.ui.right_range_slider.setValue(nbr_points-1)
+
     def matplotlib(self):
 
         def _matplotlib(parent=None, widget=None):
