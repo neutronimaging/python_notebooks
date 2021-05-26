@@ -14,6 +14,7 @@ class Initialization(Parent):
         self.matplotlib()
         self.widgets()
         self.statusbar()
+        self.data()
 
     def widgets(self):
         self.parent.ui.file_index_horizontalSlider.setMaximum(self.parent.nbr_files-1)
@@ -29,6 +30,7 @@ class Initialization(Parent):
 
         data_0 = self.parent.list_of_data[0]
         nbr_points = len(data_0)
+        self.parent.max_number_of_data_points = nbr_points
         self.parent.ui.left_range_slider.setMaximum(nbr_points-1)
         self.parent.ui.right_range_slider.setMaximum(nbr_points-1)
         self.parent.ui.right_range_slider.setValue(nbr_points-1)
@@ -57,3 +59,8 @@ class Initialization(Parent):
         self.parent.event_progress.setMaximumSize(540, 100)
         self.parent.event_progress.setVisible(False)
         self.parent.ui.statusbar.addPermanentWidget(self.parent.event_progress)
+
+    def data(self):
+        nbr_points = self.parent.max_number_of_data_points
+        self.parent.data_range['min'] = 0
+        self.parent.data_range['max'] = nbr_points-1

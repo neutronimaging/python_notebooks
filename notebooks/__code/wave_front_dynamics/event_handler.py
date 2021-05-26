@@ -1,4 +1,3 @@
-import copy
 from qtpy import QtGui
 
 from __code._utilities.parent import Parent
@@ -10,18 +9,14 @@ from __code.wave_front_dynamics.display import Display
 
 class EventHandler(Parent):
 
-    def update_prepare_data_plot(self):
-        self.parent.ui.prepare_data_plot.axes.clear()
-        o_get = Get(parent=self.parent)
-        bin_size = o_get.prepare_data_bin_size()
-        bin_type = o_get.prepare_data_bin_type()
-        file_index = o_get.prepare_data_file_index()
+    def data_range_changed(self):
+        min_range = self.parent.ui.left_range_slider.value()
+        max_range = self.parent.ui.right_range_slider.value()
+        self.parent.data_range['min'] = min_range
+        self.parent.data_range['max'] = max_range
 
-        data = copy.deepcopy(self.parent.list_of_data[file_index])
-        new_data = Algorithms.bin_data(data=data, bin_size=bin_size, bin_type=bin_type)
-
-        self.parent.ui.prepare_data_plot.axes.plot(new_data)
-        self.parent.ui.prepare_data_plot.draw()
+        o_display = Display(parent=self.parent)
+        o_display.update_prepare_data_plot()
 
     def prepare_all_data(self):
         list_of_data = self.parent.list_of_data

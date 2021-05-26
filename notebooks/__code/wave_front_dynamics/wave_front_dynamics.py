@@ -72,6 +72,10 @@ class WaveFrontDynamicsUI(QMainWindow):
                          ListAlgorithm.change_point   : None,
                          ListAlgorithm.error_function : None}
 
+    data_range = {'min': np.NaN,
+                  'max': np.NaN}
+    max_number_of_data_points = np.NaN
+
     # matplotlib
     prepare_data_plot = None
 
@@ -109,36 +113,46 @@ class WaveFrontDynamicsUI(QMainWindow):
     def prepare_data_file_index_pressed(self):
         o_event = EventHandler(parent=self)
         o_event.prepare_data_file_index_slider_changed()
-        o_event.update_prepare_data_plot()
+
+        o_display = Display(parent=self)
+        o_display.update_prepare_data_plot()
 
     def prepare_data_file_index_moved(self, value):
         o_event = EventHandler(parent=self)
         o_event.prepare_data_file_index_slider_changed()
-        o_event.update_prepare_data_plot()
+
+        o_display = Display(parent=self)
+        o_display.update_prepare_data_plot()
 
     def prepare_data_bin_size_pressed(self):
         o_event = EventHandler(parent=self)
         o_event.prepare_data_bin_size_changed()
-        o_event.update_prepare_data_plot()
+
+        o_display = Display(parent=self)
+        o_display.update_prepare_data_plot()
 
     def prepare_data_bin_size_moved(self, value):
         o_event = EventHandler(parent=self)
         o_event.prepare_data_bin_size_changed()
-        o_event.update_prepare_data_plot()
+
+        o_display = Display(parent=self)
+        o_display.update_prepare_data_plot()
 
     def prepare_data_bin_type_changed(self):
-        o_event = EventHandler(parent=self)
-        o_event.update_prepare_data_plot()
+        o_display = Display(parent=self)
+        o_display.update_prepare_data_plot()
 
     def update_prepare_data_plot(self):
-        o_event = EventHandler(parent=self)
-        o_event.update_prepare_data_plot()
+        o_display = Display(parent=self)
+        o_display.update_prepare_data_plot()
 
     def prepare_data_data_range_changed(self, value):
-        pass
+        o_event = EventHandler(parent=self)
+        o_event.data_range_changed()
 
     def prepare_data_data_range_clicked(self):
-        pass
+        o_event = EventHandler(parent=self)
+        o_event.data_range_changed()
 
     # event handler - edge calculation tab
     def edge_calculation_calculate_pressed(self):

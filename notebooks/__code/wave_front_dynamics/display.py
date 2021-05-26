@@ -1,7 +1,10 @@
+import copy
+import numpy as np
+
 from __code._utilities.parent import Parent
 from __code.wave_front_dynamics.get import Get
-
-from __code.wave_front_dynamics import algorithms_colors, algorithms_symbol
+from __code.wave_front_dynamics import algorithms_colors
+from __code.wave_front_dynamics.algorithms import Algorithms
 
 
 class Display(Parent):
@@ -11,6 +14,29 @@ class Display(Parent):
         self.parent.ui.calculated_edges_plot.draw()
         self.parent.ui.recap_edges_plot.axes.clear()
         self.parent.ui.recap_edges_plot.draw()
+
+    def update_prepare_data_plot(self):
+        self.parent.ui.prepare_data_plot.axes.clear()
+        o_get = Get(parent=self.parent)
+        bin_size = o_get.prepare_data_bin_size()
+        bin_type = o_get.prepare_data_bin_type()
+        file_index = o_get.prepare_data_file_index()
+        min_data_range = self.parent.data_range['min']
+        max_data_range = self.parent.data_range['max']
+        min_data_range_for_plot = np.floor(min_data_range/bin_size)
+        max_data_range_for_plot = np.floor(max_data_range/bin_size)
+
+        data = copy.deepcopy(self.parent.list_of_data[file_index])
+        new_data = Algorithms.bin_data(data=data, bin_size=bin_size, bin_type=bin_type)
+
+        self.parent.ui.prepare_data_plot.axes.plot(new_data)
+        self.parent.ui.prepare_data_plot.axes.axvline(min_data_range_for_plot,
+                                                      linestyle='--',
+                                                      color='blue')
+        self.parent.ui.prepare_data_plot.axes.axvline(max_data_range_for_plot,
+                                                      linestyle='--',
+                                                      color='red')
+        self.parent.ui.prepare_data_plot.draw()
 
     def display_current_selected_profile_and_edge_position(self):
 
