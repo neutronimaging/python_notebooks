@@ -581,13 +581,13 @@ class NormalizationWithSimplifySelection(object):
         # table of metadata
         [metadata_table_label, metadata_table] = self.populate_metadata_table(dict_config)
 
-        select_width = '300px'
+        select_width = '100%'
         sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs (ALL WILL BE USED!)",
                                                           layout=widgets.Layout(width='100%')),
                                             widgets.Select(options=list_sample,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
-                                           layout=widgets.Layout(width="360px"))
+                                           layout=widgets.Layout(width="100%"))
         # self.list_of_runs_ui = box0.children[1]
         ob_list_of_runs = widgets.VBox([widgets.Label("List of OB (ONLY SELECTED ONE ARE USED!)",
                                                       layout=widgets.Layout(width='100%')),
@@ -595,16 +595,16 @@ class NormalizationWithSimplifySelection(object):
                                                                value=list_ob,
                                                                layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
-                                       layout=widgets.Layout(width="360px"))
+                                       layout=widgets.Layout(width="100%"))
         df_list_of_runs = widgets.VBox([widgets.Label("List of DF (ONLY SELECTED ONE ARE USED!)",
                                                       layout=widgets.Layout(width='100%')),
                                         widgets.SelectMultiple(options=list_df,
                                                                value=list_df,
                                                                layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
-                                       layout=widgets.Layout(width="360px"))
+                                       layout=widgets.Layout(width="100%"))
 
-        list_runs_layout = widgets.HBox([sample_list_of_runs,
+        list_runs_layout = widgets.VBox([sample_list_of_runs,
                                          ob_list_of_runs,
                                          df_list_of_runs])
         config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
@@ -796,10 +796,10 @@ class NormalizationWithSimplifySelection(object):
 
     def update_list_of_ob_for_current_config_tab(self, list_ob=[]):
         [active_acquisition, active_config] = self.get_active_tabs()
-        short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
-        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = short_version_list_ob
+        # short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = list_ob
         # select everything by default
-        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].value = short_version_list_ob
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].valuelist_ob
 
     def update_time_range_message(self, value):
         if value is None:
