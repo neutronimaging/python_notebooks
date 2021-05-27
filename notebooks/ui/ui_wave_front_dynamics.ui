@@ -36,6 +36,54 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>File index:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="file_index_horizontalSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="file_index_value_label">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="use_this_file_checkBox">
+            <property name="text">
+             <string>Use this file</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
            <string>Data range to use</string>
@@ -158,31 +206,6 @@
            </item>
           </layout>
          </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>File index:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSlider" name="file_index_horizontalSlider">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="file_index_value_label">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox">
@@ -848,7 +871,7 @@
           <item>
            <widget class="QLabel" name="edge_calculation_file_index_label">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="text">
              <string>File index:</string>
@@ -858,7 +881,7 @@
           <item>
            <widget class="QSlider" name="edge_calculation_file_index_slider">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -868,7 +891,7 @@
           <item>
            <widget class="QLabel" name="edge_calculation_file_index_value">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="text">
              <string>0</string>
@@ -931,8 +954,8 @@
    <slot>prepare_data_file_index_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>884</x>
-     <y>659</y>
+     <x>875</x>
+     <y>597</y>
     </hint>
     <hint type="destinationlabel">
      <x>1091</x>
@@ -947,8 +970,8 @@
    <slot>prepare_data_file_index_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>947</x>
-     <y>658</y>
+     <x>875</x>
+     <y>597</y>
     </hint>
     <hint type="destinationlabel">
      <x>1088</x>
@@ -1139,8 +1162,8 @@
    <slot>prepare_data_data_range_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>229</x>
-     <y>608</y>
+     <x>288</x>
+     <y>657</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1155,8 +1178,8 @@
    <slot>prepare_data_data_range_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>857</x>
-     <y>602</y>
+     <x>1006</x>
+     <y>657</y>
     </hint>
     <hint type="destinationlabel">
      <x>1091</x>
@@ -1171,8 +1194,8 @@
    <slot>prepare_data_data_range_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>228</x>
-     <y>602</y>
+     <x>287</x>
+     <y>657</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -1187,12 +1210,28 @@
    <slot>prepare_data_data_range_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>807</x>
-     <y>607</y>
+     <x>1006</x>
+     <y>657</y>
     </hint>
     <hint type="destinationlabel">
      <x>1092</x>
      <y>587</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>use_this_file_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>use_this_file_checkbox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>997</x>
+     <y>586</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1090</x>
+     <y>530</y>
     </hint>
    </hints>
   </connection>
@@ -1211,5 +1250,6 @@
   <slot>edge_calculation_export_button_pressed()</slot>
   <slot>prepare_data_data_range_changed()</slot>
   <slot>prepare_data_data_range_clicked()</slot>
+  <slot>use_this_file_checkbox_clicked()</slot>
  </slots>
 </ui>

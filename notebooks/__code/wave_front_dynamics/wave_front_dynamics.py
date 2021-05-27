@@ -65,6 +65,8 @@ class WaveFrontDynamics:
 class WaveFrontDynamicsUI(QMainWindow):
 
     list_of_ascii_files = None
+    nbr_files = None
+    list_of_files_to_use = None
     list_of_original_image_files = None
     list_of_data = None
     list_of_data_prepared = None
@@ -113,6 +115,7 @@ class WaveFrontDynamicsUI(QMainWindow):
     def prepare_data_file_index_pressed(self):
         o_event = EventHandler(parent=self)
         o_event.prepare_data_file_index_slider_changed()
+        o_event.check_state_of_prepare_data_plot()
 
         o_display = Display(parent=self)
         o_display.update_prepare_data_plot()
@@ -123,6 +126,7 @@ class WaveFrontDynamicsUI(QMainWindow):
 
         o_display = Display(parent=self)
         o_display.update_prepare_data_plot()
+        o_event.check_state_of_prepare_data_plot()
 
     def prepare_data_bin_size_pressed(self):
         o_event = EventHandler(parent=self)
@@ -154,13 +158,17 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.data_range_changed()
 
+    def use_this_file_checkbox_clicked(self):
+        o_event = EventHandler(parent=self)
+        o_event.use_this_file_clicked()
+        o_event.check_state_of_prepare_data_plot()
+
     # event handler - edge calculation tab
     def edge_calculation_calculate_pressed(self):
         o_event = EventHandler(parent=self)
         o_event.prepare_all_data()
         o_event.calculate_edge_position()
-        o_event.check_status_of_edge_calculation_checkboxes()
-        o_event.check_status_of_export_button()
+        o_event.check_status_of_edge_calculation_buttons()
         o_display = Display(parent=self)
         o_display.display_current_selected_profile_and_edge_position()
         o_display.display_all_edge_positions()

@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -5,7 +6,7 @@ from qtpy.QtWidgets import QVBoxLayout, QProgressBar
 
 from __code.panoramic_stitching.mplcanvas import MplCanvas
 from __code._utilities.parent import Parent
-from __code.wave_front_dynamics import MAX_BIN_SIZE
+from __code.wave_front_dynamics import MAX_BIN_SIZE, INIT_BIN_SIZE
 
 
 class Initialization(Parent):
@@ -22,6 +23,7 @@ class Initialization(Parent):
 
         self.parent.ui.bin_value_horizontalSlider.setMinimum(1)
         self.parent.ui.bin_value_horizontalSlider.setMaximum(MAX_BIN_SIZE)
+        self.parent.ui.bin_value_horizontalSlider.setValue(INIT_BIN_SIZE)
 
         self.parent.ui.recap_edges_widget.setEnabled(False)
         self.parent.ui.calculated_edges_widget.setEnabled(False)
@@ -64,3 +66,6 @@ class Initialization(Parent):
         nbr_points = self.parent.max_number_of_data_points
         self.parent.data_range['min'] = 0
         self.parent.data_range['max'] = nbr_points-1
+
+        nbr_files = self.parent.nbr_files
+        self.parent.list_of_files_to_use = np.ones((nbr_files), dtype=bool)

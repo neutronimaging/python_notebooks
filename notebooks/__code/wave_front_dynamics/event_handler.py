@@ -47,11 +47,25 @@ class EventHandler(Parent):
 
         self.parent.ui.file_index_value_label.setText(str(slider_value))
 
+        list_of_files_to_use = self.parent.list_of_files_to_use
+        self.parent.ui.use_this_file_checkBox.setChecked(list_of_files_to_use[slider_value])
+
+    def use_this_file_clicked(self):
+        file_index = self.parent.ui.file_index_horizontalSlider.value()
+        list_of_files_to_use = self.parent.list_of_files_to_use
+        list_of_files_to_use[file_index] = self.parent.ui.use_this_file_checkBox.isChecked()
+        self.parent.list_of_files_to_use = list_of_files_to_use
+
     def prepare_data_bin_size_changed(self, slider_value=None):
         if slider_value is None:
             slider_value = self.parent.ui.bin_value_horizontalSlider.value()
 
         self.parent.ui.bin_value_label.setText(str(slider_value))
+
+    def check_state_of_prepare_data_plot(self):
+        list_of_files_to_use = self.parent.list_of_files_to_use
+        file_index = self.parent.ui.file_index_horizontalSlider.value()
+        self.parent.ui.prepare_data_widget.setEnabled(list_of_files_to_use[file_index])
 
     def calculate_edge_position(self):
         o_get = Get(parent=self.parent)
@@ -100,7 +114,9 @@ class EventHandler(Parent):
 
         self.parent.ui.edge_calculation_file_index_value.setText(str(slider_value))
 
-    def check_status_of_edge_calculation_checkboxes(self):
+    def check_status_of_edge_calculation_buttons(self):
+
+        # checkbox
         enable_sliding_average_button = True
         enable_change_point_button = True
         enable_error_function_button = True
@@ -122,12 +138,7 @@ class EventHandler(Parent):
         if enable_error_function_button:
             self.parent.ui.plot_edge_calculation_error_function.setChecked(True)
 
-    def reset_peak_value_arrays(self):
-        self.parent.peak_value_arrays = {ListAlgorithm.sliding_average: None,
-                                         ListAlgorithm.change_point: None,
-                                         ListAlgorithm.error_function: None}
-
-    def check_status_of_export_button(self):
+        # export and file index slider
         enabled_state = False
         for _key in self.parent.peak_value_arrays.keys():
             value = self.parent.peak_value_arrays[_key]
@@ -135,3 +146,11 @@ class EventHandler(Parent):
                 enabled_state = True
                 break
         self.parent.ui.export_button.setEnabled(enabled_state)
+        self.parent.ui.edge_calculation_file_index_label.setEnabled(enabled_state)
+        self.parent.ui.edge_calculation_file_index_slider.setEnabled(enabled_state)
+        self.parent.ui.edge_calculation_file_index_value.setEnabled(enabled_state)
+
+    def reset_peak_value_arrays(self):
+        self.parent.peak_value_arrays = {ListAlgorithm.sliding_average: None,
+                                         ListAlgorithm.change_point: None,
+                                         ListAlgorithm.error_function: None}
