@@ -39,7 +39,6 @@ class Display(Parent):
         self.parent.ui.prepare_data_plot.draw()
 
     def display_current_selected_profile_and_edge_position(self):
-
         self.parent.ui.calculated_edges_plot.axes.clear()
         self.parent.ui.calculated_edges_plot.draw()
 

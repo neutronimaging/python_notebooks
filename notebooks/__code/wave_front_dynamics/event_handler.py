@@ -31,6 +31,7 @@ class EventHandler(Parent):
 
         list_of_data_prepared = []
         for _index, _data in enumerate(list_of_data):
+            _data = o_get.working_range_of_data(data=_data)
             prepared_data = Algorithms.bin_data(data=_data, bin_size=bin_size, bin_type=bin_type)
             list_of_data_prepared.append(prepared_data)
             self.parent.event_progress.setValue(_index + 1)
