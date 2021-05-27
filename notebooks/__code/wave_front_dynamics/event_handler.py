@@ -126,3 +126,12 @@ class EventHandler(Parent):
         self.parent.peak_value_arrays = {ListAlgorithm.sliding_average: None,
                                          ListAlgorithm.change_point: None,
                                          ListAlgorithm.error_function: None}
+
+    def check_status_of_export_button(self):
+        enabled_state = False
+        for _key in self.parent.peak_value_arrays.keys():
+            value = self.parent.peak_value_arrays[_key]
+            if not (value is None):
+                enabled_state = True
+                break
+        self.parent.ui.export_button.setEnabled(enabled_state)

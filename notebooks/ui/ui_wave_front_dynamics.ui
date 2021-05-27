@@ -894,6 +894,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="export_button">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Export ...</string>
             </property>

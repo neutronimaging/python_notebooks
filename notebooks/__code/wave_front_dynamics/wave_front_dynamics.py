@@ -160,6 +160,7 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_event.prepare_all_data()
         o_event.calculate_edge_position()
         o_event.check_status_of_edge_calculation_checkboxes()
+        o_event.check_status_of_export_button()
         o_display = Display(parent=self)
         o_display.display_current_selected_profile_and_edge_position()
         o_display.display_all_edge_positions()
