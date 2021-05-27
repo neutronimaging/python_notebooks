@@ -4,6 +4,7 @@ import numpy as np
 from IPython.core.display import display
 import os
 from qtpy.QtWidgets import QMainWindow
+import copy
 
 from __code import load_ui
 from __code.ipywe import fileselector
@@ -68,8 +69,15 @@ class WaveFrontDynamicsUI(QMainWindow):
     nbr_files = None
     list_of_files_to_use = None
     list_of_original_image_files = None
+
+    # raw
     list_of_data = None
+    list_timestamp = None
+
+    # after being prepared
     list_of_data_prepared = None
+    list_of_timestamp_of_data_prepared = None
+
     peak_value_arrays = {ListAlgorithm.sliding_average: None,
                          ListAlgorithm.change_point   : None,
                          ListAlgorithm.error_function : None}
@@ -92,10 +100,6 @@ class WaveFrontDynamicsUI(QMainWindow):
         self.list_of_data = wave_front_dynamics.list_of_data
         self.list_timestamp = wave_front_dynamics.list_timestamp
 
-        # first file used as reference
-        t0 = np.float(self.list_timestamp[0])
-        self.list_relative_timestamp = [np.float(_time) - t0 for _time in self.list_timestamp]
-
         self.nbr_files = len(self.list_of_data)
 
         super(QMainWindow, self).__init__(parent)
@@ -110,6 +114,12 @@ class WaveFrontDynamicsUI(QMainWindow):
 
         self.prepare_data_file_index_pressed()
         self.prepare_data_bin_size_pressed()
+
+        # first file used as reference
+        t0 = np.float(self.list_timestamp[0])
+        self.list_relative_timestamp = [np.float(_time) - t0 for _time in self.list_timestamp]
+        o_event = EventHandler(parent=self)
+        o_event.update_list_of_relative_timestamp_of_prepared_data()
 
     # event handler - prepare data tab
     def prepare_data_file_index_pressed(self):
@@ -162,6 +172,7 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.use_this_file_clicked()
         o_event.check_state_of_prepare_data_plot()
+        o_event.update_list_of_relative_timestamp_of_prepared_data()
 
     # event handler - edge calculation tab
     def edge_calculation_calculate_pressed(self):

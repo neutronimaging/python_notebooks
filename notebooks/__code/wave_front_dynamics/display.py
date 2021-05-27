@@ -82,7 +82,7 @@ class Display(Parent):
         if not list_edge_calculation_algorithm:
             return
 
-        relative_timestamp = self.parent.list_relative_timestamp
+        relative_timestamp = self.parent.list_of_timestamp_of_data_prepared
         for edge_calculation_algorithm in list_edge_calculation_algorithm:
 
             peak_value_array = self.parent.peak_value_arrays[edge_calculation_algorithm]

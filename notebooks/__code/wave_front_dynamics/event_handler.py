@@ -1,4 +1,5 @@
 from qtpy import QtGui
+import numpy as np
 
 from __code._utilities.parent import Parent
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
@@ -23,6 +24,8 @@ class EventHandler(Parent):
         o_get = Get(parent=self.parent)
         bin_size = o_get.prepare_data_bin_size()
         bin_type = o_get.prepare_data_bin_type()
+        list_of_files_to_use = self.parent.list_of_files_to_use
+        list_of_timestamp = self.parent.list_timestamp
 
         self.parent.event_progress.setMaximum(len(list_of_data))
         self.parent.event_progress.setValue(0)
@@ -30,14 +33,19 @@ class EventHandler(Parent):
         QtGui.QGuiApplication.processEvents()
 
         list_of_data_prepared = []
+        list_of_timestamp_of_data_prepared = []
         for _index, _data in enumerate(list_of_data):
+            if not list_of_files_to_use[_index]:
+                continue
             _data = o_get.working_range_of_data(data=_data)
             prepared_data = Algorithms.bin_data(data=_data, bin_size=bin_size, bin_type=bin_type)
             list_of_data_prepared.append(prepared_data)
+            list_of_timestamp_of_data_prepared.append(list_of_timestamp[_index])
             self.parent.event_progress.setValue(_index + 1)
             QtGui.QGuiApplication.processEvents()
 
         self.parent.list_of_data_prepared = list_of_data_prepared
+        self.parent.list_of_timestamp_of_data_prepared = list_of_timestamp_of_data_prepared
         self.parent.event_progress.setVisible(False)
         QtGui.QGuiApplication.processEvents()
 
@@ -154,3 +162,22 @@ class EventHandler(Parent):
         self.parent.peak_value_arrays = {ListAlgorithm.sliding_average: None,
                                          ListAlgorithm.change_point: None,
                                          ListAlgorithm.error_function: None}
+
+    def update_list_of_relative_timestamp_of_prepared_data(self):
+        list_timestamp = self.parent.list_timestamp
+        list_of_files_to_use = self.parent.list_of_files_to_use
+
+        t0 = -1
+        list_of_timestamp_of_data_prepared = []
+        for _index, _state in enumerate(list_of_files_to_use):
+            if _state:
+
+                if t0 == -1:
+                    t0 = np.float(list_timestamp[_index])
+                    list_of_timestamp_of_data_prepared.append(0)
+
+                else:
+                    relative_time = np.float(list_timestamp[_index]) - t0
+                    list_of_timestamp_of_data_prepared.append(relative_time)
+
+        self.parent.list_of_timestamp_of_data_prepared = list_of_timestamp_of_data_prepared
