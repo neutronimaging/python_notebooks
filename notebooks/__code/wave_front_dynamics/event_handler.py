@@ -25,7 +25,6 @@ class EventHandler(Parent):
         bin_size = o_get.prepare_data_bin_size()
         bin_type = o_get.prepare_data_bin_type()
         list_of_files_to_use = self.parent.list_of_files_to_use
-        list_of_timestamp = self.parent.list_timestamp
 
         self.parent.event_progress.setMaximum(len(list_of_data))
         self.parent.event_progress.setValue(0)
@@ -33,19 +32,16 @@ class EventHandler(Parent):
         QtGui.QGuiApplication.processEvents()
 
         list_of_data_prepared = []
-        list_of_timestamp_of_data_prepared = []
         for _index, _data in enumerate(list_of_data):
             if not list_of_files_to_use[_index]:
                 continue
             _data = o_get.working_range_of_data(data=_data)
             prepared_data = Algorithms.bin_data(data=_data, bin_size=bin_size, bin_type=bin_type)
             list_of_data_prepared.append(prepared_data)
-            list_of_timestamp_of_data_prepared.append(list_of_timestamp[_index])
             self.parent.event_progress.setValue(_index + 1)
             QtGui.QGuiApplication.processEvents()
 
         self.parent.list_of_data_prepared = list_of_data_prepared
-        self.parent.list_of_timestamp_of_data_prepared = list_of_timestamp_of_data_prepared
         self.parent.event_progress.setVisible(False)
         QtGui.QGuiApplication.processEvents()
 
@@ -123,7 +119,6 @@ class EventHandler(Parent):
         self.parent.ui.edge_calculation_file_index_value.setText(str(slider_value))
 
     def check_status_of_edge_calculation_buttons(self):
-
         # checkbox
         enable_sliding_average_button = True
         enable_change_point_button = True
