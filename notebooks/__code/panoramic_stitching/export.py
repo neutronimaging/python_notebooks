@@ -156,7 +156,7 @@ class SelectStitchingAlgorithm(QDialog):
 
     def display_plot(self):
 
-        self.parent.ui.statusbar.setStyleSheet("color: blue")
+        self.top_parent.ui.statusbar.setStyleSheet("color: blue")
         self.top_parent.ui.statusbar.showMessage("Calculating previews of current working group ...")
         QtGui.QGuiApplication.processEvents()
 
