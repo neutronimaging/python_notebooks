@@ -14,6 +14,7 @@ from __code.radial_profile.event_handler import EventHandler
 from __code.radial_profile.initialization import Initialization
 from __code.radial_profile.display import Display
 from __code._utilities.metadata_handler import MetadataHandler
+from __code._utilities.folder import make_or_reset_folder
 
 
 class RadialProfile:
@@ -27,10 +28,11 @@ class RadialProfile:
     list_images = []
     profile_data = []
 
-    def __init__(self, parent_ui=None, data=None, list_files=None):
+    def __init__(self, parent_ui=None, data=None, list_files=None, working_dir=""):
         self.working_data = data
         self.parent_ui = parent_ui
         self.list_images = list_files
+        self.working_dir = working_dir
 
         self.short_list_files = [os.path.basename(_file) for _file in list_files]
 
@@ -102,6 +104,11 @@ class RadialProfile:
 
     def export(self, output_folder=''):
         if output_folder:
+
+            output_folder_name = os.path.basename(self.working_dir) + "_profiles"
+            output_folder = os.path.join(output_folder, output_folder_name)
+            make_or_reset_folder(output_folder)
+
             for _index, _file in enumerate(self.list_images):
 
                 time_stamp_of_that_file = MetadataHandler.get_time_stamp(file_name=_file)
@@ -268,7 +275,8 @@ class SelectRadialParameters(QMainWindow):
     def calculate_profiles_clicked(self):
         o_profile = RadialProfile(parent_ui=self,
                                   data=self.working_data,
-                                  list_files=self.list_images)
+                                  list_files=self.list_images,
+                                  working_dir=self.working_dir)
         radius = self.ui.max_radius_slider.value() if self.ui.max_radius_radioButton.isChecked() else None
         o_profile.calculate(center=self.center,
                             angle_range=self.angle_range,

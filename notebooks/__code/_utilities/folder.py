@@ -1,6 +1,7 @@
 import glob
 import os
 import numpy as np
+import shutil
 
 
 def get_list_of_folders_with_specified_file_type(list_of_folders_to_check=None,
@@ -85,3 +86,14 @@ def get_list_of_folders_with_specified_file_type_and_same_number_of_files(list_o
             list_of_folders_rejected.append(_folder)
 
     return list_of_folders_checked, list_of_folders_rejected
+
+
+def make_folder(folder_name):
+    if not (os.path.exists(folder_name)):
+        os.makedirs(folder_name)
+
+
+def make_or_reset_folder(folder_name):
+    if os.path.exists(folder_name):
+         shutil.rmtree(folder_name)
+    os.makedirs(folder_name)
