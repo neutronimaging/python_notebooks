@@ -62,6 +62,10 @@ class WaveFrontDynamics:
         self.list_of_data = list_of_data
         self.list_of_original_image_files = list_of_original_image_files
 
+        nbr_files = str(len(list_of_ascii_files))
+        display(HTML('<span style="font-size: 20px; color:blue">Notebooks successfully loaded the ' + nbr_files +
+                     ' ASCII profile files!</span>'))
+
 
 class WaveFrontDynamicsUI(QMainWindow):
 
