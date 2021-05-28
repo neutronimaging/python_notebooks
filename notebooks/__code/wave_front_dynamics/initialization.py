@@ -68,4 +68,4 @@ class Initialization(Parent):
         self.parent.data_range['max'] = nbr_points-1
 
         nbr_files = self.parent.nbr_files
-        self.parent.list_of_files_to_use = np.ones((nbr_files), dtype=bool)
+        self.parent.boolean_list_of_files_to_use = np.ones((nbr_files), dtype=bool)

@@ -24,7 +24,7 @@ class EventHandler(Parent):
         o_get = Get(parent=self.parent)
         bin_size = o_get.prepare_data_bin_size()
         bin_type = o_get.prepare_data_bin_type()
-        list_of_files_to_use = self.parent.list_of_files_to_use
+        boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
 
         self.parent.event_progress.setMaximum(len(list_of_data))
         self.parent.event_progress.setValue(0)
@@ -33,7 +33,7 @@ class EventHandler(Parent):
 
         list_of_data_prepared = []
         for _index, _data in enumerate(list_of_data):
-            if not list_of_files_to_use[_index]:
+            if not boolean_list_of_files_to_use[_index]:
                 continue
             _data = o_get.working_range_of_data(data=_data)
             prepared_data = Algorithms.bin_data(data=_data, bin_size=bin_size, bin_type=bin_type)
@@ -51,14 +51,14 @@ class EventHandler(Parent):
 
         self.parent.ui.file_index_value_label.setText(str(slider_value))
 
-        list_of_files_to_use = self.parent.list_of_files_to_use
-        self.parent.ui.use_this_file_checkBox.setChecked(list_of_files_to_use[slider_value])
+        boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
+        self.parent.ui.use_this_file_checkBox.setChecked(boolean_list_of_files_to_use[slider_value])
 
     def use_this_file_clicked(self):
         file_index = self.parent.ui.file_index_horizontalSlider.value()
-        list_of_files_to_use = self.parent.list_of_files_to_use
-        list_of_files_to_use[file_index] = self.parent.ui.use_this_file_checkBox.isChecked()
-        self.parent.list_of_files_to_use = list_of_files_to_use
+        boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
+        boolean_list_of_files_to_use[file_index] = self.parent.ui.use_this_file_checkBox.isChecked()
+        self.parent.boolean_list_of_files_to_use = boolean_list_of_files_to_use
 
     def prepare_data_bin_size_changed(self, slider_value=None):
         if slider_value is None:
@@ -67,9 +67,9 @@ class EventHandler(Parent):
         self.parent.ui.bin_value_label.setText(str(slider_value))
 
     def check_state_of_prepare_data_plot(self):
-        list_of_files_to_use = self.parent.list_of_files_to_use
+        boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
         file_index = self.parent.ui.file_index_horizontalSlider.value()
-        self.parent.ui.prepare_data_widget.setEnabled(list_of_files_to_use[file_index])
+        self.parent.ui.prepare_data_widget.setEnabled(boolean_list_of_files_to_use[file_index])
 
     def calculate_edge_position(self):
         o_get = Get(parent=self.parent)
@@ -86,7 +86,7 @@ class EventHandler(Parent):
                          ListAlgorithm.change_point]
             for _algo in list_algo:
                 self.running_algo(algorithm=_algo)
-                self.check_status_of_edge_calculation_checkboxes()
+                # self.check_status_of_edge_calculation_checkboxes()
                 o_display.display_current_selected_profile_and_edge_position()
                 o_display.display_all_edge_positions()
         else:
@@ -160,11 +160,11 @@ class EventHandler(Parent):
 
     def update_list_of_relative_timestamp_of_prepared_data(self):
         list_timestamp = self.parent.list_timestamp
-        list_of_files_to_use = self.parent.list_of_files_to_use
+        boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
 
         t0 = -1
         list_of_timestamp_of_data_prepared = []
-        for _index, _state in enumerate(list_of_files_to_use):
+        for _index, _state in enumerate(boolean_list_of_files_to_use):
             if _state:
 
                 if t0 == -1:
@@ -176,3 +176,14 @@ class EventHandler(Parent):
                     list_of_timestamp_of_data_prepared.append(relative_time)
 
         self.parent.list_of_timestamp_of_data_prepared = list_of_timestamp_of_data_prepared
+
+    def update_list_of_original_image_files_to_use(self):
+        list_of_original_image_files = self.parent.list_of_original_image_files
+        boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
+
+        list_of_original_image_files_to_use = []
+        for _index, _state in enumerate(boolean_list_of_files_to_use):
+            if _state:
+                list_of_original_image_files_to_use.append(list_of_original_image_files[_index])
+
+        self.parent.list_of_original_image_files_to_use = list_of_original_image_files_to_use

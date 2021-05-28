@@ -67,8 +67,9 @@ class WaveFrontDynamicsUI(QMainWindow):
 
     list_of_ascii_files = None
     nbr_files = None
-    list_of_files_to_use = None
+    boolean_list_of_files_to_use = None
     list_of_original_image_files = None
+    list_of_original_image_files_to_use = None
 
     # raw
     list_of_data = None
@@ -99,7 +100,8 @@ class WaveFrontDynamicsUI(QMainWindow):
 
         self.list_of_data = wave_front_dynamics.list_of_data
         self.list_timestamp = wave_front_dynamics.list_timestamp
-
+        self.list_of_original_image_files = wave_front_dynamics.list_of_original_image_files
+        self.list_of_original_image_files_to_use = copy.deepcopy(wave_front_dynamics.list_of_original_image_files)
         self.nbr_files = len(self.list_of_data)
 
         super(QMainWindow, self).__init__(parent)
@@ -173,6 +175,7 @@ class WaveFrontDynamicsUI(QMainWindow):
         o_event.use_this_file_clicked()
         o_event.check_state_of_prepare_data_plot()
         o_event.update_list_of_relative_timestamp_of_prepared_data()
+        o_event.update_list_of_original_image_files_to_use()
 
     # event handler - edge calculation tab
     def edge_calculation_calculate_pressed(self):
