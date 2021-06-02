@@ -113,6 +113,7 @@ class BraggEdge:
         self.bragg_edges = _handler.bragg_edges
         self.hkl = _handler.hkl
         self.handler = _handler
+        print(self.handler)
 
     def select_working_folder(self):
         select_data = fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
