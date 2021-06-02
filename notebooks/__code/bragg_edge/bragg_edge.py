@@ -44,9 +44,6 @@ class BraggEdge:
         retrieve_material = RetrieveMaterialMetadata(material='all')
         self.list_returned = retrieve_material.full_list_material()
 
-        # import pprint
-        # pprint.pprint(list_returned)
-
         box4 = widgets.HBox([widgets.Label("List of elements",
                                            layout=widgets.Layout(width=self.label_width)),
                              widgets.Select(options=self.list_returned,
@@ -260,7 +257,7 @@ class BraggEdge:
             mode='markers')
 
         layout = go.Layout(
-            width="100%",
+            width=1000,
             height=500,
             title="Sum Counts vs TOF",
             xaxis=dict(
@@ -273,6 +270,9 @@ class BraggEdge:
 
         max_x = 6
         y_off = 1
+
+        data = [trace]
+        figure = go.Figure(data=data, layout=layout)
 
         for y_index, _material in enumerate(bragg_edges):
             for _index, _value in enumerate(bragg_edges[_material]):
@@ -288,7 +288,8 @@ class BraggEdge:
                                   'color': 'rgb(255, 0, 0)',
                                   'width': 1
                               }}
-                layout.shapes.append(bragg_line)
+                figure.add_shape(bragg_line)
+                # layout.shapes.append(bragg_line)
                 y_off = 1 - 0.25 * y_index
 
                 # add labels to plots
@@ -307,11 +308,9 @@ class BraggEdge:
                     ax=0,
                     ay=-25)
 
-                layout.annotations.append(_annot)
+                figure.add_annotation(_annot)
 
-        data = [trace]
-
-        figure = go.Figure(data=data, layout=layout)
+        # figure = go.Figure(data=data, layout=layout)
         iplot(figure)
 
     def select_output_folder(self):
