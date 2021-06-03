@@ -1,4 +1,4 @@
-name: base
+name: jupyter_notebooks_py37
 channels:
   - defaults
 dependencies:
