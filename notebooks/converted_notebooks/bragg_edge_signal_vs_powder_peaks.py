@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.5.0
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -16,9 +16,6 @@
 # [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bragg_edge_signal_vs_powder_peaks)
 #
 # <img src='__docs/__all/notebook_rules.png' />
-
-# + run_control={"frozen": false, "read_only": false}
-# %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Your IPTS 
@@ -33,6 +30,9 @@ custom_style.style()
 
 from plotly.offline import plot, init_notebook_mode, iplot
 init_notebook_mode()
+
+# + run_control={"frozen": false, "read_only": false}
+# %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Input Folder

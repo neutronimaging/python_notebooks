@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.5.0
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -22,12 +22,9 @@
 # # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_radial_profile.ui')
-
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
-from __code.radial_profile import RadialProfile, SelectRadialParameters
+from __code.radial_profile.radial_profile import RadialProfile, SelectRadialParameters
 
 system.System.select_working_dir()
 from __code.__all import custom_style

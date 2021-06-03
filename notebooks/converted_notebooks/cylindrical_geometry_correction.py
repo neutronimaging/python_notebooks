@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.5.0
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -26,7 +26,7 @@ from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name = 'ui_profile.ui')
 
 from __code import system
-from __code.fileselector import FileSelection
+from __code.ipywe.myfileselector import FileSelection
 from __code.profile import ProfileUi
 
 system.System.select_working_dir()

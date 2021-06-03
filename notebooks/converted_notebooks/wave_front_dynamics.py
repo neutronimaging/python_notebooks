@@ -13,21 +13,19 @@
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/frederick_ipts/)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/wave_front_dynamics/)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select IPTS
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.frederick_ipts import FrederickIpts
+import warnings
+warnings.filterwarnings('ignore')
 
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_file_metadata_display.ui')
-from __code.file_metadata_display import Interface
-
+from __code.wave_front_dynamics.wave_front_dynamics import WaveFrontDynamics, WaveFrontDynamicsUI
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style
@@ -37,18 +35,22 @@ custom_style.style()
 # %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Files 
+# # Select Profile Files to Process
+#
+# list of notebooks that create such files
+# * [radial_profile](radial_profile.ipynb)
+# -
 
-# + run_control={"frozen": false, "read_only": false}
-o_fred = FrederickIpts(working_dir = system.System.get_working_dir())
-o_fred.select_files()
+o_wave = WaveFrontDynamics(working_dir=system.System.get_working_dir())
+o_wave.select_data()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Display images 
+# # Launch User Interface
 
 # + run_control={"frozen": false, "read_only": false}
-o_gui = Interface(exp_dict=o_fred.exp_dict)
-o_gui.show()
+o_ui = WaveFrontDynamicsUI(working_dir=system.System.get_working_dir(),
+                           wave_front_dynamics=o_wave)
+o_ui.show()
+# -
 
-# + run_control={"frozen": false, "read_only": false}
 
