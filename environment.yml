@@ -1,23 +1,33 @@
-name: jupyter_notebooks_py37
+name: neutron-imaging
 channels:
   - defaults
+  - conda-forge
 dependencies:
-  - conda
   - python=3.7
-  - conda-env
-  - conda-build
-  - conda-verify
-  - _ipyw_jlab_nb_ext_conf
-  - anaconda
-  - anaconda-navigator
-  - navigator-updater
-  - graphviz
-  - rise
-  - python-graphviz
-  - pydot
+  - requests
+  - requests-oauthlib
+  - numpy
+  - scipy
+  - pandas
+  - scikit-image
+  - matplotlib
   - plotly
-  - ffmpeg
-  - keras
-  - tifffile
+  - nodejs
+  - qtpy
+  - pyqtgraph
+  - astropy
+  - nbstripout
+  - jupyterlab
+  - ipykernel
   - pip
-prefix: /Users/kaestner/opt/anaconda3
+  - pip:
+    - ipywe
+    - lmfit
+    - neutronbraggedge
+    - NeuNorm
+    - sectorizedradialprofile
+    - inflect
+    - ImagingReso
+    - ipywidgets
+    - https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl
+prefix: /opt/anaconda/envs/neutron-imaging
