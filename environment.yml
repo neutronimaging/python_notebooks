@@ -19,6 +19,7 @@ dependencies:
   - nbstripout
   - jupyterlab
   - ipykernel
+  - jupytext
   - pip
   - pip:
     - ipywe
