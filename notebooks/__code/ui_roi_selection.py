@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_roi_selection.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -123,4 +125,3 @@ class Ui_MainWindow(object):
         self.add_roi_button.setText(_translate("MainWindow", "+"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel"))
         self.apply_button.setText(_translate("MainWindow", "OK"))
-
