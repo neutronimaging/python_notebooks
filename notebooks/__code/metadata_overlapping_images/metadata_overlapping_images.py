@@ -14,6 +14,7 @@ from __code.metadata_overlapping_images.export_images import MetadataTableHandle
 from __code.metadata_overlapping_images.export_images import ExportImages
 from __code.metadata_overlapping_images.export_images import DisplayImages
 from __code.metadata_overlapping_images.export_images import TableLoader
+from __code.metadata_overlapping_images.advanced_table_handler import AdvancedTableHandler
 
 from __code.metadata_overlapping_images import HELP_PAGE, LIST_FUNNY_CHARACTERS
 
@@ -245,6 +246,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def table_cell_changed(self, row, column):
         self.update_metadata_pyqt_ui()
+
+    def advanced_table_clicked(self):
+        o_advanced = AdvancedTableHandler(parent=self)
+        o_advanced.show()
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,

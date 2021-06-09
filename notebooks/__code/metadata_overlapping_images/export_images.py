@@ -118,6 +118,7 @@ class Initializer:
 
         # populate list of metadata if file is a tiff
         list_metadata = self.get_list_metadata()
+        self.parent.raw_list_metadata = list_metadata
         if list_metadata:
             self.parent.ui.select_metadata_combobox.addItems(list_metadata)
         else: #hide widgets
