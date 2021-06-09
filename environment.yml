@@ -20,6 +20,7 @@ dependencies:
   - jupyterlab
   - ipykernel
   - jupytext
+  - PyQt5
   - pip
   - pip:
     - ipywe

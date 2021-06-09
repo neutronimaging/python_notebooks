@@ -85,7 +85,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.setWindowTitle("Metadata Overlapping Images")
 
         self.working_dir = working_dir
-        self.data_dict = data_dict # Normalization data dictionary  {'file_name': [],
+        self.data_dict = data_dict  # Normalization data dictionary  {'file_name': [],
                                                                      #'data': [[...],[...]]],
                                                                      #'metadata': [],
                                                                      #'shape': {}}
@@ -381,7 +381,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
             # highlight current file
             current_index = self.ui.file_slider.value()
             _pen = pg.mkPen((255, 0, 0), width=4)
-            graph.plot(x=[current_index], y=[data[current_index]], pen=_pen, symboBrush=(255, 0,0), symbolPen='w')
+
+            graph.plot(x=[current_index], y=[data[current_index]],
+                       pen=_pen,
+                       symboBrush=(255, 0, 0),
+                       symbolPen='w')
             _inf_line = pg.InfiniteLine(current_index, pen=_pen)
             graph.addItem(_inf_line)
 
@@ -408,6 +412,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
             _row_str = str(self.ui.tableWidget.item(_row, 1).text())
+            split_row_str = _row_str.split(":")
+            if len(split_row_str) == 1:
+                _row_str = split_row_str[0]
+            else:
+                _row_str = split_row_str[1]
             try:
                 _row_value = np.float(_row_str)
             except:
