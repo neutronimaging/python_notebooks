@@ -1994,6 +1994,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>advanced_table_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>advanced_table_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>862</x>
+     <y>697</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>670</x>
+     <y>791</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
