@@ -22,14 +22,10 @@
 # # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_metadata_overlapping_images.ui')
-o_builder = UiBuilder(ui_name = 'ui_metadata_overlapping_images_string_format.ui')
+from __code.ipywe.myfileselector import FileSelection
+from __code.metadata_overlapping_images.metadata_overlapping_images import MetadataOverlappingImagesUi
 
 from __code import system
-from __code.ipywe.myfileselector import FileSelection
-from __code.metadata_overlapping_images import MetadataOverlappingImagesUi
-
 system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
@@ -55,8 +51,25 @@ o_profile = MetadataOverlappingImagesUi(working_dir=system.System.get_working_di
                       data_dict=o_selection.data_dict['sample'])
 o_profile.show()
 
-# + run_control={"frozen": false, "read_only": false}
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # DEBUGGING
 
-
 # + run_control={"frozen": false, "read_only": false}
+from __code.metadata_overlapping_images.metadata_overlapping_images import MetadataOverlappingImagesUi
+import glob
+from NeuNorm.normalization import Normalization
+
+working_dir = '/Volumes/G-DRIVE/IPTS/IPTS-26628-ali/2021_06_05_2nd_light/'
+list_files = glob.glob(working_dir + "*.tif")
+o_norm = Normalization()
+o_norm.load(file=list_files, notebook=True)
+data_dict = o_norm.data['sample']
+# -
+
+# %gui qt
+
+o_metadata_overlap = MetadataOverlappingImagesUi(working_dir=working_dir,
+                                                 data_dict=data_dict)
+o_metadata_overlap.show()
+
 
