@@ -71,7 +71,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="tableWidget_2">
+     <widget class="QTableWidget" name="formula_tableWidget">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -96,11 +96,6 @@
       <attribute name="verticalHeaderVisible">
        <bool>false</bool>
       </attribute>
-      <row>
-       <property name="text">
-        <string>New Row</string>
-       </property>
-      </row>
       <row>
        <property name="text">
         <string>New Row</string>

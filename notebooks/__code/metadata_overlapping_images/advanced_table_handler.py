@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QLineEdit, QLabel
 import os
 import numpy as np
 
@@ -7,6 +7,10 @@ from __code._utilities.table_handler import TableHandler
 
 
 class AdvancedTableHandler(QMainWindow):
+
+    list_formula_tableWidget_labels = []
+    formula_table_cell_size = {'row': 50,
+                               'column': 200}
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -37,8 +41,36 @@ class AdvancedTableHandler(QMainWindow):
             name = metadata_code
             value = metadata_value
 
+        self.add_metadata_to_formula_table(name=name, value=value)
+
         self.ui.statusbar.showMessage("")
         self.ui.statusbar.setStyleSheet("color: green")
+
+    def add_metadata_to_formula_table(self, name="", value=""):
+        o_table = TableHandler(table_ui=self.ui.formula_tableWidget)
+        nbr_column = o_table.column_count()
+
+        o_table.insert_empty_column(column=nbr_column)
+
+        widget = QWidget()
+        hbox = QHBoxLayout()
+
+        if nbr_column > 0:
+            label = QLabel(f"+")
+            hbox.addWidget(label)
+
+        coeff_field = QLineEdit("1")
+        label = QLabel(f"* {value}")
+        hbox.addWidget(coeff_field)
+        hbox.addWidget(label)
+        widget.setLayout(hbox)
+        o_table.insert_widget(row=0, column=nbr_column, widget=widget)
+
+        column_width = np.ones((nbr_column + 1)) * self.formula_table_cell_size['column']
+        o_table.set_column_width(column_width=column_width)
+
+        self.list_formula_tableWidget_labels.append(name)
+        o_table.set_column_names(self.list_formula_tableWidget_labels)
 
     def remove_metadata(self):
         pass
@@ -59,6 +91,7 @@ class Initialization:
     def all(self):
         self.list_of_metadata()
         self.file_name_value_table()
+        self.formula_table()
 
     def list_of_metadata(self):
         list_of_metadata = self.top_parent.raw_list_metadata
@@ -78,3 +111,7 @@ class Initialization:
             o_table.insert_item(row=_row, column=0, value=_file, editable=False)
 
         o_table.set_column_width(column_width=[450])
+
+    def formula_table(self):
+        o_table = TableHandler(table_ui=self.parent.ui.formula_tableWidget)
+        o_table.set_row_height(row_height=[self.parent.formula_table_cell_size['row']])
