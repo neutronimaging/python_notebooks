@@ -850,6 +850,30 @@
              </widget>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_15">
+              <item>
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Font size</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="font_size_slider">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>10</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <spacer name="verticalSpacer_2">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -1073,8 +1097,20 @@
                 <layout class="QHBoxLayout" name="horizontalLayout_12">
                  <item>
                   <widget class="QLabel" name="metadata_graph_size_label_2">
+                   <property name="minimumSize">
+                    <size>
+                     <width>80</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>80</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
                    <property name="text">
-                    <string>Size:</string>
+                    <string>Graph size:</string>
                    </property>
                   </widget>
                  </item>
@@ -1097,18 +1133,44 @@
                    </property>
                   </widget>
                  </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_16">
                  <item>
-                  <spacer name="horizontalSpacer_2">
+                  <widget class="QLabel" name="label_17">
+                   <property name="minimumSize">
+                    <size>
+                     <width>80</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>90</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Font size</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSlider" name="graph_font_size_slider">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>10</number>
+                   </property>
+                   <property name="value">
+                    <number>10</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -1683,8 +1745,8 @@
    <slot>metadata_graph_size_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1156</x>
-     <y>719</y>
+     <x>1167</x>
+     <y>685</y>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
@@ -1699,8 +1761,8 @@
    <slot>metadata_graph_size_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1138</x>
-     <y>722</y>
+     <x>1149</x>
+     <y>688</y>
     </hint>
     <hint type="destinationlabel">
      <x>905</x>
@@ -1764,7 +1826,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1077</x>
-     <y>627</y>
+     <y>661</y>
     </hint>
     <hint type="destinationlabel">
      <x>1081</x>
@@ -1780,7 +1842,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1126</x>
-     <y>625</y>
+     <y>659</y>
     </hint>
     <hint type="destinationlabel">
      <x>1153</x>
@@ -1812,7 +1874,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1396</x>
-     <y>499</y>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>899</x>
@@ -1828,7 +1890,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1114</x>
-     <y>694</y>
+     <y>660</y>
     </hint>
     <hint type="destinationlabel">
      <x>998</x>
@@ -1844,7 +1906,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1131</x>
-     <y>644</y>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -1869,18 +1931,66 @@
    </hints>
   </connection>
   <connection>
-   <sender>advanced_table_pushButton</sender>
-   <signal>clicked()</signal>
+   <sender>font_size_slider</sender>
+   <signal>sliderPressed()</signal>
    <receiver>MainWindow</receiver>
-   <slot>advanced_table_clicked()</slot>
+   <slot>font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>876</x>
-     <y>698</y>
+     <x>1200</x>
+     <y>483</y>
     </hint>
     <hint type="destinationlabel">
-     <x>658</x>
-     <y>810</y>
+     <x>1413</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>font_size_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>font_size_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1272</x>
+     <y>481</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1415</x>
+     <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_font_size_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_font_size_slider_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1231</x>
+     <y>729</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1414</x>
+     <y>737</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_font_size_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_font_size_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1261</x>
+     <y>720</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1413</x>
+     <y>691</y>
     </hint>
    </hints>
   </connection>
@@ -1919,5 +2029,9 @@
   <slot>enable_graph_button_clicked()</slot>
   <slot>graph_color_changed()</slot>
   <slot>advanced_table_clicked()</slot>
+  <slot>font_size_slider_pressed()</slot>
+  <slot>font_size_slider_moved()</slot>
+  <slot>graph_font_size_slider_moved()</slot>
+  <slot>graph_font_size_slider_pressed()</slot>
  </slots>
 </ui>

@@ -169,6 +169,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.select_metadata_combobox.setEnabled(status)
         self.update_metadata_pyqt_ui()
 
+    def font_size_slider_pressed(self):
+        self.update_metadata_pyqt_ui()
+
+    def font_size_slider_moved(self, value):
+        self.update_metadata_pyqt_ui()
+
+    def graph_font_size_slider_pressed(self):
+        self.update_metadata_pyqt_ui()
+
+    def graph_font_size_slider_moved(self, value):
+        self.update_metadata_pyqt_ui()
+
     def metadata_list_changed(self, index):
         key_selected = self.list_metadata[index]
 
@@ -340,17 +352,23 @@ class MetadataOverlappingImagesUi(QMainWindow):
         if not self.ui.metadata_checkbox.isChecked():
             return
 
+        font_size = self.ui.font_size_slider.value()
         x0 = self.ui.metadata_position_x.value()
         y0 = self.ui.metadata_position_y.maximum() - self.ui.metadata_position_y.value()
         metadata_text = self.get_metadata_text()
         color = self.get_color(source='metadata', color_type='html')
 
-        text = pg.TextItem(html='<div style="text-align: center"><span style="color: ' + color + ';">' + metadata_text + '</span></div>')
+        text = pg.TextItem(html='<div style="text-align:center"> ' +
+                                '<font size="' + str(font_size) + '"> ' +
+                                '<span style="color: ' + color + '"' +
+                                '>' + metadata_text + '</span></div>')
+
         view.addItem(text)
         text.setPos(x0, y0)
         if save_it:
             self.metadata_pyqt_ui = text
 
+        graph_font_size = self.ui.graph_font_size_slider.value()
         if self.ui.enable_graph_checkbox.isChecked():
 
             data = self.get_metadata_column()
@@ -358,21 +376,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
             # _view_box.setBackgroundColor((100, 100, 100, 100))
             graph = pg.PlotItem(viewBox=_view_box)
 
-            font_size = 8
             units = self.ui.manual_metadata_units.text()
             if units:
                 y_axis_label = '<html><font color="{}" size="{}">{} ({})</font></html>'.format(color,
-                                                                                               font_size,
+                                                                                               graph_font_size,
                                                                                                self.ui.manual_metadata_name.text(),
                                                                                                units)
             else:
                 y_axis_label = '<html><font color="{}" size="{}">{}</font></html>'.format(color,
-                                                                                          font_size,
+                                                                                          graph_font_size,
                                                                                           self.ui.manual_metadata_name.text())
 
-
-            x_axis_label = '<p><font color="{}" size="{}">File Index</font></p>'.format(color,
-                                                                                              font_size)
+            x_axis_label = '<p><font color="{}" size="{}">File Index</font></p>'.format(color, graph_font_size)
 
             graph.setLabel('left', text=y_axis_label)
             graph.setLabel('bottom', text=x_axis_label)
