@@ -118,7 +118,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         o_metadata_table.right_click(position)
 
     def previous_image_button_clicked(self):
-        self.change_slider(offset = -1)
+        self.change_slider(offset=-1)
         self.update_metadata_pyqt_ui()
 
     def next_image_button_clicked(self):
