@@ -74,7 +74,7 @@ class AdvancedTableHandler(QMainWindow):
                 o_dict = dict(o_image.tag_v2)
                 value = o_dict[float(key_selected)]
 
-                if ":" in value:
+                if ":" in str(value):
                     name, value_str = value.split(":")
                     try:
                         value = np.float(value_str)
