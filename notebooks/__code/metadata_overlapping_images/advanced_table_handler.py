@@ -53,6 +53,9 @@ class AdvancedTableHandler(QMainWindow):
 
         self.update_tableWidget()
 
+    def coefficient_changed(self):
+        self.update_tableWidget()
+
     def update_tableWidget(self):
         list_metadata_index_selected = self.list_metatata_index_selected
         list_files = self.parent.data_dict['file_name']
@@ -84,9 +87,8 @@ class AdvancedTableHandler(QMainWindow):
                     self.ui.statusbar.setStyleSheet("color: red")
                     return
 
-                print(f"coefficient: {coefficient} and value:{value}")
                 global_value += coefficient * value
-            o_table.insert_item(row=_row, column=1, value=value, editable=False)
+            o_table.insert_item(row=_row, column=1, value=global_value, editable=False)
 
         self.ui.statusbar.showMessage("Table refreshed with new formula!", 10000)
         self.ui.statusbar.setStyleSheet("color: green")
@@ -105,6 +107,9 @@ class AdvancedTableHandler(QMainWindow):
             hbox.addWidget(label)
 
         coeff_field = QLineEdit("1")
+        coeff_field.blockSignals(True)
+        coeff_field.returnPressed.connect(self.coefficient_changed)
+        coeff_field.blockSignals(False)
         self.list_lineedit_ui_in_formula_tableWidget.append(coeff_field)
         label = QLabel(f"* {value}")
         hbox.addWidget(coeff_field)
