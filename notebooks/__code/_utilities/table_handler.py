@@ -38,12 +38,18 @@ class TableHandler:
     def remove_all_rows(self):
         nbr_row = self.table_ui.rowCount()
         for _ in np.arange(nbr_row):
-            self.table_ui.removeRow(0)
+            self.remove_row(row=0)
+
+    def remove_row(self, row=-1):
+        self.table_ui.removeRow(row)
 
     def remove_all_columns(self):
         nbr_column = self.table_ui.columnCount()
         for _ in np.arange(nbr_column):
-            self.table_ui.removeColumn(0)
+            self.remove_column(column=0)
+
+    def remove_column(self, column=-1):
+        self.table_ui.removeColumn(column)
 
     def full_reset(self):
         self.remove_all_rows()
@@ -79,6 +85,16 @@ class TableHandler:
         except IndexError:
             return -1
         return first_selection.topRow()
+
+    def get_column_selected(self):
+        if self.table_ui is None:
+            return -1
+        list_selection = self.table_ui.selectedRanges()
+        try:
+            first_selection = list_selection[0]
+        except IndexError:
+            return -1
+        return first_selection.leftColumn()
 
     def get_cell_selected(self):
         list_selection = self.table_ui.selectedRanges()

@@ -63,8 +63,12 @@ class AdvancedTableHandler(QMainWindow):
 
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         for _row, _file in enumerate(list_files):
+            o_table.insert_item(row=_row, column=1, value="", editable=False)
+
             global_value = 0
+            there_is_at_least_one_column = False
             for _column, _index_metadata in enumerate(list_metadata_index_selected):
+                there_is_at_least_one_column = True
                 key_selected = self.parent.list_metadata[_index_metadata]
                 o_image = Image.open(_file)
                 o_dict = dict(o_image.tag_v2)
@@ -86,9 +90,10 @@ class AdvancedTableHandler(QMainWindow):
                     self.ui.statusbar.showMessage(f"Coefficient in column {_column} is wrong!", 10000)
                     self.ui.statusbar.setStyleSheet("color: red")
                     return
-
                 global_value += coefficient * value
-            o_table.insert_item(row=_row, column=1, value=global_value, editable=False)
+
+            if there_is_at_least_one_column:
+                o_table.insert_item(row=_row, column=1,value=global_value, editable=False)
 
         self.ui.statusbar.showMessage("Table refreshed with new formula!", 10000)
         self.ui.statusbar.setStyleSheet("color: green")
@@ -122,9 +127,21 @@ class AdvancedTableHandler(QMainWindow):
 
         self.list_formula_tableWidget_labels.append(name)
         o_table.set_column_names(self.list_formula_tableWidget_labels)
+        self.ui.remove_metadata_button.setEnabled(True)
 
     def remove_metadata(self):
-        pass
+        o_table = TableHandler(table_ui=self.ui.formula_tableWidget)
+        column_selected = o_table.get_column_selected()
+        if column_selected == -1:
+            return
+
+        del(self.list_formula_tableWidget_labels[column_selected])
+        del(self.list_metatata_index_selected[column_selected])
+        del(self.list_lineedit_ui_in_formula_tableWidget[column_selected])
+        o_table.remove_column(column=column_selected)
+        self.update_tableWidget()
+        if o_table.column_count() == 0:
+            self.ui.remove_metadata_button.setEnabled(False)
 
     def cancel_clicked(self):
         self.close()
