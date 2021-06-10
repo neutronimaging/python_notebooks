@@ -147,7 +147,14 @@ class AdvancedTableHandler(QMainWindow):
         self.close()
 
     def ok_clicked(self):
-        pass
+        o_table_out = TableHandler(table_ui=self.parent.ui.tableWidget)
+        o_table_in = TableHandler(table_ui=self.ui.tableWidget)
+
+        nbr_row = o_table_in.row_count()
+        for _row in np.arange(nbr_row):
+            value_in = o_table_in.get_item_str_from_cell(row=_row, column=1)
+            o_table_out.set_item_with_str(row=_row, column=1, cell_str=value_in)
+        self.close()
 
 
 class Initialization:
