@@ -50,26 +50,6 @@ o_selection.select_data()
 o_profile = MetadataOverlappingImagesUi(working_dir=system.System.get_working_dir(),
                       data_dict=o_selection.data_dict['sample'])
 o_profile.show()
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # DEBUGGING
-
-# + run_control={"frozen": false, "read_only": false}
-from __code.metadata_overlapping_images.metadata_overlapping_images import MetadataOverlappingImagesUi
-import glob
-from NeuNorm.normalization import Normalization
-
-working_dir = '/Volumes/G-DRIVE/IPTS/IPTS-26628-ali/2021_06_05_2nd_light/'
-list_files = glob.glob(working_dir + "*.tif")
-o_norm = Normalization()
-o_norm.load(file=list_files, notebook=True)
-data_dict = o_norm.data['sample']
 # -
-
-# %gui qt
-
-o_metadata_overlap = MetadataOverlappingImagesUi(working_dir=working_dir,
-                                                 data_dict=data_dict)
-o_metadata_overlap.show()
 
 
