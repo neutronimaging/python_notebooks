@@ -4,84 +4,9 @@ Full tutorial of most of the notebooks can be found at [here](https://neutronima
 
 ## Instructions
 
-The majority of the notebooks are ready to use on the ORNL cluster ([analysis cluster](https://analysis.sns.gov)) when logged in with your __XCAME__ account.
-For those who wish to run these notebooks locally for
-* light-weight data processing
-* training and education
-* development
+To learn how to access or install the notebooks, and how to run them, refer to the complete tutorial found on our imaging web site https://neutronimaging.pages.ornl.gov
 
-<!---
-__two methods__ are provided here to setup your personal environment to run these notebooks.
---->
-
-### Build Local Conda Environment
-
-For most developers who wish to build on top of existing notebooks, it is recommended to build you own local environment such that additional dependencies and modules can be added to the `conda` env easily.
-Here are the steps needed to build your own Conda env
-
-* Install [`Anaconda3`](https://www.anaconda.com/products/individual) or [`miniconda3`](https://docs.conda.io/en/latest/miniconda.html).
-  > If one of the two is already installed, skip this step.
-
-## for Mac and linux
-
-* open a terminal session
-
-* Create a virtual environment for this repo, e.g.
-  ```bash
-  conda create -n neutron_imaging python=3
-  ```
-* Activate the virtual environment with
-  ```bash
-  conda activate neutron_imaging
-  ```
-* Clone this repository to your local computer with
-  ```bash
-  git clone https://github.com/neutronimaging/python_notebooks.git
-  ```
-* move inside the new folder created
-  ```bash
-  cd python_notebooks
-  ```
-* you should be able to find a bash script, `config_conda_env.sh`.  Use it to install required packages with
-  ```bash
-  bash config_conda_env.sh
-  ```
-  > NOTE: technically you can run this script in any environment, but it is __highly recommended__ to run it in a virual environment.
-
-* Fire up your terminal, go to the root of this repo, and start the Jupyter notebook server with
-  ```bash
-  jupyter notebook
-  ```
-  You will see something similar to the following
-  ```bash
-    [I 14:00:13.183 NotebookApp] The port 8888 is already in use, trying another port.
-    [I 14:00:14.061 NotebookApp] JupyterLab extension loaded from A_REALL_LONG_PATH
-    [I 14:00:14.061 NotebookApp] JupyterLab application directory is ANOTHER_LONG_PATH
-    [I 14:00:14.063 NotebookApp] Serving notebooks from local directory: CURRNT_DIR
-    [I 14:00:14.063 NotebookApp] Jupyter Notebook 6.1.1 is running at:
-    [I 14:00:14.063 NotebookApp] http://localhost:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
-    [I 14:00:14.063 NotebookApp]  or http://127.0.0.1:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
-    [I 14:00:14.063 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-    [C 14:00:14.068 NotebookApp] 
-
-    To access the notebook, open this file in a browser:
-        file:///home/user/.local/share/jupyter/runtime/nbserver-2560206-open.html
-    Or copy and paste one of these URLs:
-        http://localhost:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
-        or http://127.0.0.1:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
-
-  ```
-  At that point, your favorite browser should show up with the jupyter environment ready to go. If it does not, copy and paste the 6th line of the output to your browser
-  ```bash
-  http://localhost:8889/?token=1e612467cf5e1e4f91cf074f483010ea7c8de989745eba96
-  ```
-  and you are ready to use the notebooks.
-  > NOTE: For most terminals, you can also `Ctrl+click` or `CMD+click` on the link to open it in your default browser. 
-
-## for Windows
-
-
-
+![Screen Shot 2021-06-11 at 8 03 33 AM](https://user-images.githubusercontent.com/1138324/121683900-000cc080-ca8c-11eb-815f-5ff52731dba7.png)
 
 ## How to contribute back
 
