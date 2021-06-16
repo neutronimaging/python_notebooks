@@ -288,6 +288,9 @@
           <property name="text">
            <string>Apply Chips Alignment Correction</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -298,9 +301,9 @@
           <widget class="QWidget" name="">
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
-             <widget class="QWidget" name="widget" native="true">
+             <widget class="QWidget" name="alignment_before_widget" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -310,7 +313,7 @@
             <item>
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>Raw</string>
+               <string>Before</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -322,9 +325,9 @@
           <widget class="QWidget" name="">
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
-             <widget class="QWidget" name="widget_2" native="true">
+             <widget class="QWidget" name="alignment_after_widget" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -334,7 +337,7 @@
             <item>
              <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Corrected</string>
+               <string>After</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -352,7 +355,7 @@
     <item>
      <widget class="QPushButton" name="perform_correction_pushButton">
       <property name="text">
-       <string>Perform correction on all images ...</string>
+       <string>Correct and Export all Images ...</string>
       </property>
      </widget>
     </item>
