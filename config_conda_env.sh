@@ -7,6 +7,8 @@ PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl
 conda update -y -n base -c defaults conda
 
 # install dependencies from main channel
+conda install -c conda-forge nodejs=15.14.0
+
 conda install -y      \
     requests          \
     requests-oauthlib \
@@ -18,7 +20,6 @@ conda install -y      \
     plotly            \
     jupyter           \
     jupyterlab        \
-    nodejs            \
     qtpy              \
     pyqtgraph         \
     astropy
