@@ -1,5 +1,6 @@
 import os
 import pyqtgraph as pg
+import pyqtgraph.exporters
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import QApplication
@@ -46,7 +47,7 @@ class ExportImages:
             output_file_name = self._create_output_file_name(file=_file)
             self.parent.ui.file_slider.setValue(_index)
 
-            exporter = pg.exporters.ImageExporter(self.parent.ui.image_view.view)
+            exporter = pyqtgraph.exporters.ImageExporter(self.parent.ui.image_view.view)
 
             exporter.params.param('width').setValue(2024, blockSignal=exporter.widthChanged)
             exporter.params.param('height').setValue(2014, blockSignal=exporter.heightChanged)

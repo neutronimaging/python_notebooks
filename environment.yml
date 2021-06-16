@@ -14,7 +14,7 @@ dependencies:
   - plotly
   - nodejs
   - qtpy
-  - pyqtgraph
+  - pyqtgraph=0.12.1
   - astropy
   - nbstripout
   - jupyterlab
