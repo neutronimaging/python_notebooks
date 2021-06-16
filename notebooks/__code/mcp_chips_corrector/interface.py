@@ -63,6 +63,8 @@ class Interface(QMainWindow):
         self.display_setup_image()
 
     # Event handler
+
+    # contrast
     def display_setup_image(self):
         o_event = EventHandler(parent=self)
         o_event.display_setup_image()
@@ -105,6 +107,16 @@ class Interface(QMainWindow):
         o_event.with_correction_tab()
         o_event.plot_mean()
 
+    # Alignment
+
+    # global
+    def file_slider_clicked(self):
+        print("clicked slider")
+
+    def file_slider_moved(self, value):
+        print("slider value changed")
+
     def correct_all_images_pushed(self):
         o_event = EventHandler(parent=self)
         o_event.correct_all_images()
+

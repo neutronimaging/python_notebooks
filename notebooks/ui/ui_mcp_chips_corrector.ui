@@ -39,7 +39,7 @@
           </property>
           <widget class="QTabWidget" name="tabWidget">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab">
             <attribute name="title">
@@ -311,6 +311,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QSlider" name="alignment_file_slider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QLabel" name="label">
               <property name="text">
                <string>Before</string>
@@ -353,6 +360,24 @@
      </widget>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>File index</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="file_slider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QPushButton" name="perform_correction_pushButton">
       <property name="text">
        <string>Correct and Export all Images ...</string>
@@ -382,8 +407,8 @@
    <slot>profile_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>350</x>
-     <y>102</y>
+     <x>331</x>
+     <y>170</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -398,8 +423,8 @@
    <slot>profile_type_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>404</x>
-     <y>98</y>
+     <x>413</x>
+     <y>170</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -414,8 +439,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
-     <y>609</y>
+     <x>278</x>
+     <y>521</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -430,8 +455,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>343</x>
-     <y>605</y>
+     <x>321</x>
+     <y>521</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -446,8 +471,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>391</x>
-     <y>606</y>
+     <x>365</x>
+     <y>521</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -462,8 +487,8 @@
    <slot>chips_index_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>432</x>
-     <y>612</y>
+     <x>409</x>
+     <y>521</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -478,8 +503,8 @@
    <slot>coefficient_corrector_manually_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1095</x>
-     <y>635</y>
+     <x>1062</x>
+     <y>549</y>
     </hint>
     <hint type="destinationlabel">
      <x>1375</x>
@@ -494,8 +519,8 @@
    <slot>reset_button_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1190</x>
-     <y>634</y>
+     <x>1147</x>
+     <y>556</y>
     </hint>
     <hint type="destinationlabel">
      <x>1375</x>
@@ -510,12 +535,44 @@
    <slot>correct_all_images_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>483</x>
-     <y>623</y>
+     <x>475</x>
+     <y>663</y>
     </hint>
     <hint type="destinationlabel">
      <x>787</x>
      <y>659</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>file_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>371</x>
+     <y>614</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>10</x>
+     <y>576</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>file_slider_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>181</x>
+     <y>605</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>531</y>
     </hint>
    </hints>
   </connection>
@@ -526,5 +583,7 @@
   <slot>coefficient_corrector_manually_changed()</slot>
   <slot>reset_button_pushed()</slot>
   <slot>correct_all_images_pushed()</slot>
+  <slot>file_slider_moved()</slot>
+  <slot>file_slider_clicked()</slot>
  </slots>
 </ui>
