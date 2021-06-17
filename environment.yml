@@ -20,9 +20,9 @@ dependencies:
   - jupyterlab
   - ipykernel
   - jupytext
-  - PyQt5
   - pip
   - pip:
+    - PyQt5
     - ipywe
     - lmfit
     - neutronbraggedge
