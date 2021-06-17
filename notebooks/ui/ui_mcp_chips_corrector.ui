@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget_2">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -282,9 +282,9 @@
        <attribute name="title">
         <string>Alignement</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_8">
+       <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QCheckBox" name="apply_contrast_correction_checkBox_2">
+         <widget class="QCheckBox" name="apply_chips_alignment_correction">
           <property name="text">
            <string>Apply Chips Alignment Correction</string>
           </property>
@@ -294,88 +294,28 @@
          </widget>
         </item>
         <item>
-         <widget class="QSplitter" name="splitter_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QWidget" name="alignment_widget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <widget class="QWidget" name="">
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <widget class="QWidget" name="alignment_before_widget" native="true">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="alignment_file_slider">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Before</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="">
-           <layout class="QVBoxLayout" name="verticalLayout_7">
-            <item>
-             <widget class="QWidget" name="alignment_after_widget" native="true">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>After</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
          </widget>
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>RESULT</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QWidget" name="result_widget" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>File index</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="file_slider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
     <item>
      <widget class="QPushButton" name="perform_correction_pushButton">
@@ -440,7 +380,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>521</y>
+     <y>561</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -456,7 +396,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>321</x>
-     <y>521</y>
+     <y>561</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -472,7 +412,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>365</x>
-     <y>521</y>
+     <y>561</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -488,7 +428,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>409</x>
-     <y>521</y>
+     <y>561</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -504,7 +444,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1062</x>
-     <y>549</y>
+     <y>589</y>
     </hint>
     <hint type="destinationlabel">
      <x>1375</x>
@@ -520,7 +460,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1147</x>
-     <y>556</y>
+     <y>596</y>
     </hint>
     <hint type="destinationlabel">
      <x>1375</x>
@@ -545,34 +485,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>file_slider</sender>
-   <signal>sliderMoved(int)</signal>
+   <sender>apply_chips_alignment_correction</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>file_slider_moved()</slot>
+   <slot>chips_alignment_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>371</x>
-     <y>614</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>10</x>
-     <y>576</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>file_slider</sender>
-   <signal>sliderPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>file_slider_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>181</x>
-     <y>605</y>
+     <x>98</x>
+     <y>76</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
-     <y>531</y>
+     <y>83</y>
     </hint>
    </hints>
   </connection>
@@ -585,5 +509,6 @@
   <slot>correct_all_images_pushed()</slot>
   <slot>file_slider_moved()</slot>
   <slot>file_slider_clicked()</slot>
+  <slot>chips_alignment_clicked()</slot>
  </slots>
 </ui>

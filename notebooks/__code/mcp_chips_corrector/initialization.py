@@ -30,6 +30,7 @@ class Initialization:
         self.parent.profile_changed()
         self.widgets()
         self.statusbar()
+        self.parent.chips_alignment_clicked()
 
     def pyqtgraph(self):
         # setup
@@ -55,19 +56,20 @@ class Initialization:
         self.parent.ui.profile_widget.setLayout(profile_layout)
 
         # Alignment
-        self.parent.alignment_before_view = pg.ImageView()
-        self.parent.alignment_before_view.ui.roiBtn.hide()
-        self.parent.alignment_before_view.ui.menuBtn.hide()
+        self.parent.alignment_view = pg.ImageView(view=pg.PlotItem())
+        self.parent.alignment_view.ui.roiBtn.hide()
+        self.parent.alignment_view.ui.menuBtn.hide()
         setup_layout = QVBoxLayout()
-        setup_layout.addWidget(self.parent.alignment_before_view)
-        self.parent.ui.alignment_before_widget.setLayout(setup_layout)
+        setup_layout.addWidget(self.parent.alignment_view)
+        self.parent.ui.alignment_widget.setLayout(setup_layout)
 
-        self.parent.alignment_after_view = pg.ImageView()
-        self.parent.alignment_after_view.ui.roiBtn.hide()
-        self.parent.alignment_after_view.ui.menuBtn.hide()
+        # result
+        self.parent.result_view = pg.ImageView(view=pg.PlotItem())
+        self.parent.result_view.ui.roiBtn.hide()
+        self.parent.result_view.ui.menuBtn.hide()
         setup_layout = QVBoxLayout()
-        setup_layout.addWidget(self.parent.alignment_after_view)
-        self.parent.ui.alignment_after_widget.setLayout(setup_layout)
+        setup_layout.addWidget(self.parent.result_view)
+        self.parent.ui.result_widget.setLayout(setup_layout)
 
     def data(self):
         self.parent.integrated_data = self.parent.o_corrector.integrated_data
@@ -79,7 +81,6 @@ class Initialization:
 
     def splitter(self):
         self.parent.ui.splitter.setSizes([1, 1])
-        self.parent.ui.splitter_2.setSizes([200, 1])
 
     def widgets(self):
         self.parent.ui.reset_pushButton.setVisible(False)

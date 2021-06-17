@@ -1,6 +1,6 @@
 import numpy as np
 import pyqtgraph as pg
-from qtpy.QtGui import QPen, QColor, QGuiApplication
+from qtpy.QtGui import QPen, QGuiApplication
 import copy
 import os
 from qtpy.QtWidgets import QFileDialog
@@ -9,10 +9,8 @@ from NeuNorm.normalization import Normalization
 
 from __code.mcp_chips_corrector.get import Get
 from __code.file_handler import get_file_extension
-
-COLOR_CONTOUR = QColor(255, 0, 0, 255)
-PROFILE_ROI = QColor(255, 255, 255, 255)
-INTER_CHIPS = QColor(0, 255, 0, 255)
+from __code.mcp_chips_corrector import COLOR_CONTOUR, PROFILE_ROI, INTER_CHIPS
+from __code.mcp_chips_corrector.alignment import Alignment
 
 
 class EventHandler:
@@ -32,6 +30,33 @@ class EventHandler:
     def __init__(self, parent=None):
         self.parent = parent
         self.o_get = Get(parent=self.parent)
+
+    def mcp_alignment_correction(self):
+        setup_image = self.parent.o_corrector.integrated_data
+        if self.parent.ui.apply_chips_alignment_correction.isChecked():
+            o_align = Alignment(parent=self.parent)
+            _image = o_align.correct(input_image=setup_image)
+        else:
+            _image = setup_image
+
+        _view = self.parent.ui.alignment_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.parent.alignment_view_histogram_level is None:
+            first_update = True
+        _histo_widget = self.parent.ui.alignment_view.getHistogramWidget()
+        self.parent.alignment_view_histogram_level = _histo_widget.getLevels()
+
+        _image = np.transpose(_image)
+        self.parent.ui.alignment_view.setImage(_image)
+
+        if not first_update:
+            _histo_widget.setLevels(self.parent.alignment_view_histogram_level[0],
+                                    self.parent.alignment_view_histogram_level[1])
+
+        _view_box.setState(_state)
 
     def display_setup_image(self):
         setup_image = self.parent.o_corrector.integrated_data

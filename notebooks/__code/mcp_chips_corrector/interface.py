@@ -14,8 +14,10 @@ class Interface(QMainWindow):
     setup_image_view = None
     corrected_image_view = None
     profile_view = None
-    alignment_before_view = None
-    alignment_after_view = None
+    alignment_view = None
+
+    # histogram
+    alignment_view_histogram_level = None
 
     # live images
     setup_live_image = None
@@ -68,6 +70,7 @@ class Interface(QMainWindow):
     def display_setup_image(self):
         o_event = EventHandler(parent=self)
         o_event.display_setup_image()
+        o_event.mcp_alignment_correction()
 
     def profile_type_changed(self):
         o_event = EventHandler(parent=self)
@@ -108,14 +111,11 @@ class Interface(QMainWindow):
         o_event.plot_mean()
 
     # Alignment
+    def chips_alignment_clicked(self):
+        o_event = EventHandler(parent=self)
+        o_event.mcp_alignment_correction()
 
-    # global
-    def file_slider_clicked(self):
-        print("clicked slider")
-
-    def file_slider_moved(self, value):
-        print("slider value changed")
-
+    # general
     def correct_all_images_pushed(self):
         o_event = EventHandler(parent=self)
         o_event.correct_all_images()
