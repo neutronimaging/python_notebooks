@@ -34,8 +34,9 @@ class EventHandler:
     def mcp_alignment_correction(self):
         setup_image = self.parent.o_corrector.integrated_data
         if self.parent.ui.apply_chips_alignment_correction.isChecked():
-            o_align = Alignment(parent=self.parent)
-            _image = o_align.correct(input_image=setup_image)
+            o_align = Alignment(parent=self.parent,
+                                raw_image=setup_image)
+            _image = o_align.correct()
         else:
             _image = setup_image
 

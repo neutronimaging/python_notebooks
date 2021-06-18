@@ -1,9 +1,9 @@
 from qtpy.QtGui import QColor
 
-chip_correction = {'low': {1: {'xoffset': 0,
+CHIP_CORRECTION = {'low': {1: {'xoffset': 0,
                                'yoffset': 0},
                            2: {'xoffset': 2,
-                               'yoffset': 1},
+                               'yoffset': 0},
                            3: {'xoffset': 0,
                                'yoffset': 3},
                            4: {'xoffset': 2,
@@ -19,6 +19,13 @@ chip_correction = {'low': {1: {'xoffset': 0,
                                 'yoffset': 16},
                             },
                    }
+CHIP_GAP = {'low': {'xoffset': 2,
+                    'yoffset': 3,
+                    },
+            'high': {'xoffset': 8,
+                     'yoffset': 16,
+                     }
+            }
 
 COLOR_CONTOUR = QColor(255, 0, 0, 255)
 PROFILE_ROI = QColor(255, 255, 255, 255)
