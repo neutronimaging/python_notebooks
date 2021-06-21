@@ -21,20 +21,17 @@ class Alignment:
 
     def correct(self):
         moved_image = self.move_chips(input_image=self.raw_image)
-        fill_image = self.fill_gaps(moved_image=moved_image,
-                                    raw_image=self.raw_image)
+        fill_image = self.fill_gaps(moved_image=moved_image)
         return fill_image
 
-    def fill_gaps(self, moved_image=None, raw_image=None):
+    def fill_gaps(self, moved_image=None):
         if moved_image is None:
             raise ValueError("no moved image provided to fill_gaps")
-        if raw_image is None:
-            raise ValueError("no raw image provided to fill gaps")
 
         # vertical gap
         chip1 = self.get_chip(chip_index=1)
         chip2 = self.get_chip(chip_index=2)
-        size_of_gap = CHIP_GAP['low']['xoffset']
+        size_of_gap = CHIP_GAP['low']
 
         x_axis_left = np.zeros(self.chip_height) + self.chip_width
         y_axis_left = np.arange(self.chip_height)
@@ -42,14 +39,30 @@ class Alignment:
         x_axis_right = np.zeros(self.chip_height)
         y_axis_right = y_axis_left
 
+        for index, y in enumerate(y_axis_left):
+            x_left = x_axis_left[index]
+            y_left = y_axis_left[index]
+            intensity_left = chip1[y_left, x_left]
+
+            x_right = x_axis_right[index]
+            y_right = y_axis_right[index]
+            intensity_right = chip2[y_right, x_right]
+
+            x0 = x_left
+            x1 = x_left + size_of_gap['xoffset'] + 1
+
+            list_x_gap = np.arange(x0+1, x1-1)
+            list_intensity_gap = Alignment.get_interpolated_value(x0=x0,
+                                                                  x1=x1,
+                                                                  value_x0=intensity_left,
+                                                                  value_x1=intensity_right,
+                                                                  list_value=list_x_gap)
+            
 
 
 
 
-
-
-
-        return []
+        return moved_image
 
     def move_chips(self, input_image=None):
         if input_image is None:
@@ -128,21 +141,6 @@ class Alignment:
         mid_height = np.int(image_height / 2)
 
         return {'width': mid_width, 'height': mid_height}
-
-    # @staticmethod
-    # def get_a(y0=0, x0=0, y1=1, x1=1):
-    #     a = (y1 - y0) / (x1 - x0)
-    #     return a
-    #
-    # @staticmethod
-    # def get_b(y0=0, x0=0, y1=1, x1=1):
-    #     a = Alignment.get_a(y0=y0, x0=x0, y1=y1, x1=x1)
-    #     b = y1 - a * x1
-    #     return b
-    #
-    # @staticmethod
-    # def linear_equation(x=0, a=0, b=0):
-    #     return a * x + b
 
     @staticmethod
     def get_interpolated_value(x0=0, x1=1, value_x0=5, value_x1=10, list_value_x=[np.NaN]):
