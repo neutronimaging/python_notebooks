@@ -1,5 +1,6 @@
 import numpy as np
 import pyqtgraph as pg
+import logging
 from qtpy.QtGui import QPen, QGuiApplication
 import copy
 import os
@@ -32,12 +33,16 @@ class EventHandler:
         self.o_get = Get(parent=self.parent)
 
     def mcp_alignment_correction(self):
+
+        logging.info("method: mcp_alignment_correction")
         setup_image = self.parent.o_corrector.integrated_data
         if self.parent.ui.apply_chips_alignment_correction.isChecked():
+            logging.info("-> apply chips alignment: True")
             o_align = Alignment(parent=self.parent,
                                 raw_image=setup_image)
             _image = o_align.correct()
         else:
+            logging.info("-> apply chips alignment: False")
             _image = setup_image
 
         _view = self.parent.ui.alignment_view.getView()

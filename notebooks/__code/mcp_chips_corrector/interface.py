@@ -2,10 +2,12 @@ from qtpy.QtWidgets import QMainWindow
 from IPython.core.display import HTML
 import os
 from IPython.display import display
+import logging
 
 from __code import load_ui
 from __code.mcp_chips_corrector.event_handler import EventHandler
 from __code.mcp_chips_corrector.initialization import Initialization
+from __code.mcp_chips_corrector.get import Get
 
 
 class Interface(QMainWindow):
@@ -58,6 +60,14 @@ class Interface(QMainWindow):
 
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("MCP Chips Corrector")
+
+        o_get = Get(parent=self)
+        log_file_name = o_get.log_file_name()
+        logging.basicConfig(filename=log_file_name,
+                            filemode='w',
+                            format='[%(levelname)s] - %(asctime)s - %(message)s',
+                            level=logging.DEBUG)   # logging.INFO
+        logging.info("*** Starting new session ***")
 
         o_init = Initialization(parent=self)
         o_init.run_all()

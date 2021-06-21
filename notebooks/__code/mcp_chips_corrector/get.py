@@ -1,4 +1,8 @@
 import numpy as np
+import os
+from os.path import expanduser
+
+from __code.mcp_chips_corrector import LOG_FILENAME
 
 
 class Get:
@@ -21,6 +25,11 @@ class Get:
             return 'horizontal'
         else:
             return 'vertical'
+
+    def log_file_name(self):
+        log_file_name = LOG_FILENAME
+        full_log_file_name = Get.full_home_file_name(log_file_name)
+        return full_log_file_name
 
     @staticmethod
     def get_x_y_ranges(index_of_chip,
@@ -156,3 +165,9 @@ class Get:
                 'y'     : np.int(y),
                 'width' : np.int(width),
                 'height': np.int(height)}
+
+    @staticmethod
+    def full_home_file_name(base_file_name):
+        home_folder = expanduser("~")
+        full_log_file_name = os.path.join(home_folder, base_file_name)
+        return full_log_file_name

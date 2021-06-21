@@ -32,3 +32,5 @@ PROFILE_ROI = QColor(255, 255, 255, 255)
 INTER_CHIPS = QColor(0, 255, 0, 255)
 
 MCP_LOW_MODE = 512  # pixel
+
+LOG_FILENAME = ".mcp_chips_corrector.log"
