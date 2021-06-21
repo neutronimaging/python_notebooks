@@ -42,7 +42,7 @@ class Alignment:
         x_axis_right = np.zeros(self.chip_height)
         y_axis_right = y_axis_left
 
-
+        
 
 
 
