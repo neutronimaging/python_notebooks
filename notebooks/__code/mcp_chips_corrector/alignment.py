@@ -3,7 +3,7 @@ import numpy as np
 from scipy import interpolate
 import logging
 
-from __code.mcp_chips_corrector import CHIP_CORRECTION, MCP_LOW_MODE, CHIP_GAP
+from __code.mcp_chips_corrector import CHIP_CORRECTION, MCP_LOW_MODE, CHIP_GAP, NBR_OF_EDGES_PIXEL_TO_NOT_USE
 
 
 class Alignment:
@@ -37,15 +37,15 @@ class Alignment:
         chip2 = self.get_chip(chip_index=2)
         size_of_gap = CHIP_GAP['low']
 
-        x_axis_left = np.zeros(self.chip_width) + self.chip_width - 1
+        x_axis_left = np.zeros(self.chip_width) + self.chip_width - 1 - NBR_OF_EDGES_PIXEL_TO_NOT_USE
         y_axis_left = np.arange(self.chip_height)
 
-        x_axis_right = np.zeros(self.chip_width)
+        x_axis_right = np.zeros(self.chip_width) + NBR_OF_EDGES_PIXEL_TO_NOT_USE
         y_axis_right = y_axis_left
 
         for index, y in enumerate(y_axis_left):
 
-            logging.info(f"----> index: {index} and y: {y}")
+            logging.debug(f"----> index: {index} and y: {y}")
 
             x_left = int(x_axis_left[index])
             y_left = int(y_axis_left[index])
@@ -56,17 +56,19 @@ class Alignment:
             intensity_right = chip2[y_right, x_right]
 
             x0 = x_left
-            x1 = x_left + size_of_gap['xoffset'] + 1
+            x1 = x_left + size_of_gap['xoffset'] + 1 + 2 * NBR_OF_EDGES_PIXEL_TO_NOT_USE
 
             list_x_gap = np.arange(x0+1, x1)
-            logging.info(f"-----> x0:{x0}, x1:{x1}, value_x0:{intensity_left}, value_x1:{intensity_right}")
-            logging.info(f"-----> list_x_gap: {list_x_gap}")
+            logging.debug(f"-----> x0:{x0}, x1:{x1}, value_x0:{intensity_left}, value_x1:{intensity_right}")
+            logging.debug(f"-----> list_x_gap: {list_x_gap}")
             list_intensity_gap = Alignment.get_interpolated_value(x0=x0,
                                                                   x1=x1,
                                                                   value_x0=intensity_left,
                                                                   value_x1=intensity_right,
                                                                   list_value_x=list_x_gap)
-            logging.info(f"------> list_intensity_gap: {list_intensity_gap}")
+            logging.debug(f"------> list_intensity_gap: {list_intensity_gap}")
+            for _x, _intensity in zip(list_x_gap, list_intensity_gap):
+                moved_image[y, _x] = _intensity
 
         return moved_image
 

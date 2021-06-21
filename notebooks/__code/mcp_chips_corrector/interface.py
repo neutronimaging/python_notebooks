@@ -66,7 +66,7 @@ class Interface(QMainWindow):
         logging.basicConfig(filename=log_file_name,
                             filemode='w',
                             format='[%(levelname)s] - %(asctime)s - %(message)s',
-                            level=logging.DEBUG)   # logging.INFO
+                            level=logging.INFO)   # logging.INFO
         logging.info("*** Starting new session ***")
 
         o_init = Initialization(parent=self)

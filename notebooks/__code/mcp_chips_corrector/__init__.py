@@ -27,6 +27,8 @@ CHIP_GAP = {'low': {'xoffset': 2,
                      }
             }
 
+NBR_OF_EDGES_PIXEL_TO_NOT_USE = 1
+
 COLOR_CONTOUR = QColor(255, 0, 0, 255)
 PROFILE_ROI = QColor(255, 255, 255, 255)
 INTER_CHIPS = QColor(0, 255, 0, 255)
