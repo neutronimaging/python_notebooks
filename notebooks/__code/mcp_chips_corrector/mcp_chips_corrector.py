@@ -36,6 +36,7 @@ class McpChipsCorrector:
         o_norm = Normalization()
         o_norm.load(file=working_list_files, notebook=True)
 
+        self.input_working_folder = folder_selected
         self.working_list_files = working_list_files
         self.working_data = o_norm.data['sample']['data']
 

@@ -7,6 +7,7 @@ from NeuNorm.normalization import Normalization
 
 from __code.file_handler import get_file_extension
 from __code.mcp_chips_corrector.event_handler import EventHandler
+from __code._utilities.file import make_or_reset_folder
 
 
 class Export:
@@ -23,6 +24,10 @@ class Export:
         QGuiApplication.processEvents()  # to close QFileDialog
 
         if export_folder:
+
+            base_input_folder = os.path.basename(os.path.abspath(self.parent.o_corrector.input_working_folder))
+            export_folder = os.path.join(export_folder, base_input_folder + "_corrected")
+            make_or_reset_folder(export_folder)
 
             logging.info("exporting all corrected images:")
             logging.info(f"-> export folder: {export_folder}")
@@ -51,5 +56,5 @@ class Export:
                 QGuiApplication.processEvents()
                 logging.info(f"-> exported file: {self.parent.o_corrector.working_list_files[_index_file]}")
 
-            self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 1000)
+            self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 10000)
             self.parent.eventProgress.setVisible(False)
