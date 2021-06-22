@@ -26,6 +26,10 @@ class Alignment:
         return fill_image
 
     def fill_gaps(self, moved_image=None):
+
+        if not self.parent.ui.auto_fill_gaps_checkBox.isChecked():
+            return moved_image
+
         if moved_image is None:
             raise ValueError("no moved image provided to fill_gaps")
 
@@ -113,8 +117,7 @@ class Alignment:
         if input_image is None:
             raise ValueError("no input image provided to move_chips!")
 
-        image_height, image_width = self.parent.image_size.height, \
-                                    self.parent.image_size.width
+        image_height, image_width = self.parent.image_size.height, self.parent.image_size.width
 
         if image_height == MCP_LOW_MODE:
             mode = 'low'
@@ -123,6 +126,8 @@ class Alignment:
 
         chip_width = self.chip_width
         chip_height = self.chip_height
+
+        logging.debug(f"---> chip_width:{chip_width}, chip_height:{chip_height}")
 
         chip1 = self.get_chip(chip_index=1)
         chip2 = self.get_chip(chip_index=2)
@@ -153,6 +158,8 @@ class Alignment:
                   CHIP_CORRECTION[mode][4]['yoffset'] + 2 * chip_height,
                   CHIP_CORRECTION[mode][4]['xoffset'] + chip_width:
                   CHIP_CORRECTION[mode][4]['xoffset'] + 2 * chip_width] = chip4
+
+        logging.debug(f"---> np.shape(new_image): {np.shape(new_image)}")
 
         return new_image
 

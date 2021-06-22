@@ -66,7 +66,7 @@ class Interface(QMainWindow):
         logging.basicConfig(filename=log_file_name,
                             filemode='w',
                             format='[%(levelname)s] - %(asctime)s - %(message)s',
-                            level=logging.INFO)   # logging.INFO
+                            level=logging.DEBUG)   # logging.INFO, logging.DEBUG
         logging.info("*** Starting new session ***")
 
         o_init = Initialization(parent=self)
@@ -124,6 +124,7 @@ class Interface(QMainWindow):
     def chips_alignment_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.mcp_alignment_correction()
+        o_event.check_auto_fill_checkBox_widget()
 
     # general
     def correct_all_images_pushed(self):

@@ -64,6 +64,9 @@ class EventHandler:
 
         _view_box.setState(_state)
 
+    def check_auto_fill_checkBox_widget(self):
+        self.parent.ui.auto_fill_gaps_checkBox.setEnabled(self.parent.ui.apply_chips_alignment_correction.isChecked())
+
     def display_setup_image(self):
         setup_image = self.parent.o_corrector.integrated_data
         self.parent.setup_live_image = setup_image
