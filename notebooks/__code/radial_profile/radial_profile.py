@@ -329,6 +329,8 @@ class SelectRadialParameters(QMainWindow):
         o_event.circle_center_changed()
         o_event.update_max_radius_value()
 
+        self.max_radius_button_clicked()
+
     def guide_color_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.guide_color_changed()
