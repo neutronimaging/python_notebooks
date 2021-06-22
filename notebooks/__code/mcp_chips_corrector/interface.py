@@ -8,6 +8,7 @@ from __code import load_ui
 from __code.mcp_chips_corrector.event_handler import EventHandler
 from __code.mcp_chips_corrector.initialization import Initialization
 from __code.mcp_chips_corrector.get import Get
+from __code.mcp_chips_corrector.export import Export
 
 
 class Interface(QMainWindow):
@@ -77,6 +78,9 @@ class Interface(QMainWindow):
     # Event handler
 
     # contrast
+    def apply_contrast_correction_clicked(self):
+        self.check_export_button_status()
+
     def display_setup_image(self):
         o_event = EventHandler(parent=self)
         o_event.display_setup_image()
@@ -89,6 +93,7 @@ class Interface(QMainWindow):
         o_event.calculate_coefficient_corrector()
         o_event.with_correction_tab()
         o_event.plot_mean()
+        self.check_export_button_status()
 
     def chips_index_changed(self):
         o_event = EventHandler(parent=self)
@@ -97,6 +102,7 @@ class Interface(QMainWindow):
         o_event.calculate_coefficient_corrector()
         o_event.with_correction_tab()
         o_event.plot_mean()
+        self.check_export_button_status()
 
     def profile_changed(self):
         o_event = EventHandler(parent=self)
@@ -105,11 +111,13 @@ class Interface(QMainWindow):
         o_event.calculate_coefficient_corrector()
         o_event.with_correction_tab()
         o_event.plot_mean()
+        self.check_export_button_status()
 
     def coefficient_corrector_manually_changed(self):
         self.ui.reset_pushButton.setVisible(True)
         o_event = EventHandler(parent=self)
         o_event.with_correction_tab()
+        self.check_export_button_status()
 
     def reset_button_pushed(self):
         self.ui.reset_pushButton.setVisible(False)
@@ -119,6 +127,7 @@ class Interface(QMainWindow):
         o_event.calculate_coefficient_corrector()
         o_event.with_correction_tab()
         o_event.plot_mean()
+        self.check_export_button_status()
 
     # Alignment
     def chips_alignment_clicked(self):
@@ -133,7 +142,10 @@ class Interface(QMainWindow):
             o_event.update_result_tab()
 
     # general
-    def correct_all_images_pushed(self):
+    def check_export_button_status(self):
         o_event = EventHandler(parent=self)
-        o_event.correct_all_images()
+        o_event.check_export_button_status()
 
+    def correct_all_images_pushed(self):
+        o_export = Export(parent=self)
+        o_export.correct_all_images()

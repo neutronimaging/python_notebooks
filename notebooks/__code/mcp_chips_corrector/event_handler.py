@@ -1,15 +1,10 @@
 import numpy as np
 import pyqtgraph as pg
 import logging
-from qtpy.QtGui import QPen, QGuiApplication
+from qtpy.QtGui import QPen
 import copy
-import os
-from qtpy.QtWidgets import QFileDialog
-
-from NeuNorm.normalization import Normalization
 
 from __code.mcp_chips_corrector.get import Get
-from __code.file_handler import get_file_extension
 from __code.mcp_chips_corrector import COLOR_CONTOUR, PROFILE_ROI, INTER_CHIPS
 from __code.mcp_chips_corrector.alignment import Alignment
 
@@ -258,43 +253,45 @@ class EventHandler:
         else:
             self.parent.ui.tabWidget.setTabEnabled(1, True)
 
-        image_corrected = self.calculate_corrected_image(raw_image=self.parent.setup_live_image)
+        image_corrected = self.calculate_contrast_image(raw_image=self.parent.setup_live_image)
         self.parent.corrected_live_image = image_corrected
-        self.display_corrected_image()
+        self.display_contrast_image()
 
-    def calculate_corrected_image(self, raw_image=None):
+    def calculate_contrast_image(self, raw_image=None):
         setup_image = copy.deepcopy(raw_image)
 
-        coefficient = np.float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
-        index_of_chip_to_correct = self.o_get.get_index_of_chip_to_correct()
-        gap_index = self.parent.image_size.gap_index
+        if self.parent.ui.apply_contrast_correction_checkBox.isChecked():
 
-        if index_of_chip_to_correct == 0:
-            from_x = 0
-            to_x = gap_index
-            from_y = 0
-            to_y = gap_index
-        elif index_of_chip_to_correct == 1:
-            from_x = gap_index
-            to_x = self.parent.image_size.width
-            from_y = 0
-            to_y = gap_index
-        elif index_of_chip_to_correct == 2:
-            from_x = 0
-            to_x = gap_index
-            from_y = gap_index
-            to_y = self.parent.image_size.height
-        else:
-            from_x = gap_index
-            to_x = self.parent.image_size.width
-            from_y = gap_index
-            to_y = self.parent.image_size.height
+            coefficient = np.float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
+            index_of_chip_to_correct = self.o_get.get_index_of_chip_to_correct()
+            gap_index = self.parent.image_size.gap_index
 
-        setup_image[from_y: to_y, from_x: to_x] *= coefficient
+            if index_of_chip_to_correct == 0:
+                from_x = 0
+                to_x = gap_index
+                from_y = 0
+                to_y = gap_index
+            elif index_of_chip_to_correct == 1:
+                from_x = gap_index
+                to_x = self.parent.image_size.width
+                from_y = 0
+                to_y = gap_index
+            elif index_of_chip_to_correct == 2:
+                from_x = 0
+                to_x = gap_index
+                from_y = gap_index
+                to_y = self.parent.image_size.height
+            else:
+                from_x = gap_index
+                to_x = self.parent.image_size.width
+                from_y = gap_index
+                to_y = self.parent.image_size.height
+
+            setup_image[from_y: to_y, from_x: to_x] *= coefficient
 
         return setup_image
 
-    def display_corrected_image(self):
+    def display_contrast_image(self):
 
         _view = self.parent.corrected_image_view.getView()
         _view_box = _view.getViewBox()
@@ -316,50 +313,29 @@ class EventHandler:
             _histo_widget.setLevels(self.parent.corrected_histogram_level[0],
                                     self.parent.corrected_histogram_level[1])
 
-    def correct_all_images(self):
-        export_folder = QFileDialog.getExistingDirectory(self.parent,
-                                                         directory=self.parent.working_dir,
-                                                         caption="Select output folder",
-                                                         options=QFileDialog.ShowDirsOnly)
-
-        QGuiApplication.processEvents()  # to close QFileDialog
-
-        if export_folder:
-
-            working_data = self.parent.working_data
-            nbr_files = len(working_data)
-            self.parent.ui.statusbar.showMessage("Correcting all images ...")
-
-            self.parent.eventProgress.setMaximum(nbr_files)
-            self.parent.eventProgress.setVisible(True)
-            working_list_files = self.parent.working_list_files
-
-            for _index_file, _data in enumerate(working_data):
-
-                corrected_data = self.calculate_corrected_image(raw_image=_data)
-                o_norm = Normalization()
-                o_norm.load(data=corrected_data, notebook=False)
-
-                short_file_name = os.path.basename(working_list_files[_index_file])
-                file_extension = get_file_extension(short_file_name)
-                o_norm.data['sample']['file_name'] = [short_file_name]
-                o_norm.export(folder=export_folder,
-                              data_type='sample',
-                              file_type=file_extension)
-
-                self.parent.eventProgress.setValue(_index_file+1)
-                QGuiApplication.processEvents()
-
-            self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 1000)
-            self.parent.eventProgress.setVisible(False)
-
     def update_result_tab(self):
         if str(self.parent.ui.coefficient_corrector_lineEdit.text()) == 'N/A':
             image_corrected = self.parent.setup_live_image
         else:
-            image_corrected = self.calculate_corrected_image(raw_image=self.parent.setup_live_image)
+            image_corrected = self.calculate_contrast_image(raw_image=self.parent.setup_live_image)
         o_align = Alignment(parent=self.parent,
                             raw_image=image_corrected)
         _image = o_align.correct()
         _image = np.transpose(_image)
         self.parent.result_view.setImage(_image)
+
+    def calculate_corrected_image(self, image=None):
+        image_corrected = self.calculate_contrast_image(raw_image=image)
+        o_align = Alignment(parent=self.parent,
+                            raw_image=image_corrected)
+        final_image = o_align.correct()
+
+        return final_image
+
+    def check_export_button_status(self):
+        export_button_enabled = True
+        if self.parent.ui.apply_contrast_correction_checkBox.isChecked():
+            if str(self.parent.ui.coefficient_corrector_lineEdit.text()) == 'N/A':
+                export_button_enabled = False
+
+        self.parent.ui.perform_correction_pushButton.setEnabled(export_button_enabled)

@@ -349,6 +349,9 @@
     </item>
     <item>
      <widget class="QPushButton" name="perform_correction_pushButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Correct and Export all Images ...</string>
       </property>
@@ -562,6 +565,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>apply_contrast_correction_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>apply_contrast_correction_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>111</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>profile_type_changed()</slot>
@@ -573,5 +592,6 @@
   <slot>file_slider_clicked()</slot>
   <slot>chips_alignment_clicked()</slot>
   <slot>main_tab_changed()</slot>
+  <slot>apply_contrast_correction_clicked()</slot>
  </slots>
 </ui>
