@@ -35,15 +35,34 @@ class Alignment:
 
         logging.info(f"--> filling gaps")
 
-        # vertical gap
-        logging.info(f"---> working on vertical gap chip1/chip2")
-        chip1 = self.get_chip(chip_index=1)
-        chip2 = self.get_chip(chip_index=2)
-        size_of_gap = CHIP_GAP['low']
+        self._fix_vertical_gap(moved_image=moved_image,
+                               first_chip_index=1,
+                               second_chip_index=2,
+                               image_mode='low')
+
+        self._fix_vertical_gap(moved_image=moved_image,
+                               first_chip_index=3,
+                               second_chip_index=4,
+                               image_mode='low')
+
+        return moved_image
+
+    def _fix_vertical_gap(self, moved_image=None, first_chip_index=1, second_chip_index=2, image_mode='low'):
+
+        # vertical gap between chip 1 and 2
+        logging.info(f"---> working on vertical gap chip{first_chip_index}/chip{second_chip_index}")
+        chip1 = self.get_chip(chip_index=first_chip_index)
+        chip2 = self.get_chip(chip_index=second_chip_index)
+        size_of_gap = CHIP_GAP[image_mode]
 
         x_axis_left = np.zeros(self.chip_width) + self.chip_width - 1 - NBR_OF_EDGES_PIXEL_TO_NOT_USE
         y_axis_left = np.arange(self.chip_height)
-        global_y_axis_left = y_axis_left
+
+        if (first_chip_index == 1) and (second_chip_index == 2):
+            global_y_axis_left = y_axis_left
+
+        elif (first_chip_index == 3) and (second_chip_index == 4):
+            global_y_axis_left = np.arange(self.chip_height) + self.chip_height + size_of_gap['yoffset']
 
         x_axis_right = np.zeros(self.chip_width) + NBR_OF_EDGES_PIXEL_TO_NOT_USE
         y_axis_right = y_axis_left
@@ -74,42 +93,6 @@ class Alignment:
             logging.debug(f"------> list_intensity_gap: {list_intensity_gap}")
             for _x, _intensity in zip(list_x_gap, list_intensity_gap):
                 moved_image[y, _x] = _intensity
-
-        logging.info(f"---> working on vertical gap chip3/chip4")
-        chip3 = self.get_chip(chip_index=3)
-        chip4 = self.get_chip(chip_index=4)
-        size_of_gap = CHIP_GAP['low']
-
-        global_y_axis_left = np.arange(self.chip_height) + self.chip_height + size_of_gap['yoffset']
-
-        for index, y in enumerate(global_y_axis_left):
-
-            logging.debug(f"----> index: {index} and y: {y}")
-
-            x_left = int(x_axis_left[index])
-            y_left = int(y_axis_left[index])
-            intensity_left = chip3[y_left, x_left]
-
-            x_right = int(x_axis_right[index])
-            y_right = int(y_axis_right[index])
-            intensity_right = chip4[y_right, x_right]
-
-            x0 = x_left
-            x1 = x_left + size_of_gap['xoffset'] + 1 + 2 * NBR_OF_EDGES_PIXEL_TO_NOT_USE
-
-            list_x_gap = np.arange(x0+1, x1)
-            logging.debug(f"-----> x0:{x0}, x1:{x1}, value_x0:{intensity_left}, value_x1:{intensity_right}")
-            logging.debug(f"-----> list_x_gap: {list_x_gap}")
-            list_intensity_gap = Alignment.get_interpolated_value(x0=x0,
-                                                                  x1=x1,
-                                                                  value_x0=intensity_left,
-                                                                  value_x1=intensity_right,
-                                                                  list_value_x=list_x_gap)
-            logging.debug(f"------> list_intensity_gap: {list_intensity_gap}")
-            for _x, _intensity in zip(list_x_gap, list_intensity_gap):
-                moved_image[y, _x] = _intensity
-
-        return moved_image
 
     def move_chips(self, input_image=None):
 
