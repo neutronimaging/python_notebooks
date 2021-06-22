@@ -126,6 +126,12 @@ class Interface(QMainWindow):
         o_event.mcp_alignment_correction()
         o_event.check_auto_fill_checkBox_widget()
 
+    # result
+    def main_tab_changed(self, tab_index):
+        if tab_index == 2:
+            o_event = EventHandler(parent=self)
+            o_event.update_result_tab()
+
     # general
     def correct_all_images_pushed(self):
         o_event = EventHandler(parent=self)

@@ -33,7 +33,6 @@ class EventHandler:
         self.o_get = Get(parent=self.parent)
 
     def mcp_alignment_correction(self):
-
         logging.info("method: mcp_alignment_correction")
         setup_image = self.parent.o_corrector.integrated_data
         if self.parent.ui.apply_chips_alignment_correction.isChecked():
@@ -353,3 +352,14 @@ class EventHandler:
 
             self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 1000)
             self.parent.eventProgress.setVisible(False)
+
+    def update_result_tab(self):
+        if str(self.parent.ui.coefficient_corrector_lineEdit.text()) == 'N/A':
+            image_corrected = self.parent.setup_live_image
+        else:
+            image_corrected = self.calculate_corrected_image(raw_image=self.parent.setup_live_image)
+        o_align = Alignment(parent=self.parent,
+                            raw_image=image_corrected)
+        _image = o_align.correct()
+        _image = np.transpose(_image)
+        self.parent.result_view.setImage(_image)
