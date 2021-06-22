@@ -248,10 +248,10 @@ class EventHandler:
 
     def with_correction_tab(self):
         if str(self.parent.ui.coefficient_corrector_lineEdit.text()) == 'N/A':
-            self.parent.ui.tabWidget.setTabEnabled(1, False)
+            self.parent.ui.contrast_tabWidget.setTabEnabled(1, False)
             return
         else:
-            self.parent.ui.tabWidget.setTabEnabled(1, True)
+            self.parent.ui.contrast_tabWidget.setTabEnabled(1, True)
 
         image_corrected = self.calculate_contrast_image(raw_image=self.parent.setup_live_image)
         self.parent.corrected_live_image = image_corrected
@@ -339,3 +339,11 @@ class EventHandler:
                 export_button_enabled = False
 
         self.parent.ui.perform_correction_pushButton.setEnabled(export_button_enabled)
+
+    def check_contrast_correction_widgets(self):
+        state = self.parent.ui.apply_contrast_correction_checkBox.isChecked()
+        self.parent.ui.contrast_tabWidget.setEnabled(state)
+        self.parent.ui.label_coefficient_corrector.setEnabled(state)
+        self.parent.ui.coefficient_corrector_lineEdit.setEnabled(state)
+        self.parent.ui.reset_pushButton.setEnabled(state)
+        self.parent.ui.profile_widget.setEnabled(state)

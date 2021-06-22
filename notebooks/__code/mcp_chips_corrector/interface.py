@@ -74,11 +74,14 @@ class Interface(QMainWindow):
         o_init.run_all()
 
         self.display_setup_image()
+        self.check_contrast_correction_widgets()
+        self.check_export_button_status()
 
     # Event handler
 
     # contrast
     def apply_contrast_correction_clicked(self):
+        self.check_contrast_correction_widgets()
         self.check_export_button_status()
 
     def display_setup_image(self):
@@ -145,6 +148,10 @@ class Interface(QMainWindow):
     def check_export_button_status(self):
         o_event = EventHandler(parent=self)
         o_event.check_export_button_status()
+
+    def check_contrast_correction_widgets(self):
+        o_event = EventHandler(parent=self)
+        o_event.check_contrast_correction_widgets()
 
     def correct_all_images_pushed(self):
         o_export = Export(parent=self)

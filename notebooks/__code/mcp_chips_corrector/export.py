@@ -57,4 +57,5 @@ class Export:
                 logging.info(f"-> exported file: {self.parent.o_corrector.working_list_files[_index_file]}")
 
             self.parent.ui.statusbar.showMessage("Corrected images are in folder {}".format(export_folder), 10000)
+            self.parent.ui.statusbar.setStyleSheet("color: blue")
             self.parent.eventProgress.setVisible(False)

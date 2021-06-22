@@ -37,7 +37,7 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="contrast_tabWidget">
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -228,7 +228,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="label_2">
+               <widget class="QLabel" name="label_coefficient_corrector">
                 <property name="text">
                  <string>Coefficient corrector</string>
                 </property>
@@ -280,7 +280,7 @@
       </widget>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
-        <string>Alignement</string>
+        <string>Alignment</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
@@ -318,6 +318,9 @@
            <widget class="QCheckBox" name="auto_fill_gaps_checkBox">
             <property name="text">
              <string>Auto-fill gaps</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
