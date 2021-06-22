@@ -47,5 +47,3 @@ o_corrector.select_folder()
 
 o_interface = Interface(o_corrector=o_corrector)
 o_interface.show()
-
-
