@@ -114,6 +114,14 @@ def get_file_extension(filename):
     return full_extension[1:]
 
 
+def get_list_file_extensions(list_filename):
+    list_extension = []
+    for _file in list_filename:
+        list_extension.append(get_file_extension(_file))
+
+    return set(list_extension)
+
+
 def get_data_type(file_name):
     '''
     using the file name extension, will return the type of the data
@@ -597,6 +605,7 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
 
     pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
     return {'data': pd_data, 'metadata': metadata}
+
 
 class ListMostDominantExtension(object):
     Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))

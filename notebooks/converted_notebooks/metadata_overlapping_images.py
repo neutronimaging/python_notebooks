@@ -52,4 +52,9 @@ o_profile = MetadataOverlappingImagesUi(working_dir=system.System.get_working_di
 o_profile.show()
 # -
 
+import pyqtgraph
+
+pyqtgraph.__version__
+
+
 
