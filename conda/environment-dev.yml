@@ -1,0 +1,13 @@
+name: neutron-imaging-dev
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.7
+  - jupyterlab
+  - ipykernel
+  - pip
+  - pip:
+    - -r file:../requirements.txt
+    - -r file:../requirements_dev.txt
+prefix: /opt/anaconda/envs/neutron-imaging-dev
