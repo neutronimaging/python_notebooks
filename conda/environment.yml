@@ -14,15 +14,17 @@ dependencies:
   - plotly
   - nodejs
   - qtpy
-  - pyqtgraph=0.12.1
+  - pyqtgraph=0.11.0
+  - nodejs=15.14.0
   - astropy
   - nbstripout
   - jupyterlab
   - ipykernel
   - jupytext
-  - PyQt5
   - pip
   - pip:
+    - PyQt5
+    - changepy
     - ipywe
     - lmfit
     - neutronbraggedge
