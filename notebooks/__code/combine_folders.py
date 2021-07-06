@@ -16,14 +16,15 @@ class CombineFolders(object):
     list_folders_short = []  # short name of list of folders
     list_files_dict = {}
     nbr_files_in_each_folder = np.NaN
-
     global_list_of_folders_to_combine = []
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
         self.list_folders_short = []
+        self.global_list_of_folders_to_combine = []
 
     def select_folders(self):
+
         self.done_button = widgets.Button(description="Click me when done selecting folders!",
                                           # button_style="success",
                                           disabled=True,
@@ -41,7 +42,6 @@ class CombineFolders(object):
                                                                  type='directory',
                                                                  next=self.add_folder_selected_to_global_list,
                                                                  multiple=True)
-
         self.folder_list_widget.show()
 
     def add_folder_selected_to_global_list(self, list_folders):
@@ -61,16 +61,34 @@ class CombineFolders(object):
         are_folders_valid = self.check_validity_of_folders_selected()
 
         if are_folders_valid:
-            display(HTML('<span style="font-size: 20px; color:blue">You have selected ' +
-                         str(len(self.global_list_of_folders_to_combine)) + ' folders!</span>'))
+            pass
+            # display(HTML('<span style="font-size: 20px; color:blue">You have selected ' +
+            #              str(len(self.global_list_of_folders_to_combine)) + ' folders!</span>'))
         else:
             display(HTML('<span style="font-size: 20px; color:red">Folders must contain the same number'
-                         'of images!</span>'))
+                         ' of images!</span>'))
 
     def check_validity_of_folders_selected(self):
-        global_list_of_folers = self.global_list_of_folders_to_combine
+        global_list_of_folders = self.global_list_of_folders_to_combine
+        nbr_of_files = []
+        file_format = []
+        for _folder in global_list_of_folders:
+            _dict_list_of_files = self.__get_list_files(folder=_folder)
+            file_format.append(_dict_list_of_files['file_format'])
+            nbr_of_files.append(len(_dict_list_of_files['list_files']))
 
+        set_nbr_of_files = set(nbr_of_files)
+        if len(set_nbr_of_files) > 1:
+            return False
 
+        set_file_format = set(file_format)
+        if len(set_file_format) > 1:
+            return False
+
+        if set_nbr_of_files.pop() == 0:
+            return False
+
+        self.check_number_of_files(list_folders=global_list_of_folders)
 
         return True
 
@@ -95,7 +113,6 @@ class CombineFolders(object):
         # initialization of dictionary that will store the list of files
         list_files_dict = {}
 
-        #self.list_folders = self.folder_list_widget.selected
         self.list_folders = list_folders
 
         nbr_files = {}
@@ -121,21 +138,24 @@ class CombineFolders(object):
 #            raise ValueError("Folder do not have the same number of files!")
         else:
             display(HTML('<span style="font-size: 20px; color:green">All the folders selected contain the ' + \
-                         'same number of files (' + str(list(values)[0]) + ' files each)!</span>'))
-            display(HTML('<span style="font-size: 20px; color:green">Format: ' + _format))
+                         'same number of files </span>'))
+            display(HTML('<span style="font-size: 20px; color:green">Format: ' + _format + '</span>'))
+            display(HTML('<span style="font-size: 20px; color:blue"> Nbr folders: ' + str(len(list_folders)) + '</span>'))
+            display(HTML('<span style="font-size: 20px; color:blue"> Nbr files per folder: ' + str(list(values)[0]) + '</span>'))
+
             self.nbr_files_in_each_folder = list(values)[0]
 
         self.list_files_dict = list_files_dict
 
     def how_many_folders(self):
-        nbr_folder = len(self.list_folders)
+        nbr_folder = len(self.global_list_of_folders_to_combine)
         radio_list_string = [str(_index) for _index in np.arange(2, nbr_folder + 1)]
         self.bin_size = widgets.RadioButtons(options=radio_list_string,
                                              value=radio_list_string[0])
         display(self.bin_size)
 
     def how_to_combine(self):
-        self.combine_method = widgets.RadioButtons(options=['add', 'mean'],
+        self.combine_method = widgets.RadioButtons(options=['add', 'mean', 'median'],
                                                    value='add')
         display(self.combine_method)
 
@@ -172,9 +192,14 @@ class CombineFolders(object):
 
         # get merging algorithm
         merging_algo = self.combine_method.value
-        algorithm = self.__add
-        if merging_algo == 'mean':
+        if merging_algo == 'add':
+            algorithm = self.__add
+        elif merging_algo == 'mean':
             algorithm = self.__mean
+        elif merging_algo == 'median':
+            algorithm = self.__median
+        else:
+            raise NotImplementedError(f"Algorithm {merging_algo} has not been implemented yet!")
 
         # get output folder
         output_folder = os.path.abspath(output_folder)
@@ -226,9 +251,7 @@ class CombineFolders(object):
 
             w1.value = _index_final_folder + 1
 
-
     def __create_dict_of_files_to_merge(self, merging_dict):
-
         list_files_dict = self.list_files_dict
 
         final_dict_of_files_to_merge = {}
@@ -246,6 +269,9 @@ class CombineFolders(object):
 
     def __mean(self, data_array):
         return np.mean(data_array, axis=0)
+
+    def __median(self, data_array):
+        return np.median(data_array, axis=0)
 
     def __merging_algorithm(self, function_, *args):
         return function_(*args)
