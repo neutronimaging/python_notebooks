@@ -12,7 +12,7 @@ dependencies:
   - scikit-image
   - matplotlib
   - plotly
-  - nodejs
+  - nodejs=15.14.0
   - qtpy
   - pyqtgraph=0.12.1
   - astropy

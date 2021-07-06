@@ -17,17 +17,55 @@ class CombineFolders(object):
     list_files_dict = {}
     nbr_files_in_each_folder = np.NaN
 
+    global_list_of_folders_to_combine = []
+
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
         self.list_folders_short = []
 
     def select_folders(self):
+        self.done_button = widgets.Button(description="Click me when done selecting folders!",
+                                          button_style="success",
+                                          layout=widgets.Layout(width="100%"))
+
+        self.done_button.on_click(self.stop_selecting_folders)
+        vertical_layout = widgets.VBox([self.done_button])
+        display(vertical_layout)
+
+        self.select_folders_file_selector()
+
+    def select_folders_file_selector(self):
         self.folder_list_widget = fileselector.FileSelectorPanel(instruction='select folder to combine',
                                                                  start_dir=self.working_dir,
                                                                  type='directory',
-                                                                 next=self.check_number_of_files,
+                                                                 next=self.add_folder_selected_to_global_list,
                                                                  multiple=True)
+
         self.folder_list_widget.show()
+
+    def add_folder_selected_to_global_list(self, list_folders):
+        for _folder in list_folders:
+            self.global_list_of_folders_to_combine.append(_folder)
+        self.select_folders_file_selector()
+
+    def stop_selecting_folders(self, value):
+        self.folder_list_widget.remove()
+        self.done_button.close()
+
+        are_folders_valid = self.check_validity_of_folders_selected()
+
+        if are_folders_valid:
+            display(HTML('<span style="font-size: 20px; color:blue">You have selected ' +
+                         str(len(self.global_list_of_folders_to_combine)) + ' folders!</span>'))
+        else:
+            display(HTML('<span style="font-size: 20px; color:red">Folders must contain the same number'
+                         'of images!</span>'))
+
+    def check_validity_of_folders_selected(self):
+        globa_list_of_folers = self.global_list_of_folders_to_combine
+        print(globa_list_of_folers)
+
+        return True
 
     def __get_list_files(self, file_format='', folder=''):
         if file_format == '':
