@@ -21,7 +21,7 @@ conda install -y      \
     jupyter           \
     jupyterlab        \
     qtpy              \
-    pyqtgraph         \
+    pyqtgraph=0.11.0  \
     astropy
 
 # install dependencies from conda-forge
