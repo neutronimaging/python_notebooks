@@ -25,7 +25,8 @@ class CombineFolders(object):
 
     def select_folders(self):
         self.done_button = widgets.Button(description="Click me when done selecting folders!",
-                                          button_style="success",
+                                          # button_style="success",
+                                          disabled=True,
                                           layout=widgets.Layout(width="100%"))
 
         self.done_button.on_click(self.stop_selecting_folders)
@@ -46,6 +47,11 @@ class CombineFolders(object):
     def add_folder_selected_to_global_list(self, list_folders):
         for _folder in list_folders:
             self.global_list_of_folders_to_combine.append(_folder)
+
+        if len(self.global_list_of_folders_to_combine) > 1:
+            self.done_button.disabled = False
+            self.done_button.button_style = "success"
+
         self.select_folders_file_selector()
 
     def stop_selecting_folders(self, value):
@@ -62,8 +68,9 @@ class CombineFolders(object):
                          'of images!</span>'))
 
     def check_validity_of_folders_selected(self):
-        globa_list_of_folers = self.global_list_of_folders_to_combine
-        print(globa_list_of_folers)
+        global_list_of_folers = self.global_list_of_folders_to_combine
+
+
 
         return True
 
