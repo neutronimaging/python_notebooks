@@ -4,6 +4,7 @@ from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
 import logging
+from shutil import copy2
 
 from NeuNorm.normalization import Normalization
 
@@ -134,6 +135,14 @@ class CombineFolders(object):
             _list_files = glob.glob(folder + "/*." + file_format)
             return {'file_format': file_format, 'list_files': _list_files}
 
+    def __get_full_list_files(self, folder=''):
+        list_format_to_check = ["tif*", "fits", "txt"]
+        full_list_files_dict = {}
+        for _format in list_format_to_check:
+            full_list_files_dict[_format] = self.__get_list_files(file_format=_format,
+                                                                  folder=folder)['list_files']
+        return full_list_files_dict
+
     def check_number_of_files(self, list_folders):
         logging.info("Checking number of files")
 
@@ -187,6 +196,11 @@ class CombineFolders(object):
         self.combine_method = widgets.RadioButtons(options=['add', 'mean', 'median'],
                                                    value='add')
         display(self.combine_method)
+
+    def extra_files(self):
+        self.keep_extra_files = widgets.RadioButtons(options=['yes', 'no'],
+                                                     value='yes')
+        display(self.keep_extra_files)
 
     def __create_merging_dictionary(self):
         """where we will figure out which file goes with witch one"""
@@ -284,10 +298,25 @@ class CombineFolders(object):
                 file_handler.save_data(data=combined_data, filename=output_file_name)
                 w2.value = _index_files_to_merge + 1
 
+            if self.keep_extra_files.value == 'yes':
+                self.move_extra_files_to_output_folder(output_folder=os.path.join(output_folder, _final_folder))
+
             w1.value = _index_final_folder + 1
+
 
         folder_level_ui.close()
         file_level_ui.close()
+
+    def move_extra_files_to_output_folder(self, output_folder="./"):
+        logging.info("moving extra files to output folder")
+        first_folder = self.global_list_of_folders_to_combine[0]
+        logging.info(f"-> using source folder: {first_folder}")
+        full_list_files = self.__get_full_list_files(folder=first_folder)
+        list_txt = full_list_files['txt']
+        logging.info(f"-> found the following files: {list_txt}")
+        for _file in list_txt:
+            logging.info(f"--> copying {_file} to {output_folder}")
+            copy2(_file, output_folder)
 
     def __create_dict_of_files_to_merge(self, merging_dict):
         list_files_dict = self.list_files_dict
@@ -320,5 +349,4 @@ class CombineFolders(object):
                                                                    start_dir=self.working_dir,
                                                                    next=self.merging,
                                                                    type='directory')
-
         self.output_folder_widget.show()
