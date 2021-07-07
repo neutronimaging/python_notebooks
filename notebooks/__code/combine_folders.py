@@ -3,11 +3,15 @@ import os
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
+import logging
 
 from NeuNorm.normalization import Normalization
 
 from __code import file_handler
 from __code.ipywe import fileselector
+from __code._utilities.file import get_full_home_file_name
+
+LOG_FILE_NAME = ".combine_folders.log"
 
 
 class CombineFolders(object):
@@ -22,6 +26,14 @@ class CombineFolders(object):
         self.working_dir = working_dir
         self.list_folders_short = []
         self.global_list_of_folders_to_combine = []
+
+        self.log_file_name = get_full_home_file_name(LOG_FILE_NAME)
+
+        logging.basicConfig(filename=self.log_file_name,
+                            filemode='w',
+                            format='[%(levelname)s] - %(asctime)s - %(message)s',
+                            level=logging.INFO)
+        logging.info("*** Starting a new session ***")
 
     def select_folders(self):
 
@@ -58,34 +70,47 @@ class CombineFolders(object):
         self.folder_list_widget.remove()
         self.done_button.close()
 
+        logging.info("User stop selecting folders")
+
         are_folders_valid = self.check_validity_of_folders_selected()
 
         if are_folders_valid:
             pass
-            # display(HTML('<span style="font-size: 20px; color:blue">You have selected ' +
-            #              str(len(self.global_list_of_folders_to_combine)) + ' folders!</span>'))
         else:
             display(HTML('<span style="font-size: 20px; color:red">Folders must contain the same number'
                          ' of images!</span>'))
 
     def check_validity_of_folders_selected(self):
         global_list_of_folders = self.global_list_of_folders_to_combine
+
         nbr_of_files = []
         file_format = []
+        logging.info("List of folders requested:")
         for _folder in global_list_of_folders:
             _dict_list_of_files = self.__get_list_files(folder=_folder)
-            file_format.append(_dict_list_of_files['file_format'])
-            nbr_of_files.append(len(_dict_list_of_files['list_files']))
+
+            _file_format = _dict_list_of_files['file_format']
+            file_format.append(_file_format)
+
+            _nbr_of_files = len(_dict_list_of_files['list_files'])
+            nbr_of_files.append(_nbr_of_files)
+
+            logging.info(f"> folder: {_folder}")
+            logging.info(f"-> files format: {_file_format}")
+            logging.info(f"-> nbr of files: {_nbr_of_files}")
 
         set_nbr_of_files = set(nbr_of_files)
         if len(set_nbr_of_files) > 1:
+            logging.info(f" Nbr of files do not match - STOP")
             return False
 
         set_file_format = set(file_format)
         if len(set_file_format) > 1:
+            logging.info(f" More than 1 type of file format - STOP")
             return False
 
         if set_nbr_of_files.pop() == 0:
+            logging.info(f" 0 files found!")
             return False
 
         self.check_number_of_files(list_folders=global_list_of_folders)
@@ -110,6 +135,8 @@ class CombineFolders(object):
             return {'file_format': file_format, 'list_files': _list_files}
 
     def check_number_of_files(self, list_folders):
+        logging.info("Checking number of files")
+
         # initialization of dictionary that will store the list of files
         list_files_dict = {}
 
@@ -133,10 +160,12 @@ class CombineFolders(object):
         # checking the folders have the same number of files
         values = set(nbr_files.values())
         if len(values) > 1:
+            logging.info("Folders do not contain the same number of files")
             display(HTML('<span style="font-size: 20px; color:red">All the folders selected DO NOT ' + \
                          'contain the same number of files </span>'))
 #            raise ValueError("Folder do not have the same number of files!")
         else:
+            logging.info("Number of files per folder match!")
             display(HTML('<span style="font-size: 20px; color:green">All the folders selected contain the ' + \
                          'same number of files </span>'))
             display(HTML('<span style="font-size: 20px; color:green">Format: ' + _format + '</span>'))
@@ -189,6 +218,7 @@ class CombineFolders(object):
 
     def merging(self, output_folder):
         """combine images using algorithm provided"""
+        logging.info("merging folders")
 
         # get merging algorithm
         merging_algo = self.combine_method.value
@@ -201,8 +231,11 @@ class CombineFolders(object):
         else:
             raise NotImplementedError(f"Algorithm {merging_algo} has not been implemented yet!")
 
+        logging.info(f"-> merging algorithm: {algorithm}")
+
         # get output folder
         output_folder = os.path.abspath(output_folder)
+        logging.info(f"-> output folder: {output_folder}")
 
         # create dictionary of how the images will be combined
         merging_dict = self.__create_merging_dictionary()
@@ -245,11 +278,16 @@ class CombineFolders(object):
 
                 _base_name_file = os.path.basename(_files_to_merge[0])
                 output_file_name = os.path.join(output_folder, _final_folder, _base_name_file)
+                logging.info(f"_final_folder: {_final_folder}")
+                logging.info(f"_base_name_file: {_base_name_file}")
 
                 file_handler.save_data(data=combined_data, filename=output_file_name)
                 w2.value = _index_files_to_merge + 1
 
             w1.value = _index_final_folder + 1
+
+        folder_level_ui.close()
+        file_level_ui.close()
 
     def __create_dict_of_files_to_merge(self, merging_dict):
         list_files_dict = self.list_files_dict

@@ -1,4 +1,5 @@
 import os
+from os.path import expanduser
 from pathlib import Path
 import pandas as pd
 from astropy.io import fits
@@ -15,6 +16,12 @@ from ipywidgets import widgets
 from IPython.core.display import display, HTML
 
 from __code.metadata_handler import MetadataHandler
+
+
+def get_full_home_file_name(base_file_name):
+    home_folder = expanduser("~")
+    full_log_file_name = os.path.join(home_folder, base_file_name)
+    return full_log_file_name
 
 
 def force_file_extension(filename, ext='.txt'):
