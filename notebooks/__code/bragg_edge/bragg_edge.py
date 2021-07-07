@@ -1,4 +1,3 @@
-from __code.ipywe import fileselector
 import random
 import os
 import glob
@@ -10,22 +9,20 @@ from plotly.offline import iplot
 import plotly.graph_objs as go
 from ipywidgets import widgets
 import pyqtgraph as pg
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+
+from qtpy.QtWidgets import QMainWindow
+from qtpy import QtGui, QtCore
+
+from __code import load_ui
 
 from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
 from NeuNorm.normalization import Normalization
 
+from __code.ipywe import fileselector
 from __code import file_handler
-from __code.ui_roi_selection  import Ui_MainWindow as UiMainWindow
+from __code.ui_roi_selection import Ui_MainWindow as UiMainWindow
 
 
 class BraggEdge:
@@ -113,14 +110,13 @@ class BraggEdge:
         self.bragg_edges = _handler.bragg_edges
         self.hkl = _handler.hkl
         self.handler = _handler
-        print(self.handler)
 
     def select_working_folder(self):
         select_data = fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
-                                                           start_dir=self.working_dir,
-                                                           next=self.load_data,
-                                                           type='directory',
-                                                           multiple=False)
+                                                     start_dir=self.working_dir,
+                                                     next=self.load_data,
+                                                     type='directory',
+                                                     multiple=False)
         select_data.show()
 
     def load_data(self, folder_selected):
@@ -371,16 +367,24 @@ class Interface(QMainWindow):
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
-    def __init__(self, parent=None, data=None):
+    def __init__(self, parent=None, data=None, instruction="", next=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
         self.live_data = data
+        self.next = next
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+        super(QMainWindow, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_roi_selection.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
+
+        # QMainWindow.__init__(self, parent=parent)
+        # self.ui = UiMainWindow()
+        # self.ui.setupUi(self)
+
         self.init_statusbar()
         self.setWindowTitle("Background ROI Selection Tool")
 
@@ -391,14 +395,19 @@ class Interface(QMainWindow):
         top_layout = QtGui.QVBoxLayout()
         top_layout.addWidget(self.ui.image_view)
         self.ui.widget.setLayout(top_layout)
-        self.init_widgets()
+        self.init_widgets(instruction=instruction)
         self.integrate_images()
         self.display_image()
 
-    def init_widgets(self):
+    def init_widgets(self, instruction=""):
         nbr_columns = self.ui.table_roi.columnCount()
         for _col in range(nbr_columns):
             self.ui.table_roi.setColumnWidth(_col, self.roi_column_width)
+
+        if instruction == "":
+            self.ui.instruction.setVisible(False)
+        else:
+            self.ui.instruction.setText(instruction)
 
     def init_statusbar(self):
         self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
@@ -760,4 +769,5 @@ class Interface(QMainWindow):
         self.close()
 
     def closeEvent(self, eventhere=None):
-        print("Leaving Parameters Selection UI")
+        if self.next:
+            self.next()

@@ -303,7 +303,6 @@ class CombineFolders(object):
 
             w1.value = _index_final_folder + 1
 
-
         folder_level_ui.close()
         file_level_ui.close()
 

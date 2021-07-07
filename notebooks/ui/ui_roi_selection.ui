@@ -137,6 +137,26 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QLabel" name="instruction">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </item>
      </layout>
@@ -180,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1140</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
