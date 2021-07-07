@@ -49,6 +49,13 @@ o_merge.how_many_folders()
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge.how_to_combine()
+# -
+
+# ## Do you want to copy over extra files (.txt, ...)
+#
+# If **yes**, the first folder selected will be the source of those files
+
+o_merge.extra_files()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Output Folder 
