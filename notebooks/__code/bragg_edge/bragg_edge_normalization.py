@@ -302,7 +302,8 @@ class BraggEdge(BraggEdgeParent):
 
 
 
-            
+
+
 
 
 
