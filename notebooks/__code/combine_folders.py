@@ -170,16 +170,20 @@ class CombineFolders(object):
         values = set(nbr_files.values())
         if len(values) > 1:
             logging.info("Folders do not contain the same number of files")
-            display(HTML('<span style="font-size: 20px; color:red">All the folders selected DO NOT ' + \
+            display(HTML('<span style="font-size: 15px; color:blue">Status: </span>'
+                         '<span style="font-size: 15px; color:red">All the folders selected DO NOT ' + \
                          'contain the same number of files </span>'))
 #            raise ValueError("Folder do not have the same number of files!")
         else:
             logging.info("Number of files per folder match!")
-            display(HTML('<span style="font-size: 20px; color:green">All the folders selected contain the ' + \
+            display(HTML('<span style="font-size: 15px; color:blue">Status: </span> '
+                         '<span style="font-size: 15px; color:green">All the folders selected contain the ' + \
                          'same number of files </span>'))
-            display(HTML('<span style="font-size: 20px; color:green">Format: ' + _format + '</span>'))
-            display(HTML('<span style="font-size: 20px; color:blue"> Nbr folders: ' + str(len(list_folders)) + '</span>'))
-            display(HTML('<span style="font-size: 20px; color:blue"> Nbr files per folder: ' + str(list(values)[0]) + '</span>'))
+            display(HTML('<span style="font-size: 15px; color:blue">Format: </span><span style="font-size: '
+                         '15px; color:green">' + _format + '</span>'))
+            display(HTML('<span style="font-size: 15px; color:blue"> List of folders selected: </span>'))
+            for _folder in self.list_folders:
+                display(HTML('<span style="font-size: 15px; color:green"> * ' + _folder + '</span>'))
 
             self.nbr_files_in_each_folder = list(values)[0]
 
