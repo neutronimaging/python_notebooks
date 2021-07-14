@@ -31,7 +31,7 @@ o_builder = UiBuilder(ui_name = 'ui_registration_profile.ui')
 o_builder = UiBuilder(ui_name = 'ui_registration_profile_settings.ui')
 
 from __code import system
-from __code.registration import RegistrationFileSelection, RegistrationUi
+from __code.registration.registration import RegistrationFileSelection, RegistrationUi
 
 system.System.select_working_dir()
 from __code.__all import custom_style

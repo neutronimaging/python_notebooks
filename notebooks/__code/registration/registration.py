@@ -1,42 +1,27 @@
 from IPython.core.display import HTML
 from IPython.core.display import display
 from ipywidgets import widgets
-
 import numpy as np
 import os
 from skimage import transform
 from scipy.ndimage.interpolation import shift
 from skimage.feature import register_translation
 import copy
-
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-
-from __code.color import  Color
-
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui, QtWidgets
-    from PyQt4.QtGui import QMainWindow, QDialog
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
-
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
+from qtpy.QtWidgets import QFileDialog, QDialog, QMainWindow
+from qtpy import QtGui, QtCore
 
 from NeuNorm.normalization import Normalization
 
-from __code.ui_registration  import Ui_MainWindow as UiMainWindow
+# from __code.ui_registration  import Ui_MainWindow as UiMainWindow
 from __code.ui_registration_tool import Ui_MainWindow as UiMainWindowTool
 from __code.ui_registration_auto_confirmation import Ui_Dialog as UiDialog
 from __code.ui_registration_markers import Ui_Dialog as UiDialogMarkers
 from __code.registration_profile import RegistrationProfileUi
 from __code.ipywe import fileselector
+from __code import load_ui
+from __code.color import  Color
 
 
 class RegistrationUi(QMainWindow):
@@ -93,12 +78,18 @@ class RegistrationUi(QMainWindow):
 
     def __init__(self, parent=None, data_dict=None):
 
+        super(QMainWindow, self).__init__(parent)
+
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_registration.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+        # QMainWindow.__init__(self, parent=parent)
+        # self.ui = UiMainWindow()
+        # self.ui.setupUi(self)
         self.setWindowTitle("Registration")
 
         self.data_dict = data_dict # Normalization data dictionary  {'filename': [],
@@ -143,7 +134,6 @@ class RegistrationUi(QMainWindow):
         self.o_MarkerDefaultSettings = o_marker
 
     def init_pyqtgrpah(self):
-
         area = DockArea()
         area.setVisible(True)
         d1 = Dock("Registered Image", size=(400, 600))
@@ -991,38 +981,45 @@ class RegistrationManual(QMainWindow):
     list_rotate_widgets = []
 
     def __init__(self, parent=None):
+
+        super(QMainWindow, self).__init__(parent)
+
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_registration_tool.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.parent = parent
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindowTool()
-        self.ui.setupUi(self)
+        # QMainWindow.__init__(self, parent=parent)
+        # self.ui = UiMainWindowTool()
+        # self.ui.setupUi(self)
         self.setWindowTitle("Registration Tool")
         self.initialize_widgets()
         self.update_status_widgets()
 
     def initialize_widgets(self):
         _file_path = os.path.dirname(__file__)
-        up_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/up_arrow.png'))
+        up_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/up_arrow.png'))
         self.ui.up_button.setIcon(QtGui.QIcon(up_arrow_file))
 
-        down_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/down_arrow.png'))
+        down_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/down_arrow.png'))
         self.ui.down_button.setIcon(QtGui.QIcon(down_arrow_file))
 
-        right_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/right_arrow.png'))
+        right_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/right_arrow.png'))
         self.ui.right_button.setIcon(QtGui.QIcon(right_arrow_file))
 
-        left_arrow_file = os.path.abspath(os.path.join(_file_path, 'static/left_arrow.png'))
+        left_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/left_arrow.png'))
         self.ui.left_button.setIcon(QtGui.QIcon(left_arrow_file))
 
-        rotate_left_file = os.path.abspath(os.path.join(_file_path, 'static/rotate_left.png'))
+        rotate_left_file = os.path.abspath(os.path.join(_file_path, '../static/rotate_left.png'))
         self.ui.rotate_left_button.setIcon(QtGui.QIcon(rotate_left_file))
 
-        rotate_right_file = os.path.abspath(os.path.join(_file_path, 'static/rotate_right.png'))
+        rotate_right_file = os.path.abspath(os.path.join(_file_path, '../static/rotate_right.png'))
         self.ui.rotate_right_button.setIcon(QtGui.QIcon(rotate_right_file))
 
-        small_rotate_left_file = os.path.abspath(os.path.join(_file_path, 'static/small_rotate_left.png'))
+        small_rotate_left_file = os.path.abspath(os.path.join(_file_path, '../static/small_rotate_left.png'))
         self.ui.small_rotate_left_button.setIcon(QtGui.QIcon(small_rotate_left_file))
 
-        small_rotate_right_file = os.path.abspath(os.path.join(_file_path, 'static/small_rotate_right.png'))
+        small_rotate_right_file = os.path.abspath(os.path.join(_file_path, '../static/small_rotate_right.png'))
         self.ui.small_rotate_right_button.setIcon(QtGui.QIcon(small_rotate_right_file))
 
         self.list_arrow_widgets = [self.ui.up_button,
@@ -1207,7 +1204,7 @@ class RegistrationManualAutoConfirmation(QDialog):
 
     def initialize_widgets(self):
         _file_path = os.path.dirname(__file__)
-        warning_image_file = os.path.abspath(os.path.join(_file_path, 'static/warning_icon.png'))
+        warning_image_file = os.path.abspath(os.path.join(_file_path, '../static/warning_icon.png'))
         warning_image = QtGui.QPixmap(warning_image_file)
         self.ui.warning_label.setPixmap(warning_image)
 
