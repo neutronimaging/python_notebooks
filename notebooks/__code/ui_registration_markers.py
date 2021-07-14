@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_registration_markers.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.15.4
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -74,4 +76,3 @@ class Ui_Dialog(object):
         self.marker_color_widget.setItemText(4, _translate("Dialog", "blue"))
         self.marker_color_widget.setItemText(5, _translate("Dialog", "black"))
         self.run_registration_button.setText(_translate("Dialog", "Align Images Using Markers"))
-

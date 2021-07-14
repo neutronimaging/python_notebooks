@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_registration_profile.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.15.4
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -262,4 +264,3 @@ class Ui_MainWindow(object):
         self.actionSettings_2.setText(_translate("MainWindow", "Settings ..."))
         self.actionSettings_3.setText(_translate("MainWindow", "Settings ..."))
         self.actionTutorial.setText(_translate("MainWindow", "Tutorial ..."))
-
