@@ -1,31 +1,27 @@
 from IPython.core.display import HTML
 from IPython.core.display import display
-from ipywidgets import widgets
 import numpy as np
 import os
 from skimage import transform
 from scipy.ndimage.interpolation import shift
-from skimage.feature import register_translation
 import copy
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QFileDialog, QDialog, QMainWindow
+from qtpy.QtWidgets import QFileDialog, QMainWindow
 from qtpy import QtGui, QtCore
+import webbrowser
 
-from NeuNorm.normalization import Normalization
-
-from __code.ipywe import fileselector
 from __code import load_ui
 from __code.color import Color
+from __code._utilities.table_handler import TableHandler
 
-from __code.ui_registration_auto_confirmation import Ui_Dialog as UiDialog
-from __code.registration_profile import RegistrationProfileUi
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
 from __code.registration.export_registration import ExportRegistration
 from __code.registration.registration_auto import RegistrationAuto
 from __code.registration.registration_auto_confirmation import RegistrationAutoConfirmationLauncher
-from __code.registration.file_selection import FileSelection
+from __code.registration.manual import ManualLauncher
+from __code.registration.registration_profile import RegistrationProfileLauncher
 
 
 class RegistrationUi(QMainWindow):
@@ -33,6 +29,7 @@ class RegistrationUi(QMainWindow):
     table_registration = {} # dictionary that populate the table
 
     table_column_width = [650, 80, 80, 80]
+    value_to_copy = None
 
     # image view
     histogram_level = []
@@ -215,6 +212,54 @@ class RegistrationUi(QMainWindow):
 
         #select first row
         self.select_row_in_table(0)
+
+    def table_right_click(self):
+        top_menu = QtGui.QMenu(self)
+
+        state_of_paste = True
+        if self.value_to_copy is None:
+            state_of_paste = False
+
+        copy_menu = QtGui.QMenu("Copy ...")
+        top_menu.addMenu(copy_menu)
+        copy_xoffset_menu = copy_menu.addAction("From first xoffset cell selected")
+        copy_yoffset_menu = copy_menu.addAction("From first yoffset cell selected")
+
+        paste_menu = QtGui.QMenu("Paste ...")
+        paste_menu.setEnabled(state_of_paste)
+        top_menu.addMenu(paste_menu)
+        paste_xoffset_menu = paste_menu.addAction("In all xoffset cell selected")
+        paste_yoffset_menu = paste_menu.addAction("In all yoffset cell selected")
+
+        action = top_menu.exec_(QtGui.QCursor.pos())
+
+        if action == copy_xoffset_menu:
+            self.copy_xoffset_value()
+        elif action == copy_yoffset_menu:
+            self.copy_yoffset_value()
+        elif action == paste_xoffset_menu:
+            self.paste_xoffset_value()
+        elif action == paste_yoffset_menu:
+            self.paste_yoffset_value()
+
+    def copy_xoffset_value(self):
+        self.value_to_copy = self.get_value_to_copy(column=1)
+
+    def copy_yoffset_value(self):
+        self.value_to_copy = self.get_value_to_copy(column=2)
+
+    def get_value_to_copy(self, column=1):
+        o_table = TableHandler(self.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        value_to_copy = o_table.get_item_str_from_cell(row=row_selected,
+                                                       column=column)
+        return value_to_copy
+
+    def paste_xoffset_value(self):
+        pass
+
+    def paste_yoffset_value(self):
+        pass
 
     def display_markers(self, all=False):
         if self.registration_markers_ui is None:
@@ -852,8 +897,7 @@ class RegistrationUi(QMainWindow):
         self.ui.tableWidget.blockSignals(False)
 
     def help_button_clicked(self):
-        import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/registration/")
+        webbrowser.open("https://neutronimaging.pages.ornl.gov/tutorial/notebooks/registration/")
 
     def ok_button_clicked(self):
         self.close()
@@ -905,7 +949,7 @@ class RegistrationUi(QMainWindow):
 
     def manual_registration_button_clicked(self):
         """launch the manual registration tool"""
-        o_registration_tool = RegistrationManualLauncher(parent=self)
+        o_registration_tool = ManualLauncher(parent=self)
         self.set_widget_status(list_ui=[self.ui.auto_registration_button],
                            enabled=False)
 
@@ -934,211 +978,3 @@ class RegistrationUi(QMainWindow):
 
     def grid_size_slider_pressed(self):
         self.display_live_image()
-
-
-class RegistrationProfileLauncher(object):
-
-    parent = None
-
-    def __init__(self, parent=None):
-        self.parent = parent
-
-        if self.parent.registration_profile_ui == None:
-            profile_ui = RegistrationProfileUi(parent=parent)
-            profile_ui.show()
-            self.parent.registration_profile_ui = profile_ui
-        else:
-            self.parent.registration_profile_ui.setFocus()
-            self.parent.registration_profile_ui.activateWindow()
-
-
-# class RegistrationManualLauncher(object):
-#
-#     parent = None
-#
-#     def __init__(self, parent=None):
-#         self.parent = parent
-#
-#         if self.parent.registration_tool_ui == None:
-#             tool_ui = RegistrationManual(parent=parent)
-#             tool_ui.show()
-#             self.parent.registration_tool_ui = tool_ui
-#         else:
-#             self.parent.registration_tool_ui.setFocus()
-#             self.parent.registration_tool_ui.activateWindow()
-#
-#
-# class RegistrationManual(QMainWindow):
-#
-#     parent = None
-#     button_size = {'arrow': {'width': 100,
-#                              'height': 100},
-#                    'rotate': {'width': 100,
-#                               'height': 200},
-#                    'small_rotate': {'width': 50,
-#                                     'height': 100},
-#                    }
-#
-#     list_arrow_widgets = []
-#     list_rotate_widgets = []
-#
-#     def __init__(self, parent=None):
-#
-#         super(QMainWindow, self).__init__(parent)
-#
-#         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-#                                     os.path.join('ui',
-#                                                  'ui_registration_tool.ui'))
-#         self.ui = load_ui(ui_full_path, baseinstance=self)
-#         self.parent = parent
-#         self.setWindowTitle("Registration Tool")
-#         self.initialize_widgets()
-#         self.update_status_widgets()
-#
-#     def initialize_widgets(self):
-#         _file_path = os.path.dirname(__file__)
-#         up_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/up_arrow.png'))
-#         self.ui.up_button.setIcon(QtGui.QIcon(up_arrow_file))
-#
-#         down_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/down_arrow.png'))
-#         self.ui.down_button.setIcon(QtGui.QIcon(down_arrow_file))
-#
-#         right_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/right_arrow.png'))
-#         self.ui.right_button.setIcon(QtGui.QIcon(right_arrow_file))
-#
-#         left_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/left_arrow.png'))
-#         self.ui.left_button.setIcon(QtGui.QIcon(left_arrow_file))
-#
-#         rotate_left_file = os.path.abspath(os.path.join(_file_path, '../static/rotate_left.png'))
-#         self.ui.rotate_left_button.setIcon(QtGui.QIcon(rotate_left_file))
-#
-#         rotate_right_file = os.path.abspath(os.path.join(_file_path, '../static/rotate_right.png'))
-#         self.ui.rotate_right_button.setIcon(QtGui.QIcon(rotate_right_file))
-#
-#         small_rotate_left_file = os.path.abspath(os.path.join(_file_path, '../static/small_rotate_left.png'))
-#         self.ui.small_rotate_left_button.setIcon(QtGui.QIcon(small_rotate_left_file))
-#
-#         small_rotate_right_file = os.path.abspath(os.path.join(_file_path, '../static/small_rotate_right.png'))
-#         self.ui.small_rotate_right_button.setIcon(QtGui.QIcon(small_rotate_right_file))
-#
-#         self.list_arrow_widgets = [self.ui.up_button,
-#                               self.ui.down_button,
-#                               self.ui.left_button,
-#                               self.ui.right_button]
-#         self._set_widgets_size(widgets = self.list_arrow_widgets,
-#                               width = self.button_size['arrow']['width'],
-#                               height = self.button_size['arrow']['height'])
-#
-#         self.list_rotate_widgets = [self.ui.rotate_left_button,
-#                                     self.ui.rotate_right_button]
-#         self._set_widgets_size(widgets = self.list_rotate_widgets,
-#                               width = self.button_size['rotate']['width'],
-#                               height = self.button_size['rotate']['height'])
-#
-#         self.list_small_rotate_widgets = [self.ui.small_rotate_left_button,
-#                                         self.ui.small_rotate_right_button]
-#         self._set_widgets_size(widgets = self.list_small_rotate_widgets,
-#                               width = self.button_size['small_rotate']['width'],
-#                               height = self.button_size['small_rotate']['height'])
-#
-#
-#     def _set_widgets_size(self, widgets=[], width=10, height=10):
-#         for _widget in widgets:
-#             _widget.setIconSize(QtCore.QSize(width, height))
-#
-#     def update_status_widgets(self):
-#             list_row_selected = self.parent.get_list_row_selected()
-#             _enabled = True
-#
-#             if list_row_selected is None:
-#                 _enabled = False
-#
-#             elif not list_row_selected == []:
-#                 if len(list_row_selected) == 1:
-#                     if list_row_selected[0] == self.parent.reference_image_index:
-#                         _enabled = False
-#
-#             for _widget in self.list_arrow_widgets:
-#                 _widget.setEnabled(_enabled)
-#
-#             for _widget in self.list_rotate_widgets:
-#                 _widget.setEnabled(_enabled)
-#
-#             for _widget in self.list_small_rotate_widgets:
-#                 _widget.setEnabled(_enabled)
-#
-#     def closeEvent(self, c):
-#         self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button],
-#                            enabled=True)
-#         self.parent.registration_tool_ui = None
-#
-#     def modified_selected_images(self, motion=None, rotation=0.):
-#         # retrieve row selected and changed values
-#         self.parent.ui.tableWidget.blockSignals(True)
-#
-#         list_row_selected = self.parent.get_list_row_selected()
-#         for _row in list_row_selected:
-#
-#             # we never modified the reference image
-#             if _row == self.parent.reference_image_index:
-#                 continue
-#
-#             if motion:
-#
-#                 # left and right - > we works with xoffset, column 1
-#                 if motion in ['left', 'right']:
-#                     _old_value = np.int(self.parent.ui.tableWidget.item(_row, 1).text())
-#
-#                     if motion == 'left':
-#                         xoffset = -1
-#                     else:
-#                         xoffset = 1
-#
-#                     _new_value = _old_value + xoffset
-#                     self.parent.ui.tableWidget.item(_row, 1).setText(str(_new_value))
-#
-#                 else: # up and down -> yoffset, column 2
-#
-#                     _old_value = np.int(self.parent.ui.tableWidget.item(_row, 2).text())
-#
-#                     if motion == 'up':
-#                         yoffset = -1
-#                     else:
-#                         yoffset = 1
-#
-#                     _new_value = _old_value + yoffset
-#                     self.parent.ui.tableWidget.item(_row, 2).setText(str(_new_value))
-#
-#             if not rotation == 0: # column 3
-#
-#                 _old_value = np.float(self.parent.ui.tableWidget.item(_row, 3).text())
-#                 _new_value = _old_value + rotation
-#                 self.parent.ui.tableWidget.item(_row, 3).setText("{:.2f}".format(_new_value))
-#
-#         self.parent.ui.tableWidget.blockSignals(False)
-#         self.parent.table_cell_modified(-1, -1)
-#
-#     # event handler
-#     def left_button_clicked(self):
-#         self.modified_selected_images(motion='left')
-#
-#     def right_button_clicked(self):
-#         self.modified_selected_images(motion='right')
-#
-#     def up_button_clicked(self):
-#         self.modified_selected_images(motion='up')
-#
-#     def down_button_clicked(self):
-#         self.modified_selected_images(motion='down')
-#
-#     def small_rotate_left_button_clicked(self):
-#         self.modified_selected_images(rotation=.1)
-#
-#     def small_rotate_right_button_clicked(self):
-#         self.modified_selected_images(rotation=-.1)
-#
-#     def rotate_left_button_clicked(self):
-#         self.modified_selected_images(rotation=1)
-#
-#     def rotate_right_button_clicked(self):
-#         self.modified_selected_images(rotation=-1)

@@ -1,31 +1,37 @@
 from IPython.core.display import HTML
 from IPython.core.display import display
-
+import pyqtgraph as pg
+from pyqtgraph.dockarea import *
 import os
 import numpy as np
 from changepy import pelt
 from changepy.costs import normal_var
 from scipy.ndimage.interpolation import shift
 import copy
-
-from __code.color import  Color
-
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui, QtWidgets
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtWidgets import QApplication, QMainWindow
-
-import pyqtgraph as pg
-from pyqtgraph.dockarea import *
+from qtpy.QtWidgets import QMainWindow
+from qtpy import QtGui, QtCore
 
 from NeuNorm.normalization import Normalization
 
-from __code.ui_registration_profile import Ui_MainWindow as UiMainWindowProfile
-from __code.ui_registration_profile_settings import Ui_MainWindow as UiMainWindowSettings
+from __code.color import Color
+from __code import load_ui
+
+
+class RegistrationProfileLauncher:
+
+    parent = None
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+        if self.parent.registration_profile_ui == None:
+            profile_ui = RegistrationProfileUi(parent=parent)
+            profile_ui.show()
+            self.parent.registration_profile_ui = profile_ui
+        else:
+            self.parent.registration_profile_ui.setFocus()
+            self.parent.registration_profile_ui.activateWindow()
+
 
 class RegistrationProfileUi(QMainWindow):
 
@@ -104,9 +110,11 @@ class RegistrationProfileUi(QMainWindow):
 
     def __init__(self, parent=None, data_dict=None):
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindowProfile()
-        self.ui.setupUi(self)
+        super(QMainWindow, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_registration_profile.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Registration Profile Tool")
 
         self.init_pyqtgraph()
@@ -890,11 +898,18 @@ class SettingsLauncher(object):
             self.parent.settings_ui.setFocus()
             self.parent.settings_ui.activateWindow()
 
+
 class Settings(QMainWindow):
 
     def __init__(self, parent=None):
         self.parent = parent
-        QMainWindow.__init__(self, parent=None)
+        self(QMainWindow, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_registration_profile_settings.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
+
+
         self.ui = UiMainWindowSettings()
         self.ui.setupUi(self)
 
@@ -931,6 +946,7 @@ class MeanRangeCalculation(object):
     def calculate_delta_mean_square(self):
         self.delta_square = np.square(self.left_mean - self.right_mean)
 
+
 class ExportRegistration(object):
 
     def __init__(self, parent=None, export_folder=''):
@@ -958,7 +974,7 @@ class ExportRegistration(object):
             o_norm.export(folder=self.export_folder, data_type='sample')
 
             self.parent.eventProgress.setValue(_row+1)
-            QtGui.QApplication.processEvents()
+            QApplication.processEvents()
 
         self.parent.eventProgress.setVisible(False)
 

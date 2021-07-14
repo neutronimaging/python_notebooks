@@ -542,6 +542,9 @@
              <height>0</height>
             </size>
            </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -656,7 +659,7 @@
      <x>0</x>
      <y>0</y>
      <width>1007</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
@@ -717,7 +720,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>993</x>
-     <y>1114</y>
+     <y>1113</y>
     </hint>
     <hint type="destinationlabel">
      <x>685</x>
@@ -733,7 +736,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>112</x>
-     <y>1114</y>
+     <y>1113</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -748,8 +751,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>876</x>
-     <y>594</y>
+     <x>874</x>
+     <y>618</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -764,8 +767,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>876</x>
-     <y>594</y>
+     <x>874</x>
+     <y>618</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1013,6 +1016,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_right_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>753</x>
+     <y>813</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1003</x>
+     <y>854</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -1034,5 +1053,6 @@
   <slot>grid_size_slider_pressed()</slot>
   <slot>markers_registration_button_clicked()</slot>
   <slot>profiler_registration_button_clicked()</slot>
+  <slot>table_right_click()</slot>
  </slots>
 </ui>

@@ -238,6 +238,9 @@
              <height>0</height>
             </size>
            </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -353,7 +356,7 @@
      <x>0</x>
      <y>0</y>
      <width>1007</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -455,8 +458,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>876</x>
-     <y>457</y>
+     <x>874</x>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -471,8 +474,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>876</x>
-     <y>457</y>
+     <x>874</x>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -599,8 +602,8 @@
    <slot>registered_all_images_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>751</x>
-     <y>1115</y>
+     <x>762</x>
+     <y>1114</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -615,8 +618,8 @@
    <slot>full_reset()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>1115</y>
+     <x>119</x>
+     <y>1114</y>
     </hint>
     <hint type="destinationlabel">
      <x>322</x>
@@ -669,5 +672,6 @@
   <slot>export_button_clicked()</slot>
   <slot>help_button_clicked()</slot>
   <slot>registered_all_images_and_return_to_main_ui_button_clicked()</slot>
+  <slot>table_right_click()</slot>
  </slots>
 </ui>

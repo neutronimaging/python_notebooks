@@ -68,7 +68,7 @@ from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name = 'ui_registration_profile.ui')
 
 from __code.registration.registration import RegistrationFileSelection
-from __code.registration_profile import RegistrationProfileUi
+from __code.registration.registration_profile import RegistrationProfileUi
 import os
 
 list_files = ["/Users/j35/IPTS/charles/im0000.tif",
