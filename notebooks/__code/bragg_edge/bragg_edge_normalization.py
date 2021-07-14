@@ -26,6 +26,8 @@ LOG_FILE_NAME = ".bragg_edge_normalization.log"
 
 class BraggEdge(BraggEdgeParent):
 
+    o_interface = None
+
     def __init__(self, working_dir="./"):
         super(BraggEdge, self).__init__(working_dir=working_dir)
 
@@ -125,7 +127,6 @@ class BraggEdge(BraggEdgeParent):
         return init_value
 
     def normalization_settings_widgets(self):
-
         # with ob
 
         ## button
@@ -286,7 +287,10 @@ class BraggEdge(BraggEdgeParent):
         return final_image
 
     def normalization(self):
-        list_rois = self.o_interface.roi_selected
+        if self.o_interface:
+            list_rois = self.o_interface.roi_selected
+        else:
+            list_rois = None
 
         if self.accordion.selected_index == 0:
             # with ob
@@ -296,9 +300,14 @@ class BraggEdge(BraggEdgeParent):
             # without ob
             self.normalization_without_ob(list_rois=list_rois)
 
+        self.export_normalized_data()
+
     def normalization_without_ob(self, list_rois):
+        logging.info("Running normalization without OB")
         if list_rois is None:
+            logging.info("-> no ROIs found! At least one ROI must be provided. Normalization Aborted!")
             display(HTML('<span style="font-size: 15px; color:red"> You need to provide a ROI!</span>'))
+            return
 
         else:
             list_o_roi = []
@@ -314,9 +323,15 @@ class BraggEdge(BraggEdgeParent):
                                       x1=_x1,
                                       y1=_y1))
 
-    def normalization_with_ob(self, list_rois):
+                logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
+                self.o_norm.normalization(roi=list_o_roi, use_only_sample=True, notebook=True)
+        display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
+        logging.info(f"-> Done!")
 
+    def normalization_with_ob(self, list_rois):
+        logging.info("Running normalization with OB")
         if list_rois is None:
+            logging.info("-> no roi used!")
             self.o_norm.normalization()
         else:
             list_o_roi = []
@@ -332,8 +347,10 @@ class BraggEdge(BraggEdgeParent):
                                       x1=_x1,
                                       y1=_y1))
 
+            logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
             self.o_norm.normalization(roi=list_o_roi, notebook=True)
         display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
+        logging.info(f"-> Done!")
 
     def export_normalized_data(self):
         self.o_folder = FileFolderBrowser(working_dir=self.working_dir,
@@ -342,6 +359,8 @@ class BraggEdge(BraggEdgeParent):
         self.o_folder.select_output_folder_with_new(instruction="Select where to create the normalized data ...")
 
     def export_normalized_data_step2(self, output_folder):
+        logging.info(f"export normalized data")
+        logging.info(f"-> output_folder: {output_folder}")
         output_folder = os.path.abspath(output_folder)
         self.o_folder.list_output_folders_ui.shortcut_buttons.close()
         normalized_export_folder = str(Path(output_folder) / (self.data_folder_name + '_normalized'))
@@ -351,12 +370,14 @@ class BraggEdge(BraggEdgeParent):
         display(HTML('<span style="font-size: 15px; color:green"> Created the normalized data in the folder ' +
                      normalized_export_folder + '</span>'))
         if self.spectra_file:
+            logging.info(f"-> time spectra copied to output folder!")
             file_handler.copy_files_to_folder(list_files=[self.spectra_file],
                                               output_folder=normalized_export_folder)
             display(HTML('<span style="font-size: 15px; color:green"> Copied time spectra file to same folder </span>'))
+        else:
+            logging.info(f"->No time spectra copied!")
 
     def calculate_counts_vs_file_index_of_regions_selected(self, list_roi=None):
-
         self.list_roi = list_roi
         data = self.o_norm.get_sample_data()
 
@@ -420,8 +441,6 @@ class BraggEdge(BraggEdgeParent):
         o_folder = FileFolderBrowser(working_dir=self.working_dir,
                                      next_function=self.export_data)
         o_folder.select_output_folder(instruction="Select where to create the ascii file...")
-        # self.select_folder(message='Select where to output the data',
-        #                    next_function=self.export_data)
 
     def make_output_file_name(self, output_folder='', input_folder=''):
         file_name = os.path.basename(input_folder) + "_counts_vs_lambda_tof.txt"
