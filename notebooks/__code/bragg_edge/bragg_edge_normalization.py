@@ -37,6 +37,8 @@ class BraggEdge(BraggEdgeParent):
         logging.info("*** Starting a new session ***")
 
     def load_data(self, folder_selected):
+
+        logging.info(f"Loading data from {folder_selected}")
         self.o_norm = Normalization()
         self.load_files(data_type='sample', folder=folder_selected)
 
@@ -45,13 +47,16 @@ class BraggEdge(BraggEdgeParent):
         self.list_files = self.o_norm.data['sample']['file_name']
         self.data_folder_name = os.path.basename(folder)
         spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
+        logging.info(f"> looking for spectra file: {spectra_file}")
         if spectra_file:
+            logging.info(f"-> spectra file FOUND!")
             self.spectra_file = spectra_file[0]
             display(HTML('<span style="font-size: 15px; color:blue"> Spectra File automatically located: ' + \
                          self.spectra_file + '</span>'))
 
         else:
             # ask for spectra file
+            logging.info(f"-> spectra file NOT FOUND! Asking user to select time spectra file")
             self.select_time_spectra_file()
 
     def select_time_spectra_file(self):
@@ -71,15 +76,16 @@ class BraggEdge(BraggEdgeParent):
 
     def save_time_spectra(self, file):
         BraggEdgeParent.save_time_spectra(self, file)
+        logging.info(f"Time spectra file loaded: {file}")
         self.cancel_button.close()
 
     def cancel_time_spectra_selection(self, value):
+        logging.info(f"User cancel loading time spectra!")
         self.time_spectra_ui.remove()
         self.cancel_button.close()
         display(HTML('<span style="font-size: 20px; color:blue">NO Spectra File loaded! </span>'))
 
     def load_files(self, data_type='sample', folder=None):
-
         self.starting_dir = os.path.dirname(folder)
         if data_type == 'sample':
             self.data_folder_name = os.path.basename(folder)
@@ -96,7 +102,17 @@ class BraggEdge(BraggEdgeParent):
         # sort list of files
         list_files.sort()
 
-        self.o_norm.load(file=list_files, notebook=True, data_type=data_type)
+        logging.info(f"load files:")
+        logging.info(f"-> data type: {data_type}")
+        logging.info(f"-> nbr of files: {len(list_files)}")
+
+        o_norm = Normalization()
+        o_norm.load(file=list_files, notebook=True, data_type=data_type)
+
+        if data_type == 'sample':
+            self.o_norm = o_norm
+        elif data_type == 'ob':
+            self.o_norm.data['ob'] = o_norm.data['ob']
 
         display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_files)) + \
                      ' files have been loaded as ' + data_type + '</span>'))
@@ -114,8 +130,8 @@ class BraggEdge(BraggEdgeParent):
 
         ## button
         self.select_ob_widget = widgets.Button(description="Select OB ...",
-                                          button_style="success",
-                                          layout=widgets.Layout(width="100%"))
+                                               button_style="success",
+                                               layout=widgets.Layout(width="100%"))
         self.select_ob_widget.on_click(self.select_ob_folder)
 
         ## space
@@ -136,10 +152,10 @@ class BraggEdge(BraggEdgeParent):
                                     'images, the slower the loading process!</span>')
 
         self.select_roi_widget_with_ob = widgets.Button(description="OPTIONAL: Select Region of interest away from "
-                                                                  "sample "
-                                                               "to "
-                                                               "improve normalization",
-                                                   layout=widgets.Layout(width="100%"))
+                                                                    "sample "
+                                                                    "to "
+                                                                    "improve normalization",
+                                                        layout=widgets.Layout(width="100%"))
         self.select_roi_widget_with_ob.on_click(self.select_roi_with_ob)
 
         vbox_with_ob = widgets.VBox([self.select_ob_widget,
@@ -297,15 +313,6 @@ class BraggEdge(BraggEdgeParent):
                                       y0=_y0,
                                       x1=_x1,
                                       y1=_y1))
-
-
-
-
-
-
-
-
-
 
     def normalization_with_ob(self, list_rois):
 
