@@ -148,10 +148,6 @@ class BraggEdge(BraggEdgeParent):
                                                            layout=widgets.Layout(width="80%"))
         hbox_1 = widgets.HBox([nbr_images_to_use_label, self.nbr_images_slider_with_ob])
 
-        ## label to explain nbr of images to use
-        label1 = widgets.HTML(value='<span style="color:red">WARNING</span><span> the higher the number of '
-                                    'images, the slower the loading process!</span>')
-
         self.select_roi_widget_with_ob = widgets.Button(description="OPTIONAL: Select Region of interest away from "
                                                                     "sample "
                                                                     "to "
@@ -162,7 +158,6 @@ class BraggEdge(BraggEdgeParent):
         vbox_with_ob = widgets.VBox([self.select_ob_widget,
                                      spacer,
                                      hbox_1,
-                                     label1,
                                      spacer,
                                      self.select_roi_widget_with_ob,
                                      ])
@@ -183,7 +178,6 @@ class BraggEdge(BraggEdgeParent):
         select_roi_widget_without_ob.on_click(self.select_roi_without_ob)
 
         vbox_without_ob = widgets.VBox([hbox_without_ob,
-                                        label1,
                                         spacer,
                                         select_roi_widget_without_ob
                                         ])
