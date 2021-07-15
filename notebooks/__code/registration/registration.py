@@ -256,10 +256,22 @@ class RegistrationUi(QMainWindow):
         return value_to_copy
 
     def paste_xoffset_value(self):
-        pass
+        self.paste_value_copied(column=1)
 
     def paste_yoffset_value(self):
-        pass
+        self.paste_value_copied(column=2)
+
+    def paste_value_copied(self, column=1):
+        o_table = TableHandler(self.ui.tableWidget)
+        row_selected = o_table.get_rows_of_table_selected()
+        self.ui.tableWidget.blockSignals(True)
+
+        for _row in row_selected:
+            o_table.set_item_with_str(row=_row,
+                                      column=column,
+                                      cell_str=self.value_to_copy)
+
+        self.ui.tableWidget.blockSignals(False)
 
     def display_markers(self, all=False):
         if self.registration_markers_ui is None:
