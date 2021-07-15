@@ -22,17 +22,10 @@
 # # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_registration.ui')
-o_builder = UiBuilder(ui_name = 'ui_registration_tool.ui')
-o_builder = UiBuilder(ui_name = 'ui_registration_auto_confirmation.ui')
-o_builder = UiBuilder(ui_name = 'ui_registration_markers.ui')
-o_builder = UiBuilder(ui_name = 'ui_registration_profile.ui')
-o_builder = UiBuilder(ui_name = 'ui_registration_profile_settings.ui')
+from __code.registration.file_selection import FileSelection
+from __code.registration.registration import RegistrationUi
 
 from __code import system
-from __code.registration.registration import RegistrationFileSelection, RegistrationUi
-
 system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
@@ -47,7 +40,7 @@ custom_style.style()
 # # Select Images to Process
 
 # + run_control={"frozen": false, "read_only": false}
-o_selection = RegistrationFileSelection(working_dir=system.System.get_working_dir())
+o_selection = FileSelection(working_dir=system.System.get_working_dir())
 o_selection.select_data()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
