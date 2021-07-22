@@ -8,7 +8,7 @@ jobs:
         matrix:
           os: [ubuntu-latest, windows-latest, macOS-latest]
           python-version: [3.7, 3.8]
-      name: ${{ matrix.os }} py${{ matrix.python-version }}
+      name: ${{ matrix.os }} python ${{ matrix.python-version }}
       steps:
         - uses: actions/checkout@v2
         - name: Setup python ${{ matrix.python-version }}
@@ -16,18 +16,15 @@ jobs:
           with:
             python-version:  ${{ matrix.python-version }}
         - name: Setup conda
-          uses: conda-incubator/setup-miniconda@v2
+          uses: s-weigand/setup-conda@v1
           with:
-            activate-environment: neutron-imaging
-            environment-file: conda/environment.yml
+            update-conda: false
             python-version: ${{ matrix.python-version }}
-            channels: conda-forge
-            #condarc-file: etc/example-condarc.yml
-            auto-activate-base: false
+            conda-channels: conda-forge
         - name: Install dependencies
           run: |
             #source $CONDA/bin/activate
-            conda create --name neutron-imaging python==${{ matrix.python-version }}
+            conda env create --name neutron-imaging python==${{ matrix.python-version }}
             conda activate neutron-imaging
             conda env update --file=conda/environment.yml
             conda install pytest
