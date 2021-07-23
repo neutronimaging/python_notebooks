@@ -8,16 +8,6 @@ jobs:
         matrix:
           python-version: [3.7, 3.8]
           os: [macOS-latest, ubuntu-latest, windows-latest]
-          include:
-            - os: macOS-latest
-              shell_exec: "bash -c"
-              activate_cmd: "source $CONDA/bin/activate"
-            - os: ubuntu-latest
-              shell_exec: "bash -c"
-              activate_cmd: "source $CONDA/bin/activate"
-            - os: "windows-latest"
-              shell_exec: "cmd.exe /c"
-              activate_cmd: "activate"
       name: ${{ matrix.os }} py${{ matrix.python-version }}
       steps:
         - uses: actions/checkout@v2
@@ -33,14 +23,12 @@ jobs:
             which python
             python --version
             pwd
+            ls
         - name: Install dependencies
           run: |
             conda env update -n base --file=conda/environment.yml
             conda install pytest
-        - run: conda env list
         - name: Run tests
           run: |
-            which python
-            pwd
             cd notebooks
             PYTHONPATH=. pytest
