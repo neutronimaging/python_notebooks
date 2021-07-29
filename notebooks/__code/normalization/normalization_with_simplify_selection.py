@@ -4,12 +4,14 @@ import numpy as np
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 from enum import Enum
+import logging
 
 from NeuNorm.normalization import Normalization
 
 from __code import file_handler
 from __code import metadata_handler
 from __code.ipywe import myfileselector
+from __code.normalization.get import Get
 
 JSON_DEBUGGING = False
 
@@ -64,7 +66,8 @@ METADATA_ERROR_ALLOWED = 1
 LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
 
 
-class NormalizationWithSimplifySelection(object):
+class NormalizationWithSimplifySelection:
+
     working_dir = ''
 
     def __init__(self, working_dir=''):
@@ -113,17 +116,24 @@ class NormalizationWithSimplifySelection(object):
         # defined as excluded
         self.final_with_time_range_master_dict = {}
 
+        o_get = Get(parent=self)
+        log_file_name = o_get.log_file_name()
+        logging.basicConfig(filename=log_file_name,
+                            filemode='w',
+                            format='[%(levelname)s] - %(asctime)s - %(message)s',
+                            level=logging.INFO)   # logging.INFO, logging.DEBUG
+        logging.info("*** Starting new session ***")
+
     def select_sample_images_and_create_configuration(self):
-        # self.select_sample_images()
         self.select_sample_folder()
 
-    def select_sample_images(self):
-        list_of_images_widget = myfileselector.MyFileSelectorPanel(instruction='select images'
-                                                                               'to normalize',
-                                                                   start_dir=self.working_dir,
-                                                                   next=self.retrieve_sample_metadata,
-                                                                   multiple=True)
-        list_of_images_widget.show()
+    # def select_sample_images(self):
+    #     list_of_images_widget = myfileselector.MyFileSelectorPanel(instruction='select images'
+    #                                                                            'to normalize',
+    #                                                                start_dir=self.working_dir,
+    #                                                                next=self.retrieve_sample_metadata,
+    #                                                                multiple=True)
+    #     list_of_images_widget.show()
 
     def select_sample_folder(self):
         folder_sample_widget = myfileselector.MyFileSelectorPanel(instruction='select folder of images to normalize',
@@ -134,11 +144,14 @@ class NormalizationWithSimplifySelection(object):
         folder_sample_widget.show()
 
     def retrieve_sample_metadata_from_sample_folder(self, sample_folder):
+        logging.info(f"select sample folder: {sample_folder}")
         [list_of_images, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=sample_folder)
         can_we_continue = self.images_files_found_in_list(list_of_images)
         if can_we_continue:
+            logging.info(f"-> number of images found: {len(list_of_images)}")
             self.retrieve_sample_metadata(list_of_images)
         else:
+            logging.info(f"-> No images found!")
             display(HTML('<span style="font-size: 20px; color:Red">No images found in the folder selected!</span>'))
 
     def images_files_found_in_list(self, list_of_images):
@@ -148,6 +161,7 @@ class NormalizationWithSimplifySelection(object):
         return False
 
     def retrieve_sample_metadata(self, list_of_images):
+        logging.info("Retrieving sample metadata")
         self.list_of_images = list_of_images
         self.sample_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_images,
                                                                                          display_infos=False,
@@ -165,7 +179,7 @@ class NormalizationWithSimplifySelection(object):
                            next_function=self.retrieve_ob_metadata())
 
     def retrieve_ob_metadata(self, selected_folder):
-        list_of_ob_files = NormalizationWithSimplifySelection.get_list_of_tiff_files(folder=selected_folder)
+        list_of_ob_files = Get.list_of_tiff_files(folder=selected_folder)
         self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files)
 
     def auto_retrieve_ob_metadata(self):
@@ -188,7 +202,7 @@ class NormalizationWithSimplifySelection(object):
                            next_function=self.retrieve_df_metadata())
 
     def retrieve_df_metadata(self, selected_folder):
-        list_of_df_files = NormalizationWithSimplifySelection.get_list_of_tiff_files(folder=selected_folder)
+        list_of_df_files = Get.list_of_tiff_files(folder=selected_folder)
         self.df_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_df_files)
 
     def auto_retrieve_df_metadata(self):
@@ -1203,9 +1217,3 @@ class NormalizationWithSimplifySelection(object):
                                  'user_format_time': _user_format_time_image}
 
         return result_dictionary
-
-    @staticmethod
-    def get_list_of_tiff_files(folder=""):
-        list_of_tiff_files = file_handler.get_list_of_files(folder=folder,
-                                                            extension='tiff')
-        return list_of_tiff_files
