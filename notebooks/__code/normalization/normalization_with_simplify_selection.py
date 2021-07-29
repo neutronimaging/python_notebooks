@@ -3,63 +3,16 @@ import collections
 import numpy as np
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
-from enum import Enum
 import logging
 
 from NeuNorm.normalization import Normalization
 
 from __code import file_handler
-from __code import metadata_handler
 from __code.ipywe import myfileselector
 from __code.normalization.get import Get
+from __code.normalization.metadata_handler import MetadataHandler, MetadataName, METADATA_KEYS
 
 JSON_DEBUGGING = False
-
-
-class MetadataName(Enum):
-    EXPOSURE_TIME = 65027
-    DETECTOR_MANUFACTURER = 65026
-    APERTURE_HR = 65068
-    APERTURE_HL = 65070
-    APERTURE_VT = 65066
-    APERTURE_VB = 65064
-
-    def __str__(self):
-        return self.value
-
-
-# METADATA_KEYS = [EXPOSURE_TIME, APERTURE_HR, APERTURE_HL, APERTURE_VT, APERTURE_VB]
-
-# METADATA_KEYS = {'ob': [EXPOSURE_TIME, DETECTOR_MANUFACTURER, APERTURE_HR, APERTURE_HL, APERTURE_VT,
-#                         APERTURE_VB],
-#                  'df': [EXPOSURE_TIME, DETECTOR_MANUFACTURER],
-#                  'all': [DETECTOR_MANUFACTURER, EXPOSURE_TIME, APERTURE_HR, APERTURE_HL, APERTURE_VT,
-#                          APERTURE_VB]}
-
-METADATA_KEYS = {'ob' : [MetadataName.EXPOSURE_TIME,
-                         MetadataName.DETECTOR_MANUFACTURER,
-                         MetadataName.APERTURE_HR,
-                         MetadataName.APERTURE_HL,
-                         MetadataName.APERTURE_VT,
-                         MetadataName.APERTURE_VB],
-                 'df' : [MetadataName.EXPOSURE_TIME,
-                         MetadataName.DETECTOR_MANUFACTURER],
-                 'all': [MetadataName.EXPOSURE_TIME,
-                         MetadataName.DETECTOR_MANUFACTURER,
-                         MetadataName.APERTURE_HR,
-                         MetadataName.APERTURE_HL,
-                         MetadataName.APERTURE_VT,
-                         MetadataName.APERTURE_VB]}
-
-
-class MetadataName:
-    EXPOSURE_TIME = 65027
-    DETECTOR_MANUFACTURER = 65026
-    APERTURE_HR = 65068
-    APERTURE_HL = 65070
-    APERTURE_VT = 65066
-    APERTURE_VB = 65064
-
 
 MAX_DF_COUNTS_ALLOWED = 900
 METADATA_ERROR_ALLOWED = 1
@@ -163,7 +116,7 @@ class NormalizationWithSimplifySelection:
     def retrieve_sample_metadata(self, list_of_images):
         logging.info("Retrieving sample metadata")
         self.list_of_images = list_of_images
-        self.sample_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_images,
+        self.sample_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_images,
                                                                                          display_infos=False,
                                                                                          label='sample')
 
@@ -180,13 +133,13 @@ class NormalizationWithSimplifySelection:
 
     def retrieve_ob_metadata(self, selected_folder):
         list_of_ob_files = Get.list_of_tiff_files(folder=selected_folder)
-        self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files)
+        self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files)
 
     def auto_retrieve_ob_metadata(self):
         folder = os.path.join(self.working_dir, 'raw', 'ob')
         list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff', 'tif'])
-        self.ob_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_ob_files,
+        self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files,
                                                                                      label='ob')
 
     def select_folder(self, message="", next_function=None):
@@ -203,13 +156,13 @@ class NormalizationWithSimplifySelection:
 
     def retrieve_df_metadata(self, selected_folder):
         list_of_df_files = Get.list_of_tiff_files(folder=selected_folder)
-        self.df_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_df_files)
+        self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files)
 
     def auto_retrieve_df_metadata(self):
         folder = os.path.join(self.working_dir, 'raw', 'df')
         list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff', 'tif'])
-        self.df_metadata_dict = NormalizationWithSimplifySelection.retrieve_metadata(list_of_files=list_of_df_files,
+        self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files,
                                                                                      label='df')
 
     def match_files(self):
@@ -883,61 +836,6 @@ class NormalizationWithSimplifySelection:
 
         self.final_json_dict = _final_json_dict
 
-    # def create_final_json2(self):
-    #     # go through each of the acquisition tab and into each of the config to create the list of sample, ob and df
-    #     # to use
-    #     _final_full_master_dict = self.final_full_master_dict
-    #     _config_tab_dict = self.config_tab_dict
-    #     _final_json_dict = {}
-    #
-    #     for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
-    #
-    #         _final_json_for_this_acquisition = {}
-    #         _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
-    #         _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
-    #         for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
-    #             this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
-    #             normalize_flag = this_config_tab_dict['use_this_config']
-    #
-    #             _dict_of_this_acquisition_this_config = _dict_of_this_acquisition[_config]
-    #
-    #             list_sample = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_sample']]
-    #             list_df = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_df']]
-    #
-    #             list_ob = _dict_of_this_acquisition_this_config['list_ob']
-    #             use_custom_time_range_checkbox_id = this_config_tab_dict["use_custom_time_range_checkbox"]
-    #             if not use_custom_time_range_checkbox_id.value:
-    #                 list_ob_to_keep = [_file['filename'] for _file in _dict_of_this_acquisition_this_config['list_ob']]
-    #             else:
-    #                 # retrieve first and last sample file for this config and for this acquisition
-    #                 first_sample_image_time_stamp = _dict_of_this_acquisition_this_config['first_images']['sample'][
-    #                     'time_stamp']
-    #                 last_sample_images_time_stamp = _dict_of_this_acquisition_this_config['last_images']['sample'][
-    #                     'time_stamp']
-    #
-    #                 [time_before_selected, time_after_selected] = \
-    #                     self.get_time_before_and_after_of_this_config(current_config=this_config_tab_dict)
-    #
-    #                 # calculate list of ob that are within that time range
-    #                 list_ob_to_keep = []
-    #                 for _ob_file in list_ob:
-    #                     _ob_time_stamp = _ob_file['time_stamp']
-    #                     if (_ob_time_stamp < first_sample_image_time_stamp) and \
-    #                             ((first_sample_image_time_stamp - _ob_time_stamp) <= np.abs(time_before_selected)):
-    #                         list_ob_to_keep.append(_ob_file['filename'])
-    #                     elif (_ob_time_stamp > last_sample_images_time_stamp) and \
-    #                             ((_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)):
-    #                         list_ob_to_keep.append(_ob_file['filename'])
-    #
-    #             _final_json_for_this_acquisition[_config] = {'list_sample'          : list_sample,
-    #                                                          'list_df'              : list_df,
-    #                                                          'list_ob'              : list_ob_to_keep,
-    #                                                          'normalize_this_config': normalize_flag}
-    #
-    #         _final_json_dict[_acquisition] = _final_json_for_this_acquisition
-    #
-    #     self.final_json_dict = _final_json_dict
-
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,
         which mean, at least 1 OB"""
@@ -1105,7 +1003,7 @@ class NormalizationWithSimplifySelection:
         return isolated_dictionary
 
     @staticmethod
-    def _reformat_dict(dictionary={}):
+    def _reformat_dict(dictionary=None):
         """
         to go from
             {'list_images': [], 'list_time_stamp': [], 'list_time_stamp_user_format':[]}
@@ -1127,76 +1025,6 @@ class NormalizationWithSimplifySelection:
                                             'time_stamp'            : list_time_stamp[_index],
                                             'time_stamp_user_format': list_time_stamp_user_format[_index]}
         return formatted_dictionary
-
-    @staticmethod
-    def _combine_dictionaries(master_dictionary={}, servant_dictionary={}):
-        new_master_dictionary = collections.OrderedDict()
-        for _key in master_dictionary.keys():
-            _servant_key = master_dictionary[_key]['filename']
-            _dict1 = master_dictionary[_key]
-            _dict2 = servant_dictionary[_servant_key]
-            _dict3 = {**_dict1, **_dict2}
-            new_master_dictionary[_key] = _dict3
-        return new_master_dictionary
-
-    @staticmethod
-    def retrieve_metadata(list_of_files=[], display_infos=False, label=""):
-        """
-        dict = {'file1': {'metadata1_key': {'value': value, 'name': name},
-                          'metadata2_key': {'value': value, 'name': name},
-                          'metadata3_key': {'value': value, 'name': name},
-                          ...
-                          },
-                ...
-                }
-        """
-        _dict = file_handler.retrieve_time_stamp(list_of_files, label=label)
-        _time_metadata_dict = NormalizationWithSimplifySelection._reformat_dict(dictionary=_dict)
-
-        _beamline_metadata_dict = NormalizationWithSimplifySelection.retrieve_beamline_metadata(list_of_files)
-        _metadata_dict = NormalizationWithSimplifySelection._combine_dictionaries(master_dictionary=_time_metadata_dict,
-                                                                                  servant_dictionary=_beamline_metadata_dict)
-
-        if display_infos:
-            display(HTML('<span style="font-size: 20px; color:blue">Nbr of images: ' + str(len(_metadata_dict)) +
-                         '</span'))
-            display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
-                         _metadata_dict[0]['time_stamp_user_format'] + '</span>'))
-            last_index = len(_metadata_dict) - 1
-            display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
-                         _metadata_dict[last_index]['time_stamp_user_format'] + '</span>'))
-
-        return _metadata_dict
-
-    @staticmethod
-    def retrieve_beamline_metadata(list_files):
-        """list of metadata to retrieve is:000
-            - acquisition time -> 65027
-            - detector type -> 65026 (Manufacturer)
-            - slits positions ->
-            - aperture value
-        """
-        list_metadata = METADATA_KEYS['all']
-        _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
-                                                                   list_metadata=list_metadata,
-                                                                   using_enum_object=True)
-
-        for _file_key in _dict.keys():
-            _file_dict = {}
-            for _pv in list_metadata:
-                _raw_value = _dict[_file_key][_pv]
-                if _raw_value is not None:
-                    split_raw_value = _raw_value.split(":")
-                    try:
-                        _value = np.float(split_raw_value[1])
-                    except ValueError:
-                        _value = split_raw_value[1]
-                    finally:
-                        _file_dict[_pv.value] = {'value': _value, 'name': _pv.name}
-                else:
-                    _file_dict[_pv.value] = {}
-            _dict[_file_key] = _file_dict
-        return _dict
 
     @staticmethod
     def isolate_infos_from_file_index(index=-1, dictionary=None, all_keys=False):
