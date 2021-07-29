@@ -398,7 +398,7 @@ def get_list_of_all_files_in_subfolders(folder="", extensions=['tiff', 'tif']):
 
 def read_bragg_edge_fitting_ascii_format(full_file_name):
     if not Path(full_file_name).exists():
-        raise FileNotFoundError(str(full_file_name))
+        raise FileNotFoundError
 
     metadata = {'detector_offset': '',
                 'distance_detector_sample': '',
@@ -421,8 +421,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#fitting peak range in file index: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['bragg_edge_range'] = [np.int(m.group('left_index')),
-                                                    np.int(m.group('right_index'))]
+                    metadata['bragg_edge_range'] = [int(m.group('left_index')),
+                                                    int(m.group('right_index'))]
                 else:
                     metadata['bragg_edge_range'] = [None, None]
                 line_number += 1
@@ -444,8 +444,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#march-dollase bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['march-dollase bragg peak selection range'] = [np.int(m.group('left_index')),
-                                                                            np.int(m.group('right_index'))]
+                    metadata['march-dollase bragg peak selection range'] = [int(m.group('left_index')),
+                                                                            int(m.group('right_index'))]
                 line_number += 1
                 continue
             if "#march-dollase fitting procedure started: " in line:
@@ -458,8 +458,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#Bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['bragg_peak_selection_range'] = [np.int(m.group('left_index')),
-                                                              np.int(m.group('right_index'))]
+                    metadata['bragg_peak_selection_range'] = [int(m.group('left_index')),
+                                                              int(m.group('right_index'))]
                 line_number += 1
                 continue
             if "#kropff " in line:
@@ -467,8 +467,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                           r"(?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['kropff_{}'.format(m.group('type'))] = [np.int(m.group('left_index')),
-                                                                     np.int(m.group('right_index'))]
+                    metadata['kropff_{}'.format(m.group('type'))] = [int(m.group('left_index')),
+                                                                     int(m.group('right_index'))]
                 line_number += 1
                 continue
             if "#fitting algorithm selected: " in line:

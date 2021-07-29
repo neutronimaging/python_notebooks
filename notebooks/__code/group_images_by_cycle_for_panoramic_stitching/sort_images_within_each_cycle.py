@@ -1,6 +1,5 @@
 from collections import OrderedDict
 import pandas as pd
-import numpy as np
 
 
 class SortImagesWithinEachCycle:
@@ -48,7 +47,7 @@ class SortImagesWithinEachCycle:
             for _key in list_metadata:
                 if _index == 0:
                     name_of_columns.append(_key)
-                _entry.append(np.float(self.dict_filename_metadata[_file][_key]))
+                _entry.append(float(self.dict_filename_metadata[_file][_key]))
             data.append(_entry)
 
         df = pd.DataFrame(data, columns=name_of_columns)
