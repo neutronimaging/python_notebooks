@@ -16,7 +16,7 @@ def get_list_entries(nexus_file_name=None, starting_entries=None):
 		raise ValueError("Please provide a full path to a nexus file name!")
 
 	if not Path(nexus_file_name).exists():
-		raise ValueError("File do not exist!")
+		raise ValueError('File "{}" does not exist!'.format(nexus_file_name))
 
 	dict_daslogs_keys = OrderedDict()
 	with h5py.File(nexus_file_name, 'r') as nxs:
@@ -48,7 +48,7 @@ def get_entry_value(nexus_file_name=None, entry_path=None):
 		raise ValueError("Please provide a full path to a nexus file name!")
 
 	if not Path(nexus_file_name).exists():
-		raise ValueError("File do not exist!")
+		raise ValueError('File "{}" does not exist!'.format(nexus_file_name))
 
 	with h5py.File(nexus_file_name, 'r') as nxs:
 
