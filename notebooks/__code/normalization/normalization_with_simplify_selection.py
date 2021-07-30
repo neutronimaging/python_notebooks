@@ -191,7 +191,7 @@ class NormalizationWithSimplifySelection:
         list_of_sample_acquisition = final_full_master_dict.keys()
 
         for _index_ob in list_ob_dict.keys():
-            _all_ob_instrument_metadata = self.get_instrument_metadata_only(list_ob_dict[_index_ob])
+            _all_ob_instrument_metadata = Get.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(
                     _all_ob_instrument_metadata)
             _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
@@ -216,7 +216,7 @@ class NormalizationWithSimplifySelection:
         list_of_sample_acquisition = final_full_master_dict.keys()
 
         for _index_df in list_df_dict.keys():
-            _all_df_instrument_metadata = self.get_instrument_metadata_only(list_df_dict[_index_df])
+            _all_df_instrument_metadata = Get.get_instrument_metadata_only(list_df_dict[_index_df])
             _df_instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(
                     _all_df_instrument_metadata)
             _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
@@ -274,7 +274,7 @@ class NormalizationWithSimplifySelection:
                                                         'after' : np.NaN},
                               'time_range_s'         : {'before': np.NaN,
                                                         'after' : np.NaN},
-                              'metadata_infos'       : NormalizationWithSimplifySelection.get_instrument_metadata_only(
+                              'metadata_infos'       : Get.get_instrument_metadata_only(
                                       _instrument_metadata)}
                 final_full_master_dict[_acquisition_time] = {}
                 final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
@@ -318,7 +318,7 @@ class NormalizationWithSimplifySelection:
                                                                 'after' : np.NaN},
                                       'time_range_s'         : {'before': np.NaN,
                                                                 'after' : np.NaN},
-                                      'metadata_infos'       : NormalizationWithSimplifySelection.get_instrument_metadata_only(
+                                      'metadata_infos'       : Get.get_instrument_metadata_only(
                                               _instrument_metadata)}
                         nbr_config = len(_dict_for_this_acquisition_time.keys())
                         _dict_for_this_acquisition_time['config{}'.format(nbr_config)] = _temp_dict
@@ -340,7 +340,7 @@ class NormalizationWithSimplifySelection:
                                                             'after' : np.NaN},
                                   'time_range_s'         : {'before': np.NaN,
                                                             'after' : np.NaN},
-                                  'metadata_infos'       : NormalizationWithSimplifySelection.get_instrument_metadata_only(
+                                  'metadata_infos'       : Get.get_instrument_metadata_only(
                                           _instrument_metadata)}
                     final_full_master_dict[_acquisition_time] = {}
                     final_full_master_dict[_acquisition_time]['config0'] = _temp_dict
@@ -406,6 +406,8 @@ class NormalizationWithSimplifySelection:
         _config_tab_dict = {}  # will keep record of each config tab for each acquisition
         _acquisition_tabs = widgets.Tab()
 
+        o_get = Get(parent=self)
+
         for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
             _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
 
@@ -413,7 +415,7 @@ class NormalizationWithSimplifySelection:
             _current_acquisition_tab_widgets_id = {'config_tab_id': _config_tab}
             for _index, _config in enumerate(_dict_of_this_acquisition.keys()):
                 _dict_config = _dict_of_this_acquisition[_config]
-                _dict = self.get_full_layout_for_this_config(_dict_config)
+                _dict = o_get.full_layout_for_this_config(_dict_config)
                 _layout = _dict['verti_layout']
                 _config_widgets_id_dict = _dict['config_widgets_id_dict']
                 _config_tab.children += (_layout,)
@@ -429,163 +431,6 @@ class NormalizationWithSimplifySelection:
 
         self.acquisition_tab = _acquisition_tabs
         self.config_tab_dict = _config_tab_dict
-
-    def get_max_time_elapse_before_experiment(self):
-        # this will use the first sample image taken, the first OB image taken and will calculate that
-        # difference. If the OB was taken after the first image, time will be 0
-
-        # retrieve acquisition and config values
-        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
-        config_key = self.get_active_tab_config_key()  # ex: 'config0'
-
-        # retrieve list of ob and df for this config for this acquisition
-        final_full_master_dict = self.final_full_master_dict
-        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
-
-        # retrieve first and last sample file for this config and for this acquisition
-        first_sample_image_time_stamp = dict_for_this_config['first_images']['sample']['time_stamp']
-        first_ob = dict_for_this_config['first_images']['ob']['time_stamp']
-
-        if first_ob > first_sample_image_time_stamp:
-            return 0
-        else:
-            return first_sample_image_time_stamp - first_ob
-
-    def get_max_time_elapse_after_experiment(self):
-        # this will use the last sample image taken, the last OB image taken and will calculate that
-        # difference. If the last OB was taken before the last image, time will be 0
-
-        # retrieve acquisition and config values
-        acquisition_key = np.float(self.get_active_tab_acquisition_key())  # ex: 55.0
-        config_key = self.get_active_tab_config_key()  # ex: 'config0'
-
-        # retrieve list of ob and df for this config for this acquisition
-        final_full_master_dict = self.final_full_master_dict
-        dict_for_this_config = final_full_master_dict[acquisition_key][config_key]
-
-        # retrieve first and last sample file for this config and for this acquisition
-        last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
-        last_ob = dict_for_this_config['last_images']['ob']['time_stamp']
-
-        if last_ob < last_sample_images_time_stamp:
-            return 0
-        else:
-            return last_sample_images_time_stamp - last_ob
-
-    def get_full_layout_for_this_config(self, dict_config):
-
-        config_widgets_id_dict = {}
-
-        def _make_list_basename_file(list_name='list_sample'):
-            return [os.path.basename(_entry['filename']) for _entry in dict_config[list_name]]
-
-        def _make_full_file_name(list_name='list_sample'):
-            return [_entry['filename'] for _entry in dict_config[list_name]]
-
-        # list_sample = _make_list_basename_file(list_name='list_sample')
-        # list_ob = _make_list_basename_file(list_name='list_ob')
-        # list_df = _make_list_basename_file(list_name='list_df')
-
-        list_sample = _make_full_file_name(list_name='list_sample')
-        list_ob = _make_full_file_name(list_name='list_ob')
-        list_df = _make_full_file_name(list_name='list_df')
-
-        # normalize or not this configuration
-        use_this_config_widget = widgets.Checkbox(description="Normalize this configuration",
-                                                  value=True,
-                                                  layout=widgets.Layout(width="100%"))
-        use_this_config_widget.observe(self.update_use_this_config_widget, names='value')
-        config_widgets_id_dict['use_this_config'] = use_this_config_widget
-
-        # use custom time range check box
-        check_box_user_time_range = widgets.Checkbox(description="Use selected OB & DF from custom time range",
-                                                     value=False,
-                                                     layout=widgets.Layout(width="35%"))
-        config_widgets_id_dict['use_custom_time_range_checkbox'] = check_box_user_time_range
-        check_box_user_time_range.observe(self.update_config_widgets, names='value')
-
-        [max_time_elapse_before_experiment,
-         max_time_elapse_after_experiment] = self.calculate_max_time_before_and_after_exp_for_this_config(dict_config)
-
-        hori_layout1 = widgets.HBox([check_box_user_time_range,
-                                     widgets.FloatSlider(value=-max_time_elapse_before_experiment - 0.1,
-                                                         min=-max_time_elapse_before_experiment - 0.1,
-                                                         max=0,
-                                                         step=0.1,
-                                                         readout=False,
-                                                         layout=widgets.Layout(width="30%",
-                                                                               visibility='hidden')),
-                                     widgets.Label(" <<< EXPERIMENT >>> ",
-                                                   layout=widgets.Layout(width="20%",
-                                                                         visibility='hidden')),
-                                     widgets.FloatSlider(value=max_time_elapse_before_experiment + 0.1,
-                                                         min=0,
-                                                         max=max_time_elapse_after_experiment + 0.1,
-                                                         step=0.1,
-                                                         readout=False,
-                                                         layout=widgets.Layout(width="30%",
-                                                                               visibility='hidden')),
-                                     ])
-        self.hori_layout1 = hori_layout1
-        self.time_before_slider = hori_layout1.children[1]
-        self.time_after_slider = hori_layout1.children[3]
-        self.experiment_label = hori_layout1.children[2]
-        self.time_after_slider.observe(self.update_time_range_event, names='value')
-        self.time_before_slider.observe(self.update_time_range_event, names='value')
-        config_widgets_id_dict['time_slider_before_experiment'] = hori_layout1.children[1]
-        config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
-        config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
-
-        # use all OB and DF
-        hori_layout2 = widgets.HBox([widgets.Label("    ",
-                                                   layout=widgets.Layout(width="20%")),
-                                     widgets.HTML("",
-                                                  layout=widgets.Layout(width="80%"))])
-        self.hori_layout2 = hori_layout2
-        self.time_before_and_after_message = hori_layout2.children[1]
-        config_widgets_id_dict['time_slider_before_message'] = hori_layout2.children[1]
-
-        # table of metadata
-        [metadata_table_label, metadata_table] = self.populate_metadata_table(dict_config)
-
-        select_width = '100%'
-        sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs (ALL WILL BE USED!)",
-                                                          layout=widgets.Layout(width='100%')),
-                                            widgets.Select(options=list_sample,
-                                                           layout=widgets.Layout(width=select_width,
-                                                                                 height='300px'))],
-                                           layout=widgets.Layout(width="100%"))
-        # self.list_of_runs_ui = box0.children[1]
-        ob_list_of_runs = widgets.VBox([widgets.Label("List of OB (ONLY SELECTED ONE ARE USED!)",
-                                                      layout=widgets.Layout(width='100%')),
-                                        widgets.SelectMultiple(options=list_ob,
-                                                               value=list_ob,
-                                                               layout=widgets.Layout(width=select_width,
-                                                                             height='300px'))],
-                                       layout=widgets.Layout(width="100%"))
-        df_list_of_runs = widgets.VBox([widgets.Label("List of DF (ONLY SELECTED ONE ARE USED!)",
-                                                      layout=widgets.Layout(width='100%')),
-                                        widgets.SelectMultiple(options=list_df,
-                                                               value=list_df,
-                                                               layout=widgets.Layout(width=select_width,
-                                                                             height='300px'))],
-                                       layout=widgets.Layout(width="100%"))
-
-        list_runs_layout = widgets.VBox([sample_list_of_runs,
-                                         ob_list_of_runs,
-                                         df_list_of_runs])
-        config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
-        config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
-        config_widgets_id_dict['list_of_df'] = df_list_of_runs.children[1]
-
-        verti_layout = widgets.VBox([use_this_config_widget,
-                                     hori_layout1,
-                                     hori_layout2,
-                                     metadata_table_label,
-                                     metadata_table,
-                                     list_runs_layout])
-
-        return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
 
     def calculate_max_time_before_and_after_exp_for_this_config(self, dict_config):
 
@@ -653,71 +498,22 @@ class NormalizationWithSimplifySelection:
         self.update_time_range_event(message)
 
     def show_or_not_before_and_after_sliders(self):
-        current_config = self.get_current_config_dict()
+        o_get = Get(parent=self)
+        current_config = o_get.current_config_dict()
         [max_time_elapse_before_experiment, max_time_elapse_after_experiment] = \
             self.calculate_max_time_before_and_after_exp_for_this_config(current_config)
 
         slider_before_visibility = 'visible' if max_time_elapse_before_experiment > 0 else 'hidden'
         slider_after_visibility = 'visible' if max_time_elapse_after_experiment > 0 else 'hidden'
 
-        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
+        [time_before_selected_ui, time_after_selected_ui] = o_get.time_before_and_after_ui_of_this_config()
         time_before_selected_ui.layout.visibility = slider_before_visibility
         time_after_selected_ui.layout.visibility = slider_after_visibility
 
-    def get_active_tabs(self):
-        active_acquisition_tab = self.acquisition_tab.selected_index
-        config_tab_dict = self.config_tab_dict[active_acquisition_tab]
-        active_config_tab = config_tab_dict['config_tab_id'].selected_index
-        return [active_acquisition_tab, active_config_tab]
-
-    def get_active_tab_acquisition_key(self):
-        active_acquisition_tab_index = self.acquisition_tab.selected_index
-        title = self.acquisition_tab.get_title(active_acquisition_tab_index)
-        [_, time_s] = title.split(": ")
-        acquisition_key = time_s[:-1]
-        return np.float(acquisition_key)
-
-    def get_active_tab_config_key(self):
-        [active_acquisition, _] = self.get_active_tabs()
-        all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
-        current_config_tab = all_config_tab_of_acquisition['config_tab_id']
-        current_config_tab_index = current_config_tab.selected_index
-        return current_config_tab.get_title(current_config_tab_index)
-
-    def get_time_before_and_after_of_this_config(self, current_config=None):
-        [time_before_selected_ui, time_after_selected_ui] = \
-            self.get_time_before_and_after_ui_of_this_config(current_config=current_config)
-        return [time_before_selected_ui.value, time_after_selected_ui.value]
-
-    def get_time_before_and_after_ui_of_this_config(self, current_config=None):
-        if current_config is None:
-            current_config = self.get_current_config_of_widgets_id()
-        return [current_config['time_slider_before_experiment'], current_config['time_slider_after_experiment']]
-
-    def get_time_before_and_after_message_ui_of_this_config(self):
-        current_config = self.get_current_config_of_widgets_id()
-        return current_config['time_slider_before_message']
-
-    def get_experiment_label_ui_of_this_config(self):
-        current_config = self.get_current_config_of_widgets_id()
-        return current_config['experiment_label']
-
     def is_custom_time_range_checked_for_this_config(self):
-        current_config = self.get_current_config_of_widgets_id()
+        o_get = Get(parent=self)
+        current_config = o_get.current_config_of_widgets_id()
         return current_config['use_custom_time_range_checkbox'].value
-
-    def get_current_config_dict(self):
-        active_acquisition = self.get_active_tab_acquisition_key()
-        active_config = self.get_active_tab_config_key()
-        final_full_master_dict = self.final_full_master_dict
-        current_config = final_full_master_dict[active_acquisition][active_config]
-        return current_config
-
-    def get_current_config_of_widgets_id(self):
-        [active_acquisition, active_config] = self.get_active_tabs()
-        all_config_tab_of_acquisition = self.config_tab_dict[active_acquisition]
-        current_config_of_widgets_id = all_config_tab_of_acquisition[active_config]
-        return current_config_of_widgets_id
 
     def update_time_range_event(self, value):
         # reach when user interact with the sliders in the config tab
@@ -726,9 +522,11 @@ class NormalizationWithSimplifySelection:
 
     def update_list_of_files_in_widgets_using_new_time_range(self):
 
+        o_get = Get(parent=self)
         # retrieve acquisition and config values
-        acquisition_key = self.get_active_tab_acquisition_key()  # ex: '55.0'
-        config_key = self.get_active_tab_config_key()  # ex: 'config0'
+
+        acquisition_key = o_get.active_tab_acquisition_key()  # ex: '55.0'
+        config_key = o_get.active_tab_config_key()  # ex: 'config0'
 
         # retrieve list of ob and df for this config for this acquisition
         final_full_master_dict = self.final_full_master_dict
@@ -746,7 +544,7 @@ class NormalizationWithSimplifySelection:
             last_sample_images_time_stamp = dict_for_this_config['last_images']['sample']['time_stamp']
 
             # retrieve time before and after selected
-            [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
+            [time_before_selected, time_after_selected] = o_get.time_before_and_after_of_this_config()
 
             # calculate list of ob that are within that time range
             list_ob_to_keep = []
@@ -762,20 +560,22 @@ class NormalizationWithSimplifySelection:
         self.update_list_of_ob_for_current_config_tab(list_ob=list_ob_to_keep)
 
     def update_list_of_ob_for_current_config_tab(self, list_ob=[]):
-        [active_acquisition, active_config] = self.get_active_tabs()
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
         # short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
         self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = list_ob
         # select everything by default
         self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].valuelist_ob
 
     def update_time_range_message(self, value):
+        o_get = Get(parent=self)
         if value is None:
             _message = "Use <b><font color='red'>All </b> " \
                        "<font color='black'>OBs and DFs " \
                        "matching the samples images</font>"
         else:
 
-            [time_before_selected, time_after_selected] = self.get_time_before_and_after_of_this_config()
+            [time_before_selected, time_after_selected] = o_get.time_before_and_after_of_this_config()
 
             time_before_selected = np.abs(time_before_selected)
 
@@ -800,7 +600,7 @@ class NormalizationWithSimplifySelection:
                                                                                       "<b><font color='red'>" + str_time_after + "</b> " \
                                                                                                                                  "<font color='black'>after experiment!</font>"
 
-        time_before_and_after_message_ui = self.get_time_before_and_after_message_ui_of_this_config()
+        time_before_and_after_message_ui = o_get.time_before_and_after_message_ui_of_this_config()
         time_before_and_after_message_ui.value = _message
 
     def checking_normalization_workflow(self):
@@ -968,14 +768,6 @@ class NormalizationWithSimplifySelection:
     def keep_basename_only(list_files=[]):
         basename_only = [os.path.basename(_file) for _file in list_files]
         return basename_only
-
-    @staticmethod
-    def get_instrument_metadata_only(metadata_dict):
-        _clean_dict = {}
-        for _key in metadata_dict.keys():
-            if not _key in LIST_METADATA_NOT_INSTRUMENT_RELATED:
-                _clean_dict[_key] = metadata_dict[_key]
-        return _clean_dict
 
     @staticmethod
     def all_metadata_match(metadata_1={}, metadata_2={}, list_key_to_check=None):
