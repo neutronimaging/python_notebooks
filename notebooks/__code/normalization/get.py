@@ -167,7 +167,7 @@ class Get(TopGet):
         self.parent.time_after_slider = hori_layout1.children[3]
         self.parent.experiment_label = hori_layout1.children[2]
         self.parent.time_after_slider.observe(self.parent.update_time_range_event, names='value')
-        self.parenttime_before_slider.observe(self.parent.update_time_range_event, names='value')
+        self.parent.time_before_slider.observe(self.parent.update_time_range_event, names='value')
         config_widgets_id_dict['time_slider_before_experiment'] = hori_layout1.children[1]
         config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
         config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]

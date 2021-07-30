@@ -1,11 +1,13 @@
 from IPython.core.display import display, HTML
 import collections
 import numpy as np
+import logging
 from enum import Enum
 
 from __code import file_handler
 from __code import metadata_handler
 from __code._utilities.dictionary import combine_dictionaries
+
 
 class MetadataName(Enum):
     EXPOSURE_TIME = 65027
@@ -17,6 +19,7 @@ class MetadataName(Enum):
 
     def __str__(self):
         return self.value
+
 
 METADATA_KEYS = {'ob' : [MetadataName.EXPOSURE_TIME,
                          MetadataName.DETECTOR_MANUFACTURER,
@@ -37,7 +40,7 @@ METADATA_KEYS = {'ob' : [MetadataName.EXPOSURE_TIME,
 class MetadataHandler:
 
     @staticmethod
-    def retrieve_metadata(list_of_files=[], display_infos=False, label=""):
+    def retrieve_metadata(list_of_files=None, display_infos=False, label=""):
         """
         dict = {'file1': {'metadata1_key': {'value': value, 'name': name},
                           'metadata2_key': {'value': value, 'name': name},
@@ -52,7 +55,7 @@ class MetadataHandler:
 
         _beamline_metadata_dict = MetadataHandler.retrieve_beamline_metadata(list_of_files)
         _metadata_dict = combine_dictionaries(master_dictionary=_time_metadata_dict,
-                                                                                  servant_dictionary=_beamline_metadata_dict)
+                                              servant_dictionary=_beamline_metadata_dict)
 
         if display_infos:
             display(HTML('<span style="font-size: 20px; color:blue">Nbr of images: ' + str(len(_metadata_dict)) +

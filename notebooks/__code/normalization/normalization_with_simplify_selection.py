@@ -78,9 +78,6 @@ class NormalizationWithSimplifySelection:
                             level=logging.INFO)   # logging.INFO, logging.DEBUG
         logging.info("*** Starting new session ***")
 
-    def select_sample_images_and_create_configuration(self):
-        self.select_sample_folder()
-
     def select_sample_folder(self):
         folder_sample_widget = myfileselector.MyFileSelectorPanel(instruction='select folder of images to normalize',
                                                                   start_dir=self.working_dir,
@@ -107,12 +104,14 @@ class NormalizationWithSimplifySelection:
         return False
 
     def retrieve_sample_metadata(self, list_of_images):
-        logging.info("Retrieving sample metadata")
+        __name__ = "retrieve_sample_metadata"
+
+        logging.info(f"Retrieving sample metadata ({__name__})")
         self.list_of_images = list_of_images
         self.sample_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_images,
                                                                       display_infos=False,
                                                                       label='sample')
-
+        # logging.info(f"self.sample_metadata_dict: {self.sample_metadata_dict}")
         self.auto_retrieve_ob_metadata()
         self.auto_retrieve_df_metadata()
         self.match_files()
@@ -129,11 +128,17 @@ class NormalizationWithSimplifySelection:
         self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files)
 
     def auto_retrieve_ob_metadata(self):
+        logging.info(f"> auto_retrieve_ob_metadata")
         folder = os.path.join(self.working_dir, 'raw', 'ob')
+        logging.info(f"-> folder: {folder}")
         list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff', 'tif'])
+        logging.info(f"-> nbr of ob files found: {len(list_of_ob_files)}")
         self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files,
                                                                   label='ob')
+
+        # logging.info(f"ob metadata dict")
+        # logging.info(f"-> {self.ob_metadata_dict}")
 
     def select_folder(self, message="", next_function=None):
         folder_widget = myfileselector.MyFileSelectorPanel(instruction='select {} folder'.format(message),
@@ -155,6 +160,7 @@ class NormalizationWithSimplifySelection:
         folder = os.path.join(self.working_dir, 'raw', 'df')
         list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff', 'tif'])
+        logging.info(f"-> nbr of df files found: {len(list_of_df_files)}")
         self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files,
                                                                   label='df')
 
@@ -187,7 +193,7 @@ class NormalizationWithSimplifySelection:
             _all_ob_instrument_metadata = Get.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = utilities.isolate_instrument_metadata(
                     _all_ob_instrument_metadata)
-            _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
+            _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME.value]['value']
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
@@ -211,7 +217,7 @@ class NormalizationWithSimplifySelection:
             _all_df_instrument_metadata = Get.get_instrument_metadata_only(list_df_dict[_index_df])
             _df_instrument_metadata = utilities.isolate_instrument_metadata(
                     _all_df_instrument_metadata)
-            _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
+            _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME.value]['value']
 
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
@@ -237,7 +243,7 @@ class NormalizationWithSimplifySelection:
             _dict_file_index = sample_metadata_dict[_file_index]
             _sample_file = _dict_file_index['filename']
 
-            _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME]['value']
+            _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME.value]['value']
             _instrument_metadata = utilities.isolate_instrument_metadata(_dict_file_index)
             _sample_time_stamp = _dict_file_index['time_stamp']
 
@@ -475,8 +481,9 @@ class NormalizationWithSimplifySelection:
             message = True
             visibility = 'visible'
 
-        [time_before_selected_ui, time_after_selected_ui] = self.get_time_before_and_after_ui_of_this_config()
-        experiment_label_ui = self.get_experiment_label_ui_of_this_config()
+        o_get = Get(parent=self)
+        [time_before_selected_ui, time_after_selected_ui] = o_get.time_before_and_after_ui_of_this_config()
+        experiment_label_ui = o_get.experiment_label_ui_of_this_config()
         experiment_label_ui.layout.visibility = visibility
 
         if visibility == 'hidden':
