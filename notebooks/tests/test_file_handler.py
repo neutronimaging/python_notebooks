@@ -17,10 +17,6 @@ class TestReadBraggEdgeFittingAsciiFormat:
         with pytest.raises(FileNotFoundError):
             read_bragg_edge_fitting_ascii_format(full_file_name=ascii_file)
 
-    # def test_retrieving_metadata_base_folder(self):
-    #     result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
-    #     assert result['metadata']['base_folder'] == '/Users/j35/IPTS/VENUS/IPTS-25778_normalized'
-
     def test_retrieving_metadata_columns(self):
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         print(f"str(Path(__file__).parent: {str(Path(__file__).parent)}")
