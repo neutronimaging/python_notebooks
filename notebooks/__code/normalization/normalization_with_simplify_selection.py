@@ -11,6 +11,7 @@ from __code import file_handler
 from __code.ipywe import myfileselector
 from __code.normalization.get import Get
 from __code.normalization.metadata_handler import MetadataHandler, MetadataName, METADATA_KEYS
+from __code.normalization import utilities
 
 JSON_DEBUGGING = False
 
@@ -80,14 +81,6 @@ class NormalizationWithSimplifySelection:
     def select_sample_images_and_create_configuration(self):
         self.select_sample_folder()
 
-    # def select_sample_images(self):
-    #     list_of_images_widget = myfileselector.MyFileSelectorPanel(instruction='select images'
-    #                                                                            'to normalize',
-    #                                                                start_dir=self.working_dir,
-    #                                                                next=self.retrieve_sample_metadata,
-    #                                                                multiple=True)
-    #     list_of_images_widget.show()
-
     def select_sample_folder(self):
         folder_sample_widget = myfileselector.MyFileSelectorPanel(instruction='select folder of images to normalize',
                                                                   start_dir=self.working_dir,
@@ -117,8 +110,8 @@ class NormalizationWithSimplifySelection:
         logging.info("Retrieving sample metadata")
         self.list_of_images = list_of_images
         self.sample_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_images,
-                                                                                         display_infos=False,
-                                                                                         label='sample')
+                                                                      display_infos=False,
+                                                                      label='sample')
 
         self.auto_retrieve_ob_metadata()
         self.auto_retrieve_df_metadata()
@@ -140,7 +133,7 @@ class NormalizationWithSimplifySelection:
         list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff', 'tif'])
         self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files,
-                                                                                     label='ob')
+                                                                  label='ob')
 
     def select_folder(self, message="", next_function=None):
         folder_widget = myfileselector.MyFileSelectorPanel(instruction='select {} folder'.format(message),
@@ -163,7 +156,7 @@ class NormalizationWithSimplifySelection:
         list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff', 'tif'])
         self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files,
-                                                                                     label='df')
+                                                                  label='df')
 
     def match_files(self):
         """This is where the files will be associated with their respective OB, DF by using the metadata"""
@@ -192,14 +185,13 @@ class NormalizationWithSimplifySelection:
 
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = Get.get_instrument_metadata_only(list_ob_dict[_index_ob])
-            _ob_instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(
+            _ob_instrument_metadata = utilities.isolate_instrument_metadata(
                     _all_ob_instrument_metadata)
             _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
-                    if NormalizationWithSimplifySelection.all_metadata_match(_sample_metadata_infos,
-                                                                             _ob_instrument_metadata):
+                    if utilities.all_metadata_match(_sample_metadata_infos, _ob_instrument_metadata):
                         final_full_master_dict[_acquisition_time][_config_id]['list_ob'].append(list_ob_dict[_index_ob])
 
         self.final_full_master_dict = final_full_master_dict
@@ -217,7 +209,7 @@ class NormalizationWithSimplifySelection:
 
         for _index_df in list_df_dict.keys():
             _all_df_instrument_metadata = Get.get_instrument_metadata_only(list_df_dict[_index_df])
-            _df_instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(
+            _df_instrument_metadata = utilities.isolate_instrument_metadata(
                     _all_df_instrument_metadata)
             _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME]['value']
 
@@ -225,16 +217,14 @@ class NormalizationWithSimplifySelection:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]['metadata_infos']
 
-                    if NormalizationWithSimplifySelection.all_metadata_match(_sample_metadata_infos,
-                                                                             _df_instrument_metadata,
-                                                                             list_key_to_check=[METADATA_KEYS['df'][
-                                                                                                    1].value]):
+                    if utilities.all_metadata_match(_sample_metadata_infos, _df_instrument_metadata,
+                                                    list_key_to_check=[METADATA_KEYS['df'][
+                                                                           1].value]):
                         final_full_master_dict[_acquisition_time][_config_id]['list_df'].append(list_df_dict[_index_df])
 
         self.final_full_master_dict = final_full_master_dict
 
     def create_master_sample_dict(self):
-
         final_full_master_dict = collections.OrderedDict()
         sample_metadata_dict = self.sample_metadata_dict
 
@@ -248,7 +238,7 @@ class NormalizationWithSimplifySelection:
             _sample_file = _dict_file_index['filename']
 
             _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME]['value']
-            _instrument_metadata = NormalizationWithSimplifySelection._isolate_instrument_metadata(_dict_file_index)
+            _instrument_metadata = utilities.isolate_instrument_metadata(_dict_file_index)
             _sample_time_stamp = _dict_file_index['time_stamp']
 
             # find which image was first and which image was last
@@ -286,8 +276,8 @@ class NormalizationWithSimplifySelection:
                     _found_a_match = False
                     for _config_key in _dict_for_this_acquisition_time.keys():
                         _config = _dict_for_this_acquisition_time[_config_key]
-                        if (NormalizationWithSimplifySelection.all_metadata_match(metadata_1=_config['metadata_infos'],
-                                                                                  metadata_2=_instrument_metadata)):
+                        if (utilities.all_metadata_match(metadata_1=_config['metadata_infos'],
+                                                         metadata_2=_instrument_metadata)):
                             _config['list_sample'].append(_dict_file_index)
 
                             _first_images_dict = {'sample': first_sample_image,
@@ -521,7 +511,6 @@ class NormalizationWithSimplifySelection:
         self.update_list_of_files_in_widgets_using_new_time_range()
 
     def update_list_of_files_in_widgets_using_new_time_range(self):
-
         o_get = Get(parent=self)
         # retrieve acquisition and config values
 
@@ -530,7 +519,7 @@ class NormalizationWithSimplifySelection:
 
         # retrieve list of ob and df for this config for this acquisition
         final_full_master_dict = self.final_full_master_dict
-        dict_for_this_config = final_full_master_dict[np.float(acquisition_key)][config_key]
+        dict_for_this_config = final_full_master_dict[float(acquisition_key)][config_key]
         list_ob = dict_for_this_config['list_ob']
 
         # no need to do anything more if user wants to use all the files
@@ -583,13 +572,13 @@ class NormalizationWithSimplifySelection:
                 if _time_s < 60:
                     return "{:.2f}s".format(_time_s)
                 elif _time_s < 3600:
-                    _time_mn = np.int(_time_s % 60.)
-                    _time_s = np.int((_time_s / 60) % 60)
+                    _time_mn = int(_time_s % 60.)
+                    _time_s = int((_time_s / 60) % 60)
                     return "{:d}mn {:d}s".format(_time_mn, _time_s)
                 else:
-                    _time_hr = np.int(_time_s / 3600.)
-                    _time_mn = np.int(_time_s % 60.)
-                    _time_s = np.int((_time_s / 60) % 60)
+                    _time_hr = int(_time_s / 3600.)
+                    _time_mn = int(_time_s % 60.)
+                    _time_s = int((_time_s / 60) % 60)
                     return "{:d}hr {:d}mn {:d}s".format(_time_hr, _time_mn, _time_s)
 
             str_time_before = _format_time(time_before_selected)
@@ -608,7 +597,6 @@ class NormalizationWithSimplifySelection:
         self.normalization_recap()
 
     def create_final_json(self):
-
         _final_full_master_dict = self.final_full_master_dict
         _config_tab_dict = self.config_tab_dict
         _final_json_dict = {}
@@ -654,7 +642,7 @@ class NormalizationWithSimplifySelection:
                 nbr_df = len(_current_config_dict['list_df'])
                 nbr_sample = len(_current_config_dict['list_sample'])
                 self.number_of_normalization += 1 if nbr_ob > 0 else 0
-                table += NormalizationWithSimplifySelection.populate_normalization_recap_row(
+                table += utilities.populate_normalization_recap_row(
                         acquisition=_name_acquisition,
                         config=_name_config,
                         nbr_sample=nbr_sample,
@@ -709,7 +697,7 @@ class NormalizationWithSimplifySelection:
 
                 list_sample = _current_config['list_sample']
                 full_output_normalization_folder_name = \
-                    NormalizationWithSimplifySelection.make_full_output_normalization_folder_name(
+                    utilities.make_full_output_normalization_folder_name(
                             output_folder=output_folder,
                             first_sample_file_name=list_sample[0],
                             name_acquisition=_name_acquisition,
@@ -736,104 +724,3 @@ class NormalizationWithSimplifySelection:
         for _folder in list_full_output_normalization_folder_name:
             _folder = _folder if _folder else "None"
             display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + '</span>'))
-
-    @staticmethod
-    def make_full_output_normalization_folder_name(output_folder='', first_sample_file_name='',
-                                                   name_acquisition='', name_config=''):
-
-        basename_sample_folder = os.path.basename(os.path.dirname(first_sample_file_name))
-        basename_sample_folder += "_{}_{}".format(name_acquisition, name_config)
-        full_basename_sample_folder = os.path.abspath(os.path.join(output_folder, basename_sample_folder))
-        file_handler.make_or_reset_folder(full_basename_sample_folder)
-        return full_basename_sample_folder
-
-    @staticmethod
-    def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0,
-                                         normalize_this_config=True):
-
-        if not normalize_this_config.value:
-            status_string = "<th style='color:#ff0000'>SKIP!</th>"
-        else:
-            if nbr_ob > 0:
-                status_string = "<th style='color:#odbc2e'>OK</th>"
-            else:
-                status_string = "<th style='color:#ff0000'>Missing OB!</th>"
-
-        _row = ""
-        _row = "<tr><th>{}</th><th>{}</th><th>{}</th><th>{}</th><th>{}</th>{}</tr>". \
-            format(acquisition, config, nbr_sample, nbr_ob, nbr_df, status_string)
-        return _row
-
-    @staticmethod
-    def keep_basename_only(list_files=[]):
-        basename_only = [os.path.basename(_file) for _file in list_files]
-        return basename_only
-
-    @staticmethod
-    def all_metadata_match(metadata_1={}, metadata_2={}, list_key_to_check=None):
-
-        list_key = metadata_1.keys() if list_key_to_check is None else list_key_to_check
-
-        for _key in list_key:
-            try:
-                if np.abs(np.float(
-                        metadata_1[_key]['value']) - np.float(metadata_2[_key]['value'])) > METADATA_ERROR_ALLOWED:
-                    return False
-            except ValueError:
-                if metadata_1[_key]['value'] != metadata_2[_key]['value']:
-                    return False
-        return True
-
-    @staticmethod
-    def _isolate_instrument_metadata(dictionary):
-        """create a dictionary of all the instrument metadata without the acquisition time"""
-        isolated_dictionary = {}
-        for _key in dictionary.keys():
-            if _key == MetadataName.EXPOSURE_TIME:
-                continue
-            isolated_dictionary[_key] = dictionary[_key]
-        return isolated_dictionary
-
-    @staticmethod
-    def _reformat_dict(dictionary=None):
-        """
-        to go from
-            {'list_images': [], 'list_time_stamp': [], 'list_time_stamp_user_format':[]}
-        to
-            {'0': {'filename': file1,
-                   'time_stamp': 'value',
-                   'time_stamp_user_format': 'value',
-                   },
-             ...,
-             }
-        """
-        formatted_dictionary = collections.OrderedDict()
-        list_files = dictionary['list_images']
-        list_time_stamp = dictionary['list_time_stamp']
-        list_time_stamp_user_format = dictionary['list_time_stamp_user_format']
-
-        for _index, _file in enumerate(list_files):
-            formatted_dictionary[_index] = {'filename'              : _file,
-                                            'time_stamp'            : list_time_stamp[_index],
-                                            'time_stamp_user_format': list_time_stamp_user_format[_index]}
-        return formatted_dictionary
-
-    @staticmethod
-    def isolate_infos_from_file_index(index=-1, dictionary=None, all_keys=False):
-        result_dictionary = collections.OrderedDict()
-
-        if all_keys:
-            for _image in dictionary['list_images'].keys():
-                _time_image = dictionary['list_time_stamp'][index]
-                _user_format_time_image = dictionary['list_time_stamp_user_format'][index]
-                result_dictionary[_image] = {'system_time'     : _time_image,
-                                             'user_format_time': _user_format_time_image}
-        else:
-            _image = dictionary['list_images'][index]
-            _time_image = dictionary['list_time_stamp'][index]
-            _user_format_time_image = dictionary['list_time_stamp_user_format'][index]
-            result_dictionary = {'file_name'       : _image,
-                                 'system_time'     : _time_image,
-                                 'user_format_time': _user_format_time_image}
-
-        return result_dictionary
