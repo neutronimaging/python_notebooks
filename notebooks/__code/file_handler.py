@@ -10,6 +10,7 @@ import glob
 from collections import Counter, namedtuple, OrderedDict
 import re
 import datetime
+import logging
 
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
