@@ -9,6 +9,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
 
     def setup_method(self):
         data_path = Path(__file__).parent
+        self.data_path = data_path
         self.ascii_file_name = Path(data_path) / 'data' / 'ascii' / 'bragg_edge_fitting_all_regions.txt'
 
     def test_file_does_not_exist(self):
@@ -22,6 +23,10 @@ class TestReadBraggEdgeFittingAsciiFormat:
 
     def test_retrieving_metadata_columns(self):
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
+        print(f"str(Path(__file__).parent: {str(Path(__file__).parent)}")
+        print(f"str(Path(data_path): {str(Path(self.data_path))}")
+        print(f"self.ascii_file_name: {self.ascii_file_name}")
+        assert False
         metadata_column = result['metadata']['columns']
 
         assert metadata_column['3'] == {'x0'                                                                : '285',
