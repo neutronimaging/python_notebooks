@@ -1,5 +1,4 @@
 from collections import OrderedDict
-import numpy as np
 
 from __code.metadata_handler import MetadataHandler
 from __code._utilities.list import is_this_list_already_in_those_lists_within_tolerance
@@ -57,7 +56,7 @@ class GroupImagesByCycle:
             # loop through the metadata of each file
             list_of_metadata_for_that_file = list()
             for _key in _file_dictionary.keys():
-                _value = np.float(_file_dictionary[_key])
+                _value = float(_file_dictionary[_key])
                 list_of_metadata_for_that_file.append(_value)
 
             if not is_this_list_already_in_those_lists_within_tolerance(list_of_metadata_for_that_file,
