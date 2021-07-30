@@ -1,7 +1,7 @@
 import os
 from ipywidgets import widgets
+import numpy as np
 
-from __code.normalization import LOG_FILENAME
 from __code._utilities.get import Get as TopGet
 
 from __code.normalization import LOG_FILENAME

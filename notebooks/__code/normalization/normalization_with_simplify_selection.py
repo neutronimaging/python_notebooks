@@ -561,7 +561,7 @@ class NormalizationWithSimplifySelection:
         # short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
         self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].options = list_ob
         # select everything by default
-        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].valuelist_ob
+        self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].value = list_ob
 
     def update_time_range_message(self, value):
         o_get = Get(parent=self)
@@ -574,6 +574,8 @@ class NormalizationWithSimplifySelection:
             [time_before_selected, time_after_selected] = o_get.time_before_and_after_of_this_config()
 
             time_before_selected = np.abs(time_before_selected)
+
+            print(f"time_before_selected: {time_before_selected}")
 
             def _format_time(_time_s):
                 if _time_s < 60:
