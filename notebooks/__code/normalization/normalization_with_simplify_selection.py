@@ -575,23 +575,24 @@ class NormalizationWithSimplifySelection:
 
             time_before_selected = np.abs(time_before_selected)
 
-            print(f"time_before_selected: {time_before_selected}")
-
             def _format_time(_time_s):
                 if _time_s < 60:
                     return "{:.2f}s".format(_time_s)
                 elif _time_s < 3600:
-                    _time_mn = int(_time_s % 60.)
-                    _time_s = int((_time_s / 60) % 60)
+                    _time_mn = int(_time_s / 60.)
+                    _time_s = int(_time_s % 60)
                     return "{:d}mn {:d}s".format(_time_mn, _time_s)
                 else:
                     _time_hr = int(_time_s / 3600.)
-                    _time_mn = int(_time_s % 60.)
-                    _time_s = int((_time_s / 60) % 60)
+                    _time_s_left = _time_s - _time_hr * 3600
+                    _time_mn = int(_time_s_left / 60.)
+                    _time_s = int(_time_s_left % 60)
                     return "{:d}hr {:d}mn {:d}s".format(_time_hr, _time_mn, _time_s)
 
             str_time_before = _format_time(time_before_selected)
             str_time_after = _format_time(time_after_selected)
+
+            logging.info(f"str_time_before: {time_before_selected} -> {str_time_before}")
 
             _message = "Use OB taken up to <b><font color='red'>" + str_time_before + "</b> " \
                                                                                       "<font color='black'>before and up to </font>" \
