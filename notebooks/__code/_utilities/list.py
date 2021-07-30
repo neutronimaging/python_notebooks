@@ -19,7 +19,7 @@ def are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.01)
         return True
 
     for item1, item2 in zip(list1, list2):
-        if not np.abs(np.float(item1) - np.float(item2)) <= tolerance:
+        if not np.abs(float(item1) - float(item2)) <= tolerance:
             return False
 
     return True
