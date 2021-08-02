@@ -1,6 +1,7 @@
 from qtpy.QtGui import QGuiApplication
 import numpy as np
 import logging
+import os
 
 from NeuNorm.normalization import Normalization
 
@@ -13,7 +14,14 @@ class EventHandler:
     def __init__(self, parent=None):
         self.parent = parent
 
+    def load_file(self, file=None):
+        o_norm = Normalization()
+        o_norm.load(file=file, notebook=False)
+        _data = o_norm.data['sample']['data'][0]
+        return _data
+
     def load_files(self):
+        logging.info("loading files ...")
         show_status_message(parent=self.parent,
                             message="Loading ...",
                             status=StatusMessageStatus.working)
@@ -25,12 +33,9 @@ class EventHandler:
         self.parent.eventProgress.setVisible(True)
 
         list_data = list()
-
         for _index, _file in enumerate(list_files):
-
-            o_norm = Normalization()
-            o_norm.load(file=_file, notebook=False)
-            _data = o_norm.data['sample']['data']
+            # logging.info(f"-> loading file: {_file}")
+            _data = self.load_file(file=_file)
             list_data.append(_data)
 
             self.parent.eventProgress.setValue(_index+1)
@@ -39,6 +44,7 @@ class EventHandler:
         self.parent.list_data = list_data
         self.parent.eventProgress.setVisible(False)
 
+        logging.info(f"file loaded! np.shape(list_data): {np.shape(self.parent.list_data)}")
         show_status_message(parent=self.parent,
                             message="Done loading!",
                             status=StatusMessageStatus.ready,
@@ -72,16 +78,11 @@ class EventHandler:
                                     self.parent.histogram_level[1])
 
     def update_replace_by_list(self):
-        logging.info("> update replace by list")
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         full_list_of_files = self.parent.full_raw_list_of_files
         index_file_selected = o_list.get_current_row()
         extracting_value = self.parent.extracting_value
         self.parent.ui.replace_by_comboBox.clear()
-
-        logging.info(f"-> index_file_selected: {index_file_selected}")
-        logging.info(f"-> extracting_value: {extracting_value}")
-        logging.info(f"-> full_list_of_files: {full_list_of_files}")
 
         if extracting_value == 1:
             self.parent.ui.replace_by_comboBox.setEnabled(False)
@@ -119,9 +120,25 @@ class EventHandler:
         index_file_selected = o_list.get_current_row()
 
         del self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
+        del self.parent.list_data[index_file_selected]
         self.parent.ui.list_of_files_listWidget.clear()
         self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
 
         o_list.select_element(row=index_file_selected-1)
-
         self.update_replace_by_list()
+
+    def replace_by_list_changed(self):
+        new_file = self.parent.ui.replace_by_comboBox.currentText()
+
+        new_data = self.load_file(file=new_file)
+
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        index_file_selected = o_list.get_current_row()
+        self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected] = \
+            os.path.basename(new_file)
+
+        self.parent.ui.list_of_files_listWidget.clear()
+        self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
+
+        self.parent.list_data[index_file_selected] = new_data
+        o_list.select_element(row=index_file_selected)

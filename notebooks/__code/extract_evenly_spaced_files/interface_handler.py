@@ -99,8 +99,13 @@ class InterfaceHandler(QMainWindow):
         self.ui.previous_image_pushButton.setEnabled(previous_status)
         self.ui.next_image_pushButton.setEnabled(next_status)
 
-    def replace_by_list_changed(self, new_index):
-        pass
+    # def replace_by_list_changed(self, new_index):
+    #     o_event = EventHandler(parent=self)
+    #     o_event.replace_by_list_changed(new_index)
+
+    def replace_top_image_by_this_image(self):
+        o_event = EventHandler(parent=self)
+        o_event.replace_by_list_changed()
 
     def remove_this_file_clicked(self):
         o_event = EventHandler(parent=self)

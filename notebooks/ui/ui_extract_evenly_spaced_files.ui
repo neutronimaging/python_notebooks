@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1192</width>
-    <height>847</height>
+    <width>1394</width>
+    <height>839</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -84,29 +84,26 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
-                <widget class="QLabel" name="label">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
+                <widget class="QComboBox" name="replace_by_comboBox"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton">
                  <property name="minimumSize">
                   <size>
-                   <width>80</width>
+                   <width>250</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>250</width>
                    <height>16777215</height>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Replace by</string>
+                  <string>Replace top image by this image</string>
                  </property>
                 </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="replace_by_comboBox"/>
                </item>
                <item>
                 <widget class="QLabel" name="or_label">
@@ -210,7 +207,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1192</width>
+     <width>1394</width>
      <height>24</height>
     </rect>
    </property>
@@ -258,8 +255,8 @@
    <slot>next_image_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1095</x>
-     <y>407</y>
+     <x>1297</x>
+     <y>403</y>
     </hint>
     <hint type="destinationlabel">
      <x>1148</x>
@@ -274,28 +271,12 @@
    <slot>ok_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1133</x>
-     <y>799</y>
+     <x>1335</x>
+     <y>791</y>
     </hint>
     <hint type="destinationlabel">
      <x>1168</x>
      <y>734</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>replace_by_comboBox</sender>
-   <signal>currentIndexChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>replace_by_list_changed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>756</x>
-     <y>726</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>818</x>
-     <y>783</y>
     </hint>
    </hints>
   </connection>
@@ -306,12 +287,28 @@
    <slot>remove_this_file_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>930</x>
-     <y>730</y>
+     <x>1132</x>
+     <y>722</y>
     </hint>
     <hint type="destinationlabel">
      <x>1108</x>
      <y>689</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>replace_top_image_by_this_image()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>931</x>
+     <y>719</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>951</x>
+     <y>779</y>
     </hint>
    </hints>
   </connection>
@@ -323,5 +320,6 @@
   <slot>ok_clicked()</slot>
   <slot>replace_by_list_changed()</slot>
   <slot>remove_this_file_clicked()</slot>
+  <slot>replace_top_image_by_this_image()</slot>
  </slots>
 </ui>

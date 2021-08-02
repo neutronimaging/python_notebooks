@@ -32,8 +32,10 @@ class InterfaceInitialization:
         self.parent.ui.statistics_widget.setLayout(profile_layout)
 
     def widgets(self):
+        self.parent.ui.list_of_files_listWidget.blockSignals(True)
         base_list_of_files_to_extract = self.parent.basename_list_of_files_that_will_be_extracted
         self.parent.ui.list_of_files_listWidget.addItems(base_list_of_files_to_extract)
+        self.parent.ui.list_of_files_listWidget.blockSignals(False)
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
