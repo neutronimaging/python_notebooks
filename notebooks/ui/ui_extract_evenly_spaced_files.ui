@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,11 +17,17 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="previous_image_pushButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>150</width>
@@ -38,6 +47,9 @@
       </item>
       <item>
        <widget class="QGroupBox" name="groupBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="title">
          <string>Current working image</string>
         </property>
@@ -55,9 +67,9 @@
              <enum>Qt::Horizontal</enum>
             </property>
             <widget class="QListWidget" name="list_of_files_listWidget"/>
-            <widget class="QWidget" name="widget" native="true"/>
+            <widget class="QWidget" name="image_widget" native="true"/>
            </widget>
-           <widget class="QWidget" name="">
+           <widget class="QWidget" name="layoutWidget">
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
               <widget class="QWidget" name="statistics_widget" native="true">
@@ -73,6 +85,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
                 <widget class="QLabel" name="label">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>80</width>
@@ -144,7 +159,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="next_image_pushButton">
         <property name="minimumSize">
          <size>
           <width>150</width>
@@ -203,5 +218,59 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>list_of_files_listWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>image_selected_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>360</x>
+     <y>191</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>22</x>
+     <y>147</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>previous_image_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous_image_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>405</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>51</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>next_image_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>next_image_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1095</x>
+     <y>407</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1148</x>
+     <y>340</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>image_selected_changed()</slot>
+  <slot>previous_image_clicked()</slot>
+  <slot>next_image_clicked()</slot>
+ </slots>
 </ui>

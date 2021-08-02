@@ -52,7 +52,6 @@ class ExtractEvenlySpacedFiles(object):
         self.extracting_label_ui = hori_layout_2.children[0]
 
         # list of files that will be extracted
-
         hori_layout_3 = widgets.HBox([widgets.Label("List of files extracted",
                                                     layout=widgets.Layout(width='20%')),
                                       widgets.Select(options=self.basename_list_files,
