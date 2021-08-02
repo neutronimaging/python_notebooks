@@ -5,6 +5,7 @@ import logging
 from NeuNorm.normalization import Normalization
 
 from __code._utilities.list_widget import ListWidget
+from __code._utilities.status_message import StatusMessageStatus, show_status_message
 
 
 class EventHandler:
@@ -13,6 +14,9 @@ class EventHandler:
         self.parent = parent
 
     def load_files(self):
+        show_status_message(parent=self.parent,
+                            message="Loading ...",
+                            status=StatusMessageStatus.working)
         list_files = self.parent.list_of_files_that_will_be_extracted
         nbr_files = len(list_files)
 
@@ -34,7 +38,12 @@ class EventHandler:
 
         self.parent.list_data = list_data
         self.parent.eventProgress.setVisible(False)
-    QGuiApplication.processEvents()
+
+        show_status_message(parent=self.parent,
+                            message="Done loading!",
+                            status=StatusMessageStatus.ready,
+                            duration_s=5)
+        QGuiApplication.processEvents()
 
     def select_first_file(self):
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
@@ -83,10 +92,10 @@ class EventHandler:
         logging.info(f"-> index_file_selected_in_full_list: {index_file_selected_in_full_list}")
         if index_file_selected == 0:
             list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected_in_full_list + 1: index_file_selected_in_full_list + extracting_value]
+            full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list + extracting_value]
         elif index_file_selected == (o_list.get_number_elements() - 1):
             list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected_in_full_list - extracting_value + 1:
+            full_list_of_files[index_file_selected_in_full_list - extracting_value:
                                index_file_selected_in_full_list]
         else:
             list_of_option_of_files_to_replace_with = []
@@ -94,8 +103,13 @@ class EventHandler:
             index_file_selected_in_full_list]:
                     list_of_option_of_files_to_replace_with.append(_file)
 
-            for _file in full_list_of_files[index_file_selected_in_full_list + 1: index_file_selected_in_full_list +
+            for _file in full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list +
                                                                      extracting_value]:
                     list_of_option_of_files_to_replace_with.append(_file)
 
         self.parent.ui.replace_by_comboBox.addItems(list_of_option_of_files_to_replace_with)
+
+        # select current file as default (mid point in the list)
+        nbr_option = len(list_of_option_of_files_to_replace_with)
+        mid_point = int(nbr_option/2)
+        self.parent.ui.replace_by_comboBox.setCurrentIndex(mid_point)

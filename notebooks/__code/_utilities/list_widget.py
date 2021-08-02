@@ -6,6 +6,9 @@ class ListWidget:
     def get_current_row(self):
         return self.ui.currentRow()
 
+    def set_current_row(self, row=0):
+        self.ui.setCurrentRow(row)
+
     def get_number_elements(self):
         return self.ui.count()
 
