@@ -113,3 +113,15 @@ class EventHandler:
         nbr_option = len(list_of_option_of_files_to_replace_with)
         mid_point = int(nbr_option/2)
         self.parent.ui.replace_by_comboBox.setCurrentIndex(mid_point)
+
+    def remove_this_file_clicked(self):
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        index_file_selected = o_list.get_current_row()
+
+        del self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
+        self.parent.ui.list_of_files_listWidget.clear()
+        self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
+
+        o_list.select_element(row=index_file_selected-1)
+
+        self.update_replace_by_list()

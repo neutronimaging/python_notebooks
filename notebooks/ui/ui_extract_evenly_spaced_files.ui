@@ -283,11 +283,45 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>replace_by_comboBox</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>replace_by_list_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>756</x>
+     <y>726</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>818</x>
+     <y>783</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>remove_this_file_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>930</x>
+     <y>730</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1108</x>
+     <y>689</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>image_selected_changed()</slot>
   <slot>previous_image_clicked()</slot>
   <slot>next_image_clicked()</slot>
   <slot>ok_clicked()</slot>
+  <slot>replace_by_list_changed()</slot>
+  <slot>remove_this_file_clicked()</slot>
  </slots>
 </ui>
