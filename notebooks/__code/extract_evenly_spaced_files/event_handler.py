@@ -1,4 +1,6 @@
 from qtpy.QtGui import QGuiApplication
+from qtpy.QtWidgets import QMenu
+from qtpy import QtGui
 import numpy as np
 import logging
 import os
@@ -77,6 +79,20 @@ class EventHandler:
             _histo_widget.setLevels(self.parent.histogram_level[0],
                                     self.parent.histogram_level[1])
 
+    def list_files_right_click(self):
+        menu = QMenu(self.parent)
+        remove_action = menu.addAction("Remove")
+        replace_with_action = menu.addAction("Replace with ...")
+
+        action = menu.exec_(QtGui.QCursor.pos())
+
+        if action == remove_action:
+            pass
+        elif action == replace_with_action:
+            pass
+
+        QtGui.QGuiApplication.processEvents()
+
     def update_replace_by_list(self):
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         full_list_of_files = self.parent.full_raw_list_of_files
@@ -142,3 +158,4 @@ class EventHandler:
 
         self.parent.list_data[index_file_selected] = new_data
         o_list.select_element(row=index_file_selected)
+

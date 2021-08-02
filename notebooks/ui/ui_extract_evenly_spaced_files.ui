@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1394</width>
-    <height>839</height>
+    <width>1230</width>
+    <height>816</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,7 +66,11 @@
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <widget class="QListWidget" name="list_of_files_listWidget"/>
+            <widget class="QListWidget" name="list_of_files_listWidget">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+            </widget>
             <widget class="QWidget" name="image_widget" native="true"/>
            </widget>
            <widget class="QWidget" name="layoutWidget">
@@ -80,73 +84,6 @@
                 </sizepolicy>
                </property>
               </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <widget class="QComboBox" name="replace_by_comboBox"/>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton">
-                 <property name="minimumSize">
-                  <size>
-                   <width>250</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>250</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Replace top image by this image</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="or_label">
-                 <property name="minimumSize">
-                  <size>
-                   <width>30</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>30</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>or</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_3">
-                 <property name="minimumSize">
-                  <size>
-                   <width>150</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>150</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Remove this file</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </item>
             </layout>
            </widget>
@@ -193,6 +130,18 @@
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_4">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
          <string>OK</string>
         </property>
@@ -207,7 +156,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1394</width>
+     <width>1230</width>
      <height>24</height>
     </rect>
    </property>
@@ -255,8 +204,8 @@
    <slot>next_image_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1297</x>
-     <y>403</y>
+     <x>1133</x>
+     <y>392</y>
     </hint>
     <hint type="destinationlabel">
      <x>1148</x>
@@ -271,8 +220,8 @@
    <slot>ok_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1335</x>
-     <y>791</y>
+     <x>1171</x>
+     <y>768</y>
     </hint>
     <hint type="destinationlabel">
      <x>1168</x>
@@ -281,34 +230,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked()</signal>
+   <sender>list_of_files_listWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
    <receiver>MainWindow</receiver>
-   <slot>remove_this_file_clicked()</slot>
+   <slot>list_files_right_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1132</x>
-     <y>722</y>
+     <x>575</x>
+     <y>296</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1108</x>
-     <y>689</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>replace_top_image_by_this_image()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>931</x>
-     <y>719</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>951</x>
-     <y>779</y>
+     <x>1187</x>
+     <y>517</y>
     </hint>
    </hints>
   </connection>
@@ -321,5 +254,6 @@
   <slot>replace_by_list_changed()</slot>
   <slot>remove_this_file_clicked()</slot>
   <slot>replace_top_image_by_this_image()</slot>
+  <slot>list_files_right_click()</slot>
  </slots>
 </ui>
