@@ -1,0 +1,1 @@
+LOG_FILENAME = ".extract_evenly_spaced_files.log"

@@ -1,11 +1,13 @@
 from qtpy.QtWidgets import QMainWindow
 import os
+import logging
 
 from __code import load_ui
 from __code._utilities.list_widget import ListWidget
 
 from __code.extract_evenly_spaced_files.interface_initialization import InterfaceInitialization
 from __code.extract_evenly_spaced_files.event_handler import EventHandler
+from __code.extract_evenly_spaced_files.get import Get
 
 
 class Interface:
@@ -27,6 +29,14 @@ class InterfaceHandler(QMainWindow):
     histogram_level = None
 
     def __init__(self, parent=None, o_extract=None):
+        o_get = Get(parent=self)
+        log_file_name = o_get.log_file_name()
+        logging.basicConfig(filename=log_file_name,
+                            filemode='w',
+                            format='[%(levelname)s] - %(asctime)s - %(message)s',
+                            level=logging.INFO)   # logging.INFO, logging.DEBUG
+        logging.info("*** Starting new session ***")
+
         self.parent = parent
         self.o_extract = o_extract
         self.basename_list_of_files_that_will_be_extracted = \
@@ -34,6 +44,10 @@ class InterfaceHandler(QMainWindow):
         self.list_of_files_that_will_be_extracted = o_extract.list_of_files_to_extract
         self.full_raw_list_of_files = o_extract.list_files
         self.extracting_value = self.o_extract.extracting_ui.value
+
+        logging.info(f"number of files to extract: len(list_of_files_to_extract) = "
+                     f" {len(self.list_of_files_that_will_be_extracted)}")
+        logging.info(f"number of full list of files: len(full_raw_list_of_files) = {len(self.full_raw_list_of_files)}")
 
         super(InterfaceHandler, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),

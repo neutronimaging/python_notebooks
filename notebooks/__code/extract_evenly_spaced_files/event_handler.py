@@ -1,5 +1,6 @@
 from qtpy.QtGui import QGuiApplication
 import numpy as np
+import logging
 
 from NeuNorm.normalization import Normalization
 
@@ -62,27 +63,35 @@ class EventHandler:
                                     self.parent.histogram_level[1])
 
     def update_replace_by_list(self):
+        logging.info("> update replace by list")
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         full_list_of_files = self.parent.full_raw_list_of_files
         index_file_selected = o_list.get_current_row()
         extracting_value = self.parent.extracting_value
         self.parent.ui.replace_by_comboBox.clear()
 
+        logging.info(f"-> index_file_selected: {index_file_selected}")
+        logging.info(f"-> extracting_value: {extracting_value}")
+        logging.info(f"-> full_list_of_files: {full_list_of_files}")
+
         if extracting_value == 1:
             self.parent.ui.replace_by_comboBox.setEnabled(False)
             self.parent.ui.or_label.setEnabled(False)
             return
 
+        index_file_selected_in_full_list = index_file_selected * extracting_value
+        logging.info(f"-> index_file_selected_in_full_list: {index_file_selected_in_full_list}")
         if index_file_selected == 0:
             list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected+1: index_file_selected + extracting_value]
+            full_list_of_files[index_file_selected_in_full_list + 1: index_file_selected_in_full_list + extracting_value]
         elif index_file_selected == (o_list.get_number_elements() - 1):
             list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected - extracting_value: index_file_selected]
+            full_list_of_files[index_file_selected_in_full_list - extracting_value: index_file_selected_in_full_list]
         else:
             list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected+1: index_file_selected + extracting_value]
-            for _file in full_list_of_files[index_file_selected - extracting_value: index_file_selected]:
+            full_list_of_files[index_file_selected_in_full_list + 1: index_file_selected_in_full_list +
+                                                                     extracting_value]
+            for _file in full_list_of_files[index_file_selected_in_full_list - extracting_value: index_file_selected_in_full_list]:
                 list_of_option_of_files_to_replace_with.append(_file)
 
         self.parent.ui.replace_by_comboBox.addItems(list_of_option_of_files_to_replace_with)

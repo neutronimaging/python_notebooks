@@ -1,10 +1,15 @@
 import numpy as np
 import os
 
-from __code._utilities.parent import Parent
+from __code._utilities.get import Get as TopGet
+
+from __code.extract_evenly_spaced_files import LOG_FILENAME
 
 
-class Get(Parent):
+class Get(TopGet):
+
+    def log_file_name(self):
+        return TopGet.log_file_name(LOG_FILENAME)
 
     def number_of_files_to_extract(self):
         extracting_value = self.parent.extracting_ui.value
