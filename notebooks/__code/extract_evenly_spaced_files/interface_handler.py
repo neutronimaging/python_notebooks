@@ -22,6 +22,8 @@ class InterfaceHandler(QMainWindow):
     list_of_files_that_will_be_extracted = None
     list_data = None
 
+    histogram_level = None
+
     def __init__(self, parent=None, o_extract=None):
         self.parent = parent
         self.o_extract = o_extract

@@ -43,4 +43,20 @@ class EventHandler:
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         index_file_selected = o_list.get_current_row()
         data = self.parent.list_data[index_file_selected]
+
+        _view = self.parent.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.parent.histogram_level is None:
+            first_update = True
+        _histo_widget = self.parent.ui.image_view.getHistogramWidget()
+        self.parent.histogram_level = _histo_widget.getLevels()
+
         self.parent.ui.image_view.setImage(np.transpose(data))
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.parent.histogram_level[0],
+                                    self.parent.histogram_level[1])
