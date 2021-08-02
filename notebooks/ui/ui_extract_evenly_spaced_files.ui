@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1948</width>
-    <height>1117</height>
+    <width>1192</width>
+    <height>847</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,21 +46,21 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QSplitter" name="splitter_2">
+          <widget class="QSplitter" name="vertical_splitter">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <widget class="QSplitter" name="splitter">
+           <widget class="QSplitter" name="horizontal_splitter">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <widget class="QListWidget" name="listWidget"/>
+            <widget class="QListWidget" name="list_of_files_listWidget"/>
             <widget class="QWidget" name="widget" native="true"/>
            </widget>
            <widget class="QWidget" name="">
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QWidget" name="widget_2" native="true">
+              <widget class="QWidget" name="statistics_widget" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -195,7 +195,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1948</width>
+     <width>1192</width>
      <height>24</height>
     </rect>
    </property>
