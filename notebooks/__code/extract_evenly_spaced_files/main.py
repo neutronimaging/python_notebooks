@@ -65,6 +65,8 @@ class ExtractEvenlySpacedFiles(object):
         self.extracting_ui = hori_layout_1.children[1]
         self.extracting_ui.observe(self.update_extracting_value, names='value')
 
+        self.update_extracting_value(-1)
+
     def update_extracting_value(self, _):
         o_get = Get(parent=self)
         nbr_files_extracted = o_get.number_of_files_to_extract()

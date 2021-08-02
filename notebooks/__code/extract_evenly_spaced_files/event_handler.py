@@ -60,3 +60,32 @@ class EventHandler:
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0],
                                     self.parent.histogram_level[1])
+
+    def update_replace_by_list(self):
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        full_list_of_files = self.parent.full_raw_list_of_files
+        index_file_selected = o_list.get_current_row()
+        extracting_value = self.parent.extracting_value
+        self.parent.ui.replace_by_comboBox.clear()
+
+        if extracting_value == 1:
+            self.parent.ui.replace_by_comboBox.setEnabled(False)
+            self.parent.ui.or_label.setEnabled(False)
+            return
+
+        if index_file_selected == 0:
+            list_of_option_of_files_to_replace_with = \
+            full_list_of_files[index_file_selected+1: index_file_selected + extracting_value]
+        elif index_file_selected == (o_list.get_number_elements() - 1):
+            list_of_option_of_files_to_replace_with = \
+            full_list_of_files[index_file_selected - extracting_value: index_file_selected]
+        else:
+            list_of_option_of_files_to_replace_with = \
+            full_list_of_files[index_file_selected+1: index_file_selected + extracting_value]
+            for _file in full_list_of_files[index_file_selected - extracting_value: index_file_selected]:
+                list_of_option_of_files_to_replace_with.append(_file)
+
+        self.parent.ui.replace_by_comboBox.addItems(list_of_option_of_files_to_replace_with)
+
+
+

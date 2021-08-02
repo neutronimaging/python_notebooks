@@ -106,10 +106,10 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox"/>
+                <widget class="QComboBox" name="replace_by_comboBox"/>
                </item>
                <item>
-                <widget class="QLabel" name="label_2">
+                <widget class="QLabel" name="or_label">
                  <property name="minimumSize">
                   <size>
                    <width>30</width>

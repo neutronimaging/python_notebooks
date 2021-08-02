@@ -21,6 +21,8 @@ class InterfaceHandler(QMainWindow):
     basename_list_of_files_that_will_be_extracted = None
     list_of_files_that_will_be_extracted = None
     list_data = None
+    full_raw_list_of_files = None
+    extracting_value = 1
 
     histogram_level = None
 
@@ -30,6 +32,8 @@ class InterfaceHandler(QMainWindow):
         self.basename_list_of_files_that_will_be_extracted = \
             o_extract.basename_list_of_files_that_will_be_extracted
         self.list_of_files_that_will_be_extracted = o_extract.list_of_files_to_extract
+        self.full_raw_list_of_files = o_extract.list_files
+        self.extracting_value = self.o_extract.extracting_ui.value
 
         super(InterfaceHandler, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -52,6 +56,7 @@ class InterfaceHandler(QMainWindow):
     def image_selected_changed(self):
         o_event = EventHandler(parent=self)
         o_event.image_selected_changed()
+        o_event.update_replace_by_list()
         self.check_previous_next_image_status()
 
     def previous_image_clicked(self):
