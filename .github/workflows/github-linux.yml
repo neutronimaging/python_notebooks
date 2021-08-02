@@ -1,7 +1,7 @@
 name: Linux build
 on: [push, pull_request]
 jobs:
-    random-build-name:
+    run-unit-tests:
       runs-on: ${{ matrix.os }}
       timeout-minutes: 10
       strategy:
