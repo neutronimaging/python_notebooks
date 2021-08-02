@@ -14,5 +14,3 @@ build/*
 dist/*
 .pytest_cache/*
 .idea/*
-
-notebooks/tests/data
