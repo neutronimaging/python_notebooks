@@ -20,7 +20,7 @@ class Get(TopGet):
         extracting_value = self.parent.extracting_ui.value
         list_of_files = self.parent.list_files
         nbr_files = self.parent.number_of_files
-        array_of_indexes = np.arange(1, nbr_files, extracting_value)
+        array_of_indexes = np.arange(0, nbr_files, extracting_value)
 
         list_of_files_to_extract = []
         for _index in array_of_indexes:

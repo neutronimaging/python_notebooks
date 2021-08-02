@@ -86,15 +86,16 @@ class EventHandler:
             full_list_of_files[index_file_selected_in_full_list + 1: index_file_selected_in_full_list + extracting_value]
         elif index_file_selected == (o_list.get_number_elements() - 1):
             list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected_in_full_list - extracting_value: index_file_selected_in_full_list]
+            full_list_of_files[index_file_selected_in_full_list - extracting_value + 1:
+                               index_file_selected_in_full_list]
         else:
-            list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected_in_full_list + 1: index_file_selected_in_full_list +
-                                                                     extracting_value]
-            for _file in full_list_of_files[index_file_selected_in_full_list - extracting_value: index_file_selected_in_full_list]:
-                list_of_option_of_files_to_replace_with.append(_file)
+            list_of_option_of_files_to_replace_with = []
+            for _file in full_list_of_files[index_file_selected_in_full_list + 1 - extracting_value:
+            index_file_selected_in_full_list]:
+                    list_of_option_of_files_to_replace_with.append(_file)
+
+            for _file in full_list_of_files[index_file_selected_in_full_list + 1: index_file_selected_in_full_list +
+                                                                     extracting_value]:
+                    list_of_option_of_files_to_replace_with.append(_file)
 
         self.parent.ui.replace_by_comboBox.addItems(list_of_option_of_files_to_replace_with)
-
-
-
