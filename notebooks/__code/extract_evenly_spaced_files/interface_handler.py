@@ -42,14 +42,17 @@ class InterfaceHandler(QMainWindow):
         o_init.all()
 
     def init_loading(self):
+        self.ui.setEnabled(False)
         o_event = EventHandler(parent=self)
         o_event.load_files()
         o_event.select_first_file()
+        self.ui.setEnabled(True)
 
     # event handler
     def image_selected_changed(self):
         o_event = EventHandler(parent=self)
         o_event.image_selected_changed()
+        self.check_previous_next_image_status()
 
     def previous_image_clicked(self):
         o_list = ListWidget(ui=self.ui.list_of_files_listWidget)
@@ -77,3 +80,5 @@ class InterfaceHandler(QMainWindow):
         self.ui.previous_image_pushButton.setEnabled(previous_status)
         self.ui.next_image_pushButton.setEnabled(next_status)
 
+    def ok_clicked(self):
+        self.close()

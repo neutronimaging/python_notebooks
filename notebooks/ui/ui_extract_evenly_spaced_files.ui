@@ -267,10 +267,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ok_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1133</x>
+     <y>799</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1168</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>image_selected_changed()</slot>
   <slot>previous_image_clicked()</slot>
   <slot>next_image_clicked()</slot>
+  <slot>ok_clicked()</slot>
  </slots>
 </ui>
