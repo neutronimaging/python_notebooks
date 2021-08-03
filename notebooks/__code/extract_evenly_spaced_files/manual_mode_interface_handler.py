@@ -8,6 +8,7 @@ import numpy as np
 from __code import load_ui
 from __code._utilities.list_widget import ListWidget
 from __code.extract_evenly_spaced_files.load import load_file
+from __code.extract_evenly_spaced_files.get import Get
 
 
 class Interface:
@@ -111,13 +112,10 @@ class InterfaceHandler(QMainWindow):
         self.ui.replace_by_comboBox.blockSignals(True)
         self.ui.replace_by_comboBox.clear()
 
-        if extracting_value == 1:
-            self.parent.ui.replace_by_comboBox.setEnabled(False)
-            self.parent.ui.or_label.setEnabled(False)
-            return
-
-        index_file_selected_in_full_list = index_file_selected * extracting_value
-        # logging.info(f"-> index_file_selected_in_full_list: {index_file_selected_in_full_list}")
+        #index_file_selected_in_full_list = index_file_selected * extracting_value
+        o_get = Get(parent=self.parent)
+        base_file_name = self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
+        index_file_selected_in_full_list = o_get.index_of_file_selected_in_full_list(base_file_name)
         if index_file_selected == 0:
             list_of_option_of_files_to_replace_with = \
             full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list + extracting_value]

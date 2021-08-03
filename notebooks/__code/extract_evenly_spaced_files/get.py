@@ -2,6 +2,7 @@ import numpy as np
 import os
 
 from __code._utilities.get import Get as TopGet
+from __code._utilities.list_widget import ListWidget
 
 from __code.extract_evenly_spaced_files import LOG_FILENAME
 
@@ -38,3 +39,13 @@ class Get(TopGet):
             new_name = "_".join(_name_split[:-1]) + "_{:04d}{}".format(_counter, ext)
             renamed_list_of_files_to_extract.append(new_name)
         return renamed_list_of_files_to_extract
+
+    def index_of_file_selected_in_full_list(self, base_file_name):
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        nbr_row = o_list.get_number_elements()
+        for _row in np.arange(nbr_row):
+            item = self.parent.ui.list_of_files_listWidget.item(_row)
+            text = item.text()
+            if text == base_file_name:
+                return _row
+        return -1

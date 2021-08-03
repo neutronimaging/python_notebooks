@@ -45,6 +45,7 @@ class InterfaceHandler(QMainWindow):
             o_extract.basename_list_of_files_that_will_be_extracted
         self.list_of_files_that_will_be_extracted = o_extract.list_of_files_to_extract
         self.full_raw_list_of_files = o_extract.list_files
+        self.full_base_list_of_files = [os.path.basename(_file) for _file in self.full_raw_list_of_files]
         self.extracting_value = self.o_extract.extracting_ui.value
 
         logging.info(f"number of files to extract: len(list_of_files_to_extract) = "

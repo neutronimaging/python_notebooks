@@ -77,7 +77,9 @@ class EventHandler:
     def list_files_right_click(self):
         menu = QMenu(self.parent)
         remove_action = menu.addAction("Remove")
-        replace_with_action = menu.addAction("Replace with ...")
+
+        if len(self.parent.basename_list_of_files_that_will_be_extracted) != len(self.parent.full_raw_list_of_files):
+            replace_with_action = menu.addAction("Replace with ...")
 
         action = menu.exec_(QtGui.QCursor.pos())
 
