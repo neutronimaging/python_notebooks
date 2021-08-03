@@ -41,11 +41,5 @@ class Get(TopGet):
         return renamed_list_of_files_to_extract
 
     def index_of_file_selected_in_full_list(self, base_file_name):
-        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
-        nbr_row = o_list.get_number_elements()
-        for _row in np.arange(nbr_row):
-            item = self.parent.ui.list_of_files_listWidget.item(_row)
-            text = item.text()
-            if text == base_file_name:
-                return _row
-        return -1
+        return self.parent.full_base_list_of_files.index(base_file_name)
+    

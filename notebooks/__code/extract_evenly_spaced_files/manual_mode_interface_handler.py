@@ -109,6 +109,9 @@ class InterfaceHandler(QMainWindow):
         index_file_selected = o_list.get_current_row()
         extracting_value = self.parent.extracting_value
 
+        logging.info(f"index_file_selected: {index_file_selected}")
+        logging.info(f"extracting_value: {extracting_value}")
+
         self.ui.replace_by_comboBox.blockSignals(True)
         self.ui.replace_by_comboBox.clear()
 
@@ -116,6 +119,10 @@ class InterfaceHandler(QMainWindow):
         o_get = Get(parent=self.parent)
         base_file_name = self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
         index_file_selected_in_full_list = o_get.index_of_file_selected_in_full_list(base_file_name)
+
+        logging.info(f"base_file_name: {base_file_name}")
+        logging.info(f"index_file_selected_in_full_list: {index_file_selected_in_full_list}")
+
         if index_file_selected == 0:
             list_of_option_of_files_to_replace_with = \
             full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list + extracting_value]

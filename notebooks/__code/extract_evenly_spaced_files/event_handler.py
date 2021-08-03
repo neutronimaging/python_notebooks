@@ -3,8 +3,6 @@ from qtpy.QtWidgets import QMenu
 from qtpy import QtGui
 import numpy as np
 import logging
-import os
-# from PIL import Image
 
 from __code._utilities.list_widget import ListWidget
 from __code._utilities.status_message import StatusMessageStatus, show_status_message

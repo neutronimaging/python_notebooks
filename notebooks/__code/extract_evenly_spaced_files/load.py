@@ -1,6 +1,4 @@
 import matplotlib.image as mpimg
-import logging
-import numpy as np
 
 from NeuNorm.normalization import Normalization
 
@@ -20,5 +18,4 @@ def load_file(file=None):
         o_norm.load(file=file, notebook=False)
         _data = o_norm.data['sample']['data'][0]
 
-    logging.info(f"np.shape(_data): {np.shape(_data)}")
     return _data
