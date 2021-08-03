@@ -28,6 +28,8 @@ class InterfaceHandler(QMainWindow):
 
     histogram_level = None
 
+    manual_interace_id = None
+
     def __init__(self, parent=None, o_extract=None):
         o_get = Get(parent=self)
         log_file_name = o_get.log_file_name()

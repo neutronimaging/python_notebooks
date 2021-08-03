@@ -12,6 +12,7 @@ from NeuNorm.normalization import Normalization
 from __code._utilities.list_widget import ListWidget
 from __code._utilities.file import get_file_extension
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
+from __code.extract_evenly_spaced_files.manual_mode_interface_handler import Interface as ManualModeInterface
 
 
 class EventHandler:
@@ -102,47 +103,47 @@ class EventHandler:
         if action == remove_action:
             pass
         elif action == replace_with_action:
-            pass
+            o_interface = ManualModeInterface(parent=self.parent)
 
         QtGui.QGuiApplication.processEvents()
 
-    def update_replace_by_list(self):
-        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
-        full_list_of_files = self.parent.full_raw_list_of_files
-        index_file_selected = o_list.get_current_row()
-        extracting_value = self.parent.extracting_value
-        self.parent.ui.replace_by_comboBox.clear()
-
-        if extracting_value == 1:
-            self.parent.ui.replace_by_comboBox.setEnabled(False)
-            self.parent.ui.or_label.setEnabled(False)
-            return
-
-        index_file_selected_in_full_list = index_file_selected * extracting_value
-        logging.info(f"-> index_file_selected_in_full_list: {index_file_selected_in_full_list}")
-        if index_file_selected == 0:
-            list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list + extracting_value]
-        elif index_file_selected == (o_list.get_number_elements() - 1):
-            list_of_option_of_files_to_replace_with = \
-            full_list_of_files[index_file_selected_in_full_list - extracting_value:
-                               index_file_selected_in_full_list]
-        else:
-            list_of_option_of_files_to_replace_with = []
-            for _file in full_list_of_files[index_file_selected_in_full_list + 1 - extracting_value:
-            index_file_selected_in_full_list]:
-                    list_of_option_of_files_to_replace_with.append(_file)
-
-            for _file in full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list +
-                                                                     extracting_value]:
-                    list_of_option_of_files_to_replace_with.append(_file)
-
-        self.parent.ui.replace_by_comboBox.addItems(list_of_option_of_files_to_replace_with)
-
-        # select current file as default (mid point in the list)
-        nbr_option = len(list_of_option_of_files_to_replace_with)
-        mid_point = int(nbr_option/2)
-        self.parent.ui.replace_by_comboBox.setCurrentIndex(mid_point)
+    # def update_replace_by_list(self):
+    #     o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+    #     full_list_of_files = self.parent.full_raw_list_of_files
+    #     index_file_selected = o_list.get_current_row()
+    #     extracting_value = self.parent.extracting_value
+    #     self.parent.ui.replace_by_comboBox.clear()
+    #
+    #     if extracting_value == 1:
+    #         self.parent.ui.replace_by_comboBox.setEnabled(False)
+    #         self.parent.ui.or_label.setEnabled(False)
+    #         return
+    #
+    #     index_file_selected_in_full_list = index_file_selected * extracting_value
+    #     logging.info(f"-> index_file_selected_in_full_list: {index_file_selected_in_full_list}")
+    #     if index_file_selected == 0:
+    #         list_of_option_of_files_to_replace_with = \
+    #         full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list + extracting_value]
+    #     elif index_file_selected == (o_list.get_number_elements() - 1):
+    #         list_of_option_of_files_to_replace_with = \
+    #         full_list_of_files[index_file_selected_in_full_list - extracting_value:
+    #                            index_file_selected_in_full_list]
+    #     else:
+    #         list_of_option_of_files_to_replace_with = []
+    #         for _file in full_list_of_files[index_file_selected_in_full_list + 1 - extracting_value:
+    #         index_file_selected_in_full_list]:
+    #                 list_of_option_of_files_to_replace_with.append(_file)
+    #
+    #         for _file in full_list_of_files[index_file_selected_in_full_list: index_file_selected_in_full_list +
+    #                                                                  extracting_value]:
+    #                 list_of_option_of_files_to_replace_with.append(_file)
+    #
+    #     self.parent.ui.replace_by_comboBox.addItems(list_of_option_of_files_to_replace_with)
+    #
+    #     # select current file as default (mid point in the list)
+    #     nbr_option = len(list_of_option_of_files_to_replace_with)
+    #     mid_point = int(nbr_option/2)
+    #     self.parent.ui.replace_by_comboBox.setCurrentIndex(mid_point)
 
     def remove_this_file_clicked(self):
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)

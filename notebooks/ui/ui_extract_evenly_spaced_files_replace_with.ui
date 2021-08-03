@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -88,9 +91,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="ok_pushButton">
+       <widget class="QPushButton" name="close_pushButton">
         <property name="text">
-         <string>OK</string>
+         <string>Close</string>
         </property>
        </widget>
       </item>
@@ -111,5 +114,42 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>close_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1062</x>
+     <y>643</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>971</x>
+     <y>637</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>replace_by_comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>to_replace_by_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>752</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1116</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>close_clicked()</slot>
+  <slot>to_replace_by_changed()</slot>
+ </slots>
 </ui>
