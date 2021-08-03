@@ -82,7 +82,7 @@ class EventHandler:
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == remove_action:
-            pass
+            self.remove_this_file_clicked()
         elif action == replace_with_action:
             o_interface = ManualModeInterface(parent=self.parent)
 
@@ -98,13 +98,19 @@ class EventHandler:
         self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
 
         o_list.select_element(row=index_file_selected-1)
-        # self.update_replace_by_list()
+
+        if self.parent.manual_interface_id is None:
+            return
+
+        self.parent.manual_interface_id.update_current_image_name()
+        self.parent.manual_interface_id.update_replace_by_list()
+        self.parent.manual_interface_id.display_before_image()
+        self.parent.manual_interface_id.display_after_image()
 
     def update_manual_ui(self):
         if self.parent.manual_interface_id is None:
             return
 
         self.parent.manual_interface_id.update_current_image_name()
-        #self.parent.manual_interface_id.update_replace_by_list()
         self.parent.manual_interface_id.display_before_image()
         self.parent.manual_interface_id.display_after_image()

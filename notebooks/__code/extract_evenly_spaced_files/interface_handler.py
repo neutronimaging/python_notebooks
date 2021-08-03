@@ -105,18 +105,6 @@ class InterfaceHandler(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.list_files_right_click()
 
-    # def replace_by_list_changed(self, new_index):
-    #     o_event = EventHandler(parent=self)
-    #     o_event.replace_by_list_changed(new_index)
-
-    # def replace_top_image_by_this_image(self):
-    #     o_event = EventHandler(parent=self)
-    #     o_event.replace_by_list_changed()
-    #
-    # def remove_this_file_clicked(self):
-    #     o_event = EventHandler(parent=self)
-    #     o_event.remove_this_file_clicked()
-
     def ok_clicked(self):
         if self.manual_interface_id:
             self.manual_interface_id.close()
