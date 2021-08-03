@@ -100,19 +100,11 @@ class EventHandler:
         o_list.select_element(row=index_file_selected-1)
         # self.update_replace_by_list()
 
-    # def replace_by_list_changed(self, new_file):
-    #     # new_file = self.parent.ui.replace_by_comboBox.currentText()
-    #
-    #     # new_data = self.load_file(file=new_file)
-    #
-    #     o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
-    #     index_file_selected = o_list.get_current_row()
-    #     self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected] = \
-    #         os.path.basename(new_file)
-    #
-    #     self.parent.ui.list_of_files_listWidget.clear()
-    #     self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
-    #
-    #     self.parent.list_data[index_file_selected] = new_data
-    #     o_list.select_element(row=index_file_selected)
+    def update_manual_ui(self):
+        if self.parent.manual_interface_id is None:
+            return
 
+        self.parent.manual_interface_id.update_current_image_name()
+        #self.parent.manual_interface_id.update_replace_by_list()
+        self.parent.manual_interface_id.display_before_image()
+        self.parent.manual_interface_id.display_after_image()

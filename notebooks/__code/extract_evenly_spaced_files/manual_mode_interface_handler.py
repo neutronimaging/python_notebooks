@@ -52,16 +52,22 @@ class InterfaceHandler(QMainWindow):
         vertical_layout2.addWidget(self.ui.after_image_view)
         self.ui.after_widget.setLayout(vertical_layout2)
 
+        self.update_current_image_name()
+        self.update_replace_by_list()
+        self.display_before_image()
+        self.display_after_image()
+
+    def update_current_image_name(self):
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         index_file_selected = o_list.get_current_row()
         file_name = self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
         self.ui.name_of_current_file.setText(file_name)
-        self.update_replace_by_list()
-
-        self.display_before_image()
-        self.display_after_image()
 
     def close_clicked(self):
+        self.parent.manual_interface_id = None
+        self.close()
+
+    def closeEvent(self, eventhere=None):
         self.parent.manual_interface_id = None
         self.close()
 
@@ -101,6 +107,8 @@ class InterfaceHandler(QMainWindow):
         full_list_of_files = self.parent.full_raw_list_of_files
         index_file_selected = o_list.get_current_row()
         extracting_value = self.parent.extracting_value
+
+        self.ui.replace_by_comboBox.blockSignals(True)
         self.ui.replace_by_comboBox.clear()
 
         if extracting_value == 1:
@@ -133,3 +141,5 @@ class InterfaceHandler(QMainWindow):
         nbr_option = len(list_of_option_of_files_to_replace_with)
         mid_point = int(nbr_option/2)
         self.ui.replace_by_comboBox.setCurrentIndex(mid_point)
+
+        self.ui.replace_by_comboBox.blockSignals(False)

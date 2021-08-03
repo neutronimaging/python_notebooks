@@ -72,7 +72,7 @@ class InterfaceHandler(QMainWindow):
     def image_selected_changed(self):
         o_event = EventHandler(parent=self)
         o_event.image_selected_changed()
-        # o_event.update_replace_by_list()
+        o_event.update_manual_ui()
         self.check_previous_next_image_status()
 
     def previous_image_clicked(self):
@@ -118,4 +118,6 @@ class InterfaceHandler(QMainWindow):
     #     o_event.remove_this_file_clicked()
 
     def ok_clicked(self):
+        if self.manual_interface_id:
+            self.manual_interface_id.close()
         self.close()
