@@ -39,7 +39,7 @@ jobs:
       runs-on: ubuntu-20.04
       steps:
         - name: Update Conda Environment
-          run: curl -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=master -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=https://raw.githubusercontent.com/neutronimaging/python_notebooks/master/conda/environment.yml" ${{ secrets.GITLAB_TRIGGER_URL }} > /dev/null
+          run: curl -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=master -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=neutron-imaging" ${{ secrets.GITLAB_TRIGGER_URL }} > /dev/null
         - name: Update Notebooks
           run: curl -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=master -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks" ${{ secrets.NOTEBOOKS_TRIGGER_URL }} > /dev/null
 
@@ -49,6 +49,6 @@ jobs:
       runs-on: ubuntu-20.04
       steps:
         - name: Update Conda Environment
-          run: curl -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=master -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=https://raw.githubusercontent.com/neutronimaging/python_notebooks/master/conda/environment.yml" ${{ secrets.GITLAB_TRIGGER_URL }} > /dev/null
+          run: curl -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=master -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=neutron-imaging-dev" ${{ secrets.GITLAB_TRIGGER_URL }} > /dev/null
         - name: Update Notebooks
           run: curl -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=master -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks_testing" ${{ secrets.NOTEBOOKS_TRIGGER_URL }} > /dev/null
