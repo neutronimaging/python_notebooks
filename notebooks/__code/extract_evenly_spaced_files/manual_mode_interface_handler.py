@@ -1,9 +1,13 @@
 from qtpy.QtWidgets import QMainWindow
 import os
 import logging
+import pyqtgraph as pg
+from qtpy import QtGui
+import numpy as np
 
 from __code import load_ui
 from __code._utilities.list_widget import ListWidget
+from __code.extract_evenly_spaced_files.load import load_file
 
 
 class Interface:
@@ -32,20 +36,67 @@ class InterfaceHandler(QMainWindow):
         self.setWindowTitle("Manual Mode")
 
     def init(self):
+        # before
+        self.ui.before_image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.before_image_view.ui.menuBtn.hide()
+        self.ui.before_image_view.ui.roiBtn.hide()
+        vertical_layout1 = QtGui.QVBoxLayout()
+        vertical_layout1.addWidget(self.ui.before_image_view)
+        self.ui.before_widget.setLayout(vertical_layout1)
+
+        # after
+        self.ui.after_image_view = pg.ImageView(view=pg.PlotItem())
+        self.ui.after_image_view.ui.menuBtn.hide()
+        self.ui.after_image_view.ui.roiBtn.hide()
+        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2.addWidget(self.ui.after_image_view)
+        self.ui.after_widget.setLayout(vertical_layout2)
+
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         index_file_selected = o_list.get_current_row()
         file_name = self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
         self.ui.name_of_current_file.setText(file_name)
-        self.init_replace_by_list()
+        self.update_replace_by_list()
+
+        self.display_before_image()
+        self.display_after_image()
 
     def close_clicked(self):
         self.parent.manual_interface_id = None
         self.close()
 
-    def to_replace_by_changed(self, index):
-        pass
+    def validate_change(self):
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        index_file_selected = o_list.get_current_row()
+        new_file = self.ui.replace_by_comboBox.currentText()
 
-    def init_replace_by_list(self):
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected] = \
+            os.path.basename(new_file)
+
+        self.parent.ui.list_of_files_listWidget.clear()
+        self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
+
+        self.parent.list_data[index_file_selected] = self.new_data
+        self.parent.image_selected_changed()
+        o_list.select_element(row=index_file_selected)
+
+    def to_replace_by_changed(self, index):
+        self.display_after_image()
+
+    def display_before_image(self):
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        index_file_selected = o_list.get_current_row()
+        data = self.parent.list_data[index_file_selected]
+        self.ui.before_image_view.setImage(np.transpose(data))
+
+    def display_after_image(self):
+        file = self.ui.replace_by_comboBox.currentText()
+        data = load_file(file)
+        self.ui.after_image_view.setImage(np.transpose(data))
+        self.new_data = data
+
+    def update_replace_by_list(self):
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         full_list_of_files = self.parent.full_raw_list_of_files
         index_file_selected = o_list.get_current_row()

@@ -3,7 +3,7 @@
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -78,6 +78,13 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
+       <widget class="QPushButton" name="close_pushButton">
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -91,9 +98,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="close_pushButton">
+       <widget class="QPushButton" name="pushButton">
         <property name="text">
-         <string>Close</string>
+         <string>Validate change</string>
         </property>
        </widget>
       </item>
@@ -122,7 +129,7 @@
    <slot>close_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1062</x>
+     <x>45</x>
      <y>643</y>
     </hint>
     <hint type="destinationlabel">
@@ -147,9 +154,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>validate_change()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1087</x>
+     <y>647</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>873</x>
+     <y>648</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>close_clicked()</slot>
   <slot>to_replace_by_changed()</slot>
+  <slot>validate_change()</slot>
  </slots>
 </ui>
