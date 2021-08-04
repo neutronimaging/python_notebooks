@@ -168,3 +168,11 @@ class EventHandler:
         err_above_threshold = [i for i, x in enumerate(list_err) if x > max_statistics_error_value]
 
         logging.info(f"index of files with errors above threshold: {err_above_threshold}")
+
+        for _row in np.arange(len(list_err)):
+            _item = self.parent.ui.list_of_files_listWidget.item(_row)
+            _item.setBackground(QtGui.QColor(255, 255, 255, 0))
+
+        for _row in err_above_threshold:
+            _item = self.parent.ui.list_of_files_listWidget.item(_row)
+            _item.setBackground(QtGui.QColor(255, 0, 0, 100))
