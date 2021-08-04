@@ -22,7 +22,7 @@ class InterfaceInitialization:
         self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.image_view.ui.menuBtn.hide()
         self.parent.ui.image_view.ui.roiBtn.hide()
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.image_widget.setLayout(vertical_layout)
 

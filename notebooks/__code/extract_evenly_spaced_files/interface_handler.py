@@ -30,6 +30,9 @@ class InterfaceHandler(QMainWindow):
 
     manual_interface_id = None
 
+    max_statistics_error_value = -1
+    threshold_line = None
+
     def __init__(self, parent=None, o_extract=None):
         o_get = Get(parent=self)
         log_file_name = o_get.log_file_name()
@@ -68,6 +71,7 @@ class InterfaceHandler(QMainWindow):
         o_event.load_files()
         o_event.select_first_file()
         o_event.update_statistics()
+        o_event.update_statistics_threshold()
         self.ui.setEnabled(True)
 
     # event handler
@@ -106,6 +110,9 @@ class InterfaceHandler(QMainWindow):
     def list_files_right_click(self, point):
         o_event = EventHandler(parent=self)
         o_event.list_files_right_click()
+
+    def statistics_max_threshold_moved(self):
+        print("moved")
 
     def ok_clicked(self):
         if self.manual_interface_id:

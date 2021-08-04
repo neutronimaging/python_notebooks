@@ -3,12 +3,14 @@ from qtpy.QtWidgets import QMenu
 from qtpy import QtGui
 import numpy as np
 import logging
+import pyqtgraph as pg
 
 from __code._utilities.list_widget import ListWidget
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.extract_evenly_spaced_files.manual_mode_interface_handler import Interface as ManualModeInterface
 from __code.extract_evenly_spaced_files.load import load_file
 from __code._utilities.math import mean_square_error
+from __code.extract_evenly_spaced_files import MAX_STATISTICS_ERROR_ALLOWED
 
 
 class EventHandler:
@@ -115,8 +117,10 @@ class EventHandler:
         self.parent.manual_interface_id.display_after_image()
 
     def update_statistics(self):
+        logging.info(f"Updating statistics ...")
+        QGuiApplication.processEvents()
+
         list_data = self.parent.list_data
-        nbr_data = len(list_data)
 
         list_image_1 = list_data[1:]
         list_image_2 = list_data[0:-1]
@@ -126,4 +130,18 @@ class EventHandler:
             err = mean_square_error(image1, image2)
             list_err.append(err)
 
-        self.parent.ui.statistics_plot.plot(list_err)
+        self.parent.max_statistics_error_value = np.max(list_err)
+        self.parent.ui.statistics_plot.plot(list_err, symbol='o', pen='w')
+        logging.info(f"Statistics plot done!")
+        QGuiApplication.processEvents()
+
+    def update_statistics_threshold(self):
+        max_value = self.parent.max_statistics_error_value
+
+        self.parent.threshold_line = pg.InfiniteLine(pos=max_value,
+                                                     angle=0,
+                                                     label="Max threshold",
+                                                     movable=True)
+        self.parent.ui.statistics_plot.addItem(self.parent.threshold_line)
+        self.parent.threshold_line.sigPositionChanged.connect(
+                self.parent.statistics_max_threshold_moved)
