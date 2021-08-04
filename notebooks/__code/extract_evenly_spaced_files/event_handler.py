@@ -103,6 +103,13 @@ class EventHandler:
         o_list.select_element(row=index_file_selected-1)
         self.update_manual_interface()
 
+        self.parent.ui.setEnabled(False)
+        self.parent.ui.statistics_plot.clear()
+        self.update_statistics()
+        self.update_list_of_files_listWidget()
+        self.parent.ui.statistics_plot.addItem(self.parent.threshold_line)
+        self.parent.ui.setEnabled(True)
+
     def update_manual_ui(self):
         self.update_manual_interface(update_replace_by_list=False)
 
@@ -161,7 +168,6 @@ class EventHandler:
                                             pen=(200, 200, 200),
                                             symbolBrush=(255,0,0),
                                             symbolPen='w')
-
 
     def init_plot_statistics_threshold(self):
         max_value = self.parent.max_statistics_error_value

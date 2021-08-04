@@ -3,6 +3,7 @@ import os
 import logging
 import pyqtgraph as pg
 from qtpy import QtGui
+from qtpy.QtWidgets import QVBoxLayout
 import numpy as np
 
 from __code import load_ui
@@ -41,7 +42,7 @@ class InterfaceHandler(QMainWindow):
         self.ui.before_image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.before_image_view.ui.menuBtn.hide()
         self.ui.before_image_view.ui.roiBtn.hide()
-        vertical_layout1 = QtGui.QVBoxLayout()
+        vertical_layout1 = QVBoxLayout()
         vertical_layout1.addWidget(self.ui.before_image_view)
         self.ui.before_widget.setLayout(vertical_layout1)
 
@@ -49,7 +50,7 @@ class InterfaceHandler(QMainWindow):
         self.ui.after_image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.after_image_view.ui.menuBtn.hide()
         self.ui.after_image_view.ui.roiBtn.hide()
-        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2 = QVBoxLayout()
         vertical_layout2.addWidget(self.ui.after_image_view)
         self.ui.after_widget.setLayout(vertical_layout2)
 
