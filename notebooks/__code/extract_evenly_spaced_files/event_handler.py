@@ -118,6 +118,9 @@ class EventHandler:
 
     def update_statistics(self):
         logging.info(f"Updating statistics ...")
+        show_status_message(parent=self.parent,
+                            message="Updating statistics ...",
+                            status=StatusMessageStatus.working)
         QGuiApplication.processEvents()
 
         list_data = self.parent.list_data
@@ -133,6 +136,10 @@ class EventHandler:
         self.parent.max_statistics_error_value = np.max(list_err)
         self.parent.ui.statistics_plot.plot(list_err, symbol='o', pen='w')
         logging.info(f"Statistics plot done!")
+        show_status_message(parent=self.parent,
+                            message="Updated statistics!",
+                            status=StatusMessageStatus.ready,
+                            duration_s=5)
         QGuiApplication.processEvents()
 
     def update_statistics_threshold(self):
