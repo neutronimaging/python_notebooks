@@ -133,7 +133,10 @@ class EventHandler:
             err = mean_square_error(image1, image2)
             list_err.append(err)
 
-        self.parent.max_statistics_error_value = np.max(list_err)
+        self.parent.list_statistics_error_value = list_err
+        if self.parent.max_statistics_error_value == -1:
+            self.parent.max_statistics_error_value = np.max(list_err)
+
         self.parent.ui.statistics_plot.plot(list_err, symbol='o', pen='w')
         logging.info(f"Statistics plot done!")
         show_status_message(parent=self.parent,
@@ -142,7 +145,7 @@ class EventHandler:
                             duration_s=5)
         QGuiApplication.processEvents()
 
-    def update_statistics_threshold(self):
+    def init_statistics_threshold(self):
         max_value = self.parent.max_statistics_error_value
 
         self.parent.threshold_line = pg.InfiniteLine(pos=max_value,
@@ -152,3 +155,16 @@ class EventHandler:
         self.parent.ui.statistics_plot.addItem(self.parent.threshold_line)
         self.parent.threshold_line.sigPositionChanged.connect(
                 self.parent.statistics_max_threshold_moved)
+
+    def statistics_max_threshold_moved(self):
+        self.parent.max_statistics_error_value = self.parent.threshold_line.value()
+        self.update_list_of_files_listWidget()
+
+    def update_list_of_files_listWidget(self):
+        list_err = self.parent.list_statistics_error_value
+        max_statistics_error_value = self.parent.max_statistics_error_value
+
+        # find where the err is above the threshold
+        err_above_threshold = [i for i, x in enumerate(list_err) if x > max_statistics_error_value]
+
+        logging.info(f"index of files with errors above threshold: {err_above_threshold}")
