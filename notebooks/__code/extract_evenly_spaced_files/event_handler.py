@@ -137,7 +137,8 @@ class EventHandler:
         if self.parent.max_statistics_error_value == -1:
             self.parent.max_statistics_error_value = np.max(list_err)
 
-        self.parent.ui.statistics_plot.plot(list_err, symbol='o', pen='w')
+        self.plot_statistics()
+
         logging.info(f"Statistics plot done!")
         show_status_message(parent=self.parent,
                             message="Updated statistics!",
@@ -145,7 +146,24 @@ class EventHandler:
                             duration_s=5)
         QGuiApplication.processEvents()
 
-    def init_statistics_threshold(self):
+    def plot_statistics(self):
+        # self.parent.ui.statistics_plot.clear()
+        list_err = self.parent.list_statistics_error_value
+        if list_err is None:
+            return
+
+        self.parent.ui.statistics_plot.plot(list_err, symbol='o', pen='w')
+
+        o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
+        index_file_selected = o_list.get_current_row()
+        self.parent.ui.statistics_plot.plot([index_file_selected],
+                                            [list_err[index_file_selected]],
+                                            pen=(200, 200, 200),
+                                            symbolBrush=(255,0,0),
+                                            symbolPen='w')
+
+
+    def init_plot_statistics_threshold(self):
         max_value = self.parent.max_statistics_error_value
 
         self.parent.threshold_line = pg.InfiniteLine(pos=max_value,

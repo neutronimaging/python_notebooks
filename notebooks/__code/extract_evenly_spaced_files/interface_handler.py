@@ -72,7 +72,8 @@ class InterfaceHandler(QMainWindow):
         o_event.load_files()
         o_event.select_first_file()
         o_event.update_statistics()
-        o_event.init_statistics_threshold()
+        o_event.plot_statistics()
+        o_event.init_plot_statistics_threshold()
         self.ui.setEnabled(True)
 
     # event handler
@@ -80,6 +81,7 @@ class InterfaceHandler(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.image_selected_changed()
         o_event.update_manual_ui()
+        o_event.plot_statistics()
         self.check_previous_next_image_status()
 
     def previous_image_clicked(self):
@@ -119,4 +121,7 @@ class InterfaceHandler(QMainWindow):
     def ok_clicked(self):
         if self.manual_interface_id:
             self.manual_interface_id.close()
+
+        basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
+        self.o_extract.basename_list_of_files_that_will_be_extracted = basename_list_of_files_that_will_be_extracted
         self.close()

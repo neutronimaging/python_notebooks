@@ -5,7 +5,8 @@ import numpy as np
 import logging
 
 from __code import file_handler
-from __code.ipywe import fileselector
+from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
+from __code.ipywe.fileselector import FileSelectorPanel
 from __code.extract_evenly_spaced_files.get import Get
 
 
@@ -17,15 +18,16 @@ class ExtractEvenlySpacedFiles(object):
         self.working_dir = working_dir
 
     def select_folder(self):
-        self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
-                                                            start_dir=self.working_dir,
-                                                            type='directory',
-                                                            next=self.retrieve_list_of_files,
-                                                            multiple=False)
+        self.folder_widget = FileSelectorPanel(instruction='select folder with images to combine',
+                                               start_dir=self.working_dir,
+                                               type='directory',
+                                               next=self.retrieve_list_of_files,
+                                               multiple=False)
         self.folder_widget.show()
 
     def retrieve_list_of_files(self, folder_selected):
         [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=folder_selected)
+        self.folder_of_files_to_extract = folder_selected
         self.list_of_files_to_extract = self.list_files
         self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
         self.basename_list_of_files_that_will_be_extracted = [os.path.basename(_file) for _file in self.list_files]
@@ -114,17 +116,15 @@ class ExtractEvenlySpacedFiles(object):
         display(full_vertical_layout)
 
     def select_output_folder(self):
-        self.output_folder_ui = fileselector.FileSelectorPanelWithJumpFolders(instruction='select where to extract the files',
-                                                                              start_dir=self.working_dir,
-                                                                              next=self.extract,
-                                                                              type='directory',
-                                                                              ipts_folder=self.working_dir,
-                                                                              newdir_toolbar_button=True)
+        self.output_folder_ui = FileSelectorPanelWithJumpFolders(instruction='select where to extract the files',
+                                                                 start_dir=self.working_dir,
+                                                                 next=self.extract,
+                                                                 type='directory',
+                                                                 ipts_folder=self.working_dir,
+                                                                 newdir_toolbar_button=True)
 
     def extract(self, output_folder):
-
         self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
-
         list_of_files_to_extract = self.list_of_files_to_extract
         name_of_parent_folder = os.path.basename(os.path.dirname(list_of_files_to_extract[0]))
         extracting_value = self.extracting_ui.value
