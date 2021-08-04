@@ -67,6 +67,7 @@ class InterfaceHandler(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.load_files()
         o_event.select_first_file()
+        o_event.update_statistics()
         self.ui.setEnabled(True)
 
     # event handler

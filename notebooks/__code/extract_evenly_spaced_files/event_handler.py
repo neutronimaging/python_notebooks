@@ -8,6 +8,7 @@ from __code._utilities.list_widget import ListWidget
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.extract_evenly_spaced_files.manual_mode_interface_handler import Interface as ManualModeInterface
 from __code.extract_evenly_spaced_files.load import load_file
+from __code._utilities.math import mean_square_error
 
 
 class EventHandler:
@@ -98,19 +99,31 @@ class EventHandler:
         self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
 
         o_list.select_element(row=index_file_selected-1)
-
-        if self.parent.manual_interface_id is None:
-            return
-
-        self.parent.manual_interface_id.update_current_image_name()
-        self.parent.manual_interface_id.update_replace_by_list()
-        self.parent.manual_interface_id.display_before_image()
-        self.parent.manual_interface_id.display_after_image()
+        self.update_manual_interface()
 
     def update_manual_ui(self):
+        self.update_manual_interface(update_replace_by_list=False)
+
+    def update_manual_interface(self, update_replace_by_list=True):
         if self.parent.manual_interface_id is None:
             return
 
         self.parent.manual_interface_id.update_current_image_name()
+        if update_replace_by_list:
+            self.parent.manual_interface_id.update_replace_by_list()
         self.parent.manual_interface_id.display_before_image()
         self.parent.manual_interface_id.display_after_image()
+
+    def update_statistics(self):
+        list_data = self.parent.list_data
+        nbr_data = len(list_data)
+
+        list_image_1 = list_data[1:]
+        list_image_2 = list_data[0:-1]
+
+        list_err = []
+        for image1, image2 in zip(list_image_1, list_image_2):
+            err = mean_square_error(image1, image2)
+            list_err.append(err)
+
+        self.parent.ui.statistics_plot.plot(list_err)

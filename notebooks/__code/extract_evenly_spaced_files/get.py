@@ -42,4 +42,3 @@ class Get(TopGet):
 
     def index_of_file_selected_in_full_list(self, base_file_name):
         return self.parent.full_base_list_of_files.index(base_file_name)
-    
