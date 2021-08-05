@@ -8,6 +8,7 @@ from __code._utilities.list_widget import ListWidget
 from __code.extract_evenly_spaced_files.interface_initialization import InterfaceInitialization
 from __code.extract_evenly_spaced_files.event_handler import EventHandler
 from __code.extract_evenly_spaced_files.get import Get
+from __code.extract_evenly_spaced_files.statistics import Statistics
 
 
 class Interface:
@@ -71,9 +72,10 @@ class InterfaceHandler(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.load_files()
         o_event.select_first_file()
-        o_event.update_statistics()
-        o_event.plot_statistics()
-        o_event.init_plot_statistics_threshold()
+        o_statistics = Statistics(parent=self)
+        o_statistics.update_statistics()
+        o_statistics.plot_statistics()
+        o_statistics.init_plot_statistics_threshold()
         self.ui.setEnabled(True)
 
     # event handler
@@ -81,7 +83,8 @@ class InterfaceHandler(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.image_selected_changed()
         o_event.update_manual_ui()
-        o_event.plot_statistics()
+        o_statistics = Statistics(parent=self)
+        o_statistics.plot_statistics()
         self.check_previous_next_image_status()
 
     def previous_image_clicked(self):
@@ -115,8 +118,8 @@ class InterfaceHandler(QMainWindow):
         o_event.list_files_right_click()
 
     def statistics_max_threshold_moved(self):
-        o_event = EventHandler(parent=self)
-        o_event.statistics_max_threshold_moved()
+        o_statistics = Statistics(parent=self)
+        o_statistics.statistics_max_threshold_moved()
 
     def ok_clicked(self):
         if self.manual_interface_id:
@@ -124,4 +127,9 @@ class InterfaceHandler(QMainWindow):
 
         basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
         self.o_extract.basename_list_of_files_that_will_be_extracted = basename_list_of_files_that_will_be_extracted
+        self.close()
+
+    def closeEvent(self, event=None):
+        if not (self.manual_interface_id is None):
+            self.manual_interface_id.close()
         self.close()

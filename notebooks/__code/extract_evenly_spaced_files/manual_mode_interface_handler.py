@@ -2,7 +2,6 @@ from qtpy.QtWidgets import QMainWindow
 import os
 import logging
 import pyqtgraph as pg
-from qtpy import QtGui
 from qtpy.QtWidgets import QVBoxLayout
 import numpy as np
 
@@ -10,6 +9,7 @@ from __code import load_ui
 from __code._utilities.list_widget import ListWidget
 from __code.extract_evenly_spaced_files.load import load_file
 from __code.extract_evenly_spaced_files.get import Get
+from __code.extract_evenly_spaced_files.statistics import Statistics
 
 
 class Interface:
@@ -88,6 +88,9 @@ class InterfaceHandler(QMainWindow):
         self.parent.list_data[index_file_selected] = self.new_data
         self.parent.image_selected_changed()
         o_list.select_element(row=index_file_selected)
+
+        o_statistics = Statistics(parent=self.parent)
+        o_statistics.full_update()
 
     def to_replace_by_changed(self, index):
         self.display_after_image()
