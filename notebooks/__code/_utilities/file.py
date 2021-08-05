@@ -436,7 +436,7 @@ def get_list_of_all_files_in_subfolders(folder="", extensions=['tiff', 'tif']):
 
 def read_bragg_edge_fitting_ascii_format(full_file_name):
     if not Path(full_file_name).exists():
-        raise FileNotFoundError
+        raise FileNotFoundError(str(full_file_name))
 
     metadata = {'detector_offset': '',
                 'distance_detector_sample': '',

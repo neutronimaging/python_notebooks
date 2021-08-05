@@ -20,28 +20,33 @@
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.extract_evenly_spaced_files import ExtractEvenlySpacedFiles as EESF
+from __code.extract_evenly_spaced_files.main import ExtractEvenlySpacedFiles as EESF
+from __code.extract_evenly_spaced_files.interface_handler import Interface
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
+# -
+
+# %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Folder with Images to Extract 
+# -
 
-# + run_control={"frozen": false, "read_only": false}
 o_extract = EESF(working_dir=system.System.get_working_dir())
 o_extract.select_folder()
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
 # # Extraction Method to Use
 
-# + run_control={"frozen": false, "read_only": false}
 o_extract.how_to_extract()
-# -
+
+# # Manual review and/or selection of files 
+
+o_inteface = Interface(o_extract=o_extract)
 
 # # Renamed files ?
-
+#
 # This will replace the last part of the name (file counter digit)
 #
 # for example:
@@ -51,8 +56,7 @@ o_extract.how_to_extract()
 
 o_extract.renamed_files()
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Output Folder 
+# # Select output folder 
 
 # + run_control={"frozen": false, "read_only": false}
 o_extract.select_output_folder()
