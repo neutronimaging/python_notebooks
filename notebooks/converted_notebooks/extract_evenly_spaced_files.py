@@ -36,8 +36,6 @@ custom_style.style()
 
 o_extract = EESF(working_dir=system.System.get_working_dir())
 o_extract.select_folder()
-# o_extract = EESF(working_dir="./")
-# o_extract.retrieve_list_of_files("/Volumes/G-DRIVE/work/2021/Venus/time_lapse/2021-01/")
 
 # # Extraction Method to Use
 
