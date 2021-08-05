@@ -2,7 +2,6 @@ import os
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import numpy as np
-import logging
 
 from __code import file_handler
 from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders

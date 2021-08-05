@@ -53,7 +53,6 @@ class Statistics:
         QGuiApplication.processEvents()
 
     def plot_statistics(self):
-        # self.parent.ui.statistics_plot.clear()
         list_err = self.parent.list_statistics_error_value
         if list_err is None:
             return
