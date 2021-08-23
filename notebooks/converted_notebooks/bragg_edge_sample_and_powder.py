@@ -20,8 +20,8 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.bragg_edge_normalization import BraggEdge
-from __code.bragg_edge import Interface
+from __code.bragg_edge.bragg_edge_sample_and_powder import BraggEdge
+from __code.bragg_edge.bragg_edge import Interface
 
 system.System.select_working_dir(facility='SNS', instrument='SNAP')
 from __code.__all import custom_style
@@ -69,7 +69,7 @@ o_interface.show()
 
 # # Normalize Data 
 
-o_bragg.normalization(list_rois=o_interface.roi_selected)
+o_bragg.normalization_with_ob(list_rois=o_interface.list_roi)
 
 # # Powder element(s) to use to compare data  
 
