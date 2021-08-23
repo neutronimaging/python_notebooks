@@ -48,6 +48,7 @@ class BraggEdge(BraggEdgeParent):
         # define time spectra file
         folder = os.path.dirname(self.o_norm.data['sample']['file_name'][0])
         self.list_files = self.o_norm.data['sample']['file_name']
+        self.data = self.o_norm.data['sample']['data']
         self.data_folder_name = os.path.basename(folder)
         spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
         logging.info(f"> looking for spectra file: {spectra_file}")
