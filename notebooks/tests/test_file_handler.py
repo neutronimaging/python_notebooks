@@ -22,7 +22,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
         print(f"data_path = Path(__file__).parent: {Path(__file__).parent}")
         data_path = Path(__file__).parent
         import glob
-        print(f"glob(data_path): {glob.glob(data_path)}")
+        print(f"glob(data_path): {glob.glob(str(data_path) + '/data/*')}")
 
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         metadata_column = result['metadata']['columns']
@@ -45,6 +45,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
                 'a6'       : 'None', 'd_spacing_error': 'None', 'sigma_error': 'None', 'alpha_error': 'None',
                 'a1_error' : 'None', 'a2_error': 'None', 'a5_error': 'None', 'a6_error': 'None'}}
         assert len(metadata_column) == 86
+        assert False
 
     def test_retrieving_data(self):
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
