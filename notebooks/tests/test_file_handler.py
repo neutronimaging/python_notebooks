@@ -17,6 +17,13 @@ class TestReadBraggEdgeFittingAsciiFormat:
             read_bragg_edge_fitting_ascii_format(full_file_name=ascii_file)
 
     def test_retrieving_metadata_columns(self):
+
+        print(f"self.ascii_file_name: {self.ascii_file_name}")
+        print(f"data_path = Path(__file__).parent: {Path(__file__).parent}")
+        data_path = Path(__file__).parent
+        import glob
+        print(f"glob(data_path): {glob.glob(data_path)}")
+
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         metadata_column = result['metadata']['columns']
 
