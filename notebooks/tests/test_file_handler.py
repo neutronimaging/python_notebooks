@@ -24,12 +24,21 @@ class TestReadBraggEdgeFittingAsciiFormat:
         data_path = Path(__file__).parent
         import glob
         import os
-        print(f"glob(data_path + '/my_data/*'): {glob.glob(str(data_path) + '/my_data/*')}")
+        print(f"glob(data_path + '/data/*'): {glob.glob(str(data_path) + '/data/*')}")
 
-        my_data_path = "/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/my_data/"
+        my_data_path = "/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/"
         print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests exists? "
               f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests')}")
 
+        print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ exists? "
+              f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data')}")
+
+        print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii exists? "
+              f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii')}")
+
+        print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii"
+              f"/bragg_edge_fitting_all_regions.txt exists? "
+              f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii/bragg_edge_fitting_all_regions.txt')}")
 
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         assert False
