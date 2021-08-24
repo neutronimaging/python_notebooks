@@ -204,7 +204,6 @@ class BraggEdge:
         nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
         nbr_images = len(self.data)
         list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
-
         final_array = []
         for _index in list_of_indexes_to_keep:
             final_array.append(self.data[_index])

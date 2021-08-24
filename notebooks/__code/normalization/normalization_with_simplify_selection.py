@@ -669,6 +669,7 @@ class NormalizationWithSimplifySelection:
                 instruction='select where to create the ' + \
                             'normalized folders',
                 start_dir=self.working_dir,
+                ipts_folder=self.working_dir,
                 next=self.normalization,
                 type='directory',
                 newdir_toolbar_button=True)

@@ -7,6 +7,7 @@ class TestGroupImagesByCycle:
 
     def setup_method(self):
         data_path = Path(__file__).parent.parent
+        self.data_path = str(data_path)
 
         tiff_path = Path(data_path) / 'data' / 'images' / 'tiff'
         list_of_files = glob.glob(str(tiff_path) + '/*.tif')
@@ -25,31 +26,31 @@ class TestGroupImagesByCycle:
                                      list_of_metadata_key=self.list_of_metadata_key)
         o_group.create_master_dictionary()
 
-        dict_expected = {'/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image001.tif': {
+        dict_expected = {self.data_path + '/data/images/tiff/image001.tif': {
                                 'MotLongAxis': '170.000000',
                                 'MotLiftTable': '115.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image002.tif': {
+                         self.data_path + '/data/images/tiff/image002.tif': {
                                 'MotLongAxis': '135.000000',
                                 'MotLiftTable': '115.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image003.tif': {
+                         self.data_path + '/data/images/tiff/image003.tif': {
                                 'MotLongAxis': '100.000000',
                                 'MotLiftTable': '115.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image004.tif': {
+                         self.data_path + '/data/images/tiff/image004.tif': {
                                 'MotLongAxis': '100.000000',
                                 'MotLiftTable': '70.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image005.tif': {
+                         self.data_path + '/data/images/tiff/image005.tif': {
                                 'MotLongAxis': '100.000000',
                                 'MotLiftTable': '30.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image006.tif': {
+                         self.data_path + '/data/images/tiff/image006.tif': {
                                 'MotLongAxis': '135.000000',
                                 'MotLiftTable': '30.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image007.tif': {
+                         self.data_path + '/data/images/tiff/image007.tif': {
                                 'MotLongAxis': '170.000000',
                                 'MotLiftTable': '30.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image008.tif': {
+                         self.data_path + '/data/images/tiff/image008.tif': {
                                 'MotLongAxis': '170.000000',
                                 'MotLiftTable': '70.000000'},
-                         '/Users/j35/git/python_notebooks/notebooks/tests/data/images/tiff/image009.tif': {
+                         self.data_path + '/data/images/tiff/image009.tif': {
                                 'MotLongAxis': '135.000000',
                                 'MotLiftTable': '70.000000'},
                          }

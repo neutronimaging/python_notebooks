@@ -18,6 +18,15 @@ class TestReadBraggEdgeFittingAsciiFormat:
             read_bragg_edge_fitting_ascii_format(full_file_name=ascii_file)
 
     def test_retrieving_metadata_columns(self):
+
+        print(f"self.ascii_file_name: {self.ascii_file_name}")
+        print(f"data_path = Path(__file__).parent: {Path(__file__).parent}")
+        data_path = Path(__file__).parent
+        import glob
+        print(f"glob(data_path): {glob.glob(str(data_path) + '/data/*')}")
+        my_data_path = "/home/runner/work/python_notebooks/notebooks/tests/data/"
+        print(f"glob(my_data_path): {glob(my_data_path)}")
+
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         print(f"str(Path(__file__).parent: {str(Path(__file__).parent)}")
         print(f"str(Path(data_path): {str(Path(self.data_path))}")
@@ -43,6 +52,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
                 'a6'       : 'None', 'd_spacing_error': 'None', 'sigma_error': 'None', 'alpha_error': 'None',
                 'a1_error' : 'None', 'a2_error': 'None', 'a5_error': 'None', 'a6_error': 'None'}}
         assert len(metadata_column) == 86
+        assert False
 
     def test_retrieving_data(self):
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
