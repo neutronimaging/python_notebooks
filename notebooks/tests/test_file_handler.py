@@ -25,7 +25,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
         import glob
         print(f"glob(data_path): {glob.glob(str(data_path) + '/data/*')}")
         my_data_path = "/home/runner/work/python_notebooks/notebooks/tests/data/"
-        print(f"glob(my_data_path): {glob(my_data_path)}")
+        print(f"glob(my_data_path): {glob.glob(my_data_path)}")
 
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         print(f"str(Path(__file__).parent: {str(Path(__file__).parent)}")
