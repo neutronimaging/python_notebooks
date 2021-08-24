@@ -10,7 +10,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
     def setup_method(self):
         data_path = Path(__file__).parent
         self.data_path = data_path
-        self.ascii_file_name = Path(data_path) / 'data' / 'ascii' / 'bragg_edge_fitting_all_regions.txt'
+        self.ascii_file_name = str(Path(data_path) / 'data' / 'ascii' / 'bragg_edge_fitting_all_regions.txt')
 
     def test_file_does_not_exist(self):
         ascii_file = 'does_not_exist'
@@ -19,26 +19,11 @@ class TestReadBraggEdgeFittingAsciiFormat:
 
     def test_retrieving_metadata_columns(self):
 
-        print(f"self.ascii_file_name: {self.ascii_file_name}")
-        print(f"data_path = Path(__file__).parent: {Path(__file__).parent}")
         data_path = Path(__file__).parent
-        import glob
+#        my_data_path = "/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/"
+
         import os
-        print(f"glob(data_path + '/data/*'): {glob.glob(str(data_path) + '/data/*')}")
-
-        my_data_path = "/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/"
-        print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests exists? "
-              f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests')}")
-
-        print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ exists? "
-              f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data')}")
-
-        print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii exists? "
-              f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii')}")
-
-        print(f"/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii"
-              f"/bragg_edge_fitting_all_regions.txt exists? "
-              f"{os.path.exists('/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/ascii/bragg_edge_fitting_all_regions.txt')}")
+        print(f"self.ascii_file_name exists: {os.path.exists(self.ascii_file_name)}")
 
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         assert False
