@@ -23,12 +23,11 @@ class TestReadBraggEdgeFittingAsciiFormat:
         print(f"data_path = Path(__file__).parent: {Path(__file__).parent}")
         data_path = Path(__file__).parent
         import glob
-        print(f"glob(data_path): {glob.glob(str(data_path) + '/data/*')}")
+        print(f"glob(data_path + '/my_data/*'): {glob.glob(str(data_path) + '/my_data/*')}")
+
         my_data_path = "/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/my_data/"
-        print(f"glob(my_data_path): {glob.glob(my_data_path)}")
-        print(f"str(Path(__file__).parent: {str(Path(__file__).parent)}")
-        print(f"str(Path(data_path): {str(Path(self.data_path))}")
-        print(f"self.ascii_file_name: {self.ascii_file_name}")
+        print(f"glob(my_data_path): {glob.glob(my_data_path + '/*/')}")
+        print(f"glob(my_data_path + '/")
 
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         assert False
