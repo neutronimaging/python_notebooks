@@ -19,14 +19,7 @@ class TestReadBraggEdgeFittingAsciiFormat:
 
     def test_retrieving_metadata_columns(self):
 
-        data_path = Path(__file__).parent
-#        my_data_path = "/home/runner/work/python_notebooks/python_notebooks/notebooks/tests/data/"
-
-        import os
-        print(f"self.ascii_file_name exists: {os.path.exists(self.ascii_file_name)}")
-
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
-        assert False
         metadata_column = result['metadata']['columns']
 
         assert metadata_column['3'] == {'x0'                                                                : '285',
