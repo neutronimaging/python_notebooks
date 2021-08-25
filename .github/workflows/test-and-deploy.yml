@@ -6,7 +6,7 @@ jobs:
       timeout-minutes: 10
       strategy:
         matrix:
-          python-version: [3.7, 3.8]
+          python-version: [3.7]
           os: [macOS-latest, ubuntu-latest, windows-latest]
       name: ${{ matrix.os }} py${{ matrix.python-version }}
       steps:
