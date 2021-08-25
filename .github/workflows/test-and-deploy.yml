@@ -3,14 +3,13 @@ on: [push, pull_request]
 jobs:
     run-unit-tests:
       runs-on: ${{ matrix.os }}
-      timeout-minutes: 20
+      timeout-minutes: 10
       strategy:
         matrix:
           python-version: [3.7, 3.8]
           os: [macOS-latest, ubuntu-latest, windows-latest]
       name: ${{ matrix.os }} py${{ matrix.python-version }}
       steps:
-        - timeout-minutes: 20
         - uses: actions/checkout@v2
         - uses: s-weigand/setup-conda@v1.0.7
           name: Setup Conda
@@ -26,6 +25,7 @@ jobs:
             pwd
             ls
         - name: Install dependencies
+          timeout-minutes: 10
           run: |
             conda env update -n base --file=conda/environment.yml
             conda install pytest
