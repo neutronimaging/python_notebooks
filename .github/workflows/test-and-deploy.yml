@@ -33,8 +33,9 @@ jobs:
             conda env update -n base --file=conda/environment.yml
             conda install pytest
         - name: Run tests
-          working-directory: notebooks
-          run: pytest
+          run: |
+            cd notebooks
+            python -m pytest tests/ 
 
     trigger-prod-deployment:
       if: ${{ github.ref == 'refs/heads/master' }}
