@@ -3,10 +3,10 @@ on: [push, pull_request]
 jobs:
     run-unit-tests:
       runs-on: ${{ matrix.os }}
-      timeout-minutes: 10
+      timeout-minutes: 15
       strategy:
         matrix:
-          python-version: [3.7, 3.8]
+          python-version: [3.7]
           os: [macOS-latest, ubuntu-latest, windows-latest]
       name: ${{ matrix.os }} py${{ matrix.python-version }}
       steps:
