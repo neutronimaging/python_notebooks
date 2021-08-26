@@ -21,7 +21,7 @@ from __code.file_folder_browser import FileFolderBrowser
 from __code import ipywe
 from __code._utilities.file import get_full_home_file_name
 
-LOG_FILE_NAME = ".bragg_edge_normalization.log"
+LOG_FILE_NAME = ".bragg_edge_raw_sample_and_powder.log"
 
 
 class BraggEdge(BraggEdgeParent):
@@ -283,76 +283,91 @@ class BraggEdge(BraggEdgeParent):
         self.final_image = final_image
         return final_image
 
-    def normalization(self):
-        if self.o_interface:
-            list_rois = self.o_interface.roi_selected
-        else:
-            list_rois = None
-
-        if self.accordion.selected_index == 0:
-            # with ob
-            self.normalization_with_ob(list_rois=list_rois)
-
-        elif self.accordion.selected_index == 1:
-            # without ob
-            self.normalization_without_ob(list_rois=list_rois)
-
-        self.export_normalized_data()
-
-    def normalization_without_ob(self, list_rois):
+    def normalization(self, o_background=None):
         logging.info("Running normalization without OB")
-        if list_rois is None:
-            logging.info("-> no ROIs found! At least one ROI must be provided. Normalization Aborted!")
-            display(HTML('<span style="font-size: 15px; color:red"> You need to provide a ROI!</span>'))
+
+        list_rois = o_background.roi_selected
+        self.background_rois = list_rois
+        if list_rois == {}:
+            logging.info("-> no roi used!")
+            self.o_norm.normalization(force=True, notebook=True)
             return
 
-        else:
-            list_o_roi = []
-            for key in list_rois.keys():
-                roi = list_rois[key]
-                _x0 = roi['x0']
-                _y0 = roi['y0']
-                _x1 = roi['x1']
-                _y1 = roi['y1']
+        list_o_roi = []
+        for key in list_rois.keys():
+            roi = list_rois[key]
+            _x0 = roi['x0']
+            _y0 = roi['y0']
+            _x1 = roi['x1']
+            _y1 = roi['y1']
 
-                list_o_roi.append(ROI(x0=_x0,
-                                      y0=_y0,
-                                      x1=_x1,
-                                      y1=_y1))
+            list_o_roi.append(ROI(x0=_x0,
+                                  y0=_y0,
+                                  x1=_x1,
+                                  y1=_y1))
 
-                logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
-                self.o_norm.normalization(roi=list_o_roi,
-                                          use_only_sample=True,
-                                          notebook=True,
-                                          force=True)
+        logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
+        self.o_norm.normalization(roi=list_o_roi,
+                                  notebook=True,
+                                  force=True)
+
         display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
         logging.info(f"-> Done!")
 
-    def normalization_with_ob(self, list_rois):
-        logging.info("Running normalization with OB")
-        if list_rois is None:
-            logging.info("-> no roi used!")
-            self.o_norm.normalization(force=True)
-        else:
-            list_o_roi = []
-            for key in list_rois.keys():
-                roi = list_rois[key]
-                _x0 = roi['x0']
-                _y0 = roi['y0']
-                _x1 = roi['x1']
-                _y1 = roi['y1']
-
-                list_o_roi.append(ROI(x0=_x0,
-                                      y0=_y0,
-                                      x1=_x1,
-                                      y1=_y1))
-
-            logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
-            self.o_norm.normalization(roi=list_o_roi,
-                                      notebook=True,
-                                      force=True)
-        display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
-        logging.info(f"-> Done!")
+    # def normalization_without_ob(self, list_rois):
+    #     logging.info("Running normalization without OB")
+    #     if list_rois is None:
+    #         logging.info("-> no ROIs found! At least one ROI must be provided. Normalization Aborted!")
+    #         display(HTML('<span style="font-size: 15px; color:red"> You need to provide a ROI!</span>'))
+    #         return
+    #
+    #     else:
+    #         list_o_roi = []
+    #         for key in list_rois.keys():
+    #             roi = list_rois[key]
+    #             _x0 = roi['x0']
+    #             _y0 = roi['y0']
+    #             _x1 = roi['x1']
+    #             _y1 = roi['y1']
+    #
+    #             list_o_roi.append(ROI(x0=_x0,
+    #                                   y0=_y0,
+    #                                   x1=_x1,
+    #                                   y1=_y1))
+    #
+    #             logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
+    #             self.o_norm.normalization(roi=list_o_roi,
+    #                                       use_only_sample=True,
+    #                                       notebook=True,
+    #                                       force=True)
+    #     display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
+    #     logging.info(f"-> Done!")
+    #
+    # def normalization_with_ob(self, list_rois):
+    #     logging.info("Running normalization with OB")
+    #     if list_rois is None:
+    #         logging.info("-> no roi used!")
+    #         self.o_norm.normalization(force=True, notebook=True)
+    #     else:
+    #         list_o_roi = []
+    #         for key in list_rois.keys():
+    #             roi = list_rois[key]
+    #             _x0 = roi['x0']
+    #             _y0 = roi['y0']
+    #             _x1 = roi['x1']
+    #             _y1 = roi['y1']
+    #
+    #             list_o_roi.append(ROI(x0=_x0,
+    #                                   y0=_y0,
+    #                                   x1=_x1,
+    #                                   y1=_y1))
+    #
+    #         logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
+    #         self.o_norm.normalization(roi=list_o_roi,
+    #                                   notebook=True,
+    #                                   force=True)
+    #     display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
+    #     logging.info(f"-> Done!")
 
     def export_normalized_data(self):
         self.o_folder = FileFolderBrowser(working_dir=self.working_dir,
@@ -381,9 +396,9 @@ class BraggEdge(BraggEdgeParent):
 
     def calculate_counts_vs_file_index_of_regions_selected(self, list_roi=None):
         self.list_roi = list_roi
-        data = self.o_norm.get_sample_data()
+        normalized_data = self.o_norm.get_normalized_data()
 
-        nbr_data = len(data)
+        nbr_data = len(normalized_data)
         box_ui = widgets.HBox([widgets.Label("Calculate Counts vs lambda",
                                              layout=widgets.Layout(width='20%')),
                                widgets.IntProgress(min=0,
@@ -394,7 +409,7 @@ class BraggEdge(BraggEdgeParent):
         display(box_ui)
 
         counts_vs_file_index = []
-        for _index, _data in enumerate(data):
+        for _index, _data in enumerate(normalized_data):
 
             if len(list_roi) == 0:
                 _array_data = _data
@@ -417,7 +432,6 @@ class BraggEdge(BraggEdgeParent):
         box_ui.close()
 
     def plot(self):
-
         trace = go.Scatter(
                 x=self.lambda_array,
                 y=self.counts_vs_file_index,
@@ -441,7 +455,8 @@ class BraggEdge(BraggEdgeParent):
         bragg_edges = self.bragg_edges
         hkl = self.hkl
 
-        max_x = 6
+        max_x = self.lambda_array[-1] + 0.1
+        min_x = self.lambda_array[0] - 0.1
 
         # format hkl labels
         _hkl_formated = {}
@@ -456,6 +471,8 @@ class BraggEdge(BraggEdgeParent):
         for y_index, _material in enumerate(bragg_edges):
             for _index, _value in enumerate(bragg_edges[_material]):
                 if _value > max_x:
+                    continue
+                if _value < min_x:
                     continue
                 bragg_line = {"type": "line",
                               'x0'  : _value,
@@ -521,12 +538,29 @@ class BraggEdge(BraggEdgeParent):
                 _y0 = roi['y0']
                 _x1 = roi['x1']
                 _y1 = roi['y1']
-                metadata.append("# ROI {}: x0={}, y0={}, x1={}, y1={}".format(index,
-                                                                              _x0,
-                                                                              _y0,
-                                                                              _x1,
-                                                                              _y1))
-        metadata.append("#")
+                metadata.append("# Sample ROI {}: x0={}, y0={}, x1={}, y1={}".format(index,
+                                                                                     _x0,
+                                                                                     _y0,
+                                                                                     _x1,
+                                                                                     _y1))
+
+        background_rois = self.background_rois
+        if len(background_rois) == 0:
+            metadata.append("# No background region selected")
+        else:
+            for index, key in enumerate(background_rois.keys()):
+                roi = list_roi[key]
+                _x0 = roi['x0']
+                _y0 = roi['y0']
+                _x1 = roi['x1']
+                _y1 = roi['y1']
+                metadata.append("# Background ROI {}: x0={}, y0={}, x1={}, y1={}".format(index,
+                                                                                     _x0,
+                                                                                     _y0,
+                                                                                     _x1,
+                                                                                     _y1))
+            metadata.append("#")
+
         metadata.append("# tof (micros), lambda (Angstroms), Average transmission")
 
         data = []
