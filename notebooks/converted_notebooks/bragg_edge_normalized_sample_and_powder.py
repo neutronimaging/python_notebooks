@@ -65,6 +65,7 @@ o_bragg.list_elements()
 # ## List Bragg Edges 
 
 o_bragg.list_powder_bragg_edges()
+o_bragg.bragg_edges
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Define Experiment Setup

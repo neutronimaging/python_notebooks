@@ -9,7 +9,8 @@ class TestReadBraggEdgeFittingAsciiFormat:
 
     def setup_method(self):
         data_path = Path(__file__).parent
-        self.ascii_file_name = Path(data_path) / 'data' / 'ascii' / 'bragg_edge_fitting_all_regions.txt'
+        self.data_path = data_path
+        self.ascii_file_name = str(Path(data_path) / 'data' / 'ascii' / 'bragg_edge_fitting_all_regions.txt')
 
     def test_file_does_not_exist(self):
         ascii_file = 'does_not_exist'
@@ -17,16 +18,6 @@ class TestReadBraggEdgeFittingAsciiFormat:
             read_bragg_edge_fitting_ascii_format(full_file_name=ascii_file)
 
     def test_retrieving_metadata_columns(self):
-
-        print(f"self.ascii_file_name: {self.ascii_file_name}")
-        print(f"data_path = Path(__file__).parent: {Path(__file__).parent}")
-        data_path = Path(__file__).parent
-        import glob
-        print(f"glob(data_path): {glob.glob(str(data_path) + '/data/*')}")
-        my_data_path = "/home/runner/work/python_notebooks/notebooks/tests/data/"
-        print(f"glob(my_data_path): {glob.glob(my_data_path)}")
-        print("in master")
-
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
         metadata_column = result['metadata']['columns']
 
@@ -48,7 +39,6 @@ class TestReadBraggEdgeFittingAsciiFormat:
                 'a6'       : 'None', 'd_spacing_error': 'None', 'sigma_error': 'None', 'alpha_error': 'None',
                 'a1_error' : 'None', 'a2_error': 'None', 'a5_error': 'None', 'a6_error': 'None'}}
         assert len(metadata_column) == 86
-        # assert False
 
     def test_retrieving_data(self):
         result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
