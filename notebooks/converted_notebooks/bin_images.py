@@ -46,4 +46,6 @@ o_bin.select_bin_parameter()
 o_bin.select_export_folder()
 # -
 
+print("TEST")
+
 
