@@ -27,6 +27,7 @@ LOG_FILE_NAME = ".bragg_edge_normalization.log"
 class BraggEdge(BraggEdgeParent):
 
     o_interface = None
+    select_ob_widget = None
 
     def __init__(self, working_dir="./"):
         super(BraggEdge, self).__init__(working_dir=working_dir)
@@ -209,7 +210,7 @@ class BraggEdge(BraggEdgeParent):
             # without OB
             self.select_roi_widget_without_ob.button_style = ""
 
-    def select_ob_folder(self, status):
+    def select_ob_folder(self, status=None):
         select_data = ipywe.fileselector.FileSelectorPanel(instruction='Select OB Folder ...',
                                                            start_dir=self.starting_dir,
                                                            next=self.load_ob,
@@ -220,8 +221,9 @@ class BraggEdge(BraggEdgeParent):
     def load_ob(self, folder_selected):
         self.load_files(data_type='ob', folder=folder_selected)
         self.check_data_array_sizes()
-        self.select_ob_widget.button_style = ""
-        self.select_roi_widget_with_ob.button_style = "success"
+        if self.select_ob_widget:
+            self.select_ob_widget.button_style = ""
+            self.select_roi_widget_with_ob.button_style = "success"
 
     def check_data_array_sizes(self):
         len_ob = len(self.o_norm.data['ob']['file_name'])

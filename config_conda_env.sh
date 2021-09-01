@@ -33,6 +33,7 @@ conda install -c conda-forge nbstripout
 
 # install additional from pip
 pip install \
+    h5py \
     neutronbraggedge \
     NeuNorm \
     sectorizedradialprofile \

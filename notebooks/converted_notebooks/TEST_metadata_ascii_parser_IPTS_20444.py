@@ -167,8 +167,8 @@ o_meta.select_output_location()
 # new_data = data[metadata_to_keep]
 
 # +
-# my_data = new_data.reset_index()
-# my_data.rename(index=str, columns={"index": "TimeStamp"})
+# data = new_data.reset_index()
+# data.rename(index=str, columns={"index": "TimeStamp"})
 # -
 
 

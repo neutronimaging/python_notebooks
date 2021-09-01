@@ -457,9 +457,7 @@ class FileSelectorPanelWithJumpFolders:
                                        )
 
         def display_file_selector_from_home(ev):
-            import getpass
-            _user = getpass.getuser()
-            start_dir = os.path.join('/SNS/users', _user)
+            start_dir = os.path.expanduser("~")
             self.output_folder_ui.remove()
             self.display_file_selector(instruction=instruction,
                                        start_dir=start_dir,

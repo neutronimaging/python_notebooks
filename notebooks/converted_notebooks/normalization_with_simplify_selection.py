@@ -34,10 +34,8 @@ custom_style.style()
 #
 # Change the time range if needed!
 
-# + run_control={"frozen": false, "read_only": false}
 o_which = NormalizationWithSimplifySelection(working_dir=system.System.get_working_dir())
-o_which.select_sample_images_and_create_configuration()
-# -
+o_which.select_sample_folder()
 
 # # Normalization workflow
 
@@ -47,4 +45,5 @@ o_which.checking_normalization_workflow()
 
 o_which.select_output_folder()
 
-
+# +
+# dev

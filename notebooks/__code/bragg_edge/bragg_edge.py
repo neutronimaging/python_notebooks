@@ -87,7 +87,7 @@ class BraggEdge:
                              widgets.Text(str(16.08),
                                           layout=widgets.Layout(width='20%'))])
 
-        box3 = widgets.HBox([widgets.Label("detector offset (microns)",
+        box3 = widgets.HBox([widgets.Label("detector offset (microS)",
                                            layout=widgets.Layout(width=self.label_width)),
                              widgets.Text(str(3700),
                                           layout=widgets.Layout(width='20%'))])
@@ -110,6 +110,8 @@ class BraggEdge:
         self.bragg_edges = _handler.bragg_edges
         self.hkl = _handler.hkl
         self.handler = _handler
+
+        print(_handler)
 
     def select_working_folder(self):
         select_data = fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
@@ -204,7 +206,16 @@ class BraggEdge:
         nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
         nbr_images = len(self.data)
         list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
+        final_array = []
+        for _index in list_of_indexes_to_keep:
+            final_array.append(self.data[_index])
+        final_image = np.mean(final_array, axis=0)
+        self.final_image = final_image
 
+    def define_integrated_sample_to_use(self):
+        nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
+        nbr_images = len(self.data)
+        list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
         final_array = []
         for _index in list_of_indexes_to_keep:
             final_array.append(self.data[_index])
