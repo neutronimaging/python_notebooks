@@ -20,7 +20,7 @@
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.extract_evenly_spaced_files import ExtractEvenlySpacedFiles as EESF
+from __code.extract_evenly_spaced_files.main import ExtractEvenlySpacedFiles as EESF
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style

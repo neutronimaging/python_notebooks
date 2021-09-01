@@ -4,7 +4,7 @@ from IPython.core.display import display, HTML
 import numpy as np
 
 from __code import file_handler
-from __code import fileselector
+from __code.ipywe import fileselector
 
 
 class ExtractEvenlySpacedFiles(object):
