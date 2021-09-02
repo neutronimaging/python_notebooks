@@ -50,6 +50,9 @@ class MetadataHandler:
                 ...
                 }
         """
+        if not list_of_files:
+            return {}
+
         _dict = file_handler.retrieve_time_stamp(list_of_files, label=label)
         _time_metadata_dict = MetadataHandler._reformat_dict(dictionary=_dict)
 

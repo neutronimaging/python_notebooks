@@ -344,6 +344,11 @@ def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
 
 
 def retrieve_time_stamp(list_images, label=""):
+    if not list_images:
+        return {'list_images': None,
+                'list_time_stamp': None,
+                'list_time_stamp_user_format': None}
+
     [_, ext] = os.path.splitext(list_images[0])
     if ext.lower() in ['.tiff', '.tif']:
         ext = 'tif'
