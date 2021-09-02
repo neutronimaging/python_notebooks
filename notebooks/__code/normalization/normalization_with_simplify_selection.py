@@ -467,9 +467,10 @@ class NormalizationWithSimplifySelection:
         return [table_label, table]
 
     def update_use_this_config_widget(self, state):
-        new_state = state['new']
-        [active_acquisition, active_config] = self.get_active_tabs()
-        self.config_tab_dict[active_acquisition][active_config]['normalize_this_config'] = new_state
+        pass
+        # new_state = state['new']
+        # [active_acquisition, active_config] = self.get_active_tabs()
+        # self.config_tab_dict[active_acquisition][active_config]['normalize_this_config'] = new_state
 
     def update_config_widgets(self, state):
         if state['new'] is False:
