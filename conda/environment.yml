@@ -24,7 +24,7 @@ dependencies:
   - jupytext
   - pip
   - pip:
-    - PyQt5
+    - PyQt5>=5.14.1
     - changepy
     - ipywe
     - lmfit
