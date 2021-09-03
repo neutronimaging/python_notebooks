@@ -26,6 +26,10 @@ jobs:
             python --version
             pwd
             ls
+        - name: Fix for macOS 
+          if: startsWith(matrix.os, 'macOS')
+          run: |
+            find . -name .qmake.stash -type f -delete
         - name: Install dependencies
           timeout-minutes: 30
           run: |
