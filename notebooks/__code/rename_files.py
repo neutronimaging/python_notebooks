@@ -7,6 +7,7 @@ from __code.ipywe import fileselector
 
 from __code.file_handler import ListMostDominantExtension
 from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
+from __code._utilities.file import get_list_of_files, get_list_file_extensions
 
 
 class FormatFileNameIndex(object):
@@ -22,19 +23,31 @@ class FormatFileNameIndex(object):
                                                               multiple=False)
         self.input_folder_ui.show()
 
-    def calculate_most_dominant_files(self):
-        self.o_list_dominant = ListMostDominantExtension(working_dir=self.input_folder)
-        self.o_list_dominant.calculate()
+    # def calculate_most_dominant_files(self):
+    #     self.o_list_dominant = ListMostDominantExtension(working_dir=self.input_folder)
+    #     self.o_list_dominant.calculate()
+    #
+    # def get_most_dominant_files(self):
+    #     _result = self.o_list_dominant.get_files_of_selected_ext()
+    #     self.list_files = _result.list_files
+    #     self.ext = _result.ext
 
-    def get_most_dominant_files(self):
-        _result = self.o_list_dominant.get_files_of_selected_ext()
-        self.list_files = _result.list_files
-        self.ext = _result.ext
+    def get_list_files(self):
+        self.list_files = get_list_of_files(folder=self.input_folder,
+                                            extension="*")
+        self.ext = get_list_file_extensions(self.list_files)
+
+        if len(self.ext) > 1:
+            str_ext = f"[{','.join(self.ext)}]"
+        else:
+            str_ext = self.ext[0]
+        self.str_ext = str_ext
 
     def next(self, input_folder):
         self.input_folder = input_folder
-        self.calculate_most_dominant_files()
-        self.get_most_dominant_files()
+        #self.calculate_most_dominant_files()
+        #self.get_most_dominant_files()
+        self.get_list_files()
 
         self.o_schema = NamingSchemaDefinition(o_format=self)
         self.o_schema.show()
@@ -44,6 +57,7 @@ class NamingSchemaDefinition(object):
     ext = ''
     list_files = []
     working_dir = ''
+    str_ext = ''
 
     ready_to_output = False
 
@@ -51,6 +65,7 @@ class NamingSchemaDefinition(object):
         if o_format:
             self.list_files = o_format.list_files
             self.ext = o_format.ext
+            self.str_ext = o_format.str_ext
             self.working_dir = o_format.working_dir
 
         if self.list_files:
@@ -62,7 +77,7 @@ class NamingSchemaDefinition(object):
 
     def current_naming_schema(self):
         pre_index_separator = self.box2.children[1].value
-        schema = "<untouched_part>" + pre_index_separator + '<digit>' + self.ext
+        schema = "<untouched_part>" + pre_index_separator + '<digit>' + self.str_ext
         return schema
 
     def new_naming_schema(self):
@@ -74,7 +89,7 @@ class NamingSchemaDefinition(object):
         post_index_separator = self.box5.children[1].value
         nbr_digits = self.box7.children[1].value
 
-        schema = prefix + post_index_separator + nbr_digits * '#' + self.ext
+        schema = prefix + post_index_separator + nbr_digits * '#' + self.str_ext
         return schema
 
     def pre_index_text_changed(self, sender):
@@ -322,11 +337,11 @@ class NamingSchemaDefinition(object):
             _index = np.int(_name_separated[-1]) + offset
             new_name = prefix + new_index_separator + \
                        '{:0{}}'.format(_index, new_number_of_digits) + \
-                       self.ext
+                       self.str_ext
         except ValueError:
             _index = _name_separated[-1]
             new_name = prefix + new_index_separator + \
-                _index + self.ext
+                _index + self.str_ext
 
         return new_name
 
