@@ -40,7 +40,7 @@ class FormatFileNameIndex(object):
         if len(self.ext) > 1:
             str_ext = f"[{','.join(self.ext)}]"
         else:
-            str_ext = self.ext[0]
+            str_ext = f"{self.ext}"
         self.str_ext = str_ext
 
     def next(self, input_folder):
