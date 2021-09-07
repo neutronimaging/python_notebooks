@@ -12,6 +12,8 @@
 #     name: python3
 # ---
 
+print("If you see this, you are running the dev conda environment!")
+
 # [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bin_images)
 #
 # <img src='__docs/__all/notebook_rules.png' />
@@ -45,7 +47,5 @@ o_bin.select_bin_parameter()
 # + run_control={"frozen": false, "read_only": false}
 o_bin.select_export_folder()
 # -
-
-print("TEST")
 
 
