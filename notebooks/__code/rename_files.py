@@ -58,6 +58,7 @@ class NamingSchemaDefinition(object):
     list_files = []
     working_dir = ''
     str_ext = ''
+    input_folder = ''
 
     ready_to_output = False
 
@@ -67,13 +68,16 @@ class NamingSchemaDefinition(object):
             self.ext = o_format.ext
             self.str_ext = o_format.str_ext
             self.working_dir = o_format.working_dir
+            self.input_folder = o_format.input_folder
+        else:
+            raise ValueError("FormatFileNameIndex object is missing!")
 
         if self.list_files:
             _random_input_list = utilities.get_n_random_element(input_list=self.list_files,
                                                                 n=10)
             self.random_input_list = [os.path.basename(_file) for _file in _random_input_list]
 
-        self.basename = os.path.basename(self.list_files[0])
+            self.basename = os.path.basename(self.list_files[0])
 
     def current_naming_schema(self):
         pre_index_separator = self.box2.children[1].value
@@ -337,11 +341,11 @@ class NamingSchemaDefinition(object):
             _index = np.int(_name_separated[-1]) + offset
             new_name = prefix + new_index_separator + \
                        '{:0{}}'.format(_index, new_number_of_digits) + \
-                       self.str_ext
+                       _ext
         except ValueError:
             _index = _name_separated[-1]
             new_name = prefix + new_index_separator + \
-                _index + self.str_ext
+                _index + _ext
 
         return new_name
 
@@ -391,10 +395,12 @@ class NamingSchemaDefinition(object):
 
     def export(self, selected):
 
+        input_folder = self.input_folder
+        input_folder_renamed = os.path.basename(input_folder) + '_renamed'
         self.output_folder_ui.shortcut_buttons.close()
 
         dict_old_new_names = self.get_dict_old_new_filenames()
-        new_output_folder = os.path.abspath(selected)
+        new_output_folder = os.path.join(os.path.abspath(selected), input_folder_renamed)
 
         utilities.copy_files(dict_old_new_names=dict_old_new_names,
                              new_output_folder=new_output_folder,
