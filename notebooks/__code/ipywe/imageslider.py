@@ -3,7 +3,7 @@ from __future__ import division
 
 import ipywidgets as ipyw
 from . import base
-from traitlets import Unicode, Integer, Float, Tuple, HasTraits, observe
+from traitlets import Unicode, Integer, Float, Tuple, observe
 import numpy as np
 import sys
 

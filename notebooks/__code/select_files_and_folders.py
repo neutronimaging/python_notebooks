@@ -31,7 +31,7 @@ class SelectFolderWithDefaultPaths(FileFolderBrowser):
     def __init__(self, system=None, working_dir='', next_function=None, multiple_flag=False):
         if working_dir == '':
             if system is None:
-                working_dir = './'
+                working_dir = '/'
             else:
                 working_dir = system.System.get_working_dir()
 

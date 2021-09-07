@@ -66,7 +66,7 @@ def gui_single_file(dir=None):
     """Select one o file via a dialog and returns the file name.
     """
     if dir is None: 
-        dir ='./'
+        dir = '/'
     fname = QFileDialog.getOpenFileName(None, "Select file...", 
             dir, filter="Spectra File (*_Spectra.txt)")
     return fname
@@ -77,7 +77,7 @@ def gui_csv_fname(dir=None):
     """Select one or more file via a dialog and returns the file name.
     """
     if dir is None: 
-        dir ='./'
+        dir = '/'
     fname = QFileDialog.getOpenFileNames(None, "Select file(s)...", 
             dir, filter="Fits files(*.csv)")
     return fname

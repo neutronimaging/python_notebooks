@@ -17,9 +17,9 @@ def format_directory(function):
     def new_function(dir=None, **kwargs):
 
         if dir is None:
-            dir = './'
+            dir = '/'
         elif dir == "":
-            dir = './'
+            dir = '/'
         else:
             if os.sys.platform == 'darwin':
                 dir = dir.replace('\\','')

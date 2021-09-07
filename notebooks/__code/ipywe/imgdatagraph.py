@@ -5,7 +5,7 @@ import numpy as np
 import ipywidgets as ipyw
 from . import base
 import sys
-from traitlets import Unicode, Integer, Float, HasTraits, observe
+from traitlets import Unicode, Integer, Float, observe
 import matplotlib.pyplot as plt
 
 
