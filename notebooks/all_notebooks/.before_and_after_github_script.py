@@ -48,7 +48,7 @@ def run():
     else:
         print("Turning Debugging Mode OFF!")
 
-    config_file = os.path.join(_top_path, '__code/config.py')
+    config_file = os.path.join(_top_path, '../__code/config.py')
     _config_file_contain = read_ascii(config_file)
     _parse = _config_file_contain.split('\n')
     _parse[0] = 'debugging = {}'.format(args.use_debugging_mode)
