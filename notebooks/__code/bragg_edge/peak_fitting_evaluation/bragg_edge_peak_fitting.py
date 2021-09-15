@@ -1,3 +1,4 @@
+import logging
 from IPython.core.display import HTML
 import os
 import random
@@ -6,18 +7,17 @@ from IPython.display import display
 import pyqtgraph as pg
 from qtpy.QtWidgets import QMainWindow
 from qtpy import QtGui
-import logging
 from pathlib import Path
 
 from neutronbraggedge.experiment_handler import *
 
-from __code.bragg_edge.bragg_edge_normalization import BraggEdge as BraggEdgeParent
-from __code.bragg_edge.peak_fitting_interface_initialization import Initialization
+from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_normalization import BraggEdge as BraggEdgeParent
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code import load_ui
 from __code._utilities.array import exclude_y_value_when_error_is_nan
 from __code.utilities import find_nearest_index
 from __code.table_handler import TableHandler
+from __code.bragg_edge.peak_fitting_evaluation.peak_fitting_interface_initialization import Initialization
 from __code.bragg_edge.peak_fitting_evaluation.kropff_fitting_job_handler import KropffFittingJobHandler
 from __code.bragg_edge.peak_fitting_evaluation.march_dollase_fitting_job_handler import MarchDollaseFittingJobHandler
 from __code.bragg_edge.peak_fitting_evaluation.kropff import Kropff
@@ -29,7 +29,7 @@ from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_selection_tab import B
 from __code.bragg_edge.peak_fitting_evaluation.get import Get, GetInfo
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
 
-DEBUGGING = True
+from . import DEBUGGING
 
 
 class BraggEdge(BraggEdgeParent):
@@ -189,6 +189,7 @@ class Interface(QMainWindow):
 
         o_get = GetInfo(parent=self)
         log_file_name = o_get.log_file_name()
+        print(f"log_file_name: {log_file_name}")
         logging.basicConfig(filename=log_file_name,
                             filemode='w',
                             format='[%(levelname)s] - %(asctime)s - %(message)s',
@@ -196,9 +197,11 @@ class Interface(QMainWindow):
         logging.info("*** Starting new session ***")
 
         if o_bragg:
+            logging.info("Data loaded via o_bragg")
             # self.working_dir = o_bragg.working_dir
             self.o_norm = o_bragg.o_norm
             self.working_dir = self.retrieve_working_dir()
+            logging.info(f"working dir: {self.working_dir}")
             self.o_bragg = o_bragg
             show_selection_tab = True
             enabled_export_button = False
@@ -210,6 +213,7 @@ class Interface(QMainWindow):
 
         if spectra_file:
             self.spectra_file = spectra_file
+            logging.info(f"spectra file: {self.spectra_file}")
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
@@ -244,6 +248,7 @@ class Interface(QMainWindow):
         return os.path.dirname(file_path)
 
     def load_time_spectra(self):
+        logging.info(f"loading spectra file.")
         self.tof_handler = TOF(filename=self.spectra_file)
         self.tof_array_s = self.tof_handler.tof_array
         self.update_time_spectra()
@@ -848,8 +853,9 @@ class Interface(QMainWindow):
         o_march.result_table_right_click()
 
     def cancel_clicked(self):
+        logging.info(" #### Leaving bragg_edge_peak_fitting_evaluation! ####")
         self.close()
 
     def apply_clicked(self):
-        # FIXME
+        logging.info(" #### Leaving bragg_edge_peak_fitting_evaluation! ####")
         self.close()
