@@ -18,10 +18,10 @@ from __code import load_ui
 from __code._utilities.array import exclude_y_value_when_error_is_nan
 from __code.utilities import find_nearest_index
 from __code.table_handler import TableHandler
-from __code.bragg_edge.kropff_fitting_job_handler import KropffFittingJobHandler
-from __code.bragg_edge.march_dollase_fitting_job_handler import MarchDollaseFittingJobHandler
-from __code.bragg_edge.kropff import Kropff
-from __code.bragg_edge.march_dollase import MarchDollase
+from __code.bragg_edge.peak_fitting_evaluation.kropff_fitting_job_handler import KropffFittingJobHandler
+from __code.bragg_edge.peak_fitting_evaluation.march_dollase_fitting_job_handler import MarchDollaseFittingJobHandler
+from __code.bragg_edge.peak_fitting_evaluation.kropff import Kropff
+from __code.bragg_edge.peak_fitting_evaluation.march_dollase import MarchDollase
 from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
 
