@@ -1,8 +1,15 @@
 import numpy as np
 
+from __code._utilities.get import Get as TopGet
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.selection_region_utilities import SelectionRegionUtilities
-from __code._utilities.get import Get as TopGet
+from __code.bragg_edge.peak_fitting_evaluation import LOG_FILENAME
+
+
+class GetInfo(TopGet):
+
+    def log_file_name(self):
+        return TopGet.log_file_name(LOG_FILENAME)
 
 
 class Get(TopGet):
