@@ -168,10 +168,10 @@ class Interface(QMainWindow):
     march_dollase_fitting_initial_parameters = {'d_spacing': np.NaN,
                                                 'sigma': 3.5,
                                                 'alpha': 4.5,
-                                                'a1': "row dependent",
-                                                'a2': "row dependent",
-                                                'a5': "row dependent",
-                                                'a6': "row dependent"}
+                                                'a1': "pixels ROI dependent",
+                                                'a2': "pixels ROI dependent",
+                                                'a5': "pixels ROI dependent",
+                                                'a6': "pixels ROI dependent"}
     march_dollase_fitting_history_table_default_new_row = None
     march_dollase_fitting_range_selected = None
 
@@ -403,7 +403,6 @@ class Interface(QMainWindow):
 
         o_init = PeakFittingInitialization(parent=self)
         fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(dict_regions))
-        logging.info(f"-> fitting_input_dictionary: {fitting_input_dictionary}")
 
         o_init.set_top_keys_values(fitting_input_dictionary,
                                    {'xaxis': x_axis,
@@ -529,7 +528,6 @@ class Interface(QMainWindow):
     def update_fitting_plot(self):
         o_gui = GuiUtility(parent=self)
         algorithm_tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tab_algorithm)
-        logging.info(f"Updating fitting plot for {algorithm_tab_selected}")
 
         if algorithm_tab_selected == 'Kropff':
             o_kropff = Kropff(parent=self)
@@ -795,7 +793,7 @@ class Interface(QMainWindow):
                 _label.setVisible(not state)
             else:
                 _label = _widget
-                _label.setText("Row dependent")
+                _label.setText("pixel ROI dependent")
                 _label.setVisible(not state)
 
         o_march.save_table_history_and_initial_parameters()
