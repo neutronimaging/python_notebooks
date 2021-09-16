@@ -395,12 +395,16 @@ class Interface(QMainWindow):
         self.dict_profile_to_fit = profile_to_fit
 
     def fit_that_selection_pushed_by_program(self, initialize_region=True):
+        logging.info(f"> fit_that_selection_pushed_by_program({initialize_region})")
+
         o_get = Get(parent=self)
         x_axis = o_get.all_x_axis()
         dict_regions = o_get.all_russian_doll_region_full_infos()
 
         o_init = PeakFittingInitialization(parent=self)
         fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(dict_regions))
+        logging.info(f"-> fitting_input_dictionary: {fitting_input_dictionary}")
+
         o_init.set_top_keys_values(fitting_input_dictionary,
                                    {'xaxis': x_axis,
                                     'bragg_edge_range': self.bragg_edge_range})
@@ -414,15 +418,15 @@ class Interface(QMainWindow):
         o_kropff = Kropff(parent=self)
         o_kropff.reset_all_table()
 
-        # o_march = MarchDollase(parent=self)
-        # o_march.reset_table()
+        o_march = MarchDollase(parent=self)
+        o_march.reset_table()
 
         if initialize_region:
             self.initialize_default_peak_regions()
         else:
             if self.fitting_procedure_started['kropff']:
                 o_kropff.fill_table_with_fitting_information()
-        # o_march.fill_tables_with_fitting_information()
+        o_march.fill_tables_with_fitting_information()
 
         # if initialize_region:
         #     o_march_fitting = MarchDollaseFittingJobHandler(parent=self)
@@ -443,6 +447,13 @@ class Interface(QMainWindow):
         self.fit_that_selection_pushed_by_program(initialize_region=True)
 
     def initialize_default_peak_regions(self):
+        """this define the default peak region for the various algorithms
+
+        for Kropff, each of the 3 regions (high, low, peak) will be initialized with the same left and right index
+
+        """
+        logging.info("initialize_default_peak_region")
+
         [left_range, right_range] = self.bragg_edge_range
         xaxis_dict = self.fitting_input_dictionary['xaxis']
         xaxis_index, _ = xaxis_dict['index']
@@ -455,8 +466,8 @@ class Interface(QMainWindow):
         for _key in self.kropff_fitting_range.keys():
             self.kropff_fitting_range[_key] = [left_index, right_index]
 
-        # TBD tab
-        pass
+        # Marche dollase tab
+        self.march_dollase_fitting_range_selected = [left_index, right_index]
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
         dict_rois_imported = self.dict_rois_imported
@@ -518,6 +529,7 @@ class Interface(QMainWindow):
     def update_fitting_plot(self):
         o_gui = GuiUtility(parent=self)
         algorithm_tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tab_algorithm)
+        logging.info(f"Updating fitting plot for {algorithm_tab_selected}")
 
         if algorithm_tab_selected == 'Kropff':
             o_kropff = Kropff(parent=self)
@@ -555,7 +567,7 @@ class Interface(QMainWindow):
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
         global_left_index = find_nearest_index(array=xaxis, value=global_left_range)
-        global_left_index = 0 # for debugging
+        global_left_index = 0  # for debugging
         global_right_index = find_nearest_index(array=xaxis, value=global_right_range)
 
         self.kropff_fitting_range['high'] = [right_index, global_right_index]
@@ -821,7 +833,8 @@ class Interface(QMainWindow):
     def tab_algorithm_changed(self, tab_index):
         logging.info(f"Tab algorithm changed to tab index {tab_index}")
         self.update_fitting_plot()
-        self.march_dollase_fitting_range_changed()
+        if tab_index == 1:
+            self.march_dollase_fitting_range_changed()
 
     def march_dollase_fit_button_clicked(self):
         o_fit = MarchDollaseFittingJobHandler(parent=self)
@@ -841,7 +854,6 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def march_dollase_fitting_range_changed(self):
-
         o_march = MarchDollase(parent=self)
         o_march.update_roi_labels()
 

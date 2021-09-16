@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1250,15 +1250,15 @@
              <item>
               <widget class="QToolBox" name="march_dollase_toolBox">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_2">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>428</width>
-                  <height>380</height>
+                  <width>728</width>
+                  <height>831</height>
                  </rect>
                 </property>
                 <attribute name="label">

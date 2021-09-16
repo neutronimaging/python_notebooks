@@ -1,6 +1,7 @@
 from lmfit import Model
 import numpy as np
 from qtpy.QtWidgets import QApplication
+import logging
 
 from __code.bragg_edge.fitting_functions import march_dollase_basic_fit, march_dollase_advanced_fit
 from __code.bragg_edge.get import Get
@@ -170,8 +171,12 @@ class MarchDollaseFittingJobHandler:
         calculates the d_spacing using the lambda range selection and using the central lambda
         2* d_spacing = lambda
         """
+        logging.info("> march_dollase_fitting_job_handler | get_d_spacing")
         lambda_axis = self.parent.fitting_input_dictionary['xaxis']['lambda']
+        logging.info(f"-> lambda_axis: {lambda_axis}")
+
         bragg_edge_range = self.parent.march_dollase_fitting_range_selected
+        logging.info(f"-> bragg_edge_range: {bragg_edge_range}")
 
         from_lambda = np.float(lambda_axis[0][np.int(bragg_edge_range[0])])
         to_lambda = np.float(lambda_axis[0][np.int(bragg_edge_range[1])])

@@ -4,6 +4,7 @@ import pyqtgraph as pg
 from qtpy.QtWidgets import QFileDialog
 from pathlib import Path
 import os
+import logging
 
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
@@ -251,7 +252,7 @@ class MarchDollase:
         if self.parent.march_dollase_fitting_peak_ui:
             self.parent.ui.fitting.removeItem(self.parent.march_dollase_fitting_peak_ui)
         self.parent.march_dollase_fitting_peak_ui = pg.LinearRegionItem(values=local_peak_range,
-                                                                        orientation=None,
+                                                                        orientation='vertical',
                                                                         brush=None,
                                                                         movable=move_bragg_peak_range,
                                                                         bounds=None)
@@ -315,6 +316,7 @@ class MarchDollase:
         return str(self.parent.march_dollase_fitting_initial_parameters[name])
 
     def update_roi_labels(self):
+        logging.info("> marche-dollase | update_roi_labels")
         [global_left_range, global_right_range] = self.parent.bragg_edge_range
         [left_range, right_range] = list(self.parent.march_dollase_fitting_peak_ui.getRegion())
 
@@ -330,6 +332,7 @@ class MarchDollase:
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
         self.parent.march_dollase_fitting_range_selected = [left_index, right_index]
+        logging.info(f"-> march_dollase_fitting_range_selected: {self.parent.march_dollase_fitting_range_selected}")
 
         xaxis_in_selected_axis = self.parent.fitting_input_dictionary['xaxis'][x_axis_selected][0][
                                  global_left_range: global_right_range]
