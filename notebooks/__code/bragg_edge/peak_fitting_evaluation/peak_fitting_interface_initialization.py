@@ -37,6 +37,7 @@ class Initialization:
         self.pyqtgraph_image_view()
         self.pyqtgraph_profile()
         self.matplotlib()
+        self.tabs()
 
         if tab == 'all':
             # self.normalize_images_by_white_beam()
@@ -61,7 +62,8 @@ class Initialization:
             self.parent.o_norm.data['sample']['data'][_index_data] = normalized_data
 
     def block_signals(self, flag):
-        list_ui = [self.parent.ui.profile_of_bin_size_slider]
+        list_ui = [self.parent.ui.profile_of_bin_size_slider,
+                   self.parent.ui.tab_algorithm]
         for _ui in list_ui:
             _ui.blockSignals(flag)
 
@@ -115,6 +117,9 @@ class Initialization:
 
         self.parent.march_dollase_plot = _matplotlib(parent=self.parent,
                                                      widget=self.parent.ui.march_dollase_graph_widget)
+
+    def tabs(self):
+        self.parent.ui.tab_algorithm.setCurrentIndex(0)
 
     def pyqtgraph_fitting(self):
         # fitting view

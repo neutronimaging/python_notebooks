@@ -189,7 +189,6 @@ class Interface(QMainWindow):
 
         o_get = GetInfo(parent=self)
         log_file_name = o_get.log_file_name()
-        print(f"log_file_name: {log_file_name}")
         logging.basicConfig(filename=log_file_name,
                             filemode='w',
                             format='[%(levelname)s] - %(asctime)s - %(message)s',
@@ -820,6 +819,7 @@ class Interface(QMainWindow):
         pass
 
     def tab_algorithm_changed(self, tab_index):
+        logging.info(f"Tab algorithm changed to tab index {tab_index}")
         self.update_fitting_plot()
         self.march_dollase_fitting_range_changed()
 
@@ -841,6 +841,7 @@ class Interface(QMainWindow):
         self.update_fitting_plot()
 
     def march_dollase_fitting_range_changed(self):
+
         o_march = MarchDollase(parent=self)
         o_march.update_roi_labels()
 

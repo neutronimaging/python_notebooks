@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -608,7 +608,7 @@
             <bool>true</bool>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tab_3">
             <attribute name="title">
@@ -625,8 +625,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>727</width>
-                  <height>765</height>
+                  <width>728</width>
+                  <height>763</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1038,7 +1038,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>361</width>
+                  <width>364</width>
                   <height>338</height>
                  </rect>
                 </property>
@@ -1566,8 +1566,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>727</width>
-                  <height>833</height>
+                  <width>728</width>
+                  <height>831</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -1861,7 +1861,7 @@
      <x>0</x>
      <y>0</y>
      <width>1418</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuImport_Export">
