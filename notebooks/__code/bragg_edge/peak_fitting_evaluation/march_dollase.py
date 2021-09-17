@@ -304,7 +304,8 @@ class MarchDollase:
 
             for _col, _col_name in enumerate(list_columns):
                 _arg_value = _march_entry.get(_col_name)
-                self.result_table_ui.item(_row, _col + 1).setText(_arg_value)
+                if not(_arg_value is None):
+                    self.result_table_ui.item(_row, _col + 1).setText("{:4.2f}".format(_arg_value))
 
     def fill_history_table_with_fitting_information(self):
         o_gui = GuiUtility(parent=self.parent)

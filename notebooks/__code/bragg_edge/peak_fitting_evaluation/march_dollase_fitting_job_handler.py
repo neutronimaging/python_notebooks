@@ -5,6 +5,7 @@ import logging
 
 from __code.bragg_edge.fitting_functions import march_dollase_basic_fit, march_dollase_advanced_fit
 from __code.bragg_edge.get import Get
+from __code.bragg_edge.peak_fitting_evaluation.march_dollase import MarchDollase
 
 
 class MarchDollaseFittingJobHandler:
@@ -345,6 +346,10 @@ class MarchDollaseFittingJobHandler:
 
         self.parent.fitting_input_dictionary = fitting_input_dictionary
         logging.info(f"fitting_input_dictionary: {fitting_input_dictionary}")
+
+        o_march = MarchDollase(parent=self.parent)
+        o_march.fill_result_table_with_fitting_information()
+
 
 class ResultValueError(object):
 
