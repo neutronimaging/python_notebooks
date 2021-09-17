@@ -9,6 +9,7 @@ import logging
 from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.get import Get
+from __code.bragg_edge.peak_fitting_evaluation.get import Get as GetPeakFitting
 from __code.utilities import find_nearest_index
 from __code.file_handler import make_ascii_file
 
@@ -437,3 +438,19 @@ class MarchDollase:
 
             message = "{} has been created!".format(output_file_name)
             self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
+
+    def fitting_item_to_plot_changed(self):
+        o_get = GetPeakFitting(parent=self.parent)
+        item_to_plot = o_get.march_dollase_result_fitting_item_selected()
+
+        fitting_input_dictionary = self.parent.fitting_input_dictionary
+        march_data = fitting_input_dictionary['rois']
+
+        array_to_plot = []
+        for _roi in march_data.keys():
+            _value = march_data[_roi]['fitting']['march_dollase'][item_to_plot]
+            array_to_plot.append(_value)
+
+        self.parent.march_dollase_plot.axes.cla()
+        self.parent.march_dollase_plot.axes.plot(array_to_plot, '*')
+        self.parent.march_dollase_plot.draw()

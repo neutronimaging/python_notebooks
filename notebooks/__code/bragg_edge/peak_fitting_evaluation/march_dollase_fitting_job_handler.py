@@ -349,6 +349,7 @@ class MarchDollaseFittingJobHandler:
 
         o_march = MarchDollase(parent=self.parent)
         o_march.fill_result_table_with_fitting_information()
+        o_march.fitting_item_to_plot_changed()
 
 
 class ResultValueError(object):

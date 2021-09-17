@@ -826,7 +826,8 @@ class Interface(QMainWindow):
         o_march.fill_history_table_with_fitting_information()
 
     def march_dollase_item_to_plot_changed(self):
-        pass
+        o_march = MarchDollase(parent=self)
+        o_march.fitting_item_to_plot_changed()
 
     def tab_algorithm_changed(self, tab_index):
         logging.info(f"Tab algorithm changed to tab index {tab_index}")
