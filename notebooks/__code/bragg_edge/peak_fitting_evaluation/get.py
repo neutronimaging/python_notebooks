@@ -1,8 +1,15 @@
 import numpy as np
 
+from __code._utilities.get import Get as TopGet
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.selection_region_utilities import SelectionRegionUtilities
-from __code._utilities.get import Get as TopGet
+from __code.bragg_edge.peak_fitting_evaluation import LOG_FILENAME
+
+
+class GetInfo(TopGet):
+
+    def log_file_name(self):
+        return TopGet.log_file_name(LOG_FILENAME)
 
 
 class Get(TopGet):
@@ -155,6 +162,24 @@ class Get(TopGet):
         [left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
         xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
         return xaxis
+
+    def march_dollase_result_fitting_item_selected(self):
+        if self.parent.ui.march_d_spacing.isChecked():
+            return 'd_spacing'
+        elif self.parent.ui.march_sigma.isChecked():
+            return 'sigma'
+        elif self.parent.ui.march_alpha.isChecked():
+            return 'alpha'
+        elif self.parent.ui.march_a1.isChecked():
+            return 'a1'
+        elif self.parent.ui.march_a2.isChecked():
+            return 'a2'
+        elif self.parent.ui.march_a5.isChecked():
+            return 'a5'
+        elif self.parent.ui.march_a6.isChecked():
+            return 'a6'
+        else:
+            raise NotImplementedError("fitting option parameter not implemented!")
 
     @staticmethod
     def units(name='index'):

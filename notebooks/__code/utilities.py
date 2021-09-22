@@ -223,6 +223,7 @@ def rename_files(dict_old_new_names={}, new_output_folder=''):
 
 
 def copy_files(dict_old_new_names={}, new_output_folder='', overwrite=True):
+
     make_dir(dir=new_output_folder, overwrite=overwrite)
 
     nbr_files = len(dict_old_new_names.keys())
