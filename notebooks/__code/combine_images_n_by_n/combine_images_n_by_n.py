@@ -66,7 +66,7 @@ class CombineImagesNByN(object):
                                 widgets.Image(value=_alge_image,
                                               format='png')])
 
-        self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean'],
+        self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean', 'median'],
                                                    value='arithmetic mean')
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
@@ -116,8 +116,12 @@ class CombineImagesNByN(object):
             return 'arithmetic_mean'
         elif _algo == 'geometric mean':
             return 'geometric_mean'
+        elif _algo == 'median':
+            return 'median'
+        elif _algo == 'add':
+            return 'add'
         else:
-            return _algo
+            raise NotImplementedError(f"Algorithm {_algo} not implemented yet!")
 
     def create_list_of_files_to_merge(self):
         bin_value = np.int(self.bin_size_ui.value)
@@ -141,12 +145,50 @@ class CombineImagesNByN(object):
     def get_merging_algorithm(self):
         # get merging algorithm
         merging_algo = self.combine_method.value
-        algorithm = CombineImagesNByN.add
         if merging_algo == 'arithmetic mean':
-            algorithm = CombineImagesNByN.arithmetic_mean
+            return CombineImagesNByN.arithmetic_mean
         elif merging_algo == 'geometric mean':
-            algorithm = CombineImagesNByN.geo_mean
-        return algorithm
+            return CombineImagesNByN.geo_mean
+        elif merging_algo == 'median':
+            return CombineImagesNByN.median
+        elif merging_algo == 'add':
+            return CombineImagesNByN.add
+
+        raise NotImplementedError(f"merging algo {merging_algo} not implemented!")
+
+    def get_merging_algorithm_name(self):
+        merging_algo = self.combine_method.value
+        if merging_algo == 'arithmetic mean':
+            return 'arithmetic_mean'
+        elif merging_algo == 'geometric mean':
+            return 'geometric_mean'
+        elif merging_algo == 'median':
+            return 'median'
+        elif merging_algo == 'add':
+            return 'add'
+
+        raise NotImplementedError(f"merging algo {merging_algo} not implemented!")
+
+    def preview_result(self):
+        self.dict_list_files = self.create_list_of_files_to_merge()
+        list_groups = list(self.dict_list_files.keys())
+        self.group_dropdown = widgets.Dropdown(options=list_groups,
+                                               description="Groups")
+        self.list_files_per_group = widgets.Select(options=self.dict_list_files[list_groups[0]],
+                                                   description="Files combined",
+                                                   layout=widgets.Layout(width='100%',
+                                                                         height='400px'))
+
+        vbox = widgets.VBox([self.group_dropdown, self.list_files_per_group],
+                            layout=widgets.Layout(height="500px"))
+        display(vbox)
+
+        self.group_dropdown.observe(self.group_changed, names='value')
+
+    def group_changed(self, value):
+        new_group = value['new']
+        new_list_files = self.dict_list_files[new_group]
+        self.list_files_per_group.options = new_list_files
 
     def merging(self, output_folder):
         """combine images using algorithm provided"""
@@ -163,10 +205,12 @@ class CombineImagesNByN(object):
         global_slider = horizontal_layout.children[1]
         display(horizontal_layout)
 
+        algo_name = self.get_merging_algorithm_name()
         output_folder_name = CombineImagesNByN.__create_output_folder_name(
                 output_folder=output_folder,
                 base_file_name=self.base_working_dir,
-                bin_value=self.bin_value)
+                bin_value=self.bin_value,
+                algo_name=algo_name)
         file_handler.make_or_reset_folder(folder_name=output_folder_name)
 
         output_timespectra_file_name = os.path.join(output_folder_name,
@@ -236,10 +280,11 @@ class CombineImagesNByN(object):
         np.savetxt(output_timespectra_file_name, new_timespectra, delimiter="\t")
 
     @staticmethod
-    def __create_output_folder_name(output_folder="./", base_file_name='', bin_value=2):
+    def __create_output_folder_name(output_folder="./", base_file_name='', bin_value=2, algo_name='add'):
         output_folder = os.path.abspath(output_folder)
-        output_folder_name = os.path.join(output_folder, "{}_files_combined_by_{:03d}".format(base_file_name,
-                                                                                              bin_value))
+        output_folder_name = os.path.join(output_folder, "{}_files_combined_by_{:d}_{}".format(base_file_name,
+                                                                                               bin_value,
+                                                                                               algo_name))
         return output_folder_name
 
     @staticmethod
@@ -263,6 +308,10 @@ class CombineImagesNByN(object):
     @staticmethod
     def geo_mean(data_array):
         return gmean(data_array, axis=0)
+
+    @staticmethod
+    def median(data_array):
+        return np.median(data_array, axis=0)
 
     @staticmethod
     def merging_algorithm(function_, *args):

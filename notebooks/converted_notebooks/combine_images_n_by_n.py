@@ -20,7 +20,7 @@
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.combine_images_n_by_n import CombineImagesNByN as CombineImages
+from __code.combine_images_n_by_n.combine_images_n_by_n import CombineImagesNByN as CombineImages
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style

@@ -261,14 +261,17 @@ class MarchDollaseFittingJobHandler:
             # logging.info(f"--> xaxis: {xaxis}")
             # logging.info(f"--> yaxis: {yaxis}")
 
-            # # for debugging only # REMOVE_ME
-            # import json
-            # json_filename = "/Users/j35/Desktop/march_dollase_data.json"
-            # xaxis_float = [float(x) for x in xaxis]
-            # yaxis_float = [float(y) for y in yaxis]
-            #
-            # dict = {'xaxis': list(xaxis_float),
-            #         'yaxis': list(yaxis_float)}
+            # for debugging only # REMOVE_ME
+            if _roi_row == 0:
+                import json
+                json_filename = "/Users/j35/Desktop/march_dollase_data.json"
+                xaxis_float = [float(x) for x in xaxis]
+                yaxis_float = [float(y) for y in yaxis]
+
+                dict = {'xaxis': list(xaxis_float),
+                        'yaxis': list(yaxis_float)}
+
+                dict['parameters'] = {}
 
             for _history_row, _row_entry in enumerate(march_dollase_fitting_history_table):
 
@@ -280,28 +283,6 @@ class MarchDollaseFittingJobHandler:
                 if _is_advanced_mode:
                     a5_flag = _entry['a5']
                     a6_flag = _entry['a6']
-
-                params = gmodel.make_params()
-
-                set_params(params, 'd_spacing', _entry, d_spacing_flag)
-                set_params(params, 'sigma', _entry, sigma_flag)
-                set_params(params, 'alpha', _entry, alpha_flag)
-                set_params(params, 'a1', _entry, a1_flag)
-                set_params(params, 'a2', _entry, a2_flag)
-
-                if _is_advanced_mode:
-                    set_params(params, 'a5', _entry, a5_flag)
-                    set_params(params, 'a6', _entry, a6_flag)
-
-                # # for debugging only # REMOVE_ME
-                # dict['parameters'] = {'d_spacing': float(_entry['d_spacing']),
-                #                       'sigma': float(_entry['sigma']),
-                #                       'alpha': float(_entry['alpha']),
-                #                       'a1': float(_entry['a1']),
-                #                       'a2': float(_entry['a2'])}
-
-                # with open(json_filename, 'w') as json_file:
-                #     json.dump(dict, json_file)
 
                 logging.info(f"---> Parameters pre-initialized:")
                 if not d_spacing_flag:
@@ -315,10 +296,38 @@ class MarchDollaseFittingJobHandler:
                 if not a2_flag:
                     a2 = _entry['a2']
                     if np.isnan(a2):
-                        logging.info(f"     yes a2 is a NaN and needs to be calculated")
                         a2 = self.get_a2(advanced_mode=_is_advanced_mode)
-                        logging.info(f"     a2 is now {a2}")
-                    logging.info(f"    a2: {a2}")
+                        _entry['a2'] = a2
+
+                params = gmodel.make_params()
+
+                set_params(params, 'd_spacing', _entry, d_spacing_flag)
+                set_params(params, 'sigma', _entry, sigma_flag)
+                set_params(params, 'alpha', _entry, alpha_flag)
+                set_params(params, 'a1', _entry, a1_flag)
+                set_params(params, 'a2', _entry, a2_flag)
+
+                if _is_advanced_mode:
+                    set_params(params, 'a5', _entry, a5_flag)
+                    set_params(params, 'a6', _entry, a6_flag)
+
+                if _roi_row == 0:
+                    # for debugging only # REMOVE_ME
+                    dict['parameters'][_history_row] = {'value': {
+                                                            'd_spacing': float(_entry['d_spacing']),
+                                                            'sigma': float(_entry['sigma']),
+                                                            'alpha': float(_entry['alpha']),
+                                                            'a1': float(_entry['a1']),
+                                                            'a2': float(_entry['a2'])},
+                    'state': {'d_spacing': d_spacing_flag,
+                              'sigma': sigma_flag,
+                              'alpha': alpha_flag,
+                              'a1': a1_flag,
+                              'a2': a2_flag},
+                    }
+
+                    with open(json_filename, 'w') as json_file:
+                        json.dump(dict, json_file)
 
                 # try:
                 result = gmodel.fit(yaxis, params, t=xaxis)
