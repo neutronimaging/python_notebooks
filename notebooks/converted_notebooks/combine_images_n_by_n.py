@@ -46,6 +46,10 @@ o_merge.how_to_combine()
 
 o_merge.how_many_files()
 
+# Preview of how the files will be combined 
+
+o_merge.preview_result()
+
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Output Folder 
 

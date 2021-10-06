@@ -13,7 +13,7 @@
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bragg_edge_peak_fitting/#activate-search)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bragg_edge_peak_fitting)
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -66,34 +66,57 @@ o_interface.show()
 # # DEBUGGING
 
 from __code import system
-from __code.bragg_edge.bragg_edge_peak_fitting import BraggEdge, Interface
+from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_peak_fitting import BraggEdge, Interface
 
 # %gui qt
 
-data_path = "/Users/j35/IPTS/VENUS/shared/testing_normalized/"
-import glob
+# +
 import os
+
+# small data set
+# data_path = "/Volumes/G-DRIVE/IPTS/VENUS/shared/testing_normalized/"
+# spectra_file = os.path.join(data_path, "Image019_Spectra.txt")
+
+# full data set
+data_path = "/Volumes/G-DRIVE/IPTS/SNAP/Si_normalized/Si_powder_1_Angs_20C_corrected_normalized"
+spectra_file = os.path.join(data_path, "normalized_Spectra.txt")
+
+import glob
 list_data = glob.glob(data_path + "*.tif")
-spectra_file = os.path.join(data_path, "Image019_Spectra.txt")
 assert os.path.exists(spectra_file)
 
 o_bragg = BraggEdge(working_dir=data_path)
 o_bragg.load_data(data_path)
+# -
 
 o_interface = Interface(o_bragg=o_bragg,
                         working_dir=data_path,
                         spectra_file=spectra_file)
 o_interface.show()
 
+
+
+
+
+
+
+
+
+
+
 # # DEBUGGING using import straight 
 
 from __code import system
-from __code.bragg_edge.bragg_edge_peak_fitting import BraggEdge, Interface
+from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_peak_fitting import BraggEdge, Interface
 
 # %gui qt
 
-data_path = "/Users/j35/IPTS/SNAP/Si_normalized"
+data_path = "/Volumes/G-Drive/IPTS/SNAP/Si_normalized/Si_powder_1_Angs_20C_corrected_normalized"
 o_interface = Interface(working_dir=data_path)
 o_interface.show()
+
+
+
+
 
 
