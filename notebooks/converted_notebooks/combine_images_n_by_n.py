@@ -46,7 +46,7 @@ o_merge.how_to_combine()
 
 o_merge.how_many_files()
 
-# Preview of how the files will be combined 
+# # Preview of how the files will be combined and renamed
 
 o_merge.preview_result()
 
