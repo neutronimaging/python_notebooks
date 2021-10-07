@@ -219,15 +219,16 @@ class CombineImagesNByN(object):
             list_files = dict_list_files[_key]
             base_list_files = [os.path.basename(_file) for _file in list_files]
             _common_part = get_beginning_common_part_of_string_from_list(list_of_text=base_list_files)
-            dict_list_new_files[_key] = _common_part
+            new_file_name = _common_part + '_{:03d}.tiff'.format(_key)
+            dict_list_new_files[_key] = new_file_name
         return dict_list_new_files
 
     def update_combined_file_name_widget(self):
         group_selected = self.group_dropdown.value
         preserve_file_name_flag = self.keep_file_name.value
         if preserve_file_name_flag:
-            dict_list_new_files = self.dict_list_new_files
-            output_file_name = dict_list_new_files[group_selected]
+            self.dict_list_new_files = self.create_dictionary_of_new_file_names()
+            output_file_name = self.dict_list_new_files[group_selected]
         else:
             output_file_name = CombineImagesNByN.__create_merged_file_name(index=group_selected)
         self.new_file_name.value = output_file_name
@@ -281,7 +282,11 @@ class CombineImagesNByN(object):
             combined_data = CombineImagesNByN.merging_algorithm(algorithm, _data)
             del o_load
 
-            output_file_name = CombineImagesNByN.__create_merged_file_name(index=_key)
+            if self.keep_file_name.value:
+                output_file_name = self.dict_list_new_files[_key]
+            else:
+                output_file_name = CombineImagesNByN.__create_merged_file_name(index=_key)
+
             o_save = Normalization()
             o_save.load(data=combined_data)
             o_save.data['sample']['metadata'] = metadata
