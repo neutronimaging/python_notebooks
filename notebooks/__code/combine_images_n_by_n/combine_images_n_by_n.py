@@ -196,7 +196,7 @@ class CombineImagesNByN(object):
                              self.list_files_per_group,
                              hori1,
                              self.keep_file_name],
-                            layout=widgets.Layout(height="500px"))
+                            layout=widgets.Layout(height="600px"))
         display(vbox)
 
         self.group_dropdown.observe(self.group_changed, names='value')
