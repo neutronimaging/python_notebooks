@@ -182,9 +182,11 @@ class CombineImagesNByN(object):
                                                                          height='400px'))
 
         new_file_name_label = widgets.Label("Combined file name:",
-                                            layout=widgets.Layout(width='150px'))
+                                            layout=widgets.Layout(width='150px',
+                                                                  height='80px'))
         self.new_file_name = widgets.Label(self.dict_list_new_files[0],
-                                           layout=widgets.Layout(width='400px'))
+                                           layout=widgets.Layout(width='400px',
+                                                                 height='80px'))
         hori1 = widgets.HBox([new_file_name_label, self.new_file_name])
 
         self.keep_file_name = widgets.Checkbox(value=True,
