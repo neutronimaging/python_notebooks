@@ -25,8 +25,7 @@ def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_sp
             break
         common_part.append(list(_set)[0])
 
-    return filename_spacer.join(common_part
-                                )
+    return filename_spacer.join(common_part)
 
 
 def format_html_message(pre_message='', spacer=':', message='', is_error=False):
