@@ -135,7 +135,7 @@ class CombineImagesNByN(object):
         for _index in np.arange(0, nbr_files, bin_value):
             # make sure we don't go over board
             right_threshold = _index + bin_value
-            if right_threshold >= nbr_files:
+            if right_threshold > nbr_files:
                 break
             dict_list_files[global_index] = list_files[_index: _index+bin_value]
             global_index += 1
