@@ -36,7 +36,7 @@ class CombineImages(object):
                                 widgets.Image(value=_alge_image,
                                               format='png')])
 
-        self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean'],
+        self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean', 'median'],
                                                    value='arithmetic mean')
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
@@ -56,8 +56,12 @@ class CombineImages(object):
             return 'arithmetic_mean'
         elif _algo == 'geometric mean':
             return 'geometric_mean'
+        elif _algo == 'median':
+            return 'median'
+        elif _algo == 'add':
+            return 'add'
         else:
-            return _algo
+            raise NotImplementedError(f"Algorithm {_algo} not implemented!")
 
     def define_output_filename(self):
         list_files = self.files_list_widget.selected
@@ -88,11 +92,16 @@ class CombineImages(object):
 
         # get merging algorithm
         merging_algo = self.combine_method.value
-        algorithm = self.__add
         if merging_algo =='arithmetic mean':
             algorithm = self.__arithmetic_mean
         elif merging_algo == 'geometric mean':
             algorithm = self.__geo_mean
+        elif merging_algo == 'add':
+            algorithm = self.__add
+        elif merging_algo == 'median':
+            algorithm = self.__median
+        else:
+            raise NotImplementedError(f"algo {merging_algo} not implemented!")
 
         # get output folder
         output_folder = os.path.abspath(self.output_folder_widget.selected)
@@ -151,5 +160,5 @@ class CombineImages(object):
     def __merging_algorithm(self, function_, *args):
         return function_(*args)
 
-
-
+    def __median(self, data_array):
+        return np.median(data_array, axis=0)
