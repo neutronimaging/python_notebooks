@@ -712,7 +712,12 @@
                </column>
                <column>
                 <property name="text">
-                 <string>Value</string>
+                 <string>Value of Metadata 1</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Value of Metadata 2</string>
                 </property>
                </column>
               </widget>

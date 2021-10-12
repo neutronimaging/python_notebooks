@@ -9,11 +9,11 @@ from qtpy.QtWidgets import QMainWindow, QFileDialog
 from qtpy import QtGui
 
 from __code import load_ui
-from __code.metadata_overlapping_images.export_images import Initializer
-from __code.metadata_overlapping_images.export_images import MetadataTableHandler
+from .initialization import Initializer
+from .event_handler import MetadataTableHandler
 from __code.metadata_overlapping_images.export_images import ExportImages
-from __code.metadata_overlapping_images.export_images import DisplayImages
-from __code.metadata_overlapping_images.export_images import TableLoader
+from .display_images import DisplayImages
+from .table_loader import TableLoader
 from __code.metadata_overlapping_images.advanced_table_handler import AdvancedTableHandler
 
 from __code.metadata_overlapping_images import HELP_PAGE, LIST_FUNNY_CHARACTERS
@@ -36,7 +36,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     graph_pyqt_ui = None
 
     # size of tables
-    guide_table_width = [300, 50]
+    guide_table_width = [400, 150, 150]
 
     live_image = []
     display_ui = []
