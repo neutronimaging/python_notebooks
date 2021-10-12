@@ -38,8 +38,9 @@ class Initializer:
         self.parent.ui.tableWidget.blockSignals(True)
         for _row, _file in enumerate(list_files_short_name):
             self.parent.ui.tableWidget.insertRow(_row)
-            self.set_item_table(row=_row, col=0, value=_file)
-            self.set_item_table(row=_row, col=1, value="N/A", editable=True)
+            self.set_item_table(row=_row, col=1, value=_file)
+            self.set_item_table(row=_row, col=2, value="N/A", editable=True)
+            self.set_item_table(row=_row, col=3, value="N/A", editable=True)
         self.parent.ui.tableWidget.blockSignals(False)
 
     def set_scale_spinbox_max_value(self):
@@ -117,7 +118,7 @@ class Initializer:
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
         item = QtGui.QTableWidgetItem(str(value))
-        self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
+        self.parent.ui.all_plots_file_name_table.setItem(row, 1, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def set_item_table(self, row=0, col=0, value='', editable=False):
