@@ -137,8 +137,20 @@ class DisplayMetadataPyqtUi:
 
     def __init__(self, parent=None):
         self.parent = parent
+        self.list_ui = {1: {'font_size_slider': self.parent.ui.font_size_slider,
+                            'position_x': self.parent.ui.metadata_position_x,
+                            'position_y': self.parent.ui.metadata_position_y,
+                            'enable_ui': self.parent.ui.checkBox,
+                            },
+                        2: {'font_size_slider': self.parent.ui.font_size_slider_2,
+                            'position_x': self.parent.ui.metadata_position_x_2,
+                            'position_y': self.parent.ui.metadata_position_y_2,
+                            'enable_ui': self.parent.ui.checkBox_2,
+                            },
+                        }
 
-    def run(self, view=None, save_it=True):
+
+    def clear_pyqt_items(self, view=None):
 
         if view is None:
             view = self.parent.ui.image_view
@@ -149,22 +161,40 @@ class DisplayMetadataPyqtUi:
         except:
             return
 
-        if self.parent.metadata_pyqt_ui:
-            view.removeItem(self.parent.metadata_pyqt_ui)
+        if self.parent.metadata1_pyqt_ui:
+            view.removeItem(self.parent.metadata1_pyqt_ui)
+
+        if self.parent.metadata2_pyqt_ui:
+            view.removeItem(self.parent.metadata2_pyqt_ui)
 
         if self.parent.graph_pyqt_ui:
             view.removeItem(self.parent.graph_pyqt_ui)
 
+    def run(self, save_it=True):
+        self.clear_pyqt_items()
+
         if not self.parent.ui.metadata_checkbox.isChecked():
             return
 
-        font_size = self.parent.ui.font_size_slider.value()
-        x0 = self.parent.ui.metadata_position_x.value()
-        y0 = self.parent.ui.metadata_position_y.maximum() - self.parent.ui.metadata_position_y.value()
+        self.display_text(save_it=save_it, metadata_index=1)
+        self.display_text(save_it=save_it, metadata_index=2)
+        self.display_grah(save_it=save_it)
+
+    def display_text(self, save_it=True, metadata_index=1):
+
+        if not self.list_ui[metadata_index]['enable_ui'].isChecked():
+            return
+
+        view = self.parent.ui.image_view
+
+        font_size = self.list_ui[metadata_index]['font_size_slider'].value()
+        x0 = self.list_ui[metadata_index]['position_x'].value()
+        y0 = self.list_ui[metadata_index]['position_y'].maximum() - self.list_ui[metadata_index]['position_y'].value()
+
         o_get = Get(parent=self.parent)
         metadata_text = o_get.metadata_text()
-        color = o_get.color(source='metadata', color_type='html')
 
+        color = o_get.color(source='metadata', color_type='html')
         text = pg.TextItem(html='<div style="text-align:center"> ' +
                                 '<font size="' + str(font_size) + '"> ' +
                                 '<span style="color: ' + color + '"' +
@@ -172,8 +202,19 @@ class DisplayMetadataPyqtUi:
 
         view.addItem(text)
         text.setPos(x0, y0)
+
         if save_it:
-            self.parent.metadata_pyqt_ui = text
+            if metadata_index == 1:
+                self.parent.metadata1_pyqt_ui = text
+            else:
+                self.parent.metadata2_pyqt_ui = text
+
+    def display_graph(self, save_it=True):
+
+        view = self.parent.ui.image_view
+
+        o_get = Get(parent=self.parent)
+        color = o_get.color(source='metadata', color_type='html')
 
         graph_font_size = self.parent.ui.graph_font_size_slider.value()
         if self.parent.ui.enable_graph_checkbox.isChecked():

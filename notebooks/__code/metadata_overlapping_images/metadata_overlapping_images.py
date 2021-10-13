@@ -35,7 +35,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
     # scale pyqtgraph
     scale_pyqt_ui = None
     scale_legend_pyqt_ui = None
-    metadata_pyqt_ui = None
+
+    metadata1_pyqt_ui = None # metadata 1 text
+    metadata2_pyqt_ui = None # metadata 2 text
+
     graph_pyqt_ui = None
 
     # size of tables
@@ -227,6 +230,12 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def metadata_position_clicked(self):
         self.update_metadata_pyqt_ui()
 
+    def metadata2_position_moved(self, new_value):
+        self.update_metadata_pyqt_ui()
+
+    def metadata2_position_clicked(self):
+        self.update_metadata_pyqt_ui()
+
     def metadata_color_changed(self, value):
         self.update_metadata_pyqt_ui()
 
@@ -296,25 +305,30 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.metadata_position_frame.setEnabled(status)
         self.ui.label_14.setEnabled(status)
         self.ui.font_size_slider.setEnabled(status)
+        self.update_metadata_pyqt_ui()
 
     def text_metadata_2_enable_pressed(self, status):
         self.ui.metadata_position_frame_2.setEnabled(status)
         self.ui.label_20.setEnabled(status)
         self.ui.font_size_slider_2.setEnabled(status)
+        self.update_metadata_pyqt_ui()
 
     # ========================================================================================
 
     def update_metadata_pyqt_ui(self):
-        if self.metadata_pyqt_ui:
-            self.ui.image_view.removeItem(self.metadata_pyqt_ui)
-        if self.graph_pyqt_ui:
-            self.ui.image_view.removeItem(self.graph_pyqt_ui)
+        o_display = DisplayMetadataPyqtUi(parent=self)
+        o_display.clear_pyqt_items()
 
-        try:
-            if self.ui.image_view:
-                pass
-        except:
-            return
+        # if self.metadata_pyqt_ui:
+        #     self.ui.image_view.removeItem(self.metadata_pyqt_ui)
+        # if self.graph_pyqt_ui:
+        #     self.ui.image_view.removeItem(self.graph_pyqt_ui)
+        #
+        # try:
+        #     if self.ui.image_view:
+        #         pass
+        # except:
+        #     return
 
         o_display = DisplayMetadataPyqtUi(parent=self)
         o_display.run()
