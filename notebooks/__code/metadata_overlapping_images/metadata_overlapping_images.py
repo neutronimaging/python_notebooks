@@ -189,7 +189,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
             o_image = Image.open(_file)
             o_dict = dict(o_image.tag_v2)
             value = o_dict[float(key_selected)]
-            self.ui.tableWidget.item(row, 1).setText("{}".format(value))
+            self.ui.tableWidget.item(row, 2).setText("{}".format(value))
 
         self.update_metadata_pyqt_ui()
 

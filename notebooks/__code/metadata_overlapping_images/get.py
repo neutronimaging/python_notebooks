@@ -1,4 +1,7 @@
 import numpy as np
+import os
+import collections
+from PIL import Image
 
 
 class Get:
@@ -70,3 +73,19 @@ class Get:
             return self.parent.rgba_color[color_selected]
         else:
             return self.parent.rgb_color[color_selected]
+
+    def list_metadata(self):
+        first_file = self.parent.data_dict['file_name'][0]
+        [_, ext] = os.path.splitext(os.path.basename(first_file))
+        if ext in [".tif", ".tiff"]:
+            o_image0 = Image.open(first_file)
+            info = collections.OrderedDict(sorted(o_image0.tag_v2.items()))
+            list_metadata = []
+            list_key = []
+            for tag, value in info.items():
+                list_metadata.append("{} -> {}".format(tag, value))
+                list_key.append(tag)
+            self.parent.list_metadata = list_key
+            return list_metadata
+        else:
+            return []
