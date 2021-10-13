@@ -1,9 +1,7 @@
 from IPython.core.display import HTML
 from IPython.core.display import display
-import numpy as np
 import os
 import copy
-import pyqtgraph as pg
 from PIL import Image
 from qtpy.QtWidgets import QMainWindow, QFileDialog
 from qtpy import QtGui
@@ -12,10 +10,9 @@ from __code import load_ui
 from .initialization import Initializer
 from .event_handler import MetadataTableHandler
 from __code.metadata_overlapping_images.export_images import ExportImages
-from .display_images import DisplayImages
+from .display import DisplayImages, DisplayScalePyqtUi, DisplayMetadataPyqtUi
 from .table_loader import TableLoader
 from __code.metadata_overlapping_images.advanced_table_handler import AdvancedTableHandler
-from .get import Get
 
 from __code.metadata_overlapping_images import HELP_PAGE, LIST_FUNNY_CHARACTERS
 
@@ -101,11 +98,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         # initialization
         o_initialization = Initializer(parent=self)
+        o_initialization.pyqtgraph()
         o_initialization.parameters()
         o_initialization.statusbar()
         o_initialization.table()
         o_initialization.widgets()
-        o_initialization.pyqtgraph()
         o_initialization.event()
 
         # display first images
@@ -149,7 +146,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.scale_groupbox.setEnabled(status)
         self.ui.scale_position_label.setEnabled(status)
         self.ui.scale_position_frame.setEnabled(status)
-        self.display_scale_pyqt_ui()
+        o_display = DisplayScalePyqtUi(parent=self)
+        o_display.run()
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
@@ -164,7 +162,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         else:
             self.ui.graph_groupBox.setEnabled(False)
 
-        self.display_metadata_pyqt_ui()
+        o_display = DisplayMetadataPyqtUi(parent=self)
+        o_display.run()
 
     def select_metadata_checkbox_clicked(self, status):
         self.ui.select_metadata_combobox.setEnabled(status)
@@ -304,188 +303,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
                 pass
         except:
             return
-        self.display_metadata_pyqt_ui()
+
+        o_display = DisplayMetadataPyqtUi(parent=self)
+        o_display.run()
 
     def update_scale_pyqt_ui(self):
         if self.scale_pyqt_ui:
             self.ui.image_view.removeItem(self.scale_pyqt_ui)
         if self.scale_legend_pyqt_ui:
             self.ui.image_view.removeItem(self.scale_legend_pyqt_ui)
-        try:
-            if self.ui.image_view:
-                pass
-        except:
-            return
-        self.display_scale_pyqt_ui(view=self.ui.image_view)
 
-    def display_metadata_pyqt_ui(self, view=None, save_it=True):
-
-        if view is None:
-            view = self.ui.image_view
-
-        try:
-            if view:
-                pass
-        except:
-            return
-
-        if self.metadata_pyqt_ui:
-            view.removeItem(self.metadata_pyqt_ui)
-
-        if self.graph_pyqt_ui:
-            view.removeItem(self.graph_pyqt_ui)
-
-        if not self.ui.metadata_checkbox.isChecked():
-            return
-
-        font_size = self.ui.font_size_slider.value()
-        x0 = self.ui.metadata_position_x.value()
-        y0 = self.ui.metadata_position_y.maximum() - self.ui.metadata_position_y.value()
-        o_get = Get(parent=self)
-        metadata_text = o_get.metadata_text()
-        color = o_get.color(source='metadata', color_type='html')
-
-        text = pg.TextItem(html='<div style="text-align:center"> ' +
-                                '<font size="' + str(font_size) + '"> ' +
-                                '<span style="color: ' + color + '"' +
-                                '>' + metadata_text + '</span></div>')
-
-        view.addItem(text)
-        text.setPos(x0, y0)
-        if save_it:
-            self.metadata_pyqt_ui = text
-
-        graph_font_size = self.ui.graph_font_size_slider.value()
-        if self.ui.enable_graph_checkbox.isChecked():
-
-            o_get = Get(parent=self)
-            data = o_get.metadata_column()
-            _view_box = pg.ViewBox(enableMouse=False)
-            # _view_box.setBackgroundColor((100, 100, 100, 100))
-            graph = pg.PlotItem(viewBox=_view_box)
-
-            units = self.ui.manual_metadata_units.text()
-            if units:
-                y_axis_label = '<html><font color="{}" size="{}">{} ({})</font></html>'.format(color,
-                                                                                               graph_font_size,
-                                                                                               self.ui.manual_metadata_name.text(),
-                                                                                               units)
-            else:
-                y_axis_label = '<html><font color="{}" size="{}">{}</font></html>'.format(color,
-                                                                                          graph_font_size,
-                                                                                          self.ui.manual_metadata_name.text())
-
-            x_axis_label = '<p><font color="{}" size="{}">File Index</font></p>'.format(color, graph_font_size)
-
-            graph.setLabel('left', text=y_axis_label)
-            graph.setLabel('bottom', text=x_axis_label)
-
-            _size = self.ui.metadata_graph_size_slider.value()
-            graph.setFixedWidth(_size)
-            graph.setFixedHeight(_size)
-            o_get = Get(parent=self)
-            color_pen = o_get.color(source='graph', color_type='rgb_color')
-            graph.plot(data, pen=color_pen)
-
-            # highlight current file
-            current_index = self.ui.file_slider.value()
-            _pen = pg.mkPen((255, 0, 0), width=4)
-
-            graph.plot(x=[current_index], y=[data[current_index]],
-                       pen=_pen,
-                       symboBrush=(255, 0, 0),
-                       symbolPen='w')
-            _inf_line = pg.InfiniteLine(current_index, pen=_pen)
-            graph.addItem(_inf_line)
-
-            x0 = self.ui.graph_position_x.value()
-            y0 = self.ui.graph_position_y.maximum() - self.ui.graph_position_y.value()
-
-            view.addItem(graph)
-            graph.setPos(x0, y0)
-
-            if save_it:
-                self.graph_pyqt_ui = graph
-
-    def display_scale_pyqt_ui(self, view=None, save_it=True):
-
-        if view is None:
-            view = self.ui.image_view
-
-            try:
-                if view:
-                    pass
-            except:
-                return
-
-        if self.scale_pyqt_ui:
-            view.removeItem(self.scale_pyqt_ui)
-            view.removeItem(self.scale_legend_pyqt_ui)
-
-        if not self.ui.scale_checkbox.isChecked():
-            return
-
-        # scale
-        thickness = self.ui.scale_thickness.value()
-        size = self.ui.scale_size_spinbox.value()
-
-        pos = []
-        adj = []
-
-        x0 = self.ui.scale_position_x.value()
-        y0 = self.ui.scale_position_y.maximum() - self.ui.scale_position_y.value()
-
-        one_edge = [x0, y0]
-        if self.ui.scale_horizontal_orientation.isChecked():
-            other_edge = [x0+size, y0]
-            angle = 0
-            legend_x0 = x0
-            legend_y0 = y0
-        else:
-            other_edge = [x0, y0 + size]
-            angle = 90
-            legend_x0 = x0
-            legend_y0 = y0 + np.int(size)
-
-        pos.append(one_edge)
-        pos.append(other_edge)
-        adj.append([0, 1])
-
-        pos = np.array(pos)
-        adj = np.array(adj)
-
-        o_get = Get(parent=self)
-        line_color = np.array(o_get.color(color_type='rgba', source='scale'))
-        line_color[4] = thickness
-        list_line_color = list(line_color)
-        line_color =tuple(list_line_color)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
-
-        scale = pg.GraphItem()
-        view.addItem(scale)
-        scale.setData(pos=pos,
-                      adj=adj,
-                      pen=lines,
-                      symbol=None,
-                      pxMod=False)
-        if save_it:
-            self.scale_pyqt_ui = scale
-
-        # legend
-        o_get = Get(parent=self)
-        legend = o_get.scale_legend()
-        color = o_get.color(source='scale', color_type='html')
-        text = pg.TextItem(html='<div style="text-align=center"><span style="color: ' + color + ';">' + \
-                                legend + '</span></div>',
-                           angle=angle)
-        view.addItem(text)
-
-        text.setPos(legend_x0, legend_y0)
-        if save_it:
-            self.scale_legend_pyqt_ui = text
+        o_display = DisplayScalePyqtUi(parent=self)
+        o_display.run()
 
     def display_image(self, recalculate_image=False):
         """display the image selected by the file slider"""

@@ -59,7 +59,7 @@ class Get:
             data.append(_row_str)
         return data
 
-    def get_color(self, color_type='html', source='metadata'):
+    def color(self, color_type='html', source='metadata'):
         if source == 'metadata':
             color_selected = self.parent.ui.metadata_color_combobox.currentText().lower()
         elif source == 'graph':

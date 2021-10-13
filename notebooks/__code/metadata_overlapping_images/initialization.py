@@ -1,7 +1,7 @@
 import os
 import pyqtgraph as pg
 from qtpy import QtCore
-from qtpy import QtGui
+from qtpy.QtWidgets import QVBoxLayout, QProgressBar, QTableWidgetItem
 import numpy as np
 
 from __code.file_handler import retrieve_time_stamp
@@ -20,10 +20,10 @@ class Initializer:
 
     def parameters(self):
         self.parent.scale_settings = ScaleSettings()
-        self.parent.metadata_settings  = MetadataSettings()
+        self.parent.metadata_settings = MetadataSettings()
 
     def statusbar(self):
-        self.parent.eventProgress = QtGui.QProgressBar(self.parent.ui.statusbar)
+        self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
         self.parent.eventProgress.setMinimumSize(300, 20)
         self.parent.eventProgress.setMaximumSize(300, 20)
         self.parent.eventProgress.setVisible(False)
@@ -84,7 +84,7 @@ class Initializer:
             max_value = width
         else:
             max_value = height
-        self.parent.ui.scale_size_spinbox.setValue(np.int(max_value/4))
+        self.parent.ui.scale_size_spinbox.setValue(int(max_value/4))
 
         # metadata and scale slider positions
         self.parent.ui.scale_position_x.setMaximum(width)
@@ -97,7 +97,7 @@ class Initializer:
 
         self.parent.ui.graph_position_x.setMinimum(0)
         self.parent.ui.graph_position_x.setMaximum(width)
-        self.parent.ui.graph_position_x.setValue(np.int(width/2))
+        self.parent.ui.graph_position_x.setValue(int(width/2))
         self.parent.ui.graph_position_y.setMaximum(height)
         self.parent.ui.graph_position_y.setValue(height)
 
@@ -113,17 +113,17 @@ class Initializer:
         self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.image_view.ui.menuBtn.hide()
         self.parent.ui.image_view.ui.roiBtn.hide()
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.parent.ui.all_plots_file_name_table.setItem(row, 1, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def set_item_table(self, row=0, col=0, value='', editable=False):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.parent.ui.tableWidget.setItem(row, col, item)
         if not editable:
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
