@@ -22,6 +22,11 @@ from __code.metadata_overlapping_images import HELP_PAGE, LIST_FUNNY_CHARACTERS
 
 class MetadataOverlappingImagesUi(QMainWindow):
 
+    x_axis_column_index = 0
+    y_axis_column_index = 2
+    xy_axis_menu_logo = {'enable': u"\u2713  ",     # \u25CF (dark circle)
+                         'disable': "     "}
+
     data_dict = {}
     data_dict_raw = {}
     timestamp_dict = {}
@@ -53,17 +58,16 @@ class MetadataOverlappingImagesUi(QMainWindow):
                         'html': ["mm", "<span>&#181;m</span>", "nm"]}
 
     rgba_color = {'white': (255, 255, 255, 255, None),
-                   'red': (255, 0, 0, 255, None),
-                   'green': (0, 255, 0, 255, None),
-                   'blue': (0, 0, 255, 255, None),
-                   'black': (0, 0, 0, 255, None)}
+                  'red': (255, 0, 0, 255, None),
+                  'green': (0, 255, 0, 255, None),
+                  'blue': (0, 0, 255, 255, None),
+                  'black': (0, 0, 0, 255, None)}
 
     rgb_color = {'white': (255, 255, 255),
-                   'red': (255, 0, 0),
-                   'green': (0, 255, 0),
-                   'blue': (0, 0, 255),
-                   'black': (0, 0, 0)}
-
+                 'red': (255, 0, 0),
+                 'green': (0, 255, 0),
+                 'blue': (0, 0, 255),
+                 'black': (0, 0, 0)}
 
     html_color = {'white': "#FFF",
                   'red': "#F00",
