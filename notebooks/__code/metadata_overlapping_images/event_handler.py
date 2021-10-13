@@ -48,7 +48,7 @@ class MetadataTableHandler:
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == _set_new_metadata:
-            o_selector = MetadataSelectorHandler(parent=self.parent)
+            o_selector = MetadataSelectorHandler(parent=self.parent, column=column_selected)
             o_selector.show()
 
         elif action == _format:

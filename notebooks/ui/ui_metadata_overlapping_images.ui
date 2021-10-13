@@ -1556,8 +1556,8 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1406</x>
-     <y>787</y>
+     <x>1681</x>
+     <y>1089</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
@@ -1572,8 +1572,8 @@
    <slot>help_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>76</x>
-     <y>787</y>
+     <x>81</x>
+     <y>1089</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
@@ -1604,8 +1604,8 @@
    <slot>metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>875</x>
-     <y>272</y>
+     <x>928</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -1620,8 +1620,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>84</x>
-     <y>751</y>
+     <x>97</x>
+     <y>1044</y>
     </hint>
     <hint type="destinationlabel">
      <x>112</x>
@@ -1636,8 +1636,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>467</x>
-     <y>770</y>
+     <x>520</x>
+     <y>1044</y>
     </hint>
     <hint type="destinationlabel">
      <x>387</x>
@@ -1652,8 +1652,8 @@
    <slot>slider_file_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>306</x>
-     <y>767</y>
+     <x>359</x>
+     <y>1041</y>
     </hint>
     <hint type="destinationlabel">
      <x>214</x>
@@ -1668,8 +1668,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>306</x>
-     <y>767</y>
+     <x>359</x>
+     <y>1041</y>
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
@@ -1684,8 +1684,8 @@
    <slot>select_metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
-     <y>317</y>
+     <x>676</x>
+     <y>469</y>
     </hint>
     <hint type="destinationlabel">
      <x>668</x>
@@ -1700,8 +1700,8 @@
    <slot>metadata_list_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>963</x>
-     <y>321</y>
+     <x>1078</x>
+     <y>473</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -1716,8 +1716,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>660</x>
-     <y>109</y>
+     <x>713</x>
+     <y>135</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -1732,8 +1732,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>737</x>
-     <y>102</y>
+     <x>793</x>
+     <y>135</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -1748,8 +1748,8 @@
    <slot>scale_thickness_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>964</x>
-     <y>217</y>
+     <x>1017</x>
+     <y>344</y>
     </hint>
     <hint type="destinationlabel">
      <x>1020</x>
@@ -1764,8 +1764,8 @@
    <slot>scale_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>629</x>
-     <y>219</y>
+     <x>682</x>
+     <y>346</y>
     </hint>
     <hint type="destinationlabel">
      <x>811</x>
@@ -1780,8 +1780,8 @@
    <slot>scale_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>640</x>
-     <y>164</y>
+     <x>693</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
@@ -1796,8 +1796,8 @@
    <slot>scale_real_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>854</x>
-     <y>162</y>
+     <x>907</x>
+     <y>238</y>
     </hint>
     <hint type="destinationlabel">
      <x>963</x>
@@ -1812,8 +1812,8 @@
    <slot>scale_units_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>965</x>
-     <y>166</y>
+     <x>1018</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>1267</x>
@@ -1828,8 +1828,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1117</x>
-     <y>178</y>
+     <x>1566</x>
+     <y>183</y>
     </hint>
     <hint type="destinationlabel">
      <x>1401</x>
@@ -1844,8 +1844,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1117</x>
-     <y>178</y>
+     <x>1566</x>
+     <y>183</y>
     </hint>
     <hint type="destinationlabel">
      <x>1408</x>
@@ -1860,8 +1860,8 @@
    <slot>metadata_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1116</x>
-     <y>408</y>
+     <x>1315</x>
+     <y>598</y>
     </hint>
     <hint type="destinationlabel">
      <x>1166</x>
@@ -1876,8 +1876,8 @@
    <slot>metadata_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1116</x>
-     <y>408</y>
+     <x>1315</x>
+     <y>598</y>
     </hint>
     <hint type="destinationlabel">
      <x>1096</x>
@@ -1892,8 +1892,8 @@
    <slot>metadata_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1076</x>
-     <y>446</y>
+     <x>1275</x>
+     <y>636</y>
     </hint>
     <hint type="destinationlabel">
      <x>1129</x>
@@ -1908,8 +1908,8 @@
    <slot>metadata_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1076</x>
-     <y>446</y>
+     <x>1275</x>
+     <y>636</y>
     </hint>
     <hint type="destinationlabel">
      <x>1206</x>
@@ -1924,8 +1924,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1077</x>
-     <y>216</y>
+     <x>1526</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1940,8 +1940,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1077</x>
-     <y>216</y>
+     <x>1526</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1956,8 +1956,8 @@
    <slot>metadata_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>627</x>
-     <y>710</y>
+     <x>680</x>
+     <y>984</y>
     </hint>
     <hint type="destinationlabel">
      <x>758</x>
@@ -1972,8 +1972,8 @@
    <slot>metadata_name_return_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>719</x>
-     <y>353</y>
+     <x>803</x>
+     <y>505</y>
     </hint>
     <hint type="destinationlabel">
      <x>796</x>
@@ -1988,8 +1988,8 @@
    <slot>metadata_name_return_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>962</x>
-     <y>353</y>
+     <x>1077</x>
+     <y>505</y>
     </hint>
     <hint type="destinationlabel">
      <x>913</x>
@@ -2004,8 +2004,8 @@
    <slot>metadata_graph_size_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1167</x>
-     <y>685</y>
+     <x>1368</x>
+     <y>956</y>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
@@ -2020,8 +2020,8 @@
    <slot>metadata_graph_size_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1149</x>
-     <y>688</y>
+     <x>1368</x>
+     <y>956</y>
     </hint>
     <hint type="destinationlabel">
      <x>905</x>
@@ -2036,8 +2036,8 @@
    <slot>import_table_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>961</x>
-     <y>729</y>
+     <x>1078</x>
+     <y>1030</y>
     </hint>
     <hint type="destinationlabel">
      <x>972</x>
@@ -2057,7 +2057,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>452</x>
-     <y>-3</y>
+     <y>0</y>
     </hint>
    </hints>
   </connection>
@@ -2068,8 +2068,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>682</y>
+     <x>1289</x>
+     <y>955</y>
     </hint>
     <hint type="destinationlabel">
      <x>1169</x>
@@ -2084,8 +2084,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1077</x>
-     <y>661</y>
+     <x>1329</x>
+     <y>917</y>
     </hint>
     <hint type="destinationlabel">
      <x>1081</x>
@@ -2100,8 +2100,8 @@
    <slot>graph_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1126</x>
-     <y>659</y>
+     <x>1329</x>
+     <y>917</y>
     </hint>
     <hint type="destinationlabel">
      <x>1153</x>
@@ -2116,8 +2116,8 @@
    <slot>graph_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>682</y>
+     <x>1289</x>
+     <y>955</y>
     </hint>
     <hint type="destinationlabel">
      <x>1119</x>
@@ -2132,8 +2132,8 @@
    <slot>enable_graph_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1396</x>
-     <y>533</y>
+     <x>1392</x>
+     <y>779</y>
     </hint>
     <hint type="destinationlabel">
      <x>899</x>
@@ -2148,8 +2148,8 @@
    <slot>graph_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1114</x>
-     <y>660</y>
+     <x>1286</x>
+     <y>923</y>
     </hint>
     <hint type="destinationlabel">
      <x>998</x>
@@ -2164,8 +2164,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1131</x>
-     <y>675</y>
+     <x>1329</x>
+     <y>917</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2180,8 +2180,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>682</y>
+     <x>1289</x>
+     <y>955</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2196,8 +2196,8 @@
    <slot>font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1200</x>
-     <y>483</y>
+     <x>1383</x>
+     <y>680</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
@@ -2212,8 +2212,8 @@
    <slot>font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1272</x>
-     <y>481</y>
+     <x>1383</x>
+     <y>680</y>
     </hint>
     <hint type="destinationlabel">
      <x>1415</x>
@@ -2228,8 +2228,8 @@
    <slot>graph_font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1231</x>
-     <y>729</y>
+     <x>1368</x>
+     <y>990</y>
     </hint>
     <hint type="destinationlabel">
      <x>1414</x>
@@ -2244,8 +2244,8 @@
    <slot>graph_font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1261</x>
-     <y>720</y>
+     <x>1368</x>
+     <y>990</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
@@ -2260,8 +2260,8 @@
    <slot>advanced_table_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>862</x>
-     <y>697</y>
+     <x>1078</x>
+     <y>988</y>
     </hint>
     <hint type="destinationlabel">
      <x>670</x>
