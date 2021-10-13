@@ -151,11 +151,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
-        self.ui.metadata_position_label.setEnabled(status)
+        # self.ui.metadata_position_label.setEnabled(status)
         self.ui.metadata_position_frame.setEnabled(status)
         self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
         self.ui.enable_graph_checkbox.setEnabled(status)
+        self.ui.text_groupBox_top.setEnabled(status)
+        self.ui.graph_groupBox_top.setEnabled(status)
 
         if status:
             self.ui.graph_groupBox.setEnabled(self.ui.enable_graph_checkbox.isChecked())
@@ -289,6 +291,16 @@ class MetadataOverlappingImagesUi(QMainWindow):
             o_import.load_table()
             o_import.populate()
             self.update_metadata_pyqt_ui()
+
+    def text_metadata_1_enable_pressed(self, status):
+        self.ui.metadata_position_frame.setEnabled(status)
+        self.ui.label_14.setEnabled(status)
+        self.ui.font_size_slider.setEnabled(status)
+
+    def text_metadata_2_enable_pressed(self, status):
+        self.ui.metadata_position_frame_2.setEnabled(status)
+        self.ui.label_20.setEnabled(status)
+        self.ui.font_size_slider_2.setEnabled(status)
 
     # ========================================================================================
 
