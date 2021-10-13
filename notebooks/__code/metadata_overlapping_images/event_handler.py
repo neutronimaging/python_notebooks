@@ -1,4 +1,5 @@
 from qtpy import QtGui
+from qtpy.QtWidgets import QMenu
 
 from __code.metadata_overlapping_images.metadata_string_format_handler import MetadataStringFormatLauncher
 from .get import Get
@@ -16,7 +17,7 @@ class MetadataTableHandler:
         if column_selected == 1:
             return
 
-        menu = QtGui.QMenu(self.parent)
+        menu = QMenu(self.parent)
 
         _x_axis = None
         _y_axis = None
@@ -42,10 +43,14 @@ class MetadataTableHandler:
 
         if action == _format:
             self.format_metadata_column()
+
         elif action == _x_axis:
             self.parent.x_axis_column_index = column_selected
+            self.parent.update_metadata_pyqt_ui()
+
         elif action == _y_axis:
             self.parent.y_axis_column_index = column_selected
+            self.parent.update_metadata_pyqt_ui()
 
     def format_metadata_column(self):
         MetadataStringFormatLauncher(parent=self.parent)

@@ -39,7 +39,9 @@ class Get:
         metadata_name = str(self.parent.ui.manual_metadata_name.text())
         metadata_units = str(self.parent.ui.manual_metadata_units.text())
         slider_index = self.parent.ui.file_slider.value()
-        metadata_value = str(self.parent.ui.tableWidget.item(slider_index, 1).text())
+
+        index_of_y_axis = self.parent.y_axis_column_index
+        metadata_value = str(self.parent.ui.tableWidget.item(slider_index, index_of_y_axis).text())
         if metadata_name.strip() == '':
             return "{} {}".format(metadata_value, metadata_units)
         else:
