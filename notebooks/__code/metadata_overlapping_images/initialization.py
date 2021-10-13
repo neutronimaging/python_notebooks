@@ -68,9 +68,7 @@ class Initializer:
         o_get = Get(parent=self.parent)
         list_metadata = o_get.list_metadata()
         self.parent.raw_list_metadata = list_metadata
-        if list_metadata:
-            self.parent.ui.select_metadata_combobox.addItems(list_metadata)
-        else: # hide widgets
+        if not list_metadata:
             self.parent.ui.select_metadata_checkbox.setVisible(False)
             self.parent.ui.select_metadata_combobox.setVisible(False)
 
