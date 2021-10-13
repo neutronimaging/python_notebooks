@@ -3,6 +3,7 @@ from qtpy.QtWidgets import QMenu
 
 from __code.metadata_overlapping_images.metadata_string_format_handler import MetadataStringFormatLauncher
 from .get import Get
+from .metadata_selector_handler import MetadataSelectorHandler
 
 
 class MetadataTableHandler:
@@ -18,6 +19,11 @@ class MetadataTableHandler:
             return
 
         menu = QMenu(self.parent)
+
+        _set_new_metadata = None
+        if column_selected in [2, 3]:
+            _set_new_metadata = menu.addAction("Select metadata ...")
+            menu.addSeparator()
 
         _x_axis = None
         _y_axis = None
@@ -41,7 +47,11 @@ class MetadataTableHandler:
 
         action = menu.exec_(QtGui.QCursor.pos())
 
-        if action == _format:
+        if action == _set_new_metadata:
+            o_selector = MetadataSelectorHandler(parent=self.parent)
+            o_selector.show()
+
+        elif action == _format:
             self.format_metadata_column()
 
         elif action == _x_axis:
