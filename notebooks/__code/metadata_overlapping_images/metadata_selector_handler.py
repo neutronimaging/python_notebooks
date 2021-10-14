@@ -1,10 +1,8 @@
 from qtpy.QtWidgets import QDialog
 import os
-import re
 
 from __code import load_ui
-from . import LIST_FUNNY_CHARACTERS
-
+from .utilities import string_cleaning
 
 class MetadataSelectorHandler(QDialog):
 
@@ -19,43 +17,36 @@ class MetadataSelectorHandler(QDialog):
 
         self.initialization()
         self.check_if_before_linear_operation_valid()
-        self.check_linear_operation_is_valid()
+        _ = self.is_linear_operation_is_valid()
 
     def initialization(self):
-        list_metadata = self.parent.raw_list_metadata
+        list_metadata = self.parent.dict_list_metadata.values()
+        list_metadata = [str(_item) for _item in list_metadata]
         self.ui.select_metadata_combobox.addItems(list_metadata)
 
-    def string_cleaning_changed(self, new_text):
+    def string_cleaning_changed(self, new_text=None):
         first_part_of_string_to_remove = str(self.ui.first_part_lineEdit.text())
-        _clean_first_part = ""
-        for _c in first_part_of_string_to_remove:
-            if _c in LIST_FUNNY_CHARACTERS:
-                _clean_first_part += "\{}".format(_c)
-            else:
-                _clean_first_part += "{}".format(_c)
-
         last_part_of_string_to_remove = str(self.ui.second_part_lineEdit.text())
-        _clean_second_part = ""
-        for _c in last_part_of_string_to_remove:
-            if _c in LIST_FUNNY_CHARACTERS:
-                _clean_second_part += "\{}".format(_c)
-            else:
-                _clean_second_part += "{}".format(_c)
-
-        regular_expr = r"{}(.*){}".format(_clean_first_part, _clean_second_part)
         string_to_clean = self.ui.select_metadata_combobox.currentText()
-        m = re.match(regular_expr, string_to_clean)
-        if m and m.group(1):
-            _new_str = m.group(1)
-            self.ui.linear_operation_value_before.setText(_new_str)
+
+        cleaned_string = string_cleaning(first_part_of_string_to_remove=first_part_of_string_to_remove,
+                                         last_part_of_string_to_remove=last_part_of_string_to_remove,
+                                         string_to_clean=string_to_clean)
+        self.ui.linear_operation_value_before.setText(cleaned_string)
 
         self.check_if_before_linear_operation_valid()
         self.linear_operation_lineedit_changed()
 
-    def linear_operation_lineedit_changed(self, new_string=None):
-        any_error_reported = self.check_linear_operation_is_valid()
+    def list_of_metadata_changed(self, text=None):
+        self.string_cleaning_changed()
 
-        if any_error_reported:
+    def linear_operation_lineedit_changed(self, new_string=None):
+        is_linear_operation_valid = self.is_linear_operation_is_valid()
+        if not is_linear_operation_valid:
+            return
+
+        is_before_linear_operation_is_valid = self.is_before_linear_operation_is_valid()
+        if not is_before_linear_operation_is_valid:
             return
 
         input_parameter = float(str(self.ui.linear_operation_value_before.text()).strip())
@@ -78,23 +69,49 @@ class MetadataSelectorHandler(QDialog):
 
     def ok_clicked(self):
         index_selected = self.ui.select_metadata_combobox.currentIndex()
+        self.save_parameters()
         self.parent.metadata_list_changed(index=index_selected, column=self.column)
         self.close()
 
     def cancel_clicked(self):
         self.close()
 
-    def check_if_before_linear_operation_valid(self):
-        string_to_check = str(self.ui.linear_operation_value_before.text())
+    def save_parameters(self):
+        first_part_of_string_to_remove = str(self.ui.first_part_lineEdit.text())
+        last_part_of_string_to_remove = str(self.ui.second_part_lineEdit.text())
 
+        math_1 = str(self.ui.linear_operation_comboBox_1.currentText())
+        math_2 = str(self.ui.linear_operation_comboBox_2.currentText())
+        if self.is_linear_operation_is_valid():
+            value_1 = str(self.ui.linear_operation_lineEdit_1.text()).strip()
+            value_2 = str(self.ui.linear_operation_lineEdit_2.text()).strip()
+        else:
+            value_1 = ""
+            value_2 = ""
+
+        self.parent.metadata_operation = {"first_part_of_string_to_remove": first_part_of_string_to_remove,
+                                          "last_part_of_string_to_remove": last_part_of_string_to_remove,
+                                          "math_1": math_1,
+                                          "value_1": value_1,
+                                          "math_2": math_2,
+                                          "value_2": value_2,
+                                          }
+
+    def is_before_linear_operation_is_valid(self):
+        string_to_check = str(self.ui.linear_operation_value_before.text())
         enable_linear_operation_widgets = True
         try:
             float(string_to_check)
         except ValueError:
             enable_linear_operation_widgets = False
+
+        return enable_linear_operation_widgets
+
+    def check_if_before_linear_operation_valid(self):
+        enable_linear_operation_widgets = self.is_before_linear_operation_is_valid()
         self.ui.linear_operation_groupBox.setEnabled(enable_linear_operation_widgets)
 
-    def check_linear_operation_is_valid(self):
+    def is_linear_operation_is_valid(self):
 
         def result_of_checking_operation(ui=None):
             is_error_in_operation = False
@@ -114,6 +131,6 @@ class MetadataSelectorHandler(QDialog):
 
         if is_error_operation_1 or is_error_operation_2:
             self.ui.linear_operation_value_after.setText("N/A")
-            return True
-        else:
             return False
+        else:
+            return True

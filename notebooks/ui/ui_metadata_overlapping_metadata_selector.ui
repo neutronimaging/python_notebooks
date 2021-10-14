@@ -569,6 +569,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>select_metadata_combobox</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>list_of_metadata_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>28</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>533</x>
+     <y>449</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ok_clicked()</slot>
@@ -576,5 +592,6 @@
   <slot>string_cleaning_changed()</slot>
   <slot>linear_operation_lineedit_changed()</slot>
   <slot>linear_operation_combobox_changed()</slot>
+  <slot>list_of_metadata_changed()</slot>
  </slots>
 </ui>

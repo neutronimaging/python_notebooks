@@ -1,9 +1,11 @@
 from qtpy import QtGui
 from qtpy.QtWidgets import QMenu
+from PIL import Image
 
 from __code.metadata_overlapping_images.metadata_string_format_handler import MetadataStringFormatLauncher
 from .get import Get
 from .metadata_selector_handler import MetadataSelectorHandler
+from .utilities import string_cleaning, linear_operation
 
 
 class MetadataTableHandler:
@@ -64,3 +66,37 @@ class MetadataTableHandler:
 
     def format_metadata_column(self):
         MetadataStringFormatLauncher(parent=self.parent)
+
+    def metadata_list_changed(self, index, column):
+        key_selected = self.parent.list_metadata[index]
+
+        for row, _file in enumerate(self.parent.data_dict['file_name']):
+            o_image = Image.open(_file)
+            o_dict = dict(o_image.tag_v2)
+            value = o_dict[float(key_selected)]
+
+            new_value = self.perform_cleaning_and_math_on_metadata(value=value)
+            self.parent.ui.tableWidget.item(row, column).setText("{}".format(new_value))
+
+        self.parent.update_metadata_pyqt_ui()
+
+    def perform_cleaning_and_math_on_metadata(self, value=""):
+        metadata_operation = self.parent.metadata_operation
+
+        first_part_of_string_to_remove = metadata_operation['first_part_of_string_to_remove']
+        last_part_of_string_to_remove = metadata_operation['last_part_of_string_to_remove']
+        string_cleaned = string_cleaning(first_part_of_string_to_remove=first_part_of_string_to_remove,
+                                         last_part_of_string_to_remove=last_part_of_string_to_remove,
+                                         string_to_clean=value)
+
+        math_1 = metadata_operation['math_1']
+        value_1 = metadata_operation['value_1']
+        math_2 = metadata_operation['math_2']
+        value_2 = metadata_operation['value_2']
+        result_linear_operation = linear_operation(input_parameter=string_cleaned,
+                                                   math_1=math_1,
+                                                   value_1=value_1,
+                                                   math_2=math_2,
+                                                   value_2=value_2)
+
+        return result_linear_operation

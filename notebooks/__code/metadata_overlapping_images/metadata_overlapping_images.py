@@ -2,9 +2,9 @@ from IPython.core.display import HTML
 from IPython.core.display import display
 import os
 import copy
-from PIL import Image
 from qtpy.QtWidgets import QMainWindow, QFileDialog
 from qtpy import QtGui
+from collections import OrderedDict
 
 from __code import load_ui
 from .initialization import Initializer
@@ -14,7 +14,7 @@ from .display import DisplayImages, DisplayScalePyqtUi, DisplayMetadataPyqtUi
 from .table_loader import TableLoader
 from __code.metadata_overlapping_images.advanced_table_handler import AdvancedTableHandler
 
-from __code.metadata_overlapping_images import HELP_PAGE, LIST_FUNNY_CHARACTERS
+from __code.metadata_overlapping_images import HELP_PAGE
 
 
 class MetadataOverlappingImagesUi(QMainWindow):
@@ -23,6 +23,14 @@ class MetadataOverlappingImagesUi(QMainWindow):
     y_axis_column_index = 2
     xy_axis_menu_logo = {'enable': u"\u2713  ",     # \u25CF (dark circle)
                          'disable': "     "}
+
+    metadata_operation = {"first_part_of_string_to_remove": "",
+                          "last_part_of_string_to_remove": "",
+                          "math_1": "",
+                          "value_1": "",
+                          "math_2": "",
+                          "value_2": "",
+                          }
 
     data_dict = {}
     data_dict_raw = {}
@@ -53,6 +61,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_table_widget_checkbox = list()
 
     list_metadata = []
+    dict_list_metadata = OrderedDict() #  {0: '10', 1: 'hfir', ...}
     list_scale_units = ["mm", u"\u00B5m", "nm"]
     list_scale_units = {'string': ["mm", u"\u00B5m", "nm"],
                         'html': ["mm", "<span>&#181;m</span>", "nm"]}
@@ -187,15 +196,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.update_metadata_pyqt_ui()
 
     def metadata_list_changed(self, index, column):
-        key_selected = self.list_metadata[index]
-
-        for row, _file in enumerate(self.data_dict['file_name']):
-            o_image = Image.open(_file)
-            o_dict = dict(o_image.tag_v2)
-            value = o_dict[float(key_selected)]
-            self.ui.tableWidget.item(row, column).setText("{}".format(value))
-
-        self.update_metadata_pyqt_ui()
+        o_event = MetadataTableHandler(parent=self)
+        o_event.metadata_list_changed(index, column)
 
     def scale_orientation_clicked(self):
         o_init = Initializer(parent=self)

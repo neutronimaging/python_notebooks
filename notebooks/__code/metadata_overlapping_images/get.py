@@ -78,6 +78,7 @@ class Get:
 
     def list_metadata(self):
         first_file = self.parent.data_dict['file_name'][0]
+        dict_list_metadata = collections.OrderedDict()
         [_, ext] = os.path.splitext(os.path.basename(first_file))
         if ext in [".tif", ".tiff"]:
             o_image0 = Image.open(first_file)
@@ -85,9 +86,11 @@ class Get:
             list_metadata = []
             list_key = []
             for tag, value in info.items():
+                dict_list_metadata[tag] = value
                 list_metadata.append("{} -> {}".format(tag, value))
                 list_key.append(tag)
             self.parent.list_metadata = list_key
+            self.parent.dict_list_metadata = dict_list_metadata
             return list_metadata
         else:
             return []
