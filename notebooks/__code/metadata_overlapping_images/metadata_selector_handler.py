@@ -19,6 +19,7 @@ class MetadataSelectorHandler(QDialog):
 
         self.initialization()
         self.check_if_before_linear_operation_valid()
+        self.check_linear_operation_is_valid()
 
     def initialization(self):
         list_metadata = self.parent.raw_list_metadata
@@ -49,12 +50,31 @@ class MetadataSelectorHandler(QDialog):
             self.ui.linear_operation_value_before.setText(_new_str)
 
         self.check_if_before_linear_operation_valid()
+        self.linear_operation_lineedit_changed()
 
-    def linear_operation_lineedit_changed(self, new_string):
-        pass
+    def linear_operation_lineedit_changed(self, new_string=None):
+        any_error_reported = self.check_linear_operation_is_valid()
 
-    def linear_operation_combobox_changed(self, new_string):
-        pass
+        if any_error_reported:
+            return
+
+        input_parameter = float(str(self.ui.linear_operation_value_before.text()).strip())
+        math_1 = str(self.ui.linear_operation_comboBox_1.currentText())
+        value_1 = str(self.ui.linear_operation_lineEdit_1.text()).strip()
+        math_2 = str(self.ui.linear_operation_comboBox_2.currentText())
+        value_2 = str(self.ui.linear_operation_lineEdit_2.text()).strip()
+
+        operation_to_eval = f"{input_parameter}"
+        if value_1:
+            operation_to_eval += f" {math_1} {float(value_1)}"
+        if value_2:
+            operation_to_eval += f" {math_2} {float(value_2)}"
+
+        result = eval(operation_to_eval)
+        self.ui.linear_operation_value_after.setText("{}".format(result))
+
+    def linear_operation_combobox_changed(self, new_string=None):
+        self.linear_operation_lineedit_changed()
 
     def ok_clicked(self):
         index_selected = self.ui.select_metadata_combobox.currentIndex()
@@ -69,7 +89,31 @@ class MetadataSelectorHandler(QDialog):
 
         enable_linear_operation_widgets = True
         try:
-            float_string = float(string_to_check)
+            float(string_to_check)
         except ValueError:
             enable_linear_operation_widgets = False
         self.ui.linear_operation_groupBox.setEnabled(enable_linear_operation_widgets)
+
+    def check_linear_operation_is_valid(self):
+
+        def result_of_checking_operation(ui=None):
+            is_error_in_operation = False
+            operation = str(ui.text()).strip()
+            if operation:
+                try:
+                    float(operation)
+                except ValueError:
+                    is_error_in_operation = True
+            return is_error_in_operation
+
+        is_error_operation_1 = result_of_checking_operation(ui=self.ui.linear_operation_lineEdit_1)
+        is_error_operation_2 = result_of_checking_operation(ui=self.ui.linear_operation_lineEdit_2)
+
+        self.ui.error_label_1.setVisible(is_error_operation_1)
+        self.ui.error_label_2.setVisible(is_error_operation_2)
+
+        if is_error_operation_1 or is_error_operation_2:
+            self.ui.linear_operation_value_after.setText("N/A")
+            return True
+        else:
+            return False

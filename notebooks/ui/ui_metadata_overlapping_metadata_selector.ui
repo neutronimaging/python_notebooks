@@ -175,6 +175,77 @@
        <widget class="QLineEdit" name="linear_operation_lineEdit_1"/>
       </item>
       <item>
+       <widget class="QLabel" name="error_label_1">
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="text">
+         <string>!!</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="linear_operation_comboBox_2">
         <property name="minimumSize">
          <size>
@@ -212,6 +283,50 @@
       </item>
       <item>
        <widget class="QLineEdit" name="linear_operation_lineEdit_2"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="error_label_2">
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="text">
+         <string>!!</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_8">
