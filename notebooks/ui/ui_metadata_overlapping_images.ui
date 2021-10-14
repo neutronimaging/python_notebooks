@@ -663,6 +663,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string>RIGHT + CLICK in the table to access more options.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <widget class="QLabel" name="label_6">
@@ -806,7 +813,7 @@
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>-16</y>
+                       <y>-6</y>
                        <width>268</width>
                        <height>203</height>
                       </rect>

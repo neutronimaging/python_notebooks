@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>581</width>
-    <height>108</height>
+    <width>928</width>
+    <height>565</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,6 +48,204 @@
     </layout>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>String Cleaning</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>First part of string to ignore:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="first_part_lineEdit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Last part of string to ignore</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="second_part_lineEdit"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Linear Operation</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="label_6">
+        <property name="minimumSize">
+         <size>
+          <width>110</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>110</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Linear operation:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="linear_operation_value_before">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>N/A</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="linear_operation_comboBox_1">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>+</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>*</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>/</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="linear_operation_lineEdit_1"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="linear_operation_comboBox_2">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>+</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>*</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>/</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="linear_operation_lineEdit_2"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_8">
+        <property name="minimumSize">
+         <size>
+          <width>15</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>15</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>=</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="linear_operation_value_after">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>N/A</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -55,10 +253,40 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>3</height>
+       <height>40</height>
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Result:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="final_result_label">
+       <property name="text">
+        <string>N/A</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -102,8 +330,8 @@
    <slot>ok_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>534</x>
-     <y>79</y>
+     <x>915</x>
+     <y>552</y>
     </hint>
     <hint type="destinationlabel">
      <x>427</x>
@@ -118,8 +346,8 @@
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>53</x>
-     <y>74</y>
+     <x>65</x>
+     <y>552</y>
     </hint>
     <hint type="destinationlabel">
      <x>177</x>
@@ -127,9 +355,108 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>first_part_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>string_cleaning_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>100</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>923</x>
+     <y>225</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>second_part_lineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>string_cleaning_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>288</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>921</x>
+     <y>304</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>linear_operation_comboBox_1</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>linear_operation_combobox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>322</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>linear_operation_comboBox_2</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>linear_operation_combobox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>526</x>
+     <y>202</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>341</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>linear_operation_lineEdit_1</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>linear_operation_lineedit_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>202</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>217</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>linear_operation_lineEdit_2</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>linear_operation_lineedit_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>621</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>922</x>
+     <y>365</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ok_clicked()</slot>
   <slot>cancel_clicked()</slot>
+  <slot>string_cleaning_changed()</slot>
+  <slot>linear_operation_lineedit_changed()</slot>
+  <slot>linear_operation_combobox_changed()</slot>
  </slots>
 </ui>

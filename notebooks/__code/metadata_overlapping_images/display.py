@@ -178,7 +178,7 @@ class DisplayMetadataPyqtUi:
 
         self.display_text(save_it=save_it, metadata_index=1)
         self.display_text(save_it=save_it, metadata_index=2)
-        self.display_grah(save_it=save_it)
+        self.display_graph(save_it=save_it)
 
     def display_text(self, save_it=True, metadata_index=1):
 
@@ -210,6 +210,9 @@ class DisplayMetadataPyqtUi:
                 self.parent.metadata2_pyqt_ui = text
 
     def display_graph(self, save_it=True):
+
+        if not self.parent.ui.enable_graph_checkbox.isChecked():
+            return
 
         view = self.parent.ui.image_view
 
