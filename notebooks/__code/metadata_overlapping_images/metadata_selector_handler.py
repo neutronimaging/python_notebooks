@@ -18,6 +18,7 @@ class MetadataSelectorHandler(QDialog):
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
         self.initialization()
+        self.check_if_before_linear_operation_valid()
 
     def initialization(self):
         list_metadata = self.parent.raw_list_metadata
@@ -47,6 +48,8 @@ class MetadataSelectorHandler(QDialog):
             _new_str = m.group(1)
             self.ui.linear_operation_value_before.setText(_new_str)
 
+        self.check_if_before_linear_operation_valid()
+
     def linear_operation_lineedit_changed(self, new_string):
         pass
 
@@ -60,3 +63,13 @@ class MetadataSelectorHandler(QDialog):
 
     def cancel_clicked(self):
         self.close()
+
+    def check_if_before_linear_operation_valid(self):
+        string_to_check = str(self.ui.linear_operation_value_before.text())
+
+        enable_linear_operation_widgets = True
+        try:
+            float_string = float(string_to_check)
+        except ValueError:
+            enable_linear_operation_widgets = False
+        self.ui.linear_operation_groupBox.setEnabled(enable_linear_operation_widgets)
