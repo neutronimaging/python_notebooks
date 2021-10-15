@@ -5,7 +5,7 @@ from PIL import Image
 from __code.metadata_overlapping_images.metadata_string_format_handler import MetadataStringFormatLauncher
 from .get import Get
 from .metadata_selector_handler import MetadataSelectorHandler
-from .utilities import string_cleaning, linear_operation
+from .utilities import string_cleaning, linear_operation, is_linear_operation_valid
 
 
 class MetadataTableHandler:
@@ -89,14 +89,20 @@ class MetadataTableHandler:
                                          last_part_of_string_to_remove=last_part_of_string_to_remove,
                                          string_to_clean=value)
 
-        math_1 = metadata_operation[column]['math_1']
         value_1 = metadata_operation[column]['value_1']
-        math_2 = metadata_operation[column]['math_2']
         value_2 = metadata_operation[column]['value_2']
-        result_linear_operation = linear_operation(input_parameter=string_cleaned,
-                                                   math_1=math_1,
-                                                   value_1=value_1,
-                                                   math_2=math_2,
-                                                   value_2=value_2)
+        if is_linear_operation_valid(input_parameter=string_cleaned,
+                                     value_1=value_1,
+                                     value_2=value_2):
+
+            math_1 = metadata_operation[column]['math_1']
+            math_2 = metadata_operation[column]['math_2']
+            result_linear_operation = linear_operation(input_parameter=string_cleaned,
+                                                       math_1=math_1,
+                                                       value_1=value_1,
+                                                       math_2=math_2,
+                                                       value_2=value_2)
+        else:
+            return string_cleaned
 
         return result_linear_operation
