@@ -118,6 +118,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
         # display first images
         self.slider_file_changed(0)
+        self.text_metadata_1_enable_pressed(self.ui.checkBox.isChecked())
+        self.text_metadata_2_enable_pressed(self.ui.checkBox_2.isChecked())
 
     # ========================================================================================
     # MAIN UI EVENTs
