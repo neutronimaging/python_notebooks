@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2046</width>
-    <height>1189</height>
+    <width>2225</width>
+    <height>1211</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -657,7 +657,7 @@
                    <bool>false</bool>
                   </property>
                   <property name="currentIndex">
-                   <number>0</number>
+                   <number>1</number>
                   </property>
                   <widget class="QWidget" name="page">
                    <property name="geometry">
@@ -665,7 +665,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>374</height>
+                     <height>693</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -877,28 +877,42 @@
                      </layout>
                     </item>
                     <item>
-                     <layout class="QGridLayout" name="gridLayout">
-                      <item row="0" column="0">
-                       <widget class="QLabel" name="prefix_label_1">
-                        <property name="text">
-                         <string>Prefix:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="1">
-                       <widget class="QLineEdit" name="prefix_lineEdit_1"/>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="suffix_label_1">
-                        <property name="text">
-                         <string>Suffix:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1">
-                       <widget class="QLineEdit" name="suffix_lineEdit_1"/>
-                      </item>
-                     </layout>
+                     <widget class="QGroupBox" name="groupBox">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="title">
+                       <string>Name of metadata to display</string>
+                      </property>
+                      <layout class="QGridLayout" name="gridLayout_3">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="prefix_label_1">
+                         <property name="text">
+                          <string>Prefix:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLineEdit" name="prefix_lineEdit_1"/>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="suffix_label_1">
+                         <property name="text">
+                          <string>Suffix:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QLineEdit" name="suffix_lineEdit_1"/>
+                       </item>
+                      </layout>
+                     </widget>
                     </item>
                     <item>
                      <spacer name="verticalSpacer">
@@ -921,7 +935,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>374</height>
+                     <height>693</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -1145,28 +1159,39 @@
                      </layout>
                     </item>
                     <item>
-                     <layout class="QGridLayout" name="gridLayout_2">
-                      <item row="0" column="0">
-                       <widget class="QLabel" name="prefix_label_2">
-                        <property name="text">
-                         <string>Prefix:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="suffix_label_2">
-                        <property name="text">
-                         <string>Suffix:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1">
-                       <widget class="QLineEdit" name="suffix_lineEdit_2"/>
-                      </item>
-                      <item row="0" column="1">
-                       <widget class="QLineEdit" name="prefix_lineEdit_2"/>
-                      </item>
-                     </layout>
+                     <widget class="QGroupBox" name="groupBox_2">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="title">
+                       <string>Name of metadata to display</string>
+                      </property>
+                      <layout class="QGridLayout" name="gridLayout">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="prefix_label_2">
+                         <property name="text">
+                          <string>Prefix:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLineEdit" name="prefix_lineEdit_2"/>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="suffix_label_2">
+                         <property name="text">
+                          <string>Suffix:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QLineEdit" name="suffix_lineEdit_2"/>
+                       </item>
+                      </layout>
+                     </widget>
                     </item>
                     <item>
                      <spacer name="verticalSpacer_2">
@@ -1492,6 +1517,76 @@
                     </layout>
                    </item>
                    <item>
+                    <widget class="QGroupBox" name="groupBox_3">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="title">
+                      <string>x-axis legend</string>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_4">
+                      <item>
+                       <widget class="QLabel" name="label_7">
+                        <property name="text">
+                         <string>name</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="graph_x_axis_name"/>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_22">
+                        <property name="text">
+                         <string>units</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="graph_x_axis_units"/>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QGroupBox" name="groupBox_4">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="title">
+                      <string>y-axis legend</string>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_11">
+                      <item>
+                       <widget class="QLabel" name="label_12">
+                        <property name="text">
+                         <string>name</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="graph_y_axis_name"/>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_23">
+                        <property name="text">
+                         <string>units</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="graph_y_axis_units"/>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
                     <spacer name="verticalSpacer_3">
                      <property name="orientation">
                       <enum>Qt::Vertical</enum>
@@ -1557,7 +1652,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>2046</width>
+     <width>2225</width>
      <height>24</height>
     </rect>
    </property>
@@ -1635,7 +1730,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>81</x>
-     <y>1150</y>
+     <y>1139</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
@@ -1650,8 +1745,8 @@
    <slot>scale_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>889</x>
-     <y>162</y>
+     <x>850</x>
+     <y>56</y>
     </hint>
     <hint type="destinationlabel">
      <x>1137</x>
@@ -1666,8 +1761,8 @@
    <slot>metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>887</x>
-     <y>569</y>
+     <x>848</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -1698,7 +1793,7 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>479</x>
+     <x>440</x>
      <y>1079</y>
     </hint>
     <hint type="destinationlabel">
@@ -1714,7 +1809,7 @@
    <slot>slider_file_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>318</x>
+     <x>279</x>
      <y>1076</y>
     </hint>
     <hint type="destinationlabel">
@@ -1730,7 +1825,7 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>318</x>
+     <x>279</x>
      <y>1076</y>
     </hint>
     <hint type="destinationlabel">
@@ -1746,8 +1841,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>683</x>
-     <y>327</y>
+     <x>645</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -1762,8 +1857,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>763</x>
-     <y>327</y>
+     <x>725</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -1778,8 +1873,8 @@
    <slot>scale_thickness_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>987</x>
-     <y>414</y>
+     <x>901</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>1020</x>
@@ -1794,8 +1889,8 @@
    <slot>scale_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>652</x>
-     <y>416</y>
+     <x>614</x>
+     <y>201</y>
     </hint>
     <hint type="destinationlabel">
      <x>811</x>
@@ -1810,8 +1905,8 @@
    <slot>scale_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>663</x>
-     <y>371</y>
+     <x>601</x>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
@@ -1826,8 +1921,8 @@
    <slot>scale_real_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>877</x>
-     <y>370</y>
+     <x>791</x>
+     <y>156</y>
     </hint>
     <hint type="destinationlabel">
      <x>963</x>
@@ -1842,8 +1937,8 @@
    <slot>scale_units_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>988</x>
-     <y>373</y>
+     <x>902</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>1267</x>
@@ -1858,8 +1953,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1948</x>
-     <y>395</y>
+     <x>1039</x>
+     <y>161</y>
     </hint>
     <hint type="destinationlabel">
      <x>1401</x>
@@ -1874,8 +1969,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1948</x>
-     <y>395</y>
+     <x>1039</x>
+     <y>161</y>
     </hint>
     <hint type="destinationlabel">
      <x>1408</x>
@@ -1891,7 +1986,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1607</x>
-     <y>756</y>
+     <y>437</y>
     </hint>
     <hint type="destinationlabel">
      <x>1166</x>
@@ -1907,7 +2002,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1607</x>
-     <y>756</y>
+     <y>437</y>
     </hint>
     <hint type="destinationlabel">
      <x>1096</x>
@@ -1923,7 +2018,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1567</x>
-     <y>794</y>
+     <y>475</y>
     </hint>
     <hint type="destinationlabel">
      <x>1129</x>
@@ -1939,7 +2034,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1567</x>
-     <y>794</y>
+     <y>475</y>
     </hint>
     <hint type="destinationlabel">
      <x>1206</x>
@@ -1954,8 +2049,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1908</x>
-     <y>433</y>
+     <x>1038</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1970,8 +2065,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1908</x>
-     <y>433</y>
+     <x>1038</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -1986,7 +2081,7 @@
    <slot>metadata_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>639</x>
+     <x>600</x>
      <y>1061</y>
     </hint>
     <hint type="destinationlabel">
@@ -2002,8 +2097,8 @@
    <slot>metadata_graph_size_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1714</x>
-     <y>849</y>
+     <x>1605</x>
+     <y>530</y>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
@@ -2018,8 +2113,8 @@
    <slot>metadata_graph_size_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1714</x>
-     <y>849</y>
+     <x>1605</x>
+     <y>530</y>
     </hint>
     <hint type="destinationlabel">
      <x>905</x>
@@ -2034,7 +2129,7 @@
    <slot>import_table_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1326</x>
+     <x>1217</x>
      <y>1065</y>
     </hint>
     <hint type="destinationlabel">
@@ -2067,7 +2162,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1567</x>
-     <y>769</y>
+     <y>450</y>
     </hint>
     <hint type="destinationlabel">
      <x>1169</x>
@@ -2083,7 +2178,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1607</x>
-     <y>731</y>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>1081</x>
@@ -2099,7 +2194,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1607</x>
-     <y>731</y>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>1153</x>
@@ -2115,7 +2210,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1567</x>
-     <y>769</y>
+     <y>450</y>
     </hint>
     <hint type="destinationlabel">
      <x>1119</x>
@@ -2130,8 +2225,8 @@
    <slot>enable_graph_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1738</x>
-     <y>631</y>
+     <x>1629</x>
+     <y>312</y>
     </hint>
     <hint type="destinationlabel">
      <x>899</x>
@@ -2147,7 +2242,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1524</x>
-     <y>816</y>
+     <y>497</y>
     </hint>
     <hint type="destinationlabel">
      <x>998</x>
@@ -2163,7 +2258,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1607</x>
-     <y>731</y>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2179,7 +2274,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1567</x>
-     <y>769</y>
+     <y>450</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2194,8 +2289,8 @@
    <slot>font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1717</x>
-     <y>838</y>
+     <x>1608</x>
+     <y>519</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
@@ -2210,8 +2305,8 @@
    <slot>font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1717</x>
-     <y>838</y>
+     <x>1608</x>
+     <y>519</y>
     </hint>
     <hint type="destinationlabel">
      <x>1415</x>
@@ -2226,8 +2321,8 @@
    <slot>graph_font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1714</x>
-     <y>883</y>
+     <x>1605</x>
+     <y>564</y>
     </hint>
     <hint type="destinationlabel">
      <x>1414</x>
@@ -2242,8 +2337,8 @@
    <slot>graph_font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1714</x>
-     <y>883</y>
+     <x>1605</x>
+     <y>564</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
@@ -2258,8 +2353,8 @@
    <slot>text_metadata_1_enable_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1726</x>
-     <y>677</y>
+     <x>1617</x>
+     <y>358</y>
     </hint>
     <hint type="destinationlabel">
      <x>1684</x>
@@ -2274,8 +2369,8 @@
    <slot>text_metadata_2_enable_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1726</x>
-     <y>711</y>
+     <x>1617</x>
+     <y>392</y>
     </hint>
     <hint type="destinationlabel">
      <x>1692</x>
@@ -2291,7 +2386,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1607</x>
-     <y>790</y>
+     <y>471</y>
     </hint>
     <hint type="destinationlabel">
      <x>1691</x>
@@ -2307,7 +2402,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1607</x>
-     <y>790</y>
+     <y>471</y>
     </hint>
     <hint type="destinationlabel">
      <x>1690</x>
@@ -2323,7 +2418,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1567</x>
-     <y>828</y>
+     <y>509</y>
     </hint>
     <hint type="destinationlabel">
      <x>1687</x>
@@ -2339,7 +2434,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1567</x>
-     <y>828</y>
+     <y>509</y>
     </hint>
     <hint type="destinationlabel">
      <x>1689</x>
@@ -2354,8 +2449,8 @@
    <slot>font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1717</x>
-     <y>872</y>
+     <x>1608</x>
+     <y>553</y>
     </hint>
     <hint type="destinationlabel">
      <x>1689</x>
@@ -2370,8 +2465,8 @@
    <slot>font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1717</x>
-     <y>872</y>
+     <x>1608</x>
+     <y>553</y>
     </hint>
     <hint type="destinationlabel">
      <x>1687</x>
@@ -2386,8 +2481,8 @@
    <slot>metadata_1_suffix_prefix_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1515</x>
-     <y>863</y>
+     <x>1529</x>
+     <y>582</y>
     </hint>
     <hint type="destinationlabel">
      <x>1619</x>
@@ -2402,8 +2497,8 @@
    <slot>metadata_1_suffix_prefix_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1611</x>
-     <y>895</y>
+     <x>1516</x>
+     <y>614</y>
     </hint>
     <hint type="destinationlabel">
      <x>1565</x>
@@ -2418,8 +2513,8 @@
    <slot>metadata_2_suffix_prefix_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1492</x>
-     <y>890</y>
+     <x>1506</x>
+     <y>594</y>
     </hint>
     <hint type="destinationlabel">
      <x>1487</x>
@@ -2434,12 +2529,76 @@
    <slot>metadata_2_suffix_prefix_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1515</x>
-     <y>926</y>
+     <x>1529</x>
+     <y>630</y>
     </hint>
     <hint type="destinationlabel">
      <x>1528</x>
      <y>1154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_x_axis_name</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_axis_label_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1498</x>
+     <y>612</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1496</x>
+     <y>1110</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_x_axis_units</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_axis_label_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1657</x>
+     <y>611</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1577</x>
+     <y>1141</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_y_axis_name</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_axis_label_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1504</x>
+     <y>674</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1804</x>
+     <y>1155</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graph_y_axis_units</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>graph_axis_label_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1682</x>
+     <y>682</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2016</x>
+     <y>1126</y>
     </hint>
    </hints>
   </connection>
@@ -2484,10 +2643,10 @@
   <slot>graph_font_size_slider_pressed()</slot>
   <slot>text_metadata_1_enable_pressed()</slot>
   <slot>text_metadata_2_enable_pressed()</slot>
-  <slot>slot1()</slot>
   <slot>metadata2_position_clicked()</slot>
   <slot>metadata2_position_moved()</slot>
   <slot>metadata_1_suffix_prefix_changed()</slot>
   <slot>metadata_2_suffix_prefix_changed()</slot>
+  <slot>graph_axis_label_changed()</slot>
  </slots>
 </ui>

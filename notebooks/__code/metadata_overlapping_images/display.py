@@ -301,48 +301,35 @@ class DisplayMetadataPyqtUi:
             clean_and_format_x_axis = o_get.convert_to_float(x_axis)
             clean_and_format_y_axis = o_get.convert_to_float(y_axis)
 
-            # print(f"x_axis: {x_axis}")
-            # print(f"y_axis: {y_axis}")
-            #
-            # clean_and_format_x_axis = self.clean_and_format_x_axis(x_axis=x_axis)
-            # print(f"clean_and_format_x_axis: {clean_and_format_x_axis}")
-            # if clean_and_format_x_axis is None:
-            #     self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph (x-axis has wrong format)!",
-            #                                          10000)
-            #     self.parent.ui.statusbar.setStyleSheet("color: red")
-            #     return
-            #
-            # clean_and_format_y_axis = self.clean_and_format_y_axis(y_axis=y_axis)
-            # print(f"clean_and_format_y_axis: {clean_and_format_y_axis}")
-            # if clean_and_format_y_axis is None:
-            #     self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph (y-axis has wrong format)!",
-            #                                          10000)
-            #     self.parent.ui.statusbar.setStyleSheet("color: red")
-            #     return
-
             _view_box = pg.ViewBox(enableMouse=False)
             # _view_box.setBackgroundColor((100, 100, 100, 100))
             graph = pg.PlotItem(viewBox=_view_box)
 
-            y_prefix = o_get.prefix_of_y_axis()
-            y_suffix = o_get.suffix_of_y_axis()
-            name_of_y_metadata = "FIXME"
-            y_axis_label = '<html><font color="{}" size="{}">{} {} {}</font></html>'.format(color,
-                                                                                            graph_font_size,
-                                                                                            y_prefix,
-                                                                                            name_of_y_metadata,
-                                                                                            y_suffix,
-                                                                                            )
+            y_name = self.parent.ui.graph_y_axis_name.text()
+            y_unit = self.parent.ui.graph_y_axis_units.text()
+            if y_unit:
+                y_axis_label = '<html><font color="{}" size="{}">{} ({})</font></html>'.format(color,
+                                                                                               graph_font_size,
+                                                                                               y_name,
+                                                                                               y_unit,
+                                                                                               )
+            else:
+                y_axis_label = '<html><font color="{}" size="{}">{} {}</font></html>'.format(color,
+                                                                                             graph_font_size,
+                                                                                             y_name)
 
-            x_prefix = o_get.prefix_of_x_axis()
-            x_suffix = o_get.suffix_of_x_axis()
-            name_of_x_metadata = "FIXME too"
-            x_axis_label = '<html><p><font color="{}" size="{}">{} {} {}</font></html>'.format(color,
-                                                                                        graph_font_size,
-                                                                                        x_prefix,
-                                                                                        name_of_x_metadata,
-                                                                                        x_suffix,
-                                                                                        )
+            x_name = self.parent.ui.graph_x_axis_name.text()
+            x_unit = self.parent.ui.graph_x_axis_units.text()
+            if x_unit:
+                x_axis_label = '<html><p><font color="{}" size="{}">{} ({})</font></html>'.format(color,
+                                                                                                  graph_font_size,
+                                                                                                  x_name,
+                                                                                                  x_unit,
+                                                                                                  )
+            else:
+                x_axis_label = '<html><p><font color="{}" size="{}">{}</font></html>'.format(color,
+                                                                                             graph_font_size,
+                                                                                             x_name)
 
             graph.setLabel('left', text=y_axis_label)
             graph.setLabel('bottom', text=x_axis_label)

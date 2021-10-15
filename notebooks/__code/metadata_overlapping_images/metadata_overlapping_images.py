@@ -260,6 +260,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def graph_color_changed(self, value):
         self.update_metadata_pyqt_ui()
 
+    def graph_axis_label_changed(self, new_value):
+        self.update_metadata_pyqt_ui()
+
     def metadata_text_or_graph_clicked(self):
         status = self.ui.metadata_graph_option.isChecked()
         self.ui.metadata_graph_size_label.setVisible(status)
