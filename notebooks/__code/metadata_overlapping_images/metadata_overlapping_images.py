@@ -254,10 +254,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def graph_color_changed(self, value):
         self.update_metadata_pyqt_ui()
 
-    def enable_graph_button_clicked(self, new_state):
-        self.ui.graph_groupBox.setEnabled(self.ui.enable_graph_checkbox.isChecked())
-        self.update_metadata_pyqt_ui()
-
     def metadata_text_or_graph_clicked(self):
         status = self.ui.metadata_graph_option.isChecked()
         self.ui.metadata_graph_size_label.setVisible(status)
@@ -300,8 +296,21 @@ class MetadataOverlappingImagesUi(QMainWindow):
             o_import.populate()
             self.update_metadata_pyqt_ui()
 
+    def enable_graph_button_clicked(self, new_state):
+        self.ui.graph_groupBox.setEnabled(new_state)
+        self.ui.metadata_position_frame_3.setEnabled(new_state)
+        self.ui.graph_position_y.setEnabled(new_state)
+        self.ui.graph_position_x.setEnabled(new_state)
+        self.ui.label_15.setEnabled(new_state)
+        self.ui.label_16.setEnabled(new_state)
+        self.update_metadata_pyqt_ui()
+
     def text_metadata_1_enable_pressed(self, status):
         self.ui.metadata_position_frame.setEnabled(status)
+        self.ui.metadata_position_x.setEnabled(status)
+        self.ui.metadata_position_y.setEnabled(status)
+        self.ui.label_10.setEnabled(status)
+        self.ui.label_11.setEnabled(status)
         self.ui.label_14.setEnabled(status)
         self.ui.font_size_slider.setEnabled(status)
         self.ui.prefix_label_1.setEnabled(status)
@@ -312,6 +321,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def text_metadata_2_enable_pressed(self, status):
         self.ui.metadata_position_frame_2.setEnabled(status)
+        self.ui.metadata_position_x_2.setEnabled(status)
+        self.ui.metadata_position_y_2.setEnabled(status)
+        self.ui.label_18.setEnabled(status)
+        self.ui.label_19.setEnabled(status)
         self.ui.label_20.setEnabled(status)
         self.ui.font_size_slider_2.setEnabled(status)
         self.ui.prefix_label_2.setEnabled(status)
