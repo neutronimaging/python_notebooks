@@ -4,6 +4,7 @@ import os
 from __code import load_ui
 from .utilities import string_cleaning
 
+
 class MetadataSelectorHandler(QDialog):
 
     def __init__(self, parent=None, column=2):
@@ -17,7 +18,8 @@ class MetadataSelectorHandler(QDialog):
 
         self.initialization()
         self.check_if_before_linear_operation_valid()
-        _ = self.is_linear_operation_is_valid()
+        _ = self.is_linear_operation_valid()
+        self.update_final_result()
 
     def initialization(self):
         list_metadata = self.parent.dict_list_metadata.values()
@@ -36,17 +38,20 @@ class MetadataSelectorHandler(QDialog):
 
         self.check_if_before_linear_operation_valid()
         self.linear_operation_lineedit_changed()
+        self.update_final_result()
 
     def list_of_metadata_changed(self, text=None):
         self.string_cleaning_changed()
 
     def linear_operation_lineedit_changed(self, new_string=None):
-        is_linear_operation_valid = self.is_linear_operation_is_valid()
+        is_linear_operation_valid = self.is_linear_operation_valid()
         if not is_linear_operation_valid:
+            self.ui.linear_operation_value_after.setText("N/A")
             return
 
         is_before_linear_operation_is_valid = self.is_before_linear_operation_is_valid()
         if not is_before_linear_operation_is_valid:
+            self.ui.linear_operation_value_after.setText("N/A")
             return
 
         input_parameter = float(str(self.ui.linear_operation_value_before.text()).strip())
@@ -63,9 +68,19 @@ class MetadataSelectorHandler(QDialog):
 
         result = eval(operation_to_eval)
         self.ui.linear_operation_value_after.setText("{}".format(result))
+        self.update_final_result()
 
     def linear_operation_combobox_changed(self, new_string=None):
         self.linear_operation_lineedit_changed()
+        self.update_final_result()
+
+    def update_final_result(self):
+        if self.is_before_linear_operation_is_valid() and self.is_linear_operation_valid():
+            result = self.ui.linear_operation_value_after.text()
+        else:
+            result = self.ui.linear_operation_value_before.text()
+
+        self.ui.final_result_label.setText(result)
 
     def ok_clicked(self):
         index_selected = self.ui.select_metadata_combobox.currentIndex()
@@ -82,9 +97,7 @@ class MetadataSelectorHandler(QDialog):
 
         math_1 = str(self.ui.linear_operation_comboBox_1.currentText())
         math_2 = str(self.ui.linear_operation_comboBox_2.currentText())
-        prefix = str(self.ui.prefix_lineEdit.text())
-        suffix = str(self.ui.suffix_lineEdit.text())
-        if self.is_linear_operation_is_valid():
+        if self.is_linear_operation_valid():
             value_1 = str(self.ui.linear_operation_lineEdit_1.text()).strip()
             value_2 = str(self.ui.linear_operation_lineEdit_2.text()).strip()
         else:
@@ -97,8 +110,6 @@ class MetadataSelectorHandler(QDialog):
                                           "value_1": value_1,
                                           "math_2": math_2,
                                           "value_2": value_2,
-                                          "prefix": prefix,
-                                          "suffix": suffix,
                                           }
 
     def is_before_linear_operation_is_valid(self):
@@ -115,7 +126,7 @@ class MetadataSelectorHandler(QDialog):
         enable_linear_operation_widgets = self.is_before_linear_operation_is_valid()
         self.ui.linear_operation_groupBox.setEnabled(enable_linear_operation_widgets)
 
-    def is_linear_operation_is_valid(self):
+    def is_linear_operation_valid(self):
 
         def result_of_checking_operation(ui=None):
             is_error_in_operation = False
