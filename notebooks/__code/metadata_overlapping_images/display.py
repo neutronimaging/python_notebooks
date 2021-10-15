@@ -50,7 +50,7 @@ class DisplayScalePyqtUi:
     def __init__(self, parent=None):
         self.parent = parent
 
-    def run(self, view=None, save_it=True):
+    def clear_pyqt_items(self, view=None):
 
         if view is None:
             view = self.parent.ui.image_view
@@ -62,8 +62,13 @@ class DisplayScalePyqtUi:
                 return
 
         if self.parent.scale_pyqt_ui:
-            view.removeItem(self.parent.scale_pyqt_ui)
-            view.removeItem(self.parent.scale_legend_pyqt_ui)
+            self.parent.ui.image_view.removeItem(self.parent.scale_pyqt_ui)
+        if self.parent.scale_legend_pyqt_ui:
+            self.parent.ui.image_view.removeItem(self.parent.scale_legend_pyqt_ui)
+
+    def run(self, save_it=True):
+
+        view = self.parent.ui.image_view
 
         if not self.parent.ui.scale_checkbox.isChecked():
             return
@@ -148,7 +153,6 @@ class DisplayMetadataPyqtUi:
                             'enable_ui': self.parent.ui.checkBox_2,
                             },
                         }
-
 
     def clear_pyqt_items(self, view=None):
 

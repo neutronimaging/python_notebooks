@@ -157,17 +157,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def scale_checkbox_clicked(self, status):
         self.ui.scale_groupbox.setEnabled(status)
-        self.ui.scale_position_label.setEnabled(status)
         self.ui.scale_position_frame.setEnabled(status)
         o_display = DisplayScalePyqtUi(parent=self)
         o_display.run()
 
     def metadata_checkbox_clicked(self, status):
         self.ui.metadata_groupbox.setEnabled(status)
-        # self.ui.metadata_position_label.setEnabled(status)
         self.ui.metadata_position_frame.setEnabled(status)
-        # self.ui.meta_label.setEnabled(status)
-        # self.ui.manual_metadata_name.setEnabled(status)
         self.ui.enable_graph_checkbox.setEnabled(status)
         self.ui.text_graph_tabWidget.setEnabled(status)
         self.ui.toolBox.setEnabled(status)
@@ -344,28 +340,15 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def update_metadata_pyqt_ui(self):
         o_display = DisplayMetadataPyqtUi(parent=self)
         o_display.clear_pyqt_items()
-
-        # if self.metadata_pyqt_ui:
-        #     self.ui.image_view.removeItem(self.metadata_pyqt_ui)
-        # if self.graph_pyqt_ui:
-        #     self.ui.image_view.removeItem(self.graph_pyqt_ui)
-        #
-        # try:
-        #     if self.ui.image_view:
-        #         pass
-        # except:
-        #     return
-
-        o_display = DisplayMetadataPyqtUi(parent=self)
         o_display.run()
 
     def update_scale_pyqt_ui(self):
-        if self.scale_pyqt_ui:
-            self.ui.image_view.removeItem(self.scale_pyqt_ui)
-        if self.scale_legend_pyqt_ui:
-            self.ui.image_view.removeItem(self.scale_legend_pyqt_ui)
-
+        # if self.scale_pyqt_ui:
+        #     self.ui.image_view.removeItem(self.scale_pyqt_ui)
+        # if self.scale_legend_pyqt_ui:
+        #     self.ui.image_view.removeItem(self.scale_legend_pyqt_ui)
         o_display = DisplayScalePyqtUi(parent=self)
+        o_display.clear_pyqt_items()
         o_display.run()
 
     def display_image(self, recalculate_image=False):
