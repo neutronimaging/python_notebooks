@@ -314,9 +314,9 @@ class DisplayMetadataPyqtUi:
                                                                                                y_unit,
                                                                                                )
             else:
-                y_axis_label = '<html><font color="{}" size="{}">{} {}</font></html>'.format(color,
-                                                                                             graph_font_size,
-                                                                                             y_name)
+                y_axis_label = '<html><font color="{}" size="{}">{}</font></html>'.format(color,
+                                                                                          graph_font_size,
+                                                                                          y_name)
 
             x_name = self.parent.ui.graph_x_axis_name.text()
             x_unit = self.parent.ui.graph_x_axis_units.text()
