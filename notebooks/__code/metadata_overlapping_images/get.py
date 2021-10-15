@@ -13,23 +13,26 @@ class Get:
         selection = self.parent.ui.tableWidget.selectedRanges()[0]
         return selection.leftColumn()
 
-    def get_y_axis_data(self):
+    def y_axis_data(self):
         y_axis_column_index = self.parent.y_axis_column_index
-        y_axis = self.get_axis_data(axis_index=y_axis_column_index)
+        y_axis = self.axis_data(axis_index=y_axis_column_index)
         return y_axis
 
-    def get_x_axis_data(self):
+    def x_axis_data(self):
         x_axis_column_index = self.parent.x_axis_column_index
-        x_axis = self.get_axis_data(axis_index=x_axis_column_index)
+        x_axis = self.axis_data(axis_index=x_axis_column_index)
         return x_axis
 
-    def get_axis_data(self, axis_index=0):
+    def axis_data(self, axis_index=0):
         nbr_row = self.parent.ui.tableWidget.rowCount()
         axis_data = []
         for _row in np.arange(nbr_row):
             _row_str = str(self.parent.ui.tableWidget.item(_row, axis_index).text())
             axis_data.append(_row_str)
         return axis_data
+
+    def convert_to_float(self, axis=None):
+        return [float(value) for value in axis]
 
     def metadata_column(self):
         data = []
@@ -51,6 +54,39 @@ class Get:
             data.append(_row_value)
 
         return data
+
+    def prefix_of_y_axis(self):
+        y_axis_column_index = self.parent.y_axis_column_index
+        return self.prefix_of_axis(column_index=y_axis_column_index)
+
+    def suffix_of_y_axis(self):
+        y_axis_column_index = self.parent.y_axis_column_index
+        return self.suffix_of_axis(column_index=y_axis_column_index)
+
+    def prefix_of_x_axis(self):
+        x_axis_column_index = self.parent.x_axis_column_index
+        return self.prefix_of_axis(column_index=x_axis_column_index)
+
+    def suffix_of_x_axis(self):
+        x_axis_column_index = self.parent.x_axis_column_index
+        return self.suffix_of_axis(column_index=x_axis_column_index)
+
+    def prefix_of_axis(self, column_index=0):
+        if column_index == 0:
+            return ""
+        elif column_index == 2:
+            return str(self.parent.ui.prefix_lineEdit_1.text())
+        else:
+            return str(self.parent.ui.prefix_lineEdit_2.text())
+
+    def suffix_of_axis(self, column_index=0):
+        column_index = self.parent.y_axis_column_index
+        if column_index == 0:
+            return ""
+        elif column_index == 2:
+            return str(self.parent.ui.suffix_lineEdit_1.text())
+        else:
+            return str(self.parent.ui.suffix_lineEdit_2.text())
 
     def metadata_text(self, metadata_index=1):
         """return the text and value of the metadata to display"""

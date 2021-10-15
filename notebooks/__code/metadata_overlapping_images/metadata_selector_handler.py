@@ -25,6 +25,7 @@ class MetadataSelectorHandler(QDialog):
         list_metadata = self.parent.dict_list_metadata.values()
         list_metadata = [str(_item) for _item in list_metadata]
         self.ui.select_metadata_combobox.addItems(list_metadata)
+        self.ui.select_metadata_combobox.setCurrentIndex(self.parent.metadata_operation[self.column]['index_of_metadata'])
 
     def string_cleaning_changed(self, new_text=None):
         first_part_of_string_to_remove = str(self.ui.first_part_lineEdit.text())
@@ -42,6 +43,8 @@ class MetadataSelectorHandler(QDialog):
 
     def list_of_metadata_changed(self, text=None):
         self.string_cleaning_changed()
+        index_selected = self.ui.select_metadata_combobox.currentIndex()
+        self.index_metadata_selected = index_selected
 
     def linear_operation_lineedit_changed(self, new_string=None):
         is_linear_operation_valid = self.is_linear_operation_valid()
@@ -110,6 +113,7 @@ class MetadataSelectorHandler(QDialog):
                                                        "value_1": value_1,
                                                        "math_2": math_2,
                                                        "value_2": value_2,
+                                                       "index_of_metadata": self.index_metadata_selected,
                                                        }
 
     def is_before_linear_operation_is_valid(self):
