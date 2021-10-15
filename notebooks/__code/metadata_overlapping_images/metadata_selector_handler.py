@@ -25,7 +25,17 @@ class MetadataSelectorHandler(QDialog):
         list_metadata = self.parent.dict_list_metadata.values()
         list_metadata = [str(_item) for _item in list_metadata]
         self.ui.select_metadata_combobox.addItems(list_metadata)
-        self.ui.select_metadata_combobox.setCurrentIndex(self.parent.metadata_operation[self.column]['index_of_metadata'])
+
+        metadata_operation = self.parent.metadata_operation[self.column]
+        self.ui.select_metadata_combobox.setCurrentIndex(metadata_operation['index_of_metadata'])
+        self.ui.first_part_lineEdit.setText(metadata_operation['first_part_of_string_to_remove'])
+        self.ui.second_part_lineEdit.setText(metadata_operation['last_part_of_string_to_remove'])
+        self.ui.linear_operation_lineEdit_1.setText(metadata_operation['value_1'])
+        self.ui.linear_operation_lineEdit_2.setText(metadata_operation['value_2'])
+        math_1_index = self.ui.linear_operation_comboBox_1.findText(metadata_operation['math_1'])
+        self.ui.linear_operation_comboBox_1.setCurrentIndex(math_1_index)
+        math_2_index = self.ui.linear_operation_comboBox_2.findText(metadata_operation['math_2'])
+        self.ui.linear_operation_comboBox_2.setCurrentIndex(math_2_index)
 
     def string_cleaning_changed(self, new_text=None):
         first_part_of_string_to_remove = str(self.ui.first_part_lineEdit.text())

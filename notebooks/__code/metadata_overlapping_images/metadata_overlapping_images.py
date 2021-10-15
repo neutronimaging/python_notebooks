@@ -25,21 +25,29 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     metadata_operation = {0: {"first_part_of_string_to_remove": "",
                               "last_part_of_string_to_remove": "",
-                              "math_1": "",
+                              "math_1": "+",
                               "value_1": "",
-                              "math_2": "",
+                              "math_2": "+",
                               "value_2": "",
                               "index_of_metadata": 0,
                               },
                           2: {"first_part_of_string_to_remove": "",
                               "last_part_of_string_to_remove": "",
-                              "math_1": "",
+                              "math_1": "+",
                               "value_1": "",
-                              "math_2": "",
+                              "math_2": "+",
                               "value_2": "",
                               "index_of_metadata": 0,
                               },
-                         }
+                          3: {"first_part_of_string_to_remove": "",
+                              "last_part_of_string_to_remove": "",
+                              "math_1": "+",
+                              "value_1": "",
+                              "math_2": "+",
+                              "value_2": "",
+                              "index_of_metadata": 0,
+                              },
+                          }
 
     data_dict = {}
     data_dict_raw = {}
