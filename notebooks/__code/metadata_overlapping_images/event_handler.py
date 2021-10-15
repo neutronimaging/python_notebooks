@@ -75,24 +75,24 @@ class MetadataTableHandler:
             o_dict = dict(o_image.tag_v2)
             value = o_dict[float(key_selected)]
 
-            new_value = self.perform_cleaning_and_math_on_metadata(value=value)
+            new_value = self.perform_cleaning_and_math_on_metadata(column=column, value=value)
             self.parent.ui.tableWidget.item(row, column).setText("{}".format(new_value))
 
         self.parent.update_metadata_pyqt_ui()
 
-    def perform_cleaning_and_math_on_metadata(self, value=""):
+    def perform_cleaning_and_math_on_metadata(self, column=1, value=""):
         metadata_operation = self.parent.metadata_operation
 
-        first_part_of_string_to_remove = metadata_operation['first_part_of_string_to_remove']
-        last_part_of_string_to_remove = metadata_operation['last_part_of_string_to_remove']
+        first_part_of_string_to_remove = metadata_operation[column]['first_part_of_string_to_remove']
+        last_part_of_string_to_remove = metadata_operation[column]['last_part_of_string_to_remove']
         string_cleaned = string_cleaning(first_part_of_string_to_remove=first_part_of_string_to_remove,
                                          last_part_of_string_to_remove=last_part_of_string_to_remove,
                                          string_to_clean=value)
 
-        math_1 = metadata_operation['math_1']
-        value_1 = metadata_operation['value_1']
-        math_2 = metadata_operation['math_2']
-        value_2 = metadata_operation['value_2']
+        math_1 = metadata_operation[column]['math_1']
+        value_1 = metadata_operation[column]['value_1']
+        math_2 = metadata_operation[column]['math_2']
+        value_2 = metadata_operation[column]['value_2']
         result_linear_operation = linear_operation(input_parameter=string_cleaned,
                                                    math_1=math_1,
                                                    value_1=value_1,

@@ -213,6 +213,12 @@ class DisplayMetadataPyqtUi:
             else:
                 self.parent.metadata2_pyqt_ui = text
 
+    def clean_and_format_x_axis(self, x_axis=None):
+        return None
+
+    def clean_and_format_y_axis(self, y_axis=None):
+        return None
+
     def display_graph(self, save_it=True):
 
         if not self.parent.ui.enable_graph_checkbox.isChecked():
@@ -227,6 +233,30 @@ class DisplayMetadataPyqtUi:
         if self.parent.ui.enable_graph_checkbox.isChecked():
 
             o_get = Get(parent=self.parent)
+
+            x_axis = o_get.get_x_axis_data()
+            y_axis = o_get.get_y_axis_data()
+
+            clean_and_format_x_axis = self.clean_and_format_x_axis(x_axis=x_axis)
+            if clean_and_format_x_axis is None:
+                self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph (x-axis has wrong format)!",
+                                                     10000)
+                self.parent.ui.statusbar.setStyleSheet("color: red")
+                return
+
+            clean_and_format_y_axis = self.clean_and_format_x_axis(y_axis=y_axis)
+            if clean_and_format_y_axis is None:
+                self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph (y-axis has wrong format)!",
+                                                     10000)
+                self.parent.ui.statusbar.setStyleSheet("color: red")
+                return
+
+
+
+
+
+
+
             data = o_get.metadata_column()
             _view_box = pg.ViewBox(enableMouse=False)
             # _view_box.setBackgroundColor((100, 100, 100, 100))

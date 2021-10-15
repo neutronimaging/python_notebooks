@@ -23,13 +23,22 @@ class MetadataOverlappingImagesUi(QMainWindow):
     xy_axis_menu_logo = {'enable': u"\u2713  ",     # \u25CF (dark circle)
                          'disable': "     "}
 
-    metadata_operation = {"first_part_of_string_to_remove": "",
-                          "last_part_of_string_to_remove": "",
-                          "math_1": "",
-                          "value_1": "",
-                          "math_2": "",
-                          "value_2": "",
-                          }
+    metadata_operation = {}
+    # { 1: {"first_part_of_string_to_remove": "",
+    #         "last_part_of_string_to_remove": "",
+    #         "math_1": "",
+    #         "value_1": "",
+    #         "math_2": "",
+    #         "value_2": "",
+    #         },
+    #  2: {"first_part_of_string_to_remove": "",
+    #      "last_part_of_string_to_remove": "",
+    #      "math_1": "",
+    #      "value_1": "",
+    #      "math_2": "",
+    #      "value_2": "",
+    #      },
+    # }
 
     data_dict = {}
     data_dict_raw = {}

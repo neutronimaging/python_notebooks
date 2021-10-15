@@ -104,13 +104,13 @@ class MetadataSelectorHandler(QDialog):
             value_1 = ""
             value_2 = ""
 
-        self.parent.metadata_operation = {"first_part_of_string_to_remove": first_part_of_string_to_remove,
-                                          "last_part_of_string_to_remove": last_part_of_string_to_remove,
-                                          "math_1": math_1,
-                                          "value_1": value_1,
-                                          "math_2": math_2,
-                                          "value_2": value_2,
-                                          }
+        self.parent.metadata_operation[self.column] = {"first_part_of_string_to_remove": first_part_of_string_to_remove,
+                                                       "last_part_of_string_to_remove": last_part_of_string_to_remove,
+                                                       "math_1": math_1,
+                                                       "value_1": value_1,
+                                                       "math_2": math_2,
+                                                       "value_2": value_2,
+                                                       }
 
     def is_before_linear_operation_is_valid(self):
         string_to_check = str(self.ui.linear_operation_value_before.text())

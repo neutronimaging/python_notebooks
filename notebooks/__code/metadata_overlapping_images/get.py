@@ -13,6 +13,24 @@ class Get:
         selection = self.parent.ui.tableWidget.selectedRanges()[0]
         return selection.leftColumn()
 
+    def get_y_axis_data(self):
+        y_axis_column_index = self.parent.y_axis_column_index
+        y_axis = self.get_axis_data(axis_index=y_axis_column_index)
+        return y_axis
+
+    def get_x_axis_data(self):
+        x_axis_column_index = self.parent.x_axis_column_index
+        x_axis = self.get_axis_data(axis_index=x_axis_column_index)
+        return x_axis
+
+    def get_axis_data(self, axis_index=0):
+        nbr_row = self.parent.ui.tableWidget.rowCount()
+        axis_data = []
+        for _row in np.arange(nbr_row):
+            _row_str = str(self.parent.ui.tableWidget.item(_row, axis_index).text())
+            axis_data.append(_row_str)
+        return axis_data
+
     def metadata_column(self):
         data = []
         nbr_row = self.parent.ui.tableWidget.rowCount()
