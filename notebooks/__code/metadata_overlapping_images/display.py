@@ -3,6 +3,7 @@ import numpy as np
 import pyqtgraph as pg
 
 from .get import Get
+from .utilities import string_cleaning, linear_operation
 
 
 class DisplayImages:
@@ -214,10 +215,50 @@ class DisplayMetadataPyqtUi:
                 self.parent.metadata2_pyqt_ui = text
 
     def clean_and_format_x_axis(self, x_axis=None):
-        return None
+        x_axis_column_index = self.parent.x_axis_column_index
+        metadata_operation = self.parent.metadata_operation[x_axis_column_index]
+        x_axis = self.clean_and_format_axis(metadata_operation=metadata_operation,
+                                            input_axis=x_axis)
+        return x_axis
 
     def clean_and_format_y_axis(self, y_axis=None):
-        return None
+        y_axis_column_index = self.parent.y_axis_column_index
+        metadata_operation = self.parent.metadata_operation[y_axis_column_index]
+        y_axis = self.clean_and_format_axis(metadata_operation=metadata_operation,
+                                            input_axis=y_axis)
+        return y_axis
+
+    def clean_and_format_axis(self, metadata_operation=None,
+                              input_axis=None):
+
+        first_part_of_string_to_remove = metadata_operation['first_part_of_string_to_remove']
+        last_part_of_string_to_remove = metadata_operation['last_part_of_string_to_remove']
+        math_1 = metadata_operation['math_1']
+        math_2 = metadata_operation['math_2']
+        value_1 = metadata_operation['value_1']
+        value_2 = metadata_operation['value_2']
+
+        final_axis = []
+        for _value in input_axis:
+            value_cleaned = string_cleaning(first_part_of_string_to_remove=first_part_of_string_to_remove,
+                                            last_part_of_string_to_remove=last_part_of_string_to_remove,
+                                            string_to_clean=_value)
+
+            if value_cleaned == "N/A":
+                return None
+
+            value_cleaned_math = linear_operation(input_parameter=value_cleaned,
+                                                  math_1=math_1,
+                                                  math_2=math_2,
+                                                  value_1=value_1,
+                                                  value_2=value_2)
+
+            if value_cleaned_math == "":
+                return None
+
+            final_axis.append(value_cleaned_math)
+
+        return final_axis
 
     def display_graph(self, save_it=True):
 
@@ -244,20 +285,13 @@ class DisplayMetadataPyqtUi:
                 self.parent.ui.statusbar.setStyleSheet("color: red")
                 return
 
-            clean_and_format_y_axis = self.clean_and_format_x_axis(y_axis=y_axis)
+            clean_and_format_y_axis = self.clean_and_format_y_axis(y_axis=y_axis)
             if clean_and_format_y_axis is None:
                 self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph (y-axis has wrong format)!",
                                                      10000)
                 self.parent.ui.statusbar.setStyleSheet("color: red")
                 return
 
-
-
-
-
-
-
-            data = o_get.metadata_column()
             _view_box = pg.ViewBox(enableMouse=False)
             # _view_box.setBackgroundColor((100, 100, 100, 100))
             graph = pg.PlotItem(viewBox=_view_box)
@@ -283,13 +317,13 @@ class DisplayMetadataPyqtUi:
             graph.setFixedHeight(_size)
             o_get = Get(parent=self.parent)
             color_pen = o_get.color(source='graph', color_type='rgb_color')
-            graph.plot(data, pen=color_pen)
+            graph.plot(clean_and_format_x_axis, clean_and_format_y_axis, pen=color_pen)
 
             # highlight current file
             current_index = self.parent.ui.file_slider.value()
             _pen = pg.mkPen((255, 0, 0), width=4)
 
-            graph.plot(x=[current_index], y=[data[current_index]],
+            graph.plot(x=[current_index], y=[clean_and_format_y_axis[current_index]],
                        pen=_pen,
                        symboBrush=(255, 0, 0),
                        symbolPen='w')
