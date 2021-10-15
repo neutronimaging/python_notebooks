@@ -34,10 +34,16 @@ class Get:
 
         return data
 
-    def metadata_text(self):
+    def metadata_text(self, metadata_index=1):
         """return the text and value of the metadata to display"""
-        metadata_name = str(self.parent.ui.manual_metadata_name.text())
-        metadata_units = str(self.parent.ui.manual_metadata_units.text())
+
+        if metadata_index == 1:
+            metadata_name = str(self.parent.ui.prefix_lineEdit_1.text())
+            metadata_units = str(self.parent.ui.suffix_lineEdit_1.text())
+        else:
+            metadata_name = str(self.parent.ui.prefix_lineEdit_2.text())
+            metadata_units = str(self.parent.ui.suffix_lineEdit_2.text())
+
         slider_index = self.parent.ui.file_slider.value()
 
         index_of_y_axis = self.parent.y_axis_column_index

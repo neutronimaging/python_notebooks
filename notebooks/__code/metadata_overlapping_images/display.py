@@ -192,7 +192,7 @@ class DisplayMetadataPyqtUi:
         y0 = self.list_ui[metadata_index]['position_y'].maximum() - self.list_ui[metadata_index]['position_y'].value()
 
         o_get = Get(parent=self.parent)
-        metadata_text = o_get.metadata_text()
+        metadata_text = o_get.metadata_text(metadata_index=metadata_index)
 
         color = o_get.color(source='metadata', color_type='html')
         text = pg.TextItem(html='<div style="text-align:center"> ' +

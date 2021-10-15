@@ -697,859 +697,889 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QTabWidget" name="text_graph_tabWidget">
+              <property name="enabled">
+               <bool>false</bool>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QWidget" name="widget" native="true">
               <property name="minimumSize">
                <size>
-                <width>300</width>
-                <height>98</height>
+                <width>400</width>
+                <height>100</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>300</width>
+                <width>400</width>
                 <height>16777215</height>
                </size>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_12">
-               <item>
-                <widget class="QGroupBox" name="text_groupBox_top">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>300</height>
-                  </size>
-                 </property>
-                 <property name="title">
-                  <string>Text</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_11">
-                  <item>
-                   <widget class="QToolBox" name="toolBox">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                    <property name="currentIndex">
-                     <number>1</number>
-                    </property>
-                    <widget class="QWidget" name="page">
-                     <property name="geometry">
-                      <rect>
-                       <x>0</x>
-                       <y>0</y>
-                       <width>268</width>
-                       <height>203</height>
-                      </rect>
-                     </property>
-                     <attribute name="label">
-                      <string>Metadata 1</string>
-                     </attribute>
-                     <layout class="QVBoxLayout" name="verticalLayout_14">
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="tab">
+               <attribute name="title">
+                <string>Text</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_5">
+                <item>
+                 <widget class="QToolBox" name="toolBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="currentIndex">
+                   <number>0</number>
+                  </property>
+                  <widget class="QWidget" name="page">
+                   <property name="geometry">
+                    <rect>
+                     <x>0</x>
+                     <y>0</y>
+                     <width>354</width>
+                     <height>374</height>
+                    </rect>
+                   </property>
+                   <attribute name="label">
+                    <string>Metadata 1</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_14">
+                    <item>
+                     <widget class="QCheckBox" name="checkBox">
+                      <property name="text">
+                       <string>Enable</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_18">
                       <item>
-                       <widget class="QCheckBox" name="checkBox">
-                        <property name="text">
-                         <string>Enable</string>
+                       <spacer name="horizontalSpacer_9">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
                         </property>
-                        <property name="checked">
-                         <bool>true</bool>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Minimum</enum>
                         </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_18">
-                        <item>
-                         <spacer name="horizontalSpacer_9">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeType">
-                           <enum>QSizePolicy::Minimum</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>40</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                        <item>
-                         <widget class="QFrame" name="metadata_position_frame">
-                          <property name="enabled">
-                           <bool>true</bool>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>130</width>
-                            <height>120</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>130</width>
-                            <height>120</height>
-                           </size>
-                          </property>
-                          <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <widget class="QSlider" name="metadata_position_y">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="geometry">
-                            <rect>
-                             <x>60</x>
-                             <y>30</y>
-                             <width>20</width>
-                             <height>80</height>
-                            </rect>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>80</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>16777215</width>
-                             <height>80</height>
-                            </size>
-                           </property>
-                           <property name="value">
-                            <number>99</number>
-                           </property>
-                           <property name="orientation">
-                            <enum>Qt::Vertical</enum>
-                           </property>
-                          </widget>
-                          <widget class="QSlider" name="metadata_position_x">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="geometry">
-                            <rect>
-                             <x>20</x>
-                             <y>50</y>
-                             <width>100</width>
-                             <height>22</height>
-                            </rect>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>100</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>100</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="value">
-                            <number>0</number>
-                           </property>
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                          </widget>
-                          <widget class="QLabel" name="label_10">
-                           <property name="geometry">
-                            <rect>
-                             <x>10</x>
-                             <y>50</y>
-                             <width>16</width>
-                             <height>21</height>
-                            </rect>
-                           </property>
-                           <property name="text">
-                            <string>x</string>
-                           </property>
-                          </widget>
-                          <widget class="QLabel" name="label_11">
-                           <property name="geometry">
-                            <rect>
-                             <x>64</x>
-                             <y>10</y>
-                             <width>10</width>
-                             <height>21</height>
-                            </rect>
-                           </property>
-                           <property name="text">
-                            <string>y</string>
-                           </property>
-                           <property name="alignment">
-                            <set>Qt::AlignCenter</set>
-                           </property>
-                          </widget>
-                         </widget>
-                        </item>
-                        <item>
-                         <spacer name="horizontalSpacer_10">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeType">
-                           <enum>QSizePolicy::Minimum</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>40</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_15">
-                        <item>
-                         <widget class="QLabel" name="label_14">
-                          <property name="minimumSize">
-                           <size>
-                            <width>80</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>80</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>Font size</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSlider" name="font_size_slider">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimum">
-                           <number>1</number>
-                          </property>
-                          <property name="maximum">
-                           <number>10</number>
-                          </property>
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                     </layout>
-                    </widget>
-                    <widget class="QWidget" name="page_2">
-                     <property name="geometry">
-                      <rect>
-                       <x>0</x>
-                       <y>0</y>
-                       <width>268</width>
-                       <height>203</height>
-                      </rect>
-                     </property>
-                     <attribute name="label">
-                      <string>Metadata 2</string>
-                     </attribute>
-                     <layout class="QVBoxLayout" name="verticalLayout_15">
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_2">
-                        <property name="text">
-                         <string>Enable</string>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
                         </property>
-                        <property name="checked">
-                         <bool>true</bool>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QFrame" name="metadata_position_frame">
+                        <property name="enabled">
+                         <bool>false</bool>
                         </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_20">
-                        <item>
-                         <spacer name="horizontalSpacer_14">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeType">
-                           <enum>QSizePolicy::Minimum</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>40</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                        <item>
-                         <widget class="QFrame" name="metadata_position_frame_2">
-                          <property name="enabled">
-                           <bool>true</bool>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>130</width>
-                            <height>120</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>130</width>
-                            <height>120</height>
-                           </size>
-                          </property>
-                          <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <widget class="QSlider" name="metadata_position_y_2">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="geometry">
-                            <rect>
-                             <x>60</x>
-                             <y>30</y>
-                             <width>20</width>
-                             <height>80</height>
-                            </rect>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>80</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>16777215</width>
-                             <height>80</height>
-                            </size>
-                           </property>
-                           <property name="value">
-                            <number>99</number>
-                           </property>
-                           <property name="orientation">
-                            <enum>Qt::Vertical</enum>
-                           </property>
-                          </widget>
-                          <widget class="QSlider" name="metadata_position_x_2">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="geometry">
-                            <rect>
-                             <x>20</x>
-                             <y>50</y>
-                             <width>100</width>
-                             <height>22</height>
-                            </rect>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>100</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>100</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="value">
-                            <number>0</number>
-                           </property>
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                          </widget>
-                          <widget class="QLabel" name="label_18">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="geometry">
-                            <rect>
-                             <x>10</x>
-                             <y>50</y>
-                             <width>16</width>
-                             <height>21</height>
-                            </rect>
-                           </property>
-                           <property name="text">
-                            <string>x</string>
-                           </property>
-                          </widget>
-                          <widget class="QLabel" name="label_19">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="geometry">
-                            <rect>
-                             <x>64</x>
-                             <y>10</y>
-                             <width>10</width>
-                             <height>21</height>
-                            </rect>
-                           </property>
-                           <property name="text">
-                            <string>y</string>
-                           </property>
-                           <property name="alignment">
-                            <set>Qt::AlignCenter</set>
-                           </property>
-                          </widget>
-                         </widget>
-                        </item>
-                        <item>
-                         <spacer name="horizontalSpacer_15">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeType">
-                           <enum>QSizePolicy::Minimum</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>40</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_21">
-                        <item>
-                         <widget class="QLabel" name="label_20">
-                          <property name="enabled">
-                           <bool>true</bool>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>80</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>80</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>Font size</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSlider" name="font_size_slider_2">
-                          <property name="enabled">
-                           <bool>true</bool>
-                          </property>
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimum">
-                           <number>1</number>
-                          </property>
-                          <property name="maximum">
-                           <number>10</number>
-                          </property>
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                     </layout>
-                    </widget>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="graph_groupBox_top">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="title">
-                  <string>Graph</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_10">
-                  <item>
-                   <widget class="QCheckBox" name="enable_graph_checkbox">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="text">
-                     <string>Enable Graph</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QGroupBox" name="graph_groupBox">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="title">
-                     <string/>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_9">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_17">
-                       <item>
-                        <spacer name="horizontalSpacer_2">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Minimum</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item>
-                        <widget class="QFrame" name="metadata_position_frame_3">
+                        <property name="minimumSize">
+                         <size>
+                          <width>130</width>
+                          <height>120</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>130</width>
+                          <height>120</height>
+                         </size>
+                        </property>
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Raised</enum>
+                        </property>
+                        <widget class="QSlider" name="metadata_position_y">
                          <property name="enabled">
                           <bool>false</bool>
                          </property>
+                         <property name="geometry">
+                          <rect>
+                           <x>60</x>
+                           <y>30</y>
+                           <width>20</width>
+                           <height>80</height>
+                          </rect>
+                         </property>
                          <property name="minimumSize">
                           <size>
-                           <width>130</width>
-                           <height>120</height>
+                           <width>0</width>
+                           <height>80</height>
                           </size>
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>130</width>
-                           <height>120</height>
+                           <width>16777215</width>
+                           <height>80</height>
                           </size>
                          </property>
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                         <property name="value">
+                          <number>99</number>
                          </property>
-                         <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
-                         </property>
-                         <widget class="QSlider" name="graph_position_y">
-                          <property name="geometry">
-                           <rect>
-                            <x>60</x>
-                            <y>30</y>
-                            <width>20</width>
-                            <height>80</height>
-                           </rect>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>80</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>80</height>
-                           </size>
-                          </property>
-                          <property name="value">
-                           <number>99</number>
-                          </property>
-                          <property name="orientation">
-                           <enum>Qt::Vertical</enum>
-                          </property>
-                         </widget>
-                         <widget class="QSlider" name="graph_position_x">
-                          <property name="geometry">
-                           <rect>
-                            <x>20</x>
-                            <y>50</y>
-                            <width>100</width>
-                            <height>22</height>
-                           </rect>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>100</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>100</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="value">
-                           <number>0</number>
-                          </property>
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                         </widget>
-                         <widget class="QLabel" name="label_15">
-                          <property name="geometry">
-                           <rect>
-                            <x>10</x>
-                            <y>50</y>
-                            <width>16</width>
-                            <height>21</height>
-                           </rect>
-                          </property>
-                          <property name="text">
-                           <string>x</string>
-                          </property>
-                         </widget>
-                         <widget class="QLabel" name="label_16">
-                          <property name="geometry">
-                           <rect>
-                            <x>64</x>
-                            <y>10</y>
-                            <width>10</width>
-                            <height>21</height>
-                           </rect>
-                          </property>
-                          <property name="text">
-                           <string>y</string>
-                          </property>
-                          <property name="alignment">
-                           <set>Qt::AlignCenter</set>
-                          </property>
-                         </widget>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_8">
                          <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Minimum</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_10">
-                       <item>
-                        <widget class="QLabel" name="label_13">
-                         <property name="text">
-                          <string>Color:</string>
+                          <enum>Qt::Vertical</enum>
                          </property>
                         </widget>
-                       </item>
-                       <item>
-                        <widget class="QComboBox" name="graph_color_combobox">
-                         <item>
-                          <property name="text">
-                           <string>White</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Red</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Blue</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Green</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Black</string>
-                          </property>
-                         </item>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_7">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
+                        <widget class="QSlider" name="metadata_position_x">
+                         <property name="enabled">
+                          <bool>false</bool>
                          </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
+                         <property name="geometry">
+                          <rect>
+                           <x>20</x>
+                           <y>50</y>
+                           <width>100</width>
+                           <height>22</height>
+                          </rect>
                          </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_12">
-                       <item>
-                        <widget class="QLabel" name="metadata_graph_size_label_2">
                          <property name="minimumSize">
                           <size>
-                           <width>80</width>
+                           <width>100</width>
                            <height>0</height>
                           </size>
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>80</width>
+                           <width>100</width>
                            <height>16777215</height>
                           </size>
                          </property>
-                         <property name="text">
-                          <string>Graph size:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSlider" name="metadata_graph_size_slider">
-                         <property name="minimum">
-                          <number>50</number>
-                         </property>
-                         <property name="maximum">
-                          <number>1000</number>
-                         </property>
-                         <property name="singleStep">
-                          <number>1</number>
-                         </property>
                          <property name="value">
-                          <number>200</number>
+                          <number>0</number>
                          </property>
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
                          </property>
                         </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_16">
-                       <item>
-                        <widget class="QLabel" name="label_17">
+                        <widget class="QLabel" name="label_10">
+                         <property name="geometry">
+                          <rect>
+                           <x>10</x>
+                           <y>50</y>
+                           <width>16</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string>x</string>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_11">
+                         <property name="geometry">
+                          <rect>
+                           <x>64</x>
+                           <y>10</y>
+                           <width>10</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string>y</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_10">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Minimum</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_15">
+                      <item>
+                       <widget class="QLabel" name="label_14">
+                        <property name="minimumSize">
+                         <size>
+                          <width>80</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>80</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Font size</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSlider" name="font_size_slider">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>10</number>
+                        </property>
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QGridLayout" name="gridLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="prefix_label_1">
+                        <property name="text">
+                         <string>Prefix:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QLineEdit" name="prefix_lineEdit_1"/>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="suffix_label_1">
+                        <property name="text">
+                         <string>Suffix:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QLineEdit" name="suffix_lineEdit_1"/>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QWidget" name="page_2">
+                   <property name="geometry">
+                    <rect>
+                     <x>0</x>
+                     <y>0</y>
+                     <width>354</width>
+                     <height>374</height>
+                    </rect>
+                   </property>
+                   <attribute name="label">
+                    <string>Metadata 2</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_15">
+                    <item>
+                     <widget class="QCheckBox" name="checkBox_2">
+                      <property name="text">
+                       <string>Enable</string>
+                      </property>
+                      <property name="checked">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_20">
+                      <item>
+                       <spacer name="horizontalSpacer_14">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Minimum</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QFrame" name="metadata_position_frame_2">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>130</width>
+                          <height>120</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>130</width>
+                          <height>120</height>
+                         </size>
+                        </property>
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Raised</enum>
+                        </property>
+                        <widget class="QSlider" name="metadata_position_y_2">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="geometry">
+                          <rect>
+                           <x>60</x>
+                           <y>30</y>
+                           <width>20</width>
+                           <height>80</height>
+                          </rect>
+                         </property>
                          <property name="minimumSize">
                           <size>
-                           <width>80</width>
+                           <width>0</width>
+                           <height>80</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>80</height>
+                          </size>
+                         </property>
+                         <property name="value">
+                          <number>99</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                        </widget>
+                        <widget class="QSlider" name="metadata_position_x_2">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="geometry">
+                          <rect>
+                           <x>20</x>
+                           <y>50</y>
+                           <width>100</width>
+                           <height>22</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>100</width>
                            <height>0</height>
                           </size>
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>90</width>
+                           <width>100</width>
                            <height>16777215</height>
                           </size>
                          </property>
-                         <property name="text">
-                          <string>Font size</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSlider" name="graph_font_size_slider">
-                         <property name="minimum">
-                          <number>1</number>
-                         </property>
-                         <property name="maximum">
-                          <number>10</number>
-                         </property>
                          <property name="value">
-                          <number>10</number>
+                          <number>0</number>
                          </property>
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
                          </property>
                         </widget>
-                       </item>
-                      </layout>
+                        <widget class="QLabel" name="label_18">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="geometry">
+                          <rect>
+                           <x>10</x>
+                           <y>50</y>
+                           <width>16</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string>x</string>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_19">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="geometry">
+                          <rect>
+                           <x>64</x>
+                           <y>10</y>
+                           <width>10</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string>y</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_15">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Minimum</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_21">
+                      <item>
+                       <widget class="QLabel" name="label_20">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>80</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>80</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Font size</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSlider" name="font_size_slider_2">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>10</number>
+                        </property>
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QGridLayout" name="gridLayout_2">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="prefix_label_2">
+                        <property name="text">
+                         <string>Prefix:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="suffix_label_2">
+                        <property name="text">
+                         <string>Suffix:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QLineEdit" name="suffix_lineEdit_2"/>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QLineEdit" name="prefix_lineEdit_2"/>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer_2">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="Graph">
+               <attribute name="title">
+                <string>Graph</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_13">
+                <item>
+                 <widget class="QCheckBox" name="enable_graph_checkbox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Enable Graph</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="graph_groupBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_9">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <item>
+                      <spacer name="horizontalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeType">
+                        <enum>QSizePolicy::Minimum</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="metadata_position_frame_3">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>130</width>
+                         <height>120</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>130</width>
+                         <height>120</height>
+                        </size>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <widget class="QSlider" name="graph_position_y">
+                        <property name="geometry">
+                         <rect>
+                          <x>60</x>
+                          <y>30</y>
+                          <width>20</width>
+                          <height>80</height>
+                         </rect>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>80</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>80</height>
+                         </size>
+                        </property>
+                        <property name="value">
+                         <number>99</number>
+                        </property>
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                       </widget>
+                       <widget class="QSlider" name="graph_position_x">
+                        <property name="geometry">
+                         <rect>
+                          <x>20</x>
+                          <y>50</y>
+                          <width>100</width>
+                          <height>22</height>
+                         </rect>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>100</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>100</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="value">
+                         <number>0</number>
+                        </property>
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                       </widget>
+                       <widget class="QLabel" name="label_15">
+                        <property name="geometry">
+                         <rect>
+                          <x>10</x>
+                          <y>50</y>
+                          <width>16</width>
+                          <height>21</height>
+                         </rect>
+                        </property>
+                        <property name="text">
+                         <string>x</string>
+                        </property>
+                       </widget>
+                       <widget class="QLabel" name="label_16">
+                        <property name="geometry">
+                         <rect>
+                          <x>64</x>
+                          <y>10</y>
+                          <width>10</width>
+                          <height>21</height>
+                         </rect>
+                        </property>
+                        <property name="text">
+                         <string>y</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignCenter</set>
+                        </property>
+                       </widget>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_8">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeType">
+                        <enum>QSizePolicy::Minimum</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
                      </item>
                     </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_10">
+                     <item>
+                      <widget class="QLabel" name="label_13">
+                       <property name="text">
+                        <string>Color:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="graph_color_combobox">
+                       <item>
+                        <property name="text">
+                         <string>White</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Red</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Blue</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Green</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Black</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_7">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_12">
+                     <item>
+                      <widget class="QLabel" name="metadata_graph_size_label_2">
+                       <property name="minimumSize">
+                        <size>
+                         <width>80</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>80</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Graph size:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSlider" name="metadata_graph_size_slider">
+                       <property name="minimum">
+                        <number>50</number>
+                       </property>
+                       <property name="maximum">
+                        <number>1000</number>
+                       </property>
+                       <property name="singleStep">
+                        <number>1</number>
+                       </property>
+                       <property name="value">
+                        <number>200</number>
+                       </property>
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_16">
+                     <item>
+                      <widget class="QLabel" name="label_17">
+                       <property name="minimumSize">
+                        <size>
+                         <width>80</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>90</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Font size</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSlider" name="graph_font_size_slider">
+                       <property name="minimum">
+                        <number>1</number>
+                       </property>
+                       <property name="maximum">
+                        <number>10</number>
+                       </property>
+                       <property name="value">
+                        <number>10</number>
+                       </property>
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_3">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </item>
@@ -1658,8 +1688,8 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1681</x>
-     <y>1089</y>
+     <x>2212</x>
+     <y>1150</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
@@ -1675,7 +1705,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>81</x>
-     <y>1089</y>
+     <y>1150</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
@@ -1690,8 +1720,8 @@
    <slot>scale_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>877</x>
-     <y>56</y>
+     <x>889</x>
+     <y>162</y>
     </hint>
     <hint type="destinationlabel">
      <x>1137</x>
@@ -1706,8 +1736,8 @@
    <slot>metadata_checkbox_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>907</x>
-     <y>250</y>
+     <x>887</x>
+     <y>569</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -1722,8 +1752,8 @@
    <slot>previous_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>97</x>
-     <y>1044</y>
+     <x>110</x>
+     <y>1079</y>
     </hint>
     <hint type="destinationlabel">
      <x>112</x>
@@ -1738,8 +1768,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>499</x>
-     <y>1044</y>
+     <x>479</x>
+     <y>1079</y>
     </hint>
     <hint type="destinationlabel">
      <x>387</x>
@@ -1754,8 +1784,8 @@
    <slot>slider_file_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>338</x>
-     <y>1041</y>
+     <x>318</x>
+     <y>1076</y>
     </hint>
     <hint type="destinationlabel">
      <x>214</x>
@@ -1770,8 +1800,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>338</x>
-     <y>1041</y>
+     <x>318</x>
+     <y>1076</y>
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
@@ -1786,8 +1816,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>703</x>
-     <y>115</y>
+     <x>683</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -1802,8 +1832,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>783</x>
-     <y>115</y>
+     <x>763</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -1818,8 +1848,8 @@
    <slot>scale_thickness_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1007</x>
-     <y>202</y>
+     <x>987</x>
+     <y>414</y>
     </hint>
     <hint type="destinationlabel">
      <x>1020</x>
@@ -1834,8 +1864,8 @@
    <slot>scale_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>672</x>
-     <y>204</y>
+     <x>652</x>
+     <y>416</y>
     </hint>
     <hint type="destinationlabel">
      <x>811</x>
@@ -1850,8 +1880,8 @@
    <slot>scale_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>683</x>
-     <y>159</y>
+     <x>663</x>
+     <y>371</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
@@ -1866,8 +1896,8 @@
    <slot>scale_real_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>897</x>
-     <y>158</y>
+     <x>877</x>
+     <y>370</y>
     </hint>
     <hint type="destinationlabel">
      <x>963</x>
@@ -1882,8 +1912,8 @@
    <slot>scale_units_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1008</x>
-     <y>161</y>
+     <x>988</x>
+     <y>373</y>
     </hint>
     <hint type="destinationlabel">
      <x>1267</x>
@@ -1898,8 +1928,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1544</x>
-     <y>183</y>
+     <x>1948</x>
+     <y>395</y>
     </hint>
     <hint type="destinationlabel">
      <x>1401</x>
@@ -1914,8 +1944,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1544</x>
-     <y>183</y>
+     <x>1948</x>
+     <y>395</y>
     </hint>
     <hint type="destinationlabel">
      <x>1408</x>
@@ -1930,8 +1960,8 @@
    <slot>metadata_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1313</x>
-     <y>465</y>
+     <x>1607</x>
+     <y>756</y>
     </hint>
     <hint type="destinationlabel">
      <x>1166</x>
@@ -1946,8 +1976,8 @@
    <slot>metadata_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1313</x>
-     <y>465</y>
+     <x>1607</x>
+     <y>756</y>
     </hint>
     <hint type="destinationlabel">
      <x>1096</x>
@@ -1962,8 +1992,8 @@
    <slot>metadata_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1273</x>
-     <y>503</y>
+     <x>1567</x>
+     <y>794</y>
     </hint>
     <hint type="destinationlabel">
      <x>1129</x>
@@ -1978,8 +2008,8 @@
    <slot>metadata_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1273</x>
-     <y>503</y>
+     <x>1567</x>
+     <y>794</y>
     </hint>
     <hint type="destinationlabel">
      <x>1206</x>
@@ -1994,8 +2024,8 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1504</x>
-     <y>221</y>
+     <x>1908</x>
+     <y>433</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -2010,8 +2040,8 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1504</x>
-     <y>221</y>
+     <x>1908</x>
+     <y>433</y>
     </hint>
     <hint type="destinationlabel">
      <x>1409</x>
@@ -2026,8 +2056,8 @@
    <slot>metadata_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>659</x>
-     <y>984</y>
+     <x>639</x>
+     <y>1061</y>
     </hint>
     <hint type="destinationlabel">
      <x>758</x>
@@ -2042,8 +2072,8 @@
    <slot>metadata_graph_size_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1355</x>
-     <y>929</y>
+     <x>1714</x>
+     <y>849</y>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
@@ -2058,8 +2088,8 @@
    <slot>metadata_graph_size_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1355</x>
-     <y>929</y>
+     <x>1714</x>
+     <y>849</y>
     </hint>
     <hint type="destinationlabel">
      <x>905</x>
@@ -2074,8 +2104,8 @@
    <slot>import_table_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1071</x>
-     <y>1030</y>
+     <x>1326</x>
+     <y>1065</y>
     </hint>
     <hint type="destinationlabel">
      <x>972</x>
@@ -2090,8 +2120,8 @@
    <slot>metadata_table_right_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>604</x>
-     <y>536</y>
+     <x>1110</x>
+     <y>999</y>
     </hint>
     <hint type="destinationlabel">
      <x>452</x>
@@ -2106,8 +2136,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1276</x>
-     <y>849</y>
+     <x>1567</x>
+     <y>769</y>
     </hint>
     <hint type="destinationlabel">
      <x>1169</x>
@@ -2122,8 +2152,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1316</x>
-     <y>811</y>
+     <x>1607</x>
+     <y>731</y>
     </hint>
     <hint type="destinationlabel">
      <x>1081</x>
@@ -2138,8 +2168,8 @@
    <slot>graph_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1316</x>
-     <y>811</y>
+     <x>1607</x>
+     <y>731</y>
     </hint>
     <hint type="destinationlabel">
      <x>1153</x>
@@ -2154,8 +2184,8 @@
    <slot>graph_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1276</x>
-     <y>849</y>
+     <x>1567</x>
+     <y>769</y>
     </hint>
     <hint type="destinationlabel">
      <x>1119</x>
@@ -2170,8 +2200,8 @@
    <slot>enable_graph_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1379</x>
-     <y>711</y>
+     <x>1738</x>
+     <y>631</y>
     </hint>
     <hint type="destinationlabel">
      <x>899</x>
@@ -2186,8 +2216,8 @@
    <slot>graph_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1273</x>
-     <y>896</y>
+     <x>1524</x>
+     <y>816</y>
     </hint>
     <hint type="destinationlabel">
      <x>998</x>
@@ -2202,8 +2232,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1316</x>
-     <y>811</y>
+     <x>1607</x>
+     <y>731</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2218,8 +2248,8 @@
    <slot>graph_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1276</x>
-     <y>849</y>
+     <x>1567</x>
+     <y>769</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2234,8 +2264,8 @@
    <slot>font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1380</x>
-     <y>547</y>
+     <x>1717</x>
+     <y>838</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
@@ -2250,8 +2280,8 @@
    <slot>font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1380</x>
-     <y>547</y>
+     <x>1717</x>
+     <y>838</y>
     </hint>
     <hint type="destinationlabel">
      <x>1415</x>
@@ -2266,8 +2296,8 @@
    <slot>graph_font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1355</x>
-     <y>963</y>
+     <x>1714</x>
+     <y>883</y>
     </hint>
     <hint type="destinationlabel">
      <x>1414</x>
@@ -2282,8 +2312,8 @@
    <slot>graph_font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1355</x>
-     <y>963</y>
+     <x>1714</x>
+     <y>883</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
@@ -2298,8 +2328,8 @@
    <slot>text_metadata_1_enable_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1170</x>
-     <y>376</y>
+     <x>1726</x>
+     <y>677</y>
     </hint>
     <hint type="destinationlabel">
      <x>1684</x>
@@ -2314,8 +2344,8 @@
    <slot>text_metadata_2_enable_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1190</x>
-     <y>415</y>
+     <x>1726</x>
+     <y>711</y>
     </hint>
     <hint type="destinationlabel">
      <x>1692</x>
@@ -2330,8 +2360,8 @@
    <slot>metadata2_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1238</x>
-     <y>495</y>
+     <x>1607</x>
+     <y>790</y>
     </hint>
     <hint type="destinationlabel">
      <x>1691</x>
@@ -2346,8 +2376,8 @@
    <slot>metadata2_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1289</x>
-     <y>495</y>
+     <x>1607</x>
+     <y>790</y>
     </hint>
     <hint type="destinationlabel">
      <x>1690</x>
@@ -2362,8 +2392,8 @@
    <slot>metadata2_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1268</x>
-     <y>526</y>
+     <x>1567</x>
+     <y>828</y>
     </hint>
     <hint type="destinationlabel">
      <x>1687</x>
@@ -2378,8 +2408,8 @@
    <slot>metadata2_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1259</x>
-     <y>537</y>
+     <x>1567</x>
+     <y>828</y>
     </hint>
     <hint type="destinationlabel">
      <x>1689</x>
@@ -2394,8 +2424,8 @@
    <slot>font_size_slider_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1297</x>
-     <y>572</y>
+     <x>1717</x>
+     <y>872</y>
     </hint>
     <hint type="destinationlabel">
      <x>1689</x>
@@ -2410,12 +2440,76 @@
    <slot>font_size_slider_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1269</x>
-     <y>580</y>
+     <x>1717</x>
+     <y>872</y>
     </hint>
     <hint type="destinationlabel">
      <x>1687</x>
      <y>780</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>prefix_lineEdit_1</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_1_suffix_prefix_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1515</x>
+     <y>863</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1619</x>
+     <y>1134</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>suffix_lineEdit_1</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_1_suffix_prefix_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1611</x>
+     <y>895</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1565</x>
+     <y>1107</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>prefix_lineEdit_2</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_2_suffix_prefix_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1492</x>
+     <y>890</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1487</x>
+     <y>1147</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>suffix_lineEdit_2</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_2_suffix_prefix_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1515</x>
+     <y>926</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1528</x>
+     <y>1154</y>
     </hint>
    </hints>
   </connection>
@@ -2463,5 +2557,7 @@
   <slot>slot1()</slot>
   <slot>metadata2_position_clicked()</slot>
   <slot>metadata2_position_moved()</slot>
+  <slot>metadata_1_suffix_prefix_changed()</slot>
+  <slot>metadata_2_suffix_prefix_changed()</slot>
  </slots>
 </ui>
