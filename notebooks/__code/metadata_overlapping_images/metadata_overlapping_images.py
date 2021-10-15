@@ -334,6 +334,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.suffix_label_1.setEnabled(status)
         self.ui.prefix_lineEdit_1.setEnabled(status)
         self.ui.suffix_lineEdit_1.setEnabled(status)
+        self.ui.metadata_1_name_groupBox.setEnabled(status)
         self.update_metadata_pyqt_ui()
 
     def text_metadata_2_enable_pressed(self, status):
@@ -348,6 +349,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.suffix_label_2.setEnabled(status)
         self.ui.prefix_lineEdit_2.setEnabled(status)
         self.ui.suffix_lineEdit_2.setEnabled(status)
+        self.ui.metadata_2_name_groupBox.setEnabled(status)
         self.update_metadata_pyqt_ui()
 
     def metadata_1_suffix_prefix_changed(self, new_text):

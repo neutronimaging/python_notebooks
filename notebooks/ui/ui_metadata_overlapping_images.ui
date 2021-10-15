@@ -644,7 +644,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab">
                <attribute name="title">
@@ -657,7 +657,7 @@
                    <bool>false</bool>
                   </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
                   <widget class="QWidget" name="page">
                    <property name="geometry">
@@ -877,7 +877,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="groupBox">
+                     <widget class="QGroupBox" name="metadata_1_name_groupBox">
                       <property name="enabled">
                        <bool>false</bool>
                       </property>
@@ -1159,7 +1159,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="groupBox_2">
+                     <widget class="QGroupBox" name="metadata_2_name_groupBox">
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
