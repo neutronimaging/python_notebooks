@@ -593,5 +593,7 @@
   <slot>linear_operation_lineedit_changed()</slot>
   <slot>linear_operation_combobox_changed()</slot>
   <slot>list_of_metadata_changed()</slot>
+  <slot>prefix_text_changed()</slot>
+  <slot>suffix_text_changed()</slot>
  </slots>
 </ui>

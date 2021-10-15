@@ -82,6 +82,8 @@ class MetadataSelectorHandler(QDialog):
 
         math_1 = str(self.ui.linear_operation_comboBox_1.currentText())
         math_2 = str(self.ui.linear_operation_comboBox_2.currentText())
+        prefix = str(self.ui.prefix_lineEdit.text())
+        suffix = str(self.ui.suffix_lineEdit.text())
         if self.is_linear_operation_is_valid():
             value_1 = str(self.ui.linear_operation_lineEdit_1.text()).strip()
             value_2 = str(self.ui.linear_operation_lineEdit_2.text()).strip()
@@ -95,6 +97,8 @@ class MetadataSelectorHandler(QDialog):
                                           "value_1": value_1,
                                           "math_2": math_2,
                                           "value_2": value_2,
+                                          "prefix": prefix,
+                                          "suffix": suffix,
                                           }
 
     def is_before_linear_operation_is_valid(self):

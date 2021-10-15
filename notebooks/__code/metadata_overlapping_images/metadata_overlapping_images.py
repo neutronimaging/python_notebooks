@@ -12,7 +12,6 @@ from .event_handler import MetadataTableHandler
 from __code.metadata_overlapping_images.export_images import ExportImages
 from .display import DisplayImages, DisplayScalePyqtUi, DisplayMetadataPyqtUi
 from .table_loader import TableLoader
-from __code.metadata_overlapping_images.advanced_table_handler import AdvancedTableHandler
 
 from __code.metadata_overlapping_images import HELP_PAGE
 
@@ -165,7 +164,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.metadata_groupbox.setEnabled(status)
         # self.ui.metadata_position_label.setEnabled(status)
         self.ui.metadata_position_frame.setEnabled(status)
-        self.ui.meta_label.setEnabled(status)
+        # self.ui.meta_label.setEnabled(status)
         self.ui.manual_metadata_name.setEnabled(status)
         self.ui.enable_graph_checkbox.setEnabled(status)
         self.ui.text_groupBox_top.setEnabled(status)
@@ -271,10 +270,6 @@ class MetadataOverlappingImagesUi(QMainWindow):
 
     def table_cell_changed(self, row, column):
         self.update_metadata_pyqt_ui()
-
-    def advanced_table_clicked(self):
-        o_advanced = AdvancedTableHandler(parent=self)
-        o_advanced.show()
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,

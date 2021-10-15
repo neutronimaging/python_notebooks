@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1694</width>
-    <height>1123</height>
+    <width>2225</width>
+    <height>1211</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -354,7 +354,7 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>301</width>
+                 <width>489</width>
                  <height>98</height>
                 </size>
                </property>
@@ -586,44 +586,6 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_9">
-               <item>
-                <widget class="QLabel" name="meta_label">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Legend:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="manual_metadata_name">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>... [Value] ...</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="manual_metadata_units"/>
-               </item>
-              </layout>
-             </item>
-             <item>
               <widget class="QTableWidget" name="tableWidget">
                <property name="contextMenuPolicy">
                 <enum>Qt::CustomContextMenu</enum>
@@ -721,30 +683,6 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="advanced_table_pushButton">
-                 <property name="text">
-                  <string>Advanced Table ...</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_14">
-               <item>
-                <spacer name="horizontalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
                 <widget class="QPushButton" name="import_table_button">
                  <property name="text">
                   <string>Import Table ...</string>
@@ -813,7 +751,7 @@
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>-6</y>
+                       <y>0</y>
                        <width>268</width>
                        <height>203</height>
                       </rect>
@@ -1659,7 +1597,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1694</width>
+     <width>2225</width>
      <height>24</height>
     </rect>
    </property>
@@ -1769,7 +1707,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>907</x>
-     <y>424</y>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>1140</x>
@@ -1848,8 +1786,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>692</x>
-     <y>135</y>
+     <x>703</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>582</x>
@@ -1864,8 +1802,8 @@
    <slot>scale_orientation_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>772</x>
-     <y>135</y>
+     <x>783</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>726</x>
@@ -1880,8 +1818,8 @@
    <slot>scale_thickness_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>996</x>
-     <y>344</y>
+     <x>1007</x>
+     <y>202</y>
     </hint>
     <hint type="destinationlabel">
      <x>1020</x>
@@ -1896,8 +1834,8 @@
    <slot>scale_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>661</x>
-     <y>346</y>
+     <x>672</x>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>811</x>
@@ -1912,8 +1850,8 @@
    <slot>scale_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>672</x>
-     <y>240</y>
+     <x>683</x>
+     <y>159</y>
     </hint>
     <hint type="destinationlabel">
      <x>1019</x>
@@ -1928,8 +1866,8 @@
    <slot>scale_real_size_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>886</x>
-     <y>238</y>
+     <x>897</x>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
      <x>963</x>
@@ -1944,8 +1882,8 @@
    <slot>scale_units_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>997</x>
-     <y>242</y>
+     <x>1008</x>
+     <y>161</y>
     </hint>
     <hint type="destinationlabel">
      <x>1267</x>
@@ -1960,7 +1898,7 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1553</x>
+     <x>1544</x>
      <y>183</y>
     </hint>
     <hint type="destinationlabel">
@@ -1976,7 +1914,7 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1553</x>
+     <x>1544</x>
      <y>183</y>
     </hint>
     <hint type="destinationlabel">
@@ -1993,7 +1931,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1313</x>
-     <y>597</y>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>1166</x>
@@ -2009,7 +1947,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1313</x>
-     <y>597</y>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>1096</x>
@@ -2025,7 +1963,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1273</x>
-     <y>635</y>
+     <y>503</y>
     </hint>
     <hint type="destinationlabel">
      <x>1129</x>
@@ -2041,7 +1979,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1273</x>
-     <y>635</y>
+     <y>503</y>
     </hint>
     <hint type="destinationlabel">
      <x>1206</x>
@@ -2056,7 +1994,7 @@
    <slot>scale_position_moved()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1513</x>
+     <x>1504</x>
      <y>221</y>
     </hint>
     <hint type="destinationlabel">
@@ -2072,7 +2010,7 @@
    <slot>scale_position_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1513</x>
+     <x>1504</x>
      <y>221</y>
     </hint>
     <hint type="destinationlabel">
@@ -2098,38 +2036,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>manual_metadata_name</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>metadata_name_return_pressed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>789</x>
-     <y>468</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>796</x>
-     <y>610</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>manual_metadata_units</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>metadata_name_return_pressed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1070</x>
-     <y>468</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>913</x>
-     <y>622</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>metadata_graph_size_slider</sender>
    <signal>sliderPressed()</signal>
    <receiver>MainWindow</receiver>
@@ -2137,7 +2043,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1355</x>
-     <y>958</y>
+     <y>929</y>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
@@ -2153,7 +2059,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1355</x>
-     <y>958</y>
+     <y>929</y>
     </hint>
     <hint type="destinationlabel">
      <x>905</x>
@@ -2201,7 +2107,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1276</x>
-     <y>929</y>
+     <y>849</y>
     </hint>
     <hint type="destinationlabel">
      <x>1169</x>
@@ -2217,7 +2123,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1316</x>
-     <y>891</y>
+     <y>811</y>
     </hint>
     <hint type="destinationlabel">
      <x>1081</x>
@@ -2233,7 +2139,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1316</x>
-     <y>891</y>
+     <y>811</y>
     </hint>
     <hint type="destinationlabel">
      <x>1153</x>
@@ -2249,7 +2155,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1276</x>
-     <y>929</y>
+     <y>849</y>
     </hint>
     <hint type="destinationlabel">
      <x>1119</x>
@@ -2265,7 +2171,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1379</x>
-     <y>791</y>
+     <y>711</y>
     </hint>
     <hint type="destinationlabel">
      <x>899</x>
@@ -2281,7 +2187,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1273</x>
-     <y>925</y>
+     <y>896</y>
     </hint>
     <hint type="destinationlabel">
      <x>998</x>
@@ -2297,7 +2203,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1316</x>
-     <y>891</y>
+     <y>811</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2313,7 +2219,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1276</x>
-     <y>929</y>
+     <y>849</y>
     </hint>
     <hint type="destinationlabel">
      <x>709</x>
@@ -2329,7 +2235,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1380</x>
-     <y>679</y>
+     <y>547</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
@@ -2345,7 +2251,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1380</x>
-     <y>679</y>
+     <y>547</y>
     </hint>
     <hint type="destinationlabel">
      <x>1415</x>
@@ -2361,7 +2267,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1355</x>
-     <y>992</y>
+     <y>963</y>
     </hint>
     <hint type="destinationlabel">
      <x>1414</x>
@@ -2377,27 +2283,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>1355</x>
-     <y>992</y>
+     <y>963</y>
     </hint>
     <hint type="destinationlabel">
      <x>1413</x>
      <y>691</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>advanced_table_pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>advanced_table_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1071</x>
-     <y>988</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>670</x>
-     <y>791</y>
     </hint>
    </hints>
   </connection>
@@ -2409,7 +2299,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1170</x>
-     <y>508</y>
+     <y>376</y>
     </hint>
     <hint type="destinationlabel">
      <x>1684</x>
@@ -2425,7 +2315,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1190</x>
-     <y>561</y>
+     <y>415</y>
     </hint>
     <hint type="destinationlabel">
      <x>1692</x>
@@ -2441,7 +2331,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1238</x>
-     <y>641</y>
+     <y>495</y>
     </hint>
     <hint type="destinationlabel">
      <x>1691</x>
@@ -2457,7 +2347,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1289</x>
-     <y>641</y>
+     <y>495</y>
     </hint>
     <hint type="destinationlabel">
      <x>1690</x>
@@ -2473,7 +2363,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1268</x>
-     <y>672</y>
+     <y>526</y>
     </hint>
     <hint type="destinationlabel">
      <x>1687</x>
@@ -2489,7 +2379,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1259</x>
-     <y>683</y>
+     <y>537</y>
     </hint>
     <hint type="destinationlabel">
      <x>1689</x>
@@ -2505,7 +2395,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1297</x>
-     <y>718</y>
+     <y>572</y>
     </hint>
     <hint type="destinationlabel">
      <x>1689</x>
@@ -2521,7 +2411,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1269</x>
-     <y>726</y>
+     <y>580</y>
     </hint>
     <hint type="destinationlabel">
      <x>1687</x>
