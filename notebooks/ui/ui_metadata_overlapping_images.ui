@@ -613,9 +613,9 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QPushButton" name="import_table_button">
+                <widget class="QPushButton" name="export_table_pushButton">
                  <property name="text">
-                  <string>Import Table ...</string>
+                  <string>Export Table ...</string>
                  </property>
                 </widget>
                </item>
@@ -2123,22 +2123,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>import_table_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>import_table_pressed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1217</x>
-     <y>1065</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>972</x>
-     <y>798</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>tableWidget</sender>
    <signal>customContextMenuRequested(QPoint)</signal>
    <receiver>MainWindow</receiver>
@@ -2602,6 +2586,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>export_table_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>export_table_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1288</x>
+     <y>1049</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1292</x>
+     <y>1125</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -2648,5 +2648,6 @@
   <slot>metadata_1_suffix_prefix_changed()</slot>
   <slot>metadata_2_suffix_prefix_changed()</slot>
   <slot>graph_axis_label_changed()</slot>
+  <slot>export_table_clicked()</slot>
  </slots>
 </ui>

@@ -11,7 +11,7 @@ from .initialization import Initializer
 from .event_handler import MetadataTableHandler
 from __code.metadata_overlapping_images.export_images import ExportImages
 from .display import DisplayImages, DisplayScalePyqtUi, DisplayMetadataPyqtUi
-from .table_loader import TableLoader
+from .export_table import ExportTable
 
 from __code.metadata_overlapping_images import HELP_PAGE
 
@@ -286,6 +286,18 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def table_cell_changed(self, row, column):
         self.update_metadata_pyqt_ui()
 
+    def export_table_clicked(self):
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=os.path.dirname(self.working_dir),
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        QtGui.QGuiApplication.processEvents()
+        if _export_folder:
+            o_export = ExportTable(parent=self,
+                                   export_folder=_export_folder)
+            o_export.run()
+
+
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=os.path.dirname(self.working_dir),
@@ -297,21 +309,21 @@ class MetadataOverlappingImagesUi(QMainWindow):
                                     export_folder=_export_folder)
             o_export.run()
 
-    def import_table_pressed(self):
-        _table_file = QFileDialog.getOpenFileName(self,
-                                                  directory=os.path.dirname(self.working_dir),
-                                                  caption="Select Input File")
-        QtGui.QGuiApplication.processEvents()
-
-        if type(_table_file) is tuple:
-            _table_file = _table_file[0]
-
-        if _table_file:
-            o_import = TableLoader(parent=self,
-                                   filename=str(_table_file))
-            o_import.load_table()
-            o_import.populate()
-            self.update_metadata_pyqt_ui()
+    # def import_table_pressed(self):
+    #     _table_file = QFileDialog.getOpenFileName(self,
+    #                                               directory=os.path.dirname(self.working_dir),
+    #                                               caption="Select Input File")
+    #     QtGui.QGuiApplication.processEvents()
+    #
+    #     if type(_table_file) is tuple:
+    #         _table_file = _table_file[0]
+    #
+    #     if _table_file:
+    #         o_import = TableLoader(parent=self,
+    #                                filename=str(_table_file))
+    #         o_import.load_table()
+    #         o_import.populate()
+    #         self.update_metadata_pyqt_ui()
 
     def enable_graph_button_clicked(self, new_state):
         self.ui.graph_groupBox.setEnabled(new_state)
