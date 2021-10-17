@@ -288,13 +288,13 @@ class DisplayMetadataPyqtUi:
 
             if not self.is_axis_plotable(x_axis):
                 self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph (x-axis has wrong format)!",
-                                                         10000)
+                                                     10000)
                 self.parent.ui.statusbar.setStyleSheet("color: red")
                 return
 
             if not self.is_axis_plotable(y_axis):
                 self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph (y-axis has wrong format)!",
-                                                         10000)
+                                                     10000)
                 self.parent.ui.statusbar.setStyleSheet("color: red")
                 return
 
