@@ -29,7 +29,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
                               "value_1": "",
                               "math_2": "+",
                               "value_2": "",
-                              "index_of_metadata": 0,
+                              "index_of_metadata": -1,
                               },
                           2: {"first_part_of_string_to_remove": "",
                               "last_part_of_string_to_remove": "",
@@ -37,7 +37,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
                               "value_1": "",
                               "math_2": "+",
                               "value_2": "",
-                              "index_of_metadata": 0,
+                              "index_of_metadata": -1,
                               },
                           3: {"first_part_of_string_to_remove": "",
                               "last_part_of_string_to_remove": "",
@@ -45,7 +45,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
                               "value_1": "",
                               "math_2": "+",
                               "value_2": "",
-                              "index_of_metadata": 0,
+                              "index_of_metadata": -1,
                               },
                           }
 

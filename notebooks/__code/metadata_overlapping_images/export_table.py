@@ -62,9 +62,9 @@ class ExportTable:
             value_1 = metadata_operation['value_1']
             math_2 = metadata_operation['math_2']
             value_2 = metadata_operation['value_2']
-            return (math_1, value_1, math_2, value_2)
+            return math_1, value_1, math_2, value_2
 
-        def format_math(metadata_operation, metadata_axis='x_axis', metadata=None):
+        def format_math(metadata_operation, metadata_axis='x_axis'):
             math_1, value_1, math_2, value_2 = get_maths_values(metadata_operation)
             if value_1 == "":
                 metadata.append(f"# Metadata {metadata_axis} operation: None")
@@ -74,14 +74,24 @@ class ExportTable:
                 else:
                     metadata.append(f"# Metadata {metadata_axis} operation: {math_1} {value_1} {math_2} {value_2}")
 
-        format_math(x_axis_metadata_operation, metadata_axis='x_axis', metadata=metadata)
-        format_math(y_axis_metadata_operation, metadata_axis='y_axis', metadata=metadata)
+        format_math(x_axis_metadata_operation, metadata_axis='x_axis')
+        format_math(y_axis_metadata_operation, metadata_axis='y_axis')
 
-        list_metadata = self.parent.list_metadata
+        list_metadata = self.parent.raw_list_metadata
         metadata.append(f"# column 0: file index")
         metadata.append(f"# column 1: file name")
-        metadata.append(f"# column 2: metadata {list_metadata[self.parent.metadata_operation[2]['index_of_metadata']]}")
-        metadata.append(f"# column 3: metadata {list_metadata[self.parent.metadata_operation[3]['index_of_metadata']]}")
+
+        index_metadata_1 = self.parent.metadata_operation[2]['index_of_metadata']
+        if index_metadata_1 == -1:
+            metadata.append(f"# column 2: No metadata selected!")
+        else:
+            metadata.append(f"# column 2: metadata {list_metadata[index_metadata_1]}")
+
+        index_metadata_2 = self.parent.metadata_operation[3]['index_of_metadata']
+        if index_metadata_2 == -1:
+            metadata.append(f"# column 3: No metadata selected!")
+        else:
+            metadata.append(f"# column 3: metadata {list_metadata[index_metadata_2]}")
 
         metadata.append("#")
 
