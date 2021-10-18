@@ -2,7 +2,6 @@ from qtpy import QtGui
 from qtpy.QtWidgets import QMenu
 from PIL import Image
 
-from __code.metadata_overlapping_images.metadata_string_format_handler import MetadataStringFormatLauncher
 from .get import Get
 from .metadata_selector_handler import MetadataSelectorHandler
 from .utilities import string_cleaning, linear_operation, is_linear_operation_valid
@@ -42,19 +41,11 @@ class MetadataTableHandler:
                 y_axis_string = self.parent.xy_axis_menu_logo['disable'] + "Y-axis"
             _y_axis = menu.addAction(y_axis_string)
 
-        _format = None
-        if column_selected in [2, 3]:
-            menu.addSeparator()
-            _format = menu.addAction("Clean String ...")
-
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == _set_new_metadata:
             o_selector = MetadataSelectorHandler(parent=self.parent, column=column_selected)
             o_selector.show()
-
-        elif action == _format:
-            self.format_metadata_column()
 
         elif action == _x_axis:
             self.parent.x_axis_column_index = column_selected
@@ -63,9 +54,6 @@ class MetadataTableHandler:
         elif action == _y_axis:
             self.parent.y_axis_column_index = column_selected
             self.parent.update_metadata_pyqt_ui()
-
-    def format_metadata_column(self):
-        MetadataStringFormatLauncher(parent=self.parent)
 
     def metadata_list_changed(self, index, column):
         key_selected = self.parent.list_metadata[index]
