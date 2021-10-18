@@ -1,4 +1,5 @@
-from qtpy.QtWidgets import QDialog
+from qtpy.QtWidgets import QDialog, QApplication
+from qtpy import QtCore
 import os
 
 from __code import load_ui
@@ -97,10 +98,12 @@ class MetadataSelectorHandler(QDialog):
         self.ui.final_result_label.setText(result)
 
     def ok_clicked(self):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         index_selected = self.ui.select_metadata_combobox.currentIndex()
         self.save_parameters()
         self.parent.metadata_list_changed(index=index_selected, column=self.column)
         self.close()
+        QApplication.restoreOverrideCursor()
 
     def cancel_clicked(self):
         self.close()

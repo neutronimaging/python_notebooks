@@ -58,6 +58,12 @@ class MetadataTableHandler:
     def metadata_list_changed(self, index, column):
         key_selected = self.parent.list_metadata[index]
 
+        self.parent.eventProgress.setMinimum(1)
+        self.parent.eventProgress.setMaximum(len(self.parent.data_dict['file_name']))
+        self.parent.eventProgress.setValue(1)
+        self.parent.eventProgress.setVisible(True)
+        self.parent.eventProgress.setEnabled(True)
+
         for row, _file in enumerate(self.parent.data_dict['file_name']):
             o_image = Image.open(_file)
             o_dict = dict(o_image.tag_v2)
@@ -66,7 +72,11 @@ class MetadataTableHandler:
             new_value = self.perform_cleaning_and_math_on_metadata(column=column, value=value)
             self.parent.ui.tableWidget.item(row, column).setText("{}".format(new_value))
 
+            self.parent.eventProgress.setValue(row+1)
+            QtGui.QGuiApplication.processEvents()
+
         self.parent.update_metadata_pyqt_ui()
+        self.parent.eventProgress.setVisible(False)
 
     def perform_cleaning_and_math_on_metadata(self, column=1, value=""):
         metadata_operation = self.parent.metadata_operation
