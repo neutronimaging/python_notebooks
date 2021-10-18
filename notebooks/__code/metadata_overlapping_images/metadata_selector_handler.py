@@ -15,6 +15,7 @@ class MetadataSelectorHandler(QDialog):
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui', 'ui_metadata_overlapping_metadata_selector.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
+        self.setWindowTitle("Select Metadata Toolbox")
 
         self.initialization()
         self.check_if_before_linear_operation_valid()
