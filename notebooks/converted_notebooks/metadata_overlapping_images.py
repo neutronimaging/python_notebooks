@@ -48,13 +48,26 @@ o_selection.select_data()
 
 # + run_control={"frozen": false, "read_only": false}
 o_profile = MetadataOverlappingImagesUi(working_dir=system.System.get_working_dir(),
-                      data_dict=o_selection.data_dict['sample'])
+                                        data_dict=o_selection.data_dict['sample'])
 o_profile.show()
 # -
 
-import pyqtgraph
+# # DEBUGGING 
 
-pyqtgraph.__version__
+# +
+from __code.ipywe.myfileselector import FileSelection
+from __code.metadata_overlapping_images.metadata_overlapping_images import MetadataOverlappingImagesUi
+import glob
 
+list_files = glob.glob("/Volumes/G-DRIVE/IPTS/IPTS-nautical-compass/*.tiff")
+o_selection = FileSelection(working_dir="/Volumes/G-DRIVE/IPTS/IPTS-nautical-compass")
+o_selection.load_files(list_files)
+# -
+
+# %gui qt
+
+o_profile = MetadataOverlappingImagesUi(working_dir="/Volumes/G-DRIVE/IPTS",
+                                        data_dict=o_selection.data_dict['sample'])
+o_profile.show()
 
 
