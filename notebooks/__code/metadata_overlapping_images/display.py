@@ -351,8 +351,10 @@ class DisplayMetadataPyqtUi:
                        pen=_pen,
                        symboBrush=(255, 0, 0),
                        symbolPen='w')
-            _inf_line = pg.InfiniteLine(clean_and_format_x_axis[current_index], pen=_pen)
-            graph.addItem(_inf_line)
+
+            if self.parent.ui.display_red_vertical_marker_checkbox.isChecked():
+                _inf_line = pg.InfiniteLine(clean_and_format_x_axis[current_index], pen=_pen)
+                graph.addItem(_inf_line)
 
             x0 = self.parent.ui.graph_position_x.value()
             y0 = self.parent.ui.graph_position_y.maximum() - self.parent.ui.graph_position_y.value()

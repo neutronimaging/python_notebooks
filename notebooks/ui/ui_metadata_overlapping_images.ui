@@ -644,7 +644,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="tab">
                <attribute name="title">
@@ -1515,6 +1515,29 @@
                       </widget>
                      </item>
                     </layout>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="display_red_vertical_marker_checkbox">
+                     <property name="text">
+                      <string>Display Red Vertical Marker</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_4">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                    <item>
                     <widget class="QGroupBox" name="groupBox_3">
@@ -2530,7 +2553,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1498</x>
-     <y>612</y>
+     <y>635</y>
     </hint>
     <hint type="destinationlabel">
      <x>1496</x>
@@ -2546,7 +2569,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1657</x>
-     <y>611</y>
+     <y>634</y>
     </hint>
     <hint type="destinationlabel">
      <x>1577</x>
@@ -2562,7 +2585,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1504</x>
-     <y>674</y>
+     <y>697</y>
     </hint>
     <hint type="destinationlabel">
      <x>1804</x>
@@ -2578,7 +2601,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1682</x>
-     <y>682</y>
+     <y>705</y>
     </hint>
     <hint type="destinationlabel">
      <x>2016</x>
@@ -2599,6 +2622,22 @@
     <hint type="destinationlabel">
      <x>1292</x>
      <y>1125</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>display_red_vertical_marker_checkbox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>display_red_vertical_marker_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1549</x>
+     <y>586</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1704</x>
+     <y>1171</y>
     </hint>
    </hints>
   </connection>
@@ -2649,5 +2688,6 @@
   <slot>metadata_2_suffix_prefix_changed()</slot>
   <slot>graph_axis_label_changed()</slot>
   <slot>export_table_clicked()</slot>
+  <slot>display_red_vertical_marker_clicked()</slot>
  </slots>
 </ui>

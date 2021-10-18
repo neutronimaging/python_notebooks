@@ -334,6 +334,9 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.ui.label_16.setEnabled(new_state)
         self.update_metadata_pyqt_ui()
 
+    def display_red_vertical_marker_clicked(self):
+        self.update_metadata_pyqt_ui()
+
     def text_metadata_1_enable_pressed(self, status):
         self.ui.metadata_position_frame.setEnabled(status)
         self.ui.metadata_position_x.setEnabled(status)
