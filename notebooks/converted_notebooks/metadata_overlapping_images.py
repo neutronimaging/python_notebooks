@@ -59,7 +59,7 @@ from __code.ipywe.myfileselector import FileSelection
 from __code.metadata_overlapping_images.metadata_overlapping_images import MetadataOverlappingImagesUi
 import glob
 
-list_files = glob.glob("/Volumes/G-DRIVE/IPTS/IPTS-nautical-compass/*.tiff")
+list_files = glob.glob("/Volumes/G-DRIVE/IPTS/IPTS-nautical-compass/CT/*.tiff")
 o_selection = FileSelection(working_dir="/Volumes/G-DRIVE/IPTS/IPTS-nautical-compass")
 o_selection.load_files(list_files)
 # -
