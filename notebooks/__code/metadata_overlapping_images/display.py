@@ -346,7 +346,11 @@ class DisplayMetadataPyqtUi:
             current_index = self.parent.ui.file_slider.value()
             _pen = pg.mkPen((255, 0, 0), width=4)
 
-            graph.plot(x=[current_index], y=[clean_and_format_y_axis[current_index]],
+            print(f"np.shape(clean_and_format_x_axis): {np.shape(clean_and_format_x_axis)}")
+            print(f"np.shape(clean_and_format_y_axis): {np.shape(clean_and_format_y_axis)}")
+
+            graph.plot(x=[clean_and_format_x_axis[current_index]],
+                       y=[clean_and_format_y_axis[current_index]],
                        pen=_pen,
                        symboBrush=(255, 0, 0),
                        symbolPen='w')
