@@ -70,6 +70,7 @@ class DisplayScalePyqtUi:
     def run(self, save_it=True):
 
         view = self.parent.ui.image_view
+        self.clear_pyqt_items()
 
         if not self.parent.ui.scale_checkbox.isChecked():
             return
