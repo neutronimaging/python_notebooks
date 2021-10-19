@@ -41,4 +41,9 @@ o_stitch = PanoramicStitching(working_dir=system.System.get_working_dir())
 o_stitch.select_input_folders()
 # -
 
+import pyqtgraph
+import numpy
+
+numpy.__version__
+
 
