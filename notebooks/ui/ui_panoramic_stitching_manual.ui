@@ -605,11 +605,44 @@
      <x>0</x>
      <y>0</y>
      <width>1711</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuSave_Table_as">
+    <property name="title">
+     <string>Table</string>
+    </property>
+    <addaction name="actionLoad"/>
+    <addaction name="actionSaveAs_Table"/>
+    <addaction name="actionSave_Table"/>
+   </widget>
+   <addaction name="menuSave_Table_as"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSaveAs_Table">
+   <property name="text">
+    <string>Save As ...</string>
+   </property>
+  </action>
+  <action name="actionSave_Table">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Open  ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -1093,6 +1126,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSave_Table</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>save_table()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>855</x>
+     <y>619</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSaveAs_Table</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>save_as_table()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>855</x>
+     <y>619</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLoad</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>open_table()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>855</x>
+     <y>619</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>list_folder_combobox_value_changed()</slot>
@@ -1126,5 +1207,8 @@
   <slot>table_right_clicked()</slot>
   <slot>remote_control_widget_pressed()</slot>
   <slot>remote_control_widget_released()</slot>
+  <slot>open_table()</slot>
+  <slot>save_as_table()</slot>
+  <slot>save_table()</slot>
  </slots>
 </ui>

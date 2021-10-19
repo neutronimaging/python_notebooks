@@ -423,6 +423,8 @@ class EventHandler:
                                 duration_s=10)
 
             self.parent.save_as_table_file_name = table_file_name
+            self.parent.ui.actionSave_Table.setEnabled(True)
+            self.parent.ui.actionSave_Table.setText(f"Save ({os.path.basename(table_file_name)})")
 
     def make_table_dict(self):
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)

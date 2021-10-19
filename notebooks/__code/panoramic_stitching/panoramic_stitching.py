@@ -166,6 +166,19 @@ class Interface(QMainWindow):
                                           nbr_folders_rejected) + have_string + " been rejected and not loaded!", 10000)
             self.ui.statusbar.setStyleSheet("color: red")
 
+    # menu buttons
+    def open_table(self):
+        o_event = EventHandler(parent=self)
+        o_event.load_table()
+
+    def save_as_table(self):
+        o_event = EventHandler(parent=self)
+        o_event.export_table()
+
+    def save_table(self):
+        o_event = EventHandler(parent=self)
+        o_event.export_table(table_file_name=self.save_as_table_file_name)
+
     def load_data(self):
         # load data and metadata
 
