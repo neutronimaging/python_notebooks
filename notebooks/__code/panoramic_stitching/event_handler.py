@@ -316,7 +316,7 @@ class EventHandler:
             button_name = "Save"
         else:
             base_name = os.path.basename(self.parent.save_as_table_file_name)
-            button_name = f"Save - {base_name}"
+            button_name = f"Save ({base_name})"
             state = True
         save_table = top_menu.addAction(button_name)
         save_table.setEnabled(state)
@@ -407,7 +407,7 @@ class EventHandler:
             table_file_name = QFileDialog.getSaveFileName(self.parent,
                                                           caption="Enter or select file name to export table data ...",
                                                           directory=self.parent.working_dir,
-                                                          filter="Table (*.json)",
+                                                          filter="Table (*.json);;All (*.*)",
                                                           initialFilter="Table")
             QApplication.processEvents()
             table_file_name = table_file_name[0]
