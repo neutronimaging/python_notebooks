@@ -310,7 +310,17 @@ class EventHandler:
         top_menu = QMenu(self.parent)
 
         load_table = top_menu.addAction("Load ...")
-        save_table = top_menu.addAction("Save ...")
+        save_as_table = top_menu.addAction("Save as ...")
+        if self.parent.save_as_table_file_name == "":
+            state = False
+            button_name = "Save"
+        else:
+            base_name = os.path.basename(self.parent.save_as_table_file_name)
+            button_name = f"Save - {base_name}"
+            state = True
+        save_table = top_menu.addAction(button_name)
+        save_table.setEnabled(state)
+
         top_menu.addSeparator()
         reset_table = top_menu.addAction("Reset")
 
@@ -318,8 +328,10 @@ class EventHandler:
 
         if action == load_table:
             self.load_table()
-        elif action == save_table:
+        elif action == save_as_table:
             self.export_table()
+        elif action == save_table:
+            self.export_table(table_file_name=self.parent.save_as_table_file_name )
         elif action == reset_table:
             self.reset_table()
 
@@ -390,14 +402,15 @@ class EventHandler:
         o_image.update_current_panoramic_image()
         o_image.update_contour_plot()
 
-    def export_table(self):
-        table_file_name = QFileDialog.getSaveFileName(self.parent,
-                                                      caption="Enter or select file name to export table data ...",
-                                                      directory=self.parent.working_dir,
-                                                      filter="Table (*.json)",
-                                                      initialFilter="Table")
-        QApplication.processEvents()
-        table_file_name = table_file_name[0]
+    def export_table(self, table_file_name=""):
+        if table_file_name == "":
+            table_file_name = QFileDialog.getSaveFileName(self.parent,
+                                                          caption="Enter or select file name to export table data ...",
+                                                          directory=self.parent.working_dir,
+                                                          filter="Table (*.json)",
+                                                          initialFilter="Table")
+            QApplication.processEvents()
+            table_file_name = table_file_name[0]
 
         if table_file_name:
             table_dict = self.make_table_dict()
@@ -408,6 +421,8 @@ class EventHandler:
                                 message=f"Table saved in {table_file_name}",
                                 status=StatusMessageStatus.ready,
                                 duration_s=10)
+
+            self.parent.save_as_table_file_name = table_file_name
 
     def make_table_dict(self):
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)

@@ -68,6 +68,7 @@ class PanoramicStitching:
 
 class Interface(QMainWindow):
 
+    save_as_table_file_name = ""
     remote_control_id = None
     stitching_algorithm = StitchingAlgorithmType.minimum
 
