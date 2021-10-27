@@ -402,8 +402,7 @@ class NamingSchemaDefinition(object):
             display(HTML('<span style="font-size: 20px; color:red">You need to fix the namig convention first!</span>'))
 
     def export(self, selected):
-
-        input_folder = self.input_folder
+        input_folder = os.path.abspath(self.input_folder)
         input_folder_renamed = os.path.basename(input_folder) + '_renamed'
         self.output_folder_ui.shortcut_buttons.close()
 
@@ -415,17 +414,17 @@ class NamingSchemaDefinition(object):
                              overwrite=False)
 
         self.new_list_files = dict_old_new_names
-        self.display_renaming_result(selected)
+        # self.display_renaming_result(selected)
 
-    def display_renaming_result(self, selected):
-
-        display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
-                     selected + '</span>'))
-
-        result = widgets.HBox([widgets.Label("Renmaing results: ",
-                                             layout=widgets.Layout(width='20%')),
-                               widgets.Dropdown(options=self.renaming_result,
-                                                value=self.renaming_result[0],
-                                                layout=widgets.Layout(width='80%'))
-                               ])
-        display(result)
+    # def display_renaming_result(self, selected):
+    #
+    #     display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
+    #                  selected + '</span>'))
+    #
+    #     result = widgets.HBox([widgets.Label("Renmaing results: ",
+    #                                          layout=widgets.Layout(width='20%')),
+    #                            widgets.Dropdown(options=self.renaming_result,
+    #                                             value=self.renaming_result[0],
+    #                                             layout=widgets.Layout(width='80%'))
+    #                            ])
+    #     display(result)
