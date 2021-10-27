@@ -414,7 +414,7 @@ class NamingSchemaDefinition(object):
                              overwrite=False)
 
         self.new_list_files = dict_old_new_names
-        self.display_renaming_result(selected)
+        self.display_renaming_result(input_folder_renamed)
 
     def display_renaming_result(self, selected):
 
