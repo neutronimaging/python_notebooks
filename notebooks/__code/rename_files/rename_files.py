@@ -420,11 +420,3 @@ class NamingSchemaDefinition(object):
 
         display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
                      selected + '</span>'))
-
-    #     result = widgets.HBox([widgets.Label("Renmaing results: ",
-    #                                          layout=widgets.Layout(width='20%')),
-    #                            widgets.Dropdown(options=self.renaming_result,
-    #                                             value=self.renaming_result[0],
-    #                                             layout=widgets.Layout(width='80%'))
-    #                            ])
-    #     display(result)
