@@ -394,6 +394,7 @@ class NamingSchemaDefinition(object):
         if self.ready_to_output:
             self.output_folder_ui = FileSelectorPanelWithJumpFolders(instruction='Select Output Folder',
                                                                      start_dir=self.working_dir,
+                                                                     ipts_folder=self.working_dir,
                                                                      multiple=False,
                                                                      next=self.export,
                                                                      newdir_toolbar_button=True,
@@ -414,7 +415,7 @@ class NamingSchemaDefinition(object):
                              overwrite=False)
 
         self.new_list_files = dict_old_new_names
-        self.display_renaming_result(input_folder_renamed)
+        self.display_renaming_result(new_output_folder)
 
     def display_renaming_result(self, selected):
 
