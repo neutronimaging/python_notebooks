@@ -414,13 +414,13 @@ class NamingSchemaDefinition(object):
                              overwrite=False)
 
         self.new_list_files = dict_old_new_names
-        # self.display_renaming_result(selected)
+        self.display_renaming_result(selected)
 
-    # def display_renaming_result(self, selected):
-    #
-    #     display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
-    #                  selected + '</span>'))
-    #
+    def display_renaming_result(self, selected):
+
+        display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
+                     selected + '</span>'))
+
     #     result = widgets.HBox([widgets.Label("Renmaing results: ",
     #                                          layout=widgets.Layout(width='20%')),
     #                            widgets.Dropdown(options=self.renaming_result,
