@@ -22,7 +22,7 @@
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.rename_files import NamingSchemaDefinition, FormatFileNameIndex
+from __code.rename_files.rename_files import FormatFileNameIndex
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style

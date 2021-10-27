@@ -381,6 +381,14 @@ class NamingSchemaDefinition(object):
         self.renaming_result = renaming_result
         return new_list
 
+    def check_new_names(self):
+        dict_old_new_names = self.get_dict_old_new_filenames()
+        old_names_new_names = [f"{os.path.basename(_key)} -> {_value}" for _key,_value in dict_old_new_names.items()]
+        select_widget = widgets.Select(options=old_names_new_names,
+                                       layout=widgets.Layout(width="100%",
+                                                             height="400px"))
+        display(select_widget)
+
     def select_export_folder(self):
 
         if self.ready_to_output:
