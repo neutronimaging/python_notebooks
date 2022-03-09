@@ -11,9 +11,9 @@ class FileFolderBrowser(object):
         self.ipts_folder = ipts_folder
 
     def select_images(self, instruction='Select Images ...',
-                      multiple_flag=True,
-                      filters={"All": "*.*"},
-                      default_filter="All"):
+                        multiple_flag=True,
+                        filters={"All": "*.*"},
+                        default_filter="All"):
         self.list_images_ui = fileselector.MyFileSelectorPanel(instruction=instruction,
                                                                start_dir=self.working_dir,
                                                                multiple=multiple_flag,

@@ -17,10 +17,18 @@ from __code.gamma_filtering.initialization import Initialization
 class InterfaceHandler(FileFolderBrowser):
 
     def __init__(self, working_dir=''):
-        super(InterfaceHandler, self).__init__(working_dir=working_dir)
+        super(InterfaceHandler, self).__init__(working_dir=working_dir,
+                                               next_function=self.display_status)
 
     def get_list_of_files(self):
         return self.list_images_ui.selected
+
+    def select_all_images(self):
+        self.select_images(instruction='Select all tiff or Fits Images to process ...')
+
+    def display_status(self, list_of_files):
+        nbr_images = str(len(self.get_list_of_files()))
+        display(HTML('<span style="font-size: 15px; color:blue">You have selected ' + nbr_images + ' images </span>'))
 
 
 class Interface(QMainWindow):
@@ -57,12 +65,11 @@ class Interface(QMainWindow):
 
         o_init = Initialization(parent=self)
         o_init.pyqtgraph()
-        # self.init_pyqtgraph()
         self.init_widgets()
-        self.init_table()
-        self.init_statusbar()
-        self.slider_moved()
-        self.fill_table()
+        # self.init_table()
+        # self.init_statusbar()
+        # self.slider_moved()
+        # self.fill_table()
 
     def init_statusbar(self):
         _width_labels = 40
