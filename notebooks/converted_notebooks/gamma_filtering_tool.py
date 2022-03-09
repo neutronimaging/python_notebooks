@@ -28,7 +28,7 @@ warnings.filterwarnings('ignore')
 from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name = 'ui_gamma_filtering_tool.ui')
 
-from __code.gamma_filtering_tool import Interface, InterfaceHandler
+from __code.gamma_filtering.gamma_filtering_tool import Interface, InterfaceHandler
 
 from __code import system
 system.System.select_working_dir()

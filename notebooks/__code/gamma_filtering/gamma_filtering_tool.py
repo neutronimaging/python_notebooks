@@ -2,23 +2,16 @@ from IPython.core.display import HTML
 from IPython.display import display
 import os
 import numpy as np
-import pyqtgraph as pg
-from pyqtgraph.dockarea import *
+from qtpy.QtWidgets import QMainWindow
+from qtpy import QtGui
 
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+from __code import load_ui
 
 from NeuNorm.normalization import Normalization
 
-from __code.ui_gamma_filtering_tool  import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
 from __code.decorators import wait_cursor
+from __code.gamma_filtering.initialization import Initialization
 
 
 class InterfaceHandler(FileFolderBrowser):
@@ -56,11 +49,15 @@ class Interface(QMainWindow):
 
         self.list_files = list_of_files
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+        super(Interface, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_gamma_filtering_tool.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
 
-        self.init_pyqtgraph()
+        o_init = Initialization(parent=self)
+        o_init.pyqtgraph()
+        # self.init_pyqtgraph()
         self.init_widgets()
         self.init_table()
         self.init_statusbar()
@@ -210,66 +207,66 @@ class Interface(QMainWindow):
     def mouse_moved_in_filtered_image(self, evt):
         self.mouse_moved_in_any_image(evt, image='filtered')
 
-    def init_pyqtgraph(self):
-        area = DockArea()
-        area.setVisible(True)
-        d1 = Dock("Raw", size=(200, 200))
-        d1h = Dock("Raw Histogram", size=(200, 200))
-        d2 = Dock("Gamma Filtered", size=(200, 200))
-        d2h = Dock("Gamma Filtered Histogram", size=(200, 200))
-
-        area.addDock(d1, 'left')
-        area.addDock(d1h, 'left')
-        area.moveDock(d1, 'above', d1h)
-        area.addDock(d2, 'right', d1)
-        area.addDock(d2h, 'right')
-        area.moveDock(d2, 'above', d2h)
-
-        # raw image
-        self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
-        self.ui.raw_image_view.ui.roiBtn.hide()
-        self.ui.raw_image_view.ui.menuBtn.hide()
-        self.ui.raw_image_view.view.setAutoVisible(y=True)
-        self.raw_vLine = pg.InfiniteLine(angle=90, movable=False)
-        self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
-        self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
-        self.raw_vLine.setPos([1000, 1000])
-        self.raw_hLine.setPos([1000, 1000])
-        self.raw_proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
-                                    rateLimit=60,
-                                    slot=self.mouse_moved_in_raw_image)
-        d1.addWidget(self.ui.raw_image_view)
-
-        # raw histogram plot
-        self.ui.raw_histogram_plot = pg.PlotWidget()
-        d1h.addWidget(self.ui.raw_histogram_plot)
-
-        # filtered image
-        self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name='filtered_image')
-        self.ui.filtered_image_view.ui.roiBtn.hide()
-        self.ui.filtered_image_view.ui.menuBtn.hide()
-        self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
-        self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
-        self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
-        self.filtered_vLine.setPos([1000, 1000])
-        self.filtered_hLine.setPos([1000, 1000])
-        self.filtered_proxy = pg.SignalProxy(self.ui.filtered_image_view.view.scene().sigMouseMoved,
-                                    rateLimit=60,
-                                    slot=self.mouse_moved_in_filtered_image)
-        d2.addWidget(self.ui.filtered_image_view)
-
-        # filtered histogram plot
-        self.ui.filtered_histogram_plot = pg.PlotWidget()
-        d2h.addWidget(self.ui.filtered_histogram_plot)
-
-        vertical_layout = QtGui.QVBoxLayout()
-        vertical_layout.addWidget(area)
-        self.ui.image_widget.setLayout(vertical_layout)
-
-        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
-        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+    # def init_pyqtgraph(self):
+    #     area = DockArea()
+    #     area.setVisible(True)
+    #     d1 = Dock("Raw", size=(200, 200))
+    #     d1h = Dock("Raw Histogram", size=(200, 200))
+    #     d2 = Dock("Gamma Filtered", size=(200, 200))
+    #     d2h = Dock("Gamma Filtered Histogram", size=(200, 200))
+    #
+    #     area.addDock(d1, 'left')
+    #     area.addDock(d1h, 'left')
+    #     area.moveDock(d1, 'above', d1h)
+    #     area.addDock(d2, 'right', d1)
+    #     area.addDock(d2h, 'right')
+    #     area.moveDock(d2, 'above', d2h)
+    #
+    #     # raw image
+    #     self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
+    #     self.ui.raw_image_view.ui.roiBtn.hide()
+    #     self.ui.raw_image_view.ui.menuBtn.hide()
+    #     self.ui.raw_image_view.view.setAutoVisible(y=True)
+    #     self.raw_vLine = pg.InfiniteLine(angle=90, movable=False)
+    #     self.raw_hLine = pg.InfiniteLine(angle=0, movable=False)
+    #     self.ui.raw_image_view.addItem(self.raw_vLine, ignoreBounds=True)
+    #     self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
+    #     self.raw_vLine.setPos([1000, 1000])
+    #     self.raw_hLine.setPos([1000, 1000])
+    #     self.raw_proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
+    #                                 rateLimit=60,
+    #                                 slot=self.mouse_moved_in_raw_image)
+    #     d1.addWidget(self.ui.raw_image_view)
+    #
+    #     # raw histogram plot
+    #     self.ui.raw_histogram_plot = pg.PlotWidget()
+    #     d1h.addWidget(self.ui.raw_histogram_plot)
+    #
+    #     # filtered image
+    #     self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name='filtered_image')
+    #     self.ui.filtered_image_view.ui.roiBtn.hide()
+    #     self.ui.filtered_image_view.ui.menuBtn.hide()
+    #     self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
+    #     self.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
+    #     self.ui.filtered_image_view.addItem(self.filtered_vLine, ignoreBounds=True)
+    #     self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
+    #     self.filtered_vLine.setPos([1000, 1000])
+    #     self.filtered_hLine.setPos([1000, 1000])
+    #     self.filtered_proxy = pg.SignalProxy(self.ui.filtered_image_view.view.scene().sigMouseMoved,
+    #                                 rateLimit=60,
+    #                                 slot=self.mouse_moved_in_filtered_image)
+    #     d2.addWidget(self.ui.filtered_image_view)
+    #
+    #     # filtered histogram plot
+    #     self.ui.filtered_histogram_plot = pg.PlotWidget()
+    #     d2h.addWidget(self.ui.filtered_histogram_plot)
+    #
+    #     vertical_layout = QtGui.QVBoxLayout()
+    #     vertical_layout.addWidget(area)
+    #     self.ui.image_widget.setLayout(vertical_layout)
+    #
+    #     self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+    #     self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
 
     def init_widgets(self):
         table_column_size = self.table_columns_size
