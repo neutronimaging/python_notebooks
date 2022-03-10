@@ -1,6 +1,10 @@
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QVBoxLayout
+from qtpy.QtWidgets import QVBoxLayout, QTableWidgetItem, QLabel, QSpacerItem, QWidget, QHBoxLayout, QSizePolicy
+import os
+import numpy as np
+
+from __code._utilities.table_handler import TableHandler
 
 
 class Initialization:
@@ -68,3 +72,70 @@ class Initialization:
 
         self.parent.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
         self.parent.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+
+    def table(self):
+        list_file = []
+        for _row, _file in enumerate(self.parent.list_files):
+            self.parent.ui.tableWidget.insertRow(_row)
+
+            _short_file = os.path.basename(_file)
+            list_file.append(_short_file)
+            _item = QTableWidgetItem(_short_file)
+            self.parent.ui.tableWidget.setItem(_row, 0, _item)
+
+        # select first row
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        o_table.select_rows(list_of_rows=[0])
+
+        self.parent.list_short_file_name = list_file
+
+    def widgets(self):
+        table_column_size = self.parent.table_columns_size
+        for _col in np.arange(self.parent.ui.tableWidget.columnCount()):
+            self.parent.ui.tableWidget.setColumnWidth(_col, table_column_size[_col])
+
+        nbr_files = len(self.parent.list_files)
+        if nbr_files <= 1:
+            self.parent.ui.file_index_slider.setVisible(False)
+            self.parent.ui.file_index_value.setVisible(False)
+            self.parent.ui.file_index_label.setVisible(False)
+        else:
+            self.parent.ui.file_index_slider.setMinimum(1)
+            self.parent.ui.file_index_slider.setMaximum(nbr_files)
+
+    def statusbar(self):
+        _width_labels = 50
+        _height_labels = 30
+
+        # x0, y0, width and height of selection
+        _x_label = QLabel("X:")
+        self.parent.x_value = QLabel("N/A")
+        self.parent.x_value.setFixedSize(_width_labels, _height_labels)
+        _y_label = QLabel("Y:")
+        self.parent.y_value = QLabel("N/A")
+        self.parent.y_value.setFixedSize(_width_labels, _height_labels)
+        raw_label = QLabel("  Counts Raw:")
+        self.parent.raw_value = QLabel("N/A")
+        self.parent.raw_value.setFixedSize(_width_labels, _height_labels)
+        filtered_label = QLabel("  Counts Filtered:")
+        self.parent.filtered_value = QLabel("N/A")
+        self.parent.filtered_value.setFixedSize(_width_labels, _height_labels)
+
+        hori_layout = QHBoxLayout()
+        hori_layout.addWidget(_x_label)
+        hori_layout.addWidget(self.parent.x_value)
+        hori_layout.addWidget(_y_label)
+        hori_layout.addWidget(self.parent.y_value)
+        hori_layout.addWidget(raw_label)
+        hori_layout.addWidget(self.parent.raw_value)
+        hori_layout.addWidget(filtered_label)
+        hori_layout.addWidget(self.parent.filtered_value)
+
+        # spacer
+        spacerItem = QSpacerItem(22520, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        hori_layout.addItem(spacerItem)
+
+        # add status bar in main ui
+        bottom_widget = QWidget()
+        bottom_widget.setLayout(hori_layout)
+        self.parent.ui.statusbar.addPermanentWidget(bottom_widget)
