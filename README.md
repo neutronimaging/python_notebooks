@@ -1,4 +1,9 @@
-# Python Notebooks [![Build Status](https://www.travis-ci.com/neutronimaging/python_notebooks.svg?branch=master)](https://www.travis-ci.com/neutronimaging/python_notebooks)
+# Python Notebooks [![Build Status](https://www.travis-ci.com/neutronimaging/python_notebooks.svg?branch=master)](https://www.travis-ci.com/neutronimaging/python_notebooks) [![DOI](https://zenodo.org/badge/99945953.svg)](https://zenodo.org/badge/latestdoi/99945953)
+
+
+
+
+
 This reporsitory provides various notebooks for users of the neutron imaging beamlines at ORNL. 
 Full tutorial of most of the notebooks can be found at [here](https://neutronimaging.pages.ornl.gov/tutorial/).
 
