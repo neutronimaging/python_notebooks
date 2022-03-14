@@ -36,3 +36,6 @@ class Display:
         max = np.max(_image)
         y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.parent.nbr_histo_bins))
         self.parent.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+
+    def filtered_image(self, data):
+        pass

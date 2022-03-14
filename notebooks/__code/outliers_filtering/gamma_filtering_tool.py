@@ -11,8 +11,8 @@ from NeuNorm.normalization import Normalization
 
 from __code.file_folder_browser import FileFolderBrowser
 from __code.decorators import wait_cursor
-from __code.gamma_filtering.initialization import Initialization
-from __code.gamma_filtering.event_handler import EventHandler
+from __code.outliers_filtering.initialization import Initialization
+from __code.outliers_filtering.event_handler import EventHandler
 
 
 class InterfaceHandler(FileFolderBrowser):
@@ -134,12 +134,12 @@ class Interface(QMainWindow):
             _item = QtGui.QTableWidgetItem("{:.02f}%".format(nbr_pixel_corrected*100/total_nbr_pixels))
             self.ui.tableWidget.setItem(_row, 2, _item)
 
-    def get_number_pixel_gamma_corrected(self, data=[]):
-        filtering_coefficient = self.__get_filtering_coefficient_value()
-        mean_counts = np.mean(data)
-        _data = np.copy(data)
-        gamma_indexes = np.where(filtering_coefficient * _data > mean_counts)
-        return len(gamma_indexes[0])
+    # def get_number_pixel_gamma_corrected(self, data=[]):
+    #     filtering_coefficient = self.__get_filtering_coefficient_value()
+    #     mean_counts = np.mean(data)
+    #     _data = np.copy(data)
+    #     gamma_indexes = np.where(filtering_coefficient * _data > mean_counts)
+    #     return len(gamma_indexes[0])
 
     def mouse_moved_in_any_image(self, evt, image='raw'):
         pos = evt[0]
