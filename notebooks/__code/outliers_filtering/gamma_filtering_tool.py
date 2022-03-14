@@ -61,7 +61,7 @@ class Interface(QMainWindow):
     # ['/HFIR/CG1D/.../file1', '/HFIR/CG1D/...'file2']
     list_files = None
 
-    raw_image_size = []
+    image_size = None
 
     def __init__(self, parent=None, list_of_files=None):
 
@@ -116,7 +116,7 @@ class Interface(QMainWindow):
         return float_value
 
     def fill_table(self):
-        raw_image_size = self.raw_image_size
+        raw_image_size = self.image_size
         total_nbr_pixels = raw_image_size[0] * raw_image_size[1]
 
         for _row, _file in enumerate(self.list_files):
@@ -153,7 +153,7 @@ class Interface(QMainWindow):
 
         if image_view.view.sceneBoundingRect().contains(pos):
 
-            [height, width] = self.raw_image_size
+            [height, width] = self.image_size
 
             #mouse_point = self.ui.raw_image_view.view.vb.mapSceneToView(pos)
             mouse_point = image_view.view.getViewBox().mapSceneToView(pos)

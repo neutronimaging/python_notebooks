@@ -1,8 +1,9 @@
+import numpy as np
+
 from NeuNorm.normalization import Normalization
 
 from __code._utilities.table_handler import TableHandler
 from __code.outliers_filtering.display import Display
-from __code.outliers_filtering.get import Get
 from __code.outliers_filtering.algorithm import Algorithm
 
 
@@ -24,6 +25,10 @@ class EventHandler:
             self.parent.data[short_file_name] = {'raw': self.load_raw_data(row=row_selected),
                                                  'filtered': None}
 
+        if self.parent.image_size is None:
+            [height, width] = np.shape(self.parent.data[short_file_name]['raw'])
+            self.parent.image_size = [height, width]
+
         o_display = Display(parent=self.parent)
         o_display.raw_image(data=self.parent.data[short_file_name]['raw'])
 
@@ -37,7 +42,7 @@ class EventHandler:
         o_norm = Normalization()
         o_norm.load(file=file, auto_gamma_filter=False,
                     manual_gamma_filter=False)
-        _raw_data = o_norm.data['sample']['data']
+        _raw_data = np.squeeze(o_norm.data['sample']['data'])
         return _raw_data
 
     def calculate_filtered_data(self, raw_data=None):
