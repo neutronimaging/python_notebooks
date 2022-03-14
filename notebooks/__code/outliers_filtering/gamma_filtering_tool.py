@@ -198,48 +198,49 @@ class Interface(QMainWindow):
 
     def slider_moved(self):
         slider_position = self.ui.file_index_slider.value()
+
         self.display_raw_image(file_index=slider_position-1)
         self.display_corrected_image(file_index=slider_position-1)
         self.ui.file_index_value.setText(str(slider_position))
         self.reset_states()
-        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
-        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        # self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
 
-    def display_raw_image(self, file_index):
-        _view = self.ui.raw_image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        self.state_of_raw = _state
-
-        first_update = False
-        if self.raw_histogram_level == []:
-            first_update = True
-        _histo_widget = self.ui.raw_image_view.getHistogramWidget()
-        self.raw_histogram_level = _histo_widget.getLevels()
-
-        o_norm = Normalization()
-        file_name = self.list_files[file_index]
-        o_norm.load(file=file_name, auto_gamma_filter=False)
-        _image = o_norm.data['sample']['data'][0]
-
-        _image = np.transpose(_image)
-        self.ui.raw_image_view.setImage(_image)
-
-        self.live_raw_image = _image
-
-        self.raw_image_size = np.shape(_image)
-
-        if not first_update:
-            _histo_widget.setLevels(self.raw_histogram_level[0],
-                                    self.raw_histogram_level[1])
-
-        # histogram
-        self.ui.raw_histogram_plot.clear()
-        min = 0
-        max = np.max(_image)
-        y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
-        self.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+    # def display_raw_image(self, file_index):
+    #     _view = self.ui.raw_image_view.getView()
+    #     _view_box = _view.getViewBox()
+    #     _state = _view_box.getState()
+    #
+    #     self.state_of_raw = _state
+    #
+    #     first_update = False
+    #     if self.raw_histogram_level == []:
+    #         first_update = True
+    #     _histo_widget = self.ui.raw_image_view.getHistogramWidget()
+    #     self.raw_histogram_level = _histo_widget.getLevels()
+    #
+    #     o_norm = Normalization()
+    #     file_name = self.list_files[file_index]
+    #     o_norm.load(file=file_name, auto_gamma_filter=False)
+    #     _image = o_norm.data['sample']['data'][0]
+    #
+    #     _image = np.transpose(_image)
+    #     self.ui.raw_image_view.setImage(_image)
+    #
+    #     self.live_raw_image = _image
+    #
+    #     self.raw_image_size = np.shape(_image)
+    #
+    #     if not first_update:
+    #         _histo_widget.setLevels(self.raw_histogram_level[0],
+    #                                 self.raw_histogram_level[1])
+    #
+    #     # histogram
+    #     self.ui.raw_histogram_plot.clear()
+    #     min = 0
+    #     max = np.max(_image)
+    #     y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
+    #     self.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
     def reset_states(self):
         _state = self.state_of_raw
@@ -254,38 +255,38 @@ class Interface(QMainWindow):
         _view_box = _view.getViewBox()
         _view_box.setState(_state)
 
-    def display_corrected_image(self, file_index=0):
-        _view = self.ui.filtered_image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        first_update = False
-        if self.filtered_histogram_level == []:
-            first_update = True
-        _histo_widget = self.ui.filtered_image_view.getHistogramWidget()
-        self.filtered_histogram_level = _histo_widget.getLevels()
-
-        o_norm = Normalization()
-        file_name = self.list_files[file_index]
-        o_norm.load(file=file_name, auto_gamma_filter=True, manual_gamma_filter=True, manual_gamma_threshold=self.__get_filtering_coefficient_value())
-        _image = o_norm.data['sample']['data'][0]
-
-        #self.ui.filtered_image_view.clear()
-        _image = np.transpose(_image)
-        self.ui.filtered_image_view.setImage(_image)
-        _view_box.setState(_state)
-        self.live_filtered_image = _image
-
-        if not first_update:
-            _histo_widget.setLevels(self.filtered_histogram_level[0],
-                                    self.filtered_histogram_level[1])
-
-        # histogram
-        self.ui.filtered_histogram_plot.clear()
-        min = 0
-        max = np.max(_image)
-        y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
-        self.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+    # def display_corrected_image(self, file_index=0):
+    #     _view = self.ui.filtered_image_view.getView()
+    #     _view_box = _view.getViewBox()
+    #     _state = _view_box.getState()
+    #
+    #     first_update = False
+    #     if self.filtered_histogram_level == []:
+    #         first_update = True
+    #     _histo_widget = self.ui.filtered_image_view.getHistogramWidget()
+    #     self.filtered_histogram_level = _histo_widget.getLevels()
+    #
+    #     o_norm = Normalization()
+    #     file_name = self.list_files[file_index]
+    #     o_norm.load(file=file_name, auto_gamma_filter=True, manual_gamma_filter=True, manual_gamma_threshold=self.__get_filtering_coefficient_value())
+    #     _image = o_norm.data['sample']['data'][0]
+    #
+    #     #self.ui.filtered_image_view.clear()
+    #     _image = np.transpose(_image)
+    #     self.ui.filtered_image_view.setImage(_image)
+    #     _view_box.setState(_state)
+    #     self.live_filtered_image = _image
+    #
+    #     if not first_update:
+    #         _histo_widget.setLevels(self.filtered_histogram_level[0],
+    #                                 self.filtered_histogram_level[1])
+    #
+    #     # histogram
+    #     self.ui.filtered_histogram_plot.clear()
+    #     min = 0
+    #     max = np.max(_image)
+    #     y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
+    #     self.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
     def apply_clicked(self):
         self.close()

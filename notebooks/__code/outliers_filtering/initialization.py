@@ -70,8 +70,8 @@ class Initialization:
         vertical_layout.addWidget(area)
         self.parent.ui.image_widget.setLayout(vertical_layout)
 
-        self.parent.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
-        self.parent.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        # self.parent.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        # self.parent.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
 
     def table(self):
         list_file = []
@@ -93,15 +93,6 @@ class Initialization:
         table_column_size = self.parent.table_columns_size
         for _col in np.arange(self.parent.ui.tableWidget.columnCount()):
             self.parent.ui.tableWidget.setColumnWidth(_col, table_column_size[_col])
-
-        nbr_files = len(self.parent.list_files)
-        if nbr_files <= 1:
-            self.parent.ui.file_index_slider.setVisible(False)
-            self.parent.ui.file_index_value.setVisible(False)
-            self.parent.ui.file_index_label.setVisible(False)
-        else:
-            self.parent.ui.file_index_slider.setMinimum(1)
-            self.parent.ui.file_index_slider.setMaximum(nbr_files)
 
     def statusbar(self):
         _width_labels = 50

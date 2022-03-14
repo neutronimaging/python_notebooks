@@ -24,7 +24,6 @@ class Display:
         _view_box.setState(_state)
 
         self.parent.live_raw_image = _image
-        self.parent.raw_image_size = np.shape(_image)
 
         if not first_update:
             _histo_widget.setLevels(self.parent.raw_histogram_level[0],
@@ -36,6 +35,9 @@ class Display:
         max = np.max(_image)
         y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.parent.nbr_histo_bins))
         self.parent.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+
+        # self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
 
     def filtered_image(self, data):
         _view = self.parent.ui.filtered_image_view.getView()
@@ -52,7 +54,8 @@ class Display:
 
         _image = np.transpose(data)
         self.parent.ui.filtered_image_view.setImage(_image)
-        # _view_box.setState(_state)
+        _view_box.setState(self.parent.state_of_raw)
+
 
         self.parent.live_filtered_image = _image
 
@@ -66,3 +69,6 @@ class Display:
         max = np.max(_image)
         y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.parent.nbr_histo_bins))
         self.parent.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+
+        self.parent.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        self.parent.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')

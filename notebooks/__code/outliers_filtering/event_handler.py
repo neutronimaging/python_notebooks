@@ -30,12 +30,11 @@ class EventHandler:
             self.parent.image_size = [height, width]
 
         o_display = Display(parent=self.parent)
-        o_display.raw_image(data=self.parent.data[short_file_name]['raw'])
-
         filtered_data = self.calculate_filtered_data(raw_data=self.parent.data[short_file_name]['raw'])
         self.parent.data[short_file_name]['filtered'] = filtered_data
-
         o_display.filtered_image(data=filtered_data)
+        o_display.raw_image(data=self.parent.data[short_file_name]['raw'])
+
 
     def load_raw_data(self, row=0):
         file = self.parent.list_files[row]
