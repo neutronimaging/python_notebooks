@@ -63,12 +63,22 @@
         </column>
         <column>
          <property name="text">
-          <string>Number Gamma Pixels</string>
+          <string>Number gamma pixels found</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>% Gamma Pixels</string>
+          <string>% Gamma pixels found</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Number of dead pixels found</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>% Dead pixels found</string>
          </property>
         </column>
        </widget>
@@ -111,6 +121,9 @@
              <property name="text">
               <string>Fix dead pixels</string>
              </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
@@ -146,6 +159,9 @@
           <widget class="QCheckBox" name="fix_high_intensity_counts_checkBox">
            <property name="text">
             <string>Fix high intensity counts (gamma, ...)</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -279,13 +295,6 @@
      </layout>
     </item>
     <item>
-     <widget class="QPushButton" name="apply_to_all_images_pushButton">
-      <property name="text">
-       <string>Apply to all images</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="cancel_button">
@@ -310,7 +319,7 @@
       <item>
        <widget class="QPushButton" name="apply_button">
         <property name="text">
-         <string>Export ...</string>
+         <string>Correct All Images ...</string>
         </property>
        </widget>
       </item>

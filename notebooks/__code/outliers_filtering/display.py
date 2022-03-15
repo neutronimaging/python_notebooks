@@ -36,9 +36,6 @@ class Display:
         y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.parent.nbr_histo_bins))
         self.parent.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
-        # self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
-        # self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
-
     def filtered_image(self, data):
         _view = self.parent.ui.filtered_image_view.getView()
         _view_box = _view.getViewBox()
@@ -56,7 +53,6 @@ class Display:
         self.parent.ui.filtered_image_view.setImage(_image)
         _view_box.setState(self.parent.state_of_raw)
 
-
         self.parent.live_filtered_image = _image
 
         if not first_update:
@@ -70,5 +66,6 @@ class Display:
         y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.parent.nbr_histo_bins))
         self.parent.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
+        # re-attaching the x and y axis
         self.parent.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
         self.parent.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')

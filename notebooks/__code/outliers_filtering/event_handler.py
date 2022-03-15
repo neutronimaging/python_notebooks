@@ -29,12 +29,12 @@ class EventHandler:
             [height, width] = np.shape(self.parent.data[short_file_name]['raw'])
             self.parent.image_size = [height, width]
 
-        o_display = Display(parent=self.parent)
         filtered_data = self.calculate_filtered_data(raw_data=self.parent.data[short_file_name]['raw'])
+
+        o_display = Display(parent=self.parent)
         self.parent.data[short_file_name]['filtered'] = filtered_data
         o_display.filtered_image(data=filtered_data)
         o_display.raw_image(data=self.parent.data[short_file_name]['raw'])
-
 
     def load_raw_data(self, row=0):
         file = self.parent.list_files[row]
@@ -49,5 +49,33 @@ class EventHandler:
         o_algo = Algorithm(parent=self.parent,
                            data=raw_data)
         o_algo.run()
+
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+
+        high_counts_stats = o_algo.get_high_counts_stats()
+        print(high_counts_stats)
+        o_table.insert_item(row=row_selected,
+                            column=1,
+                            editable=False,
+                            value=high_counts_stats['number'],
+                            format_str="{:d}")
+        o_table.insert_item(row=row_selected,
+                            column=2,
+                            editable=False,
+                            value=high_counts_stats['percentage'],
+                            format_str="{:.2f}")
+
+        dead_pixels_stats = o_algo.get_dead_pixels_stats()
+        o_table.insert_item(row=row_selected,
+                            column=3,
+                            editable=False,
+                            value=dead_pixels_stats['number'],
+                            format_str="{:d}")
+        o_table.insert_item(row=row_selected,
+                            column=4,
+                            editable=False,
+                            value=dead_pixels_stats['percentage'],
+                            format_str="{:.2f}")
 
         return o_algo.get_processed_data()

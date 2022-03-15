@@ -90,9 +90,8 @@ class Initialization:
         self.parent.list_short_file_name = list_file
 
     def widgets(self):
-        table_column_size = self.parent.table_columns_size
-        for _col in np.arange(self.parent.ui.tableWidget.columnCount()):
-            self.parent.ui.tableWidget.setColumnWidth(_col, table_column_size[_col])
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        o_table.set_column_width(column_width=self.parent.table_columns_size)
 
     def statusbar(self):
         _width_labels = 50
