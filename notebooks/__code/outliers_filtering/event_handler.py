@@ -90,3 +90,42 @@ class EventHandler:
                             format_str="{:.2f}")
 
         return o_algo.get_processed_data()
+
+    def mouse_moved_in_any_image(self, position=None, image=None):        
+        pos = position
+        
+        if image == 'raw':
+            image_view = self.parent.ui.raw_image_view
+        elif image == 'filtered':
+            image_view = self.parent.ui.filtered_image_view
+        else:
+            image_view = self.parent.ui.diff_image_view
+
+        if image_view.view.sceneBoundingRect().contains(pos):
+
+            [height, width] = self.parent.image_size
+
+            mouse_point = image_view.view.getViewBox().mapSceneToView(pos)
+            mouse_x = int(mouse_point.x())
+            mouse_y = int(mouse_point.y())
+
+            if (0 <= mouse_x < width) and (0 <= mouse_y < height):
+                self.parent.x_value.setText(str(mouse_x))
+                self.parent.y_value.setText(str(mouse_y))
+
+                _raw_value = self.parent.live_raw_image[mouse_x, mouse_y]
+                _filtered_value = self.parent.live_filtered_image[mouse_x, mouse_y]
+
+                self.parent.raw_value.setText("{:.02f}".format(_raw_value))
+                self.parent.filtered_value.setText("{:.02f}".format(_filtered_value))
+
+                self.parent.raw_hLine.setPos(mouse_point.y())
+                self.parent.raw_vLine.setPos(mouse_point.x())
+                self.parent.filtered_hLine.setPos(mouse_point.y())
+                self.parent.filtered_vLine.setPos(mouse_point.x())
+
+            else:
+                self.parent.x_value.setText("N/A")
+                self.parent.y_value.setText("N/A")
+                self.parent.raw_value.setText("N/A")
+                self.parent.filtered_value.setText("N/A")

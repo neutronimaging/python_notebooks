@@ -317,7 +317,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="apply_button">
+       <widget class="QPushButton" name="correct_all_images">
         <property name="text">
          <string>Correct All Images ...</string>
         </property>
@@ -358,10 +358,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>apply_button</sender>
+   <sender>correct_all_images</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>apply_clicked()</slot>
+   <slot>correct_all_images_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1803</x>
@@ -488,7 +488,7 @@
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
-  <slot>apply_clicked()</slot>
+  <slot>correct_all_images_clicked()</slot>
   <slot>circle_center_changed()</slot>
   <slot>sector_radio_button_changed()</slot>
   <slot>sector_changed()</slot>
