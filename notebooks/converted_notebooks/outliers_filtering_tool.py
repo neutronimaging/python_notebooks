@@ -12,38 +12,42 @@
 #     name: python3
 # ---
 
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/bin_images)
-#
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/outliers_filtering_tool)
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.bin_images import BinHandler
+import warnings
+warnings.filterwarnings('ignore')
+
+from __code.outliers_filtering.gamma_filtering_tool import Interface, InterfaceHandler
+
 from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Images to Rebin
-
 # + run_control={"frozen": false, "read_only": false}
-o_bin = BinHandler(working_dir = system.System.get_working_dir())
-o_bin.select_images()
+# %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Bin Parameter 
+# # Select Images
 
 # + run_control={"frozen": false, "read_only": false}
-o_bin.select_bin_parameter()
+o_template = InterfaceHandler(working_dir=system.System.get_working_dir())
+o_template.select_all_images()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Export 
+# # Load and Display Images
 
 # + run_control={"frozen": false, "read_only": false}
-o_bin.select_export_folder()
+o_interface = Interface(list_of_files = o_template.get_list_of_files())
+o_interface.show()
 # -
 
 

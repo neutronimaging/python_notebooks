@@ -78,8 +78,10 @@ import os
 # spectra_file = os.path.join(data_path, "Image019_Spectra.txt")
 
 # full data set
-data_path = "/Volumes/G-DRIVE/IPTS/SNAP/Si_normalized/Si_powder_1_Angs_20C_corrected_normalized"
-spectra_file = os.path.join(data_path, "normalized_Spectra.txt")
+#data_path = "/Volumes/G-DRIVE/IPTS/SNAP/Si_normalized/Si_powder_1_Angs_20C_corrected_normalized"
+#spectra_file = os.path.join(data_path, "normalized_Spectra.txt")
+data_path = "/Volumes/G-DRIVE/IPTS/IPTS-26171-testing_ibeatles/10_InconelPowder_1.5Hrs_Corrected_normalized/"
+spectra_file = "/Volumes/G-DRIVE/IPTS/IPTS-26171-testing_ibeatles/10_InconelPowder_1.5Hrs_Corrected_normalized/20210910_Run_52256_InconelPowder_0008_0646026_Spectra.txt"
 
 import glob
 list_data = glob.glob(data_path + "*.tif")
