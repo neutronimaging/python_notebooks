@@ -15,7 +15,18 @@ class EventHandler:
     def algorithm_changed(self):
         high_intensity_status = self.parent.ui.fix_high_intensity_counts_checkBox.isChecked()
         self.parent.ui.median_thresholding_frame.setEnabled(high_intensity_status)
+        self.reset_table_infos()
         self.table_selection_changed()
+
+    def reset_table_infos(self):
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        nbr_row = o_table.row_count()
+        for _row in np.arange(nbr_row):
+            for _col in np.arange(1, 5):
+                o_table.insert_item(row=_row,
+                                    column=_col,
+                                    editable=False,
+                                    value="")
 
     def table_selection_changed(self):
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
@@ -54,7 +65,7 @@ class EventHandler:
         row_selected = o_table.get_row_selected()
 
         high_counts_stats = o_algo.get_high_counts_stats()
-        print(high_counts_stats)
+
         o_table.insert_item(row=row_selected,
                             column=1,
                             editable=False,

@@ -396,8 +396,8 @@
    <slot>algorithm_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1595</x>
-     <y>620</y>
+     <x>1812</x>
+     <y>653</y>
     </hint>
     <hint type="destinationlabel">
      <x>1827</x>
@@ -428,8 +428,8 @@
    <slot>algorithm_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1644</x>
-     <y>970</y>
+     <x>1687</x>
+     <y>1015</y>
     </hint>
     <hint type="destinationlabel">
      <x>1827</x>
@@ -444,12 +444,44 @@
    <slot>algorithm_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1622</x>
-     <y>667</y>
+     <x>1649</x>
+     <y>697</y>
     </hint>
     <hint type="destinationlabel">
      <x>1831</x>
      <y>742</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>help_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1779</x>
+     <y>595</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1825</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>help_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1756</x>
+     <y>682</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1827</x>
+     <y>794</y>
     </hint>
    </hints>
   </connection>
@@ -467,5 +499,6 @@
   <slot>filtering_coefficient_changed()</slot>
   <slot>algorithm_changed()</slot>
   <slot>table_selection_changed()</slot>
+  <slot>help_clicked()</slot>
  </slots>
 </ui>

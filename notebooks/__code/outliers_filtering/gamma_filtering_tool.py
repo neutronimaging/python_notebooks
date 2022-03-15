@@ -229,6 +229,10 @@ class Interface(QMainWindow):
         self.ui.image_view.setImage(new_live_image)
         self.ui.file_name.setText(self.list_files[file_index])
 
+    def help_clicked(self):
+        import webbrowser
+        webbrowser.open('https://neutronimaging.pages.ornl.gov/tutorial/notebooks/gamma_filtering_tool/')
+
     def display_image(self, image):
         self.ui.image_view.setImage(image)
 

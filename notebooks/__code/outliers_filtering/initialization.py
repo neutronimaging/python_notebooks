@@ -94,7 +94,7 @@ class Initialization:
         o_table.set_column_width(column_width=self.parent.table_columns_size)
 
     def statusbar(self):
-        _width_labels = 50
+        _width_labels = 60
         _height_labels = 30
 
         # x0, y0, width and height of selection
