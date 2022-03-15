@@ -50,10 +50,18 @@ class EventHandler:
     def load_raw_data(self, row=0):
         file = self.parent.list_files[row]
         o_norm = Normalization()
-        o_norm.load(file=file, auto_gamma_filter=False,
+        o_norm.load(file=file,
+                    auto_gamma_filter=False,
                     manual_gamma_filter=False)
         _raw_data = np.squeeze(o_norm.data['sample']['data'])
         return _raw_data
+
+    def load_data_object(self, file_name=None):
+        o_norm = Normalization()
+        o_norm.load(file=file_name,
+                    auto_gamma_filter=False,
+                    manual_gamma_filter=False)
+        return o_norm
 
     def calculate_filtered_data(self, raw_data=None):
 

@@ -9,6 +9,7 @@ from __code.file_folder_browser import FileFolderBrowser
 from __code.decorators import wait_cursor
 from __code.outliers_filtering.initialization import Initialization
 from __code.outliers_filtering.event_handler import EventHandler
+from __code.outliers_filtering.export import Export
 
 
 class InterfaceHandler(FileFolderBrowser):
@@ -65,6 +66,7 @@ class Interface(QMainWindow):
             (maybe hidden behind this browser!)</span>'))
 
         self.list_files = list_of_files
+        self.working_dir = os.path.dirname(list_of_files[0])
 
         super(Interface, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -105,7 +107,8 @@ class Interface(QMainWindow):
         self.mouse_moved_in_any_image(evt, image='filtered')
 
     def correct_all_images_clicked(self):
-        pass
+        o_export = Export(parent=self)
+        o_export.export()
 
     def cancel_clicked(self):
         self.close()

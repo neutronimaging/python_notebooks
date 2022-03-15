@@ -1,8 +1,9 @@
 import pyqtgraph as pg
+from qtpy import QtGui
 from pyqtgraph.dockarea import *
 from qtpy.QtWidgets import QVBoxLayout, QTableWidgetItem, QLabel, QSpacerItem, QWidget, QHBoxLayout, QSizePolicy
 import os
-import numpy as np
+
 
 from __code._utilities.table_handler import TableHandler
 
@@ -17,8 +18,8 @@ class Initialization:
         area.setVisible(True)
         d1 = Dock("Raw", size=(200, 200))
         d1h = Dock("Raw Histogram", size=(200, 200))
-        d2 = Dock("Gamma Filtered", size=(200, 200))
-        d2h = Dock("Gamma Filtered Histogram", size=(200, 200))
+        d2 = Dock("Filtered", size=(200, 200))
+        d2h = Dock("Filtered Histogram", size=(200, 200))
 
         area.addDock(d1, 'left')
         area.addDock(d1h, 'left')
@@ -122,8 +123,14 @@ class Initialization:
         hori_layout.addWidget(self.parent.filtered_value)
 
         # spacer
-        spacerItem = QSpacerItem(22520, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        spacerItem = QSpacerItem(2520, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
         hori_layout.addItem(spacerItem)
+
+        self.parent.eventProgress = QtGui.QProgressBar(self.parent.ui.statusbar)
+        self.parent.eventProgress.setMinimumSize(540, 14)
+        self.parent.eventProgress.setMaximumSize(540, 100)
+        self.parent.eventProgress.setVisible(False)
+        hori_layout.addWidget(self.parent.eventProgress)
 
         # add status bar in main ui
         bottom_widget = QWidget()
