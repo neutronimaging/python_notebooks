@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.ndimage.filters as flt2
+from scipy.ndimage import median_filter
 import copy
 
 
@@ -39,7 +39,7 @@ class Algorithm:
 
     def calculate_median(self):
         radius = self.parent.ui.median_filter_radius_spinBox.value()
-        self.median_data = flt2.median_filter(self.data, radius)
+        self.median_data = median_filter(self.data, radius)
 
     def run(self):
         if self.is_dead_pixel_activated:
