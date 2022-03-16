@@ -5,11 +5,14 @@ import os
 import numbers
 from qtpy.QtWidgets import QMainWindow
 
-from NeuNorm.normalization import Normalization
 
 from __code import load_ui
 from __code.file_folder_browser import FileFolderBrowser
 from __code.roi_statistics_vs_stack.initialization import Initialization
+from __code.roi_statistics_vs_stack.event_handler import EventHandler
+from __code.roi_statistics_vs_stack.display import Display
+from __code.roi_statistics_vs_stack.table import Table
+from __code.roi_statistics_vs_stack.load import Load
 
 
 class FileHandler(FileFolderBrowser):
@@ -34,6 +37,11 @@ class ImageWindow(QMainWindow):
 
     list_of_images = None
 
+    # {0: {'data': [], 'time_offset': 0},
+    #  1: {'data': [], 'time_offset': 15},
+    #  }
+    data_dict = None
+
 
     stack = []
     integrated_stack = []
@@ -52,47 +60,46 @@ class ImageWindow(QMainWindow):
         self.setWindowTitle("Select ROI to display profile over all images.")
 
         o_init = Initialization(parent=self)
-        o_init.pyqtgraph()
-        o_init.splitter()
+        o_init.all()
 
-        # [self.nbr_files, height, width] = np.shape(self.stack)
-        # self.integrated_stack = self.stack.sum(axis=0)
-        #
-        # self.initialize_pyqtgraph()
-        # self.init_label()
-        #
-        # self.display_image()
-        # self.update_x_axis()
-        # self.roi_changed()
+    def file_index_slider_changed(self, new_value):
+        o_display = Display(parent=self)
+        o_display.update_image_view(slider_value=new_value)
+        self.ui.slider_value.setText(str(new_value))
+
+    def cancel_clicked(self):
+        self.close()
+
+    def plot_menu_changed(self):
+        print("plot menu changed")
+
+    def export_button_clicked(self):
+        print("export button clicked")
+
+    def closeEvent(self, event=None):
+        pass
+
+    def done_button_clicked(self):
+        print("done button clicked")
+
+    def update_table(self):
+        o_table = Table(parent=self)
+        o_table.update()
+
+    def initialize_ui(self):
+        self.load_data()
+        self.file_index_slider_changed(0)
+
+        o_init = Initialization(parent=self)
+        o_init.table()
 
     def load_data(self):
-        working_folder = self.working_folder
-        o_norm = Normalization()
-        o_norm.load(folder=working_folder, notebook=True)
-        self.stack = np.array(o_norm.data['sample']['data'])
+        o_event = Load(parent=self)
+        o_event.data()
 
     def update_plot(self):
         self.update_x_axis()
         self.plot()
-
-
-    def display_image(self):
-        self.ui.image_view.setImage(self.integrated_stack)
-
-    def plot(self):
-        x_axis_data = self.x_axis['data']
-        x_axis_label = self.x_axis['label']
-        
-        y_axis_data = self.y_axis['data']
-        y_axis_label = self.y_axis['label']
-        
-        x_axis_data = x_axis_data[0: len(y_axis_data)]
-        
-        self.counts_vs_index.clear()
-        self.counts_vs_index.plot(x_axis_data, y_axis_data)
-        
-        self.counts_vs_index.setLabel('bottom', x_axis_label)
-        self.counts_vs_index.setLabel('left', y_axis_label)
 
     def roi_changed(self):
         pass
@@ -107,8 +114,3 @@ class ImageWindow(QMainWindow):
         # self.y_axis['data'] = mean_selection
         # self.plot()
 
-    def done_button_clicked(self):
-        self.close()
-
-    def closeEvent(self, event=None):
-        pass

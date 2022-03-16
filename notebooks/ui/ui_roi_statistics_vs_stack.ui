@@ -6,33 +6,58 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1257</width>
-    <height>983</height>
+    <width>1817</width>
+    <height>1009</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
      <widget class="QSplitter" name="splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="widget" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QWidget" name="widget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string> File index</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="horizontalSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="slider_value">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
@@ -45,6 +70,15 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QTableWidget" name="tableWidget">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
            <column>
             <property name="text">
              <string>file name</string>
@@ -52,7 +86,7 @@
            </column>
            <column>
             <property name="text">
-             <string>time offset</string>
+             <string>time offset (s)</string>
             </property>
            </column>
            <column>
@@ -203,7 +237,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1257</width>
+     <width>1817</width>
      <height>24</height>
     </rect>
    </property>
@@ -219,8 +253,8 @@
    <slot>done_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>711</x>
-     <y>459</y>
+     <x>1804</x>
+     <y>758</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -228,12 +262,127 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>done_button_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cancel_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>966</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>269</x>
+     <y>866</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>plot_menu_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1744</x>
+     <y>114</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1809</x>
+     <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>plot_menu_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1738</x>
+     <y>136</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1809</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>plot_menu_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1737</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1810</x>
+     <y>235</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>plot_menu_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1741</x>
+     <y>177</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1812</x>
+     <y>285</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>plot_menu_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1724</x>
+     <y>196</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1812</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>file_index_slider_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>189</x>
+     <y>488</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>742</x>
+     <y>638</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>done_button_clicked()</slot>
+  <slot>export_button_clicked()</slot>
   <slot>distance_source_detector_validated()</slot>
   <slot>detector_offset_validated()</slot>
   <slot>time_spectra_file_browse_button_clicked()</slot>
   <slot>radio_button_clicked()</slot>
+  <slot>cancel_clicked()</slot>
+  <slot>plot_menu_changed()</slot>
+  <slot>file_index_slider_changed()</slot>
  </slots>
 </ui>

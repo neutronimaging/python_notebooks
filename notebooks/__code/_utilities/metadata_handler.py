@@ -9,7 +9,7 @@ class MetadataHandler(object):
     @staticmethod
     def get_time_stamp(file_name='', ext='tif'):
 
-        if ext == 'tif':
+        if ext in ['tif', 'tiff']:
             try:
                 o_image = Image.open(file_name)
                 o_dict = dict(o_image.tag_v2)
