@@ -27,29 +27,32 @@ class FileHandler(FileFolderBrowser):
         self.select_input_folder(instruction='Select folder containing images to process ...')
 
     def display_status(self, list_of_files):
+        self.list_of_images = list_of_files
         nbr_images = str(len(list_of_files))
         display(HTML('<span style="font-size: 15px; color:blue">You have selected ' + nbr_images + ' images </span>'))
 
 
 class ImageWindow(QMainWindow):
 
+    list_of_images = None
+
+
     stack = []
     integrated_stack = []
     working_folder = ''
-    x_axis = {'label': 'File Index', 'type': 'file_index', 'data': []}
-    y_axis = {'label': 'Mean Counts', 'data': []}
-    spectra_file = ''
-    
-    def __init__(self, parent=None, display_counts_vs_stack=None):
 
-        self.o_display_counts_vs_stack = display_counts_vs_stack
-        self.working_folder = self.o_display_counts_vs_stack.input_folder_ui.selected
-        self.load_data()
+    def __init__(self, parent=None, list_of_images=None):
+
+        self.list_of_images = list_of_images
+        self.working_folder = os.path.dirname(list_of_images[0])
+
+        # self.load_data()
+
 
         super(ImageWindow, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
-                                                 'ui_display_counts_of_region_vs_stack.ui'))
+                                                 'ui_roi_statistics_vs_stack.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Select ROI to display profile over all images.")
 
