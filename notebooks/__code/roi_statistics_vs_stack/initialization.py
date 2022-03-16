@@ -2,6 +2,7 @@ import pyqtgraph as pg
 from qtpy.QtWidgets import QProgressBar
 from qtpy.QtWidgets import QHBoxLayout
 import numpy as np
+import os
 
 from __code._utilities.table_handler import TableHandler
 
@@ -51,12 +52,15 @@ class Initialization:
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         for _row in np.arange(len(self.parent.list_of_images)):
             o_table.insert_empty_row(_row)
+            short_file_name = os.path.basename(self.parent.list_of_images[_row])
             o_table.insert_item(row=_row,
                                 column=0,
-                                value=self.parent.list_of_images[_row],
+                                value=short_file_name,
                                 editable=False)
             o_table.insert_item(row=_row,
                                 column=1,
                                 value=self.parent.data_dict[_row]['time_offset'],
+                                format_str="{:.2f}",
                                 editable=False)
 
+        o_table.set_column_width(column_width=[350, 100, 70, 70, 70, 70, 70])
