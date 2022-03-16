@@ -1,6 +1,7 @@
 from qtpy.QtWidgets import QApplication
 import numpy as np
 from pathlib import Path
+import copy
 
 from NeuNorm.normalization import Normalization
 
@@ -36,8 +37,9 @@ class Load:
             else:
                 time_stamp -= acquisition_time_of_first_image
 
-            data_dict[_index] = {'data': data,
-                                 'time_offset': time_stamp}
+            data_dict[_index] = copy.deepcopy(self.parent.data_sub_dict)
+            data_dict[_index]['data'] =  data
+            data_dict[_index]['time_offset']=  time_stamp
 
             self.parent.eventProgress.setValue(_index)
             QApplication.processEvents()

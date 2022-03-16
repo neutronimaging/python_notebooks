@@ -37,15 +37,19 @@ class ImageWindow(QMainWindow):
 
     list_of_images = None
 
+    data_sub_dict = {'data': None,
+                     'time_offset': 0,
+                     'mean': None,
+                     'max': None,
+                     'min': None,
+                     'std': None,
+                     'median': None}
+
     # {0: {'data': [], 'time_offset': 0},
     #  1: {'data': [], 'time_offset': 15},
     #  }
     data_dict = None
-
-
-    stack = []
-    integrated_stack = []
-    working_folder = ''
+    live_image = None
 
     def __init__(self, parent=None, list_of_images=None):
 
@@ -93,24 +97,13 @@ class ImageWindow(QMainWindow):
         o_init = Initialization(parent=self)
         o_init.table()
 
+        self.recalculate_table_clicked()
+
     def load_data(self):
         o_event = Load(parent=self)
         o_event.data()
 
-    def update_plot(self):
-        self.update_x_axis()
-        self.plot()
-
-    def roi_changed(self):
-        pass
-        # region = self.ui.roi.getArraySlice(self.integrated_stack,
-        #                                    self.ui.image_view.imageItem)
-        # x0 = region[0][0].start
-        # x1 = region[0][0].stop - 1
-        # y0 = region[0][1].start
-        # y1 = region[0][1].stop - 1
-        #
-        # mean_selection = [_data[x0:x1, y0:y1].mean() for _data in self.stack]
-        # self.y_axis['data'] = mean_selection
-        # self.plot()
-
+    def recalculate_table_clicked(self):
+        o_event = EventHandler(parent=self)
+        o_event.recalculate_table()
+        o_event.update_table()

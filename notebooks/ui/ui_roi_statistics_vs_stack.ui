@@ -14,9 +14,15 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
      <widget class="QSplitter" name="splitter">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -59,143 +65,160 @@
         </item>
        </layout>
       </widget>
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <widget class="QWidget" name="tab">
-        <attribute name="title">
-         <string>Table</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QTableWidget" name="tableWidget">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-           <column>
-            <property name="text">
-             <string>file name</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>time offset (s)</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>min</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>max</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>mean</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>median</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>std</string>
-            </property>
-           </column>
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab">
+           <attribute name="title">
+            <string>Table</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QTableWidget" name="tableWidget">
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <column>
+               <property name="text">
+                <string>file name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>time offset (s)</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>min</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>max</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>mean</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>median</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>std</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
           </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tab_2">
-        <attribute name="title">
-         <string>Plot</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QWidget" name="plot_widget" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+          <widget class="QWidget" name="tab_2">
+           <attribute name="title">
+            <string>Plot</string>
+           </attribute>
+           <widget class="QWidget" name="plot_widget" native="true">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>12</y>
+              <width>993</width>
+              <height>404</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+           <widget class="QWidget" name="">
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QGroupBox" name="groupBox">
+               <property name="title">
+                <string>Statistics</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout">
+                <item>
+                 <widget class="QCheckBox" name="checkBox">
+                  <property name="text">
+                   <string>min</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_2">
+                  <property name="text">
+                   <string>max</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_3">
+                  <property name="text">
+                   <string>mean</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_4">
+                  <property name="text">
+                   <string>median</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_5">
+                  <property name="text">
+                   <string>std</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
           </widget>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QGroupBox" name="groupBox">
-             <property name="title">
-              <string>Statistics</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout">
-              <item>
-               <widget class="QCheckBox" name="checkBox">
-                <property name="text">
-                 <string>min</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_2">
-                <property name="text">
-                 <string>max</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_3">
-                <property name="text">
-                 <string>mean</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_4">
-                <property name="text">
-                 <string>median</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_5">
-                <property name="text">
-                 <string>std</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Recalculate Table</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -254,7 +277,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1804</x>
-     <y>758</y>
+     <y>975</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -365,12 +388,28 @@
    <slot>file_index_slider_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>189</x>
-     <y>488</y>
+     <x>269</x>
+     <y>931</y>
     </hint>
     <hint type="destinationlabel">
      <x>742</x>
      <y>638</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>recalculate_table_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1273</x>
+     <y>914</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1647</x>
+     <y>978</y>
     </hint>
    </hints>
   </connection>
@@ -384,5 +423,6 @@
   <slot>cancel_clicked()</slot>
   <slot>plot_menu_changed()</slot>
   <slot>file_index_slider_changed()</slot>
+  <slot>recalculate_table_clicked()</slot>
  </slots>
 </ui>

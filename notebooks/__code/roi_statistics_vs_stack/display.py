@@ -10,3 +10,4 @@ class Display:
         data = self.parent.data_dict[slider_value]['data']
         data = np.transpose(data)
         self.parent.ui.image_view.setImage(data)
+        self.parent.live_image = data
