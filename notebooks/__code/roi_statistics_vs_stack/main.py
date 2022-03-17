@@ -124,6 +124,13 @@ class ImageWindow(QMainWindow):
         o_event = Load(parent=self)
         o_event.data()
 
+    def table_selection_changed(self):
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        row_selected = o_table.get_row_selected()
+        self.ui.tableWidget.blockSignals(True)
+        self.ui.horizontalSlider.setValue(row_selected)
+        self.ui.tableWidget.blockSignals(False)
+
     def recalculate_table_clicked(self):
         o_event = EventHandler(parent=self)
         o_event.recalculate_table()

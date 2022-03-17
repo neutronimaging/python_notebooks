@@ -476,6 +476,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1287</x>
+     <y>399</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1814</x>
+     <y>460</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>export_button_clicked()</slot>
@@ -487,5 +503,6 @@
   <slot>plot_menu_changed()</slot>
   <slot>file_index_slider_changed()</slot>
   <slot>recalculate_table_clicked()</slot>
+  <slot>table_selection_changed()</slot>
  </slots>
 </ui>
