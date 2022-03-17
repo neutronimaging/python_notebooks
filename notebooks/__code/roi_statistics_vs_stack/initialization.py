@@ -32,7 +32,7 @@ class Initialization:
 
         # default ROI
         self.parent.ui.roi = pg.ROI(
-            [0, 0], [20, 20], pen=(62, 13, 244), scaleSnap=True)  # blue
+            [200, 200], [400, 400], pen=(62, 13, 244), scaleSnap=True)  # blue
         self.parent.ui.roi.addScaleHandle([1, 1], [0, 0])
         self.parent.ui.image_view.addItem(self.parent.ui.roi)
         self.parent.ui.roi.sigRegionChanged.connect(self.parent.roi_changed)

@@ -14,14 +14,14 @@ class Display:
 
     def get_x_axis(self):
         if self.parent.ui.file_index_radioButton.isChecked():
-            return self.parent.x_axis['file_index']
+            return self.parent.x_axis['file_index'], 'file index'
         else:
-            return self.parent.x_axis['time_offset']
+            return self.parent.x_axis['time_offset'], 'time offset (s)'
 
     def update_statistics_plot(self):
         self.parent.statistics_plot.axes.cla()
 
-        x_axis = self.get_x_axis()
+        x_axis, x_axis_label = self.get_x_axis()
 
         nbr_plot = 0
         if self.parent.ui.mean_checkBox.isChecked():
@@ -51,5 +51,8 @@ class Display:
 
         if nbr_plot > 0:
             self.parent.statistics_plot.axes.legend()
+
+        self.parent.statistics_plot.axes.set_xlabel(x_axis_label)
+        self.parent.statistics_plot.axes.set_ylabel("counts")
 
         self.parent.statistics_plot.draw()

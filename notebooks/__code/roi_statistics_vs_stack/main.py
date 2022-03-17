@@ -1,8 +1,6 @@
 from IPython.core.display import HTML
 from IPython.display import display
-import numpy as np
 import os
-import numbers
 from qtpy.QtWidgets import QMainWindow
 
 
@@ -11,8 +9,8 @@ from __code.file_folder_browser import FileFolderBrowser
 from __code.roi_statistics_vs_stack.initialization import Initialization
 from __code.roi_statistics_vs_stack.event_handler import EventHandler
 from __code.roi_statistics_vs_stack.display import Display
-from __code.roi_statistics_vs_stack.table import Table
 from __code.roi_statistics_vs_stack.load import Load
+from __code._utilities.file import ListMostDominantExtension
 
 
 class FileHandler(FileFolderBrowser):
@@ -24,12 +22,15 @@ class FileHandler(FileFolderBrowser):
     def get_list_of_files(self):
         return self.list_images_ui.selected
 
-    def select_images(self):
+    def select_folder(self):
         self.select_input_folder(instruction='Select folder containing images to process ...')
 
-    def display_status(self, list_of_files):
-        self.list_of_images = list_of_files
-        nbr_images = str(len(list_of_files))
+    def display_status(self, folder):
+        o_list = ListMostDominantExtension(working_dir=folder)
+        o_list.calculate()
+        result = o_list.get_files_of_selected_ext()
+        self.list_of_images = result.list_files
+        nbr_images = str(len(self.list_of_images))
         display(HTML('<span style="font-size: 15px; color:blue">You have selected ' + nbr_images + ' images </span>'))
 
 
@@ -102,12 +103,8 @@ class ImageWindow(QMainWindow):
         if not self.table_has_been_reset:
             self.table_has_been_reset = True
 
-            # clear table
-            o_table = Table(parent=self)
-            o_table.reset()
-
-            #clear plots
-            self.statistics_plot.axes.cla()
+            o_event = EventHandler(parent=self)
+            o_event.reset_table_plot()
 
     def update_statistics_plot(self):
         o_display = Display(parent=self)
@@ -133,3 +130,5 @@ class ImageWindow(QMainWindow):
         o_event.update_table()
         self.ui.export_button.setEnabled(True)
         self.table_has_been_reset = False
+        self.ui.y_axis_groupBox.setEnabled(True)
+        self.ui.x_axis_groupBox.setEnabled(True)

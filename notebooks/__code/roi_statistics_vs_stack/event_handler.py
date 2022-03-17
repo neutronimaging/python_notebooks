@@ -2,6 +2,7 @@ import numpy as np
 
 from __code._utilities.table_handler import TableHandler
 from __code.roi_statistics_vs_stack import StatisticsColumnIndex
+from __code.roi_statistics_vs_stack.table import Table
 
 
 class EventHandler:
@@ -82,3 +83,16 @@ class EventHandler:
                                 value=_entry['std'],
                                 format_str='{:0.2f}',
                                 editable=False)
+
+    def reset_table_plot(self):
+        # clear table
+        o_table = Table(parent=self.parent)
+        o_table.reset()
+
+        # clear plots
+        self.parent.statistics_plot.axes.cla()
+        self.parent.statistics_plot.draw()
+
+        # disable menu buttons
+        self.parent.ui.y_axis_groupBox.setEnabled(False)
+        self.parent.ui.x_axis_groupBox.setEnabled(False)
