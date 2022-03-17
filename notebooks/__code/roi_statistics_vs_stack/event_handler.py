@@ -18,6 +18,12 @@ class EventHandler:
         y0 = region[0][1].start
         y1 = region[0][1].stop - 1
 
+        y_axis_min = []
+        y_axis_max = []
+        y_axis_mean = []
+        y_axis_median = []
+        y_axis_std = []
+
         for _row in self.parent.data_dict.keys():
             _data = self.parent.data_dict[_row]['data']
             _data_of_roi = _data[y0: y1, x0: x1]
@@ -33,6 +39,18 @@ class EventHandler:
             self.parent.data_dict[_row]['min'] = _min
             self.parent.data_dict[_row]['median'] = _median
             self.parent.data_dict[_row]['std'] = _std
+
+            y_axis_min.append(_min)
+            y_axis_max.append(_max)
+            y_axis_mean.append(_mean)
+            y_axis_median.append(_median)
+            y_axis_std.append(_std)
+
+        self.parent.y_axis['min'] = y_axis_min
+        self.parent.y_axis['max'] = y_axis_max
+        self.parent.y_axis['mean'] = y_axis_mean
+        self.parent.y_axis['median'] = y_axis_median
+        self.parent.y_axis['std'] = y_axis_std
 
     def update_table(self):
         data_dict = self.parent.data_dict

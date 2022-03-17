@@ -48,6 +48,12 @@ class ImageWindow(QMainWindow):
     x_axis = {'file_index': None,
               'time_offset': None}
 
+    y_axis = {'mean': None,
+              'max': None,
+              'min': None,
+              'std': None,
+              'median': None}
+
     # {0: {'data': [], 'time_offset': 0},
     #  1: {'data': [], 'time_offset': 15},
     #  }
@@ -79,7 +85,8 @@ class ImageWindow(QMainWindow):
         self.close()
 
     def plot_menu_changed(self):
-        print("plot menu changed")
+        o_display = Display(parent=self)
+        o_display.update_statistics_plot()
 
     def export_button_clicked(self):
         print("export button clicked")
@@ -93,10 +100,14 @@ class ImageWindow(QMainWindow):
     def roi_changed(self):
         self.ui.export_button.setEnabled(False)
         if not self.table_has_been_reset:
-            print("here")
             self.table_has_been_reset = True
+
+            # clear table
             o_table = Table(parent=self)
             o_table.reset()
+
+            #clear plots
+            self.statistics_plot.axes.cla()
 
     def update_statistics_plot(self):
         o_display = Display(parent=self)
