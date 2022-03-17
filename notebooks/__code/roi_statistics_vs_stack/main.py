@@ -63,6 +63,8 @@ class ImageWindow(QMainWindow):
     live_image = None
     table_has_been_reset = False
 
+    image_view_histogram_level = None
+
     def __init__(self, parent=None, list_of_images=None):
 
         self.list_of_images = list_of_images

@@ -26,7 +26,7 @@ class Initialization:
 
     def pyqtgraph(self):
         # image view
-        self.parent.ui.image_view = pg.ImageView()
+        self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.image_view.ui.menuBtn.hide()
         self.parent.ui.image_view.ui.roiBtn.hide()
 

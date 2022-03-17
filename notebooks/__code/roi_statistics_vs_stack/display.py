@@ -7,10 +7,27 @@ class Display:
         self.parent = parent
 
     def update_image_view(self, slider_value=0):
+        _view = self.parent.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+
+        first_update = False
+        if self.parent.image_view_histogram_level is None:
+            first_update = True
+
+        _histo_widget = self.parent.ui.image_view.getHistogramWidget()
+        self.parent.image_view_histogram_level = _histo_widget.getLevels()
+
         data = self.parent.data_dict[slider_value]['data']
         data = np.transpose(data)
         self.parent.ui.image_view.setImage(data)
         self.parent.live_image = data
+
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.parent.image_view_histogram_level[0],
+                                    self.parent.image_view_histogram_level[1])
 
     def get_x_axis(self):
         if self.parent.ui.file_index_radioButton.isChecked():
