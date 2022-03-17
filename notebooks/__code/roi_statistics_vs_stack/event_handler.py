@@ -19,6 +19,11 @@ class EventHandler:
         y0 = region[0][1].start
         y1 = region[0][1].stop - 1
 
+        self.parent.roi_dict['x0'] = x0
+        self.parent.roi_dict['y0'] = y0
+        self.parent.roi_dict['width'] = np.abs(x1-x0)
+        self.parent.roi_dict['height'] = np.abs(y1-y0)
+
         y_axis_min = []
         y_axis_max = []
         y_axis_mean = []

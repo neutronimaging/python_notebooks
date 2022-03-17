@@ -31,8 +31,13 @@ class Initialization:
         self.parent.ui.image_view.ui.roiBtn.hide()
 
         # default ROI
+        roi = self.parent.roi_dict
+        x0 = roi['x0']
+        y0 = roi['y0']
+        width = roi['width']
+        height = roi['height']
         self.parent.ui.roi = pg.ROI(
-            [200, 200], [400, 400], pen=(62, 13, 244), scaleSnap=True)  # blue
+            [x0, y0], [width, height], pen=(62, 13, 244), scaleSnap=True)  # blue
         self.parent.ui.roi.addScaleHandle([1, 1], [0, 0])
         self.parent.ui.image_view.addItem(self.parent.ui.roi)
         self.parent.ui.roi.sigRegionChanged.connect(self.parent.roi_changed)

@@ -12,6 +12,7 @@ from __code.roi_statistics_vs_stack.display import Display
 from __code.roi_statistics_vs_stack.load import Load
 from __code._utilities.file import ListMostDominantExtension
 from __code._utilities.table_handler import TableHandler
+from __code.roi_statistics_vs_stack.export import Export
 
 
 class FileHandler(FileFolderBrowser):
@@ -65,6 +66,11 @@ class ImageWindow(QMainWindow):
 
     image_view_histogram_level = None
 
+    roi_dict = {'x0': 200,
+                'y0': 200,
+                'width': 400,
+                'height': 400}
+
     def __init__(self, parent=None, list_of_images=None):
 
         self.list_of_images = list_of_images
@@ -95,7 +101,8 @@ class ImageWindow(QMainWindow):
         o_display.update_statistics_plot()
 
     def export_button_clicked(self):
-        print("export button clicked")
+        o_export = Export(parent=self)
+        o_export.export()
 
     def closeEvent(self, event=None):
         pass
