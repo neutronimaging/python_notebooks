@@ -24,6 +24,8 @@ class Load:
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
 
+        x_axis_file_index = np.arange(len(list_of_images))
+        x_axis_time_offset = []
         for _index, _file in enumerate(list_of_images):
             o_norm = Normalization()
             o_norm.load(file=_file,
@@ -37,13 +39,17 @@ class Load:
             else:
                 time_stamp -= acquisition_time_of_first_image
 
+            x_axis_time_offset.append(time_stamp)
             data_dict[_index] = copy.deepcopy(self.parent.data_sub_dict)
-            data_dict[_index]['data'] =  data
-            data_dict[_index]['time_offset']=  time_stamp
+            data_dict[_index]['data'] = data
+            data_dict[_index]['time_offset']= time_stamp
 
             self.parent.eventProgress.setValue(_index)
             QApplication.processEvents()
 
+        self.parent.x_axis['file_index'] = x_axis_file_index
+        self.parent.x_axis['time_offset'] = x_axis_time_offset
         self.parent.data_dict = data_dict
+
         self.parent.eventProgress.setVisible(False)
         QApplication.processEvents()

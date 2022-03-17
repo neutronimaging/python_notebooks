@@ -1,11 +1,15 @@
 import pyqtgraph as pg
 from qtpy.QtWidgets import QProgressBar
-from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout
 import numpy as np
 import os
+import matplotlib
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from __code._utilities.table_handler import TableHandler
 from __code.roi_statistics_vs_stack import StatisticsColumnIndex
+from __code.__all.mplcanvas import MplCanvas
 
 
 class Initialization:
@@ -18,6 +22,7 @@ class Initialization:
         self.splitter()
         self.widgets()
         self.statusbar()
+        self.matplotlib()
 
     def pyqtgraph(self):
         # image view
@@ -74,3 +79,17 @@ class Initialization:
                                     editable=False)
 
         o_table.set_column_width(column_width=[350, 100, 70, 70, 70, 70, 70])
+
+    def matplotlib(self):
+        def _matplotlib(parent=None, widget=None):
+            sc = MplCanvas(parent, width=5, height=2, dpi=100)
+            # sc.axes.plot([0,1,2,3,4,5], [10, 1, 20 ,3, 40, 50])
+            toolbar = NavigationToolbar(sc, parent)
+            layout = QVBoxLayout()
+            layout.addWidget(toolbar)
+            layout.addWidget(sc)
+            widget.setLayout(layout)
+            return sc
+
+        self.parent.statistics_plot = _matplotlib(parent=self.parent,
+                                                  widget=self.parent.ui.plot_widget)

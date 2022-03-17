@@ -131,88 +131,116 @@
            <attribute name="title">
             <string>Plot</string>
            </attribute>
-           <widget class="QWidget" name="plot_widget" native="true">
-            <property name="geometry">
-             <rect>
-              <x>20</x>
-              <y>12</y>
-              <width>993</width>
-              <height>404</height>
-             </rect>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-           <widget class="QWidget" name="">
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QGroupBox" name="groupBox">
-               <property name="title">
-                <string>Statistics</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout">
-                <item>
-                 <widget class="QCheckBox" name="checkBox">
-                  <property name="text">
-                   <string>min</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBox_2">
-                  <property name="text">
-                   <string>max</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBox_3">
-                  <property name="text">
-                   <string>mean</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBox_4">
-                  <property name="text">
-                   <string>median</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBox_5">
-                  <property name="text">
-                   <string>std</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QWidget" name="plot_widget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QGroupBox" name="groupBox_2">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="title">
+                 <string>x-axis</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <item>
+                  <widget class="QRadioButton" name="file_index_radioButton">
+                   <property name="text">
+                    <string>File index</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="time_offset_radioButton">
+                   <property name="text">
+                    <string>Time offset</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox">
+                <property name="title">
+                 <string>Statistics</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout">
+                 <item>
+                  <widget class="QCheckBox" name="min_checkBox">
+                   <property name="text">
+                    <string>min</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="max_checkBox">
+                   <property name="text">
+                    <string>max</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="mean_checkBox">
+                   <property name="text">
+                    <string>mean</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="median_checkBox">
+                   <property name="text">
+                    <string>median</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="std_checkBox">
+                   <property name="text">
+                    <string>std</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="recalculate_pushButton">
           <property name="text">
            <string>Recalculate Table</string>
           </property>
@@ -245,7 +273,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="done_button">
+       <widget class="QPushButton" name="export_button">
         <property name="text">
          <string>Export ...</string>
         </property>
@@ -270,7 +298,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>done_button</sender>
+   <sender>export_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>done_button_clicked()</slot>
@@ -302,7 +330,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>min_checkBox</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>plot_menu_changed()</slot>
@@ -318,7 +346,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_2</sender>
+   <sender>max_checkBox</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>plot_menu_changed()</slot>
@@ -334,7 +362,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_3</sender>
+   <sender>mean_checkBox</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>plot_menu_changed()</slot>
@@ -350,7 +378,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_4</sender>
+   <sender>median_checkBox</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>plot_menu_changed()</slot>
@@ -366,7 +394,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_5</sender>
+   <sender>std_checkBox</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>plot_menu_changed()</slot>
@@ -398,7 +426,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>recalculate_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>recalculate_table_clicked()</slot>

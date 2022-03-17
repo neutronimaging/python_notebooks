@@ -45,11 +45,15 @@ class ImageWindow(QMainWindow):
                      'std': None,
                      'median': None}
 
+    x_axis = {'file_index': None,
+              'time_offset': None}
+
     # {0: {'data': [], 'time_offset': 0},
     #  1: {'data': [], 'time_offset': 15},
     #  }
     data_dict = None
     live_image = None
+    table_has_been_reset = False
 
     def __init__(self, parent=None, list_of_images=None):
 
@@ -86,9 +90,17 @@ class ImageWindow(QMainWindow):
     def done_button_clicked(self):
         print("done button clicked")
 
-    def update_table(self):
-        o_table = Table(parent=self)
-        o_table.update()
+    def roi_changed(self):
+        self.ui.export_button.setEnabled(False)
+        if not self.table_has_been_reset:
+            print("here")
+            self.table_has_been_reset = True
+            o_table = Table(parent=self)
+            o_table.reset()
+
+    def update_statistics_plot(self):
+        o_display = Display(parent=self)
+        o_display.update_statistics_plot()
 
     def initialize_ui(self):
         self.load_data()
@@ -98,6 +110,7 @@ class ImageWindow(QMainWindow):
         o_init.table()
 
         self.recalculate_table_clicked()
+        self.update_statistics_plot()
 
     def load_data(self):
         o_event = Load(parent=self)
@@ -107,3 +120,5 @@ class ImageWindow(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.recalculate_table()
         o_event.update_table()
+        self.ui.export_button.setEnabled(True)
+        self.table_has_been_reset = False
