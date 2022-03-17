@@ -11,6 +11,7 @@ from __code.roi_statistics_vs_stack.event_handler import EventHandler
 from __code.roi_statistics_vs_stack.display import Display
 from __code.roi_statistics_vs_stack.load import Load
 from __code._utilities.file import ListMostDominantExtension
+from __code._utilities.table_handler import TableHandler
 
 
 class FileHandler(FileFolderBrowser):
@@ -81,6 +82,8 @@ class ImageWindow(QMainWindow):
         o_display = Display(parent=self)
         o_display.update_image_view(slider_value=new_value)
         self.ui.slider_value.setText(str(new_value))
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        o_table.select_row(new_value)
 
     def cancel_clicked(self):
         self.close()
@@ -94,9 +97,6 @@ class ImageWindow(QMainWindow):
 
     def closeEvent(self, event=None):
         pass
-
-    def done_button_clicked(self):
-        print("done button clicked")
 
     def roi_changed(self):
         self.ui.export_button.setEnabled(False)

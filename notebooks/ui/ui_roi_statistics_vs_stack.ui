@@ -304,7 +304,7 @@
    <sender>export_button</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>done_button_clicked()</slot>
+   <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1804</x>
