@@ -44,10 +44,10 @@ class Display:
         self.parent.state_of_raw = _state
 
         first_update = False
-        if self.parent.raw_histogram_level == []:
+        if self.parent.filtered_histogram_level == []:
             first_update = True
         _histo_widget = self.parent.ui.filtered_image_view.getHistogramWidget()
-        self.parent.raw_histogram_level = _histo_widget.getLevels()
+        self.parent.filtered_histogram_level = _histo_widget.getLevels()
 
         _image = np.transpose(data)
         self.parent.ui.filtered_image_view.setImage(_image)
@@ -56,8 +56,8 @@ class Display:
         self.parent.live_filtered_image = _image
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.raw_histogram_level[0],
-                                    self.parent.raw_histogram_level[1])
+            _histo_widget.setLevels(self.parent.filtered_histogram_level[0],
+                                    self.parent.filtered_histogram_level[1])
 
         # histogram
         self.parent.ui.filtered_histogram_plot.clear()
