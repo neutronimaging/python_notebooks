@@ -129,6 +129,9 @@ class ImageWindow(QMainWindow):
         self.recalculate_table_clicked()
         self.update_statistics_plot()
 
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        o_table.select_row(0)
+
     def load_data(self):
         o_event = Load(parent=self)
         o_event.data()
