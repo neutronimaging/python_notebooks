@@ -148,3 +148,4 @@ class ImageWindow(QMainWindow):
         self.table_has_been_reset = False
         self.ui.y_axis_groupBox.setEnabled(True)
         self.ui.x_axis_groupBox.setEnabled(True)
+        self.plot_menu_changed()
