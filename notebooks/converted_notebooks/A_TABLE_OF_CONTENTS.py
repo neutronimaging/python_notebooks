@@ -61,7 +61,6 @@
 
 # # G
 
-# * [gamma filtering tool](gamma_filtering_tool.ipynb)
 # * [group images by cycle for panoramic stitching](group_images_by_cycle_for_panoramic_stitching.ipynb)
 
 # # H
@@ -95,6 +94,7 @@
 
 # # O
 
+# * [outliers filtering](outliers_filtering_tool.ipynb)
 # * [overlay images](overlay_images.ipynb)
 
 # # P
@@ -113,6 +113,7 @@
 # * [registration](registration.ipynb)
 # * [rename files](rename_files.ipynb)
 # * [resonance imaging experiment vs theory](resonance_imaging_experiment_vs_theory.ipynb)
+# * [roi statistics for a stack of images](roi_statistics_vs_stack.ipynb)
 # * [rotate and crop images](rotate_and_crop_images.ipynb)
 
 # # S
