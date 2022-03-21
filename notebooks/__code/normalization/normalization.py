@@ -424,18 +424,19 @@ class NormalizationHandler(object):
                                                                description='Height',
                                                                continuous_update=False))
 
-
     def run_normalization(self, dict_roi=None):
 
         if dict_roi is None:
-            #try:
-            self.o_norm.df_correction()
-            self.o_norm.normalization(notebook=True)
-            self.normalized_data_array = self.o_norm.get_normalized_data()
-            self.normalized_metadata_array = self.o_norm.data['sample']['metadata']
-            #except:
-            #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-            #                'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
+            try:
+                self.o_norm.df_correction()
+                self.o_norm.normalization(notebook=True)
+                self.normalized_data_array = self.o_norm.get_normalized_data()
+                self.normalized_metadata_array = self.o_norm.data['sample']['metadata']
+            except:
+                display(HTML('<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) ' +
+                             'do not Match!</span>'))
+                return
+            
         else:
             _list_roi = []
             for _key in dict_roi.keys():
@@ -458,8 +459,12 @@ class NormalizationHandler(object):
 
             self.o_norm.df_correction()
             if _list_roi:
-                # try:
-                self.o_norm.normalization(roi=_list_roi[0], notebook=True)
+                try:
+                    self.o_norm.normalization(roi=_list_roi[0], notebook=True)
+                except ValueError:
+                    display(HTML('<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) ' +
+                                 'do not Match!</span>'))
+                    return
 
             else:
                 self.o_norm.normalization(notebook=True)
