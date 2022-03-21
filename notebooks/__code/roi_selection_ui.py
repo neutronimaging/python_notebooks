@@ -114,9 +114,12 @@ class Interface(QMainWindow):
     def integrate_images(self):
         percentage_of_data_to_use = self.percentage_of_data_to_use
         nbr_files = len(self.o_norm.data['sample']['data'])
-        nbr_files_to_use = np.int(percentage_of_data_to_use * nbr_files)
-        if nbr_files_to_use < minimum_number_of_images_to_use_for_roi_selection:
-            nbr_files_to_use = minimum_number_of_images_to_use_for_roi_selection
+        if nbr_files < minimum_number_of_images_to_use_for_roi_selection:
+            nbr_files_to_use = nbr_files
+        else:
+            nbr_files_to_use = np.int(percentage_of_data_to_use * nbr_files)
+            if nbr_files_to_use < minimum_number_of_images_to_use_for_roi_selection:
+                nbr_files_to_use = minimum_number_of_images_to_use_for_roi_selection
         random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
         list_data_to_use = [self.o_norm.data['sample']['data'][_index] for _index in random_list]
         self.integrated_image = np.mean(list_data_to_use, axis=0)

@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_roi_selection.ui'
+# Form implementation generated from reading ui file '/Volumes/G-DRIVE/git/python_notebooks/notebooks/ui/ui_roi_selection.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.3
+# Created by: PyQt5 UI code generator 5.15.4
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -80,6 +78,12 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
+        self.instruction = QtWidgets.QLabel(self.centralwidget)
+        self.instruction.setText("")
+        self.instruction.setObjectName("instruction")
+        self.verticalLayout.addWidget(self.instruction)
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout_4.addLayout(self.verticalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -87,15 +91,15 @@ class Ui_MainWindow(object):
         self.cancel_button = QtWidgets.QPushButton(self.centralwidget)
         self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout.addWidget(self.cancel_button)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem1)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem2)
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
         self.horizontalLayout.addWidget(self.apply_button)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1140, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1140, 24))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -125,3 +129,4 @@ class Ui_MainWindow(object):
         self.add_roi_button.setText(_translate("MainWindow", "+"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel"))
         self.apply_button.setText(_translate("MainWindow", "OK"))
+
