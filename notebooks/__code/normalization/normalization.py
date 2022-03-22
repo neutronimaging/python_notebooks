@@ -434,65 +434,128 @@ class NormalizationHandler(object):
         else:
             nbr_df = 0
 
-        how_to_combine_layout = None
-        force_combining = None
-        force_ui = None
+        table_title = "Summary Table"
+        how_to_combine_title = "How do you want to combine the OBs?"
+        force_combine_title = "Do you want to combine the OBs?"
+
+        def force_combining_changed(value):
+            widgets_changed()
+
+        def how_to_combine_changed(value):
+            widgets_changed()
+
+        def widgets_changed():
+            if self.force_ui.value == 'no':
+                accordion_children = [self.force_ui, table]
+                accordion_title = [force_combine_title, table_title]
+                self.how_to_ui.disabled = True
+            elif nbr_sample != nbr_ob:
+                accordion_children = [self.how_to_ui, table]
+                accordion_title = [how_to_combine_title, table_title]
+                self.how_to_ui.disabled = False
+            else:
+                accordion_children = [self.force_ui, self.how_to_ui, table]
+                accordion_title = [force_combine_title, how_to_combine_title, table_title]
+                self.how_to_ui.disabled = False
+            table.value = get_html_table()
+            accordion.children = accordion_children
+            for _index, _title in enumerate(accordion_title):
+                accordion.set_title(_index, _title)
+            accordion.selected_index = len(accordion_title) - 1
+
+        def get_html_table():
+            force_combine = self.force_ui.value
+            how_to_combine = self.how_to_ui.value
+
+            if force_combine == 'yes':
+                description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
+            else:
+                description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
+
+            html_table = f"<table style='width:800px'>" \
+                         "<tr>" \
+                         "<th style='background-color: grey'>Nbr of Samples</th>" \
+                         "<th style='background-color: grey'>Nbr of OBs</th>" \
+                         "<th style='background-color: grey'>Nbr of DFs</th>" \
+                         "<th style='background-color: grey; width:60%'>Description of Process</th>" \
+                         "</tr>" \
+                         "<tr>" \
+                         f"<td>{nbr_sample}</td>" \
+                         f"<td>{nbr_ob}</td>" \
+                         f"<td>{nbr_df}</td>" \
+                         f"<td>{description}</td>" \
+                         "</tr>" \
+                         "</table>"
+            return html_table
 
         accordion_children = []
-        accordion_title = ()
+        accordion_title = list()
 
-        how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
+        self.force_ui = widgets.RadioButtons(options=['yes', 'no'],
+                                             value='yes',
+                                             disabled=False,
+                                             layout=widgets.Layout(width='200px'))
+        accordion_children.append(self.force_ui)
+        self.force_ui.observe(force_combining_changed, names='value')
+
+        self.how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
                                          value='median',
                                          layout=widgets.Layout(width='200px'))
+        accordion_children.append(self.how_to_ui)
+        self.how_to_ui.observe(how_to_combine_changed, names='value')
 
-        if nbr_sample == nbr_ob:
-
-            force_ui = widgets.RadioButtons(options=['yes', 'no'],
-                                            value='no',
-                                            layout=widgets.Layout(width='200px'))
-
-            accordion_children.append(force_ui)
-            accordion_title.append("Force Combining OB?")
-
-        else:
-
-            accordion_title.append(how_to_ui)
-            accordion_title.append("How to combine the OBs?")
-
-        if (nbr_sample == nbr_ob) and (force_ui.value == 'yes'):
-            accordion_children.append(force_combining)
-
-        html_table = f"<table>" \
-                     "<tr>" \
-                      "<th style='background-color: grey'>Nbr of Samples</th>" \
-                      "<th style='background-color: grey'>Nbr of OBs</th>" \
-                      "<th style='background-color: grey'>Nbr of DFs</th>" \
-                      "</tr>" \
-                     "<tr>" \
-                      f"<td>{nbr_sample}</td>" \
-                      f"<td>{nbr_ob}</td>" \
-                      f"<td>{nbr_df}</td>" \
-                     "</tr>" \
-                     "</table>"
-
+        html_table = ""
         table = widgets.HTML(value=html_table)
         accordion_children.append(table)
-        accordion_title.append("Summary Table")
+
+        if nbr_sample != nbr_ob:
+            self.force_ui.value = 'yes'
+            accordion_children = [self.how_to_ui, table]
+            how_to_combine_title = "How to combine?"
+            accordion_title = [how_to_combine_title, table_title]
+        else:
+            accordion_title.append(force_combine_title)
+            accordion_title.append(how_to_combine_title)
+            accordion_title.append(table_title)
+
+        table.value = get_html_table()
 
         accordion = widgets.Accordion(children=accordion_children,
-                                      titles=accordion_title)
-        display(accordion)
+                                      title=accordion_title)
 
+        for _index, _title in enumerate(accordion_title):
+            accordion.set_title(_index, _title)
+
+        accordion.selected_index = len(accordion_title) - 1
+        display(accordion)
 
     def run_normalization(self, dict_roi=None):
 
+        force_mean_ob = False
+        force_median_ob = False
+
+        force_combine = self.force_ui.value
+        if force_combine == 'yes':
+            how_to_combine = self.how_to_ui.value
+            if how_to_combine == 'mean':
+                force_mean_ob = True
+            elif how_to_combine == 'median':
+                force_median_ob = True
+            else:
+                raise NotImplementedError(f"How to combine OB algorithm ({how_to_combine}) not implemented!")
+
         if dict_roi is None:
+
             try:
                 self.o_norm.df_correction()
-                self.o_norm.normalization(notebook=True)
+                self.o_norm.normalization(notebook=True,
+                                          force_median_ob=force_median_ob,
+                                          force_mean_ob=force_mean_ob,
+                                          force=True)
                 self.normalized_data_array = self.o_norm.get_normalized_data()
                 self.normalized_metadata_array = self.o_norm.data['sample']['metadata']
-            except:
+
+            except ValueError:
                 display(HTML('<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) ' +
                              'do not Match!</span>'))
                 return
@@ -520,7 +583,11 @@ class NormalizationHandler(object):
             self.o_norm.df_correction()
             if _list_roi:
                 try:
-                    self.o_norm.normalization(roi=_list_roi[0], notebook=True)
+                    self.o_norm.normalization(roi=_list_roi[0],
+                                              notebook=True,
+                                              force_median_ob=force_median_ob,
+                                              force_mean_ob=force_mean_ob,
+                                              force=True)
                 except ValueError:
                     display(HTML('<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) ' +
                                  'do not Match!</span>'))
@@ -531,9 +598,6 @@ class NormalizationHandler(object):
 
             self.normalized_data_array = self.o_norm.get_normalized_data()
             self.normalized_metadata_array = self.o_norm.data['sample']['metadata']
-            #except:
-            #    display(HTML('<span style="font-size: 20px; color:red">Data Size ' +
-            #                 'do not Match (use bin_images.ipynb notebook to resize them)!</span>'))
 
     def select_export_folder(self, ipts_folder='./'):
 
@@ -576,7 +640,6 @@ class NormalizationHandler(object):
                                                                multiple=False,
                                                                type='directory')
         self.output_folder_ui.show()
-
 
     def export(self):
 

@@ -57,6 +57,15 @@ o_gui.show()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Normalization
+# -
+
+# ## Settings 
+
+len(o_norm.o_norm.data['sample']['data'])
+
+o_norm.settings()
+
+# ## Create normalized data 
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm.run_normalization(dict_roi=o_gui.roi_selected)
@@ -69,6 +78,3 @@ o_norm.select_export_folder(ipts_folder=sample_panel.ipts_dir)
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm.export()
-# -
-
-
