@@ -279,6 +279,7 @@ class DFSelectionPanel(Panel):
         self.top_object.o_norm_handler = o_norm_handler
         self.top_object.o_norm = o_norm_handler.o_norm
 
+
 class NormalizationHandler(object):
     
     data = None
@@ -328,23 +329,23 @@ class NormalizationHandler(object):
         else:
             return self.data.df
         
-    def plot_images(self, data_type='sample'):
-
-        sample_array = self.get_data(data_type=data_type)
-
-        def _plot_images(index):
-            _ = plt.figure(num=data_type, figsize=(5, 5))
-            ax_img = plt.subplot(111)
-            my_imshow= ax_img.imshow(sample_array[index], cmap='viridis')
-            plt.colorbar(my_imshow)
-
-        _ = widgets.interact(_plot_images,
-                     index=widgets.IntSlider(min=0,
-                                             max=len(self.get_data(data_type=data_type)) - 1,
-                                             step=1,
-                                             value=0,
-                                             description='{} Index'.format(data_type),
-                                             continuous_update=False))
+    # def plot_images(self, data_type='sample'):
+    #
+    #     sample_array = self.get_data(data_type=data_type)
+    #
+    #     def _plot_images(index):
+    #         _ = plt.figure(num=data_type, figsize=(5, 5))
+    #         ax_img = plt.subplot(111)
+    #         my_imshow= ax_img.imshow(sample_array[index], cmap='viridis')
+    #         plt.colorbar(my_imshow)
+    #
+    #     _ = widgets.interact(_plot_images,
+    #                  index=widgets.IntSlider(min=0,
+    #                                          max=len(self.get_data(data_type=data_type)) - 1,
+    #                                          step=1,
+    #                                          value=0,
+    #                                          description='{} Index'.format(data_type),
+    #                                          continuous_update=False))
 
     def calculate_integrated_sample(self):
         if len(self.data.sample) > 1:
@@ -353,76 +354,135 @@ class NormalizationHandler(object):
         else:
             self.integrated_sample = np.squeeze(self.data.sample)
 
-    def with_or_without_roi(self):
-        label1 = widgets.Label("Do you want to select a region of interest (ROI) that will make sure that the " +
-                              "sample background matches the OB background")
-        label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
-        box = widgets.HBox([widgets.Label("With or Without ROI?"),
-                            widgets.RadioButtons(options=['yes','no'],
-                                                value='yes',
-                                                layout=widgets.Layout(width='50%'))])
-        self.with_or_without_radio_button = box.children[1]
-        vertical = widgets.VBox([label1, label2, box])
-        display(vertical)
+    # def with_or_without_roi(self):
+    #     label1 = widgets.Label("Do you want to select a region of interest (ROI) that will make sure that the " +
+    #                           "sample background matches the OB background")
+    #     label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
+    #     box = widgets.HBox([widgets.Label("With or Without ROI?"),
+    #                         widgets.RadioButtons(options=['yes','no'],
+    #                                             value='yes',
+    #                                             layout=widgets.Layout(width='50%'))])
+    #     self.with_or_without_radio_button = box.children[1]
+    #     vertical = widgets.VBox([label1, label2, box])
+    #     display(vertical)
 
-    def select_sample_roi(self):
+    # def select_sample_roi(self):
+    #
+    #     if self.with_or_without_radio_button.value == 'no':
+    #         label2 = widgets.Label("-> You chose not to select any ROI! Next step: Normalization")
+    #         display(label2)
+    #         return
+    #
+    #     label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
+    #     display(label2)
+    #
+    #     if self.integrated_sample == []:
+    #         self.calculate_integrated_sample()
+    #
+    #     _integrated_sample = self.integrated_sample
+    #     [height, width] = np.shape(_integrated_sample)
+    #
+    #     def plot_roi(x_left, y_top, width, height):
+    #         _ = plt.figure(figsize=(5, 5))
+    #         ax_img = plt.subplot(111)
+    #         ax_img.imshow(_integrated_sample,
+    #                       cmap='viridis',
+    #                       interpolation=None)
+    #
+    #         _rectangle = patches.Rectangle((x_left, y_top),
+    #                                        width,
+    #                                        height,
+    #                                        edgecolor='white',
+    #                                        linewidth=2,
+    #                                        fill=False)
+    #         ax_img.add_patch(_rectangle)
+    #
+    #         return [x_left, y_top, width, height]
+    #
+    #     self.roi_selection = widgets.interact(plot_roi,
+    #                                   x_left=widgets.IntSlider(min=0,
+    #                                                            max=width,
+    #                                                            step=1,
+    #                                                            value=0,
+    #                                                            description='X Left',
+    #                                                            continuous_update=False),
+    #                                   y_top=widgets.IntSlider(min=0,
+    #                                                           max=height,
+    #                                                           value=0,
+    #                                                           step=1,
+    #                                                           description='Y Top',
+    #                                                           continuous_update=False),
+    #                                   width=widgets.IntSlider(min=0,
+    #                                                           max=width - 1,
+    #                                                           step=1,
+    #                                                           value=60,
+    #                                                           description="Width",
+    #                                                           continuous_update=False),
+    #                                   height=widgets.IntSlider(min=0,
+    #                                                            max=height - 1,
+    #                                                            step=1,
+    #                                                            value=100,
+    #                                                            description='Height',
+    #                                                            continuous_update=False))
 
-        if self.with_or_without_radio_button.value == 'no':
-            label2 = widgets.Label("-> You chose not to select any ROI! Next step: Normalization")
-            display(label2)
-            return
+    def settings(self):
+        o_norm = self.o_norm
+        nbr_sample = len(o_norm.data['sample']['data'])
+        nbr_ob = len(o_norm.data['ob']['data'])
+        if o_norm.data['df']['data']:
+            nbr_df = len(o_norm.data['df']['data'])
+        else:
+            nbr_df = 0
 
-        label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
-        display(label2)
+        how_to_combine_layout = None
+        force_combining = None
+        force_ui = None
 
-        if self.integrated_sample == []:
-            self.calculate_integrated_sample()
+        accordion_children = []
+        accordion_title = ()
 
-        _integrated_sample = self.integrated_sample
-        [height, width] = np.shape(_integrated_sample)
+        how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
+                                         value='median',
+                                         layout=widgets.Layout(width='200px'))
 
-        def plot_roi(x_left, y_top, width, height):
-            _ = plt.figure(figsize=(5, 5))
-            ax_img = plt.subplot(111)
-            ax_img.imshow(_integrated_sample,
-                          cmap='viridis',
-                          interpolation=None)
+        if nbr_sample == nbr_ob:
 
-            _rectangle = patches.Rectangle((x_left, y_top),
-                                           width,
-                                           height,
-                                           edgecolor='white',
-                                           linewidth=2,
-                                           fill=False)
-            ax_img.add_patch(_rectangle)
+            force_ui = widgets.RadioButtons(options=['yes', 'no'],
+                                            value='no',
+                                            layout=widgets.Layout(width='200px'))
 
-            return [x_left, y_top, width, height]
+            accordion_children.append(force_ui)
+            accordion_title.append("Force Combining OB?")
 
-        self.roi_selection = widgets.interact(plot_roi,
-                                      x_left=widgets.IntSlider(min=0,
-                                                               max=width,
-                                                               step=1,
-                                                               value=0,
-                                                               description='X Left',
-                                                               continuous_update=False),
-                                      y_top=widgets.IntSlider(min=0,
-                                                              max=height,
-                                                              value=0,
-                                                              step=1,
-                                                              description='Y Top',
-                                                              continuous_update=False),
-                                      width=widgets.IntSlider(min=0,
-                                                              max=width - 1,
-                                                              step=1,
-                                                              value=60,
-                                                              description="Width",
-                                                              continuous_update=False),
-                                      height=widgets.IntSlider(min=0,
-                                                               max=height - 1,
-                                                               step=1,
-                                                               value=100,
-                                                               description='Height',
-                                                               continuous_update=False))
+        else:
+
+            accordion_title.append(how_to_ui)
+            accordion_title.append("How to combine the OBs?")
+
+        if (nbr_sample == nbr_ob) and (force_ui.value == 'yes'):
+            accordion_children.append(force_combining)
+
+        html_table = f"<table>" \
+                     "<tr>" \
+                      "<th style='background-color: grey'>Nbr of Samples</th>" \
+                      "<th style='background-color: grey'>Nbr of OBs</th>" \
+                      "<th style='background-color: grey'>Nbr of DFs</th>" \
+                      "</tr>" \
+                     "<tr>" \
+                      f"<td>{nbr_sample}</td>" \
+                      f"<td>{nbr_ob}</td>" \
+                      f"<td>{nbr_df}</td>" \
+                     "</tr>" \
+                     "</table>"
+
+        table = widgets.HTML(value=html_table)
+        accordion_children.append(table)
+        accordion_title.append("Summary Table")
+
+        accordion = widgets.Accordion(children=accordion_children,
+                                      titles=accordion_title)
+        display(accordion)
+
 
     def run_normalization(self, dict_roi=None):
 
@@ -436,7 +496,7 @@ class NormalizationHandler(object):
                 display(HTML('<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) ' +
                              'do not Match!</span>'))
                 return
-            
+
         else:
             _list_roi = []
             for _key in dict_roi.keys():
