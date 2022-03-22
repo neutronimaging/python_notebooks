@@ -61,8 +61,6 @@ o_gui.show()
 
 # ## Settings 
 
-len(o_norm.o_norm.data['sample']['data'])
-
 o_norm.settings()
 
 # ## Create normalized data 
