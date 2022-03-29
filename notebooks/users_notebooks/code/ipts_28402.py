@@ -295,6 +295,7 @@ class IPTS_28402:
         pixel_index = np.arange(0, nbr_pixel)
         inner_radius = self.config["cylinders_position"]["inner_radius"]
         outer_radius = self.config["cylinders_position"]["outer_radius"]
+        center = int(nbr_pixel/2)
 
         left_inner_cylinder = self.config["profiles_plot"]["left_inner_cylinder"]
         nbr_point_to_use = sampling_nbr_of_points
@@ -337,3 +338,44 @@ class IPTS_28402:
         plt.axhline(y=median_list_intensity, linestyle='-', color='black', label='Median')
 
         ax1.legend()
+
+        # Attenuation per pixel of outer ring
+        intensity_of_left_ring_array_for_all_images = []
+        x_axis_of_left_ring_array = np.arange(center - inner_radius)
+
+        intensity_of_right_ring_array_for_all_images = []
+        x_axis_of_right_ring_array = np.arange(center + inner_radius, nbr_pixel)
+
+        for _profile in profiles_attenuation_mode:
+
+            intensity_of_left_ring_array = []
+            for x in x_axis_of_left_ring_array:
+                measure = _profile[x]
+                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x,
+                                                                                        radius=outer_radius)
+                intensity_of_left_ring_array.append(measure / number_of_pixels_through_thickness)
+
+            intensity_of_left_ring_array_for_all_images.append(intensity_of_left_ring_array)
+
+            intensity_of_right_ring_array = []
+            for x in x_axis_of_right_ring_array:
+                measure = _profile[x]
+                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x,
+                                                                                        radius=outer_radius)
+                intensity_of_right_ring_array.append(measure / number_of_pixels_through_thickness)
+
+            intensity_of_right_ring_array_for_all_images.append(intensity_of_right_ring_array)
+
+        fig_outer, ax_outer = plt.subplots(num="Outer cylinder corrected")
+        fig_outer.set_figwidth(10)
+
+        def plot_profiles_with_outer_cylinder_corrected(image_index):
+            ax_outer.cla()
+            plt.plot(x_axis_of_left_ring_array, intensity_of_left_ring_array_for_all_images[image_index], '.r')
+            plt.plot(x_axis_of_right_ring_array, intensity_of_right_ring_array, '.r')
+
+
+        plot_profile_outer_ui = interactive(plot_profiles_with_outer_cylinder_corrected,
+                                          image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                        value=0))
+        display(plot_profile_outer_ui)

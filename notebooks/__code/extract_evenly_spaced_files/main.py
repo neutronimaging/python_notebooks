@@ -148,3 +148,4 @@ class ExtractEvenlySpacedFiles(object):
                                               output_folder=full_output_folder_name)
             display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
                      ' files have been copied into ' + full_output_folder_name + '</span>'))
+
