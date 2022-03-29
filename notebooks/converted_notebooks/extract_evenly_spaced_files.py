@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.11.2
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -30,18 +30,22 @@ custom_style.style()
 
 # %gui qt
 
+# # How to sort the data
+
+o_extract = EESF(working_dir=system.System.get_working_dir())
+o_extract.sorting_method()
+
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Folder with Images to Extract 
 # -
 
-o_extract = EESF(working_dir=system.System.get_working_dir())
 o_extract.select_folder()
 
 # # Extraction Method to Use
 
 o_extract.how_to_extract()
 
-# # Manual review and/or selection of files 
+# # Manual review and/or selection of files (optional)
 
 o_inteface = Interface(o_extract=o_extract)
 
