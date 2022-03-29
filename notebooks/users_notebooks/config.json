@@ -1,0 +1,17 @@
+{
+  "cylinders_position": {
+    "center": 757,
+    "inner_radius": 450,
+    "outer_radius": 647
+    },
+  "default_crop": {
+    "x0": 251,
+    "x1": 1749,
+    "y0": 1400,
+    "y1": 1650
+  },
+  "profiles_limit": {
+    "top": 89,
+    "bottom": 119
+  }
+}
