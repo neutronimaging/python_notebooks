@@ -7,6 +7,7 @@ from __code import file_handler
 from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
 from __code.ipywe.fileselector import FileSelectorPanel
 from __code.extract_evenly_spaced_files.get import Get
+from __code._utilities.file import retrieve_time_stamp
 
 
 class ExtractEvenlySpacedFiles(object):
@@ -27,12 +28,28 @@ class ExtractEvenlySpacedFiles(object):
     def retrieve_list_of_files(self, folder_selected):
         [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=folder_selected)
         self.folder_of_files_to_extract = folder_selected
+
+        sorting_algorithm = self.sorting_ui.value
+        if sorting_algorithm == "File Name":
+            self.list_files.sort()
+        else:
+            retrieve_time_stamp_dict = retrieve_time_stamp(list_images=self.list_files)
+            list_time_stamp = retrieve_time_stamp_dict['list_time_stamp']
+            index_sorted = np.argsort(list_time_stamp)
+            list_files = np.array(self.list_files)
+            self.list_files = list_files[index_sorted]
+
         self.list_of_files_to_extract = self.list_files
         self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
         self.basename_list_of_files_that_will_be_extracted = [os.path.basename(_file) for _file in self.list_files]
         self.number_of_files = len(self.list_files)
         display(HTML('<span style="font-size: 15px; color:blue">' + str(self.number_of_files) +
                  ' files will be used in the extraction.</span>'))
+
+    def sorting_method(self):
+        self.sorting_ui = widgets.RadioButtons(options=["Time", "File Name"],
+                                               value="File Name")
+        display(self.sorting_ui)
 
     def how_to_extract(self):
         o_get = Get(parent=self)

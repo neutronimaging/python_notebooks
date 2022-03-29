@@ -26,6 +26,8 @@ class MetadataHandler(object):
                 time_stamp = os.path.getctime(file_name)
         elif ext == 'fits':
             time_stamp = os.path.getctime(file_name)
+        elif ext == 'jpg':
+            time_stamp = os.path.getctime(file_name)
 
         else:
             raise NotImplemented

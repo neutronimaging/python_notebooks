@@ -386,6 +386,9 @@ def retrieve_time_stamp(list_images, label=""):
         ext = 'tif'
     elif ext.lower() == '.fits':
         ext = 'fits'
+
+    elif ext.lower() == '.jpg':
+        ext = 'jpg'
     else:
         raise ValueError
 
