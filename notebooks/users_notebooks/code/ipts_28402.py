@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from NeuNorm.normalization import Normalization
 
 from __code.file_folder_browser import FileFolderBrowser
+from .cylindrical_geometry_correction import number_of_pixels_at_that_position1, number_of_pixel_at_that_position2
 
 
 class IPTS_28402:
@@ -173,9 +174,9 @@ class IPTS_28402:
         display(v)
 
     def cylinders_positions(self):
-        fig = plt.figure(6)
-        fig.set_figheight(8)
-        fig.set_figwidth(8)
+        fig2 = plt.figure(6)
+        fig2.set_figheight(8)
+        fig2.set_figwidth(8)
 
         [_, width] = np.shape(self.cropped_data[0])
 
@@ -183,40 +184,44 @@ class IPTS_28402:
         default_bottom = self.config["profiles_limit"]["bottom"]
 
         def plot(image_index, center, inner_radius, outer_radius):
-            ax1 = plt.subplot2grid(shape=(6, 1), loc=(0, 0), colspan=1, rowspan=1)
-            ax2 = plt.subplot2grid(shape=(6, 1), loc=(1, 0), colspan=1, rowspan=5)
+            ax21 = plt.subplot2grid(shape=(6, 1), loc=(0, 0), colspan=1, rowspan=1)
+            ax22 = plt.subplot2grid(shape=(6, 1), loc=(1, 0), colspan=1, rowspan=5)
 
             # top plot
             data = self.cropped_data[image_index][default_top: default_bottom + 1, :]
-            ax1.imshow(data, vmin=0, vmax=1)
-            ax1.axis('off')
+            ax21.imshow(data, vmin=0, vmax=1)
+            ax21.axis('off')
 
             inner_left = center - inner_radius
             inner_right = center + inner_radius
-            ax1.axvline(x=inner_left, color='green')
-            ax1.axvline(x=inner_right, color='green')
+            ax21.axvline(x=inner_left, color='green')
+            ax21.axvline(x=inner_right, color='green')
 
-            ax1.axvline(x=center, color='red', linestyle='--')
+            ax21.axvline(x=center, color='red', linestyle='--')
 
             outer_left = center - outer_radius
             outer_right = center + outer_radius
-            ax1.axvline(x=outer_left, color='blue')
-            ax1.axvline(x=outer_right, color='blue')
+            ax21.axvline(x=outer_left, color='blue')
+            ax21.axvline(x=outer_right, color='blue')
 
             # bottom plot
-            ax2.plot(self.profiles[image_index])
-            ax2.set_xlim([0, width])
+            ax22.plot(self.profiles[image_index])
+            ax22.set_xlim([0, width])
 
-            ax2.axvline(x=inner_left, color='green')
-            ax2.axvline(x=inner_right, color='green')
+            ax22.axvline(x=inner_left, color='green')
+            ax22.axvline(x=inner_right, color='green')
 
-            ax2.axvline(x=center, color='red', linestyle='--')
+            ax22.axvline(x=center, color='red', linestyle='--')
 
-            ax2.axvline(x=outer_left, color='blue')
-            ax2.axvline(x=outer_right, color='blue')
+            ax22.axvline(x=outer_left, color='blue')
+            ax22.axvline(x=outer_right, color='blue')
 
             # for reference, plotting the y-axis 1
-            ax2.axhline(y=1, color="black")
+            ax22.axhline(y=1, color="black")
+
+            self.config["cylinders_position"] = {"center"      : center,
+                                                 "inner_radius": inner_radius,
+                                                 "outer_radius": outer_radius}
 
             return center, inner_radius, outer_radius
 
@@ -240,4 +245,95 @@ class IPTS_28402:
         display(self.cylinders_positions_ui)
 
     def cleaning_edges(self):
-        pass
+        [center, _, outer_radius] = self.cylinders_positions_ui.result
+
+        left_outer = center - outer_radius
+        right_outer = center + outer_radius + 1
+
+        # calculate left and right inner cylinder positions
+        inner_radius = self.config["cylinders_position"]["inner_radius"]
+        left_inner_edge = center - inner_radius - left_outer
+        right_inner_edge = center + inner_radius - left_outer
+        self.config["profiles_plot"]["left_inner_cylinder"] = left_inner_edge
+        self.config["profiles_plot"]["right_inner_cylinder"] = right_inner_edge
+
+        profiles_cleaned = [_profile[left_outer: right_outer] for _profile in self.profiles]
+        self.profiles_cleaned = profiles_cleaned
+
+        fig, ax1 = plt.subplots(num="Outer and Inner cylinders profiles")
+
+        def plot_profiles_cleaned(image_index):
+            ax1.cla()
+            plt.plot(profiles_cleaned[image_index], '.b')
+            plt.axhline(y=1, color='green')
+
+        plot_cleaning_edges_ui = interactive(plot_profiles_cleaned,
+                                        image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                      value=0))
+        display(plot_cleaning_edges_ui)
+
+    def switching_to_attenuation_mode(self):
+        threshold_value = 1
+        profiles_attenuation_mode = [(threshold_value - _profile) for _profile in self.profiles_cleaned]
+        self.profiles_attenuation_mode = profiles_attenuation_mode
+
+        fig_attenuation, ax_attenuation = plt.subplots(num="Profiles in attenuation mode")
+
+        def plot_profiles_attenuation(image_index):
+            ax_attenuation.cla()
+            plt.plot(profiles_attenuation_mode[image_index], '.b')
+            plt.axhline(y=1, color='green')
+
+        plot_attenuation_ui = interactive(plot_profiles_attenuation,
+                                        image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                      value=0))
+        display(plot_attenuation_ui)
+
+    def outer_cylinder_geometry_correction(self, sampling_nbr_of_points=3):
+        profiles_attenuation_mode = self.profiles_attenuation_mode
+        nbr_pixel = len(profiles_attenuation_mode[0])
+        pixel_index = np.arange(0, nbr_pixel)
+        inner_radius = self.config["cylinders_position"]["inner_radius"]
+        outer_radius = self.config["cylinders_position"]["outer_radius"]
+
+        left_inner_cylinder = self.config["profiles_plot"]["left_inner_cylinder"]
+        nbr_point_to_use = sampling_nbr_of_points
+        delta = int(left_inner_cylinder / (nbr_point_to_use+1))
+
+        # we gonna use 3 different points on each side of the outer cylinder to figure out the intensity
+        # per pixel
+
+        left_positions_to_test = (np.arange(nbr_point_to_use)+1) * delta
+        right_positions_to_test = left_positions_to_test + 2 * inner_radius
+
+        list_intensity_of_ring = []
+        for _profile in profiles_attenuation_mode:
+            list_intensity = []
+            for _value_to_test in left_positions_to_test:
+                measure = _profile[_value_to_test]
+                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=_value_to_test,
+                                                                                        radius=outer_radius)
+                intensity_of_ring = measure / number_of_pixels_through_thickness
+                list_intensity.append(intensity_of_ring)
+
+            for _value_to_test in right_positions_to_test:
+                measure = _profile[_value_to_test]
+                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=_value_to_test,
+                                                                                        radius=outer_radius)
+                intensity_of_ring = measure / number_of_pixels_through_thickness
+                list_intensity.append(intensity_of_ring)
+
+            intensity_of_ring = np.median(list_intensity)
+            list_intensity_of_ring.append(intensity_of_ring)
+
+        fig1, ax1 = plt.subplots(num="Outer cylinder pixel intensity")
+        fig1.set_figwidth(10)
+        plt.plot(list_intensity_of_ring, '.b')
+        ax1.set_xlabel("Image index")
+        ax1.set_ylabel("Counts per pixel in outer cylinder")
+        mean_list_intensity = np.mean(list_intensity_of_ring)
+        median_list_intensity = np.median(list_intensity_of_ring)
+        plt.axhline(y=mean_list_intensity, linestyle='--', color='green', label='Mean')
+        plt.axhline(y=median_list_intensity, linestyle='-', color='black', label='Median')
+
+        ax1.legend()
