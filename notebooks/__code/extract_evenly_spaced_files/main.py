@@ -106,14 +106,25 @@ class ExtractEvenlySpacedFiles(object):
         self.left_vertical_layout.layout.visibility = visibility
         self.right_vertical_layout.layout.visibility = visibility
 
+    def prefix_changed(self, new_value):
+        o_get = Get(parent=self)
+        new_prefix = new_value['new']
+        self.renamed_basename_list_of_files = o_get.renamed_basename_list_of_files(prefix=new_prefix)
+        self.new_file_name_ui.options = self.renamed_basename_list_of_files
+
     def renamed_files(self):
         o_get = Get(parent=self)
-        self.renamed_basename_list_of_files = o_get.renamed_basename_list_of_files()
         basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
         question_widget = widgets.Checkbox(value=True,
                                            description="Rename files?")
         question_widget.observe(self.renaming_checkbox_changed, names='value')
         self.renaming_files_widget = question_widget
+
+        self.prefix_file_name = widgets.Text(value="",
+                                             placeholder="Type prefix here",
+                                             description="Prefix:")
+        self.prefix_file_name.observe(self.prefix_changed, names='value')
+        self.renamed_basename_list_of_files = o_get.renamed_basename_list_of_files(prefix=self.prefix_file_name.value)
 
         self.left_vertical_layout = widgets.VBox([widgets.Label("Before renaming",
                                                                 layout=widgets.Layout(width='100%')),
@@ -127,8 +138,12 @@ class ExtractEvenlySpacedFiles(object):
                                                                   layout=widgets.Layout(width='90%',
                                                                                    height='400px'))],
                                                    layout=widgets.Layout(width='40%'))
-        horizontal_layout = widgets.HBox([self.left_vertical_layout, self.right_vertical_layout])
-        full_vertical_layout = widgets.VBox([question_widget, horizontal_layout])
+        self.new_file_name_ui = self.right_vertical_layout.children[1]
+        horizontal_layout = widgets.HBox([self.left_vertical_layout,
+                                          self.right_vertical_layout])
+        full_vertical_layout = widgets.VBox([question_widget,
+                                             self.prefix_file_name,
+                                             horizontal_layout])
         display(full_vertical_layout)
 
     def select_output_folder(self):
