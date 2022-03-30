@@ -46,6 +46,8 @@ o_extract.select_folder()
 o_extract.how_to_extract()
 
 # # Manual review and/or selection of files (optional)
+#
+# **WARNING** This step will require to load the entire stack of images you selected, so that may take some time!
 
 o_inteface = Interface(o_extract=o_extract)
 
