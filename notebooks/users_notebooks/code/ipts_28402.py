@@ -1,12 +1,17 @@
 import sys
 import glob
 import os
+from pathlib import PurePosixPath
 
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
 import numpy as np
 import json
+
+from plotly.offline import plot, init_notebook_mode, iplot
+import plotly.express as px
+import plotly.graph_objects as go
 
 from ipywidgets import interactive
 import ipywidgets as widgets
@@ -17,6 +22,8 @@ import matplotlib.pyplot as plt
 from NeuNorm.normalization import Normalization
 
 from __code.file_folder_browser import FileFolderBrowser
+from __code._utilities.folder import make_folder
+from __code._utilities.file import make_ascii_file
 from .cylindrical_geometry_correction import number_of_pixels_at_that_position1, number_of_pixel_at_that_position2
 
 
@@ -27,6 +34,12 @@ class IPTS_28402:
 
     default_crop = {'x0': 251, 'x1': 1749, 'y0': 1400, 'y1': 1650}
     crop = {'x0': None, 'x1': None, 'y0': None, 'y1': None}
+
+    # Profile, for each image loaded, of inner and outer cylinder with only outer cylinder corrected
+    profile_with_outer_cylinder_removed = None
+
+    # list of images full path names
+    list_of_images = None
 
     def __init__(self, working_dir="./", debugging=False):
         self.debugging = debugging
@@ -51,6 +64,12 @@ class IPTS_28402:
 
     def load_images(self, list_of_images):
         self.number_of_images = len(list_of_images)
+        self.list_of_images = list_of_images
+        if self.number_of_images == 0:
+            display(HTML('<span>0 images found!</span>'))
+            return
+
+        self.working_dir = os.path.dirname(list_of_images[0])
 
         o_norm = Normalization()
         o_norm.load(file=list_of_images,
@@ -268,8 +287,8 @@ class IPTS_28402:
             plt.axhline(y=1, color='green')
 
         plot_cleaning_edges_ui = interactive(plot_profiles_cleaned,
-                                        image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
-                                                                      value=0))
+                                             image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                           value=0))
         display(plot_cleaning_edges_ui)
 
     def switching_to_attenuation_mode(self):
@@ -285,8 +304,8 @@ class IPTS_28402:
             plt.axhline(y=1, color='green')
 
         plot_attenuation_ui = interactive(plot_profiles_attenuation,
-                                        image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
-                                                                      value=0))
+                                          image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                        value=0))
         display(plot_attenuation_ui)
 
     def outer_cylinder_geometry_correction(self, sampling_nbr_of_points=3):
@@ -295,49 +314,49 @@ class IPTS_28402:
         pixel_index = np.arange(0, nbr_pixel)
         inner_radius = self.config["cylinders_position"]["inner_radius"]
         outer_radius = self.config["cylinders_position"]["outer_radius"]
-        center = int(nbr_pixel/2)
+        center = int(nbr_pixel / 2)
 
-        left_inner_cylinder = self.config["profiles_plot"]["left_inner_cylinder"]
-        nbr_point_to_use = sampling_nbr_of_points
-        delta = int(left_inner_cylinder / (nbr_point_to_use+1))
-
-        # we gonna use 3 different points on each side of the outer cylinder to figure out the intensity
-        # per pixel
-
-        left_positions_to_test = (np.arange(nbr_point_to_use)+1) * delta
-        right_positions_to_test = left_positions_to_test + 2 * inner_radius
-
-        list_intensity_of_ring = []
-        for _profile in profiles_attenuation_mode:
-            list_intensity = []
-            for _value_to_test in left_positions_to_test:
-                measure = _profile[_value_to_test]
-                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=_value_to_test,
-                                                                                        radius=outer_radius)
-                intensity_of_ring = measure / number_of_pixels_through_thickness
-                list_intensity.append(intensity_of_ring)
-
-            for _value_to_test in right_positions_to_test:
-                measure = _profile[_value_to_test]
-                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=_value_to_test,
-                                                                                        radius=outer_radius)
-                intensity_of_ring = measure / number_of_pixels_through_thickness
-                list_intensity.append(intensity_of_ring)
-
-            intensity_of_ring = np.median(list_intensity)
-            list_intensity_of_ring.append(intensity_of_ring)
-
-        fig1, ax1 = plt.subplots(num="Outer cylinder pixel intensity")
-        fig1.set_figwidth(10)
-        plt.plot(list_intensity_of_ring, '.b')
-        ax1.set_xlabel("Image index")
-        ax1.set_ylabel("Counts per pixel in outer cylinder")
-        mean_list_intensity = np.mean(list_intensity_of_ring)
-        median_list_intensity = np.median(list_intensity_of_ring)
-        plt.axhline(y=mean_list_intensity, linestyle='--', color='green', label='Mean')
-        plt.axhline(y=median_list_intensity, linestyle='-', color='black', label='Median')
-
-        ax1.legend()
+        # left_inner_cylinder = self.config["profiles_plot"]["left_inner_cylinder"]
+        # nbr_point_to_use = sampling_nbr_of_points
+        # delta = int(left_inner_cylinder / (nbr_point_to_use+1))
+        #
+        # # we gonna use 3 different points on each side of the outer cylinder to figure out the intensity
+        # # per pixel
+        #
+        # left_positions_to_test = (np.arange(nbr_point_to_use)+1) * delta
+        # right_positions_to_test = left_positions_to_test + 2 * inner_radius
+        #
+        # list_intensity_of_ring = []
+        # for _profile in profiles_attenuation_mode:
+        #     list_intensity = []
+        #     for _value_to_test in left_positions_to_test:
+        #         measure = _profile[_value_to_test]
+        #         number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=_value_to_test,
+        #                                                                                 radius=outer_radius)
+        #         intensity_of_ring = measure / number_of_pixels_through_thickness
+        #         list_intensity.append(intensity_of_ring)
+        #
+        #     for _value_to_test in right_positions_to_test:
+        #         measure = _profile[_value_to_test]
+        #         number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=_value_to_test,
+        #                                                                                 radius=outer_radius)
+        #         intensity_of_ring = measure / number_of_pixels_through_thickness
+        #         list_intensity.append(intensity_of_ring)
+        #
+        #     intensity_of_ring = np.median(list_intensity)
+        #     list_intensity_of_ring.append(intensity_of_ring)
+        #
+        # fig1, ax1 = plt.subplots(num="Outer cylinder pixel intensity")
+        # fig1.set_figwidth(10)
+        # plt.plot(list_intensity_of_ring, '.b')
+        # ax1.set_xlabel("Image index")
+        # ax1.set_ylabel("Counts per pixel in outer cylinder")
+        # mean_list_intensity = np.mean(list_intensity_of_ring)
+        # median_list_intensity = np.median(list_intensity_of_ring)
+        # plt.axhline(y=mean_list_intensity, linestyle='--', color='green', label='Mean')
+        # plt.axhline(y=median_list_intensity, linestyle='-', color='black', label='Median')
+        #
+        # ax1.legend()
 
         # Attenuation per pixel of outer ring
         intensity_of_left_ring_array_for_all_images = []
@@ -346,14 +365,20 @@ class IPTS_28402:
         intensity_of_right_ring_array_for_all_images = []
         x_axis_of_right_ring_array = np.arange(center + inner_radius, nbr_pixel)
 
+        median_intensity_for_all_images = []
+
         for _profile in profiles_attenuation_mode:
+
+            intensity_of_ring_array = []
 
             intensity_of_left_ring_array = []
             for x in x_axis_of_left_ring_array:
                 measure = _profile[x]
                 number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x,
                                                                                         radius=outer_radius)
-                intensity_of_left_ring_array.append(measure / number_of_pixels_through_thickness)
+                value = measure / number_of_pixels_through_thickness
+                intensity_of_left_ring_array.append(value)
+                intensity_of_ring_array.append(value)
 
             intensity_of_left_ring_array_for_all_images.append(intensity_of_left_ring_array)
 
@@ -362,9 +387,15 @@ class IPTS_28402:
                 measure = _profile[x]
                 number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x,
                                                                                         radius=outer_radius)
-                intensity_of_right_ring_array.append(measure / number_of_pixels_through_thickness)
+                value = measure / number_of_pixels_through_thickness
+                intensity_of_right_ring_array.append(value)
+                intensity_of_ring_array.append(value)
 
             intensity_of_right_ring_array_for_all_images.append(intensity_of_right_ring_array)
+
+            median_intensity_for_all_images.append(np.median(intensity_of_ring_array))
+
+        self.median_intensity_for_all_images = median_intensity_for_all_images
 
         fig_outer, ax_outer = plt.subplots(num="Outer cylinder corrected")
         fig_outer.set_figwidth(10)
@@ -374,8 +405,211 @@ class IPTS_28402:
             plt.plot(x_axis_of_left_ring_array, intensity_of_left_ring_array_for_all_images[image_index], '.r')
             plt.plot(x_axis_of_right_ring_array, intensity_of_right_ring_array, '.r')
 
-
         plot_profile_outer_ui = interactive(plot_profiles_with_outer_cylinder_corrected,
-                                          image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
-                                                                        value=0))
+                                            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                          value=0))
         display(plot_profile_outer_ui)
+
+    def full_profile_with_only_outer_cylinder_corrected(self):
+        outer_radius = self.config["cylinders_position"]["outer_radius"]
+        inner_radius = self.config["cylinders_position"]["inner_radius"]
+        profiles_attenuation_mode = self.profiles_attenuation_mode
+
+        shape_of_ring_signal_for_all_images = []
+        median_intensity_for_all_images = self.median_intensity_for_all_images
+
+        new_profile_with_outer_cylinder_removed = []
+
+        for _profile_index, _profile in enumerate(profiles_attenuation_mode):
+
+            shape_of_ring_signal = []
+            for x in np.arange(0, outer_radius + 1):
+                nbr_pixels = number_of_pixel_at_that_position2(position=x,
+                                                               inner_circle_r=inner_radius,
+                                                               outer_circle_r=outer_radius)
+
+                shape_of_ring_signal.append(nbr_pixels * median_intensity_for_all_images[_profile_index])
+
+            full_shape_of_ring_signal = np.concatenate((shape_of_ring_signal[::-1], shape_of_ring_signal[:-1:]))
+            shape_of_ring_signal_for_all_images.append(full_shape_of_ring_signal)
+
+            # new profile with outer cylinder removed
+            new_profile_with_outer_cylinder_removed.append(_profile - full_shape_of_ring_signal)
+
+        self.profile_with_outer_cylinder_removed = new_profile_with_outer_cylinder_removed
+
+        def plot_shape_ring_signal(image_index):
+
+            trace = go.Scatter(y=shape_of_ring_signal_for_all_images[image_index])
+            layout = go.Layout(title="Shape of profiles using calculated outer pixel intensity",
+                               xaxis=dict(title=""),
+                               yaxis=dict(title=""))
+
+            figure = go.Figure(data=[trace], layout=layout)
+            iplot(figure)
+
+            trace = go.Scatter(y=new_profile_with_outer_cylinder_removed[image_index],
+                               mode='markers',
+                               marker=dict(color='Blue',
+                                           line=dict(color='Red',
+                                                     width=1)))
+            layout = go.Layout(title="shape of ring with outside cylinder corrected",
+                               xaxis=dict(title=""),
+                               yaxis=dict(title=""))
+
+            figure = go.Figure(data=[trace], layout=layout)
+            iplot(figure)
+
+        plot_shape_ring_signal_ui = interactive(plot_shape_ring_signal,
+                                                image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                              value=0))
+        display(plot_shape_ring_signal_ui)
+
+    def crop_to_inner_cylinder(self):
+
+        nbr_pixel = len(self.profile_with_outer_cylinder_removed[0])
+        inner_radius = self.config["cylinders_position"]["inner_radius"]
+        center = int(nbr_pixel / 2)
+        left_edge = center - inner_radius
+        right_edge = center + inner_radius
+
+        fig_crop_inner, ax_crop_inner = plt.subplots(num="Crop to inner cylinder")
+
+        def plot_crop_inner(image_index, left_edge, right_edge):
+            ax_crop_inner.cla()
+            plt.plot(self.profile_with_outer_cylinder_removed[image_index], '.b')
+            plt.axvline(x=left_edge, color='red')
+            plt.axvline(x=right_edge, color='red')
+
+            center = np.mean([left_edge, right_edge])
+            plt.axvline(x=center, color='green', linestyle='--')
+
+            return left_edge, right_edge
+
+        self.plot_crop_inner_ui = interactive(plot_crop_inner,
+                                              image_index=widgets.IntSlider(min=0,
+                                                                            max=self.number_of_images - 1,
+                                                                            value=0),
+                                              left_edge=widgets.IntSlider(min=0,
+                                                                          max=len(
+                                                                                  self.profile_with_outer_cylinder_removed[
+                                                                                      0]),
+                                                                          value=left_edge),
+                                              right_edge=widgets.IntSlider(min=0,
+                                                                           max=len(
+                                                                                   self.profile_with_outer_cylinder_removed[
+                                                                                       0]),
+                                                                           value=right_edge),
+                                              )
+        display(self.plot_crop_inner_ui)
+
+    def correct_inner_cylinder_geometry(self):
+
+        [left_edge, right_edge] = self.plot_crop_inner_ui.result
+
+        inner_profiles = []
+        for _profile in self.profile_with_outer_cylinder_removed:
+            new_profile = _profile[left_edge: right_edge+1]
+            inner_profiles.append(new_profile)
+
+        new_inner_cylinder_radius = int(len(inner_profiles[0]) / 2)
+
+        d = np.arange(len(inner_profiles[0]))
+        list_intensity = inner_profiles
+
+        list_expected_array = []
+
+        for intensity in list_intensity:
+
+            number_of_pixels = []
+            expected_array = []
+            for _index, x in enumerate(d):
+                measure = intensity[_index]
+                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x,
+                                                                                        radius=new_inner_cylinder_radius)
+                number_of_pixels.append(number_of_pixels_through_thickness)
+                expected_array.append(measure / number_of_pixels_through_thickness)
+
+            list_expected_array.append(expected_array)
+
+        self.list_expected_array = list_expected_array
+
+        def plot_final_inner(image_index):
+            trace = go.Scatter(y=list_expected_array[image_index], mode='markers')
+            layout = go.Layout(title=f"Expected Array of image #{image_index}",
+                               xaxis=dict(title="pixel"),
+                               yaxis=dict(title="Counts per pixel",
+                                          range=[0, .0015],
+                                          ))
+
+            figure = go.Figure(data=[trace], layout=layout)
+            iplot(figure)
+
+        self.plot_final_inner_ui = interactive(plot_final_inner,
+                                               image_index=widgets.IntSlider(min=0,
+                                                                             max=self.number_of_images - 1,
+                                                                             value=0),
+                                               )
+        display(self.plot_final_inner_ui)
+
+    def export_profiles(self):
+        working_dir = self.working_dir
+        output_folder_browser = FileFolderBrowser(working_dir=working_dir,
+                                                  next_function=self.export)
+        output_folder_browser.select_output_folder()
+
+    def export(self, output_folder):
+
+        output_folder = os.path.abspath(output_folder)
+        make_folder(output_folder)
+
+        list_expected_array = self.list_expected_array
+        list_images = self.list_of_images
+
+        pixel_index = np.arange(len(list_expected_array[0]))
+        list_of_ascii_file_created = []
+        for _index, _image in enumerate(list_images):
+
+            array_for_this_image = list_expected_array[_index]
+
+            base_name = os.path.basename(_image)
+            base_name_without_suffix = PurePosixPath(base_name).stem
+            base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
+            full_name_of_ascii_file = os.path.join(output_folder, base_name_of_ascii_file)
+            list_of_ascii_file_created.append(full_name_of_ascii_file)
+
+            metadata = [f"# input working file: {_image}"]
+
+            x0 = self.crop['x0']
+            x1 = self.crop['x1']
+            y0 = self.crop['y0']
+            y1 = self.crop['y1']
+            metadata.append(f"# crop: x0={x0}, x1={x1}, y0={y0}, y1={y1}")
+
+            top_profile = self.config["profiles_limit"]["top"]
+            bottom_profile = self.config["profiles_limit"]["bottom"]
+            metadata.append(f"# profile range (those horizontal profiles will be combined via mean): top_profile="
+                            f"{top_profile}, bottom_profile={bottom_profile}")
+
+            center = self.config["cylinders_position"]["center"]
+            inner_radius = self.config["cylinders_position"]["inner_radius"]
+            outer_radius = self.config["cylinders_position"]["outer_radius"]
+            metadata.append(f"# cylinders center: {center}")
+            metadata.append(f"# inner_radius (pixels): {inner_radius}")
+            metadata.append(f"# outer_radius (pixels): {outer_radius}")
+
+            metadata.append("#")
+
+            metadata.append("# pixel, counts per pixels")
+
+            data_array = [f"{x}, {y}" for (x, y) in zip(pixel_index, array_for_this_image)]
+
+            make_ascii_file(metadata=metadata,
+                            data=data_array,
+                            output_file_name=full_name_of_ascii_file,
+                            dim="1d")
+
+        display(HTML('<span style="font-size: 20px; color:blue">The following ASCII (csv) files have been '
+                     'created: </span>'))
+        for _ascii_file in list_of_ascii_file_created:
+            display(HTML('<span style="font-size: 20px; color:blue"> - ' + _ascii_file + '</span>'))
