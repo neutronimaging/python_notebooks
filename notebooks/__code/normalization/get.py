@@ -172,6 +172,108 @@ class Get(TopGet):
         config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
         config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
 
+        # how to combine the OBs
+        def force_combining_changed(value):
+            widgets_changed()
+
+        def how_to_combine_changed(value):
+            widgets_changed()
+
+        def widgets_changed():
+            if self.force_ui.value == 'no':
+                accordion_children = [self.force_ui, table]
+                accordion_title = [force_combine_title, table_title]
+                self.how_to_ui.disabled = True
+            elif nbr_sample != nbr_ob:
+                accordion_children = [self.how_to_ui, table]
+                accordion_title = [how_to_combine_title, table_title]
+                self.how_to_ui.disabled = False
+            else:
+                accordion_children = [self.force_ui, self.how_to_ui, table]
+                accordion_title = [force_combine_title, how_to_combine_title, table_title]
+                self.how_to_ui.disabled = False
+            table.value = get_html_table()
+            accordion.children = accordion_children
+            for _index, _title in enumerate(accordion_title):
+                accordion.set_title(_index, _title)
+            accordion.selected_index = len(accordion_title) - 1
+
+        def get_html_table():
+            force_combine = self.force_ui.value
+            how_to_combine = self.how_to_ui.value
+
+            if force_combine == 'yes':
+                description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
+            else:
+                description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
+
+            html_table = f"<table style='width:800px'>" \
+                         "<tr>" \
+                         "<th style='background-color: grey'>Nbr of Samples</th>" \
+                         "<th style='background-color: grey'>Nbr of OBs</th>" \
+                         "<th style='background-color: grey'>Nbr of DFs</th>" \
+                         "<th style='background-color: grey; width:60%'>Description of Process</th>" \
+                         "</tr>" \
+                         "<tr>" \
+                         f"<td>{nbr_sample}</td>" \
+                         f"<td>{nbr_ob}</td>" \
+                         f"<td>{nbr_df}</td>" \
+                         f"<td>{description}</td>" \
+                         "</tr>" \
+                         "</table>"
+            return html_table
+
+        nbr_sample = len(list_sample)
+        nbr_ob = len(list_ob)
+        nbr_df = len(list_df)
+
+        table_title = "Summary Table"
+        how_to_combine_title = "How do you want to combine the OBs?"
+        force_combine_title = "Do you want to combine the OBs?"
+
+        accordion_children = []
+        accordion_title = list()
+
+        self.force_ui = widgets.RadioButtons(options=['yes', 'no'],
+                                             value='yes',
+                                             disabled=False,
+                                             layout=widgets.Layout(width='200px'))
+        accordion_children.append(self.force_ui)
+        self.force_ui.observe(force_combining_changed, names='value')
+
+        self.how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
+                                              value='median',
+                                              layout=widgets.Layout(width='200px'))
+        accordion_children.append(self.how_to_ui)
+        self.how_to_ui.observe(how_to_combine_changed, names='value')
+
+        html_table = ""
+        table = widgets.HTML(value=html_table)
+        accordion_children.append(table)
+
+        if nbr_sample != nbr_ob:
+            self.force_ui.value = 'yes'
+            accordion_children = [self.how_to_ui, table]
+            how_to_combine_title = "How to combine?"
+            accordion_title = [how_to_combine_title, table_title]
+        else:
+            accordion_title.append(force_combine_title)
+            accordion_title.append(how_to_combine_title)
+            accordion_title.append(table_title)
+
+        table.value = get_html_table()
+
+        accordion = widgets.Accordion(children=accordion_children,
+                                      title=accordion_title)
+
+        for _index, _title in enumerate(accordion_title):
+            accordion.set_title(_index, _title)
+
+        accordion.selected_index = len(accordion_title) - 1
+
+
+
+
         # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",
                                                    layout=widgets.Layout(width="20%")),
@@ -217,8 +319,11 @@ class Get(TopGet):
         verti_layout = widgets.VBox([use_this_config_widget,
                                      hori_layout1,
                                      hori_layout2,
+                                     widgets.HTML("<hr>"),
                                      metadata_table_label,
                                      metadata_table,
+                                     widgets.HTML("<hr>"),
+                                     accordion,
                                      list_runs_layout])
 
         return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
