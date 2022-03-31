@@ -567,9 +567,11 @@ class NormalizationWithSimplifySelection:
     def update_time_range_message(self, value):
         o_get = Get(parent=self)
         if value is None:
-            _message = "Use <b><font color='red'>All </b> " \
-                       "<font color='black'>OBs and DFs " \
-                       "matching the samples images</font>"
+            _message = "Select the <b><font color='red'>OBs</font></b> and " \
+                       "<b><font color='red'>DFs</font></b> to use in the normalization"
+            # _message = "Use <b><font color='red'>All </b> " \
+            #            "<font color='black'>OBs and DFs " \
+            #            "matching the samples images</font>"
         else:
 
             [time_before_selected, time_after_selected] = o_get.time_before_and_after_of_this_config()
