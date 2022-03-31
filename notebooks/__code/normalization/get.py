@@ -181,10 +181,6 @@ class Get(TopGet):
         self.parent.time_before_and_after_message = hori_layout2.children[1]
         config_widgets_id_dict['time_slider_before_message'] = hori_layout2.children[1]
 
-        #how to combine the OBs
-
-
-
         # table of metadata
         [metadata_table_label, metadata_table] = self.parent.populate_metadata_table(dict_config)
 
@@ -196,14 +192,14 @@ class Get(TopGet):
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="100%"))
         # self.list_of_runs_ui = box0.children[1]
-        ob_list_of_runs = widgets.VBox([widgets.Label(" List of OB (ONLY SELECTED ONE ARE USED!)",
+        ob_list_of_runs = widgets.VBox([widgets.Label(" List of OBs (ONLY SELECTED ONES ARE USED!)",
                                                       layout=widgets.Layout(width='100%')),
                                         widgets.SelectMultiple(options=list_ob,
                                                                value=list_ob,
                                                                layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
                                        layout=widgets.Layout(width="100%"))
-        df_list_of_runs = widgets.VBox([widgets.Label(" List of DF (ONLY SELECTED ONE ARE USED!)",
+        df_list_of_runs = widgets.VBox([widgets.Label(" List of DFs (ONLY SELECTED ONES ARE USED!)",
                                                       layout=widgets.Layout(width='100%')),
                                         widgets.SelectMultiple(options=list_df,
                                                                value=list_df,

@@ -664,6 +664,7 @@ class NormalizationHandler(object):
         display(HTML('<span style="font-size: 20px; color:blue">The normalized images have been ' +
                      'created in ' + output_folder + '</span>'))
 
+
 class GammaCoefficient(object):
 
     def select_gamma_coefficient(self):
