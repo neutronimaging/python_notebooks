@@ -43,6 +43,7 @@ pip install \
     changepy \
     tqdm \
     $PYONCAT_LOCATION
+    werkzeug=2.0.1
 
 # build Jupyter lab
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
