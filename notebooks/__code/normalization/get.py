@@ -220,7 +220,7 @@ class Get(TopGet):
                          "<th style='background-color: grey; width:60%'>Description of Process</th>" \
                          "</tr>" \
                          "<tr>" \
-                         f"<td>{nbr_sample}</td>" \ 
+                         f"<td>{nbr_sample}</td>" \
                          f"<td>{nbr_ob}</td>" \
                          f"<td>{nbr_df}</td>" \
                          f"<td>{description}</td>" \
@@ -258,19 +258,12 @@ class Get(TopGet):
                                          how_to_ui])
         config_widgets_id_dict['how_to_combine'] = how_to_ui
 
-
-
-
-
-
         # table
         html_table = ""
         table = widgets.HTML(value=html_table)
         table.value = get_html_table()
-        #
-        #
-        #
-        #
+        config_widgets_id_dict['table'] = table
+
         # table_title = "Summary Table"
         # how_to_combine_title = "How do you want to combine the OBs?"
         # force_combine_title = "Do you want to combine the OBs?"
@@ -314,12 +307,6 @@ class Get(TopGet):
         #     accordion.set_title(_index, _title)
         #
         # accordion.selected_index = len(accordion_title) - 1
-
-
-
-
-
-
 
         # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",

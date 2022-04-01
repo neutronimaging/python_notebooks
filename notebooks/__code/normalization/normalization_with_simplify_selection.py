@@ -467,10 +467,7 @@ class NormalizationWithSimplifySelection:
         return [table_label, table]
 
     def update_use_this_config_widget(self, state):
-        pass
-        # new_state = state['new']
-        # [active_acquisition, active_config] = self.get_active_tabs()
-        # self.config_tab_dict[active_acquisition][active_config]['normalize_this_config'] = new_state
+       pass
 
     def update_config_widgets(self, state):
         if state['new'] is False:
@@ -615,9 +612,31 @@ class NormalizationWithSimplifySelection:
         o_get = Get(parent=self)
         [active_acquisition, active_config] = o_get.active_tabs()
         self.config_tab_dict[active_acquisition][active_config]['how_to_combine'].disabled = disabled_how_to_combine
+        self.update_this_config_table()
 
     def how_to_combine_changed(self, value):
-        pass
+        self.update_this_config_table()
+
+    def update_this_config_table(self):
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        table_ui = self.config_tab_dict[active_acquisition][active_config]['table']
+
+        nbr_ob = len(self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].value)
+        nbr_sample = len(self.config_tab_dict[active_acquisition][active_config]['list_of_sample_runs'].options)
+        nbr_df = len(self.config_tab_dict[active_acquisition][active_config]['list_of_df'].value)
+
+        force_combine_disabled_state = self.config_tab_dict[active_acquisition][active_config]['force_combine'].disabled
+        force_combine_value = self.config_tab_dict[active_acquisition][active_config]['force_combine'].value
+
+        how_to_combine_value = self.config_tab_dict[active_acquisition][active_config]['how_to_combine'].value
+
+
+
+
+
+
+
 
     def selection_of_ob_changed(self, value):
         list_ob_selected = value['new']
