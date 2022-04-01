@@ -619,6 +619,25 @@ class NormalizationWithSimplifySelection:
     def how_to_combine_changed(self, value):
         pass
 
+    def selection_of_ob_changed(self, value):
+        list_ob_selected = value['new']
+        nbr_ob = len(list_ob_selected)
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        list_sample = self.config_tab_dict[active_acquisition][active_config]['list_of_sample_runs'].options
+        nbr_sample = len(list_sample)
+
+        if nbr_sample == nbr_ob:
+            self.config_tab_dict[active_acquisition][active_config]['force_combine'].disabled = False
+            self.config_tab_dict[active_acquisition][active_config]['force_combine_message'].value = ""
+        else:
+            self.config_tab_dict[active_acquisition][active_config]['force_combine'].disabled = True
+            self.config_tab_dict[active_acquisition][active_config]['force_combine_message'].value = \
+                "<font color='blue'>INFO</font>: the option to combine or not is disabled as the number of " \
+                          "<b>sample</b> " \
+                          "and " \
+                          "<b>obs</b> do not match. The <b>OBs</b> will be combined!"
+
     def checking_normalization_workflow(self):
         self.create_final_json()
         self.normalization_recap()

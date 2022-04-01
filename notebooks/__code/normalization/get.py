@@ -227,11 +227,6 @@ class Get(TopGet):
         nbr_ob = len(list_ob)
         nbr_df = len(list_df)
 
-        # FOR DEBUGGING
-        nbr_ob = nbr_sample  # REMOVE_ME
-
-
-
         # do you want to combine
         if nbr_sample != nbr_ob:
             force_ui_disabled = True
@@ -351,6 +346,7 @@ class Get(TopGet):
                                                                layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
                                        layout=widgets.Layout(width="100%"))
+        ob_list_of_runs.children[1].observe(self.parent.selection_of_ob_changed, names='value')
         df_list_of_runs = widgets.VBox([widgets.HTML("<b>List of DFs</b>.Only the selected images will be used!"),
                                         widgets.SelectMultiple(options=list_df,
                                                                value=list_df,
