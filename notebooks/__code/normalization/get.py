@@ -198,34 +198,35 @@ class Get(TopGet):
         #         accordion.set_title(_index, _title)
         #     accordion.selected_index = len(accordion_title) - 1
         #
-        # def get_html_table():
-        #     force_combine = self.force_ui.value
-        #     how_to_combine = self.how_to_ui.value
-        #
-        #     if force_combine == 'yes':
-        #         description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
-        #     else:
-        #         description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
-        #
-        #     html_table = f"<table style='width:800px'>" \
-        #                  "<tr>" \
-        #                  "<th style='background-color: grey'>Nbr of Samples</th>" \
-        #                  "<th style='background-color: grey'>Nbr of OBs</th>" \
-        #                  "<th style='background-color: grey'>Nbr of DFs</th>" \
-        #                  "<th style='background-color: grey; width:60%'>Description of Process</th>" \
-        #                  "</tr>" \
-        #                  "<tr>" \
-        #                  f"<td>{nbr_sample}</td>" \
-        #                  f"<td>{nbr_ob}</td>" \
-        #                  f"<td>{nbr_df}</td>" \
-        #                  f"<td>{description}</td>" \
-        #                  "</tr>" \
-        #                  "</table>"
-        #     return html_table
 
         nbr_sample = len(list_sample)
         nbr_ob = len(list_ob)
         nbr_df = len(list_df)
+
+        def get_html_table():
+            force_combine = force_ui.value
+            how_to_combine = how_to_ui.value
+
+            if force_combine == 'yes':
+                description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
+            else:
+                description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
+
+            html_table = f"<table style='width:800px'>" \
+                         "<tr>" \
+                         "<th style='background-color: grey'>Nbr of Samples</th>" \
+                         "<th style='background-color: grey'>Nbr of OBs</th>" \
+                         "<th style='background-color: grey'>Nbr of DFs</th>" \
+                         "<th style='background-color: grey; width:60%'>Description of Process</th>" \
+                         "</tr>" \
+                         "<tr>" \
+                         f"<td>{nbr_sample}</td>" \ 
+                         f"<td>{nbr_ob}</td>" \
+                         f"<td>{nbr_df}</td>" \
+                         f"<td>{description}</td>" \
+                         "</tr>" \
+                         "</table>"
+            return html_table
 
         # do you want to combine
         if nbr_sample != nbr_ob:
@@ -262,10 +263,10 @@ class Get(TopGet):
 
 
 
-        # # table
-        # html_table = ""
-        # table = widgets.HTML(value=html_table)
-        # table.value = get_html_table()
+        # table
+        html_table = ""
+        table = widgets.HTML(value=html_table)
+        table.value = get_html_table()
         #
         #
         #
@@ -361,7 +362,9 @@ class Get(TopGet):
                                          widgets.HTML("<hr>"),
                                          how_to_combine_ui,
                                          widgets.HTML("<hr>"),
-                                         df_list_of_runs])
+                                         df_list_of_runs,
+                                         widgets.HTML("<hr>"),
+                                         table])
         config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
         config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
         config_widgets_id_dict['list_of_df'] = df_list_of_runs.children[1]
