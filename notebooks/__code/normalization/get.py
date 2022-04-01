@@ -227,49 +227,74 @@ class Get(TopGet):
         nbr_ob = len(list_ob)
         nbr_df = len(list_df)
 
-        table_title = "Summary Table"
-        how_to_combine_title = "How do you want to combine the OBs?"
-        force_combine_title = "Do you want to combine the OBs?"
-
-        accordion_children = []
-        accordion_title = list()
-
+        # do you want to combine
         self.force_ui = widgets.RadioButtons(options=['yes', 'no'],
                                              value='yes',
                                              disabled=False,
                                              layout=widgets.Layout(width='200px'))
-        accordion_children.append(self.force_ui)
-        self.force_ui.observe(force_combining_changed, names='value')
+        combine_or_no_ui = widgets.VBox([widgets.HTML("<b>Do you want to combine the OBs?</b>"),
+                                        self.force_ui])
 
+        # how to combine widgets
         self.how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
                                               value='median',
                                               layout=widgets.Layout(width='200px'))
-        accordion_children.append(self.how_to_ui)
-        self.how_to_ui.observe(how_to_combine_changed, names='value')
+        how_to_combine_ui = widgets.VBox([widgets.HTML("<b>How to combine the OBs?</b>"),
+                                         self.how_to_ui])
 
+        # table
         html_table = ""
         table = widgets.HTML(value=html_table)
-        accordion_children.append(table)
-
-        if nbr_sample != nbr_ob:
-            self.force_ui.value = 'yes'
-            accordion_children = [self.how_to_ui, table]
-            how_to_combine_title = "How to combine?"
-            accordion_title = [how_to_combine_title, table_title]
-        else:
-            accordion_title.append(force_combine_title)
-            accordion_title.append(how_to_combine_title)
-            accordion_title.append(table_title)
-
         table.value = get_html_table()
 
-        accordion = widgets.Accordion(children=accordion_children,
-                                      title=accordion_title)
 
-        for _index, _title in enumerate(accordion_title):
-            accordion.set_title(_index, _title)
 
-        accordion.selected_index = len(accordion_title) - 1
+        table_title = "Summary Table"
+        how_to_combine_title = "How do you want to combine the OBs?"
+        force_combine_title = "Do you want to combine the OBs?"
+
+        # accordion_children = []
+        # accordion_title = list()
+        #
+        # self.force_ui = widgets.RadioButtons(options=['yes', 'no'],
+        #                                      value='yes',
+        #                                      disabled=False,
+        #                                      layout=widgets.Layout(width='200px'))
+        # accordion_children.append(self.force_ui)
+        # self.force_ui.observe(force_combining_changed, names='value')
+        #
+        # self.how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
+        #                                       value='median',
+        #                                       layout=widgets.Layout(width='200px'))
+        # accordion_children.append(self.how_to_ui)
+        # self.how_to_ui.observe(how_to_combine_changed, names='value')
+
+        # html_table = ""
+        # table = widgets.HTML(value=html_table)
+        # accordion_children.append(table)
+
+        # if nbr_sample != nbr_ob:
+        #     self.force_ui.value = 'yes'
+        #     accordion_children = [self.how_to_ui, table]
+        #     how_to_combine_title = "How to combine the OBs?"
+        #     accordion_title = [how_to_combine_title, table_title]
+        # else:
+        #     accordion_title.append(force_combine_title)
+        #     accordion_title.append(how_to_combine_title)
+        #     accordion_title.append(table_title)
+
+        # table.value = get_html_table()
+        #
+        # accordion = widgets.Accordion(children=accordion_children,
+        #                               title=accordion_title)
+        #
+        # for _index, _title in enumerate(accordion_title):
+        #     accordion.set_title(_index, _title)
+        #
+        # accordion.selected_index = len(accordion_title) - 1
+
+
+
 
 
 
@@ -294,8 +319,7 @@ class Get(TopGet):
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="100%"))
         # self.list_of_runs_ui = box0.children[1]
-        ob_list_of_runs = widgets.VBox([widgets.Label(" List of OBs (ONLY SELECTED ONES ARE USED!)",
-                                                      layout=widgets.Layout(width='100%')),
+        ob_list_of_runs = widgets.VBox([widgets.HTML("<b>List of OBs </b>(ONLY SELECTED ONES WILL BE USED!"),
                                         widgets.SelectMultiple(options=list_ob,
                                                                value=list_ob,
                                                                layout=widgets.Layout(width=select_width,
@@ -310,7 +334,11 @@ class Get(TopGet):
                                        layout=widgets.Layout(width="100%"))
 
         list_runs_layout = widgets.VBox([sample_list_of_runs,
+                                         widgets.HTML("<hr><hr>"),
                                          ob_list_of_runs,
+                                         combine_or_no_ui,
+                                         how_to_combine_ui,
+                                         widgets.HTML("<hr><hr>"),
                                          df_list_of_runs])
         config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
         config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
@@ -323,7 +351,6 @@ class Get(TopGet):
                                      metadata_table_label,
                                      metadata_table,
                                      widgets.HTML("<hr>"),
-                                     accordion,
                                      list_runs_layout])
 
         return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
