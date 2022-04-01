@@ -605,6 +605,20 @@ class NormalizationWithSimplifySelection:
         time_before_and_after_message_ui = o_get.time_before_and_after_message_ui_of_this_config()
         time_before_and_after_message_ui.value = _message
 
+    def do_you_want_to_combine_changed(self, value):
+        do_you_want_to_combine = value['new']
+        if do_you_want_to_combine == 'yes':
+            disabled_how_to_combine = False
+        else:
+            disabled_how_to_combine = True
+
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        self.config_tab_dict[active_acquisition][active_config]['how_to_combine'].disabled = disabled_how_to_combine
+
+    def how_to_combine_changed(self, value):
+        pass
+
     def checking_normalization_workflow(self):
         self.create_final_json()
         self.normalization_recap()

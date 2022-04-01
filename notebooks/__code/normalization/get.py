@@ -172,86 +172,112 @@ class Get(TopGet):
         config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
         config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
 
-        # how to combine the OBs
-        def force_combining_changed(value):
-            widgets_changed()
+        # # how to combine the OBs
+        # def force_combining_changed(value):
+        #     widgets_changed()
+        #
+        # def how_to_combine_changed(value):
+        #     widgets_changed()
 
-        def how_to_combine_changed(value):
-            widgets_changed()
-
-        def widgets_changed():
-            if self.force_ui.value == 'no':
-                accordion_children = [self.force_ui, table]
-                accordion_title = [force_combine_title, table_title]
-                self.how_to_ui.disabled = True
-            elif nbr_sample != nbr_ob:
-                accordion_children = [self.how_to_ui, table]
-                accordion_title = [how_to_combine_title, table_title]
-                self.how_to_ui.disabled = False
-            else:
-                accordion_children = [self.force_ui, self.how_to_ui, table]
-                accordion_title = [force_combine_title, how_to_combine_title, table_title]
-                self.how_to_ui.disabled = False
-            table.value = get_html_table()
-            accordion.children = accordion_children
-            for _index, _title in enumerate(accordion_title):
-                accordion.set_title(_index, _title)
-            accordion.selected_index = len(accordion_title) - 1
-
-        def get_html_table():
-            force_combine = self.force_ui.value
-            how_to_combine = self.how_to_ui.value
-
-            if force_combine == 'yes':
-                description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
-            else:
-                description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
-
-            html_table = f"<table style='width:800px'>" \
-                         "<tr>" \
-                         "<th style='background-color: grey'>Nbr of Samples</th>" \
-                         "<th style='background-color: grey'>Nbr of OBs</th>" \
-                         "<th style='background-color: grey'>Nbr of DFs</th>" \
-                         "<th style='background-color: grey; width:60%'>Description of Process</th>" \
-                         "</tr>" \
-                         "<tr>" \
-                         f"<td>{nbr_sample}</td>" \
-                         f"<td>{nbr_ob}</td>" \
-                         f"<td>{nbr_df}</td>" \
-                         f"<td>{description}</td>" \
-                         "</tr>" \
-                         "</table>"
-            return html_table
+        # def widgets_changed():
+        #     if self.force_ui.value == 'no':
+        #         accordion_children = [self.force_ui, table]
+        #         accordion_title = [force_combine_title, table_title]
+        #         self.how_to_ui.disabled = True
+        #     elif nbr_sample != nbr_ob:
+        #         accordion_children = [self.how_to_ui, table]
+        #         accordion_title = [how_to_combine_title, table_title]
+        #         self.how_to_ui.disabled = False
+        #     else:
+        #         accordion_children = [self.force_ui, self.how_to_ui, table]
+        #         accordion_title = [force_combine_title, how_to_combine_title, table_title]
+        #         self.how_to_ui.disabled = False
+        #     table.value = get_html_table()
+        #     accordion.children = accordion_children
+        #     for _index, _title in enumerate(accordion_title):
+        #         accordion.set_title(_index, _title)
+        #     accordion.selected_index = len(accordion_title) - 1
+        #
+        # def get_html_table():
+        #     force_combine = self.force_ui.value
+        #     how_to_combine = self.how_to_ui.value
+        #
+        #     if force_combine == 'yes':
+        #         description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
+        #     else:
+        #         description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
+        #
+        #     html_table = f"<table style='width:800px'>" \
+        #                  "<tr>" \
+        #                  "<th style='background-color: grey'>Nbr of Samples</th>" \
+        #                  "<th style='background-color: grey'>Nbr of OBs</th>" \
+        #                  "<th style='background-color: grey'>Nbr of DFs</th>" \
+        #                  "<th style='background-color: grey; width:60%'>Description of Process</th>" \
+        #                  "</tr>" \
+        #                  "<tr>" \
+        #                  f"<td>{nbr_sample}</td>" \
+        #                  f"<td>{nbr_ob}</td>" \
+        #                  f"<td>{nbr_df}</td>" \
+        #                  f"<td>{description}</td>" \
+        #                  "</tr>" \
+        #                  "</table>"
+        #     return html_table
 
         nbr_sample = len(list_sample)
         nbr_ob = len(list_ob)
         nbr_df = len(list_df)
 
+        # FOR DEBUGGING
+        nbr_ob = nbr_sample  # REMOVE_ME
+
+
+
         # do you want to combine
-        self.force_ui = widgets.RadioButtons(options=['yes', 'no'],
+        if nbr_sample != nbr_ob:
+            force_ui_disabled = True
+            html_string = "<font color='blue'>INFO</font>: the option to combine or not is disabled as the number of " \
+                          "<b>sample</b> " \
+                          "and " \
+                          "<b>obs</b> do not match. The <b>OBs</b> will be combined!"
+        else:
+            force_ui_disabled = False
+            html_string = ""
+        force_ui = widgets.RadioButtons(options=['yes', 'no'],
                                              value='yes',
-                                             disabled=False,
+                                             disabled=force_ui_disabled,
                                              layout=widgets.Layout(width='200px'))
+        force_ui.observe(self.parent.do_you_want_to_combine_changed, names='value')
         combine_or_no_ui = widgets.VBox([widgets.HTML("<b>Do you want to combine the OBs?</b>"),
-                                        self.force_ui])
+                                        force_ui,
+                                         widgets.HTML(html_string)])
+        config_widgets_id_dict['force_combine'] = force_ui
+        config_widgets_id_dict['force_combine_message'] = combine_or_no_ui.children[2]
 
         # how to combine widgets
-        self.how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
+        how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
                                               value='median',
                                               layout=widgets.Layout(width='200px'))
+        how_to_ui.observe(self.parent.how_to_combine_changed, names='value')
         how_to_combine_ui = widgets.VBox([widgets.HTML("<b>How to combine the OBs?</b>"),
-                                         self.how_to_ui])
-
-        # table
-        html_table = ""
-        table = widgets.HTML(value=html_table)
-        table.value = get_html_table()
+                                         how_to_ui])
+        config_widgets_id_dict['how_to_combine'] = how_to_ui
 
 
 
-        table_title = "Summary Table"
-        how_to_combine_title = "How do you want to combine the OBs?"
-        force_combine_title = "Do you want to combine the OBs?"
+
+
+
+        # # table
+        # html_table = ""
+        # table = widgets.HTML(value=html_table)
+        # table.value = get_html_table()
+        #
+        #
+        #
+        #
+        # table_title = "Summary Table"
+        # how_to_combine_title = "How do you want to combine the OBs?"
+        # force_combine_title = "Do you want to combine the OBs?"
 
         # accordion_children = []
         # accordion_title = list()
@@ -312,21 +338,20 @@ class Get(TopGet):
         [metadata_table_label, metadata_table] = self.parent.populate_metadata_table(dict_config)
 
         select_width = '100%'
-        sample_list_of_runs = widgets.VBox([widgets.Label(" List of Sample Runs (ALL WILL BE USED!)",
-                                                          layout=widgets.Layout(width='100%')),
+        sample_list_of_runs = widgets.VBox([widgets.HTML("<b>List of Sample runs</b> (ALL RUNS listed here will be "
+                                                         "used!"),
                                             widgets.Select(options=list_sample,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="100%"))
         # self.list_of_runs_ui = box0.children[1]
-        ob_list_of_runs = widgets.VBox([widgets.HTML("<b>List of OBs </b>(ONLY SELECTED ONES WILL BE USED!"),
+        ob_list_of_runs = widgets.VBox([widgets.HTML("<b>List of OBs</b>. Only the selected images will be used!"),
                                         widgets.SelectMultiple(options=list_ob,
                                                                value=list_ob,
                                                                layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
                                        layout=widgets.Layout(width="100%"))
-        df_list_of_runs = widgets.VBox([widgets.Label(" List of DFs (ONLY SELECTED ONES ARE USED!)",
-                                                      layout=widgets.Layout(width='100%')),
+        df_list_of_runs = widgets.VBox([widgets.HTML("<b>List of DFs</b>.Only the selected images will be used!"),
                                         widgets.SelectMultiple(options=list_df,
                                                                value=list_df,
                                                                layout=widgets.Layout(width=select_width,
@@ -334,11 +359,12 @@ class Get(TopGet):
                                        layout=widgets.Layout(width="100%"))
 
         list_runs_layout = widgets.VBox([sample_list_of_runs,
-                                         widgets.HTML("<hr><hr>"),
+                                         widgets.HTML("<hr>"),
                                          ob_list_of_runs,
                                          combine_or_no_ui,
+                                         widgets.HTML("<hr>"),
                                          how_to_combine_ui,
-                                         widgets.HTML("<hr><hr>"),
+                                         widgets.HTML("<hr>"),
                                          df_list_of_runs])
         config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
         config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
