@@ -631,12 +631,29 @@ class NormalizationWithSimplifySelection:
 
         how_to_combine_value = self.config_tab_dict[active_acquisition][active_config]['how_to_combine'].value
 
+        if force_combine_value == 'yes':
+            description = f"OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
+        elif force_combine_disabled_state == True:
+            description = f"OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
+        else:
+            description = f"OBs <b>won't be combined</b>! Each sample will use only <b>1 OB</b>!"
 
+        html_table = f"<table style='width:800px'>" \
+                     "<tr>" \
+                     "<th style='background-color: grey'>Nbr of Samples</th>" \
+                     "<th style='background-color: grey'>Nbr of OBs</th>" \
+                     "<th style='background-color: grey'>Nbr of DFs</th>" \
+                     "<th style='background-color: grey; width:60%'>Description of Process</th>" \
+                     "</tr>" \
+                     "<tr>" \
+                     f"<td>{nbr_sample}</td>" \
+                     f"<td>{nbr_ob}</td>" \
+                     f"<td>{nbr_df}</td>" \
+                     f"<td>{description}</td>" \
+                     "</tr>" \
+                     "</table>"
 
-
-
-
-
+        table_ui.value = html_table
 
     def selection_of_ob_changed(self, value):
         list_ob_selected = value['new']
@@ -656,6 +673,7 @@ class NormalizationWithSimplifySelection:
                           "<b>sample</b> " \
                           "and " \
                           "<b>obs</b> do not match. The <b>OBs</b> will be combined!"
+        self.update_this_config_table()
 
     def checking_normalization_workflow(self):
         self.create_final_json()

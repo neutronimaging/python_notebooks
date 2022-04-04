@@ -212,12 +212,12 @@ class Get(TopGet):
             else:
                 description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
 
-            html_table = f"<table style='width:800px'>" \
+            html_table = f"<table style='width:100%'>" \
                          "<tr>" \
-                         "<th style='background-color: grey'>Nbr of Samples</th>" \
-                         "<th style='background-color: grey'>Nbr of OBs</th>" \
-                         "<th style='background-color: grey'>Nbr of DFs</th>" \
-                         "<th style='background-color: grey; width:60%'>Description of Process</th>" \
+                         "<th style='background-color: cyan'>Nbr of Samples</th>" \
+                         "<th style='background-color: cyan'>Nbr of OBs</th>" \
+                         "<th style='background-color: cyan'>Nbr of DFs</th>" \
+                         "<th style='background-color: cyan; width:60%'>Description of Process</th>" \
                          "</tr>" \
                          "<tr>" \
                          f"<td>{nbr_sample}</td>" \
@@ -259,6 +259,8 @@ class Get(TopGet):
         config_widgets_id_dict['how_to_combine'] = how_to_ui
 
         # table
+        table_title = widgets.HTML("<font color='blue'><center><b>S U M M A R Y</b></center></font>")
+
         html_table = ""
         table = widgets.HTML(value=html_table)
         table.value = get_html_table()
@@ -342,15 +344,19 @@ class Get(TopGet):
                                                                              height='300px'))],
                                        layout=widgets.Layout(width="100%"))
 
+        red_hr_line = widgets.HTML("<style>hr {border-top: 1px solid red}</style><hr>")
+        black_hr_line = widgets.HTML("<style>hr {border-top: 1px solid black}</style><hr>")
+
         list_runs_layout = widgets.VBox([sample_list_of_runs,
-                                         widgets.HTML("<hr>"),
+                                         black_hr_line,
                                          ob_list_of_runs,
                                          combine_or_no_ui,
-                                         widgets.HTML("<hr>"),
+                                         black_hr_line,
                                          how_to_combine_ui,
-                                         widgets.HTML("<hr>"),
+                                         black_hr_line,
                                          df_list_of_runs,
-                                         widgets.HTML("<hr>"),
+                                         red_hr_line,
+                                         table_title,
                                          table])
         config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
         config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
@@ -359,10 +365,10 @@ class Get(TopGet):
         verti_layout = widgets.VBox([use_this_config_widget,
                                      hori_layout1,
                                      hori_layout2,
-                                     widgets.HTML("<hr>"),
+                                     black_hr_line,
                                      metadata_table_label,
                                      metadata_table,
-                                     widgets.HTML("<hr>"),
+                                     red_hr_line,
                                      list_runs_layout])
 
         return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}
