@@ -66,7 +66,6 @@ class Interface(QMainWindow):
         self.init_widgets()
         self.integrate_images()
         self.display_image()
-        print("done")
 
     def init_widgets(self):
         nbr_columns = self.ui.table_roi.columnCount()
