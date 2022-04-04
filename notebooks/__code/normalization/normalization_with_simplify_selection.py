@@ -467,10 +467,7 @@ class NormalizationWithSimplifySelection:
         return [table_label, table]
 
     def update_use_this_config_widget(self, state):
-        pass
-        # new_state = state['new']
-        # [active_acquisition, active_config] = self.get_active_tabs()
-        # self.config_tab_dict[active_acquisition][active_config]['normalize_this_config'] = new_state
+       pass
 
     def update_config_widgets(self, state):
         if state['new'] is False:
@@ -567,9 +564,11 @@ class NormalizationWithSimplifySelection:
     def update_time_range_message(self, value):
         o_get = Get(parent=self)
         if value is None:
-            _message = "Use <b><font color='red'>All </b> " \
-                       "<font color='black'>OBs and DFs " \
-                       "matching the samples images</font>"
+            _message = "Select the <b><font color='red'>OBs</font></b> and " \
+                       "<b><font color='red'>DFs</font></b> to use in the normalization"
+            # _message = "Use <b><font color='red'>All </b> " \
+            #            "<font color='black'>OBs and DFs " \
+            #            "matching the samples images</font>"
         else:
 
             [time_before_selected, time_after_selected] = o_get.time_before_and_after_of_this_config()
@@ -603,6 +602,78 @@ class NormalizationWithSimplifySelection:
         time_before_and_after_message_ui = o_get.time_before_and_after_message_ui_of_this_config()
         time_before_and_after_message_ui.value = _message
 
+    def do_you_want_to_combine_changed(self, value):
+        do_you_want_to_combine = value['new']
+        if do_you_want_to_combine == 'yes':
+            disabled_how_to_combine = False
+        else:
+            disabled_how_to_combine = True
+
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        self.config_tab_dict[active_acquisition][active_config]['how_to_combine'].disabled = disabled_how_to_combine
+        self.update_this_config_table()
+
+    def how_to_combine_changed(self, value):
+        self.update_this_config_table()
+
+    def update_this_config_table(self):
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        table_ui = self.config_tab_dict[active_acquisition][active_config]['table']
+
+        nbr_ob = len(self.config_tab_dict[active_acquisition][active_config]['list_of_ob'].value)
+        nbr_sample = len(self.config_tab_dict[active_acquisition][active_config]['list_of_sample_runs'].options)
+        nbr_df = len(self.config_tab_dict[active_acquisition][active_config]['list_of_df'].value)
+
+        force_combine_disabled_state = self.config_tab_dict[active_acquisition][active_config]['force_combine'].disabled
+        force_combine_value = self.config_tab_dict[active_acquisition][active_config]['force_combine'].value
+        how_to_combine_value = self.config_tab_dict[active_acquisition][active_config]['how_to_combine'].value
+
+        if force_combine_value == 'yes':
+            description = f"OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
+        elif force_combine_disabled_state:
+            description = f"OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
+        else:
+            description = f"OBs <b>won't be combined</b>! Each sample will use only <b>1 OB</b>!"
+
+        html_table = f"<table style='width:100%'>" \
+                     "<tr>" \
+                     "<th style='background-color: cyan'>Nbr of Samples</th>" \
+                     "<th style='background-color: cyan'>Nbr of OBs</th>" \
+                     "<th style='background-color: cyan'>Nbr of DFs</th>" \
+                     "<th style='background-color: cyan; width:60%'>Description of Process</th>" \
+                     "</tr>" \
+                     "<tr>" \
+                     f"<td>{nbr_sample}</td>" \
+                     f"<td>{nbr_ob}</td>" \
+                     f"<td>{nbr_df}</td>" \
+                     f"<td>{description}</td>" \
+                     "</tr>" \
+                     "</table>"
+
+        table_ui.value = html_table
+
+    def selection_of_ob_changed(self, value):
+        list_ob_selected = value['new']
+        nbr_ob = len(list_ob_selected)
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        list_sample = self.config_tab_dict[active_acquisition][active_config]['list_of_sample_runs'].options
+        nbr_sample = len(list_sample)
+
+        if nbr_sample == nbr_ob:
+            self.config_tab_dict[active_acquisition][active_config]['force_combine'].disabled = False
+            self.config_tab_dict[active_acquisition][active_config]['force_combine_message'].value = ""
+        else:
+            self.config_tab_dict[active_acquisition][active_config]['force_combine'].disabled = True
+            self.config_tab_dict[active_acquisition][active_config]['force_combine_message'].value = \
+                "<font color='blue'>INFO</font>: the option to combine or not is disabled as the number of " \
+                          "<b>sample</b> " \
+                          "and " \
+                          "<b>obs</b> do not match. The <b>OBs</b> will be combined!"
+        self.update_this_config_table()
+
     def checking_normalization_workflow(self):
         self.create_final_json()
         self.normalization_recap()
@@ -626,10 +697,21 @@ class NormalizationWithSimplifySelection:
                 list_ob = this_config_tab_dict['list_of_ob'].value
                 list_df = this_config_tab_dict['list_of_df'].value
 
+                force_combine_disabled_state = this_config_tab_dict['force_combine'].disabled  # True or false
+                force_combine_value = this_config_tab_dict['force_combine'].value    # 'yes' or 'no'
+                how_to_combine_value = this_config_tab_dict['how_to_combine'].value
+
+                if (force_combine_value == 'yes') or force_combine_disabled_state:
+                    force_combine = True
+                else:
+                    force_combine = False
+
                 _final_json_for_this_acquisition[_config] = {'list_sample'          : list_sample,
                                                              'list_df'              : list_df,
                                                              'list_ob'              : list_ob,
-                                                             'normalize_this_config': normalize_flag}
+                                                             'normalize_this_config': normalize_flag,
+                                                             'force_combine'        : force_combine,
+                                                             'how_to_combine'       : how_to_combine_value}
 
             _final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
@@ -641,9 +723,17 @@ class NormalizationWithSimplifySelection:
         final_json = self.final_json_dict
         self.number_of_normalization = 0
 
-        table = "<table style='width:50%;border:1px solid black'>"
-        table += "<tr style='background-color:#eee'><th>Acquisition (s)</th><th>Config. name</th>" \
-                 "<th>Nbr sample</th><th>Nbr OB</th><th>Nbr DF</th><th>Status</th></tr>"
+        table = "<table style='width:100%'>"
+        table += "<tr style='background-color:#eee'>" \
+                 "<th style='background-color: cyan'>Acquisition (s) </th>" \
+                 "<th style='background-color: cyan'>Config. name</th>" \
+                 "<th style='background-color: cyan'>Nbr sample</th>" \
+                 "<th style='background-color: cyan'>Nbr OB</th>" \
+                 "<th style='background-color: cyan'>Nbr DF</th>" \
+                 "<th style='background-color: cyan'>Combined OBs?</th>" \
+                 "<th style='background-color: cyan'>How to combine the OBs</th>" \
+                 "<th style='background-color: cyan'>Status</th></tr>"
+
         for _name_acquisition in final_json.keys():
             _current_acquisition_dict = final_json[_name_acquisition]
             for _name_config in _current_acquisition_dict.keys():
@@ -653,13 +743,19 @@ class NormalizationWithSimplifySelection:
                 nbr_df = len(_current_config_dict['list_df'])
                 nbr_sample = len(_current_config_dict['list_sample'])
                 self.number_of_normalization += 1 if nbr_ob > 0 else 0
+
+                force_combine = _current_config_dict['force_combine']
+                how_to_combine = _current_config_dict['how_to_combine']
+
                 table += utilities.populate_normalization_recap_row(
                         acquisition=_name_acquisition,
                         config=_name_config,
                         nbr_sample=nbr_sample,
                         nbr_ob=nbr_ob,
                         nbr_df=nbr_df,
-                        normalize_this_config=normalize_this_config)
+                        normalize_this_config=normalize_this_config,
+                        force_combine=force_combine,
+                        how_to_combine=how_to_combine)
 
         table += "</table>"
         table_ui = widgets.HTML(table)
@@ -677,7 +773,7 @@ class NormalizationWithSimplifySelection:
 
     def normalization(self, output_folder):
         display(HTML('<span style="font-size: 20px; color:blue">Make sure you do not close the notebook until'
-                     'the busy signal (dark circle top right) is is gone!</span>'))
+                     'the busy signal (dark circle top right) is gone!</span>'))
 
         self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
 
@@ -724,7 +820,17 @@ class NormalizationWithSimplifySelection:
                 if len(list_df) > 0:
                     o_load.load(file=list(list_df), data_type='df')
 
-                o_load.normalization()
+                force_combine = _current_config['force_combine']
+                how_to_combine = _current_config['how_to_combine']
+
+                if not force_combine:
+                    o_load.normalization()
+                else:
+                    if how_to_combine == 'mean':
+                        o_load.normalization(force_mean_ob=True)
+                    else:
+                        o_load.normalization(force_median_ob=True)
+
                 o_load.export(folder=full_output_normalization_folder_name, file_type='tif')
                 del o_load
 
@@ -732,7 +838,7 @@ class NormalizationWithSimplifySelection:
 
         horizontal_layout.close()
 
-        display(HTML('<span style="font-size: 20px; color:blue">Following folders have been created:</span>'))
+        display(HTML('<span style="font-size: 20px; color:blue">The following folders have been created:</span>'))
         for _folder in list_full_output_normalization_folder_name:
             _folder = _folder if _folder else "None"
             display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + '</span>'))

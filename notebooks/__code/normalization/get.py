@@ -117,10 +117,6 @@ class Get(TopGet):
         def _make_full_file_name(list_name='list_sample'):
             return [_entry['filename'] for _entry in dict_config[list_name]]
 
-        # list_sample = _make_list_basename_file(list_name='list_sample')
-        # list_ob = _make_list_basename_file(list_name='list_ob')
-        # list_df = _make_list_basename_file(list_name='list_df')
-
         list_sample = _make_full_file_name(list_name='list_sample')
         list_ob = _make_full_file_name(list_name='list_ob')
         list_df = _make_full_file_name(list_name='list_df')
@@ -172,7 +168,74 @@ class Get(TopGet):
         config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
         config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
 
-        # use all OB and DF
+        nbr_sample = len(list_sample)
+        nbr_ob = len(list_ob)
+        nbr_df = len(list_df)
+
+        def get_html_table():
+            force_combine = force_ui.value
+            how_to_combine = how_to_ui.value
+
+            if force_combine == 'yes':
+                description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
+            else:
+                description = f"OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
+
+            html_table = f"<table style='width:100%'>" \
+                         "<tr>" \
+                         "<th style='background-color: cyan'>Nbr of Samples</th>" \
+                         "<th style='background-color: cyan'>Nbr of OBs</th>" \
+                         "<th style='background-color: cyan'>Nbr of DFs</th>" \
+                         "<th style='background-color: cyan; width:60%'>Description of Process</th>" \
+                         "</tr>" \
+                         "<tr>" \
+                         f"<td>{nbr_sample}</td>" \
+                         f"<td>{nbr_ob}</td>" \
+                         f"<td>{nbr_df}</td>" \
+                         f"<td>{description}</td>" \
+                         "</tr>" \
+                         "</table>"
+            return html_table
+
+        # do you want to combine
+        if nbr_sample != nbr_ob:
+            force_ui_disabled = True
+            html_string = "<font color='blue'>INFO</font>: the option to combine or not is disabled as the number of " \
+                          "<b>sample</b> " \
+                          "and " \
+                          "<b>obs</b> do not match. The <b>OBs</b> will be combined!"
+        else:
+            force_ui_disabled = False
+            html_string = ""
+        force_ui = widgets.RadioButtons(options=['yes', 'no'],
+                                             value='yes',
+                                             disabled=force_ui_disabled,
+                                             layout=widgets.Layout(width='200px'))
+        force_ui.observe(self.parent.do_you_want_to_combine_changed, names='value')
+        combine_or_no_ui = widgets.VBox([widgets.HTML("<b>Do you want to combine the OBs?</b>"),
+                                        force_ui,
+                                         widgets.HTML(html_string)])
+        config_widgets_id_dict['force_combine'] = force_ui
+        config_widgets_id_dict['force_combine_message'] = combine_or_no_ui.children[2]
+
+        # how to combine widgets
+        how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
+                                              value='median',
+                                              layout=widgets.Layout(width='200px'))
+        how_to_ui.observe(self.parent.how_to_combine_changed, names='value')
+        how_to_combine_ui = widgets.VBox([widgets.HTML("<b>How to combine the OBs?</b>"),
+                                         how_to_ui])
+        config_widgets_id_dict['how_to_combine'] = how_to_ui
+
+        # table
+        table_title = widgets.HTML("<font color='blue'><center><b>S U M M A R Y</b></center></font>")
+
+        html_table = ""
+        table = widgets.HTML(value=html_table)
+        table.value = get_html_table()
+        config_widgets_id_dict['table'] = table
+
+       # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",
                                                    layout=widgets.Layout(width="20%")),
                                      widgets.HTML("",
@@ -185,31 +248,41 @@ class Get(TopGet):
         [metadata_table_label, metadata_table] = self.parent.populate_metadata_table(dict_config)
 
         select_width = '100%'
-        sample_list_of_runs = widgets.VBox([widgets.Label("List of Sample Runs (ALL WILL BE USED!)",
-                                                          layout=widgets.Layout(width='100%')),
+        sample_list_of_runs = widgets.VBox([widgets.HTML("<b>List of Sample runs</b> (ALL RUNS listed here will be "
+                                                         "used!"),
                                             widgets.Select(options=list_sample,
                                                            layout=widgets.Layout(width=select_width,
                                                                                  height='300px'))],
                                            layout=widgets.Layout(width="100%"))
         # self.list_of_runs_ui = box0.children[1]
-        ob_list_of_runs = widgets.VBox([widgets.Label("List of OB (ONLY SELECTED ONE ARE USED!)",
-                                                      layout=widgets.Layout(width='100%')),
+        ob_list_of_runs = widgets.VBox([widgets.HTML("<b>List of OBs</b>. Only the selected images will be used!"),
                                         widgets.SelectMultiple(options=list_ob,
                                                                value=list_ob,
                                                                layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
                                        layout=widgets.Layout(width="100%"))
-        df_list_of_runs = widgets.VBox([widgets.Label("List of DF (ONLY SELECTED ONE ARE USED!)",
-                                                      layout=widgets.Layout(width='100%')),
+        ob_list_of_runs.children[1].observe(self.parent.selection_of_ob_changed, names='value')
+        df_list_of_runs = widgets.VBox([widgets.HTML("<b>List of DFs</b>.Only the selected images will be used!"),
                                         widgets.SelectMultiple(options=list_df,
                                                                value=list_df,
                                                                layout=widgets.Layout(width=select_width,
                                                                              height='300px'))],
                                        layout=widgets.Layout(width="100%"))
 
+        red_hr_line = widgets.HTML("<style>hr {border-top: 1px solid red}</style><hr>")
+        black_hr_line = widgets.HTML("<style>hr {border-top: 1px solid black}</style><hr>")
+
         list_runs_layout = widgets.VBox([sample_list_of_runs,
+                                         black_hr_line,
                                          ob_list_of_runs,
-                                         df_list_of_runs])
+                                         combine_or_no_ui,
+                                         black_hr_line,
+                                         how_to_combine_ui,
+                                         black_hr_line,
+                                         df_list_of_runs,
+                                         red_hr_line,
+                                         table_title,
+                                         table])
         config_widgets_id_dict['list_of_sample_runs'] = sample_list_of_runs.children[1]
         config_widgets_id_dict['list_of_ob'] = ob_list_of_runs.children[1]
         config_widgets_id_dict['list_of_df'] = df_list_of_runs.children[1]
@@ -217,8 +290,10 @@ class Get(TopGet):
         verti_layout = widgets.VBox([use_this_config_widget,
                                      hori_layout1,
                                      hori_layout2,
+                                     black_hr_line,
                                      metadata_table_label,
                                      metadata_table,
+                                     red_hr_line,
                                      list_runs_layout])
 
         return {'verti_layout': verti_layout, 'config_widgets_id_dict': config_widgets_id_dict}

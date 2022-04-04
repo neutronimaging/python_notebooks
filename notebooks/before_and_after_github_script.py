@@ -18,6 +18,8 @@ def run():
     _top_path = os.path.dirname(__file__)
     if args.before_push:
         list_notebooks = glob.glob('*.ipynb')
+        list_users_notebooks = glob.glob('users_notebooks/*.ipynb')
+        list_notebooks += list_users_notebooks
         list_notebooks.sort()
 
         print("Cleaning ...")
@@ -26,6 +28,8 @@ def run():
             print(" > {}".format(_notebook))
 
         list_notebooks_after = glob.glob('*.ipynb')
+        list_users_notebooks_after = glob.glob('users_notebooks/*.ipynb')
+        list_notebooks_after += list_users_notebooks_after
         list_notebooks_after.sort()
 
         if len(list_notebooks) == len(list_notebooks_after):
@@ -37,6 +41,7 @@ def run():
                     print(" Missing File: {}".format(_file))
 
         os.system('jupytext --to converted_notebooks//py *.ipynb')
+        os.system('jupytext --to converted_notebooks//py users_notebooks/*.ipynb')
 
     elif args.after_pull:
         os.system('jupytext --to ipynb converted_notebooks/*.py')
