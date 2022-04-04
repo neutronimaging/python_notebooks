@@ -773,7 +773,7 @@ class NormalizationWithSimplifySelection:
 
     def normalization(self, output_folder):
         display(HTML('<span style="font-size: 20px; color:blue">Make sure you do not close the notebook until'
-                     'the busy signal (dark circle top right) is is gone!</span>'))
+                     'the busy signal (dark circle top right) is gone!</span>'))
 
         self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
 
@@ -820,7 +820,17 @@ class NormalizationWithSimplifySelection:
                 if len(list_df) > 0:
                     o_load.load(file=list(list_df), data_type='df')
 
-                o_load.normalization()
+                force_combine = _current_config['force_combine']
+                how_to_combine = _current_config['how_to_combine']
+
+                if not force_combine:
+                    o_load.normalization()
+                else:
+                    if how_to_combine == 'mean':
+                        o_load.normalization(force_mean_ob=True)
+                    else:
+                        o_load.normalization(force_median_ob=True)
+
                 o_load.export(folder=full_output_normalization_folder_name, file_type='tif')
                 del o_load
 
@@ -828,7 +838,7 @@ class NormalizationWithSimplifySelection:
 
         horizontal_layout.close()
 
-        display(HTML('<span style="font-size: 20px; color:blue">Following folders have been created:</span>'))
+        display(HTML('<span style="font-size: 20px; color:blue">The following folders have been created:</span>'))
         for _folder in list_full_output_normalization_folder_name:
             _folder = _folder if _folder else "None"
             display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + '</span>'))
