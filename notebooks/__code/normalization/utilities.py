@@ -18,18 +18,38 @@ def make_full_output_normalization_folder_name(output_folder='', first_sample_fi
 
 
 def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0,
-                                     normalize_this_config=True):
+                                     normalize_this_config=True,
+                                     force_combine=True,
+                                     how_to_combine='median'):
+
     if not normalize_this_config.value:
-        status_string = "<th style='color:#ff0000'>SKIP!</th>"
+        status_string = "<th style='color:black'>SKIP!</th>"
     else:
         if nbr_ob > 0:
-            status_string = "<th style='color:#odbc2e'>OK</th>"
+            status_string = "<th style='color:green'>OK</th>"
         else:
-            status_string = "<th style='color:#ff0000'>Missing OB!</th>"
+            status_string = "<th style='color:red'>Missing OB!</th>"
+
+    if force_combine:
+        combine_ob = "Yes"
+        how_to_combine_ob = how_to_combine
+    else:
+        combine_ob = 'No'
+        how_to_combine_ob = "N/A"
 
     _row = ""
-    _row = "<tr><th>{}</th><th>{}</th><th>{}</th><th>{}</th><th>{}</th>{}</tr>". \
-        format(acquisition, config, nbr_sample, nbr_ob, nbr_df, status_string)
+    _row = "<tr>" \
+           "<th>{}</th>" \
+           "<th>{}</th>" \
+           "<th>{}</th>" \
+           "<th>{}</th>" \
+           "<th>{}</th>" \
+           "<th>{}</th>" \
+           "<th>{}</th>" \
+           "{}" \
+           "</tr>". \
+        format(acquisition, config, nbr_sample, nbr_ob, nbr_df, combine_ob, how_to_combine_ob, status_string)
+
     return _row
 
 

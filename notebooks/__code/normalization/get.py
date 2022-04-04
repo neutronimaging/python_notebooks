@@ -117,10 +117,6 @@ class Get(TopGet):
         def _make_full_file_name(list_name='list_sample'):
             return [_entry['filename'] for _entry in dict_config[list_name]]
 
-        # list_sample = _make_list_basename_file(list_name='list_sample')
-        # list_ob = _make_list_basename_file(list_name='list_ob')
-        # list_df = _make_list_basename_file(list_name='list_df')
-
         list_sample = _make_full_file_name(list_name='list_sample')
         list_ob = _make_full_file_name(list_name='list_ob')
         list_df = _make_full_file_name(list_name='list_df')
@@ -171,33 +167,6 @@ class Get(TopGet):
         config_widgets_id_dict['time_slider_before_experiment'] = hori_layout1.children[1]
         config_widgets_id_dict['time_slider_after_experiment'] = hori_layout1.children[3]
         config_widgets_id_dict['experiment_label'] = hori_layout1.children[2]
-
-        # # how to combine the OBs
-        # def force_combining_changed(value):
-        #     widgets_changed()
-        #
-        # def how_to_combine_changed(value):
-        #     widgets_changed()
-
-        # def widgets_changed():
-        #     if self.force_ui.value == 'no':
-        #         accordion_children = [self.force_ui, table]
-        #         accordion_title = [force_combine_title, table_title]
-        #         self.how_to_ui.disabled = True
-        #     elif nbr_sample != nbr_ob:
-        #         accordion_children = [self.how_to_ui, table]
-        #         accordion_title = [how_to_combine_title, table_title]
-        #         self.how_to_ui.disabled = False
-        #     else:
-        #         accordion_children = [self.force_ui, self.how_to_ui, table]
-        #         accordion_title = [force_combine_title, how_to_combine_title, table_title]
-        #         self.how_to_ui.disabled = False
-        #     table.value = get_html_table()
-        #     accordion.children = accordion_children
-        #     for _index, _title in enumerate(accordion_title):
-        #         accordion.set_title(_index, _title)
-        #     accordion.selected_index = len(accordion_title) - 1
-        #
 
         nbr_sample = len(list_sample)
         nbr_ob = len(list_ob)
@@ -266,51 +235,7 @@ class Get(TopGet):
         table.value = get_html_table()
         config_widgets_id_dict['table'] = table
 
-        # table_title = "Summary Table"
-        # how_to_combine_title = "How do you want to combine the OBs?"
-        # force_combine_title = "Do you want to combine the OBs?"
-
-        # accordion_children = []
-        # accordion_title = list()
-        #
-        # self.force_ui = widgets.RadioButtons(options=['yes', 'no'],
-        #                                      value='yes',
-        #                                      disabled=False,
-        #                                      layout=widgets.Layout(width='200px'))
-        # accordion_children.append(self.force_ui)
-        # self.force_ui.observe(force_combining_changed, names='value')
-        #
-        # self.how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
-        #                                       value='median',
-        #                                       layout=widgets.Layout(width='200px'))
-        # accordion_children.append(self.how_to_ui)
-        # self.how_to_ui.observe(how_to_combine_changed, names='value')
-
-        # html_table = ""
-        # table = widgets.HTML(value=html_table)
-        # accordion_children.append(table)
-
-        # if nbr_sample != nbr_ob:
-        #     self.force_ui.value = 'yes'
-        #     accordion_children = [self.how_to_ui, table]
-        #     how_to_combine_title = "How to combine the OBs?"
-        #     accordion_title = [how_to_combine_title, table_title]
-        # else:
-        #     accordion_title.append(force_combine_title)
-        #     accordion_title.append(how_to_combine_title)
-        #     accordion_title.append(table_title)
-
-        # table.value = get_html_table()
-        #
-        # accordion = widgets.Accordion(children=accordion_children,
-        #                               title=accordion_title)
-        #
-        # for _index, _title in enumerate(accordion_title):
-        #     accordion.set_title(_index, _title)
-        #
-        # accordion.selected_index = len(accordion_title) - 1
-
-        # use all OB and DF
+       # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",
                                                    layout=widgets.Layout(width="20%")),
                                      widgets.HTML("",

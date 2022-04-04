@@ -628,22 +628,21 @@ class NormalizationWithSimplifySelection:
 
         force_combine_disabled_state = self.config_tab_dict[active_acquisition][active_config]['force_combine'].disabled
         force_combine_value = self.config_tab_dict[active_acquisition][active_config]['force_combine'].value
-
         how_to_combine_value = self.config_tab_dict[active_acquisition][active_config]['how_to_combine'].value
 
         if force_combine_value == 'yes':
             description = f"OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
-        elif force_combine_disabled_state == True:
+        elif force_combine_disabled_state:
             description = f"OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
         else:
             description = f"OBs <b>won't be combined</b>! Each sample will use only <b>1 OB</b>!"
 
-        html_table = f"<table style='width:800px'>" \
+        html_table = f"<table style='width:100%'>" \
                      "<tr>" \
-                     "<th style='background-color: grey'>Nbr of Samples</th>" \
-                     "<th style='background-color: grey'>Nbr of OBs</th>" \
-                     "<th style='background-color: grey'>Nbr of DFs</th>" \
-                     "<th style='background-color: grey; width:60%'>Description of Process</th>" \
+                     "<th style='background-color: cyan'>Nbr of Samples</th>" \
+                     "<th style='background-color: cyan'>Nbr of OBs</th>" \
+                     "<th style='background-color: cyan'>Nbr of DFs</th>" \
+                     "<th style='background-color: cyan; width:60%'>Description of Process</th>" \
                      "</tr>" \
                      "<tr>" \
                      f"<td>{nbr_sample}</td>" \
@@ -698,10 +697,21 @@ class NormalizationWithSimplifySelection:
                 list_ob = this_config_tab_dict['list_of_ob'].value
                 list_df = this_config_tab_dict['list_of_df'].value
 
+                force_combine_disabled_state = this_config_tab_dict['force_combine'].disabled  # True or false
+                force_combine_value = this_config_tab_dict['force_combine'].value    # 'yes' or 'no'
+                how_to_combine_value = this_config_tab_dict['how_to_combine'].value
+
+                if (force_combine_value == 'yes') or force_combine_disabled_state:
+                    force_combine = True
+                else:
+                    force_combine = False
+
                 _final_json_for_this_acquisition[_config] = {'list_sample'          : list_sample,
                                                              'list_df'              : list_df,
                                                              'list_ob'              : list_ob,
-                                                             'normalize_this_config': normalize_flag}
+                                                             'normalize_this_config': normalize_flag,
+                                                             'force_combine'        : force_combine,
+                                                             'how_to_combine'       : how_to_combine_value}
 
             _final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
@@ -713,9 +723,17 @@ class NormalizationWithSimplifySelection:
         final_json = self.final_json_dict
         self.number_of_normalization = 0
 
-        table = "<table style='width:50%;border:1px solid black'>"
-        table += "<tr style='background-color:#eee'><th>Acquisition (s)</th><th>Config. name</th>" \
-                 "<th>Nbr sample</th><th>Nbr OB</th><th>Nbr DF</th><th>Status</th></tr>"
+        table = "<table style='width:100%'>"
+        table += "<tr style='background-color:#eee'>" \
+                 "<th style='background-color: cyan'>Acquisition (s) </th>" \
+                 "<th style='background-color: cyan'>Config. name</th>" \
+                 "<th style='background-color: cyan'>Nbr sample</th>" \
+                 "<th style='background-color: cyan'>Nbr OB</th>" \
+                 "<th style='background-color: cyan'>Nbr DF</th>" \
+                 "<th style='background-color: cyan'>Combined OBs?</th>" \
+                 "<th style='background-color: cyan'>How to combine the OBs</th>" \
+                 "<th style='background-color: cyan'>Status</th></tr>"
+
         for _name_acquisition in final_json.keys():
             _current_acquisition_dict = final_json[_name_acquisition]
             for _name_config in _current_acquisition_dict.keys():
@@ -725,13 +743,19 @@ class NormalizationWithSimplifySelection:
                 nbr_df = len(_current_config_dict['list_df'])
                 nbr_sample = len(_current_config_dict['list_sample'])
                 self.number_of_normalization += 1 if nbr_ob > 0 else 0
+
+                force_combine = _current_config_dict['force_combine']
+                how_to_combine = _current_config_dict['how_to_combine']
+
                 table += utilities.populate_normalization_recap_row(
                         acquisition=_name_acquisition,
                         config=_name_config,
                         nbr_sample=nbr_sample,
                         nbr_ob=nbr_ob,
                         nbr_df=nbr_df,
-                        normalize_this_config=normalize_this_config)
+                        normalize_this_config=normalize_this_config,
+                        force_combine=force_combine,
+                        how_to_combine=how_to_combine)
 
         table += "</table>"
         table_ui = widgets.HTML(table)
