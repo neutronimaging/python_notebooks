@@ -4,6 +4,7 @@ import numpy as np
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import logging
+from qtpy import QtGui
 
 from NeuNorm.normalization import Normalization
 
@@ -12,6 +13,7 @@ from __code.ipywe import myfileselector
 from __code.normalization.get import Get
 from __code.normalization.metadata_handler import MetadataHandler, MetadataName, METADATA_KEYS
 from __code.normalization import utilities
+from __code.roi_selection_ui import Interface
 
 JSON_DEBUGGING = False
 
@@ -701,6 +703,8 @@ class NormalizationWithSimplifySelection:
                 force_combine_value = this_config_tab_dict['force_combine'].value    # 'yes' or 'no'
                 how_to_combine_value = this_config_tab_dict['how_to_combine'].value
 
+                roi = this_config_tab_dict.get('roi', None)
+
                 if (force_combine_value == 'yes') or force_combine_disabled_state:
                     force_combine = True
                 else:
@@ -711,11 +715,23 @@ class NormalizationWithSimplifySelection:
                                                              'list_ob'              : list_ob,
                                                              'normalize_this_config': normalize_flag,
                                                              'force_combine'        : force_combine,
-                                                             'how_to_combine'       : how_to_combine_value}
+                                                             'how_to_combine'       : how_to_combine_value,
+                                                             'roi'                  : roi}
 
             _final_json_dict[_acquisition] = _final_json_for_this_acquisition
 
         self.final_json_dict = _final_json_dict
+
+    def roi_button_clicked(self, value):
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        list_sample = self.config_tab_dict[active_acquisition][active_config]['list_of_sample_runs'].options
+
+        o_gui = Interface(list_of_files=list_sample)
+        o_gui.show()
+        QtGui.QGuiApplication.processEvents()
+
+        # self.config_tab_dict[active_acquisition][active_config]['roi'] = [1, 2, 3, 4]
 
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,
@@ -732,6 +748,7 @@ class NormalizationWithSimplifySelection:
                  "<th style='background-color: cyan'>Nbr DF</th>" \
                  "<th style='background-color: cyan'>Combined OBs?</th>" \
                  "<th style='background-color: cyan'>How to combine the OBs</th>" \
+                 "<th style='background-color: cyan'>ROI</th>" \
                  "<th style='background-color: cyan'>Status</th></tr>"
 
         for _name_acquisition in final_json.keys():
@@ -746,6 +763,7 @@ class NormalizationWithSimplifySelection:
 
                 force_combine = _current_config_dict['force_combine']
                 how_to_combine = _current_config_dict['how_to_combine']
+                roi = _current_config_dict.get("roi", None)
 
                 table += utilities.populate_normalization_recap_row(
                         acquisition=_name_acquisition,
@@ -755,6 +773,7 @@ class NormalizationWithSimplifySelection:
                         nbr_df=nbr_df,
                         normalize_this_config=normalize_this_config,
                         force_combine=force_combine,
+                        roi=roi,
                         how_to_combine=how_to_combine)
 
         table += "</table>"

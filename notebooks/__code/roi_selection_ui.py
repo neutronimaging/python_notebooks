@@ -4,16 +4,12 @@ import numpy as np
 import random
 from collections import OrderedDict
 import pyqtgraph as pg
+from qtpy.QtWidgets import QMainWindow, QProgressBar, QVBoxLayout, QTableWidgetSelectionRange, QTableWidgetItem
+from qtpy import QtGui
+from __code import load_ui
+import os
 
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
-
+from NeuNorm.normalization import Normalization
 from __code.ui_roi_selection import Ui_MainWindow as UiMainWindow
 from __code.config import percentage_of_images_to_use_for_roi_selection, \
     minimum_number_of_images_to_use_for_roi_selection
@@ -24,6 +20,7 @@ class Interface(QMainWindow):
     roi_width = 0.01
     roi_selected = {} #nice formatting of list_roi for outside access
 
+    list_of_files = None
     live_data = []
     o_norm = None
     roi_column_width = 70
@@ -33,13 +30,16 @@ class Interface(QMainWindow):
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
-    def __init__(self, parent=None, o_norm=None, percentage_of_data_to_use=None):
+    def __init__(self, parent=None, o_norm=None, list_of_files=None, percentage_of_data_to_use=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
 
         if o_norm:
             self.o_norm = o_norm
+
+        if list_of_files:
+            self.list_of_files = list_of_files
 
         if percentage_of_data_to_use is None:
             percentage_of_data_to_use = percentage_of_images_to_use_for_roi_selection
@@ -48,9 +48,11 @@ class Interface(QMainWindow):
         #self.list_files = self.o_norm.data['sample']['file_name']
         #self.list_data = self.o_norm.data['sample']['data']
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+        super(QMainWindow, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                    os.path.join('ui', 'ui_roi_selection.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
+
         self.init_statusbar()
         self.setWindowTitle("Background ROI Selection Tool")
 
@@ -58,12 +60,13 @@ class Interface(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
 
-        top_layout = QtGui.QVBoxLayout()
+        top_layout = QVBoxLayout()
         top_layout.addWidget(self.ui.image_view)
         self.ui.widget.setLayout(top_layout)
         self.init_widgets()
         self.integrate_images()
         self.display_image()
+        print("done")
 
     def init_widgets(self):
         nbr_columns = self.ui.table_roi.columnCount()
@@ -71,7 +74,7 @@ class Interface(QMainWindow):
             self.ui.table_roi.setColumnWidth(_col, self.roi_column_width)
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(20, 14)
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
@@ -113,7 +116,12 @@ class Interface(QMainWindow):
 
     def integrate_images(self):
         percentage_of_data_to_use = self.percentage_of_data_to_use
-        nbr_files = len(self.o_norm.data['sample']['data'])
+
+        if self.o_norm:
+            nbr_files = len(self.o_norm.data['sample']['data'])
+        else:
+            nbr_files = len(self.list_of_files)
+
         if nbr_files < minimum_number_of_images_to_use_for_roi_selection:
             nbr_files_to_use = nbr_files
         else:
@@ -121,7 +129,16 @@ class Interface(QMainWindow):
             if nbr_files_to_use < minimum_number_of_images_to_use_for_roi_selection:
                 nbr_files_to_use = minimum_number_of_images_to_use_for_roi_selection
         random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
-        list_data_to_use = [self.o_norm.data['sample']['data'][_index] for _index in random_list]
+
+        if self.o_norm:
+            list_data_to_use = [self.o_norm.data['sample']['data'][_index] for _index in random_list]
+        else:
+            o_norm = Normalization()
+            list_of_files = np.array(self.list_of_files)
+            list_of_files = list(list_of_files[random_list])
+            o_norm.load(file=list_of_files, notebook=True)
+            list_data_to_use = o_norm.data['sample']['data']
+
         self.integrated_image = np.mean(list_data_to_use, axis=0)
         [_height, _width] = np.shape(self.integrated_image)
         self.integrated_image_size['height'] = _height
@@ -174,7 +191,7 @@ class Interface(QMainWindow):
         if row == (old_nbr_row-1):
             row = new_nbr_row - 1
 
-        _new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, 3)
+        _new_selection = QTableWidgetSelectionRange(row, 0, row, 3)
         self.ui.table_roi.setRangeSelected(_new_selection, True)
 
     def clear_table(self):
@@ -218,7 +235,7 @@ class Interface(QMainWindow):
         #self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
 
     def _set_item_value(self, row=0, column=0, value=-1):
-        _item = QtGui.QTableWidgetItem(str(value))
+        _item = QTableWidgetItem(str(value))
         self.ui.table_roi.setItem(row, column, _item)
 
     def check_roi_validity(self, value, x_axis=True):
@@ -353,16 +370,16 @@ class Interface(QMainWindow):
         self.ui.table_roi.insertRow(row)
         _default_roi = self.default_roi
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['x0']))
+        _item = QTableWidgetItem(str(_default_roi['x0']))
         self.ui.table_roi.setItem(row, 0, _item)
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['y0']))
+        _item = QTableWidgetItem(str(_default_roi['y0']))
         self.ui.table_roi.setItem(row, 1, _item)
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['x1']))
+        _item = QTableWidgetItem(str(_default_roi['x1']))
         self.ui.table_roi.setItem(row, 2, _item)
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['y1']))
+        _item = QTableWidgetItem(str(_default_roi['y1']))
         self.ui.table_roi.setItem(row, 3, _item)
 
         # save new list_roi dictionary
@@ -400,7 +417,7 @@ class Interface(QMainWindow):
         self.check_add_remove_button_widgets_status()
 
         if not _selection:
-            _new_selection = QtGui.QTableWidgetSelectionRange(0, 0, 0, 3)
+            _new_selection = QTableWidgetSelectionRange(0, 0, 0, 3)
             self.ui.table_roi.setRangeSelected(_new_selection, True)
 
     def init_roi(self, x0=0, y0=0, width=0, height=0):
@@ -446,4 +463,3 @@ class Interface(QMainWindow):
 
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")
-

@@ -20,6 +20,7 @@ def make_full_output_normalization_folder_name(output_folder='', first_sample_fi
 def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nbr_ob=0, nbr_df=0,
                                      normalize_this_config=True,
                                      force_combine=True,
+                                     roi=None,
                                      how_to_combine='median'):
 
     if not normalize_this_config.value:
@@ -37,6 +38,11 @@ def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nb
         combine_ob = 'No'
         how_to_combine_ob = "N/A"
 
+    if roi is None:
+        roi = 'No'
+    else:
+        roi = 'Yes'
+
     _row = ""
     _row = "<tr>" \
            "<th>{}</th>" \
@@ -46,9 +52,10 @@ def populate_normalization_recap_row(acquisition="", config="", nbr_sample=0, nb
            "<th>{}</th>" \
            "<th>{}</th>" \
            "<th>{}</th>" \
+           "<th>{}</th>" \
            "{}" \
            "</tr>". \
-        format(acquisition, config, nbr_sample, nbr_ob, nbr_df, combine_ob, how_to_combine_ob, status_string)
+        format(acquisition, config, nbr_sample, nbr_ob, nbr_df, combine_ob, how_to_combine_ob, roi, status_string)
 
     return _row
 

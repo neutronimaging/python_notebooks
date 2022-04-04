@@ -208,23 +208,23 @@ class Get(TopGet):
             force_ui_disabled = False
             html_string = ""
         force_ui = widgets.RadioButtons(options=['yes', 'no'],
-                                             value='yes',
-                                             disabled=force_ui_disabled,
-                                             layout=widgets.Layout(width='200px'))
+                                        value='yes',
+                                        disabled=force_ui_disabled,
+                                        layout=widgets.Layout(width='200px'))
         force_ui.observe(self.parent.do_you_want_to_combine_changed, names='value')
         combine_or_no_ui = widgets.VBox([widgets.HTML("<b>Do you want to combine the OBs?</b>"),
-                                        force_ui,
+                                         force_ui,
                                          widgets.HTML(html_string)])
         config_widgets_id_dict['force_combine'] = force_ui
         config_widgets_id_dict['force_combine_message'] = combine_or_no_ui.children[2]
 
         # how to combine widgets
         how_to_ui = widgets.RadioButtons(options=['median', 'mean'],
-                                              value='median',
-                                              layout=widgets.Layout(width='200px'))
+                                         value='median',
+                                         layout=widgets.Layout(width='200px'))
         how_to_ui.observe(self.parent.how_to_combine_changed, names='value')
         how_to_combine_ui = widgets.VBox([widgets.HTML("<b>How to combine the OBs?</b>"),
-                                         how_to_ui])
+                                          how_to_ui])
         config_widgets_id_dict['how_to_combine'] = how_to_ui
 
         # table
@@ -235,7 +235,7 @@ class Get(TopGet):
         table.value = get_html_table()
         config_widgets_id_dict['table'] = table
 
-       # use all OB and DF
+        # use all OB and DF
         hori_layout2 = widgets.HBox([widgets.Label("    ",
                                                    layout=widgets.Layout(width="20%")),
                                      widgets.HTML("",
@@ -259,18 +259,27 @@ class Get(TopGet):
                                         widgets.SelectMultiple(options=list_ob,
                                                                value=list_ob,
                                                                layout=widgets.Layout(width=select_width,
-                                                                             height='300px'))],
+                                                                                     height='300px'))],
                                        layout=widgets.Layout(width="100%"))
         ob_list_of_runs.children[1].observe(self.parent.selection_of_ob_changed, names='value')
         df_list_of_runs = widgets.VBox([widgets.HTML("<b>List of DFs</b>.Only the selected images will be used!"),
                                         widgets.SelectMultiple(options=list_df,
                                                                value=list_df,
                                                                layout=widgets.Layout(width=select_width,
-                                                                             height='300px'))],
+                                                                                     height='300px'))],
                                        layout=widgets.Layout(width="100%"))
 
         red_hr_line = widgets.HTML("<style>hr {border-top: 1px solid red}</style><hr>")
         black_hr_line = widgets.HTML("<style>hr {border-top: 1px solid black}</style><hr>")
+
+        # select ROI
+        select_roi_button = widgets.Button(description="Selection of region of interest (ROI) - OPTIONAL",
+                                           button_style='',
+                                           layout=widgets.Layout(width="100%"),
+                                           icon="gear")
+        select_roi_button.style.button_color = 'lightgreen'
+        select_roi_button.style.font_weight = 'bold'
+        select_roi_button.on_click(self.parent.roi_button_clicked)
 
         list_runs_layout = widgets.VBox([sample_list_of_runs,
                                          black_hr_line,
@@ -280,6 +289,8 @@ class Get(TopGet):
                                          how_to_combine_ui,
                                          black_hr_line,
                                          df_list_of_runs,
+                                         red_hr_line,
+                                         select_roi_button,
                                          red_hr_line,
                                          table_title,
                                          table])
