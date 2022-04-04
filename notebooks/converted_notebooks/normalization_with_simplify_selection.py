@@ -37,7 +37,7 @@ custom_style.style()
 o_which = NormalizationWithSimplifySelection(working_dir=system.System.get_working_dir())
 o_which.select_sample_folder()
 
-# # Normalization workflow
+# # Normalization workflow Summary
 
 o_which.checking_normalization_workflow()
 
@@ -45,5 +45,4 @@ o_which.checking_normalization_workflow()
 
 o_which.select_output_folder()
 
-# +
-# dev
+
