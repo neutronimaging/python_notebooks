@@ -727,11 +727,15 @@ class NormalizationWithSimplifySelection:
         [active_acquisition, active_config] = o_get.active_tabs()
         list_sample = self.config_tab_dict[active_acquisition][active_config]['list_of_sample_runs'].options
 
-        o_gui = Interface(list_of_files=list_sample)
+        o_gui = Interface(list_of_files=list_sample,
+                          callback=self.returning_from_roi_selection)
         o_gui.show()
         QtGui.QGuiApplication.processEvents()
 
         # self.config_tab_dict[active_acquisition][active_config]['roi'] = [1, 2, 3, 4]
+
+    def returning_from_roi_selection(self, roi_selected):
+        print(roi_selected)
 
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,

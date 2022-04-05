@@ -30,7 +30,7 @@ class Interface(QMainWindow):
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
-    def __init__(self, parent=None, o_norm=None, list_of_files=None, percentage_of_data_to_use=None):
+    def __init__(self, parent=None, o_norm=None, list_of_files=None, percentage_of_data_to_use=None, callback=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
             (maybe hidden behind this browser!)</span>'))
@@ -45,8 +45,8 @@ class Interface(QMainWindow):
             percentage_of_data_to_use = percentage_of_images_to_use_for_roi_selection
         self.percentage_of_data_to_use = percentage_of_data_to_use
 
-        #self.list_files = self.o_norm.data['sample']['file_name']
-        #self.list_data = self.o_norm.data['sample']['data']
+        # method called when leaving the application, if any
+        self.callback = callback
 
         super(QMainWindow, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
@@ -456,6 +456,8 @@ class Interface(QMainWindow):
         self.update_table_roi(None) #check ROI before leaving application
         self.format_roi()
         self.close()
+        if self.callback:
+            self.callback(roi=self.roi_selected)
 
     def cancel_clicked(self):
         self.close()
