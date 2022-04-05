@@ -22,9 +22,6 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code.normalization.normalization import *
-
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_roi_selection.ui')
 from __code.roi_selection_ui import Interface
 
 from __code import system

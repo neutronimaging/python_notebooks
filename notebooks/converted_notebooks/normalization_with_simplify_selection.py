@@ -25,6 +25,9 @@ from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
+# -
+
+# %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select List of Images to Normalize 
