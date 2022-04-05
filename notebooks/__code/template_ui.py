@@ -36,7 +36,7 @@ class Interface(QMainWindow):
 
     def __init__(self, parent=None, o_norm=None):
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
 
         self.o_norm = o_norm

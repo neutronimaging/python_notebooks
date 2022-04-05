@@ -75,7 +75,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
 
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
 
         QMainWindow.__init__(self, parent=parent)

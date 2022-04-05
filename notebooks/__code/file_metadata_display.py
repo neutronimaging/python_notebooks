@@ -26,7 +26,7 @@ class Interface(QMainWindow):
 
     def __init__(self, parent=None, exp_dict=None):
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
 
         self.exp_dict = exp_dict

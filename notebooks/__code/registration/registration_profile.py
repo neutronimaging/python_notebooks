@@ -127,7 +127,7 @@ class RegistrationProfileUi(QMainWindow):
             self.does_top_parent_exist = True
             self.working_dir = self.parent.working_dir
         elif data_dict:
-            display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+            display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
                 (maybe hidden behind this browser!)</span>'))
             self.data_dict = copy.deepcopy(data_dict)
             self.working_dir = os.path.dirname(data_dict['file_name'][0])

@@ -79,7 +79,7 @@ class RegistrationUi(QMainWindow):
 
         super(QMainWindow, self).__init__(parent)
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',

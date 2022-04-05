@@ -39,7 +39,8 @@ class RotateAndCropImages(QMainWindow):
 
         display(
             HTML(
-                '<span style="font-size: 20px; color:blue">Select the rotation angle in the UI that poped up (maybe hidden behind this browser!)</span>'
+                '<span style="font-size: 20px; color:blue">Select the rotation angle in the UI that popped up (maybe '
+                'hidden behind this browser!)</span>'
             ))
 
         self.working_data = o_load.working_data

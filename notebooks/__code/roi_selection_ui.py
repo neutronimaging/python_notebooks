@@ -38,7 +38,7 @@ class Interface(QMainWindow):
                  display_info_message=True):
 
         if display_info_message:
-            display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+            display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
                 (maybe hidden behind this browser!)</span>'))
 
         if o_norm:

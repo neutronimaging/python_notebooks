@@ -185,7 +185,7 @@ class SelectRadialParameters(QMainWindow):
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
         display(HTML('<span style="font-size: 20px; color:blue">Select the center of the circle and the angular '
-                     'sector in the UI that poped up \
+                     'sector in the UI that popped up \
             (maybe hidden behind this browser!)</span>'))
 
         # o_profile.load_images()
