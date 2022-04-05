@@ -6,6 +6,7 @@ from __code._utilities.get import Get as TopGet
 
 from __code.normalization import LOG_FILENAME
 from __code import file_handler
+from . import ROI_BUTTON_DESCRIPTION, ROI_ICON
 
 LIST_METADATA_NOT_INSTRUMENT_RELATED = ['filename', 'time_stamp', 'time_stamp_user_format']
 
@@ -273,13 +274,14 @@ class Get(TopGet):
         black_hr_line = widgets.HTML("<style>hr {border-top: 1px solid black}</style><hr>")
 
         # select ROI
-        select_roi_button = widgets.Button(description="Selection of region of interest (ROI) - OPTIONAL",
+        select_roi_button = widgets.Button(description=ROI_BUTTON_DESCRIPTION,
                                            button_style='',
                                            layout=widgets.Layout(width="100%"),
-                                           icon="gear")
+                                           icon=ROI_ICON)
         select_roi_button.style.button_color = 'lightgreen'
         select_roi_button.style.font_weight = 'bold'
         select_roi_button.on_click(self.parent.roi_button_clicked)
+        config_widgets_id_dict['select_roi_button'] = select_roi_button
 
         list_runs_layout = widgets.VBox([sample_list_of_runs,
                                          black_hr_line,

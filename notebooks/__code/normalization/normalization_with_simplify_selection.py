@@ -6,7 +6,7 @@ from IPython.core.display import display, HTML
 import logging
 from qtpy import QtGui
 
-from NeuNorm.normalization import Normalization
+from NeuNorm.normalization import Normalization, ROI
 
 from __code import file_handler
 from __code.ipywe import myfileselector
@@ -14,6 +14,8 @@ from __code.normalization.get import Get
 from __code.normalization.metadata_handler import MetadataHandler, MetadataName, METADATA_KEYS
 from __code.normalization import utilities
 from __code.roi_selection_ui import Interface
+
+from . import ROI_ICON, ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_ICON
 
 JSON_DEBUGGING = False
 
@@ -703,7 +705,9 @@ class NormalizationWithSimplifySelection:
                 force_combine_value = this_config_tab_dict['force_combine'].value    # 'yes' or 'no'
                 how_to_combine_value = this_config_tab_dict['how_to_combine'].value
 
-                roi = this_config_tab_dict.get('roi', None)
+                roi = this_config_tab_dict.get('roi_selected', None)
+                if roi == {}:
+                    roi = None
 
                 if (force_combine_value == 'yes') or force_combine_disabled_state:
                     force_combine = True
@@ -727,15 +731,25 @@ class NormalizationWithSimplifySelection:
         [active_acquisition, active_config] = o_get.active_tabs()
         list_sample = self.config_tab_dict[active_acquisition][active_config]['list_of_sample_runs'].options
 
+        self.config_tab_dict[active_acquisition][active_config]['select_roi_button'].description = \
+            TEMPORARY_ROI_BUTTON_DESCRIPTION
+        self.config_tab_dict[active_acquisition][active_config]['select_roi_button'].icon = TEMPORARY_ROI_ICON
+        self.config_tab_dict[active_acquisition][active_config]['select_roi_button'].disabled = True
+
         o_gui = Interface(list_of_files=list_sample,
-                          callback=self.returning_from_roi_selection)
+                          callback=self.returning_from_roi_selection,
+                          display_info_message=False)
         o_gui.show()
         QtGui.QGuiApplication.processEvents()
 
-        # self.config_tab_dict[active_acquisition][active_config]['roi'] = [1, 2, 3, 4]
-
     def returning_from_roi_selection(self, roi_selected):
-        print(roi_selected)
+        o_get = Get(parent=self)
+        [active_acquisition, active_config] = o_get.active_tabs()
+        self.config_tab_dict[active_acquisition][active_config]['roi_selected'] = roi_selected
+        self.config_tab_dict[active_acquisition][active_config]['select_roi_button'].description = \
+            ROI_BUTTON_DESCRIPTION
+        self.config_tab_dict[active_acquisition][active_config]['select_roi_button'].icon = ROI_ICON
+        self.config_tab_dict[active_acquisition][active_config]['select_roi_button'].disabled = False
 
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,
@@ -846,13 +860,26 @@ class NormalizationWithSimplifySelection:
                 force_combine = _current_config['force_combine']
                 how_to_combine = _current_config['how_to_combine']
 
+                roi = _current_config.get('roi_selected', None)
+                if roi:
+                    list_roi = []
+                    for _key in roi.keys():
+                        _roi_item = roi[_key]
+                        _roi = ROI(x0=_roi_item['x0'],
+                                   y0=_roi_item['y0'],
+                                   x1=_roi_item['x1'],
+                                   y1=_roi_item['y1'])
+                        list_roi.append(_roi)
+                else:
+                    list_roi = None
+
                 if not force_combine:
-                    o_load.normalization()
+                    o_load.normalization(roi=list_roi)
                 else:
                     if how_to_combine == 'mean':
-                        o_load.normalization(force_mean_ob=True)
+                        o_load.normalization(force_mean_ob=True, roi=list_roi)
                     else:
-                        o_load.normalization(force_median_ob=True)
+                        o_load.normalization(force_median_ob=True, roi=list_roi)
 
                 o_load.export(folder=full_output_normalization_folder_name, file_type='tif')
                 del o_load

@@ -30,10 +30,16 @@ class Interface(QMainWindow):
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
-    def __init__(self, parent=None, o_norm=None, list_of_files=None, percentage_of_data_to_use=None, callback=None):
+    def __init__(self, parent=None,
+                 o_norm=None,
+                 list_of_files=None,
+                 percentage_of_data_to_use=None,
+                 callback=None,
+                 display_info_message=True):
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
-            (maybe hidden behind this browser!)</span>'))
+        if display_info_message:
+            display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
+                (maybe hidden behind this browser!)</span>'))
 
         if o_norm:
             self.o_norm = o_norm
@@ -457,10 +463,10 @@ class Interface(QMainWindow):
         self.format_roi()
         self.close()
         if self.callback:
-            self.callback(roi=self.roi_selected)
+            self.callback(self.roi_selected)
 
     def cancel_clicked(self):
         self.close()
 
     def closeEvent(self, eventhere=None):
-        print("Leaving Parameters Selection UI")
+        pass
