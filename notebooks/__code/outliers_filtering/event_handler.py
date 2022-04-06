@@ -53,7 +53,7 @@ class EventHandler:
         o_norm.load(file=file,
                     auto_gamma_filter=False,
                     manual_gamma_filter=False)
-        _raw_data = np.squeeze(o_norm.data['sample']['data'])
+        _raw_data = np.squeeze(o_norm.data['sample']['data'][0])
         return _raw_data
 
     def load_data_object(self, file_name=None):
