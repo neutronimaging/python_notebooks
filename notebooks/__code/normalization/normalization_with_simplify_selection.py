@@ -810,7 +810,7 @@ class NormalizationWithSimplifySelection:
 
     def normalization(self, output_folder):
         display(HTML('<span style="font-size: 20px; color:blue">Make sure you do not close the notebook until'
-                     'the busy signal (dark circle top right) is gone!</span>'))
+                     ' the busy signal (dark circle top right) is gone!</span>'))
 
         self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
 
