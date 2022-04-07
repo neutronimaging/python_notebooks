@@ -12,6 +12,8 @@
 #     name: python3
 # ---
 
+# # Table of contents 
+
 # # B
 
 # * [bin images](bin_images.ipynb) 
@@ -126,3 +128,12 @@
 
 # * [water intake profile_calculator](water_intake_profile_calculator.ipynb)
 # * [wave front dynamics](wave_front_dynamics.ipynb)
+
+# # Super User 
+
+from __code.super_user import SuperUser
+a = SuperUser()
+
+
+
+
