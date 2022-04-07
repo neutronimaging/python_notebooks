@@ -11,6 +11,8 @@ from NeuNorm.normalization import Normalization
 from __code import file_handler
 from __code.ipywe import fileselector
 from __code._utilities.string import get_beginning_common_part_of_string_from_list
+from __code._utilities.file import make_or_increment_folder_name
+
 
 FILE_PREFIX = "image"
 
@@ -265,7 +267,7 @@ class CombineImagesNByN(object):
                 base_file_name=self.base_working_dir,
                 bin_value=self.bin_value,
                 algo_name=algo_name)
-        file_handler.make_or_reset_folder(folder_name=output_folder_name)
+        output_folder_name = make_or_increment_folder_name(folder_name=output_folder_name)
 
         output_timespectra_file_name = os.path.join(output_folder_name,
                                                     CombineImagesNByN.__create_timestamp_file_name())
