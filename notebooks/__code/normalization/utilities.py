@@ -2,8 +2,8 @@ import os
 import numpy as np
 import collections
 
-from __code import file_handler
 from __code.normalization.metadata_handler import MetadataName
+from __code._utilities.file import make_or_increment_folder_name
 
 METADATA_ERROR_ALLOWED = 1
 
@@ -13,7 +13,7 @@ def make_full_output_normalization_folder_name(output_folder='', first_sample_fi
     basename_sample_folder = os.path.basename(os.path.dirname(first_sample_file_name))
     basename_sample_folder += "_{}_{}".format(name_acquisition, name_config)
     full_basename_sample_folder = os.path.abspath(os.path.join(output_folder, basename_sample_folder))
-    file_handler.make_or_reset_folder(full_basename_sample_folder)
+    full_basename_sample_folder = make_or_increment_folder_name(full_basename_sample_folder)
     return full_basename_sample_folder
 
 

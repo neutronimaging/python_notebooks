@@ -14,6 +14,7 @@ from __code.normalization.get import Get
 from __code.normalization.metadata_handler import MetadataHandler, MetadataName, METADATA_KEYS
 from __code.normalization import utilities
 from __code.roi_selection_ui import Interface
+from __code._utilities.file import make_or_increment_folder_name
 
 from . import ROI_ICON, ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_ICON
 
