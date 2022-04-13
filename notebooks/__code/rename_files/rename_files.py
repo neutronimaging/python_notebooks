@@ -7,21 +7,20 @@ from __code.ipywe import fileselector
 
 from __code.file_handler import ListMostDominantExtension
 from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
-from __code._utilities.file import get_list_of_files, get_list_file_extensions
+from __code._utilities.file import get_list_of_files, get_list_file_extensions, get_file_extension
 
 
-class FormatFileNameIndex(object):
+class FormatFileNameIndex:
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
 
     def select_input_folder(self):
-        self.input_folder_ui = fileselector.FileSelectorPanel(instruction='Select Input Folder',
-                                                              type='directory',
+        self.input_files_ui = fileselector.FileSelectorPanel(instruction='Select List of Files',
                                                               start_dir=self.working_dir,
                                                               next=self.next,
-                                                              multiple=False)
-        self.input_folder_ui.show()
+                                                              multiple=True)
+        self.input_files_ui.show()
 
     # def calculate_most_dominant_files(self):
     #     self.o_list_dominant = ListMostDominantExtension(working_dir=self.input_folder)
@@ -32,25 +31,35 @@ class FormatFileNameIndex(object):
     #     self.list_files = _result.list_files
     #     self.ext = _result.ext
 
-    def get_list_files(self):
-        self.list_files = get_list_of_files(folder=self.input_folder,
-                                            extension="*")
-        self.ext = get_list_file_extensions(self.list_files)
+    # def get_list_files(self):
+    #     self.list_files = get_list_of_files(folder=self.input_folder,
+    #                                         extension="*")
+    #     self.ext = get_list_file_extensions(self.list_files)
+    #
+    #     if len(self.ext) > 1:
+    #         str_ext = f"[{','.join(self.ext)}]"
+    #     else:
+    #         str_ext = f"{self.ext}"
+    #     self.str_ext = str_ext
 
-        if len(self.ext) > 1:
-            str_ext = f"[{','.join(self.ext)}]"
-        else:
-            str_ext = f"{self.ext}"
-        self.str_ext = str_ext
+    # def next(self, input_folder):
+    #     self.input_folder = input_folder
+    #     #self.calculate_most_dominant_files()
+    #     #self.get_most_dominant_files()
+    #     self.get_list_files()
+    #
+    #     self.o_schema = NamingSchemaDefinition(o_format=self)
+    #     self.o_schema.show()
 
-    def next(self, input_folder):
-        self.input_folder = input_folder
-        #self.calculate_most_dominant_files()
-        #self.get_most_dominant_files()
-        self.get_list_files()
+    def next(self, list_of_files):
 
-        self.o_schema = NamingSchemaDefinition(o_format=self)
-        self.o_schema.show()
+        if list_of_files:
+            self.list_files = list_of_files
+            self.ext = get_file_extension(list_of_files[0])
+            self.str_ext = "." + self.ext
+            self.input_folder = os.path.dirname(list_of_files[0])
+            self.o_schema = NamingSchemaDefinition(o_format=self)
+            self.o_schema.show()
 
 
 class NamingSchemaDefinition(object):
