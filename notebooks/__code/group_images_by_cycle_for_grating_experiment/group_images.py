@@ -1,11 +1,11 @@
 import os
 from ipywidgets import widgets
-from IPython.core.display import display
+from IPython.core.display import display, HTML
 import numpy as np
 import glob
 import json
 from collections import OrderedDict
-
+import shutil
 
 from __code.ipywe import fileselector
 from __code import file_handler
@@ -494,40 +494,56 @@ class GroupImages:
         output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
                                                               start_dir=os.path.dirname(self.data_path),
                                                               type='directory',
-                                                              next=self.create_folder_for_each_cycle,
+                                                              next=self.move_and_rename_files,
                                                               multiple=False)
         output_folder_widget.show()
 
-    def create_folder_for_each_cycle(self, output_folder):
+    def move_and_rename_files(self, output_folder):
         if not output_folder:
             return
 
-        output_folder_basename = os.path.basename(self.folder_selected) + "_sorted_by_cycle"
+        output_folder_basename = os.path.basename(self.folder_selected) + "_sorted_for_grating_reconstruction"
         output_folder = os.path.join(output_folder, output_folder_basename)
         output_folder = os.path.abspath(output_folder)
+        make_or_reset_folder(output_folder)
 
-        dictionary_of_groups_sorted = self.dictionary_of_groups_sorted
-        dictionary_of_groups_new_names = self.dictionary_of_groups_new_names
-        nbr_groups = len(dictionary_of_groups_sorted.keys())
-        hbox = widgets.HBox([widgets.IntProgress(value=0,
-                                                 min=0,
-                                                 max=nbr_groups),
-                             widgets.Label("0/{}".format(nbr_groups))])
-        progress_ui = hbox.children[0]
-        label_ui = hbox.children[1]
-        display(hbox)
+        dict_old_files = self.dictionary_of_groups_unsorted
+        dict_new_files = self.dictionary_of_groups_new_names
 
-        for _group_index in dictionary_of_groups_sorted.keys():
-            full_folder_name = os.path.join(output_folder, 'group#{:02d}'.format(_group_index))
-            make_or_reset_folder(full_folder_name)
-            copy_and_rename_files_to_folder(list_files=dictionary_of_groups_sorted[_group_index],
-                                            new_list_files_names=dictionary_of_groups_new_names[_group_index],
-                                            output_folder=full_folder_name)
-            progress_ui.value = _group_index + 1
-            label_ui.value = "{}/{}".format(_group_index+1, nbr_groups)
+        list_keys = list(dict_old_files.keys())
+        size_outer_loop = len(list_keys)
+        size_inner_loop = len(dict_old_files[list_keys[0]])
 
-        hbox.close()
-        message = "{} folders have been created".format(nbr_groups)
-        display(format_html_message(pre_message=message,
-                                    spacer=" in ",
-                                    message=output_folder))
+        hbox1 = widgets.HBox([widgets.HTML("Groups",
+                                           layout=widgets.Layout(width="100px")),
+                              widgets.IntProgress(min=0,
+                                                  max=size_outer_loop-1,
+                                                  value=0,
+                                                  layout=widgets.Layout(width="300px"))])
+        outer_progress_ui = hbox1.children[1]
+        hbox2 = widgets.HBox([widgets.HTML("Files",
+                                           layout=widgets.Layout(width="100px")),
+                              widgets.IntProgress(min=0,
+                                                  max=size_inner_loop-1,
+                                                  value=0,
+                                                  layout=widgets.Layout(width="300px"))])
+        inner_progress_ui = hbox2.children[1]
+
+        vbox = widgets.VBox([hbox1, hbox2])
+        display (vbox)
+
+        for _outer_index, _key in enumerate(dict_old_files.keys()):
+            _old_name_list = dict_old_files[_key]
+            _new_name_list = dict_new_files[_key]
+            inner_progress_ui.value = 0
+            outer_progress_ui.value = _outer_index
+            for _inner_index, (_old, _new) in enumerate(zip(_old_name_list, _new_name_list)):
+                new_full_file_name = os.path.join(output_folder, _new)
+                old_full_file_name = _old
+                shutil.copy(old_full_file_name, new_full_file_name)
+                inner_progress_ui.value = _inner_index
+
+        vbox.close()
+
+        message = f"Folder {output_folder} have been created!"
+        display(HTML('<span style="font-size: 15px">' + message + '</span>'))
