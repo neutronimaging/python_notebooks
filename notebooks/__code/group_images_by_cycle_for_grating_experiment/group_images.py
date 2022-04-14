@@ -121,7 +121,9 @@ class GroupImages:
                                                 button_style='',
                                                 layout=widgets.Layout(width="10px")
                                                 )])
-        search_1.children[1].observe(self.search_metadata_1_edited, names='value')
+        self.search1_field = search_1.children[1]
+        self.search1_field.observe(self.search_metadata_1_edited, names='value')
+        search_1.children[2].on_click(self.reset_search_metadata1)
 
         result1 = widgets.HBox([widgets.Label("Metadata Selected:",
                                               layout=widgets.Layout(width="150px")),
@@ -148,7 +150,9 @@ class GroupImages:
                                                 button_style='',
                                                 layout=widgets.Layout(width="10px"))
                                                 ])
-        search_2.children[1].observe(self.search_metadata_2_edited, names='value')
+        self.search2_field = search_2.children[1]
+        self.search2_field.observe(self.search_metadata_2_edited, names='value')
+        search_2.children[2].on_click(self.reset_search_metadata2)
 
         result2 = widgets.HBox([widgets.Label("Metadata Selected:",
                                               layout=widgets.Layout(width="150px")),
@@ -182,6 +186,12 @@ class GroupImages:
         self.list_metadata1.options = selection_of_search_string
         self.list_metadata1.value = selection_of_search_string[0]
 
+    def reset_search_metadata1(self, value):
+        self.search1_field.value = ""
+        self.search_metadata_1_edited({'new': ""})
+        metadata1_value, _ = self.get_default_metadata_selected()
+        self.list_metadata1.value = metadata1_value
+
     def metadata2_selection_changed(self, name):
         new_value = name['new']
         self.metadata2_selected_label.value = new_value
@@ -194,6 +204,12 @@ class GroupImages:
                 selection_of_search_string.append(_metadata)
         self.list_metadata2.options = selection_of_search_string
         self.list_metadata2.value = selection_of_search_string[0]
+
+    def reset_search_metadata2(self, value):
+        self.search2_field.value = ""
+        self.search_metadata_2_edited({'new': ""})
+        _, metadata2_value = self.get_default_metadata_selected()
+        self.list_metadata2.value = metadata2_value
 
     def record_file_extension(self, filename=''):
         self.file_extension = file_handler.get_file_extension(filename)
