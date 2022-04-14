@@ -84,12 +84,30 @@ class GroupImages:
         # self.group_images()
         # self.display_groups()
 
+    def get_default_metadata_selected(self):
+        config = self.config
+        list_metadata = self.list_metadata
+
+        value1, value2 = "", ""
+
+        metadata1 = config['metadata1']
+        for _entry in list_metadata:
+            if f"{metadata1['key']} -> {metadata1['name']}:" in _entry:
+                value1 = _entry
+
+        metadata2 = config['metadata2']
+        for _entry in list_metadata:
+            if f"{metadata2['key']} -> {metadata2['name']}:" in _entry:
+                value2 = _entry
+
+        return value1, value2
+
     def select_metadata_to_use_for_sorting(self):
         # retrieving list of metadata
         list_metadata = MetadataHandler.get_list_of_metadata(self.list_images[0])
         self.list_metadata = list_metadata
 
-        
+        metadata1_value, metadata2_value = self.get_default_metadata_selected()
 
         select_width = "550px"
         select_height = "300px"
@@ -103,19 +121,24 @@ class GroupImages:
                                                 button_style='',
                                                 layout=widgets.Layout(width="10px")
                                                 )])
+        search_1.children[1].observe(self.search_metadata_1_edited, names='value')
 
         result1 = widgets.HBox([widgets.Label("Metadata Selected:",
                                               layout=widgets.Layout(width="150px")),
-                                widgets.Label("",
+                                widgets.Label(metadata1_value,
                                               layout=widgets.Layout(width="100%"))])
+        self.metadata1_selected_label = result1.children[1]
 
         metadata1 = widgets.VBox([widgets.Label("Metadata 1"),
                                   search_1,
                                   widgets.Select(options=list_metadata,
+                                                 value=metadata1_value,
                                                  layout=widgets.Layout(width=select_width,
                                                                        height=select_height)),
                                   result1])
-        search_1.children[1].observe(self.search_metadata_1_edited, names='value')
+        self.list_metadata1 = metadata1.children[2]
+        self.list_metadata1.observe(self.metadata1_selection_changed, names='value')
+
 
         # metadata 2
         search_2 = widgets.HBox([widgets.Label("Search:"),
@@ -129,24 +152,48 @@ class GroupImages:
 
         result2 = widgets.HBox([widgets.Label("Metadata Selected:",
                                               layout=widgets.Layout(width="150px")),
-                                widgets.Label("",
+                                widgets.Label(metadata2_value,
                                               layout=widgets.Layout(width="100%"))])
+        self.metadata2_selected_label = result2.children[1]
 
         metadata2 = widgets.VBox([widgets.Label("Metadata 2"),
                                   search_2,
                                   widgets.Select(options=list_metadata,
+                                                 value=metadata2_value,
                                                  layout=widgets.Layout(width=select_width,
                                                                        height=select_height)),
                                   result2])
+        self.list_metadata2 = metadata2.children[2]
+        self.list_metadata2.observe(self.metadata2_selection_changed, names='value')
 
         metadata = widgets.HBox([metadata1, widgets.Label(" "), metadata2])
         display(metadata)
 
+    def metadata1_selection_changed(self, name):
+        new_value = name['new']
+        self.metadata1_selected_label.value = new_value
+
     def search_metadata_1_edited(self, name):
         search_string = name['new']
+        selection_of_search_string = []
+        for _metadata in self.list_metadata:
+            if search_string in _metadata:
+                selection_of_search_string.append(_metadata)
+        self.list_metadata1.options = selection_of_search_string
+        self.list_metadata1.value = selection_of_search_string[0]
+
+    def metadata2_selection_changed(self, name):
+        new_value = name['new']
+        self.metadata2_selected_label.value = new_value
 
     def search_metadata_2_edited(self, name):
         search_string = name['new']
+        selection_of_search_string = []
+        for _metadata in self.list_metadata:
+            if search_string in _metadata:
+                selection_of_search_string.append(_metadata)
+        self.list_metadata2.options = selection_of_search_string
+        self.list_metadata2.value = selection_of_search_string[0]
 
     def record_file_extension(self, filename=''):
         self.file_extension = file_handler.get_file_extension(filename)
