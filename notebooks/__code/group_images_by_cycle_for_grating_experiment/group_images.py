@@ -125,13 +125,13 @@ class GroupImages:
         self.search1_field.observe(self.search_metadata_1_edited, names='value')
         search_1.children[2].on_click(self.reset_search_metadata1)
 
-        result1 = widgets.HBox([widgets.Label("Metadata Selected:",
+        result1 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
                                               layout=widgets.Layout(width="150px")),
                                 widgets.Label(metadata1_value,
                                               layout=widgets.Layout(width="100%"))])
         self.metadata1_selected_label = result1.children[1]
 
-        metadata1 = widgets.VBox([widgets.Label("Metadata 1"),
+        metadata1 = widgets.VBox([widgets.HTML("<b>Inner Loop Metadata</b>"),
                                   search_1,
                                   widgets.Select(options=list_metadata,
                                                  value=metadata1_value,
@@ -141,8 +141,7 @@ class GroupImages:
         self.list_metadata1 = metadata1.children[2]
         self.list_metadata1.observe(self.metadata1_selection_changed, names='value')
 
-
-        # metadata 2
+        # metadata_2
         search_2 = widgets.HBox([widgets.Label("Search:"),
                                  widgets.Text("",
                                               layout=widgets.Layout(width="150px")),
@@ -154,13 +153,13 @@ class GroupImages:
         self.search2_field.observe(self.search_metadata_2_edited, names='value')
         search_2.children[2].on_click(self.reset_search_metadata2)
 
-        result2 = widgets.HBox([widgets.Label("Metadata Selected:",
+        result2 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
                                               layout=widgets.Layout(width="150px")),
                                 widgets.Label(metadata2_value,
                                               layout=widgets.Layout(width="100%"))])
         self.metadata2_selected_label = result2.children[1]
 
-        metadata2 = widgets.VBox([widgets.Label("Metadata 2"),
+        metadata2 = widgets.VBox([widgets.HTML("<b>Outer Loop Metadata</b>"),
                                   search_2,
                                   widgets.Select(options=list_metadata,
                                                  value=metadata2_value,
@@ -173,9 +172,12 @@ class GroupImages:
         metadata = widgets.HBox([metadata1, widgets.Label(" "), metadata2])
         display(metadata)
 
+        self.save_key_metadata()
+
     def metadata1_selection_changed(self, name):
         new_value = name['new']
         self.metadata1_selected_label.value = new_value
+        self.save_key_metadata()
 
     def search_metadata_1_edited(self, name):
         search_string = name['new']
@@ -185,6 +187,7 @@ class GroupImages:
                 selection_of_search_string.append(_metadata)
         self.list_metadata1.options = selection_of_search_string
         self.list_metadata1.value = selection_of_search_string[0]
+        self.save_key_metadata()
 
     def reset_search_metadata1(self, value):
         self.search1_field.value = ""
@@ -195,6 +198,7 @@ class GroupImages:
     def metadata2_selection_changed(self, name):
         new_value = name['new']
         self.metadata2_selected_label.value = new_value
+        self.save_key_metadata()
 
     def search_metadata_2_edited(self, name):
         search_string = name['new']
@@ -204,15 +208,40 @@ class GroupImages:
                 selection_of_search_string.append(_metadata)
         self.list_metadata2.options = selection_of_search_string
         self.list_metadata2.value = selection_of_search_string[0]
+        self.save_key_metadata()
 
     def reset_search_metadata2(self, value):
         self.search2_field.value = ""
         self.search_metadata_2_edited({'new': ""})
         _, metadata2_value = self.get_default_metadata_selected()
         self.list_metadata2.value = metadata2_value
+        self.save_key_metadata()
 
     def record_file_extension(self, filename=''):
         self.file_extension = file_handler.get_file_extension(filename)
+
+    def save_key_metadata(self):
+        key_name_1, key_name_2 = self.get_metadata_name_to_select()
+        if (key_name_1 is None) or (key_name_2 is None):
+            return
+
+        key1, name1 = key_name_1.split(' -> ')
+        key2, name2 = key_name_2.split(' -> ')
+
+        self.metadata_name_to_select = [name1, name2]
+        self.metadata_key_to_select = [int(key1), int(key2)]
+
+    def get_metadata_name_to_select(self):
+        metadata1 = self.metadata1_selected_label.value
+        metadata2 = self.metadata2_selected_label.value
+
+        try:
+            key_name_1, _ = metadata1.split(':')
+            key_name_2, _ = metadata2.split(':')
+        except ValueError:
+            return None, None
+
+        return key_name_1, key_name_2
 
     def get_list_of_images(self):
         list_of_images = glob.glob(self.folder_selected + "/*.tif*")
@@ -243,17 +272,22 @@ class GroupImages:
         return dict_new_names
 
     def display_groups(self):
+        self.group_images()
+
         nbr_groups = len(self.dictionary_of_groups_unsorted)
 
+        # column 1
         group_label = ["Group # {}".format(_index) for _index in np.arange(nbr_groups)]
         self.list_group_label = group_label
-        vbox_left = widgets.VBox([widgets.Label("Select Group:"),
+        vbox_left = widgets.VBox([widgets.HTML("<b>Select Group</b>:"),
                                   widgets.Select(options=group_label,
                                                  layout=widgets.Layout(width="100px",
                                                                        height="300px"))])
         select_group_ui = vbox_left.children[1]
         select_group_ui.observe(self.group_index_changed, 'value')
-        vbox_center = widgets.VBox([widgets.Label("Original file names:"),
+
+        # column 2
+        vbox_center = widgets.VBox([widgets.HTML("<b>Original file names</b>:"),
                                     widgets.Select(options=self.get_list_of_files_basename_only(0),
                                                    layout=widgets.Layout(width="450px",
                                                                          height="300px"))])
@@ -261,6 +295,16 @@ class GroupImages:
         list_of_files_ui.observe(self.list_of_files_changed, 'value')
         self.list_of_files_ui = list_of_files_ui
 
+        # column 3
+        vbox_3 = widgets.VBox([widgets.HTML("<b>New Name</b>"),
+                               widgets.Select(options=self.get_list_of_new_files_basename_only(0),
+                                              layout=widgets.Layout(width="450px",
+                                                                    height="300px"))])
+        list_of_new_files_ui = vbox_3.children[1]
+        list_of_new_files_ui.observe(self.list_of_new_files_changed, 'value')
+        self.list_of_new_files_ui = list_of_new_files_ui
+
+        # column 4
         vbox_right = widgets.VBox([widgets.Label("Metadata:"),
                                    widgets.Textarea(value="",
                                                     layout=widgets.Layout(width="200px",
@@ -268,7 +312,7 @@ class GroupImages:
         self.metadata_ui = vbox_right.children[1]
         self.list_of_files_changed(value={'new': self.get_list_of_files_basename_only(0)[0]})
 
-        hbox = widgets.HBox([vbox_left, vbox_center, vbox_right])
+        hbox = widgets.HBox([vbox_left, vbox_center, vbox_3, vbox_right])
         display(hbox)
 
         bottom_hbox = widgets.HBox([widgets.Label("Images are in:"),
@@ -282,11 +326,28 @@ class GroupImages:
         short_list_files = [os.path.basename(_file) for _file in list_files]
         return short_list_files
 
+    def get_list_of_new_files_basename_only(self, index):
+        list_files = self.dictionary_of_groups_new_names[index]
+        short_list_files = [os.path.basename(_file) for _file in list_files]
+        return short_list_files
+
     def group_index_changed(self, value):
         new_group_selected = value['new']
         _, new_group_index = new_group_selected.split(" # ")
         short_list_files = self.get_list_of_files_basename_only(np.int(new_group_index))
         self.list_of_files_ui.options = short_list_files
+        short_list_new_files = self.get_list_of_new_files_basename_only(np.int(new_group_index))
+        self.list_of_new_files_ui.options = short_list_new_files
+        self.list_of_new_files_ui.value = short_list_new_files[0]
+        self.list_of_files_ui.value = short_list_files[0]
+
+    def list_of_new_files_changed(self, value):
+        new_file_selected = value['new']
+        list_of_files_names = self.list_of_files_ui.options
+        list_of_new_files_names = self.list_of_new_files_ui.options
+        index = list_of_new_files_names.index(new_file_selected)
+        file_selected = list_of_files_names[index]
+        self.list_of_files_ui.value = file_selected
 
     def list_of_files_changed(self, value):
         dictionary_file_vs_metadata = self.dictionary_file_vs_metadata
@@ -297,76 +358,87 @@ class GroupImages:
             string_to_display += "{}: {}\n".format(_key, _value)
         self.metadata_ui.value = string_to_display
 
-    def how_to_sort_files(self):
-        tab_titles = ['1st variable', '2nd variable']
+        list_new_names = list(self.list_of_new_files_ui.options)
+        list_of_names = list(self.list_of_files_ui.options)
+        index = list_of_names.index(file_selected)
+        self.list_of_new_files_ui.value = list_new_names[index]
 
-        vbox1 = widgets.VBox([widgets.Label("Metadata name:",
-                                            layout=widgets.Layout(width="150px")),
-                              widgets.Select(options=self.metadata_name_to_select,
-                                             value=self.metadata_name_to_select[0],
-                                             layout=widgets.Layout(width="400px",
-                                                                   height="50px")),
-                              widgets.RadioButtons(options=['Ascending', 'Descending'],
-                                                   value='Ascending')])
-        name_of_first_metadata_ui = vbox1.children[1]
-        name_of_first_metadata_ui.observe(self.name_of_first_metadata_changed, 'value')
-        self.name_of_first_metadata_ui = name_of_first_metadata_ui
-        sorting_type_var1_ui = vbox1.children[2]
-        sorting_type_var1_ui.observe(self.sorting_algorithm_variable1_changed, 'value')
-        is_ascending = True if sorting_type_var1_ui.value == 'Ascending' else False
-        self.how_to_sort_within_cycle['1st_variable'] = {'name': name_of_first_metadata_ui.value,
-                                                         'is_ascending': is_ascending}
-
-        vbox2 = widgets.VBox([widgets.Label("Metadata name:",
-                                            layout=widgets.Layout(width="150px")),
-                              widgets.Select(options=self.metadata_name_to_select,
-                                             value=self.metadata_name_to_select[1],
-                                             layout=widgets.Layout(width="400px",
-                                                                   height="50px")),
-                              widgets.RadioButtons(options=['Ascending', 'Descending'],
-                                                   value='Ascending')])
-        name_of_second_metadata_ui = vbox2.children[1]
-        name_of_second_metadata_ui.observe(self.name_of_second_metadata_changed, 'value')
-        self.name_of_second_metadata_ui = name_of_second_metadata_ui
-        sorting_type_var2_ui = vbox2.children[2]
-        sorting_type_var2_ui.observe(self.sorting_algorithm_variable2_changed, 'value')
-        is_ascending = True if sorting_type_var2_ui.value == 'Ascending' else False
-        self.how_to_sort_within_cycle['2nd_variable'] = {'name': name_of_second_metadata_ui.value,
-                                                         'is_ascending': is_ascending}
-
-        self.how_to_sort_within_cycle['2nd_variable']['name'] = name_of_second_metadata_ui.value
-
-        tab = widgets.Tab([vbox1, vbox2])
-        [tab.set_title(i, title) for i, title in enumerate(tab_titles)]
-        display(tab)
-
-        # second part
-        hori1 = widgets.HBox([widgets.Label("Select Group",
-                                           layout=widgets.Layout(width="100px")),
-                              widgets.Dropdown(options=self.list_group_label,
-                                               layout=widgets.Layout(width="150px"))])
-        self.select_group_ui = hori1.children[1]
-        self.select_group_ui.observe(self.selection_of_group_changed, 'value')
-
-        vbox3 = widgets.VBox([widgets.Label("Old name",
-                                            layout=widgets.Layout(width="200px")),
-                              widgets.Select(options="",
-                                             layout=widgets.Layout(width="400px",
-                                                                   height="300px"))])
-
-        vbox4 = widgets.VBox([widgets.Label("New name",
-                                            layout=widgets.Layout(width="200px")),
-                              widgets.Select(options="",
-                                             layout=widgets.Layout(width="400px",
-                                                                   height="300px"))])
-
-        hori2 = widgets.HBox([vbox3, vbox4])
-        self.old_name_ui = vbox3.children[1]
-        self.new_name_ui = vbox4.children[1]
-        verti2 = widgets.VBox([hori1, hori2])
-        display(verti2)
-        self.update_old_name_order()
-        self.selection_of_group_changed()
+    # def how_to_sort_files(self):
+    #
+    #     # self.group_images()
+    #     # self.display_groups()
+    #
+    #     tab_titles = ['1st variable', '2nd variable']
+    #
+    #     metadata_name_to_select = self.get_metadata_name_to_select()
+    #
+    #     vbox1 = widgets.VBox([widgets.Label("Metadata name:",
+    #                                         layout=widgets.Layout(width="150px")),
+    #                           widgets.Select(options=metadata_name_to_select,
+    #                                          value=metadata_name_to_select[0],
+    #                                          layout=widgets.Layout(width="400px",
+    #                                                                height="50px")),
+    #                           widgets.RadioButtons(options=['Ascending', 'Descending'],
+    #                                                value='Ascending')])
+    #     name_of_first_metadata_ui = vbox1.children[1]
+    #     name_of_first_metadata_ui.observe(self.name_of_first_metadata_changed, 'value')
+    #     self.name_of_first_metadata_ui = name_of_first_metadata_ui
+    #     sorting_type_var1_ui = vbox1.children[2]
+    #     sorting_type_var1_ui.observe(self.sorting_algorithm_variable1_changed, 'value')
+    #     is_ascending = True if sorting_type_var1_ui.value == 'Ascending' else False
+    #     self.how_to_sort_within_cycle['1st_variable'] = {'name': name_of_first_metadata_ui.value,
+    #                                                      'is_ascending': is_ascending}
+    #
+    #     vbox2 = widgets.VBox([widgets.Label("Metadata name:",
+    #                                         layout=widgets.Layout(width="150px")),
+    #                           widgets.Select(options=metadata_name_to_select,
+    #                                          value=metadata_name_to_select[1],
+    #                                          layout=widgets.Layout(width="400px",
+    #                                                                height="50px")),
+    #                           widgets.RadioButtons(options=['Ascending', 'Descending'],
+    #                                                value='Ascending')])
+    #     name_of_second_metadata_ui = vbox2.children[1]
+    #     name_of_second_metadata_ui.observe(self.name_of_second_metadata_changed, 'value')
+    #     self.name_of_second_metadata_ui = name_of_second_metadata_ui
+    #     sorting_type_var2_ui = vbox2.children[2]
+    #     sorting_type_var2_ui.observe(self.sorting_algorithm_variable2_changed, 'value')
+    #     is_ascending = True if sorting_type_var2_ui.value == 'Ascending' else False
+    #     self.how_to_sort_within_cycle['2nd_variable'] = {'name': name_of_second_metadata_ui.value,
+    #                                                      'is_ascending': is_ascending}
+    #
+    #     self.how_to_sort_within_cycle['2nd_variable']['name'] = name_of_second_metadata_ui.value
+    #
+    #     tab = widgets.Tab([vbox1, vbox2])
+    #     [tab.set_title(i, title) for i, title in enumerate(tab_titles)]
+    #     display(tab)
+    #
+    #     # second part
+    #     hori1 = widgets.HBox([widgets.Label("Select Group",
+    #                                        layout=widgets.Layout(width="100px")),
+    #                           widgets.Dropdown(options=self.list_group_label,
+    #                                            layout=widgets.Layout(width="150px"))])
+    #     self.select_group_ui = hori1.children[1]
+    #     self.select_group_ui.observe(self.selection_of_group_changed, 'value')
+    #
+    #     vbox3 = widgets.VBox([widgets.Label("Old name",
+    #                                         layout=widgets.Layout(width="200px")),
+    #                           widgets.Select(options="",
+    #                                          layout=widgets.Layout(width="400px",
+    #                                                                height="300px"))])
+    #
+    #     vbox4 = widgets.VBox([widgets.Label("New name",
+    #                                         layout=widgets.Layout(width="200px")),
+    #                           widgets.Select(options="",
+    #                                          layout=widgets.Layout(width="400px",
+    #                                                                height="300px"))])
+    #
+    #     hori2 = widgets.HBox([vbox3, vbox4])
+    #     self.old_name_ui = vbox3.children[1]
+    #     self.new_name_ui = vbox4.children[1]
+    #     verti2 = widgets.VBox([hori1, hori2])
+    #     display(verti2)
+    #     self.update_old_name_order()
+    #     self.selection_of_group_changed()
 
     def update_old_name_order(self):
         how_to_sort_within_cycle = self.how_to_sort_within_cycle

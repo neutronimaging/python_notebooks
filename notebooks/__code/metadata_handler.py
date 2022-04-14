@@ -2,7 +2,8 @@ from PIL import Image
 import datetime
 import os
 from collections import OrderedDict
-
+from ipywidgets import widgets
+from IPython.core.display import display
 
 class MetadataHandler(object):
 
@@ -127,14 +128,25 @@ class MetadataHandler(object):
         return result
 
     @staticmethod
-    def retrieve_value_of_metadata_key(list_files=[], list_key=[]):
+    def retrieve_value_of_metadata_key(list_files=[], list_key=[], is_from_notebook=False):
         if list_files == []:
             return {}
 
+        if is_from_notebook:
+            progress_bar = widgets.IntProgress(min=0,
+                                               max=len(list_files)-1,
+                                               value=0)
+            display(progress_bar)
+
         _dict = OrderedDict()
-        for _file in list_files:
+        for _index, _file in enumerate(list_files):
             _meta = MetadataHandler.get_value_of_metadata_key(filename=_file,
                                                               list_key=list_key)
             _dict[_file] = _meta
+            if is_from_notebook:
+                progress_bar.value = _index
+
+        if is_from_notebook:
+            progress_bar.close()
 
         return _dict
