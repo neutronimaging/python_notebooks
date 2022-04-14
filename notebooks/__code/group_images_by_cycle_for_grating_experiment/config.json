@@ -1,10 +1,10 @@
 {
-    "vertical_motor_pv": {
-        "key": 65041,
-        "name": "MotLiftTable"
+    "metadata1": {
+        "key": 65039,
+        "name": "RotationActual"
     },
-    "horizontal_motor_pv": {
-        "key": 65045,
-        "name": "MotLongAxis"
+    "metadata2": {
+        "key": 65073,
+        "name": "MotG0X"
     }
 }

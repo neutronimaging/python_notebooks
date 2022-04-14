@@ -13,6 +13,7 @@ from __code._utilities.string import format_html_message
 from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
 from __code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import SortImagesWithinEachCycle
 from __code.file_handler import make_or_reset_folder, copy_and_rename_files_to_folder
+from __code._utilities.metadata_handler import MetadataHandler
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
@@ -48,11 +49,13 @@ class GroupImages:
         with open(CONFIG_FILE) as f:
             config = json.load(f)
 
-        self.metadata_key_to_select = []
-        self.metadata_name_to_select = []
-        for key in config.keys():
-            self.metadata_key_to_select.append(config[key]['key'])
-            self.metadata_name_to_select.append(config[key]['name'])
+        self.config = config
+
+        # self.metadata_key_to_select = []
+        # self.metadata_name_to_select = []
+        # for key in config.keys():
+        #     self.metadata_key_to_select.append(config[key]['key'])
+        #     self.metadata_name_to_select.append(config[key]['name'])
 
     def select_input_folder(self):
         self.files_list_widget = fileselector.FileSelectorPanel(instruction='select folder of images to sort',
@@ -66,8 +69,6 @@ class GroupImages:
         selected = os.path.abspath(selected)
         self.folder_selected = selected
         self.list_images = self.get_list_of_images()
-
-
 
         self.data_path = os.path.dirname(self.list_images[0])
         self.record_file_extension(filename=self.list_images[0])
@@ -84,42 +85,68 @@ class GroupImages:
         # self.display_groups()
 
     def select_metadata_to_use_for_sorting(self):
+        # retrieving list of metadata
+        list_metadata = MetadataHandler.get_list_of_metadata(self.list_images[0])
+        self.list_metadata = list_metadata
+
+        
+
+        select_width = "550px"
+        select_height = "300px"
+
         # metadata_1
         search_1 = widgets.HBox([widgets.Label("Search:",
                                                ),
                                  widgets.Text("",
                                               layout=widgets.Layout(width="150px")),
-                                 widgets.Button(description="",
-                                                icon="times",
-                                                layout=widgets.Layout(width="20px"))])
+                                 widgets.Button(description="X",
+                                                button_style='',
+                                                layout=widgets.Layout(width="10px")
+                                                )])
+
+        result1 = widgets.HBox([widgets.Label("Metadata Selected:",
+                                              layout=widgets.Layout(width="150px")),
+                                widgets.Label("",
+                                              layout=widgets.Layout(width="100%"))])
+
         metadata1 = widgets.VBox([widgets.Label("Metadata 1"),
                                   search_1,
-                                  widgets.Select(options=['a', 'b'],
-                                                 layout=widgets.Layout(width="200px"))])
+                                  widgets.Select(options=list_metadata,
+                                                 layout=widgets.Layout(width=select_width,
+                                                                       height=select_height)),
+                                  result1])
         search_1.children[1].observe(self.search_metadata_1_edited, names='value')
 
         # metadata 2
         search_2 = widgets.HBox([widgets.Label("Search:"),
                                  widgets.Text("",
                                               layout=widgets.Layout(width="150px")),
-                                 widgets.Button(description="",
-                                                icons='times',
-                                                layout=widgets.Layout(width="20px"))])
+                                 widgets.Button(description="X",
+                                                button_style='',
+                                                layout=widgets.Layout(width="10px"))
+                                                ])
         search_2.children[1].observe(self.search_metadata_2_edited, names='value')
+
+        result2 = widgets.HBox([widgets.Label("Metadata Selected:",
+                                              layout=widgets.Layout(width="150px")),
+                                widgets.Label("",
+                                              layout=widgets.Layout(width="100%"))])
 
         metadata2 = widgets.VBox([widgets.Label("Metadata 2"),
                                   search_2,
-                                  widgets.Select(options=['a', 'b'],
-                                                 layout=widgets.Layout(width="200px"))])
+                                  widgets.Select(options=list_metadata,
+                                                 layout=widgets.Layout(width=select_width,
+                                                                       height=select_height)),
+                                  result2])
 
-        metadata = widgets.HBox([metadata1, widgets.Label("  "), metadata2])
+        metadata = widgets.HBox([metadata1, widgets.Label(" "), metadata2])
         display(metadata)
 
     def search_metadata_1_edited(self, name):
-        print(f"metadata1, {name}")
+        search_string = name['new']
 
     def search_metadata_2_edited(self, name):
-        print(f"metadata2, {name}")
+        search_string = name['new']
 
     def record_file_extension(self, filename=''):
         self.file_extension = file_handler.get_file_extension(filename)
