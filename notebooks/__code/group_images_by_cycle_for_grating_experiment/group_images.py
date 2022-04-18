@@ -232,16 +232,16 @@ class GroupImages:
         self.metadata_key_to_select = [int(key_outer), int(key_inner)]
 
     def get_metadata_name_to_select(self):
-        metadata1 = self.metadata_inner_selected_label.value
-        metadata2 = self.metadata_outer_selected_label.value
+        metadata_inner = self.metadata_inner_selected_label.value
+        metadata_outer = self.metadata_outer_selected_label.value
 
         try:
-            key_name_inner, _ = metadata1.split(':')
-            key_name_outer, _ = metadata2.split(':')
+            key_name_inner, _ = metadata_inner.split(':')
+            key_name_outer, _ = metadata_outer.split(':')
         except ValueError:
             return None, None
 
-        return key_name_outer, key_name_inner
+        return key_name_inner, key_name_outer
 
     def group_images(self):
         o_group = GroupImagesByCycle(list_of_files=self.list_images,
@@ -249,10 +249,11 @@ class GroupImages:
                                      tolerance_value=METADATA_ERROR)
         o_group.run()
 
-        self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
-        dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_unsorted)
-        self.dictionary_of_groups_new_names = dict_new_names
-        self.dictionary_file_vs_metadata = o_group.master_dictionary
+        self.dictionary_of_groups_sorted = o_group.master_grouped_dictionary
+        # self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
+        # dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_unsorted)
+        # self.dictionary_of_groups_new_names = dict_new_names
+        # self.dictionary_file_vs_metadata = o_group.master_dictionary
 
     @staticmethod
     def make_dictionary_of_groups_new_names(dictionary_of_group_unsorted):
@@ -267,6 +268,10 @@ class GroupImages:
 
     def display_groups(self):
         self.group_images()
+
+
+
+        return
 
         nbr_groups = len(self.dictionary_of_groups_unsorted)
 
