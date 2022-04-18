@@ -27,6 +27,7 @@ class GroupImagesByCycle:
 
     def create_master_dictionary(self):
         list_key_value = self.list_of_metadata_key_value_number
+        print(f"list_key_value: {list_key_value}")
         master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(list_files=self.list_of_files,
                                                                            list_key=list_key_value,
                                                                            is_from_notebook=True)

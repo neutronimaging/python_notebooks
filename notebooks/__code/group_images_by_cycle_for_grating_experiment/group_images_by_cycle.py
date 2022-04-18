@@ -16,7 +16,7 @@ class GroupImagesByCycle:
         self.list_of_metadata_key_value_number = list_of_metadata_key
         self.tolerance_value = tolerance_value
 
-        self.master_dictionary = None
+        self.master_dictionary = OrderedDict()
         self.list_of_metadata_key_real_name = None
         self.dictionary_of_groups = OrderedDict()
 
@@ -28,6 +28,7 @@ class GroupImagesByCycle:
         list_key_value = self.list_of_metadata_key_value_number
         master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(list_files=self.list_of_files,
                                                                            list_key=list_key_value)
+
         clean_master_dictionary = OrderedDict()
         list_metadata_key = []
         for _index, _file in enumerate(master_dictionary.keys()):
@@ -49,26 +50,31 @@ class GroupImagesByCycle:
         group_index = 0
         list_files_in_that_group = []
 
+        list_metadata_key = self.list_of_metadata_key_real_name
+
         full_list_of_metadata_list = list()
         for _file in master_dictionary.keys():
             _file_dictionary = master_dictionary[_file]
 
             # loop through the metadata of each file
             list_of_metadata_for_that_file = list()
-            for _key in _file_dictionary.keys():
+            # for _key in _file_dictionary.keys():
+            for _key in list_metadata_key:
                 _value = float(_file_dictionary[_key])
                 list_of_metadata_for_that_file.append(_value)
 
-            if not is_this_list_already_in_those_lists_within_tolerance(list_of_metadata_for_that_file,
-                                                                        full_list_of_metadata_list,
-                                                                        tolerance=self.tolerance_value):
+            if is_this_list_already_in_those_lists_within_tolerance(list_of_metadata_for_that_file,
+                                                                    full_list_of_metadata_list,
+                                                                    tolerance=self.tolerance_value):
                 full_list_of_metadata_list.append(list_of_metadata_for_that_file)
                 list_files_in_that_group.append(_file)
+
             else:
-                self.dictionary_of_groups[group_index] = list_files_in_that_group
+                if list_files_in_that_group != []:
+                    self.dictionary_of_groups[group_index] = list_files_in_that_group
+                    group_index += 1
                 list_files_in_that_group = [_file]
                 full_list_of_metadata_list = list()
                 full_list_of_metadata_list.append(list_of_metadata_for_that_file)
-                group_index += 1
 
         self.dictionary_of_groups[group_index] = list_files_in_that_group
