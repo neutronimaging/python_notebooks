@@ -6,6 +6,8 @@ import json
 from collections import OrderedDict
 import shutil
 
+from NeuNorm.normalization import Normalization
+
 from __code.ipywe import fileselector
 from __code import file_handler
 from __code._utilities.string import format_html_message
@@ -18,6 +20,8 @@ METADATA_ERROR = 1  # range +/- for which a metadata will be considered identica
 THIS_FILE_PATH = os.path.dirname(__file__)
 CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config.json')
 NEW_FILE_NAME_PREFIX = "image_"
+
+DEBUG = False
 
 
 class GroupImages:
@@ -380,6 +384,21 @@ class GroupImages:
             list_files.append(_str_file_name)
         return list_files
 
+    def get_list_of_old_files_fullname(self, index):
+        list_entries = self.dictionary_of_groups_sorted[index]
+        list_files = []
+        for _key in list_entries.keys():
+            list_files.append(list_entries[_key])
+
+        return list_files
+        # list_files = []
+        # for _key in list_entries.keys():
+        #     _short_file_name = [os.path.basename(_file) for _file in list_entries[_key]]
+        #     _str_file_name = ", ".join(_short_file_name)
+        #     list_files.append(_str_file_name)
+        # return list_files
+
+
     def get_list_of_new_files_basename_only(self, index):
         """return the list of new file names for that group"""
         list_files = self.dictionary_of_groups_new_names[index]
@@ -439,6 +458,21 @@ class GroupImages:
                                                               multiple=False)
         output_folder_widget.show()
 
+    def make_dictionary_of_groups_old_names(self):
+        """
+        this create and returns a dictionary that will look like
+        {0: [[old_file1, old_file2], [old_file3], [old_file4]],
+         1: [[old_file5], [old_file6], [old_file7], [old_file8]],
+        ...
+        }
+        """
+        dictionary_of_groups_old_names = OrderedDict()
+        for _key in self.dictionary_of_groups_new_names.keys():
+            list_files = self.get_list_of_old_files_fullname(index=_key)
+            dictionary_of_groups_old_names[_key] = list_files
+
+        return dictionary_of_groups_old_names
+
     def copy_combine_and_rename_files(self, output_folder):
         if not output_folder:
             return
@@ -448,7 +482,10 @@ class GroupImages:
         output_folder = os.path.abspath(output_folder)
         make_or_reset_folder(output_folder)
 
-        dict_old_files = self.dictionary_of_groups_sorted
+        dictionary_of_groups_old_names = self.make_dictionary_of_groups_old_names()
+        self.dictionary_of_groups_old_names = dictionary_of_groups_old_names
+
+        dict_old_files = dictionary_of_groups_old_names
         dict_new_files = self.dictionary_of_groups_new_names
 
         list_keys = list(dict_old_files.keys())
@@ -474,17 +511,46 @@ class GroupImages:
         display(vbox)
 
         for _outer_index, _key in enumerate(dict_old_files.keys()):
+            if DEBUG: print(f"outer_index: {_outer_index}")
             _old_name_list = dict_old_files[_key]
             _new_name_list = dict_new_files[_key]
             inner_progress_ui.value = 0
             outer_progress_ui.value = _outer_index
             for _inner_index, (_old, _new) in enumerate(zip(_old_name_list, _new_name_list)):
+
                 new_full_file_name = os.path.join(output_folder, _new)
-                old_full_file_name = _old
-                # shutil.copy(old_full_file_name, new_full_file_name)
+                if DEBUG: print(f"old full file name -> {_old}")
+                if DEBUG: print(f"new full file name -> {_new}")
+                if len(_old) > 1:
+                    if DEBUG: print("-> we need to combine these guys first!")
+                    self.combine_images(output_folder=output_folder,
+                                        list_images=_old,
+                                        new_file_name=_new)
+                else:
+                    shutil.copy(_old[0], new_full_file_name)
                 inner_progress_ui.value = _inner_index
 
         vbox.close()
 
         message = f"Folder {output_folder} have been created!"
         display(HTML('<span style="font-size: 15px">' + message + '</span>'))
+
+    def combine_images(self, output_folder="./", list_images=None, new_file_name=""):
+        if list_images is None:
+            return
+
+        o_norm = Normalization()
+        o_norm.load(file=list_images, notebook=False)
+        _data = o_norm.data['sample']['data']
+        _metadata = o_norm.data['sample']['metadata'][0]
+
+        _combined_data = np.median(_data, axis=0)
+        del o_norm
+
+        o_combined = Normalization()
+        o_combined.load(data=_data)
+        o_combined.data['sample']['metadata'] = [_metadata]
+        o_combined.data['sample']['data'] = _data
+        o_combined.data['sample']['file_name'] = [new_file_name]
+        o_combined.export(folder=output_folder, data_type='sample')
+        del o_combined
