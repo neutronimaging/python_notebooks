@@ -6,7 +6,6 @@ import json
 from collections import OrderedDict
 import shutil
 
-from NeuNorm.normalization import Normalization
 
 from __code.ipywe import fileselector
 from __code import file_handler
@@ -14,7 +13,9 @@ from __code._utilities.string import format_html_message
 from __code.group_images_by_cycle_for_grating_experiment.group_images_by_cycle import GroupImagesByCycle
 from __code.group_images_by_cycle_for_grating_experiment.sort_images_within_each_cycle import SortImagesWithinEachCycle
 from __code.file_handler import make_or_reset_folder, copy_and_rename_files_to_folder, get_file_extension
-from __code._utilities.metadata_handler import MetadataHandler
+from __code.group_images_by_cycle_for_grating_experiment.get import Get
+from .utilities import combine_images, make_dictionary_of_groups_new_names
+from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import NotebookWidgets
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
@@ -53,12 +54,6 @@ class GroupImages:
             config = json.load(f)
         self.config = config
 
-        # self.metadata_key_to_select = []
-        # self.metadata_name_to_select = []
-        # for key in config.keys():
-        #     self.metadata_key_to_select.append(config[key]['key'])
-        #     self.metadata_name_to_select.append(config[key]['name'])
-
     def select_input_folder(self):
         self.files_list_widget = fileselector.FileSelectorPanel(instruction='select images to sort ...',
                                                                 start_dir=self.working_dir,
@@ -82,95 +77,81 @@ class GroupImages:
             display(format_html_message('This notebook only works with TIFF images!', is_error=True))
             return
 
-    def get_default_metadata_selected(self):
-        config = self.config
-        list_metadata = self.list_metadata
-
-        value_inner, value2 = "", ""
-
-        metadata_inner = config['metadata_inner']
-        for _entry in list_metadata:
-            if f"{metadata_inner['key']} -> {metadata_inner['name']}:" in _entry:
-                value_inner = _entry
-
-        metadata_outer = config['metadata_outer']
-        for _entry in list_metadata:
-            if f"{metadata_outer['key']} -> {metadata_outer['name']}:" in _entry:
-                value_outer = _entry
-
-        return value_inner, value_outer
-
     def select_metadata_to_use_for_sorting(self):
-        # retrieving list of metadata
-        list_metadata = MetadataHandler.get_list_of_metadata(self.list_images[0])
-        self.list_metadata = list_metadata
+        o_widgets = NotebookWidgets(parent=self)
+        o_widgets.select_metadata_to_use_for_sorting()
 
-        metadata_inner_value, metadata_outer_value = self.get_default_metadata_selected()
-
-        select_width = "550px"
-        select_height = "300px"
-
-        # metadata_outer
-        search_outer = widgets.HBox([widgets.Label("Search:"),
-                                     widgets.Text("",
-                                                  layout=widgets.Layout(width="150px")),
-                                     widgets.Button(description="X",
-                                                    button_style='',
-                                                    layout=widgets.Layout(width="10px"))
-                                     ])
-        self.search_outer_field = search_outer.children[1]
-        self.search_outer_field.observe(self.search_metadata_outer_edited, names='value')
-        search_outer.children[2].on_click(self.reset_search_metadata_outer)
-
-        result2 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
-                                             layout=widgets.Layout(width="200px")),
-                                widgets.Label(metadata_outer_value,
-                                              layout=widgets.Layout(width="100%"))])
-        self.metadata_outer_selected_label = result2.children[1]
-
-        metadata_outer = widgets.VBox([widgets.HTML("<b>Outer Loop Metadata</b>"),
-                                       search_outer,
-                                       widgets.Select(options=list_metadata,
-                                                      value=metadata_outer_value,
-                                                      layout=widgets.Layout(width=select_width,
-                                                                            height=select_height)),
-                                       result2])
-        self.list_metadata_outer = metadata_outer.children[2]
-        self.list_metadata_outer.observe(self.metadata_outer_selection_changed, names='value')
-
-        # metadata_inner
-        search_inner = widgets.HBox([widgets.Label("Search:",
-                                                   ),
-                                     widgets.Text("",
-                                                  layout=widgets.Layout(width="150px")),
-                                     widgets.Button(description="X",
-                                                    button_style='',
-                                                    layout=widgets.Layout(width="10px")
-                                                    )])
-        self.search_inner_field = search_inner.children[1]
-        self.search_inner_field.observe(self.search_metadata_inner_edited, names='value')
-        search_inner.children[2].on_click(self.reset_search_metadata_inner)
-
-        result1 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
-                                             layout=widgets.Layout(width="200px")),
-                                widgets.Label(metadata_inner_value,
-                                              layout=widgets.Layout(width="100%"))])
-        self.metadata_inner_selected_label = result1.children[1]
-
-        metadata_inner = widgets.VBox([widgets.HTML("<b>Inner Loop Metadata</b>"),
-                                       search_inner,
-                                       widgets.Select(options=list_metadata,
-                                                      value=metadata_inner_value,
-                                                      layout=widgets.Layout(width=select_width,
-                                                                            height=select_height)),
-                                       result1])
-        self.list_metadata_inner = metadata_inner.children[2]
-        self.list_metadata_inner.observe(self.metadata_inner_selection_changed, names='value')
-
-        metadata = widgets.HBox([metadata_outer, widgets.Label(" "), metadata_inner])
-        display(metadata)
-
-        self.save_key_metadata()
+    #     # retrieving list of metadata
+    #     list_metadata = MetadataHandler.get_list_of_metadata(self.list_images[0])
+    #     self.list_metadata = list_metadata
+    #
+    #     o_get = Get(parent=self)
+    #     metadata_inner_value, metadata_outer_value = o_get.default_metadata_selected()
+    #
+    #     select_width = "550px"
+    #     select_height = "300px"
+    #
+    #     # metadata_outer
+    #     search_outer = widgets.HBox([widgets.Label("Search:"),
+    #                                  widgets.Text("",
+    #                                               layout=widgets.Layout(width="150px")),
+    #                                  widgets.Button(description="X",
+    #                                                 button_style='',
+    #                                                 layout=widgets.Layout(width="10px"))
+    #                                  ])
+    #     self.search_outer_field = search_outer.children[1]
+    #     self.search_outer_field.observe(self.search_metadata_outer_edited, names='value')
+    #     search_outer.children[2].on_click(self.reset_search_metadata_outer)
+    #
+    #     result2 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
+    #                                          layout=widgets.Layout(width="200px")),
+    #                             widgets.Label(metadata_outer_value,
+    #                                           layout=widgets.Layout(width="100%"))])
+    #     self.metadata_outer_selected_label = result2.children[1]
+    #
+    #     metadata_outer = widgets.VBox([widgets.HTML("<b>Outer Loop Metadata</b>"),
+    #                                    search_outer,
+    #                                    widgets.Select(options=list_metadata,
+    #                                                   value=metadata_outer_value,
+    #                                                   layout=widgets.Layout(width=select_width,
+    #                                                                         height=select_height)),
+    #                                    result2])
+    #     self.list_metadata_outer = metadata_outer.children[2]
+    #     self.list_metadata_outer.observe(self.metadata_outer_selection_changed, names='value')
+    #
+    #     # metadata_inner
+    #     search_inner = widgets.HBox([widgets.Label("Search:",
+    #                                                ),
+    #                                  widgets.Text("",
+    #                                               layout=widgets.Layout(width="150px")),
+    #                                  widgets.Button(description="X",
+    #                                                 button_style='',
+    #                                                 layout=widgets.Layout(width="10px")
+    #                                                 )])
+    #     self.search_inner_field = search_inner.children[1]
+    #     self.search_inner_field.observe(self.search_metadata_inner_edited, names='value')
+    #     search_inner.children[2].on_click(self.reset_search_metadata_inner)
+    #
+    #     result1 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
+    #                                          layout=widgets.Layout(width="200px")),
+    #                             widgets.Label(metadata_inner_value,
+    #                                           layout=widgets.Layout(width="100%"))])
+    #     self.metadata_inner_selected_label = result1.children[1]
+    #
+    #     metadata_inner = widgets.VBox([widgets.HTML("<b>Inner Loop Metadata</b>"),
+    #                                    search_inner,
+    #                                    widgets.Select(options=list_metadata,
+    #                                                   value=metadata_inner_value,
+    #                                                   layout=widgets.Layout(width=select_width,
+    #                                                                         height=select_height)),
+    #                                    result1])
+    #     self.list_metadata_inner = metadata_inner.children[2]
+    #     self.list_metadata_inner.observe(self.metadata_inner_selection_changed, names='value')
+    #
+    #     metadata = widgets.HBox([metadata_outer, widgets.Label(" "), metadata_inner])
+    #     display(metadata)
+    #
+    #     self.save_key_metadata()
 
     def metadata_inner_selection_changed(self, name):
         new_value = name['new']
@@ -256,8 +237,8 @@ class GroupImages:
         self.master_outer_inner_dictionary = o_group.master_outer_inner_dictionary
         self.dictionary_of_groups_sorted = self.format_into_dictionary_of_groups(self.master_outer_inner_dictionary)
         # self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
-        dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_sorted,
-                                                                         self.dict_group_outer_value)
+        dict_new_names = make_dictionary_of_groups_new_names(self.dictionary_of_groups_sorted,
+                                                             self.dict_group_outer_value)
         self.dictionary_of_groups_new_names = dict_new_names
         self.dictionary_file_vs_metadata = o_group.master_dictionary
 
@@ -299,25 +280,6 @@ class GroupImages:
 
         self.dict_group_outer_value = dict_group_outer_value
         return groups_inner_dictionary
-
-    @staticmethod
-    def make_dictionary_of_groups_new_names(dictionary_of_groups_sorted, dict_group_outer_value):
-        dict_new_names = OrderedDict()
-        for _group_index in dictionary_of_groups_sorted.keys():
-            nbr_files = len(dictionary_of_groups_sorted[_group_index])
-            outer_value = float(dict_group_outer_value[_group_index])
-            str_outer_value = f"{outer_value:0.3f}"
-            str_outer_value_formatted = str_outer_value.replace(".", "_", 1)
-            before_and_after_decimal = str_outer_value_formatted.split("_")
-            if len(before_and_after_decimal) > 1:
-                before_decimal = int(before_and_after_decimal[0])
-                before_decimal_str = f"{before_decimal:03d}"
-                str_outer_value_formatted = "_".join([before_decimal_str, before_and_after_decimal[1]])
-            list_new_names = [f"group_{str_outer_value_formatted}_{_index:04d}.tiff"
-                              for _index
-                              in np.arange(nbr_files)]
-            dict_new_names[_group_index] = list_new_names
-        return dict_new_names
 
     def display_groups(self):
         self.group_images()
@@ -523,9 +485,9 @@ class GroupImages:
                 if DEBUG: print(f"new full file name -> {_new}")
                 if len(_old) > 1:
                     if DEBUG: print("-> we need to combine these guys first!")
-                    self.combine_images(output_folder=output_folder,
-                                        list_images=_old,
-                                        new_file_name=_new)
+                    combine_images(output_folder=output_folder,
+                                   list_images=_old,
+                                   new_file_name=_new)
                 else:
                     shutil.copy(_old[0], new_full_file_name)
                 inner_progress_ui.value = _inner_index
@@ -534,23 +496,3 @@ class GroupImages:
 
         message = f"Folder {output_folder} have been created!"
         display(HTML('<span style="font-size: 15px">' + message + '</span>'))
-
-    def combine_images(self, output_folder="./", list_images=None, new_file_name=""):
-        if list_images is None:
-            return
-
-        o_norm = Normalization()
-        o_norm.load(file=list_images, notebook=False)
-        _data = o_norm.data['sample']['data']
-        _metadata = o_norm.data['sample']['metadata'][0]
-
-        _combined_data = np.median(_data, axis=0)
-        del o_norm
-
-        o_combined = Normalization()
-        o_combined.load(data=_data)
-        o_combined.data['sample']['metadata'] = [_metadata]
-        o_combined.data['sample']['data'] = _data
-        o_combined.data['sample']['file_name'] = [new_file_name]
-        o_combined.export(folder=output_folder, data_type='sample')
-        del o_combined
