@@ -4,6 +4,7 @@ import numpy as np
 
 from __code._utilities.metadata_handler import MetadataHandler
 from __code.group_images_by_cycle_for_grating_experiment.get import Get
+from __code.group_images_by_cycle_for_grating_experiment.event_handler import EventHandler
 
 
 class NotebookWidgets:
@@ -15,6 +16,7 @@ class NotebookWidgets:
         # retrieving list of metadata
         list_metadata = MetadataHandler.get_list_of_metadata(self.parent.list_images[0])
         self.parent.list_metadata = list_metadata
+        o_event = EventHandler(parent=self.parent)
 
         o_get = Get(parent=self.parent)
         metadata_inner_value, metadata_outer_value = o_get.default_metadata_selected()
@@ -31,8 +33,8 @@ class NotebookWidgets:
                                                     layout=widgets.Layout(width="10px"))
                                      ])
         self.parent.search_outer_field = search_outer.children[1]
-        self.parent.search_outer_field.observe(self.parent.search_metadata_outer_edited, names='value')
-        search_outer.children[2].on_click(self.parent.reset_search_metadata_outer)
+        self.parent.search_outer_field.observe(o_event.search_metadata_outer_edited, names='value')
+        search_outer.children[2].on_click(o_event.reset_search_metadata_outer)
 
         result2 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
                                              layout=widgets.Layout(width="200px")),
@@ -48,7 +50,7 @@ class NotebookWidgets:
                                                                             height=select_height)),
                                        result2])
         self.parent.list_metadata_outer = metadata_outer.children[2]
-        self.parent.list_metadata_outer.observe(self.parent.metadata_outer_selection_changed, names='value')
+        self.parent.list_metadata_outer.observe(o_event.metadata_outer_selection_changed, names='value')
 
         # metadata_inner
         search_inner = widgets.HBox([widgets.Label("Search:",
@@ -60,8 +62,8 @@ class NotebookWidgets:
                                                     layout=widgets.Layout(width="10px")
                                                     )])
         self.parent.search_inner_field = search_inner.children[1]
-        self.parent.search_inner_field.observe(self.parent.search_metadata_inner_edited, names='value')
-        search_inner.children[2].on_click(self.parent.reset_search_metadata_inner)
+        self.parent.search_inner_field.observe(o_event.search_metadata_inner_edited, names='value')
+        search_inner.children[2].on_click(o_event.reset_search_metadata_inner)
 
         result1 = widgets.HBox([widgets.HTML("<u>Metadata Selected</u>:",
                                              layout=widgets.Layout(width="200px")),
@@ -77,7 +79,7 @@ class NotebookWidgets:
                                                                             height=select_height)),
                                        result1])
         self.parent.list_metadata_inner = metadata_inner.children[2]
-        self.parent.list_metadata_inner.observe(self.parent.metadata_inner_selection_changed, names='value')
+        self.parent.list_metadata_inner.observe(o_event.metadata_inner_selection_changed, names='value')
 
         metadata = widgets.HBox([metadata_outer, widgets.Label(" "), metadata_inner])
         display(metadata)
@@ -86,6 +88,8 @@ class NotebookWidgets:
 
     def display_groups(self):
         o_get = Get(parent=self.parent)
+        o_event = EventHandler(parent=self.parent)
+
         self.parent.group_images()
         nbr_groups = len(self.parent.dictionary_of_groups_sorted.keys())
 
@@ -97,7 +101,7 @@ class NotebookWidgets:
                                                  layout=widgets.Layout(width="150px",
                                                                        height="300px"))])
         select_group_ui = vbox_left.children[1]
-        select_group_ui.observe(self.parent.group_index_changed, 'value')
+        select_group_ui.observe(o_event.group_index_changed, 'value')
 
         # column 2
         vbox_center = widgets.VBox([widgets.HTML("<b>Original file names</b>:"),
@@ -106,7 +110,7 @@ class NotebookWidgets:
                                                                          height="300px"))])
 
         list_of_files_ui = vbox_center.children[1]
-        list_of_files_ui.observe(self.parent.list_of_files_changed, 'value')
+        list_of_files_ui.observe(o_event.list_of_files_changed, 'value')
         self.parent.list_of_files_ui = list_of_files_ui
 
         # column 3
@@ -115,7 +119,7 @@ class NotebookWidgets:
                                               layout=widgets.Layout(width="450px",
                                                                     height="300px"))])
         list_of_new_files_ui = vbox_3.children[1]
-        list_of_new_files_ui.observe(self.parent.list_of_new_files_changed, 'value')
+        list_of_new_files_ui.observe(o_event.list_of_new_files_changed, 'value')
         self.parent.list_of_new_files_ui = list_of_new_files_ui
 
         # column 4
@@ -125,7 +129,7 @@ class NotebookWidgets:
                                                                           height="300px"))])
         self.parent.metadata_ui = vbox_right.children[1]
 
-        self.parent.list_of_files_changed(value={'new': o_get.list_of_files_basename_only(0)[0]})
+        o_event.list_of_files_changed(value={'new': o_get.list_of_files_basename_only(0)[0]})
 
         hbox = widgets.HBox([vbox_left, vbox_center, vbox_3, vbox_right])
         display(hbox)

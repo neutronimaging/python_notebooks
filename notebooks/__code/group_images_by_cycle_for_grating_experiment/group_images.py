@@ -9,10 +9,8 @@ from __code.ipywe import fileselector
 from __code import file_handler
 from __code._utilities.string import format_html_message
 from __code.group_images_by_cycle_for_grating_experiment.group_images_by_cycle import GroupImagesByCycle
-from __code.group_images_by_cycle_for_grating_experiment.sort_images_within_each_cycle import SortImagesWithinEachCycle
-from __code.file_handler import make_or_reset_folder, copy_and_rename_files_to_folder, get_file_extension
 from __code.group_images_by_cycle_for_grating_experiment.get import Get
-from .utilities import combine_images, make_dictionary_of_groups_new_names
+from .utilities import make_dictionary_of_groups_new_names
 from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import NotebookWidgets
 from __code.group_images_by_cycle_for_grating_experiment.combine_and_move_files import CombineAndMoveFiles
 
@@ -80,55 +78,6 @@ class GroupImages:
         o_widgets = NotebookWidgets(parent=self)
         o_widgets.select_metadata_to_use_for_sorting()
 
-    def metadata_inner_selection_changed(self, name):
-        new_value = name['new']
-        self.metadata_inner_selected_label.value = new_value
-        self.save_key_metadata()
-
-    def search_metadata_inner_edited(self, name):
-        search_string = name['new']
-        selection_of_search_string = []
-        for _metadata in self.list_metadata:
-            if search_string in _metadata.lower():
-                selection_of_search_string.append(_metadata)
-        if selection_of_search_string:
-            self.list_metadata_inner.options = selection_of_search_string
-            self.list_metadata_inner.value = selection_of_search_string[0]
-            self.save_key_metadata()
-        else:
-            self.list_metadata_inner.options = ["No Metadata found!"]
-
-    def reset_search_metadata_inner(self, value):
-        self.search_inner_field.value = ""
-        self.search_metadata_inner_edited({'new': ""})
-        metadata_inner_value, _ = self.get_default_metadata_selected()
-        self.list_metadata_inner.value = metadata_inner_value
-
-    def metadata_outer_selection_changed(self, name):
-        new_value = name['new']
-        self.metadata_outer_selected_label.value = new_value
-        self.save_key_metadata()
-
-    def search_metadata_outer_edited(self, name):
-        search_string = name['new']
-        selection_of_search_string = []
-        for _metadata in self.list_metadata:
-            if search_string in _metadata.lower():
-                selection_of_search_string.append(_metadata)
-        if selection_of_search_string:
-            self.list_metadata_outer.options = selection_of_search_string
-            self.list_metadata_outer.value = selection_of_search_string[0]
-            self.save_key_metadata()
-        else:
-            self.list_metadata_outer.options = ["No Metadata found!"]
-
-    def reset_search_metadata_outer(self, value):
-        self.search_outer_field.value = ""
-        self.search_metadata_outer_edited({'new': ""})
-        _, metadata_outer_value = self.get_default_metadata_selected()
-        self.list_metadata_outer.value = metadata_outer_value
-        self.save_key_metadata()
-
     def record_file_extension(self, filename=''):
         self.file_extension = file_handler.get_file_extension(filename)
 
@@ -163,7 +112,6 @@ class GroupImages:
 
         self.master_outer_inner_dictionary = o_group.master_outer_inner_dictionary
         self.dictionary_of_groups_sorted = self.format_into_dictionary_of_groups(self.master_outer_inner_dictionary)
-        # self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
         dict_new_names = make_dictionary_of_groups_new_names(self.dictionary_of_groups_sorted,
                                                              self.dict_group_outer_value)
         self.dictionary_of_groups_new_names = dict_new_names
@@ -211,41 +159,6 @@ class GroupImages:
     def display_groups(self):
         o_widgets = NotebookWidgets(parent=self)
         o_widgets.display_groups()
-
-    def group_index_changed(self, value):
-        new_group_selected = value['new']
-        _, new_group_index = new_group_selected.split(" # ")
-        o_get = Get(parent=self)
-        short_list_files = o_get.list_of_files_basename_only(np.int(new_group_index))
-        self.list_of_files_ui.options = short_list_files
-        short_list_new_files = o_get.list_of_new_files_basename_only(np.int(new_group_index))
-        self.list_of_new_files_ui.options = short_list_new_files
-        self.list_of_new_files_ui.value = short_list_new_files[0]
-        self.list_of_files_ui.value = short_list_files[0]
-
-    def list_of_new_files_changed(self, value):
-        new_file_selected = value['new']
-        list_of_files_names = self.list_of_files_ui.options
-        list_of_new_files_names = self.list_of_new_files_ui.options
-        index = list_of_new_files_names.index(new_file_selected)
-        file_selected = list_of_files_names[index]
-        self.list_of_files_ui.value = file_selected
-
-    def list_of_files_changed(self, value):
-        dictionary_file_vs_metadata = self.dictionary_file_vs_metadata
-        file_selected = value['new']
-
-        # make sure only first file name is used to retrieve key
-        list_file_selected = file_selected.split(", ")
-        if len(list_file_selected) > 1:
-            file_selected = list_file_selected[0]
-
-        full_file_name_selected = os.path.join(self.data_path, file_selected)
-
-        string_to_display = ""
-        for _key, _value in dictionary_file_vs_metadata[full_file_name_selected].items():
-            string_to_display += "{}: {}\n".format(_key, _value)
-        self.metadata_ui.value = string_to_display
 
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
