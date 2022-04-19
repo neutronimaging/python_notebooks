@@ -254,7 +254,6 @@ class GroupImages:
         # self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
         dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_sorted,
                                                                          self.dict_group_outer_value)
-
         self.dictionary_of_groups_new_names = dict_new_names
         self.dictionary_file_vs_metadata = o_group.master_dictionary
 
@@ -318,7 +317,6 @@ class GroupImages:
 
     def display_groups(self):
         self.group_images()
-
         nbr_groups = len(self.dictionary_of_groups_sorted.keys())
 
         # column 1
@@ -356,6 +354,7 @@ class GroupImages:
                                                     layout=widgets.Layout(width="200px",
                                                                           height="300px"))])
         self.metadata_ui = vbox_right.children[1]
+
         self.list_of_files_changed(value={'new': self.get_list_of_files_basename_only(0)[0]})
 
         hbox = widgets.HBox([vbox_left, vbox_center, vbox_3, vbox_right])
@@ -404,16 +403,24 @@ class GroupImages:
     def list_of_files_changed(self, value):
         dictionary_file_vs_metadata = self.dictionary_file_vs_metadata
         file_selected = value['new']
+
+        # make sure only first file name is used to retrieve key
+        list_file_selected = file_selected.split(", ")
+        if len(list_file_selected) > 1:
+            file_selected = list_file_selected[0]
+
         full_file_name_selected = os.path.join(self.data_path, file_selected)
+
         string_to_display = ""
         for _key, _value in dictionary_file_vs_metadata[full_file_name_selected].items():
             string_to_display += "{}: {}\n".format(_key, _value)
         self.metadata_ui.value = string_to_display
 
-        list_new_names = list(self.list_of_new_files_ui.options)
-        list_of_names = list(self.list_of_files_ui.options)
-        index = list_of_names.index(file_selected)
-        self.list_of_new_files_ui.value = list_new_names[index]
+        # list_new_names = list(self.list_of_new_files_ui.options)
+        # list_of_names = list(self.list_of_files_ui.options)
+
+        # index = list_of_names.index(file_selected)
+        # self.list_of_new_files_ui.value = list_new_names[index]
 
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
@@ -424,11 +431,11 @@ class GroupImages:
         output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
                                                               start_dir=os.path.dirname(self.data_path),
                                                               type='directory',
-                                                              next=self.move_and_rename_files,
+                                                              next=self.copy_combine_and_rename_files,
                                                               multiple=False)
         output_folder_widget.show()
 
-    def move_and_rename_files(self, output_folder):
+    def copy_combine_and_rename_files(self, output_folder):
         if not output_folder:
             return
 
@@ -437,7 +444,7 @@ class GroupImages:
         output_folder = os.path.abspath(output_folder)
         make_or_reset_folder(output_folder)
 
-        dict_old_files = self.dictionary_of_groups_unsorted
+        dict_old_files = self.dictionary_of_groups_sorted
         dict_new_files = self.dictionary_of_groups_new_names
 
         list_keys = list(dict_old_files.keys())
@@ -470,7 +477,7 @@ class GroupImages:
             for _inner_index, (_old, _new) in enumerate(zip(_old_name_list, _new_name_list)):
                 new_full_file_name = os.path.join(output_folder, _new)
                 old_full_file_name = _old
-                shutil.copy(old_full_file_name, new_full_file_name)
+                # shutil.copy(old_full_file_name, new_full_file_name)
                 inner_progress_ui.value = _inner_index
 
         vbox.close()
