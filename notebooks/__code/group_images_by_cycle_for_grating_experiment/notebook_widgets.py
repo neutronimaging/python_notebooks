@@ -1,5 +1,6 @@
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.core.display import display
+import numpy as np
 
 from __code._utilities.metadata_handler import MetadataHandler
 from __code.group_images_by_cycle_for_grating_experiment.get import Get
@@ -82,3 +83,60 @@ class NotebookWidgets:
         display(metadata)
 
         self.parent.save_key_metadata()
+
+    def display_groups(self):
+        o_get = Get(parent=self.parent)
+        self.parent.group_images()
+        nbr_groups = len(self.parent.dictionary_of_groups_sorted.keys())
+
+        # column 1
+        group_label = ["Group # {}".format(_index) for _index in np.arange(nbr_groups)]
+        self.parent.list_group_label = group_label
+        vbox_left = widgets.VBox([widgets.HTML("<b>Select Group</b>:"),
+                                  widgets.Select(options=group_label,
+                                                 layout=widgets.Layout(width="150px",
+                                                                       height="300px"))])
+        select_group_ui = vbox_left.children[1]
+        select_group_ui.observe(self.parent.group_index_changed, 'value')
+
+        # column 2
+        vbox_center = widgets.VBox([widgets.HTML("<b>Original file names</b>:"),
+                                    widgets.Select(options=o_get.list_of_files_basename_only(0),
+                                                   layout=widgets.Layout(width="450px",
+                                                                         height="300px"))])
+
+        list_of_files_ui = vbox_center.children[1]
+        list_of_files_ui.observe(self.parent.list_of_files_changed, 'value')
+        self.parent.list_of_files_ui = list_of_files_ui
+
+        # column 3
+        vbox_3 = widgets.VBox([widgets.HTML("<b>New Name</b>"),
+                               widgets.Select(options=o_get.list_of_new_files_basename_only(0),
+                                              layout=widgets.Layout(width="450px",
+                                                                    height="300px"))])
+        list_of_new_files_ui = vbox_3.children[1]
+        list_of_new_files_ui.observe(self.parent.list_of_new_files_changed, 'value')
+        self.parent.list_of_new_files_ui = list_of_new_files_ui
+
+        # column 4
+        vbox_right = widgets.VBox([widgets.Label("Metadata:"),
+                                   widgets.Textarea(value="",
+                                                    layout=widgets.Layout(width="200px",
+                                                                          height="300px"))])
+        self.parent.metadata_ui = vbox_right.children[1]
+
+        self.parent.list_of_files_changed(value={'new': o_get.list_of_files_basename_only(0)[0]})
+
+        hbox = widgets.HBox([vbox_left, vbox_center, vbox_3, vbox_right])
+        display(hbox)
+
+        message = widgets.HTML("<b><font color='blue'>INFO</font></b>: <i>if more than 1 image are in the same "
+                               "<b>original file names</b> row, they will be combined using <b>median</b></i>.")
+        display(message)
+
+        bottom_hbox = widgets.HBox([widgets.HTML("<b>Images are in</b>:",
+                                                 layout=widgets.Layout(width="150px")),
+                                    widgets.Label(self.parent.data_path,
+                                                  layout=widgets.Layout(width="90%"))])
+        self.parent.path_ui = bottom_hbox.children[1]
+        display(bottom_hbox)
