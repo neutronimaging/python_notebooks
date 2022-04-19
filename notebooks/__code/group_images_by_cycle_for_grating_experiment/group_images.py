@@ -360,8 +360,12 @@ class GroupImages:
         hbox = widgets.HBox([vbox_left, vbox_center, vbox_3, vbox_right])
         display(hbox)
 
-        bottom_hbox = widgets.HBox([widgets.Label("Images are in:",
-                                                  layout=widgets.Layout(width="150px")),
+        message = widgets.HTML("<b><font color='blue'>INFO</font></b>: <i>if more than 1 image are in the same "
+                               "<b>original file names</b> row, they will be combined using <b>median</b></i>.")
+        display(message)
+
+        bottom_hbox = widgets.HBox([widgets.HTML("<b>Images are in</b>:",
+                                                 layout=widgets.Layout(width="150px")),
                                     widgets.Label(self.data_path,
                                                   layout=widgets.Layout(width="90%"))])
         self.path_ui = bottom_hbox.children[1]
