@@ -89,4 +89,4 @@ class GroupImagesByCycle:
             else:
                 master_grouped_dictionary[outer_value][inner_value].append(_file)
 
-        self.master_grouped_dictionary = master_grouped_dictionary
+        self.master_outer_inner_dictionary = master_grouped_dictionary

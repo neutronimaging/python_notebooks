@@ -41,7 +41,7 @@ class GroupImages:
         self.dict_of_metadata = {}  # key is 'tag->value' and value is 'tag'
         self.list_images_to_combine = None
         self.extension_to_regular_expression_dict = {'tiff': r"^\w*_(?P<run>run\d+)_\w*.tiff$",
-                                                     'tif': r"^\w*_(?P<run>run\d+)_\w*.tif$"}
+                                                     'tif' : r"^\w*_(?P<run>run\d+)_\w*.tif$"}
         self.load_config()
 
     def load_config(self):
@@ -125,12 +125,12 @@ class GroupImages:
         self.metadata_outer_selected_label = result2.children[1]
 
         metadata_outer = widgets.VBox([widgets.HTML("<b>Outer Loop Metadata</b>"),
-                                  search_outer,
-                                  widgets.Select(options=list_metadata,
-                                                 value=metadata_outer_value,
-                                                 layout=widgets.Layout(width=select_width,
-                                                                       height=select_height)),
-                                  result2])
+                                       search_outer,
+                                       widgets.Select(options=list_metadata,
+                                                      value=metadata_outer_value,
+                                                      layout=widgets.Layout(width=select_width,
+                                                                            height=select_height)),
+                                       result2])
         self.list_metadata_outer = metadata_outer.children[2]
         self.list_metadata_outer.observe(self.metadata_outer_selection_changed, names='value')
 
@@ -154,12 +154,12 @@ class GroupImages:
         self.metadata_inner_selected_label = result1.children[1]
 
         metadata_inner = widgets.VBox([widgets.HTML("<b>Inner Loop Metadata</b>"),
-                                  search_inner,
-                                  widgets.Select(options=list_metadata,
-                                                 value=metadata_inner_value,
-                                                 layout=widgets.Layout(width=select_width,
-                                                                       height=select_height)),
-                                  result1])
+                                       search_inner,
+                                       widgets.Select(options=list_metadata,
+                                                      value=metadata_inner_value,
+                                                      layout=widgets.Layout(width=select_width,
+                                                                            height=select_height)),
+                                       result1])
         self.list_metadata_inner = metadata_inner.children[2]
         self.list_metadata_inner.observe(self.metadata_inner_selection_changed, names='value')
 
@@ -249,18 +249,68 @@ class GroupImages:
                                      tolerance_value=METADATA_ERROR)
         o_group.run()
 
-        self.dictionary_of_groups_sorted = o_group.master_grouped_dictionary
+        self.master_outer_inner_dictionary = o_group.master_outer_inner_dictionary
+        self.dictionary_of_groups_sorted = self.format_into_dictionary_of_groups(self.master_outer_inner_dictionary)
         # self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
-        # dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_unsorted)
-        # self.dictionary_of_groups_new_names = dict_new_names
-        # self.dictionary_file_vs_metadata = o_group.master_dictionary
+        dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_sorted,
+                                                                         self.dict_group_outer_value)
+
+        self.dictionary_of_groups_new_names = dict_new_names
+        self.dictionary_file_vs_metadata = o_group.master_dictionary
+
+    def format_into_dictionary_of_groups(self, master_outer_inner_dictionary):
+        """
+        format the dictionary
+        dict = OrderedDict('value_outer_loop_1': {'value_inner_loop_1': ['file1'],
+                                                  'value_inner_loop_2': ['file2', 'file3'],
+                                                  'value_inner_loop_3': ['file4']},
+                            'value_outer_loop_2': {'value_inner_loop_1': ['file5'],
+                                                   'value_inner_loop_2': ['file6'],
+                                                   ...,
+                                                   },
+                            )
+        into
+
+        dict = OrderedDict('0': {'value_inner_loop_1': ['file1'],
+                                 'value_inner_loop_2': ['file2', 'file3'],
+                                 'value_inner_loop_3': ['file4']},
+                            '1': {'value_inner_loop_1': ['file5'],
+                                  'value_inner_loop_2': ['file6'],
+                                   ...,
+                                 },
+                            )
+
+        this also creates a dictionary {'0': 'value_outer_loop_1',
+                                        '1': 'value_outer_loop_2',
+                                        }
+
+        """
+        list_key = master_outer_inner_dictionary.keys()
+        groups_inner_dictionary = OrderedDict()
+
+        dict_group_outer_value = OrderedDict()
+
+        for _index, _key in enumerate(list_key):
+            groups_inner_dictionary[_index] = master_outer_inner_dictionary[_key]
+            dict_group_outer_value[_index] = _key
+
+        self.dict_group_outer_value = dict_group_outer_value
+        return groups_inner_dictionary
 
     @staticmethod
-    def make_dictionary_of_groups_new_names(dictionary_of_group_unsorted):
+    def make_dictionary_of_groups_new_names(dictionary_of_groups_sorted, dict_group_outer_value):
         dict_new_names = OrderedDict()
-        for _group_index in dictionary_of_group_unsorted.keys():
-            nbr_files = len(dictionary_of_group_unsorted[_group_index])
-            list_new_names = [f"group{_group_index:02d}_{_index:04d}.tiff"
+        for _group_index in dictionary_of_groups_sorted.keys():
+            nbr_files = len(dictionary_of_groups_sorted[_group_index])
+            outer_value = float(dict_group_outer_value[_group_index])
+            str_outer_value = f"{outer_value:0.3f}"
+            str_outer_value_formatted = str_outer_value.replace(".", "_", 1)
+            before_and_after_decimal = str_outer_value_formatted.split("_")
+            if len(before_and_after_decimal) > 1:
+                before_decimal = int(before_and_after_decimal[0])
+                before_decimal_str = f"{before_decimal:03d}"
+                str_outer_value_formatted = "_".join([before_decimal_str, before_and_after_decimal[1]])
+            list_new_names = [f"group_{str_outer_value_formatted}_{_index:04d}.tiff"
                               for _index
                               in np.arange(nbr_files)]
             dict_new_names[_group_index] = list_new_names
@@ -269,11 +319,7 @@ class GroupImages:
     def display_groups(self):
         self.group_images()
 
-
-
-        return
-
-        nbr_groups = len(self.dictionary_of_groups_unsorted)
+        nbr_groups = len(self.dictionary_of_groups_sorted.keys())
 
         # column 1
         group_label = ["Group # {}".format(_index) for _index in np.arange(nbr_groups)]
@@ -290,6 +336,7 @@ class GroupImages:
                                     widgets.Select(options=self.get_list_of_files_basename_only(0),
                                                    layout=widgets.Layout(width="450px",
                                                                          height="300px"))])
+
         list_of_files_ui = vbox_center.children[1]
         list_of_files_ui.observe(self.list_of_files_changed, 'value')
         self.list_of_files_ui = list_of_files_ui
@@ -322,11 +369,16 @@ class GroupImages:
         display(bottom_hbox)
 
     def get_list_of_files_basename_only(self, index):
-        list_files = self.dictionary_of_groups_unsorted[index]
-        short_list_files = [os.path.basename(_file) for _file in list_files]
-        return short_list_files
+        list_entries = self.dictionary_of_groups_sorted[index]
+        list_files = []
+        for _key in list_entries.keys():
+            _short_file_name = [os.path.basename(_file) for _file in list_entries[_key]]
+            _str_file_name = ", ".join(_short_file_name)
+            list_files.append(_str_file_name)
+        return list_files
 
     def get_list_of_new_files_basename_only(self, index):
+        """return the list of new file names for that group"""
         list_files = self.dictionary_of_groups_new_names[index]
         short_list_files = [os.path.basename(_file) for _file in list_files]
         return short_list_files
@@ -363,55 +415,10 @@ class GroupImages:
         index = list_of_names.index(file_selected)
         self.list_of_new_files_ui.value = list_new_names[index]
 
-    # def update_old_name_order(self):
-    #     how_to_sort_within_cycle = self.how_to_sort_within_cycle
-    #     o_sort = SortImagesWithinEachCycle(dict_groups_filename=self.dictionary_of_groups_unsorted,
-    #                                        dict_filename_metadata=self.dictionary_file_vs_metadata)
-    #     o_sort.sort(dict_how_to_sort=how_to_sort_within_cycle)
-    #     self.dictionary_of_groups_sorted = o_sort.dict_groups_filename_sorted
-    #
-    #     group_number_selected = self._get_group_number_selected()
-    #     list_files_sorted = self.dictionary_of_groups_sorted[group_number_selected]
-    #     short_list_files_sorted = [os.path.basename(_file) for _file in list_files_sorted]
-    #     self.old_name_ui.options = short_list_files_sorted
-
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
         _, group_number = group_string.split(" # ")
         return np.int(group_number)
-
-    # def sorting_algorithm_variable1_changed(self, value):
-    #     new_value = value['new']
-    #     is_ascending = True if new_value == 'Ascending' else False
-    #     self.how_to_sort_within_cycle['1st_variable']['is_ascending'] = is_ascending
-    #     self.update_old_name_order()
-    #
-    # def sorting_algorithm_variable2_changed(self, value):
-    #     new_value = value['new']
-    #     is_ascending = True if new_value == 'Ascending' else False
-    #     self.how_to_sort_within_cycle['2nd_variable']['is_ascending'] = is_ascending
-    #     self.update_old_name_order()
-
-    # def name_of_first_metadata_changed(self, value):
-    #     old_value = value['old']
-    #     new_value = value['new']
-    #     self.how_to_sort_within_cycle['1st_variable']['name'] = new_value
-    #     self.name_of_second_metadata_ui.value = old_value
-    #     self.update_old_name_order()
-    #
-    # def name_of_second_metadata_changed(self, value):
-    #     old_value = value['old']
-    #     new_value = value['new']
-    #     self.how_to_sort_within_cycle['2nd_variable']['name'] = new_value
-    #     self.name_of_first_metadata_ui.value = old_value
-    #     self.update_old_name_order()
-    #
-    # def selection_of_group_changed(self, value=None):
-    #     self.update_old_name_order()
-    #     group_index = self._get_group_number_selected()
-    #     dict_new_names = self.dictionary_of_groups_new_names
-    #     list_new_names = dict_new_names[group_index]
-    #     self.new_name_ui.options = list_new_names
 
     def select_output_folder(self):
         output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
