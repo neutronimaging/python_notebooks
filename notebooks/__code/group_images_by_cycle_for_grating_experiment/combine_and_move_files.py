@@ -2,6 +2,7 @@ import os
 from IPython.core.display import display, HTML
 from ipywidgets import widgets
 import shutil
+from collections import OrderedDict
 
 from __code.file_handler import make_or_reset_folder
 from .utilities import combine_images
@@ -67,13 +68,13 @@ class CombineAndMoveFiles:
                 new_full_file_name = os.path.join(output_folder, _new)
                 if debug: print(f"old full file name -> {_old}")
                 if debug: print(f"new full file name -> {_new}")
-                # if len(_old) > 1:
-                #     if DEBUG: print("-> we need to combine these guys first!")
-                #     combine_images(output_folder=output_folder,
-                #                    list_images=_old,
-                #                    new_file_name=_new)
-                # else:
-                #     shutil.copy(_old[0], new_full_file_name)
+                if len(_old) > 1:
+                    if DEBUG: print("-> we need to combine these guys first!")
+                    combine_images(output_folder=output_folder,
+                                   list_images=_old,
+                                   new_file_name=_new)
+                else:
+                    shutil.copy(_old[0], new_full_file_name)
                 inner_progress_ui.value = _inner_index
 
         vbox.close()

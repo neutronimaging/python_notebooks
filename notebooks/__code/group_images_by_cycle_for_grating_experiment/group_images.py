@@ -36,6 +36,17 @@ class GroupImages:
     #                             }
     dictionary_of_groups_sorted = None
 
+    # to record first and last new file name of each group
+    # {0: {'first': "new_file_1.tif",
+    #      'last': "new_file_10.tif",
+    #     },
+    #  1: {'first': "new_file_1.tif",
+    #     #      'last': "new_file_10.tif",
+    #     #     },
+    #  ...
+    #  }
+    first_last_run_of_each_group_dictionary = None
+
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
         self.folder_selected = ''
@@ -160,6 +171,18 @@ class GroupImages:
     def display_groups(self):
         o_widgets = NotebookWidgets(parent=self)
         o_widgets.display_groups()
+        self.create_first_last_run_of_each_group_dictionary()
+
+    def create_first_last_run_of_each_group_dictionary(self):
+        o_get = Get(parent=self)
+        nbr_groups = len(self.dictionary_of_groups_sorted.keys())
+
+        first_last_run_of_each_group_dictionary = {}
+        for _group_index in np.arange(nbr_groups):
+            _list_for_this_group = o_get.list_of_new_files_basename_only(_group_index)
+            first_last_run_of_each_group_dictionary[_group_index] = {'first': _list_for_this_group[0],
+                                                                     'last': _list_for_this_group[-1]}
+        self.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
 
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
