@@ -67,8 +67,15 @@ class Interface(QMainWindow):
 
     def set_columns_width(self):
         columns_width = [int(value) for value in np.ones(28) * 100]
-        for index in np.arange(0, 6):
+
+        list_very_wide_columns = [0, 1, 2, 3, 4, 5, 6, 23]
+        for index in list_very_wide_columns:
             columns_width[index] = 400
+
+        list_wide_columns = [10, 24]
+        for index in list_wide_columns:
+            columns_width[index] = 150
+
         self.columns_width = columns_width
 
     def load_excel(self, excel_file=None):
@@ -167,6 +174,120 @@ class Interface(QMainWindow):
             index = list_procedure.index(fit_procedure_value)
             fit_procedure.setCurrentIndex(index)
             o_table.insert_widget(row=_row, column=column_index, widget=fit_procedure)
+
+            # roi
+            column_index = 10
+            roi_value = pandas_entry_for_this_row[column_index]
+            roi_item = QTableWidgetItem(roi_value)
+            o_table.insert_item(row=_row, column=column_index, item=roi_item)
+
+            # gamma_filter_data/ob
+            column_index = 11
+            gamma_filter_value = str(pandas_entry_for_this_row[column_index])
+            values = ['yes', 'no']
+            gamma_filter_ui = QComboBox()
+            gamma_filter_ui.addItems(values)
+            gamma_filter_ui.setCurrentText(gamma_filter_value)
+            o_table.insert_widget(row=_row, column=column_index, widget=gamma_filter_ui)
+
+            # data 3x3
+            column_index = 12
+            data_threshold_3x3_value = str(pandas_entry_for_this_row[column_index])
+            item_data_3x3 = QTableWidgetItem(data_threshold_3x3_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_data_3x3)
+
+            # data 5x5
+            column_index = 13
+            data_threshold_5x5_value = str(pandas_entry_for_this_row[column_index])
+            item_data_5x5 = QTableWidgetItem(data_threshold_5x5_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_data_5x5)
+
+            # data 7x7
+            column_index = 14
+            data_threshold_7x7_value = str(pandas_entry_for_this_row[column_index])
+            item_data_7x7 = QTableWidgetItem(data_threshold_7x7_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_data_7x7)
+
+            # data sigma log
+            column_index = 15
+            data_sigma_log_value = str(pandas_entry_for_this_row[column_index])
+            item_data_sigma = QTableWidgetItem(data_sigma_log_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_data_sigma)
+
+            # gamma_filter_dc
+            column_index = 16
+            gamma_filter_value = pandas_entry_for_this_row[column_index]
+            values = ['yes', 'no']
+            gamma_filter_dc_ui = QComboBox()
+            gamma_filter_dc_ui.addItems(values)
+            gamma_filter_dc_ui.setCurrentText(gamma_filter_value)
+            o_table.insert_widget(row=_row, column=column_index, widget=gamma_filter_dc_ui)
+
+            # dc 3x3
+            column_index = 17
+            dc_threshold_3x3_value = str(pandas_entry_for_this_row[column_index])
+            item_dc_3x3 = QTableWidgetItem(dc_threshold_3x3_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_dc_3x3)
+
+            # dc 5x5
+            column_index = 18
+            dc_threshold_5x5_value = str(pandas_entry_for_this_row[column_index])
+            item_dc_5x5 = QTableWidgetItem(dc_threshold_5x5_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_dc_5x5)
+
+            # dc 7x7
+            column_index = 19
+            dc_threshold_7x7_value = str(pandas_entry_for_this_row[column_index])
+            item_dc_7x7 = QTableWidgetItem(dc_threshold_7x7_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_dc_7x7)
+
+            # dc log
+            column_index = 20
+            dc_sigma_log_value = str(pandas_entry_for_this_row[column_index])
+            item_dc_sigma = QTableWidgetItem(dc_sigma_log_value)
+            o_table.insert_item(row=_row, column=column_index, item=item_dc_sigma)
+
+            # dc_outlier_removal
+            column_index = 21
+            dc_outlier_value = pandas_entry_for_this_row[column_index]
+            values = ['yes', 'no']
+            dc_outlier_ui = QComboBox()
+            dc_outlier_ui.addItems(values)
+            dc_outlier_ui.setCurrentText(dc_outlier_value)
+            o_table.insert_widget(row=_row, column=column_index, widget=dc_outlier_ui)
+
+            # dc_outlier_value
+            column_index = 22
+            dc_outlier_value = str(pandas_entry_for_this_row[column_index])
+            dc_outlier = QTableWidgetItem(dc_outlier_value)
+            o_table.insert_item(row=_row, column=column_index, item=dc_outlier)
+
+            # result_directory
+            column_index = 23
+            result_directory = pandas_entry_for_this_row[column_index]
+            result_directory_label = QLabel(result_directory)
+            result_directory_button = QPushButton("Browse")
+            result_directory_layout = QHBoxLayout()
+            result_directory_layout.addWidget(result_directory_label)
+            result_directory_layout.addWidget(result_directory_button)
+            result_directory_widget = QWidget()
+            result_directory_widget.setLayout(result_directory_layout)
+            o_table.insert_widget(row=_row, column=column_index, widget=result_directory_widget)
+
+            # file_id
+            column_index = 24
+            file_id_value = pandas_entry_for_this_row[column_index]
+            file_id = QTableWidgetItem(file_id_value)
+            o_table.insert_item(row=_row, column=column_index, item=file_id)
+
+            # sample information
+            # NOT USED
+
+            # used_environment
+            # NOT USED
+
+            # osc_pixel
+            # NOT USED
 
         self.fill_sample_columns()
         self.fill_ob_columns()
