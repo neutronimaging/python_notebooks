@@ -22,7 +22,7 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QRadioButton" name="radioButton">
+        <widget class="QRadioButton" name="sample_radioButton">
          <property name="text">
           <string>Sample</string>
          </property>
@@ -32,7 +32,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_2">
+        <widget class="QRadioButton" name="ob_radioButton">
          <property name="text">
           <string>OB</string>
          </property>
@@ -55,19 +55,12 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>Fill Table</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QTableWidget" name="tableWidget"/>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="cancel_button">
         <property name="text">
          <string>Cancel</string>
         </property>
@@ -87,7 +80,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="save_as_button">
         <property name="text">
          <string>Save As ...</string>
         </property>
@@ -110,5 +103,43 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>cancel_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cancel_button_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>67</x>
+     <y>761</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>196</x>
+     <y>764</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_as_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>save_as_button_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>962</x>
+     <y>765</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>850</x>
+     <y>759</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>fill_table_button_pushed()</slot>
+  <slot>cancel_button_pushed()</slot>
+  <slot>save_as_button_pushed()</slot>
+ </slots>
 </ui>

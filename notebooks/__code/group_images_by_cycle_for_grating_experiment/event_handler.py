@@ -109,7 +109,8 @@ class EventHandler:
 
     def load_excel_file(self, file_name):
         o_excel = ExcelHandler(parent=self.parent)
-        o_excel.load(excel_file=file_name)
+        o_excel.load_excel(excel_file=file_name)
 
     def create_new_excel_clicked(self, state):
-        print("create new excel clicked")
+        o_excel = ExcelHandler(parent=self.parent)
+        o_excel.new_excel()
