@@ -21,6 +21,7 @@ dependencies:
   - jupyterlab
   - ipykernel
   - jupytext
+  - xlrd
   - pip
   - pip:
     - pyqtgraph==0.12.1

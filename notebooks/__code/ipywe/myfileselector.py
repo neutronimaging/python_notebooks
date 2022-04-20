@@ -194,9 +194,6 @@ class MyFileSelectorPanel:
         if type(cur_filter) is list:
             cur_filter = cur_filter[0]
 
-        print(f"cur_filter: {cur_filter}")
-        print(f"os.path.join(curdir, cur_filter[0]): {os.path.join(curdir, cur_filter)}")
-
         list_files = glob.glob(os.path.join(curdir, cur_filter))
         # filter out dirs, they will be added below
         list_files = filter(lambda o: not os.path.isdir(o), list_files)

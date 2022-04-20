@@ -3,6 +3,7 @@ import os
 
 from __code.group_images_by_cycle_for_grating_experiment.get import Get
 from __code.file_folder_browser import FileFolderBrowser
+from __code.group_images_by_cycle_for_grating_experiment.excel_handler import ExcelHandler
 
 
 class EventHandler:
@@ -97,17 +98,18 @@ class EventHandler:
         self.parent.list_of_files_ui.value = file_selected
 
     def use_excel_file_clicked(self, state):
+        self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  #REMOVE_ME
+
         o_file = FileFolderBrowser(working_dir=self.parent.output_folder,
                                    next_function=self.load_excel_file)
-        o_excel = o_file.select_images(instruction="Select Excel file ...",
-                                       multiple_flag=False,
-                                       filters={"excel": "*.xls"},
-                                       default_filter="excel")
-
-        print("use excel file clicked")
+        o_file.select_images(instruction="Select Excel file ...",
+                             multiple_flag=False,
+                             filters={"excel": "*.xls"},
+                             default_filter="excel")
 
     def load_excel_file(self, file_name):
-        print(f"file_name : {file_name}")
+        o_excel = ExcelHandler(parent=self.parent)
+        o_excel.load(excel_file=file_name)
 
     def create_new_excel_clicked(self, state):
         print("create new excel clicked")

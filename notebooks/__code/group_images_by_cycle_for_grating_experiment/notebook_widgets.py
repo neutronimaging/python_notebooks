@@ -150,7 +150,7 @@ class NotebookWidgets:
         o_event = EventHandler(parent=self.parent)
 
         load_previous_excel_ui = widgets.Button(
-                description="Use previously created EXCEL File",
+                description="Replace  Use previously created EXCEL File",
                 icon="edit",
                 layout=widgets.Layout(width="50%",
                                       border="2px solid green")
@@ -169,3 +169,16 @@ class NotebookWidgets:
         hori_box = widgets.HBox([load_previous_excel_ui, create_new_excel_ui],
                                 layout=hori_layout)
         display(hori_box)
+
+        self.parent.excel_info_widget = widgets.HTML("")
+        display(self.parent.excel_info_widget)
+
+    def visualize_and_or_save_excel(self):
+        """
+        display Widgets that will allow the user to either visualize/edit the excel or just save it
+        """
+
+        vizualize_edit_ui = widgets.Button(
+                description="Visualize and/or edit the EXCEL file",
+
+        )
