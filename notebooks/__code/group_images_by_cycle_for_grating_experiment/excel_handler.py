@@ -68,7 +68,7 @@ class Interface(QMainWindow):
     def set_columns_width(self):
         columns_width = [int(value) for value in np.ones(28) * 100]
 
-        list_very_wide_columns = [0, 1, 2, 3, 4, 5, 6, 23]
+        list_very_wide_columns = [0, 1, 2, 3, 4, 5, 23]
         for index in list_very_wide_columns:
             columns_width[index] = 400
 
