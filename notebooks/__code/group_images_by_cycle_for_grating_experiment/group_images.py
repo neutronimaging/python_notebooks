@@ -24,6 +24,7 @@ DEBUG = False
 
 class GroupImages:
     working_dir = ''
+    output_folder = working_dir
     data_path = ''
     metadata_key_to_select = None
     metadata_name_to_select = None
@@ -195,3 +196,7 @@ class GroupImages:
                                                        output_folder=output_folder,
                                                        debug=DEBUG)
         o_combine_and_move_files.run()
+
+    def generate_angel_configuration_file(self):
+        o_widgets = NotebookWidgets(parent=self)
+        o_widgets.generate_angel_configuration_file()

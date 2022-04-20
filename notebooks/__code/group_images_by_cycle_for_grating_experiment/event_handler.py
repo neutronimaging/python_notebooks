@@ -2,6 +2,7 @@ import numpy as np
 import os
 
 from __code.group_images_by_cycle_for_grating_experiment.get import Get
+from __code.file_folder_browser import FileFolderBrowser
 
 
 class EventHandler:
@@ -94,3 +95,19 @@ class EventHandler:
         index = list_of_new_files_names.index(new_file_selected)
         file_selected = list_of_files_names[index]
         self.parent.list_of_files_ui.value = file_selected
+
+    def use_excel_file_clicked(self, state):
+        o_file = FileFolderBrowser(working_dir=self.parent.output_folder,
+                                   next_function=self.load_excel_file)
+        o_excel = o_file.select_images(instruction="Select Excel file ...",
+                                       multiple_flag=False,
+                                       filters={"excel": "*.xls"},
+                                       default_filter="excel")
+
+        print("use excel file clicked")
+
+    def load_excel_file(self, file_name):
+        print(f"file_name : {file_name}")
+
+    def create_new_excel_clicked(self, state):
+        print("create new excel clicked")

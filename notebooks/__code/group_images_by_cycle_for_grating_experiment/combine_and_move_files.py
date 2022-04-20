@@ -12,6 +12,7 @@ class CombineAndMoveFiles:
     def __init__(self, parent=None, output_folder=None, debug=False):
         self.parent = parent
         self.output_folder = output_folder
+        self.parent.output_folder = output_folder
         self.debug = debug
 
     def run(self):

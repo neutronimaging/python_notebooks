@@ -144,3 +144,28 @@ class NotebookWidgets:
                                                   layout=widgets.Layout(width="90%"))])
         self.parent.path_ui = bottom_hbox.children[1]
         display(bottom_hbox)
+
+    def generate_angel_configuration_file(self):
+
+        o_event = EventHandler(parent=self.parent)
+
+        load_previous_excel_ui = widgets.Button(
+                description="Use previously created EXCEL File",
+                icon="edit",
+                layout=widgets.Layout(width="50%",
+                                      border="2px solid green")
+        )
+        load_previous_excel_ui.on_click(o_event.use_excel_file_clicked)
+
+        create_new_excel_ui = widgets.Button(
+                description="Create New Excel",
+                layout=widgets.Layout(width="50%",
+                                      border="2px solid green"),
+                icon="file-excel-o"
+        )
+        create_new_excel_ui.on_click(o_event.create_new_excel_clicked)
+
+        hori_layout = widgets.Layout()
+        hori_box = widgets.HBox([load_previous_excel_ui, create_new_excel_ui],
+                                layout=hori_layout)
+        display(hori_box)

@@ -72,8 +72,8 @@ class MyFileSelectorPanel:
                 continue
         self.instruction = instruction
         self.type = type
-        self.filters = filters;
-        self.default_filter = default_filter;
+        self.filters = filters
+        self.default_filter = default_filter
         self.cur_filter = None
         self.multiple = multiple
         self.newdir_toolbar_button = newdir_toolbar_button
@@ -190,7 +190,14 @@ class MyFileSelectorPanel:
     def getFilteredEntries(self):
         curdir = self.curdir
         cur_filter = self.filter_widget.value
-        list_files = glob.glob(os.path.join(curdir, cur_filter[0]))
+
+        if type(cur_filter) is list:
+            cur_filter = cur_filter[0]
+
+        print(f"cur_filter: {cur_filter}")
+        print(f"os.path.join(curdir, cur_filter[0]): {os.path.join(curdir, cur_filter)}")
+
+        list_files = glob.glob(os.path.join(curdir, cur_filter))
         # filter out dirs, they will be added below
         list_files = filter(lambda o: not os.path.isdir(o), list_files)
         list_files = list(map(os.path.basename, list_files))
