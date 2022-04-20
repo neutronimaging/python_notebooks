@@ -9,7 +9,7 @@
     "images_per_step": 3,
     "rotation": 0,
     "fit_procedure": "EM Fit",
-    "roi": [700, 1300, 280, 1920],
+    "roi": "[700, 1300, 280, 1920]",
     "gamma_filter_data/ob": "yes",
     "data_threshold_3x3": 35,
     "data_threshold_5x5": 55,
@@ -26,12 +26,5 @@
     "file_id": "None",
     "sample_information": "None",
     "used_environment": "None",
-    "osc_pixel": "None",
-    "list_fit_procedure": ["EM Fit",
-      "Matrix Fit",
-      "MATRIX",
-      "FFT Fit",
-      "Sinus Fit",
-      "Matrix Fit Advanced"
-    ]
+    "osc_pixel": "None"
 }

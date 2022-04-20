@@ -7,11 +7,13 @@ from IPython.core.display import HTML
 import os
 import numpy as np
 import json
+from collections import OrderedDict
 
 from __code._utilities.string import format_html_message
 from __code import load_ui
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code._utilities.table_handler import TableHandler
+from __code.group_images_by_cycle_for_grating_experiment import list_fit_procedure
 
 ROW_HEIGHT = 40
 
@@ -28,7 +30,6 @@ class ExcelHandler:
         self.parent.excel_info_widget.value = f"<b>Loaded excel file</b>: {excel_file}!"
 
         df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
-        self.pandas_object = df
 
         nbr_excel_row = len(df)
         nbr_notebook_row = len(self.parent.first_last_run_of_each_group_dictionary.keys())
@@ -41,13 +42,53 @@ class ExcelHandler:
         else:
             o_interface = Interface(grand_parent=self.parent,
                                     excel_file=excel_file,
+                                    excel_object=df,
                                     first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
             o_interface.show()
+
+    def get_excel_config(self):
+        config_file = os.path.join(os.path.dirname(__file__), 'excel_config.json')
+        with open(config_file) as json_file:
+            return json.load(json_file)
+
+    def _create_pandas_object(self):
+        first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
+        excel_config = self.get_excel_config()
+
+        df_dict = OrderedDict()
+        for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+
+            if _row_index == 0:
+                df_dict["first_data_file"] = [first_last_run_of_each_group_dictionary[_key]['first']]
+                df_dict["last_data_file"] = [first_last_run_of_each_group_dictionary[_key]['last']]
+            else:
+                df_dict["first_data_file"].append(first_last_run_of_each_group_dictionary[_key]['first'])
+                df_dict["last_data_file"].append(first_last_run_of_each_group_dictionary[_key]['last'])
+
+        nbr_row = len(first_last_run_of_each_group_dictionary.keys())
+        df_dict["first_ob_file"] = ["" for _ in np.arange(nbr_row)]
+        df_dict["last_ob_file"] = ["" for _ in np.arange(nbr_row)]
+        df_dict["first_dc_file"] = ["" for _ in np.arange(nbr_row)]
+        df_dict["last_dc_file"] = ["" for _ in np.arange(nbr_row)]
+
+        list_key = list(excel_config.keys())
+        list_key.remove("first_data_file")
+        list_key.remove("last_data_file")
+        list_key.remove("first_ob_file")
+        list_key.remove("last_ob_file")
+        for _key in list_key:
+            df_dict[_key] = [excel_config[_key] for _ in np.arange(nbr_row)]
+
+        df = pd.DataFrame(data=df_dict)
+        return df
 
     def new_excel(self):
         self.parent.excel_info_widget.value = f"<b>Working with new excel file!"
 
+        pandas_object = self._create_pandas_object()
+
         o_interface = Interface(grand_parent=self.parent,
+                                pandas_object=pandas_object,
                                 first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
         o_interface.show()
 
@@ -57,44 +98,49 @@ class Interface(QMainWindow):
     pandas_object = None  # pandas excel object
     excel_config = None
 
-    def __init__(self, parent=None, grand_parent=None, excel_file=None, first_last_run_of_each_group_dictionary=None):
+    def __init__(self, parent=None, grand_parent=None, excel_file=None,
+                 first_last_run_of_each_group_dictionary=None,
+                 pandas_object=None):
 
         display(format_html_message(pre_message="Check UI that popped up \
                     (maybe hidden behind this browser!)",
                                     spacer=""))
 
+        self.pandas_object = pandas_object
         super(Interface, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
                                                  'ui_grating_excel_editor.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Excel Editor")
+        self.excel_file = excel_file
 
         # dictionary giving first and last run for each group (row)
         self.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
 
+        self.init_statusbar_message()
+
         self.load_config()
         self.set_columns_width()
 
-        self.load_excel(excel_file=excel_file)
         self.fill_table()
 
-        # make sure the size of excel and group from notebook match
-        pandas_object = self.pandas_object
-        if pandas_object is None:
-            show_status_message(parent=self,
-                                message=f"Error loading excel!",
-                                status=StatusMessageStatus.error,
-                                duration_s=20)
-            return
-
-        list_columns = len(pandas_object)
-        nbr_group = len(self.first_last_run_of_each_group_dictionary.keys())
-        if list_columns != nbr_group:
-            show_status_message(parent=self,
-                                message=f"Excel loaded and number of new entries do not match!",
-                                status=StatusMessageStatus.warning,
-                                duration_s=20)
+    # # make sure the size of excel and group from notebook match
+        # pandas_object = self.pandas_object
+        # if pandas_object is None:
+        #     show_status_message(parent=self,
+        #                         message=f"Error loading excel!",
+        #                         status=StatusMessageStatus.error,
+        #                         duration_s=20)
+        #     return
+        #
+        # list_columns = len(pandas_object)
+        # nbr_group = len(self.first_last_run_of_each_group_dictionary.keys())
+        # if list_columns != nbr_group:
+        #     show_status_message(parent=self,
+        #                         message=f"Excel loaded and number of new entries do not match!",
+        #                         status=StatusMessageStatus.warning,
+        #                         duration_s=20)
 
     def load_config(self):
         config_file = os.path.join(os.path.dirname(__file__), 'excel_config.json')
@@ -114,24 +160,17 @@ class Interface(QMainWindow):
 
         self.columns_width = columns_width
 
-    def load_excel(self, excel_file=None):
-        if excel_file:
-            df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
-            self.pandas_object = df
+    def init_statusbar_message(self):
+        if self.excel_file:
             show_status_message(parent=self,
-                                message=f"Loaded excel file {excel_file}!",
+                                message=f"Loaded excel file {self.excel_file}!",
                                 status=StatusMessageStatus.ready,
                                 duration_s=10)
         else:
-            df = self.initialize_new_excel()
-            self.pandas_object = df
             show_status_message(parent=self,
-                                message=f"Created a new Excel file!",
+                                message="Created a new Excel file!",
                                 status=StatusMessageStatus.ready,
                                 duration_s=10)
-
-    def initialize_new_excel(self):
-        pass
 
     def fill_table(self):
         pandas_object = self.pandas_object
@@ -270,7 +309,7 @@ class Interface(QMainWindow):
             column_index = 9
             fit_procedure = QComboBox()
             fit_procedure_value = pandas_entry_for_first_row[column_index]
-            list_procedure = self.excel_config['list_fit_procedure']
+            list_procedure = list_fit_procedure
             fit_procedure.addItems(list_procedure)
             index = list_procedure.index(fit_procedure_value)
             fit_procedure.setCurrentIndex(index)
