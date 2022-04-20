@@ -204,57 +204,57 @@ class Interface(QMainWindow):
 
             pandas_entry_for_this_row = pandas_object.iloc[_row]
 
-            if fill_sample_columns_with_pandas:
+            # if fill_sample_columns_with_pandas:
 
-                # first_sample_file
-                column_index = 0
-                start_sample_file = pandas_entry_for_this_row[column_index]
-                start_sample_file_label = QLabel(start_sample_file)
-                start_sample_file_button = QPushButton("Browse")
-                start_sample_file_layout = QHBoxLayout()
-                start_sample_file_layout.addWidget(start_sample_file_label)
-                start_sample_file_layout.addWidget(start_sample_file_button)
-                start_sample_file_widget = QWidget()
-                start_sample_file_widget.setLayout(start_sample_file_layout)
-                o_table.insert_widget(row=_row, column=column_index, widget=start_sample_file_widget)
+            # first_sample_file
+            column_index = 0
+            start_sample_file = pandas_entry_for_this_row[column_index]
+            start_sample_file_label = QLabel(start_sample_file)
+            start_sample_file_button = QPushButton("Browse")
+            start_sample_file_layout = QHBoxLayout()
+            start_sample_file_layout.addWidget(start_sample_file_label)
+            start_sample_file_layout.addWidget(start_sample_file_button)
+            start_sample_file_widget = QWidget()
+            start_sample_file_widget.setLayout(start_sample_file_layout)
+            o_table.insert_widget(row=_row, column=column_index, widget=start_sample_file_widget)
 
-                # last_sample_file
-                column_index = 1
-                end_sample_file = pandas_entry_for_this_row[column_index]
-                end_sample_file_label = QLabel(end_sample_file)
-                end_sample_file_button = QPushButton("Browse")
-                end_sample_file_layout = QHBoxLayout()
-                end_sample_file_layout.addWidget(end_sample_file_label)
-                end_sample_file_layout.addWidget(end_sample_file_button)
-                end_sample_file_widget = QWidget()
-                end_sample_file_widget.setLayout(end_sample_file_layout)
-                o_table.insert_widget(row=_row, column=column_index, widget=end_sample_file_widget)
+            # last_sample_file
+            column_index = 1
+            end_sample_file = pandas_entry_for_this_row[column_index]
+            end_sample_file_label = QLabel(end_sample_file)
+            end_sample_file_button = QPushButton("Browse")
+            end_sample_file_layout = QHBoxLayout()
+            end_sample_file_layout.addWidget(end_sample_file_label)
+            end_sample_file_layout.addWidget(end_sample_file_button)
+            end_sample_file_widget = QWidget()
+            end_sample_file_widget.setLayout(end_sample_file_layout)
+            o_table.insert_widget(row=_row, column=column_index, widget=end_sample_file_widget)
 
-            if fill_ob_columns_with_pandas:
+            # if fill_ob_columns_with_pandas:
 
-                # first_ob_file
-                column_index = 2
-                start_ob_file = pandas_entry_for_this_row[column_index]
-                start_ob_file_label = QLabel(start_ob_file)
-                start_ob_file_button = QPushButton("Browse")
-                start_ob_file_layout = QHBoxLayout()
-                start_ob_file_layout.addWidget(start_ob_file_label)
-                start_ob_file_layout.addWidget(start_ob_file_button)
-                start_ob_file_widget = QWidget()
-                start_ob_file_widget.setLayout(start_ob_file_layout)
-                o_table.insert_widget(row=_row, column=column_index, widget=start_ob_file_widget)
+            # first_ob_file
+            column_index = 2
+            start_ob_file = pandas_entry_for_this_row[column_index]
+            start_ob_file_label = QLabel(start_ob_file)
+            start_ob_file_button = QPushButton("Browse")
+            start_ob_file_layout = QHBoxLayout()
+            start_ob_file_layout.addWidget(start_ob_file_label)
+            start_ob_file_layout.addWidget(start_ob_file_button)
+            start_ob_file_widget = QWidget()
+            start_ob_file_widget.setLayout(start_ob_file_layout)
+            o_table.insert_widget(row=_row, column=column_index, widget=start_ob_file_widget)
 
-                # last_ob_file
-                column_index = 3
-                end_ob_file = pandas_entry_for_this_row[column_index]
-                end_ob_file_label = QLabel(end_ob_file)
-                end_ob_file_button = QPushButton("Browse")
-                end_ob_file_layout = QHBoxLayout()
-                end_ob_file_layout.addWidget(end_ob_file_label)
-                end_ob_file_layout.addWidget(end_ob_file_button)
-                end_ob_file_widget = QWidget()
-                end_ob_file_widget.setLayout(end_ob_file_layout)
-                o_table.insert_widget(row=_row, column=column_index, widget=end_ob_file_widget)
+            # last_ob_file
+            column_index = 3
+            end_ob_file = pandas_entry_for_this_row[column_index]
+            end_ob_file_label = QLabel(end_ob_file)
+            end_ob_file_button = QPushButton("Browse")
+            end_ob_file_layout = QHBoxLayout()
+            end_ob_file_layout.addWidget(end_ob_file_label)
+            end_ob_file_layout.addWidget(end_ob_file_button)
+            end_ob_file_widget = QWidget()
+            end_ob_file_widget.setLayout(end_ob_file_layout)
+            o_table.insert_widget(row=_row, column=column_index, widget=end_ob_file_widget)
 
             # first_dc_file
             column_index = 4
