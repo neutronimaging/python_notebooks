@@ -3,6 +3,7 @@ from qtpy.QtWidgets import QMainWindow, QLabel, QPushButton, QHBoxLayout, QWidge
 from qtpy.QtWidgets import QTableWidgetItem, QComboBox
 from qtpy import QtCore
 from IPython.core.display import display
+from IPython.core.display import HTML
 import os
 import numpy as np
 import json
@@ -26,10 +27,22 @@ class ExcelHandler:
 
         self.parent.excel_info_widget.value = f"<b>Loaded excel file</b>: {excel_file}!"
 
-        o_interface = Interface(grand_parent=self.parent,
-                                excel_file=excel_file,
-                                first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
-        o_interface.show()
+        df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
+        self.pandas_object = df
+
+        nbr_excel_row = len(df)
+        nbr_notebook_row = len(self.parent.first_last_run_of_each_group_dictionary.keys())
+
+        if nbr_excel_row != nbr_notebook_row:
+            display(HTML("<font color='red'>Number of rows in Excel document selected and number of group <b>DO NOT "
+                         "MATCH!</b></font>"))
+            display(HTML("<font color='blue'><b>SOLUTION</b>: create a new Excel document!</font>"))
+
+        else:
+            o_interface = Interface(grand_parent=self.parent,
+                                    excel_file=excel_file,
+                                    first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
+            o_interface.show()
 
     def new_excel(self):
         self.parent.excel_info_widget.value = f"<b>Working with new excel file!"
@@ -145,8 +158,6 @@ class Interface(QMainWindow):
             fill_sample_columns_with_pandas = True
 
         pandas_entry_for_first_row = pandas_object.iloc[0]
-
-
 
         nbr_rows = len(pandas_object)
         for _row in np.arange(nbr_rows):
@@ -352,17 +363,17 @@ class Interface(QMainWindow):
             dc_outlier = QTableWidgetItem(dc_outlier_value)
             o_table.insert_item(row=_row, column=column_index, item=dc_outlier)
 
-            # # result_directory
-            # column_index = 23
-            # result_directory = pandas_entry_for_first_row[column_index]
-            # result_directory_label = QLabel(result_directory)
-            # result_directory_button = QPushButton("Browse")
-            # result_directory_layout = QHBoxLayout()
-            # result_directory_layout.addWidget(result_directory_label)
-            # result_directory_layout.addWidget(result_directory_button)
-            # result_directory_widget = QWidget()
-            # result_directory_widget.setLayout(result_directory_layout)
-            # o_table.insert_widget(row=_row, column=column_index, widget=result_directory_widget)
+            # result_directory
+            column_index = 23
+            result_directory = pandas_entry_for_first_row[column_index]
+            result_directory_label = QLabel(result_directory)
+            result_directory_button = QPushButton("Browse")
+            result_directory_layout = QHBoxLayout()
+            result_directory_layout.addWidget(result_directory_label)
+            result_directory_layout.addWidget(result_directory_button)
+            result_directory_widget = QWidget()
+            result_directory_widget.setLayout(result_directory_layout)
+            o_table.insert_widget(row=_row, column=column_index, widget=result_directory_widget)
 
             # file_id
             column_index = 24
@@ -386,10 +397,53 @@ class Interface(QMainWindow):
         o_table.set_column_width(column_width=self.columns_width)
 
     def fill_sample_columns_with_data_from_notebook(self):
-        pass
+        first_last_run_of_each_group_dictionary = self.first_last_run_of_each_group_dictionary
+        list_sample_first_run = []
+        list_sample_last_run = []
+        for _group in first_last_run_of_each_group_dictionary.keys():
+            list_sample_first_run.append(first_last_run_of_each_group_dictionary[_group]['first'])
+            list_sample_last_run.append(first_last_run_of_each_group_dictionary[_group]['last'])
+
+        pandas_object = self.pandas_object
+        nbr_row = len(pandas_object)
+        list_ob_first_run = []
+        list_ob_last_run = []
+        for _row in np.arange(nbr_row):
+            list_ob_first_run.append(pandas_object.iloc[_row][2])
+            list_ob_last_run.append(pandas_object.iloc[_row][3])
+
+        self.refresh_sample_ob_columns(list_sample_first_run=list_sample_first_run,
+                                       list_sample_last_run=list_sample_last_run,
+                                       list_ob_first_run=list_ob_first_run,
+                                       list_ob_last_run=list_ob_last_run,
+                                       )
 
     def fill_ob_columns_with_data_from_notebook(self):
+        first_last_run_of_each_group_dictionary = self.first_last_run_of_each_group_dictionary
+        list_sample_first_run = []
+        list_sample_last_run = []
+        pandas_object = self.pandas_object
+        nbr_row = len(pandas_object)
+        for _row in np.arange(nbr_row):
+            list_sample_first_run.append(pandas_object.iloc[_row][0])
+            list_sample_last_run.append(pandas_object.iloc[_row][1])
+
+        list_ob_first_run = []
+        list_ob_last_run = []
+        for _group in first_last_run_of_each_group_dictionary.keys():
+            list_ob_first_run.append(first_last_run_of_each_group_dictionary[_group]['first'])
+            list_ob_last_run.append(first_last_run_of_each_group_dictionary[_group]['last'])
+
+        self.refresh_sample_ob_columns(list_sample_first_run=list_sample_first_run,
+                                       list_sample_last_run=list_sample_last_run,
+                                       list_ob_first_run=list_ob_first_run,
+                                       list_ob_last_run=list_ob_last_run,
+                                       )
+
+    def refresh_sample_ob_columns(self, list_sample_first_run=None, list_sample_last_run=None,
+                                  list_ob_first_run=None, list_ob_last_run=None):
         pass
+
 
 
     def cancel_button_pushed(self):
