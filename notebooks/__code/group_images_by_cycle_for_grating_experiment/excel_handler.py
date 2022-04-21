@@ -29,6 +29,7 @@ class ExcelHandler:
 
         self.parent.excel_info_widget.value = f"<b>Loaded excel file</b>: {excel_file}!"
 
+
         df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
 
         nbr_excel_row = len(df)
@@ -40,9 +41,15 @@ class ExcelHandler:
             display(HTML("<font color='blue'><b>SOLUTION</b>: create a new Excel document!</font>"))
 
         else:
+            data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
+            df = self._populate_pandas_object(
+                    df=df,
+                    data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data)
+
             o_interface = Interface(grand_parent=self.parent,
                                     excel_file=excel_file,
                                     pandas_object=df,
+                                    data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
                                     first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
             o_interface.show()
 
@@ -51,25 +58,59 @@ class ExcelHandler:
         with open(config_file) as json_file:
             return json.load(json_file)
 
-    def _create_pandas_object(self):
+    def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data='sample'):
+        first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
+        if data_type_to_populate_with_notebook_data == 'sample':
+
+            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+                df.iloc[_row_index][0] = first_last_run_of_each_group_dictionary[_key]['first']
+                df.iloc[_row_index][1] = first_last_run_of_each_group_dictionary[_key]['last']
+
+        else:  # ob
+
+            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+                df.iloc[_row_index][2] = first_last_run_of_each_group_dictionary[_key]['first']
+                df.iloc[_row_index][3] = first_last_run_of_each_group_dictionary[_key]['last']
+
+        return df
+
+    def _create_pandas_object(self, data_type_to_populate_with_notebook_data='sample'):
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
         excel_config = self.get_excel_config()
 
         df_dict = OrderedDict()
-        for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+        if data_type_to_populate_with_notebook_data == 'sample':
 
-            if _row_index == 0:
-                df_dict["first_data_file"] = [first_last_run_of_each_group_dictionary[_key]['first']]
-                df_dict["last_data_file"] = [first_last_run_of_each_group_dictionary[_key]['last']]
-            else:
-                df_dict["first_data_file"].append(first_last_run_of_each_group_dictionary[_key]['first'])
-                df_dict["last_data_file"].append(first_last_run_of_each_group_dictionary[_key]['last'])
+            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
 
-        nbr_row = len(first_last_run_of_each_group_dictionary.keys())
-        df_dict["first_ob_file"] = ["" for _ in np.arange(nbr_row)]
-        df_dict["last_ob_file"] = ["" for _ in np.arange(nbr_row)]
-        df_dict["first_dc_file"] = ["" for _ in np.arange(nbr_row)]
-        df_dict["last_dc_file"] = ["" for _ in np.arange(nbr_row)]
+                if _row_index == 0:
+                    df_dict["first_data_file"] = [first_last_run_of_each_group_dictionary[_key]['first']]
+                    df_dict["last_data_file"] = [first_last_run_of_each_group_dictionary[_key]['last']]
+                else:
+                    df_dict["first_data_file"].append(first_last_run_of_each_group_dictionary[_key]['first'])
+                    df_dict["last_data_file"].append(first_last_run_of_each_group_dictionary[_key]['last'])
+
+            nbr_row = len(first_last_run_of_each_group_dictionary.keys())
+            df_dict["first_ob_file"] = ["None" for _ in np.arange(nbr_row)]
+            df_dict["last_ob_file"] = ["None" for _ in np.arange(nbr_row)]
+
+        else:  # ob
+
+            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+
+                nbr_row = len(first_last_run_of_each_group_dictionary.keys())
+                df_dict["first_sample_file"] = ["None" for _ in np.arange(nbr_row)]
+                df_dict["last_sample_file"] = ["None" for _ in np.arange(nbr_row)]
+
+                if _row_index == 0:
+                    df_dict["first_ob_file"] = [first_last_run_of_each_group_dictionary[_key]['first']]
+                    df_dict["last_ob_file"] = [first_last_run_of_each_group_dictionary[_key]['last']]
+                else:
+                    df_dict["first_ob_file"].append(first_last_run_of_each_group_dictionary[_key]['first'])
+                    df_dict["last_ob_file"].append(first_last_run_of_each_group_dictionary[_key]['last'])
+
+        df_dict["first_dc_file"] = ["None" for _ in np.arange(nbr_row)]
+        df_dict["last_dc_file"] = ["None" for _ in np.arange(nbr_row)]
 
         list_key = list(excel_config.keys())
         list_key.remove("first_data_file")
@@ -84,11 +125,13 @@ class ExcelHandler:
 
     def new_excel(self):
         self.parent.excel_info_widget.value = f"<b>Working with new excel file!"
+        data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
 
-        pandas_object = self._create_pandas_object()
+        pandas_object = self._create_pandas_object(data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data)
 
         o_interface = Interface(grand_parent=self.parent,
                                 pandas_object=pandas_object,
+                                data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
                                 first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
         o_interface.show()
 
@@ -99,12 +142,14 @@ class Interface(QMainWindow):
 
     def __init__(self, parent=None, grand_parent=None, excel_file=None,
                  first_last_run_of_each_group_dictionary=None,
+                 data_type_to_populate_with_notebook_data='sample',
                  pandas_object=None):
 
         display(format_html_message(pre_message="Check UI that popped up \
                     (maybe hidden behind this browser!)",
                                     spacer=""))
         self.grand_parent = grand_parent
+        self.data_type_to_populate_with_notebook_data = data_type_to_populate_with_notebook_data
 
         self.pandas_object = pandas_object
         super(Interface, self).__init__(parent)
@@ -185,17 +230,6 @@ class Interface(QMainWindow):
             o_table.insert_column(_col_index)
         o_table.set_column_names(list_columns)
 
-        fill_sample_columns_with_pandas = False
-        fill_ob_columns_with_pandas = False
-
-        if self.ui.sample_radioButton.isChecked():
-            self.fill_sample_columns_with_data_from_notebook()
-            fill_ob_columns_with_pandas = True
-
-        else:
-            self.fill_ob_columns_with_data_from_notebook()
-            fill_sample_columns_with_pandas = True
-
         pandas_entry_for_first_row = pandas_object.iloc[0]
 
         nbr_rows = len(pandas_object)
@@ -203,10 +237,6 @@ class Interface(QMainWindow):
             o_table.insert_empty_row(_row)
 
             pandas_entry_for_this_row = pandas_object.iloc[_row]
-
-            print(f"row: {_row}")
-            import pprint
-            pprint.pprint(pandas_entry_for_this_row)
 
             # first_sample_file
             column_index = 0
@@ -391,54 +421,6 @@ class Interface(QMainWindow):
         o_table.set_row_height(row_height=row_height)
 
         o_table.set_column_width(column_width=self.columns_width)
-
-    def fill_sample_columns_with_data_from_notebook(self):
-        first_last_run_of_each_group_dictionary = self.first_last_run_of_each_group_dictionary
-        list_sample_first_run = []
-        list_sample_last_run = []
-        for _group in first_last_run_of_each_group_dictionary.keys():
-            list_sample_first_run.append(first_last_run_of_each_group_dictionary[_group]['first'])
-            list_sample_last_run.append(first_last_run_of_each_group_dictionary[_group]['last'])
-
-        pandas_object = self.pandas_object
-        nbr_row = len(pandas_object)
-        list_ob_first_run = []
-        list_ob_last_run = []
-        for _row in np.arange(nbr_row):
-            list_ob_first_run.append(pandas_object.iloc[_row][2])
-            list_ob_last_run.append(pandas_object.iloc[_row][3])
-
-        self.refresh_sample_ob_columns(list_sample_first_run=list_sample_first_run,
-                                       list_sample_last_run=list_sample_last_run,
-                                       list_ob_first_run=list_ob_first_run,
-                                       list_ob_last_run=list_ob_last_run,
-                                       )
-
-    def fill_ob_columns_with_data_from_notebook(self):
-        first_last_run_of_each_group_dictionary = self.first_last_run_of_each_group_dictionary
-        list_sample_first_run = []
-        list_sample_last_run = []
-        pandas_object = self.pandas_object
-        nbr_row = len(pandas_object)
-        for _row in np.arange(nbr_row):
-            list_sample_first_run.append(pandas_object.iloc[_row][0])
-            list_sample_last_run.append(pandas_object.iloc[_row][1])
-
-        list_ob_first_run = []
-        list_ob_last_run = []
-        for _group in first_last_run_of_each_group_dictionary.keys():
-            list_ob_first_run.append(first_last_run_of_each_group_dictionary[_group]['first'])
-            list_ob_last_run.append(first_last_run_of_each_group_dictionary[_group]['last'])
-
-        self.refresh_sample_ob_columns(list_sample_first_run=list_sample_first_run,
-                                       list_sample_last_run=list_sample_last_run,
-                                       list_ob_first_run=list_ob_first_run,
-                                       list_ob_last_run=list_ob_last_run,
-                                       )
-
-    def refresh_sample_ob_columns(self, list_sample_first_run=None, list_sample_last_run=None,
-                                  list_ob_first_run=None, list_ob_last_run=None):
-        pass
 
     def cancel_button_pushed(self):
         self.close()
