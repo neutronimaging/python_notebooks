@@ -37,5 +37,6 @@ dependencies:
     - ipywidgets
     - https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl
     - dash
+    - xlsxwriter
     - werkzeug==2.0.1
 prefix: /opt/anaconda/envs/neutron-imaging
