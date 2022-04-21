@@ -42,7 +42,7 @@ class ExcelHandler:
         else:
             o_interface = Interface(grand_parent=self.parent,
                                     excel_file=excel_file,
-                                    excel_object=df,
+                                    pandas_object=df,
                                     first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
             o_interface.show()
 
@@ -204,39 +204,43 @@ class Interface(QMainWindow):
 
             pandas_entry_for_this_row = pandas_object.iloc[_row]
 
+            print(f"row: {_row}")
+            import pprint
+            pprint.pprint(pandas_entry_for_this_row)
+
             # first_sample_file
             column_index = 0
-            start_sample_file = pandas_entry_for_this_row[column_index]
+            start_sample_file = str(pandas_entry_for_this_row[column_index])
             _item = QTableWidgetItem(start_sample_file)
             o_table.insert_item(row=_row, column=column_index, item=_item)
 
             # last_sample_file
             column_index = 1
-            end_sample_file = pandas_entry_for_this_row[column_index]
+            end_sample_file = str(pandas_entry_for_this_row[column_index])
             _item = QTableWidgetItem(end_sample_file)
             o_table.insert_item(row=_row, column=column_index, item=_item)
 
             # first_ob_file
             column_index = 2
-            start_ob_file = pandas_entry_for_this_row[column_index]
+            start_ob_file = str(pandas_entry_for_this_row[column_index])
             _item = QTableWidgetItem(start_ob_file)
             o_table.insert_item(row=_row, column=column_index, item=_item)
 
             # last_ob_file
             column_index = 3
-            end_ob_file = pandas_entry_for_this_row[column_index]
+            end_ob_file = str(pandas_entry_for_this_row[column_index])
             _item = QTableWidgetItem(end_ob_file)
             o_table.insert_item(row=_row, column=column_index, item=_item)
 
             # first_dc_file
             column_index = 4
-            start_dc_file = pandas_entry_for_this_row[column_index]
+            start_dc_file = str(pandas_entry_for_this_row[column_index])
             _item = QTableWidgetItem(start_dc_file)
             o_table.insert_item(row=_row, column=column_index, item=_item)
 
             # last_dc_file
             column_index = 5
-            end_dc_file = pandas_entry_for_first_row[column_index]
+            end_dc_file = str(pandas_entry_for_first_row[column_index])
             _item = QTableWidgetItem(end_dc_file)
             o_table.insert_item(row=_row, column=column_index, item=_item)
 
@@ -364,13 +368,13 @@ class Interface(QMainWindow):
 
             # result_directory
             column_index = 23
-            result_directory = pandas_entry_for_first_row[column_index]
+            result_directory = str(pandas_entry_for_first_row[column_index])
             _item = QTableWidgetItem(result_directory)
             o_table.insert_item(row=_row, column=column_index, item=_item)
 
             # file_id
             column_index = 24
-            file_id_value = pandas_entry_for_this_row[column_index]
+            file_id_value = str(pandas_entry_for_this_row[column_index])
             file_id = QTableWidgetItem(file_id_value)
             o_table.insert_item(row=_row, column=column_index, item=file_id)
 
