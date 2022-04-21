@@ -54,7 +54,30 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="check_table_content_pushButton">
+        <property name="text">
+         <string>Checking if current table can be loaded in Angel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QPushButton" name="save_as_button">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string>Save As ...</string>
         </property>
@@ -86,11 +109,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>67</x>
-     <y>761</y>
+     <y>612</y>
     </hint>
     <hint type="destinationlabel">
      <x>196</x>
-     <y>764</y>
+     <y>663</y>
     </hint>
    </hints>
   </connection>
@@ -101,12 +124,28 @@
    <slot>save_as_button_pushed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>962</x>
-     <y>765</y>
+     <x>1849</x>
+     <y>616</y>
     </hint>
     <hint type="destinationlabel">
      <x>850</x>
-     <y>759</y>
+     <y>663</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_table_content_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>check_table_content_pushed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1713</x>
+     <y>622</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1542</x>
+     <y>614</y>
     </hint>
    </hints>
   </connection>
@@ -115,5 +154,6 @@
   <slot>fill_table_button_pushed()</slot>
   <slot>cancel_button_pushed()</slot>
   <slot>save_as_button_pushed()</slot>
+  <slot>check_table_content_pushed()</slot>
  </slots>
 </ui>

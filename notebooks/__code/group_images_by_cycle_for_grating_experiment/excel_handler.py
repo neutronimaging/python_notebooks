@@ -1,11 +1,12 @@
 import pandas as pd
 from qtpy.QtWidgets import QMainWindow, QLabel, QPushButton, QHBoxLayout, QWidget, QSpinBox, QFileDialog
 from qtpy.QtWidgets import QTableWidgetItem, QComboBox
-from qtpy import QtCore
+from qtpy import QtCore, QtGui
 from IPython.core.display import display
 from IPython.core.display import HTML
 import os
 import numpy as np
+import re
 import json
 from collections import OrderedDict
 
@@ -169,23 +170,139 @@ class Interface(QMainWindow):
         self.set_columns_width()
 
         self.fill_table()
+        self.check_table_content_pushed()
 
-    # # make sure the size of excel and group from notebook match
-    # pandas_object = self.pandas_object
-    # if pandas_object is None:
-    #     show_status_message(parent=self,
-    #                         message=f"Error loading excel!",
-    #                         status=StatusMessageStatus.error,
-    #                         duration_s=20)
-    #     return
-    #
-    # list_columns = len(pandas_object)
-    # nbr_group = len(self.first_last_run_of_each_group_dictionary.keys())
-    # if list_columns != nbr_group:
-    #     show_status_message(parent=self,
-    #                         message=f"Excel loaded and number of new entries do not match!",
-    #                         status=StatusMessageStatus.warning,
-    #                         duration_s=20)
+    def check_table_content_pushed(self):
+        """this is where we will check to make sure the format of all the cells is right and they are
+        no missing fields"""
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        nbr_rows = o_table.row_count()
+
+        color_error = QtGui.QColor(255, 0, 0)
+        color_ok = QtGui.QColor(255, 255, 255)
+
+        def is_string_a_float(string):
+            try:
+                float(string)
+                return True
+            except ValueError:
+                return False
+
+        def is_string_an_integer(string):
+            try:
+                int(string)
+                return True
+            except ValueError:
+                return False
+
+        def set_color_for_float_field(string, row, column):
+            if is_string_a_float(string):
+                color = color_ok
+            else:
+                color = color_error
+            o_table.set_background_color(row, column, color)
+
+        def set_color_for_int_field(string, row, column):
+            if is_string_an_integer(string):
+                color = color_ok
+            else:
+                color = color_error
+            o_table.set_background_color(row, column, color)
+
+        def is_string_undefined_or_empty(string):
+            if string.lower() in ["none", "nan", ""]:
+                return True
+            return False
+
+        def set_color_for_that_mandatory_field(string, row, column):
+            if is_string_undefined_or_empty(string):
+                color = color_error
+            else:
+                color = color_ok
+            o_table.set_background_color(row, column, color)
+
+        def is_roi_correct_format(roi):
+            """check if roi has the format [##,##,##,##] where ## are integers"""
+            roi = roi.strip()
+            print(f"roi: {roi}")
+            result = re.search("\[\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*\]", roi)
+            if len(result.groups()) != 4:
+                return False
+            try:
+                int(result.groups()[0])
+                int(result.groups()[1])
+                int(result.groups()[2])
+                int(result.groups()[3])
+            except ValueError:
+                return False
+            return True
+
+        def set_color_for_roi(roi, row, column):
+            if is_roi_correct_format(roi):
+                color = color_ok
+            else:
+                color = color_error
+            o_table.set_background_color(row, column, color)
+
+        for _row in np.arange(nbr_rows):
+            o_table.set_row(row=_row)
+
+            first_data_file = o_table.get_first_data_file()
+            set_color_for_that_mandatory_field(first_data_file, _row, 0)
+
+            last_data_file = o_table.get_last_data_file()
+            set_color_for_that_mandatory_field(last_data_file, _row, 1)
+
+            first_ob_file = o_table.get_first_ob_file()
+            set_color_for_that_mandatory_field(first_ob_file, _row, 2)
+
+            last_ob_file = o_table.get_last_ob_file()
+            set_color_for_that_mandatory_field(last_ob_file, _row, 3)
+
+            first_dc_file = o_table.get_first_dc_file()
+            set_color_for_that_mandatory_field(first_dc_file, _row, 4)
+
+            last_dc_file = o_table.get_last_dc_file()
+            set_color_for_that_mandatory_field(last_dc_file, _row, 5)
+
+            rotation = o_table.get_rotation()
+            set_color_for_int_field(rotation, _row, 8)
+
+            roi = o_table.get_roi()
+            set_color_for_roi(roi, _row, 10)
+
+            data_threshold_3x3 = o_table.get_data_threshold_3x3()
+            set_color_for_int_field(data_threshold_3x3, _row, 12)
+
+            data_threshold_5x5 = o_table.get_data_threshold_5x5()
+            set_color_for_int_field(data_threshold_5x5, _row, 13)
+
+            data_threshold_7x7 = o_table.get_data_threshold_7x7()
+            set_color_for_int_field(data_threshold_7x7, _row, 14)
+
+            data_sigma_log = o_table.get_data_sigma_log()
+            set_color_for_float_field(data_sigma_log, _row, 15)
+
+            dc_threshold_3x3 = o_table.get_dc_threshold_3x3()
+            set_color_for_int_field(dc_threshold_3x3, _row, 17)
+
+            dc_threshold_5x5 = o_table.get_dc_threshold_5x5()
+            set_color_for_int_field(dc_threshold_5x5, _row, 18)
+
+            dc_threshold_7x7 = o_table.get_dc_threshold_7x7()
+            set_color_for_int_field(dc_threshold_7x7, _row, 19)
+
+            dc_sigma_log = o_table.get_dc_log()
+            set_color_for_float_field(dc_sigma_log, _row, 20)
+
+            dc_outlier_value = o_table.get_dc_outlier_value()
+            set_color_for_float_field(dc_outlier_value, _row, 22)
+
+            result_directory = o_table.get_result_directory()
+            set_color_for_that_mandatory_field(result_directory, _row, 23)
+
+            file_id = o_table.get_file_id()
+            set_color_for_that_mandatory_field(file_id, _row, 24)
 
     def load_config(self):
         config_file = os.path.join(os.path.dirname(__file__), 'excel_config.json')
