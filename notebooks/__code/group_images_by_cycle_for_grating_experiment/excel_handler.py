@@ -676,26 +676,46 @@ class Interface(QMainWindow):
     def right_click_table_widget(self, position):
         menu = QMenu(self)
 
-        print(position)
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        column_selected = o_table.get_column_selected()
+        row_selected = o_table.get_row_selected()
+
+        show_browse_for_file = False
+        show_browse_for_folder = False
+        if column_selected in [0, 1, 2, 3, 4, 5]:
+            show_browse_for_file = True
+        elif column_selected == 23:
+            show_browse_for_folder = True
 
         remove = menu.addAction("Remove selected row")
-        add = menu.addAction("Add row at bottom")
+        duplicate = menu.addAction("Duplicate selected row and move it to bottom")
 
-        menu.addSeparator()
-
-        browse = menu.addAction("Browse ...")
+        if show_browse_for_file:
+            menu.addSeparator()
+            browse = menu.addAction("Browse for file ...")
+        elif show_browse_for_folder:
+            menu.addSeparator()
+            browse = menu.addAction("Browse for folder ...")
+        else:
+            browse = None
 
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == remove:
-            self.remove_row()
-        elif action == add:
-            self.add_row_at_bottom()
+            self.remove_row(row=row_selected)
+        elif action == duplicate:
+            self.duplicate_row_and_move_it_to_bottom()
+        elif action == browse:
+            self.browse(show_browse_for_folder=show_browse_for_folder,
+                        show_browse_for_file=show_browse_for_file)
+
+    def browse(self, show_browse_for_folder=False, show_browse_for_file=True):
+        pass
 
     def remove_selected_row(self):
         pass
 
-    def add_row_at_bottom(self):
+    def duplicate_row_and_move_it_to_bottom(self):
         pass
 
     def browse_for_file(self):
