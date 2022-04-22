@@ -282,7 +282,7 @@ class Interface(QMainWindow):
             o_table.set_background_color(row, column, color)
 
         for _row in np.arange(nbr_rows):
-            o_table.set_row(row=_row)
+            o_table.define_row_for_getter(row=_row)
 
             first_data_file = o_table.get_first_data_file()
             set_color_for_that_mandatory_field(first_data_file, _row, 0)
@@ -398,185 +398,33 @@ class Interface(QMainWindow):
             o_table.insert_empty_row(_row)
 
             pandas_entry_for_this_row = pandas_object.iloc[_row]
+            o_table.define_row_for_setter(_row)
 
-            # first_sample_file
-            column_index = 0
-            start_sample_file = str(pandas_entry_for_this_row[column_index])
-            _item = QTableWidgetItem(start_sample_file)
-            o_table.insert_item(row=_row, column=column_index, item=_item)
-
-            # last_sample_file
-            column_index = 1
-            end_sample_file = str(pandas_entry_for_this_row[column_index])
-            _item = QTableWidgetItem(end_sample_file)
-            o_table.insert_item(row=_row, column=column_index, item=_item)
-
-            # first_ob_file
-            column_index = 2
-            start_ob_file = str(pandas_entry_for_this_row[column_index])
-            _item = QTableWidgetItem(start_ob_file)
-            o_table.insert_item(row=_row, column=column_index, item=_item)
-
-            # last_ob_file
-            column_index = 3
-            end_ob_file = str(pandas_entry_for_this_row[column_index])
-            _item = QTableWidgetItem(end_ob_file)
-            o_table.insert_item(row=_row, column=column_index, item=_item)
-
-            # first_dc_file
-            column_index = 4
-            start_dc_file = str(pandas_entry_for_this_row[column_index])
-            _item = QTableWidgetItem(start_dc_file)
-            o_table.insert_item(row=_row, column=column_index, item=_item)
-
-            # last_dc_file
-            column_index = 5
-            end_dc_file = str(pandas_entry_for_first_row[column_index])
-            _item = QTableWidgetItem(end_dc_file)
-            o_table.insert_item(row=_row, column=column_index, item=_item)
-
-            # period
-            column_index = 6
-            period_widget = QSpinBox()
-            period_value = pandas_entry_for_first_row[column_index]
-            period_widget.setMinimum(1)
-            period_widget.setMaximum(10)
-            period_widget.setValue(period_value)
-            o_table.insert_widget(row=_row, column=column_index, widget=period_widget)
-
-            # images per step
-            column_index = 7
-            images_per_step = QSpinBox()
-            images_per_step_value = pandas_entry_for_first_row[column_index]
-            images_per_step.setMinimum(1)
-            images_per_step.setMaximum(10)
-            images_per_step.setValue(images_per_step_value)
-            o_table.insert_widget(row=_row, column=column_index, widget=images_per_step)
-
-            # rotation  # not editable
-            column_index = 8
-            rotation_value = str(pandas_entry_for_first_row[column_index])
-            item = QTableWidgetItem(rotation_value)
-            item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-            o_table.insert_item(row=_row, column=column_index, item=item)
-
-            # fit procedure
-            column_index = 9
-            fit_procedure = QComboBox()
-            fit_procedure_value = pandas_entry_for_first_row[column_index]
-            list_procedure = list_fit_procedure
-            fit_procedure.addItems(list_procedure)
-            index = list_procedure.index(fit_procedure_value)
-            fit_procedure.setCurrentIndex(index)
-            o_table.insert_widget(row=_row, column=column_index, widget=fit_procedure)
-
-            # roi
-            column_index = 10
-            roi_value = pandas_entry_for_first_row[column_index]
-            roi_item = QTableWidgetItem(roi_value)
-            o_table.insert_item(row=_row, column=column_index, item=roi_item)
-
-            # gamma_filter_data/ob
-            column_index = 11
-            gamma_filter_value = str(pandas_entry_for_first_row[column_index])
-            values = ['yes', 'no']
-            gamma_filter_ui = QComboBox()
-            gamma_filter_ui.addItems(values)
-            gamma_filter_ui.setCurrentText(gamma_filter_value)
-            o_table.insert_widget(row=_row, column=column_index, widget=gamma_filter_ui)
-
-            # data 3x3
-            column_index = 12
-            data_threshold_3x3_value = str(pandas_entry_for_first_row[column_index])
-            item_data_3x3 = QTableWidgetItem(data_threshold_3x3_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_data_3x3)
-
-            # data 5x5
-            column_index = 13
-            data_threshold_5x5_value = str(pandas_entry_for_first_row[column_index])
-            item_data_5x5 = QTableWidgetItem(data_threshold_5x5_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_data_5x5)
-
-            # data 7x7
-            column_index = 14
-            data_threshold_7x7_value = str(pandas_entry_for_first_row[column_index])
-            item_data_7x7 = QTableWidgetItem(data_threshold_7x7_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_data_7x7)
-
-            # data sigma log
-            column_index = 15
-            data_sigma_log_value = str(pandas_entry_for_first_row[column_index])
-            item_data_sigma = QTableWidgetItem(data_sigma_log_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_data_sigma)
-
-            # gamma_filter_dc
-            column_index = 16
-            gamma_filter_value = pandas_entry_for_first_row[column_index]
-            values = ['yes', 'no']
-            gamma_filter_dc_ui = QComboBox()
-            gamma_filter_dc_ui.addItems(values)
-            gamma_filter_dc_ui.setCurrentText(gamma_filter_value)
-            o_table.insert_widget(row=_row, column=column_index, widget=gamma_filter_dc_ui)
-
-            # dc 3x3
-            column_index = 17
-            dc_threshold_3x3_value = str(pandas_entry_for_first_row[column_index])
-            item_dc_3x3 = QTableWidgetItem(dc_threshold_3x3_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_dc_3x3)
-
-            # dc 5x5
-            column_index = 18
-            dc_threshold_5x5_value = str(pandas_entry_for_first_row[column_index])
-            item_dc_5x5 = QTableWidgetItem(dc_threshold_5x5_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_dc_5x5)
-
-            # dc 7x7
-            column_index = 19
-            dc_threshold_7x7_value = str(pandas_entry_for_first_row[column_index])
-            item_dc_7x7 = QTableWidgetItem(dc_threshold_7x7_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_dc_7x7)
-
-            # dc log
-            column_index = 20
-            dc_sigma_log_value = str(pandas_entry_for_this_row[column_index])
-            item_dc_sigma = QTableWidgetItem(dc_sigma_log_value)
-            o_table.insert_item(row=_row, column=column_index, item=item_dc_sigma)
-
-            # dc_outlier_removal
-            column_index = 21
-            dc_outlier_value = pandas_entry_for_first_row[column_index]
-            values = ['yes', 'no']
-            dc_outlier_ui = QComboBox()
-            dc_outlier_ui.addItems(values)
-            dc_outlier_ui.setCurrentText(dc_outlier_value)
-            o_table.insert_widget(row=_row, column=column_index, widget=dc_outlier_ui)
-
-            # dc_outlier_value
-            column_index = 22
-            dc_outlier_value = str(pandas_entry_for_first_row[column_index])
-            dc_outlier = QTableWidgetItem(dc_outlier_value)
-            o_table.insert_item(row=_row, column=column_index, item=dc_outlier)
-
-            # result_directory
-            column_index = 23
-            result_directory = str(pandas_entry_for_first_row[column_index])
-            _item = QTableWidgetItem(result_directory)
-            o_table.insert_item(row=_row, column=column_index, item=_item)
-
-            # file_id
-            column_index = 24
-            file_id_value = str(pandas_entry_for_this_row[column_index])
-            file_id = QTableWidgetItem(file_id_value)
-            o_table.insert_item(row=_row, column=column_index, item=file_id)
-
-            # sample information
-            # NOT USED
-
-            # used_environment
-            # NOT USED
-
-            # osc_pixel
-            # NOT USED
+            o_table.set_first_data_file(pandas_entry_for_this_row[0])
+            o_table.set_last_data_file(pandas_entry_for_this_row[1])
+            o_table.set_first_ob_file(pandas_entry_for_this_row[2])
+            o_table.set_last_ob_file(pandas_entry_for_this_row[3])
+            o_table.set_first_dc_file(pandas_entry_for_this_row[4])
+            o_table.set_last_dc_file(pandas_entry_for_first_row[5])
+            o_table.set_period(pandas_entry_for_first_row[6])
+            o_table.set_images_per_step(pandas_entry_for_first_row[7])
+            o_table.set_rotation(pandas_entry_for_first_row[8])
+            o_table.set_fit_procedure(pandas_entry_for_first_row[9])
+            o_table.set_roi(pandas_entry_for_first_row[10])
+            o_table.set_gamma_filter_data_ob(pandas_entry_for_first_row[11])
+            o_table.set_data_threshold_3x3(pandas_entry_for_first_row[12])
+            o_table.set_data_threshold_5x5(pandas_entry_for_first_row[13])
+            o_table.set_data_threshold_7x7(pandas_entry_for_first_row[14])
+            o_table.set_data_sigma_log(pandas_entry_for_first_row[15])
+            o_table.set_gamma_filter_dc(pandas_entry_for_first_row[16])
+            o_table.set_dc_threshold_3x3(pandas_entry_for_first_row[17])
+            o_table.set_dc_threshold_5x5(pandas_entry_for_this_row[18])
+            o_table.set_dc_threshold_7x7(pandas_entry_for_this_row[19])
+            o_table.set_dc_log(pandas_entry_for_this_row[20])
+            o_table.set_dc_outlier_removal(pandas_entry_for_first_row[21])
+            o_table.set_dc_outlier_value(pandas_entry_for_first_row[22])
+            o_table.set_result_directory(pandas_entry_for_first_row[23])
+            o_table.set_file_id(pandas_entry_for_this_row[24])
 
         row_height = [int(value) for value in np.ones(nbr_rows) * ROW_HEIGHT]
         o_table.set_row_height(row_height=row_height)
@@ -642,7 +490,8 @@ class Interface(QMainWindow):
 
         for _row in np.arange(nbr_rows):
 
-            o_table.set_row(row=_row)
+            o_table.define_row_for_getter(row=_row)
+
             first_data_file.append(o_table.get_first_data_file())
             last_data_file.append(o_table.get_last_data_file())
             first_ob_file.append(o_table.get_first_ob_file())
@@ -735,7 +584,8 @@ class Interface(QMainWindow):
         if action == remove:
             self.remove_selected_row(row=row_selected)
         elif action == duplicate:
-            self.duplicate_row_and_move_it_to_bottom()
+            self.duplicate_row_and_move_it_to_bottom(row=row_selected)
+            self.check_table_content_pushed()
         elif action == browse:
             self.browse(show_browse_for_folder=show_browse_for_folder,
                         show_browse_for_file=show_browse_for_file,
@@ -770,12 +620,40 @@ class Interface(QMainWindow):
 
         self.check_table_content_pushed()
 
+    def remove_selected_row(self, row=0):
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        o_table.remove_row(row)
 
-    def remove_selected_row(self):
-        pass
+    def duplicate_row_and_move_it_to_bottom(self, row=0):
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        nbr_row = o_table.row_count()
+        o_table.insert_empty_row(nbr_row)
 
-    def duplicate_row_and_move_it_to_bottom(self):
-        pass
+        o_table.define_row_for_getter(row=row)
+        o_table.define_row_for_setter(row=nbr_row)
 
-    def browse_for_file(self):
-        pass
+        o_table.set_first_data_file(o_table.get_first_data_file())
+        o_table.set_last_data_file(o_table.get_last_data_file())
+        o_table.set_first_ob_file(o_table.get_first_ob_file())
+        o_table.set_last_ob_file(o_table.get_last_ob_file())
+        o_table.set_first_dc_file(o_table.get_first_dc_file())
+        o_table.set_last_dc_file(o_table.get_last_dc_file())
+        o_table.set_period(o_table.get_period())
+        o_table.set_images_per_step(o_table.get_images_per_step())
+        o_table.set_rotation(o_table.get_rotation())
+        o_table.set_fit_procedure(o_table.get_fit_procedure())
+        o_table.set_roi(o_table.get_roi())
+        o_table.set_gamma_filter_data_ob(o_table.get_gamma_filter_data_ob())
+        o_table.set_data_threshold_3x3(o_table.get_data_threshold_3x3())
+        o_table.set_data_threshold_5x5(o_table.get_data_threshold_5x5())
+        o_table.set_data_threshold_7x7(o_table.get_data_threshold_7x7())
+        o_table.set_data_sigma_log(o_table.get_data_sigma_log())
+        o_table.set_gamma_filter_dc(o_table.get_gamma_filter_dc())
+        o_table.set_dc_threshold_3x3(o_table.get_dc_threshold_3x3())
+        o_table.set_dc_threshold_5x5(o_table.get_dc_threshold_5x5())
+        o_table.set_dc_threshold_7x7(o_table.get_dc_threshold_7x7())
+        o_table.set_dc_log(o_table.get_dc_log())
+        o_table.set_dc_outlier_removal(o_table.get_dc_outlier_removal())
+        o_table.set_dc_outlier_value(o_table.get_dc_outlier_value())
+        o_table.set_result_directory(o_table.get_result_directory())
+        o_table.set_file_id(o_table.get_file_id())
