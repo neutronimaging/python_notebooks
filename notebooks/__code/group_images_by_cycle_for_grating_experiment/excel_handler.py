@@ -181,6 +181,8 @@ class Interface(QMainWindow):
         color_error = QtGui.QColor(255, 0, 0)
         color_ok = QtGui.QColor(255, 255, 255)
 
+        self.at_least_one_error_found = False
+
         def is_string_a_float(string):
             try:
                 float(string)
@@ -200,6 +202,7 @@ class Interface(QMainWindow):
                 color = color_ok
             else:
                 color = color_error
+                self.at_least_one_error_found = True
             o_table.set_background_color(row, column, color)
 
         def set_color_for_int_field(string, row, column):
@@ -207,6 +210,7 @@ class Interface(QMainWindow):
                 color = color_ok
             else:
                 color = color_error
+                self.at_least_one_error_found = True
             o_table.set_background_color(row, column, color)
 
         def is_string_undefined_or_empty(string):
@@ -217,6 +221,7 @@ class Interface(QMainWindow):
         def set_color_for_that_mandatory_field(string, row, column):
             if is_string_undefined_or_empty(string):
                 color = color_error
+                self.at_least_one_error_found = True
             else:
                 color = color_ok
             o_table.set_background_color(row, column, color)
@@ -242,6 +247,7 @@ class Interface(QMainWindow):
                 color = color_ok
             else:
                 color = color_error
+                self.at_least_one_error_found = True
             o_table.set_background_color(row, column, color)
 
         for _row in np.arange(nbr_rows):
@@ -303,6 +309,13 @@ class Interface(QMainWindow):
 
             file_id = o_table.get_file_id()
             set_color_for_that_mandatory_field(file_id, _row, 24)
+
+        if self.at_least_one_error_found:
+            show_status_message(parent=self,
+                                message=f"At least one issue found in table! Angel will not be able to execute this "
+                                        f"excel!",
+                                status=StatusMessageStatus.error,
+                                duration_s=15)
 
     def load_config(self):
         config_file = os.path.join(os.path.dirname(__file__), 'excel_config.json')
