@@ -1,5 +1,5 @@
 import pandas as pd
-from qtpy.QtWidgets import QMainWindow, QLabel, QPushButton, QHBoxLayout, QWidget, QSpinBox, QFileDialog
+from qtpy.QtWidgets import QMainWindow, QSpinBox, QFileDialog, QMenu
 from qtpy.QtWidgets import QTableWidgetItem, QComboBox
 from qtpy import QtCore, QtGui
 from IPython.core.display import display
@@ -672,3 +672,31 @@ class Interface(QMainWindow):
                                   })
 
         return table_dict
+
+    def right_click_table_widget(self, position):
+        menu = QMenu(self)
+
+        print(position)
+
+        remove = menu.addAction("Remove selected row")
+        add = menu.addAction("Add row at bottom")
+
+        menu.addSeparator()
+
+        browse = menu.addAction("Browse ...")
+
+        action = menu.exec_(QtGui.QCursor.pos())
+
+        if action == remove:
+            self.remove_row()
+        elif action == add:
+            self.add_row_at_bottom()
+
+    def remove_selected_row(self):
+        pass
+
+    def add_row_at_bottom(self):
+        pass
+
+    def browse_for_file(self):
+        pass
