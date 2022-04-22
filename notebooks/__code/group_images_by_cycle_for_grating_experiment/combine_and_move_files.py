@@ -69,7 +69,6 @@ class CombineAndMoveFiles:
                 if debug: print(f"old full file name -> {_old}")
                 if debug: print(f"new full file name -> {_new}")
                 if len(_old) > 1:
-                    if DEBUG: print("-> we need to combine these guys first!")
                     combine_images(output_folder=output_folder,
                                    list_images=_old,
                                    new_file_name=_new)

@@ -30,8 +30,11 @@ class ExcelHandler:
 
         self.parent.excel_info_widget.value = f"<b>Loaded excel file</b>: {excel_file}!"
 
-
         df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
+
+        # first_last_run_of_each_group_dictionary = Interface.add_output_folder_to_dictionary(
+        #         self.parent.first_last_run_of_each_group_dictionary, output_folder=self.parent.output_folder)
+        # self.parent.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
 
         nbr_excel_row = len(df)
         nbr_notebook_row = len(self.parent.first_last_run_of_each_group_dictionary.keys())
@@ -60,22 +63,34 @@ class ExcelHandler:
             return json.load(json_file)
 
     def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data='sample'):
+
+        self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  # REMOVE_ME
+
+        output_folder = self.parent.output_folder
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
         if data_type_to_populate_with_notebook_data == 'sample':
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-                df.iloc[_row_index][0] = first_last_run_of_each_group_dictionary[_key]['first']
-                df.iloc[_row_index][1] = first_last_run_of_each_group_dictionary[_key]['last']
+                df.iloc[_row_index][0] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                                                          'first'])
+                df.iloc[_row_index][1] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                    'last'])
 
         else:  # ob
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-                df.iloc[_row_index][2] = first_last_run_of_each_group_dictionary[_key]['first']
-                df.iloc[_row_index][3] = first_last_run_of_each_group_dictionary[_key]['last']
+                df.iloc[_row_index][2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                                                          'first'])
+                df.iloc[_row_index][3] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                    'last'])
 
         return df
 
     def _create_pandas_object(self, data_type_to_populate_with_notebook_data='sample'):
+
+        self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  # REMOVE_ME
+
+        output_folder = self.parent.output_folder
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
         excel_config = self.get_excel_config()
 
@@ -85,11 +100,17 @@ class ExcelHandler:
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
 
                 if _row_index == 0:
-                    df_dict["first_data_file"] = [first_last_run_of_each_group_dictionary[_key]['first']]
-                    df_dict["last_data_file"] = [first_last_run_of_each_group_dictionary[_key]['last']]
+                    df_dict["first_data_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                                                                   _key]['first'])]
+                    df_dict["last_data_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                                                                  _key]['last'])]
                 else:
-                    df_dict["first_data_file"].append(first_last_run_of_each_group_dictionary[_key]['first'])
-                    df_dict["last_data_file"].append(first_last_run_of_each_group_dictionary[_key]['last'])
+                    df_dict["first_data_file"].append(os.path.join(output_folder,
+                                                                   first_last_run_of_each_group_dictionary[_key][
+                                                                       'first']))
+                    df_dict["last_data_file"].append(os.path.join(output_folder,
+                                                                  first_last_run_of_each_group_dictionary[_key][
+                                                                      'last']))
 
             nbr_row = len(first_last_run_of_each_group_dictionary.keys())
             df_dict["first_ob_file"] = ["None" for _ in np.arange(nbr_row)]
@@ -151,6 +172,7 @@ class Interface(QMainWindow):
                                     spacer=""))
         self.grand_parent = grand_parent
         self.data_type_to_populate_with_notebook_data = data_type_to_populate_with_notebook_data
+        self.output_folder = self.grand_parent.output_folder
 
         self.pandas_object = pandas_object
         super(Interface, self).__init__(parent)
@@ -162,7 +184,7 @@ class Interface(QMainWindow):
         self.excel_file = excel_file
 
         # dictionary giving first and last run for each group (row)
-        self.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
+        # add output folder to dictionary
 
         self.init_statusbar_message()
 
@@ -171,6 +193,16 @@ class Interface(QMainWindow):
 
         self.fill_table()
         self.check_table_content_pushed()
+
+    @staticmethod
+    def add_output_folder_to_dictionary(first_last_run_of_each_group_dictionary=None, output_folder=None):
+        for _key in first_last_run_of_each_group_dictionary.keys():
+            first_last_run_of_each_group_dictionary[_key]['first'] = os.path.join(output_folder,
+                                                                                  first_last_run_of_each_group_dictionary[_key]['first'])
+            first_last_run_of_each_group_dictionary[_key]['last'] = os.path.join(output_folder,
+                                                                                  first_last_run_of_each_group_dictionary[
+                                                                                      _key]['last'])
+        return first_last_run_of_each_group_dictionary
 
     def check_table_content_pushed(self):
         """this is where we will check to make sure the format of all the cells is right and they are
@@ -229,7 +261,6 @@ class Interface(QMainWindow):
         def is_roi_correct_format(roi):
             """check if roi has the format [##,##,##,##] where ## are integers"""
             roi = roi.strip()
-            print(f"roi: {roi}")
             result = re.search("\[\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*\]", roi)
             if len(result.groups()) != 4:
                 return False
@@ -327,7 +358,7 @@ class Interface(QMainWindow):
 
         list_very_wide_columns = [0, 1, 2, 3, 4, 5, 23]
         for index in list_very_wide_columns:
-            columns_width[index] = 400
+            columns_width[index] = 500
 
         list_wide_columns = [10, 24]
         for index in list_wide_columns:
@@ -702,15 +733,43 @@ class Interface(QMainWindow):
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == remove:
-            self.remove_row(row=row_selected)
+            self.remove_selected_row(row=row_selected)
         elif action == duplicate:
             self.duplicate_row_and_move_it_to_bottom()
         elif action == browse:
             self.browse(show_browse_for_folder=show_browse_for_folder,
-                        show_browse_for_file=show_browse_for_file)
+                        show_browse_for_file=show_browse_for_file,
+                        row_selected=row_selected,
+                        column_selected=column_selected)
 
-    def browse(self, show_browse_for_folder=False, show_browse_for_file=True):
-        pass
+    def browse(self, show_browse_for_folder=False, show_browse_for_file=True, row_selected=0, column_selected=0):
+        folder_selected = self.grand_parent.folder_selected
+        if show_browse_for_file:
+            file_and_extension_name = QFileDialog.getOpenFileName(self,
+                                                                  "Select file ...",
+                                                                  folder_selected)
+
+            file_selected = file_and_extension_name[0]
+            if file_selected:
+                o_table = TableHandler(table_ui=self.ui.tableWidget)
+                o_table.set_item_with_str(row=row_selected,
+                                          column=column_selected,
+                                          cell_str=file_selected)
+
+        elif show_browse_for_folder:
+            folder_name = os.path.dirname(folder_selected)
+            folder = QFileDialog.getExistingDirectory(self,
+                                                      "Select output folder ...",
+                                                      folder_name)
+
+            if folder:
+                o_table = TableHandler(table_ui=self.ui.tableWidget)
+                o_table.set_item_with_str(row=row_selected,
+                                          column=column_selected,
+                                          cell_str=folder)
+
+        self.check_table_content_pushed()
+
 
     def remove_selected_row(self):
         pass
