@@ -39,7 +39,7 @@ o_group.select_metadata_to_use_for_sorting()
 
 # # Grouping 
 
-o_group.display_groups()
+o_group.grouping()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Output Folder

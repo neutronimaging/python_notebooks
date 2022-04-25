@@ -112,8 +112,5 @@ class EventHandler:
         o_excel.load_excel(excel_file=file_name)
 
     def create_new_excel_clicked(self, state):
-
-        # self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  #REMOVE_ME
-
         o_excel = ExcelHandler(parent=self.parent)
         o_excel.new_excel()

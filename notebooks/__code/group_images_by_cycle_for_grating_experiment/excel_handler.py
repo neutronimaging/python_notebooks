@@ -46,13 +46,13 @@ class ExcelHandler:
 
         else:
             data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
-            df = self._populate_pandas_object(
+            new_df = self._populate_pandas_object(
                     df=df,
                     data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data)
 
             o_interface = Interface(grand_parent=self.parent,
                                     excel_file=excel_file,
-                                    pandas_object=df,
+                                    pandas_object=new_df,
                                     data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
                                     first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
             o_interface.show()
@@ -63,34 +63,31 @@ class ExcelHandler:
             return json.load(json_file)
 
     def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data='sample'):
-
-        self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  # REMOVE_ME
-
-        output_folder = self.parent.output_folder
+        output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
         if data_type_to_populate_with_notebook_data == 'sample':
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-                df.iloc[_row_index][0] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                df.iloc[_row_index, 0] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
                                                           'first'])
-                df.iloc[_row_index][1] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                df.iloc[_row_index, 1] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
                     'last'])
 
         else:  # ob
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-                df.iloc[_row_index][2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                df.iloc[_row_index, 2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
                                                           'first'])
-                df.iloc[_row_index][3] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
+                df.iloc[_row_index, 3] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
                     'last'])
 
         return df
 
     def _create_pandas_object(self, data_type_to_populate_with_notebook_data='sample'):
 
-        self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  # REMOVE_ME
+        # self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  # REMOVE_ME
 
-        output_folder = self.parent.output_folder
+        output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
         excel_config = self.get_excel_config()
 
@@ -125,11 +122,15 @@ class ExcelHandler:
                 df_dict["last_sample_file"] = ["None" for _ in np.arange(nbr_row)]
 
                 if _row_index == 0:
-                    df_dict["first_ob_file"] = [first_last_run_of_each_group_dictionary[_key]['first']]
-                    df_dict["last_ob_file"] = [first_last_run_of_each_group_dictionary[_key]['last']]
+                    df_dict["first_ob_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                        _key]['first'])]
+                    df_dict["last_ob_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                        _key]['last'])]
                 else:
-                    df_dict["first_ob_file"].append(first_last_run_of_each_group_dictionary[_key]['first'])
-                    df_dict["last_ob_file"].append(first_last_run_of_each_group_dictionary[_key]['last'])
+                    df_dict["first_ob_file"].append(os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                                                                     _key]['first']))
+                    df_dict["last_ob_file"].append(os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                                                                    _key]['last']))
 
         df_dict["first_dc_file"] = ["None" for _ in np.arange(nbr_row)]
         df_dict["last_dc_file"] = ["None" for _ in np.arange(nbr_row)]
@@ -405,25 +406,25 @@ class Interface(QMainWindow):
             o_table.set_first_ob_file(pandas_entry_for_this_row[2])
             o_table.set_last_ob_file(pandas_entry_for_this_row[3])
             o_table.set_first_dc_file(pandas_entry_for_this_row[4])
-            o_table.set_last_dc_file(pandas_entry_for_first_row[5])
-            o_table.set_period(pandas_entry_for_first_row[6])
-            o_table.set_images_per_step(pandas_entry_for_first_row[7])
-            o_table.set_rotation(pandas_entry_for_first_row[8])
-            o_table.set_fit_procedure(pandas_entry_for_first_row[9])
-            o_table.set_roi(pandas_entry_for_first_row[10])
-            o_table.set_gamma_filter_data_ob(pandas_entry_for_first_row[11])
-            o_table.set_data_threshold_3x3(pandas_entry_for_first_row[12])
-            o_table.set_data_threshold_5x5(pandas_entry_for_first_row[13])
-            o_table.set_data_threshold_7x7(pandas_entry_for_first_row[14])
-            o_table.set_data_sigma_log(pandas_entry_for_first_row[15])
-            o_table.set_gamma_filter_dc(pandas_entry_for_first_row[16])
-            o_table.set_dc_threshold_3x3(pandas_entry_for_first_row[17])
+            o_table.set_last_dc_file(pandas_entry_for_this_row[5])
+            o_table.set_period(pandas_entry_for_this_row[6])
+            o_table.set_images_per_step(pandas_entry_for_this_row[7])
+            o_table.set_rotation(pandas_entry_for_this_row[8])
+            o_table.set_fit_procedure(pandas_entry_for_this_row[9])
+            o_table.set_roi(pandas_entry_for_this_row[10])
+            o_table.set_gamma_filter_data_ob(pandas_entry_for_this_row[11])
+            o_table.set_data_threshold_3x3(pandas_entry_for_this_row[12])
+            o_table.set_data_threshold_5x5(pandas_entry_for_this_row[13])
+            o_table.set_data_threshold_7x7(pandas_entry_for_this_row[14])
+            o_table.set_data_sigma_log(pandas_entry_for_this_row[15])
+            o_table.set_gamma_filter_dc(pandas_entry_for_this_row[16])
+            o_table.set_dc_threshold_3x3(pandas_entry_for_this_row[17])
             o_table.set_dc_threshold_5x5(pandas_entry_for_this_row[18])
             o_table.set_dc_threshold_7x7(pandas_entry_for_this_row[19])
             o_table.set_dc_log(pandas_entry_for_this_row[20])
-            o_table.set_dc_outlier_removal(pandas_entry_for_first_row[21])
-            o_table.set_dc_outlier_value(pandas_entry_for_first_row[22])
-            o_table.set_result_directory(pandas_entry_for_first_row[23])
+            o_table.set_dc_outlier_removal(pandas_entry_for_this_row[21])
+            o_table.set_dc_outlier_value(pandas_entry_for_this_row[22])
+            o_table.set_result_directory(pandas_entry_for_this_row[23])
             o_table.set_file_id(pandas_entry_for_this_row[24])
 
         row_height = [int(value) for value in np.ones(nbr_rows) * ROW_HEIGHT]

@@ -13,6 +13,8 @@ from __code.group_images_by_cycle_for_grating_experiment.get import Get
 from .utilities import make_dictionary_of_groups_new_names
 from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import NotebookWidgets
 from __code.group_images_by_cycle_for_grating_experiment.combine_and_move_files import CombineAndMoveFiles
+from __code.file_folder_browser import FileFolderBrowser
+
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
@@ -63,12 +65,12 @@ class GroupImages:
             config = json.load(f)
         self.config = config
 
-    def select_input_folder(self):
-        self.files_list_widget = fileselector.FileSelectorPanel(instruction='select images to sort ...',
-                                                                start_dir=self.working_dir,
-                                                                next=self.info_files_selected,
-                                                                multiple=True)
-        self.files_list_widget.show()
+    def select_data_to_sort(self):
+        o_file_broswer = FileFolderBrowser(working_dir=self.working_dir,
+                                           next_function=self.info_files_selected)
+        self.files_list_widget = o_file_broswer.select_images(instruction="Select Images to Sort ...",
+                                                              multiple_flag=True,
+                                                              filters={"TIFF": "*.tif*"})
 
     def info_files_selected(self, selected):
         if not selected:
@@ -168,7 +170,7 @@ class GroupImages:
         self.dict_group_outer_value = dict_group_outer_value
         return groups_inner_dictionary
 
-    def display_groups(self):
+    def grouping(self):
         o_widgets = NotebookWidgets(parent=self)
         o_widgets.display_groups()
         self.create_first_last_run_of_each_group_dictionary()

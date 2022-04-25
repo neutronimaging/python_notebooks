@@ -27,6 +27,7 @@ class CombineAndMoveFiles:
         output_folder_basename = os.path.basename(self.parent.folder_selected) + "_sorted_for_grating_reconstruction"
         output_folder = os.path.join(output_folder, output_folder_basename)
         output_folder = os.path.abspath(output_folder)
+        self.parent.output_folder = output_folder
         make_or_reset_folder(output_folder)
 
         dictionary_of_groups_old_names = self.parent.make_dictionary_of_groups_old_names()
