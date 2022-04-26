@@ -573,12 +573,15 @@ class Interface(QMainWindow):
 
         if show_browse_for_file:
             menu.addSeparator()
-            browse = menu.addAction("Browse for file ...")
+            browse_this_row = menu.addAction("Browse for file ...")
         elif show_browse_for_folder:
             menu.addSeparator()
-            browse = menu.addAction("Browse for folder ...")
+            browse_this_row = menu.addAction("Browse folder for this row ...")
+            browse_all_row = menu.addAction("Browse folder for all row ...")
+
         else:
-            browse = None
+            browse_this_row = None
+            browse_all_row = None
 
         action = menu.exec_(QtGui.QCursor.pos())
 
@@ -587,13 +590,18 @@ class Interface(QMainWindow):
         elif action == duplicate:
             self.duplicate_row_and_move_it_to_bottom(row=row_selected)
             self.check_table_content_pushed()
-        elif action == browse:
+        elif action == browse_this_row:
             self.browse(show_browse_for_folder=show_browse_for_folder,
                         show_browse_for_file=show_browse_for_file,
-                        row_selected=row_selected,
+                        row_selected=[row_selected],
+                        column_selected=column_selected)
+        elif action == browse_all_row:
+            self.browse(show_browse_for_folder=show_browse_for_folder,
+                        show_browse_for_file=show_browse_for_file,
+                        row_selected=np.arange(o_table.row_count()),
                         column_selected=column_selected)
 
-    def browse(self, show_browse_for_folder=False, show_browse_for_file=True, row_selected=0, column_selected=0):
+    def browse(self, show_browse_for_folder=False, show_browse_for_file=True, row_selected=[0], column_selected=0):
         folder_selected = self.grand_parent.folder_selected
         if show_browse_for_file:
             file_and_extension_name = QFileDialog.getOpenFileName(self,
@@ -603,9 +611,10 @@ class Interface(QMainWindow):
             file_selected = file_and_extension_name[0]
             if file_selected:
                 o_table = TableHandler(table_ui=self.ui.tableWidget)
-                o_table.set_item_with_str(row=row_selected,
-                                          column=column_selected,
-                                          cell_str=file_selected)
+                for _row in row_selected:
+                    o_table.set_item_with_str(row=_row,
+                                              column=column_selected,
+                                              cell_str=file_selected)
 
         elif show_browse_for_folder:
             folder_name = os.path.dirname(folder_selected)
@@ -615,9 +624,10 @@ class Interface(QMainWindow):
 
             if folder:
                 o_table = TableHandler(table_ui=self.ui.tableWidget)
-                o_table.set_item_with_str(row=row_selected,
-                                          column=column_selected,
-                                          cell_str=folder)
+                for _row in row_selected:
+                    o_table.set_item_with_str(row=_row,
+                                              column=column_selected,
+                                              cell_str=folder)
 
         self.check_table_content_pushed()
 
