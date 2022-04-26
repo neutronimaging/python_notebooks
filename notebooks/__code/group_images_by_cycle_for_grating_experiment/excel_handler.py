@@ -1,7 +1,6 @@
 import pandas as pd
-from qtpy.QtWidgets import QMainWindow, QSpinBox, QFileDialog, QMenu
-from qtpy.QtWidgets import QTableWidgetItem, QComboBox
-from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import QMainWindow, QFileDialog, QMenu
+from qtpy import QtGui
 from IPython.core.display import display
 from IPython.core.display import HTML
 import os
@@ -14,7 +13,6 @@ from __code._utilities.string import format_html_message
 from __code import load_ui
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
-from __code.group_images_by_cycle_for_grating_experiment import list_fit_procedure
 
 ROW_HEIGHT = 40
 
@@ -31,10 +29,6 @@ class ExcelHandler:
         self.parent.excel_info_widget.value = f"<b>Loaded excel file</b>: {excel_file}!"
 
         df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
-
-        # first_last_run_of_each_group_dictionary = Interface.add_output_folder_to_dictionary(
-        #         self.parent.first_last_run_of_each_group_dictionary, output_folder=self.parent.output_folder)
-        # self.parent.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
 
         nbr_excel_row = len(df)
         nbr_notebook_row = len(self.parent.first_last_run_of_each_group_dictionary.keys())
@@ -99,8 +93,6 @@ class ExcelHandler:
                 return f"{int_left_of_comma:03d}_{int_right_of_comma:03d}"
             else:
                 return f"{int(str_angle_value):03d}"
-
-        # self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  # REMOVE_ME
 
         output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
@@ -596,10 +588,13 @@ class Interface(QMainWindow):
 
         show_browse_for_file = False
         show_browse_for_folder = False
-        if column_selected in [0, 1, 2, 3, 4, 5]:
+        show_browse_for_file_in_all_column = False
+        if column_selected in [0, 1, 2, 3]:
             show_browse_for_file = True
         elif column_selected == 23:
             show_browse_for_folder = True
+        elif column_selected in [4, 5]:
+            show_browse_for_file_in_all_column = True
 
         remove = menu.addAction("Remove selected row")
         duplicate = menu.addAction("Duplicate selected row and move it to bottom")
@@ -611,12 +606,18 @@ class Interface(QMainWindow):
             menu.addSeparator()
             browse_this_row = menu.addAction("Browse folder for this row ...")
             browse_all_row = menu.addAction("Browse folder for all row ...")
+        elif show_browse_for_file_in_all_column:
+            menu.addSeparator()
+            browse_this_row = menu.addAction("Browse file for this row ...")
+            browse_all_row = menu.addAction("Browse file for all row ...")
 
         else:
             browse_this_row = None
             browse_all_row = None
 
         action = menu.exec_(QtGui.QCursor.pos())
+
+        show_browse_for_file = show_browse_for_file_in_all_column
 
         if action == remove:
             self.remove_selected_row(row=row_selected)
@@ -634,12 +635,15 @@ class Interface(QMainWindow):
                         row_selected=np.arange(o_table.row_count()),
                         column_selected=column_selected)
 
-    def browse(self, show_browse_for_folder=False, show_browse_for_file=True, row_selected=[0], column_selected=0):
+    def browse(self, show_browse_for_folder=False,
+               show_browse_for_file=True,
+               row_selected=[0], column_selected=0):
+
         folder_selected = self.grand_parent.folder_selected
         if show_browse_for_file:
             file_and_extension_name = QFileDialog.getOpenFileName(self,
                                                                   "Select file ...",
-                                                                  folder_selected)
+                                                                   folder_selected)
 
             file_selected = file_and_extension_name[0]
             if file_selected:
