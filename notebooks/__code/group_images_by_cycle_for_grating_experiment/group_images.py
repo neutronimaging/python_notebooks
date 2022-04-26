@@ -6,6 +6,7 @@ from collections import OrderedDict
 
 
 from __code.ipywe import fileselector
+from __code.ipywe import myfileselector
 from __code import file_handler
 from __code._utilities.string import format_html_message
 from __code.group_images_by_cycle_for_grating_experiment.group_images_by_cycle import GroupImagesByCycle
@@ -26,6 +27,7 @@ DEBUG = False
 
 class GroupImages:
     working_dir = ''
+    ipts_dir = ''
     output_folder = working_dir
     data_path = ''
     metadata_key_to_select = None
@@ -51,6 +53,7 @@ class GroupImages:
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
+        self.ipts_dir = working_dir
         self.folder_selected = ''
         self.list_images = []
         self.file_extension = 'N/A'
@@ -192,12 +195,13 @@ class GroupImages:
         return np.int(group_number)
 
     def select_output_folder(self):
-        output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
-                                                              start_dir=os.path.dirname(self.data_path),
-                                                              type='directory',
-                                                              next=self.copy_combine_and_rename_files,
-                                                              multiple=False)
-        output_folder_widget.show()
+        self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(
+                instruction='select output folder',
+                start_dir=os.path.dirname(self.data_path),
+                ipts_folder=self.ipts_dir,
+                next=self.copy_combine_and_rename_files,
+                type='directory',
+                newdir_toolbar_button=True)
 
     def make_dictionary_of_groups_old_names(self):
         """
