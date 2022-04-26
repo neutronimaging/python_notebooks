@@ -85,13 +85,28 @@ class ExcelHandler:
 
     def _create_pandas_object(self, data_type_to_populate_with_notebook_data='sample'):
 
+        def formatting_angle_value(str_angle_value=""):
+            """
+            str_value = "2.000000"
+            and new format will be
+            "002.000"
+            """
+            comma_slit = str_angle_value.split(".")
+            if len(comma_slit) > 1:
+                left_of_comma, right_of_comma = str_angle_value.split(".")
+                int_left_of_comma = int(left_of_comma)
+                int_right_of_comma = int(right_of_comma)
+                return f"{int_left_of_comma:03d}_{int_right_of_comma:03d}"
+            else:
+                return f"{int(str_angle_value):03d}"
+
         # self.parent.output_folder = "/Volumes/G-DRIVE/IPTS/IPTS-28730-gratting-CT"  # REMOVE_ME
 
         output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
         excel_config = self.get_excel_config()
 
-        df_dict = OrderedDict()
+        df_dict = {}
         if data_type_to_populate_with_notebook_data == 'sample':
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
@@ -132,6 +147,18 @@ class ExcelHandler:
                     df_dict["last_ob_file"].append(os.path.join(output_folder, first_last_run_of_each_group_dictionary[
                                                                     _key]['last']))
 
+        # default file_id
+        dict_group_outer_value = self.parent.dict_group_outer_value
+
+        for _row_index, _key in enumerate(dict_group_outer_value):
+
+            angle_value_formatted = formatting_angle_value(str_angle_value=dict_group_outer_value[_key])
+            _file_id = f"sample_{angle_value_formatted}"
+            if _row_index == 0:
+                df_dict['file_id'] = [_file_id]
+            else:
+                df_dict['file_id'].append(_file_id)
+
         df_dict["first_dc_file"] = ["None" for _ in np.arange(nbr_row)]
         df_dict["last_dc_file"] = ["None" for _ in np.arange(nbr_row)]
 
@@ -140,10 +167,16 @@ class ExcelHandler:
         list_key.remove("last_data_file")
         list_key.remove("first_ob_file")
         list_key.remove("last_ob_file")
+        list_key.remove("file_id")
         for _key in list_key:
             df_dict[_key] = [excel_config[_key] for _ in np.arange(nbr_row)]
 
-        df = pd.DataFrame(data=df_dict)
+        # reorder the dict
+        df_dict_reorder = OrderedDict()
+        for _key in list(excel_config.keys()):
+            df_dict_reorder[_key] = df_dict[_key]
+
+        df = pd.DataFrame(data=df_dict_reorder)
         return df
 
     def new_excel(self):
@@ -392,7 +425,7 @@ class Interface(QMainWindow):
             o_table.insert_column(_col_index)
         o_table.set_column_names(list_columns)
 
-        pandas_entry_for_first_row = pandas_object.iloc[0]
+        # pandas_entry_for_first_row = pandas_object.iloc[0]
 
         nbr_rows = len(pandas_object)
         for _row in np.arange(nbr_rows):
