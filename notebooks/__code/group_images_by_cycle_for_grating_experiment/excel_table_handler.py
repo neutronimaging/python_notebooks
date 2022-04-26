@@ -1,5 +1,6 @@
 from qtpy.QtWidgets import QTableWidgetItem, QSpinBox, QComboBox
 from qtpy import QtCore
+import copy
 
 from __code._utilities.table_handler import TableHandler
 from __code.group_images_by_cycle_for_grating_experiment import list_fit_procedure
@@ -57,12 +58,13 @@ class ExcelTableHandler(TableHandler):
         widget = self.get_widget(row=self.get_from_row, column=6)
         return widget.value()
 
-    def set_period(self, value):
+    def set_period(self, value, method=None, column=0):
         period_widget = QSpinBox()
         period_widget.setMinimum(1)
         period_widget.setMaximum(10)
         period_widget.setValue(int(value))
         self.insert_widget(row=self.row_to_set, column=6, widget=period_widget)
+        period_widget.valueChanged.connect(lambda value, row=self.row_to_set, column=column: method(value, row, column))
 
     def get_images_per_step(self):
         widget = self.get_widget(row=self.get_from_row, column=7)

@@ -220,6 +220,13 @@ class Interface(QMainWindow):
         self.fill_table()
         self.check_table_content_pushed()
 
+    def period_button_clicked(self, new_value, row=0, column=0):
+        self.repeat_widget_changed_or_not_dialog(row_changed=row,
+                                                 column_changed=column)
+
+    def repeat_widget_changed_or_not_dialog(self, row_changed=0, column_changed=0):
+        print(f"row: {row_changed} and column: {column_changed}")
+
     @staticmethod
     def add_output_folder_to_dictionary(first_last_run_of_each_group_dictionary=None, output_folder=None):
         for _key in first_last_run_of_each_group_dictionary.keys():
@@ -421,6 +428,7 @@ class Interface(QMainWindow):
 
         nbr_rows = len(pandas_object)
         for _row in np.arange(nbr_rows):
+            o_table = TableHandler(table_ui=self.ui.tableWidget)
             o_table.insert_empty_row(_row)
 
             pandas_entry_for_this_row = pandas_object.iloc[_row]
@@ -432,7 +440,7 @@ class Interface(QMainWindow):
             o_table.set_last_ob_file(pandas_entry_for_this_row[3])
             o_table.set_first_dc_file(pandas_entry_for_this_row[4])
             o_table.set_last_dc_file(pandas_entry_for_this_row[5])
-            o_table.set_period(pandas_entry_for_this_row[6])
+            o_table.set_period(pandas_entry_for_this_row[6], method=self.period_button_clicked, column=6)
             o_table.set_images_per_step(pandas_entry_for_this_row[7])
             o_table.set_rotation(pandas_entry_for_this_row[8])
             o_table.set_fit_procedure(pandas_entry_for_this_row[9])
@@ -452,9 +460,12 @@ class Interface(QMainWindow):
             o_table.set_result_directory(pandas_entry_for_this_row[23])
             o_table.set_file_id(pandas_entry_for_this_row[24])
 
-        row_height = [int(value) for value in np.ones(nbr_rows) * ROW_HEIGHT]
-        o_table.set_row_height(row_height=row_height)
+            del o_table
 
+        row_height = [int(value) for value in np.ones(nbr_rows) * ROW_HEIGHT]
+
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        o_table.set_row_height(row_height=row_height)
         o_table.set_column_width(column_width=self.columns_width)
 
     def cancel_button_pushed(self):
