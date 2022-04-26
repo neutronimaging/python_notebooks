@@ -70,13 +70,15 @@ class ExcelTableHandler(TableHandler):
         widget = self.get_widget(row=self.get_from_row, column=7)
         return widget.value()
 
-    def set_images_per_step(self, value):
+    def set_images_per_step(self, value, method=None, column=0):
         images_per_step = QSpinBox()
         images_per_step_value = value
         images_per_step.setMinimum(1)
         images_per_step.setMaximum(10)
         images_per_step.setValue(images_per_step_value)
         self.insert_widget(row=self.row_to_set, column=7, widget=images_per_step)
+        images_per_step.valueChanged.connect(lambda value, row=self.row_to_set, column=column: method(value, row,
+                                                                                                      column))
 
     def get_rotation(self):
         return float(self.get_item_str_from_cell(row=self.get_from_row, column=8))
@@ -91,7 +93,7 @@ class ExcelTableHandler(TableHandler):
         widget = self.get_widget(row=self.get_from_row, column=9)
         return widget.currentText()
 
-    def set_fit_procedure(self, value):
+    def set_fit_procedure(self, value, method=None, column=0):
         fit_procedure = QComboBox()
         fit_procedure_value = value
         list_procedure = list_fit_procedure
@@ -99,6 +101,8 @@ class ExcelTableHandler(TableHandler):
         index = list_procedure.index(fit_procedure_value)
         fit_procedure.setCurrentIndex(index)
         self.insert_widget(row=self.row_to_set, column=9, widget=fit_procedure)
+        fit_procedure.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(value,
+                                                                                                           row, column))
 
     def get_roi(self):
         return self.get_item_str_from_cell(row=self.get_from_row, column=10)
@@ -112,13 +116,16 @@ class ExcelTableHandler(TableHandler):
         widget = self.get_widget(row=self.get_from_row, column=11)
         return widget.currentText()
 
-    def set_gamma_filter_data_ob(self, value):
+    def set_gamma_filter_data_ob(self, value, method=None, column=0):
         gamma_filter_value = str(value)
         values = ['yes', 'no']
         gamma_filter_ui = QComboBox()
         gamma_filter_ui.addItems(values)
         gamma_filter_ui.setCurrentText(gamma_filter_value)
         self.insert_widget(row=self.row_to_set, column=11, widget=gamma_filter_ui)
+        gamma_filter_ui.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(value,
+                                                                                                             row,
+                                                                                                             column))
 
     def get_data_threshold_3x3(self):
         return int(self.get_item_str_from_cell(row=self.get_from_row, column=12))
@@ -156,13 +163,15 @@ class ExcelTableHandler(TableHandler):
         widget = self.get_widget(row=self.get_from_row, column=16)
         return widget.currentText()
 
-    def set_gamma_filter_dc(self, value):
+    def set_gamma_filter_dc(self, value, method=None, column=0):
         gamma_filter_value = value
         values = ['yes', 'no']
         gamma_filter_dc_ui = QComboBox()
         gamma_filter_dc_ui.addItems(values)
         gamma_filter_dc_ui.setCurrentText(gamma_filter_value)
         self.insert_widget(row=self.row_to_set, column=16, widget=gamma_filter_dc_ui)
+        gamma_filter_dc_ui.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(
+                value, row, column))
 
     def get_dc_threshold_3x3(self):
         return int(self.get_item_str_from_cell(row=self.get_from_row, column=17))
@@ -200,13 +209,15 @@ class ExcelTableHandler(TableHandler):
         widget = self.get_widget(row=self.get_from_row, column=21)
         return widget.currentText()
 
-    def set_dc_outlier_removal(self, value):
+    def set_dc_outlier_removal(self, value, method=None, column=0):
         dc_outlier_value = value
         values = ['yes', 'no']
         dc_outlier_ui = QComboBox()
         dc_outlier_ui.addItems(values)
         dc_outlier_ui.setCurrentText(dc_outlier_value)
         self.insert_widget(row=self.row_to_set, column=21, widget=dc_outlier_ui)
+        dc_outlier_ui.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(value,
+                                                                                                           row, column))
 
     def get_dc_outlier_value(self):
         return float(self.get_item_str_from_cell(row=self.get_from_row, column=22))

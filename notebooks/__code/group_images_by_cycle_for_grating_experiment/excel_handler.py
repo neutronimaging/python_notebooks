@@ -13,6 +13,7 @@ from __code._utilities.string import format_html_message
 from __code import load_ui
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
+from __code.group_images_by_cycle_for_grating_experiment.repeat_widget_change_dialog import RepeatWidgetChangeDialog
 
 ROW_HEIGHT = 40
 
@@ -220,12 +221,14 @@ class Interface(QMainWindow):
         self.fill_table()
         self.check_table_content_pushed()
 
-    def period_button_clicked(self, new_value, row=0, column=0):
+    def widget_state_changed(self, new_value, row=0, column=0):
         self.repeat_widget_changed_or_not_dialog(row_changed=row,
                                                  column_changed=column)
 
     def repeat_widget_changed_or_not_dialog(self, row_changed=0, column_changed=0):
         print(f"row: {row_changed} and column: {column_changed}")
+        o_dialog = RepeatWidgetChangeDialog(parent=self)
+        o_dialog.show()
 
     @staticmethod
     def add_output_folder_to_dictionary(first_last_run_of_each_group_dictionary=None, output_folder=None):
@@ -440,22 +443,22 @@ class Interface(QMainWindow):
             o_table.set_last_ob_file(pandas_entry_for_this_row[3])
             o_table.set_first_dc_file(pandas_entry_for_this_row[4])
             o_table.set_last_dc_file(pandas_entry_for_this_row[5])
-            o_table.set_period(pandas_entry_for_this_row[6], method=self.period_button_clicked, column=6)
-            o_table.set_images_per_step(pandas_entry_for_this_row[7])
+            o_table.set_period(pandas_entry_for_this_row[6], method=self.widget_state_changed, column=6)
+            o_table.set_images_per_step(pandas_entry_for_this_row[7], method=self.widget_state_changed, column=7)
             o_table.set_rotation(pandas_entry_for_this_row[8])
-            o_table.set_fit_procedure(pandas_entry_for_this_row[9])
+            o_table.set_fit_procedure(pandas_entry_for_this_row[9], method=self.widget_state_changed, column=9)
             o_table.set_roi(pandas_entry_for_this_row[10])
-            o_table.set_gamma_filter_data_ob(pandas_entry_for_this_row[11])
+            o_table.set_gamma_filter_data_ob(pandas_entry_for_this_row[11], method=self.widget_state_changed, column=11)
             o_table.set_data_threshold_3x3(pandas_entry_for_this_row[12])
             o_table.set_data_threshold_5x5(pandas_entry_for_this_row[13])
             o_table.set_data_threshold_7x7(pandas_entry_for_this_row[14])
             o_table.set_data_sigma_log(pandas_entry_for_this_row[15])
-            o_table.set_gamma_filter_dc(pandas_entry_for_this_row[16])
+            o_table.set_gamma_filter_dc(pandas_entry_for_this_row[16], method=self.widget_state_changed, column=16)
             o_table.set_dc_threshold_3x3(pandas_entry_for_this_row[17])
             o_table.set_dc_threshold_5x5(pandas_entry_for_this_row[18])
             o_table.set_dc_threshold_7x7(pandas_entry_for_this_row[19])
             o_table.set_dc_log(pandas_entry_for_this_row[20])
-            o_table.set_dc_outlier_removal(pandas_entry_for_this_row[21])
+            o_table.set_dc_outlier_removal(pandas_entry_for_this_row[21], method=self.widget_state_changed, column=21)
             o_table.set_dc_outlier_value(pandas_entry_for_this_row[22])
             o_table.set_result_directory(pandas_entry_for_this_row[23])
             o_table.set_file_id(pandas_entry_for_this_row[24])
@@ -716,3 +719,4 @@ class Interface(QMainWindow):
         o_table.set_dc_outlier_value(o_table.get_dc_outlier_value())
         o_table.set_result_directory(o_table.get_result_directory())
         o_table.set_file_id(o_table.get_file_id())
+
