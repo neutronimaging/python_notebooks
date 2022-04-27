@@ -1,5 +1,6 @@
 from qtpy.QtWidgets import QTableWidgetItem, QSpinBox, QComboBox
 from qtpy import QtCore
+import numpy as np
 
 from __code._utilities.table_handler import TableHandler
 from __code.group_images_by_cycle_for_grating_experiment import list_fit_procedure
@@ -202,7 +203,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_data_threshold_5x5(self):
         column = IndexOfColumns.data_threshold_5x5
-        return int(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = int(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_data_threshold_5x5(self, value):
         column = IndexOfColumns.data_threshold_5x5
@@ -212,7 +218,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_data_threshold_7x7(self):
         column = IndexOfColumns.data_threshold_7x7
-        return int(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = int(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_data_threshold_7x7(self, value):
         column = IndexOfColumns.data_threshold_7x7
@@ -222,7 +233,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_data_sigma_log(self):
         column = IndexOfColumns.data_sigma_log
-        return float(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = float(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_data_sigma_log(self, value):
         column = IndexOfColumns.data_sigma_log
@@ -260,7 +276,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_dc_threshold_3x3(self):
         column = IndexOfColumns.dc_threshold_3x3
-        return int(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = int(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_dc_threshold_3x3(self, value):
         column = IndexOfColumns.dc_threshold_3x3
@@ -270,7 +291,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_dc_threshold_5x5(self):
         column = IndexOfColumns.dc_threhsold_5x5
-        return int(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = int(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_dc_threshold_5x5(self, value):
         column = IndexOfColumns.dc_threhsold_5x5
@@ -280,7 +306,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_dc_threshold_7x7(self):
         column = IndexOfColumns.dc_threshold_7x7
-        return int(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = int(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_dc_threshold_7x7(self, value):
         column = IndexOfColumns.dc_threshold_7x7
@@ -290,7 +321,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_dc_log(self):
         column = IndexOfColumns.dc_log
-        return float(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = float(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_dc_log(self, value):
         column = IndexOfColumns.dc_log
@@ -328,7 +364,12 @@ class ExcelTableHandler(TableHandler):
 
     def get_dc_outlier_value(self):
         column = IndexOfColumns.dc_outlier_value
-        return float(self.get_item_str_from_cell(row=self.get_from_row, column=column))
+        value = self.get_item_str_from_cell(row=self.get_from_row, column=column)
+        try:
+            value_int = float(value)
+            return value_int
+        except ValueError:
+            return np.NaN
 
     def set_dc_outlier_value(self, value):
         column = IndexOfColumns.dc_outlier_value

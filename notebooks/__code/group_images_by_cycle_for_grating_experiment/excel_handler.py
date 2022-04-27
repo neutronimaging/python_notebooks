@@ -615,6 +615,10 @@ class Interface(QMainWindow):
         elif column_selected in [4, 5]:
             show_browse_for_file_in_all_column = True
 
+        show_copy_content_to_rest_of_column = False
+        if column_selected in [4, 5, 10, 12, 13, 14, 15, 17, 18 ,19, 20, 22, 23]:
+            show_copy_content_to_rest_of_column = True
+
         remove = menu.addAction("Remove selected row")
         duplicate = menu.addAction("Duplicate selected row and move it to bottom")
 
@@ -629,10 +633,15 @@ class Interface(QMainWindow):
             menu.addSeparator()
             browse_this_row = menu.addAction("Browse file for this row ...")
             browse_all_row = menu.addAction("Browse file for all row ...")
-
         else:
             browse_this_row = None
             browse_all_row = None
+
+        if show_copy_content_to_rest_of_column:
+            menu.addSeparator()
+            copy_content_to_rest_of_column = menu.addAction("Sync column with this value")
+        else:
+            copy_content_to_rest_of_column = None
 
         action = menu.exec_(QtGui.QCursor.pos())
 
@@ -653,6 +662,17 @@ class Interface(QMainWindow):
                         show_browse_for_file=show_browse_for_file,
                         row_selected=np.arange(o_table.row_count()),
                         column_selected=column_selected)
+        elif action == copy_content_to_rest_of_column:
+            self.copy_content_to_rest_of_column(current_row=row_selected,
+                                                current_column=column_selected)
+            self.check_table_content_pushed()
+
+    def copy_content_to_rest_of_column(self, current_row=0, current_column=0):
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        value_to_copy = o_table.get_item_str_from_cell(row=current_row, column=current_column)
+        nbr_row = o_table.row_count()
+        for _row in np.arange(nbr_row):
+            o_table.set_item_with_str(row=_row, column=current_column, cell_str=value_to_copy)
 
     def browse(self, show_browse_for_folder=False,
                show_browse_for_file=True,
