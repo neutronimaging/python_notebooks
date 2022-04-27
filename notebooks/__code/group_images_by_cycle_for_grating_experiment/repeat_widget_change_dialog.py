@@ -25,8 +25,8 @@ class RepeatWidgetChangeDialog(QMainWindow):
         statis_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
         self.do_not_repeat_released_file = os.path.join(statis_file_path, "do_not_repeat_button_released.png")
         self.do_not_repeat_pressed_file = os.path.join(statis_file_path, "do_not_repeat_button_pressed.png")
-        self.repeat_released_file = os.path.join(statis_file_path, "repeat_off.png")
-        self.repeat_pressed_file = os.path.join(statis_file_path, "repeat_on.png")
+        self.repeat_released_file = os.path.join(statis_file_path, "repeat_button_released.png")
+        self.repeat_pressed_file = os.path.join(statis_file_path, "repeat_button_pressed.png")
 
         no_repeat_icon = QIcon(self.do_not_repeat_released_file)
         self.ui.do_not_repeat_pushButton.setIcon(no_repeat_icon)
@@ -45,7 +45,9 @@ class RepeatWidgetChangeDialog(QMainWindow):
         self.ui.do_not_repeat_pushButton.setIcon(no_repeat_icon)
 
     def repeat_pressed(self):
-        pass
+        repeat_icon = QIcon(self.repeat_pressed_file)
+        self.ui.repeat_pushButton.setIcon(repeat_icon)
 
     def repeat_released(self):
-        pass
+        repeat_icon = QIcon(self.repeat_released_file)
+        self.ui.repeat_pushButton.setIcon(repeat_icon)
