@@ -293,6 +293,14 @@ class Interface(QMainWindow):
                 color = color_ok
             o_table.set_background_color(row, column, color)
 
+        def set_color_for_that_path_that_must_exist(string, row, column):
+            if os.path.exists(string):
+                color = color_ok
+            else:
+                color = color_error
+                self.at_least_one_error_found = True
+            o_table.set_background_color(row, column, color)
+
         def is_roi_correct_format(roi):
             """check if roi has the format [##,##,##,##] where ## are integers"""
             roi = roi.strip()
@@ -324,22 +332,22 @@ class Interface(QMainWindow):
             o_table.define_row_for_getter(row=_row)
 
             first_data_file = o_table.get_first_data_file()
-            set_color_for_that_mandatory_field(first_data_file, _row, 0)
+            set_color_for_that_path_that_must_exist(first_data_file, _row, 0)
 
             last_data_file = o_table.get_last_data_file()
-            set_color_for_that_mandatory_field(last_data_file, _row, 1)
+            set_color_for_that_path_that_must_exist(last_data_file, _row, 1)
 
             first_ob_file = o_table.get_first_ob_file()
-            set_color_for_that_mandatory_field(first_ob_file, _row, 2)
+            set_color_for_that_path_that_must_exist(first_ob_file, _row, 2)
 
             last_ob_file = o_table.get_last_ob_file()
-            set_color_for_that_mandatory_field(last_ob_file, _row, 3)
+            set_color_for_that_path_that_must_exist(last_ob_file, _row, 3)
 
             first_dc_file = o_table.get_first_dc_file()
-            set_color_for_that_mandatory_field(first_dc_file, _row, 4)
+            set_color_for_that_path_that_must_exist(first_dc_file, _row, 4)
 
             last_dc_file = o_table.get_last_dc_file()
-            set_color_for_that_mandatory_field(last_dc_file, _row, 5)
+            set_color_for_that_path_that_must_exist(last_dc_file, _row, 5)
 
             rotation = o_table.get_rotation()
             set_color_for_int_field(rotation, _row, 8)
@@ -375,7 +383,7 @@ class Interface(QMainWindow):
             set_color_for_float_field(dc_outlier_value, _row, 22)
 
             result_directory = o_table.get_result_directory()
-            set_color_for_that_mandatory_field(result_directory, _row, 23)
+            set_color_for_that_path_that_must_exist(result_directory, _row, 23)
 
             file_id = o_table.get_file_id()
             set_color_for_that_mandatory_field(file_id, _row, 24)
@@ -384,7 +392,13 @@ class Interface(QMainWindow):
             show_status_message(parent=self,
                                 message=f"At least one issue found in table! Angel will not be able to execute this "
                                         f"excel!",
-                                status=StatusMessageStatus.error,
+                                status=StatusMessageStatus.warning,
+                                duration_s=15)
+
+        else:
+            show_status_message(parent=self,
+                                message=f"File is ready to be loaded into Angel!",
+                                status=StatusMessageStatus.ready,
                                 duration_s=15)
 
     def load_config(self):
