@@ -175,5 +175,6 @@
   <slot>save_as_button_pushed()</slot>
   <slot>check_table_content_pushed()</slot>
   <slot>right_click_table_widget()</slot>
+  <slot>cell_content_changed()</slot>
  </slots>
 </ui>

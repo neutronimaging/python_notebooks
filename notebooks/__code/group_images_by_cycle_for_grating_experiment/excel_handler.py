@@ -297,15 +297,19 @@ class Interface(QMainWindow):
             """check if roi has the format [##,##,##,##] where ## are integers"""
             roi = roi.strip()
             result = re.search("\[\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*\]", roi)
-            if len(result.groups()) != 4:
-                return False
             try:
-                int(result.groups()[0])
-                int(result.groups()[1])
-                int(result.groups()[2])
-                int(result.groups()[3])
-            except ValueError:
+                if len(result.groups()) != 4:
+                    return False
+                try:
+                    int(result.groups()[0])
+                    int(result.groups()[1])
+                    int(result.groups()[2])
+                    int(result.groups()[3])
+                except ValueError:
+                    return False
+            except AttributeError:
                 return False
+
             return True
 
         def set_color_for_roi(roi, row, column):
@@ -425,6 +429,7 @@ class Interface(QMainWindow):
         for _col_index in np.arange(nbr_columns):
             o_table.insert_column(_col_index)
         o_table.set_column_names(list_columns)
+        self.ui.tableWidget.blockSignals(True)
 
         # pandas_entry_for_first_row = pandas_object.iloc[0]
 
@@ -469,6 +474,7 @@ class Interface(QMainWindow):
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         o_table.set_row_height(row_height=row_height)
         o_table.set_column_width(column_width=self.columns_width)
+        self.ui.tableWidget.blockSignals(False)
 
     def cancel_button_pushed(self):
         self.close()
@@ -718,4 +724,3 @@ class Interface(QMainWindow):
         o_table.set_dc_outlier_value(o_table.get_dc_outlier_value())
         o_table.set_result_directory(o_table.get_result_directory())
         o_table.set_file_id(o_table.get_file_id())
-

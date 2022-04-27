@@ -229,3 +229,4 @@ class GroupImages:
     def generate_angel_configuration_file(self):
         o_widgets = NotebookWidgets(parent=self)
         o_widgets.generate_angel_configuration_file()
+
