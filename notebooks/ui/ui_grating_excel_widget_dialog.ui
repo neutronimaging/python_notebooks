@@ -1,90 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>422</width>
-    <height>210</height>
+    <width>418</width>
+    <height>255</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Repeat value changed ?</string>
+   <string>MainWindow</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
-    <widget class="QPushButton" name="do_not_repeat_pushButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>204</width>
-       <height>198</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>204</width>
-       <height>198</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="repeat_pushButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>204</width>
-       <height>198</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>204</width>
-       <height>198</height>
-      </size>
-     </property>
-     <property name="sizeIncrement">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="do_not_repeat_pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>204</width>
+        <height>198</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>204</width>
+        <height>198</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="repeat_pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>204</width>
+        <height>198</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>204</width>
+        <height>198</height>
+       </size>
+      </property>
+      <property name="sizeIncrement">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="baseSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>418</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <tabstops>
-  <tabstop>repeat_pushButton</tabstop>
-  <tabstop>do_not_repeat_pushButton</tabstop>
- </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>do_not_repeat_pushButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>do_not_repeat_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>107</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>415</x>
+     <y>76</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>do_not_repeat_pushButton</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>do_not_repeat_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>418</x>
+     <y>160</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>repeat_pushButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>repeat_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>325</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>26</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>repeat_pushButton</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>repeat_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>331</x>
+     <y>111</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>416</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>do_not_repeat_pressed()</slot>
+  <slot>do_not_repeat_released()</slot>
+  <slot>repeat_pressed()</slot>
+  <slot>repeat_released()</slot>
+ </slots>
 </ui>
