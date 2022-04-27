@@ -6,6 +6,7 @@ import numpy as np
 
 from __code import load_ui
 from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
+from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
 
 
 class RepeatWidgetChangeDialog(QMainWindow):
@@ -63,11 +64,36 @@ class RepeatWidgetChangeDialog(QMainWindow):
         input_row = self.input_row
         input_column = self.input_column
 
-        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+        o_table = TableHandler(table_ui=self.grand_parent.ui.tableWidget)
         nbr_row = o_table.row_count()
-        if input_column == 6:
-            o_table.define_row_for_getter(row=input_row)
+        o_table.define_row_for_getter(row=input_row)
+        if input_column == IndexOfColumns.period:
             widget_value = o_table.get_period()
             for _row in np.arange(nbr_row):
                 o_table.define_row_for_setter(_row)
-                o_table.set_period(widget_value, )
+                o_table.set_period(widget_value, new=False)
+        elif input_column == IndexOfColumns.images_per_step:
+            widget_value = o_table.get_images_per_step()
+            for _row in np.arange(nbr_row):
+                o_table.define_row_for_setter(_row)
+                o_table.set_images_per_step(widget_value, new=False)
+        elif input_column == IndexOfColumns.fit_procedure:
+            widget_value_index = o_table.get_fit_procedure_index()
+            for _row in np.arange(nbr_row):
+                o_table.define_row_for_setter(_row)
+                o_table.set_fit_procedure(widget_value_index, new=False)
+        elif input_column == IndexOfColumns.gamma_filter_data_ob:
+            widget_value_index = o_table.get_gamma_filter_data_ob_index()
+            for _row in np.arange(nbr_row):
+                o_table.define_row_for_setter(_row)
+                o_table.set_gamma_filter_data_ob(widget_value_index, new=False)
+        elif input_column == IndexOfColumns.gamma_filter_dc:
+            widget_value_index = o_table.get_gamma_filter_dc_index()
+            for _row in np.arange(nbr_row):
+                o_table.define_row_for_setter(_row)
+                o_table.set_gamma_filter_dc(widget_value_index, new=False)
+        elif input_column == IndexOfColumns.dc_outlier_removal:
+            widget_value_index = o_table.get_dc_outlier_removal_index()
+            for _row in np.arange(nbr_row):
+                o_table.define_row_for_setter(_row)
+                o_table.set_dc_outlier_removal(widget_value_index, new=False)
