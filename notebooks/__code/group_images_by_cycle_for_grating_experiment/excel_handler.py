@@ -621,29 +621,34 @@ class Interface(QMainWindow):
 
         show_browse_for_file = False
         show_browse_for_folder = False
+        show_browse_for_all_row = False
+
         show_browse_for_file_in_all_column = False
+
         if column_selected in [0, 1, 2, 3]:
             show_browse_for_file = True
         elif column_selected == 23:
             show_browse_for_folder = True
+            show_browse_for_all_row = True
         elif column_selected in [4, 5]:
-            show_browse_for_file_in_all_column = True
+            show_browse_for_file = True
+            show_browse_for_all_row = True
 
         show_copy_content_to_rest_of_column = False
-        if column_selected in [4, 5, 10, 12, 13, 14, 15, 17, 18 ,19, 20, 22, 23]:
+        if column_selected in [4, 5, 10, 12, 13, 14, 15, 17, 18,19, 20, 22, 23]:
             show_copy_content_to_rest_of_column = True
 
         remove = menu.addAction("Remove selected row")
         duplicate = menu.addAction("Duplicate selected row and move it to bottom")
 
-        if show_browse_for_file:
+        if show_browse_for_file and (not show_browse_for_all_row):
             menu.addSeparator()
             browse_this_row = menu.addAction("Browse for file ...")
-        elif show_browse_for_folder:
+        elif show_browse_for_folder and show_browse_for_all_row:
             menu.addSeparator()
             browse_this_row = menu.addAction("Browse folder for this row ...")
             browse_all_row = menu.addAction("Browse folder for all row ...")
-        elif show_browse_for_file_in_all_column:
+        elif show_browse_for_file and show_browse_for_all_row:
             menu.addSeparator()
             browse_this_row = menu.addAction("Browse file for this row ...")
             browse_all_row = menu.addAction("Browse file for all row ...")
@@ -659,23 +664,27 @@ class Interface(QMainWindow):
 
         action = menu.exec_(QtGui.QCursor.pos())
 
-        show_browse_for_file = show_browse_for_file_in_all_column
+        # show_browse_for_file = show_browse_for_file_in_all_column
 
         if action == remove:
             self.remove_selected_row(row=row_selected)
+
         elif action == duplicate:
             self.duplicate_row_and_move_it_to_bottom(row=row_selected)
             self.check_table_content_pushed()
+
         elif action == browse_this_row:
             self.browse(show_browse_for_folder=show_browse_for_folder,
                         show_browse_for_file=show_browse_for_file,
                         row_selected=[row_selected],
                         column_selected=column_selected)
+
         elif action == browse_all_row:
             self.browse(show_browse_for_folder=show_browse_for_folder,
                         show_browse_for_file=show_browse_for_file,
                         row_selected=np.arange(o_table.row_count()),
                         column_selected=column_selected)
+
         elif action == copy_content_to_rest_of_column:
             self.copy_content_to_rest_of_column(current_row=row_selected,
                                                 current_column=column_selected)
@@ -693,6 +702,7 @@ class Interface(QMainWindow):
                row_selected=[0], column_selected=0):
 
         folder_selected = self.grand_parent.folder_selected
+
         if show_browse_for_file:
             file_and_extension_name = QFileDialog.getOpenFileName(self,
                                                                   "Select file ...",
