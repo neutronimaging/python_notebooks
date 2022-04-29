@@ -64,6 +64,7 @@
 # # G
 
 # * [group images by cycle for panoramic stitching](group_images_by_cycle_for_panoramic_stitching.ipynb)
+# * [group_images_by_cycle_for_grating_experiment](group_images_by_cycle_for_grating_experiment.ipynb)
 
 # # H
 
