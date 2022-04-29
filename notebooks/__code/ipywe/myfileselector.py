@@ -414,10 +414,10 @@ class FileSelection(object):
 
         if self.filter:
             self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
-                                                                 start_dir=self.working_dir,
-                                                                 next=self.load_files,
-                                                                 filters=self.filter,
-                                                                 multiple=True)
+                                                           start_dir=self.working_dir,
+                                                           next=self.load_files,
+                                                           filters=self.filter,
+                                                           multiple=True)
         else:
              self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
                                                                  start_dir=self.working_dir,

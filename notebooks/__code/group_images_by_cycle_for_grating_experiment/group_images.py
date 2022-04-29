@@ -5,7 +5,6 @@ import json
 from collections import OrderedDict
 
 
-from __code.ipywe import fileselector
 from __code.ipywe import myfileselector
 from __code import file_handler
 from __code._utilities.string import format_html_message
@@ -71,9 +70,9 @@ class GroupImages:
     def select_data_to_sort(self):
         o_file_broswer = FileFolderBrowser(working_dir=self.working_dir,
                                            next_function=self.info_files_selected)
-        self.files_list_widget = o_file_broswer.select_images(instruction="Select Images to Sort ...",
-                                                              multiple_flag=True,
-                                                              filters={"TIFF": "*.tif*"})
+        self.files_list_widget = o_file_broswer.select_images_with_search(instruction="Select Images to Sort ...",
+                                                                          multiple_flag=True,
+                                                                          filters={"TIFF": "*.tif*"})
 
     def info_files_selected(self, selected):
         if not selected:
