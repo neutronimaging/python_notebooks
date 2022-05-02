@@ -155,10 +155,9 @@ class GroupImages:
                                  },
                             )
 
-        this also creates a dictionary {'0': 'value_outer_loop_1',
-                                        '1': 'value_outer_loop_2',
-                                        }
-
+        this also creates a dictionary dict_group_outer_value {'0': 'value_outer_loop_1',
+                                                               '1': 'value_outer_loop_2',
+                                                              }
         """
         list_key = master_outer_inner_dictionary.keys()
         groups_inner_dictionary = OrderedDict()

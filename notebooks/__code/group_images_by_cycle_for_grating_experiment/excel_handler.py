@@ -97,6 +97,7 @@ class ExcelHandler:
 
         output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
+        dict_group_outer_value = self.parent.dict_group_outer_value
         excel_config = self.get_excel_config()
 
         df_dict = {}
@@ -116,6 +117,7 @@ class ExcelHandler:
                     df_dict["last_data_file"].append(os.path.join(output_folder,
                                                                   first_last_run_of_each_group_dictionary[_key][
                                                                       'last']))
+                df_dict["sample_information"] = dict_group_outer_value[_key]
 
             nbr_row = len(first_last_run_of_each_group_dictionary.keys())
             df_dict["first_ob_file"] = ["None" for _ in np.arange(nbr_row)]
@@ -480,6 +482,7 @@ class Interface(QMainWindow):
             o_table.set_dc_outlier_value(pandas_entry_for_this_row[22])
             o_table.set_result_directory(pandas_entry_for_this_row[23])
             o_table.set_file_id(pandas_entry_for_this_row[24])
+            o_table.set_sample_information(pandas_entry_for_this_row[25])
 
             del o_table
 

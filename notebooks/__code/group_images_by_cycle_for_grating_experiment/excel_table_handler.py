@@ -396,3 +396,13 @@ class ExcelTableHandler(TableHandler):
         file_id_value = str(value)
         file_id = QTableWidgetItem(file_id_value)
         self.insert_item(row=self.row_to_set, column=column, item=file_id)
+
+    def get_sample_information(self):
+        column = IndexOfColumns.sample_information
+        return self.get_item_str_from_cell(row=self.get_from_row, column=column)
+
+    def set_sample_information(self, value):
+        column = IndexOfColumns.sample_information
+        sample_information_value = str(value)
+        sample_item = QTableWidgetItem(sample_information_value)
+        self.insert_item(row=self.row_to_set, column=column, item=sample_item)

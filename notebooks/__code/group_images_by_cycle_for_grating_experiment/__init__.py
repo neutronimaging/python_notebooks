@@ -34,3 +34,4 @@ class IndexOfColumns:
     dc_outlier_value = 22
     result_directory = 23
     file_id = 24
+    sample_information = 25
