@@ -114,3 +114,10 @@ class EventHandler:
     def create_new_excel_clicked(self, state):
         o_excel = ExcelHandler(parent=self.parent)
         o_excel.new_excel()
+
+    def switch_inner_outer_metadata(self, state):
+        outer_metadata_selected = self.parent.list_metadata_outer.value
+        inner_metadata_selected = self.parent.list_metadata_inner.value
+
+        self.parent.list_metadata_outer.value = inner_metadata_selected
+        self.parent.list_metadata_inner.value = outer_metadata_selected

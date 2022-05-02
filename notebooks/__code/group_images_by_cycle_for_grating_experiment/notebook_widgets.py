@@ -81,7 +81,16 @@ class NotebookWidgets:
         self.parent.list_metadata_inner = metadata_inner.children[2]
         self.parent.list_metadata_inner.observe(o_event.metadata_inner_selection_changed, names='value')
 
-        metadata = widgets.HBox([metadata_outer, widgets.Label(" "), metadata_inner])
+        switch_button = widgets.Button(description="Switch",
+                                       icon="refresh",
+                                       layout=widgets.Layout(display="center"))
+        switch_layout = widgets.VBox([switch_button],
+                                     layout=widgets.Layout(height="400px",
+                                                           display="center",
+                                                           justify_content="space-around"))
+        switch_button.on_click(o_event.switch_inner_outer_metadata)
+
+        metadata = widgets.HBox([metadata_outer, switch_layout, metadata_inner])
         display(metadata)
 
         self.parent.save_key_metadata()
