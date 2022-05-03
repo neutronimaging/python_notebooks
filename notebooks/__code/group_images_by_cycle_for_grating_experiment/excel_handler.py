@@ -32,10 +32,6 @@ class ExcelHandler:
 
         df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
 
-        import pprint
-        pprint.pprint("load excel")
-        pprint.pprint(df)
-
         nbr_excel_row = len(df)
         nbr_notebook_row = len(self.parent.first_last_run_of_each_group_dictionary.keys())
         data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
@@ -75,10 +71,6 @@ class ExcelHandler:
             """
             for _key in dict_group_outer_value.keys():
                 ob_outer_value = dict_group_outer_value[_key]
-
-                print(f"_key: {_key}")
-                print(f"-> sample_outer_value: {sample_outer_value}")
-                print(f"-> ob_outer_value: {ob_outer_value}")
 
                 if float(sample_outer_value) <= float(ob_outer_value):
                     return _key
