@@ -14,6 +14,7 @@ from __code import load_ui
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
 from __code.group_images_by_cycle_for_grating_experiment.repeat_widget_change_dialog import RepeatWidgetChangeDialog
+from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
 
 ROW_HEIGHT = 40
 
@@ -31,16 +32,21 @@ class ExcelHandler:
 
         df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
 
+        import pprint
+        pprint.pprint("load excel")
+        pprint.pprint(df)
+
         nbr_excel_row = len(df)
         nbr_notebook_row = len(self.parent.first_last_run_of_each_group_dictionary.keys())
+        data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
 
-        if nbr_excel_row != nbr_notebook_row:
+        # if we want to populate the sample column, we need to have the same number of sample and ob
+        if (nbr_excel_row != nbr_notebook_row) and (data_type_to_populate_with_notebook_data == 'sample'):
             display(HTML("<font color='red'>Number of rows in Excel document selected and number of group <b>DO NOT "
                          "MATCH!</b></font>"))
             display(HTML("<font color='blue'><b>SOLUTION</b>: create a new Excel document!</font>"))
 
         else:
-            data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
             new_df = self._populate_pandas_object(
                     df=df,
                     data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data)
@@ -58,6 +64,28 @@ class ExcelHandler:
             return json.load(json_file)
 
     def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data='sample'):
+
+        def get_matching_ob_group_index(sample_outer_value=None, dict_group_outer_value=None):
+            """
+            Using the sample_outer_value as a reference, this method will go over all the keys in ob_outer_value
+            and look at the corresponding value.
+            if the value is bigger or equal than the sample_outer_value, this key is returned.
+            if the value is lower, the program go to the next key and check again.
+            if the last key reached is still, the value of sample is bigger, then the last key is returned
+            """
+            for _key in dict_group_outer_value.keys():
+                ob_outer_value = dict_group_outer_value[_key]
+
+                print(f"_key: {_key}")
+                print(f"-> sample_outer_value: {sample_outer_value}")
+                print(f"-> ob_outer_value: {ob_outer_value}")
+
+                if float(sample_outer_value) <= float(ob_outer_value):
+                    return _key
+
+            list_keys = list(dict_group_outer_value.keys())
+            return list_keys[-1]
+
         output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
         if data_type_to_populate_with_notebook_data == 'sample':
@@ -69,6 +97,21 @@ class ExcelHandler:
                     'last'])
 
         else:  # ob
+
+            dict_group_outer_value = self.parent.dict_group_outer_value
+
+            number_of_df_rows = len(df)
+
+            # go one row at a time and check value of sample_information (outer loop)
+            for _row in np.arange(number_of_df_rows):
+                sample_outer_value = df.iloc[_row, IndexOfColumns.sample_information]
+                ob_group_index = get_matching_ob_group_index(sample_outer_value=sample_outer_value,
+                                                             dict_group_outer_value=dict_group_outer_value)
+
+                df.iloc[_row, 2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                    ob_group_index]['first'])
+                df.iloc[_row, 3] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[
+                    ob_group_index]['last'])
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
                 df.iloc[_row_index, 2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
@@ -581,7 +624,7 @@ class Interface(QMainWindow):
             dc_outlier_value.append(o_table.get_dc_outlier_value())
             result_directory.append(o_table.get_result_directory())
             file_id.append(o_table.get_file_id())
-            sample_information.append("")
+            sample_information.append(o_table.get_sample_information())
             used_environment.append("")
             osc_pixel.append("")
 
@@ -773,3 +816,4 @@ class Interface(QMainWindow):
         o_table.set_dc_outlier_value(o_table.get_dc_outlier_value())
         o_table.set_result_directory(o_table.get_result_directory())
         o_table.set_file_id(o_table.get_file_id())
+        o_table.set_sample_information(o_table.get_sample_information())
