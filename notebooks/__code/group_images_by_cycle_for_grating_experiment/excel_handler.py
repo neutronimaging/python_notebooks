@@ -110,6 +110,7 @@ class ExcelHandler:
                                                                    _key]['first'])]
                     df_dict["last_data_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
                                                                   _key]['last'])]
+                    df_dict["sample_information"] = [dict_group_outer_value[_key]]
                 else:
                     df_dict["first_data_file"].append(os.path.join(output_folder,
                                                                    first_last_run_of_each_group_dictionary[_key][
@@ -117,7 +118,7 @@ class ExcelHandler:
                     df_dict["last_data_file"].append(os.path.join(output_folder,
                                                                   first_last_run_of_each_group_dictionary[_key][
                                                                       'last']))
-                df_dict["sample_information"] = dict_group_outer_value[_key]
+                    df_dict["sample_information"].append(dict_group_outer_value[_key])
 
             nbr_row = len(first_last_run_of_each_group_dictionary.keys())
             df_dict["first_ob_file"] = ["None" for _ in np.arange(nbr_row)]
@@ -163,6 +164,7 @@ class ExcelHandler:
         list_key.remove("first_ob_file")
         list_key.remove("last_ob_file")
         list_key.remove("file_id")
+        list_key.remove("sample_information")
         for _key in list_key:
             df_dict[_key] = [excel_config[_key] for _ in np.arange(nbr_row)]
 
