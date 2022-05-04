@@ -29,7 +29,7 @@ class CombineAndMoveFiles:
         output_folder = os.path.abspath(output_folder)
 
         # add data type file extension
-        data_type = self.parent.sample_or_ob_radio_buttons
+        data_type = self.parent.sample_or_ob_radio_buttons.value
         output_folder = output_folder + f"_{data_type}"
 
         self.parent.output_folder = output_folder
@@ -84,5 +84,5 @@ class CombineAndMoveFiles:
 
         vbox.close()
 
-        message = f"Folder {output_folder} have been created!"
+        message = f"Folder {output_folder} has been created!"
         display(HTML('<span style="font-size: 15px">' + message + '</span>'))
