@@ -36,6 +36,10 @@ o_group = GroupImages(working_dir=system.System.get_working_dir())
 o_group.select_data_to_sort()
 # -
 
+# # Select Type of Data 
+
+o_group.define_type_of_data()
+
 # # Select Metadata to Use for Sorting 
 
 o_group.select_metadata_to_use_for_sorting()
