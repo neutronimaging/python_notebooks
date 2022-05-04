@@ -158,15 +158,6 @@ class NotebookWidgets:
 
         o_event = EventHandler(parent=self.parent)
 
-        sample_or_ob_ui = widgets.HBox([widgets.HTML("Which columns do you want to populate?",
-                                                     layout=widgets.Layout(width="250px")),
-                                        widgets.RadioButtons(options=['sample', 'ob'],
-                                                             value='sample',
-                                                             layout=widgets.Layout(width="50%")),
-                                        widgets.HTML("<hr>")])
-        display(sample_or_ob_ui)
-        self.parent.sample_or_ob_radio_buttons = sample_or_ob_ui.children[1]
-
         load_previous_excel_ui = widgets.Button(
                 description="Use previously created EXCEL File",
                 icon="edit",
@@ -190,3 +181,13 @@ class NotebookWidgets:
 
         self.parent.excel_info_widget = widgets.HTML("")
         display(self.parent.excel_info_widget)
+
+    def define_type_of_data(self):
+        sample_or_ob_ui = widgets.HBox([widgets.HTML("Which type of data are you working with?",
+                                                     layout=widgets.Layout(width="250px")),
+                                        widgets.RadioButtons(options=['sample', 'ob'],
+                                                             value='sample',
+                                                             layout=widgets.Layout(width="50%")),
+                                        widgets.HTML("<hr>")])
+        display(sample_or_ob_ui)
+        self.parent.sample_or_ob_radio_buttons = sample_or_ob_ui.children[1]

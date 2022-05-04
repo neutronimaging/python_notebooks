@@ -4,7 +4,6 @@ import numpy as np
 import json
 from collections import OrderedDict
 
-
 from __code.ipywe import myfileselector
 from __code import file_handler
 from __code._utilities.string import format_html_message
@@ -14,7 +13,6 @@ from .utilities import make_dictionary_of_groups_new_names
 from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import NotebookWidgets
 from __code.group_images_by_cycle_for_grating_experiment.combine_and_move_files import CombineAndMoveFiles
 from __code.file_folder_browser import FileFolderBrowser
-
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
@@ -89,6 +87,10 @@ class GroupImages:
         if not ('tif' in self.file_extension):
             display(format_html_message('This notebook only works with TIFF images!', is_error=True))
             return
+
+    def define_type_of_data(self):
+        o_widgets = NotebookWidgets(parent=self)
+        o_widgets.define_type_of_data()
 
     def select_metadata_to_use_for_sorting(self):
         o_widgets = NotebookWidgets(parent=self)
@@ -184,7 +186,7 @@ class GroupImages:
         for _group_index in np.arange(nbr_groups):
             _list_for_this_group = o_get.list_of_new_files_basename_only(_group_index)
             first_last_run_of_each_group_dictionary[_group_index] = {'first': _list_for_this_group[0],
-                                                                     'last': _list_for_this_group[-1]}
+                                                                     'last' : _list_for_this_group[-1]}
         self.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
 
     def _get_group_number_selected(self):
@@ -227,4 +229,3 @@ class GroupImages:
     def generate_angel_configuration_file(self):
         o_widgets = NotebookWidgets(parent=self)
         o_widgets.generate_angel_configuration_file()
-

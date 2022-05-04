@@ -27,6 +27,11 @@ class CombineAndMoveFiles:
         output_folder_basename = os.path.basename(self.parent.folder_selected) + "_sorted_for_grating_reconstruction"
         output_folder = os.path.join(output_folder, output_folder_basename)
         output_folder = os.path.abspath(output_folder)
+
+        # add data type file extension
+        data_type = self.parent.sample_or_ob_radio_buttons
+        output_folder = output_folder + f"_{data_type}"
+
         self.parent.output_folder = output_folder
         make_or_reset_folder(output_folder)
 
