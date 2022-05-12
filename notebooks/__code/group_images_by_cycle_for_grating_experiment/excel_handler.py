@@ -8,6 +8,7 @@ import numpy as np
 import re
 import json
 from collections import OrderedDict
+import logging
 
 from __code._utilities.string import format_html_message
 from __code import load_ui
@@ -23,6 +24,12 @@ class ExcelHandler:
 
     def __init__(self, parent=None):
         self.parent = parent
+
+        # logging.basicConfig(filename="/Users/j35/Desktop/grating.log",
+        #                     filemode='a',
+        #                     format='[%(levelname)s] - %(asctime)s - %(message)s',
+        #                     level=logging.INFO)
+        # logging.info("*** Starting debugging ***")
 
     def load_excel(self, excel_file=None):
         if excel_file is None:
@@ -61,6 +68,8 @@ class ExcelHandler:
 
     def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data='sample'):
 
+        logging.info("Entering _populate_pandas_object!")
+
         def get_matching_ob_group_index(sample_outer_value=None, dict_group_outer_value=None):
             """
             Using the sample_outer_value as a reference, this method will go over all the keys in ob_outer_value
@@ -80,7 +89,10 @@ class ExcelHandler:
 
         output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
+
         if data_type_to_populate_with_notebook_data == 'sample':
+
+            logging.info("working with Sample")
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
                 df.iloc[_row_index, 0] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
@@ -90,26 +102,26 @@ class ExcelHandler:
 
         else:  # ob
 
-            dict_group_outer_value = self.parent.dict_group_outer_value
+            # logging.info("working with OB")
 
+            dict_group_outer_value = self.parent.dict_group_outer_value
             number_of_df_rows = len(df)
 
             # go one row at a time and check value of sample_information (outer loop)
             for _row in np.arange(number_of_df_rows):
+
+                # logging.info(f"-> _row:{_row}")
+
                 sample_outer_value = df.iloc[_row, IndexOfColumns.sample_information]
+                logging.info(f"-> sample_outer_value: {sample_outer_value}")
                 ob_group_index = get_matching_ob_group_index(sample_outer_value=sample_outer_value,
                                                              dict_group_outer_value=dict_group_outer_value)
+                # logging.info(f"-> ob_group_index: {ob_group_index}")
 
                 df.iloc[_row, 2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[
                     ob_group_index]['first'])
                 df.iloc[_row, 3] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[
                     ob_group_index]['last'])
-
-            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-                df.iloc[_row_index, 2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
-                                                          'first'])
-                df.iloc[_row_index, 3] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
-                    'last'])
 
         return df
 

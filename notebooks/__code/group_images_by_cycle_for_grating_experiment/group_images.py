@@ -220,7 +220,6 @@ class GroupImages:
         return dictionary_of_groups_old_names
 
     def copy_combine_and_rename_files(self, output_folder):
-
         o_combine_and_move_files = CombineAndMoveFiles(parent=self,
                                                        output_folder=output_folder,
                                                        debug=DEBUG)

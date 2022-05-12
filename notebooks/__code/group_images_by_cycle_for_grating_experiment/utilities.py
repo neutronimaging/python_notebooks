@@ -42,7 +42,7 @@ def make_dictionary_of_groups_new_names(dictionary_of_groups_sorted, dict_group_
             before_decimal = int(before_and_after_decimal[0])
             before_decimal_str = f"{before_decimal:03d}"
             str_outer_value_formatted = "_".join([before_decimal_str, before_and_after_decimal[1]])
-        list_new_names = [f"group_{str_outer_value_formatted}_{_index:04d}.tiff"
+        list_new_names = [f"group_{str_outer_value_formatted}_{_index:07d}.tiff"
                           for _index
                           in np.arange(nbr_files)]
         dict_new_names[_group_index] = list_new_names
