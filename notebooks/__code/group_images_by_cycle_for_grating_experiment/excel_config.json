@@ -6,7 +6,7 @@
     "first_dc_file": "None",
     "last_dc_file": "None",
     "period": 1,
-    "images_per_step": 3,
+    "images_per_step": 1,
     "rotation": 0,
     "fit_procedure": "EM Fit",
     "roi": "[0, 1460, 380, 1870]",
