@@ -29,32 +29,32 @@ jobs:
         - name: Install dependencies
           timeout-minutes: 40
           run: |
-            python -m pip install --upgrade pip 
+            python -m pip install --upgrade pip
             conda env update -n base --file=conda/environment.yml
             conda install pytest
         - name: Run tests
           run: |
             cd notebooks
-            python -m pytest tests/ 
+            python -m pytest tests/
 
     trigger-prod-deployment:
       if: ${{ github.ref == 'refs/heads/master' }}
       # remove dependency until unit tests issues are resolved
       #needs: run-unit-tests
-      runs-on: ubuntu-20.04
+      runs-on: ubuntu-22.04
       steps:
         - name: Update Conda Environment
-          run: curl -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=main -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=neutron-imaging" ${{ secrets.GITLAB_TRIGGER_URL }} > /dev/null
+          run: curl --fail-with-body -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=main -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=neutron-imaging" ${{ secrets.GITLAB_TRIGGER_URL }} | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
         - name: Update Notebooks
-          run: curl -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=main -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks" ${{ secrets.NOTEBOOKS_TRIGGER_URL }} > /dev/null
+          run: curl --fail-with-body -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=main -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks" ${{ secrets.NOTEBOOKS_TRIGGER_URL }} | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
 
     trigger-dev-deployment:
       if: ${{ github.ref == 'refs/heads/dev' }}
       # remove dependency until unit tests issues are resolved
       #needs: run-unit-tests
-      runs-on: ubuntu-20.04
+      runs-on: ubuntu-22.04
       steps:
         - name: Update Conda Environment
-          run: curl -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=main -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=neutron-imaging-dev" ${{ secrets.GITLAB_TRIGGER_URL }} > /dev/null
+          run: curl --fail-with-body -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=main -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=neutron-imaging-dev" ${{ secrets.GITLAB_TRIGGER_URL }} | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
         - name: Update Notebooks
-          run: curl -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=main -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks_testing" ${{ secrets.NOTEBOOKS_TRIGGER_URL }} > /dev/null
+          run: curl --fail-with-body -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=main -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks_testing" ${{ secrets.NOTEBOOKS_TRIGGER_URL }} | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
