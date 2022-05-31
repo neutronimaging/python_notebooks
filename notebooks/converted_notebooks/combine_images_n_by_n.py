@@ -31,7 +31,8 @@ custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge = CombineImages(working_dir=system.System.get_working_dir())
-o_merge.select_folder()
+# o_merge.select_folder()
+o_merge.select_images()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Merging Arithmetic Method
