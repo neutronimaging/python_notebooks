@@ -40,7 +40,7 @@ jobs:
     trigger-prod-deployment:
       if: ${{ github.ref == 'refs/heads/master' }}
       # remove dependency until unit tests issues are resolved
-      #needs: run-unit-tests
+      needs: run-unit-tests
       runs-on: ubuntu-22.04
       steps:
         - name: Update Conda Environment
@@ -51,7 +51,7 @@ jobs:
     trigger-dev-deployment:
       if: ${{ github.ref == 'refs/heads/dev' }}
       # remove dependency until unit tests issues are resolved
-      #needs: run-unit-tests
+      needs: run-unit-tests
       runs-on: ubuntu-22.04
       steps:
         - name: Update Conda Environment
