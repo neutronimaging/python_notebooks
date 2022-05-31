@@ -8,6 +8,7 @@ import glob
 
 from NeuNorm.normalization import Normalization
 
+from __code.file_folder_browser import FileFolderBrowser
 from __code import file_handler
 from __code.ipywe import fileselector
 from __code._utilities.string import get_beginning_common_part_of_string_from_list
@@ -30,23 +31,37 @@ class CombineImagesNByN(object):
         self.output_folder_widget = None
         self.timespectra_file_name = None
 
-    def select_folder(self):
-            self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
-                                                                start_dir=self.working_dir,
-                                                                type='directory',
-                                                                next=self.post_select_folder,
-                                                                multiple=False)
-            self.folder_widget.show()
+    def select_images(self):
+        o_file_browser = FileFolderBrowser(working_dir=self.working_dir,
+                                           next_function=self.post_select_images)
+        self.list_files_selected = o_file_browser.select_images_with_search(instruction="Select images to combine",
+                                                                            multiple_flag=True,
+                                                                            filters={"TIFF": "*.tif*",
+                                                                                     "FITS": "*.fits"})
 
-    def post_select_folder(self, folder_selected):
-        self.input_folder_selected = folder_selected
-        self._retrieve_number_of_files()
-        self._check_if_working_with_time_spectra()
+    def post_select_images(self, list_of_images):
+        if list_of_images:
+            self.input_folder_selected = os.path.dirname(list_of_images[0])
+            self.base_working_dir = str(PurePath(Path(self.input_folder_selected).parent).name)
+            self.list_files = list_of_images
 
-    def _retrieve_number_of_files(self):
-        self.base_working_dir = str(PurePath(Path(self.input_folder_selected).parent).name)
-        [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(
-                folder=self.input_folder_selected)
+    # def select_folder(self):
+    #         self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder with images to combine',
+    #                                                             start_dir=self.working_dir,
+    #                                                             type='directory',
+    #                                                             next=self.post_select_folder,
+    #                                                             multiple=False)
+    #         self.folder_widget.show()
+    #
+    # def post_select_folder(self, folder_selected):
+    #     self.input_folder_selected = folder_selected
+    #     self._retrieve_number_of_files()
+    #     self._check_if_working_with_time_spectra()
+
+    # def _retrieve_number_of_files(self):
+    #     self.base_working_dir = str(PurePath(Path(self.input_folder_selected).parent).name)
+    #     [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+    #             folder=self.input_folder_selected)
 
     def _check_if_working_with_time_spectra(self):
         input_folder = self.input_folder_selected
