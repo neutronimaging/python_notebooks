@@ -1,7 +1,32 @@
 name: Test and Deploy
 on: [push, pull_request]
 jobs:
+    test-notebook-deployment:
+      runs-on: ubuntu-22.04
+      needs: [linux]
+      if: github.ref == 'refs/heads/deployTrigger'
+      steps:
+        - name: Determine the Notebook Collection
+          id: notebook_collection
+          run: |
+            case ${{ github.ref }} in
+            refs/heads/next)
+              echo "::set-output name=name::IPTS_notebooks_testing_2"
+              ;;
+            refs/heads/deployTrigger)
+              echo "::set-output name=name::IPTS_notebooks_2"
+              ;;
+            *)
+              echo "This job should not run on unprotected branches REF=${{ github.ref }}"
+              exit 1
+              ;;
+            esac
+        - name: Print info
+          run: echo "NOTEBOOK COLLETION = ${{ steps.notebook_collection.outputs.name }}"
+
     run-unit-tests:
+      # DEBUG: temporarily disable running this action
+      if: ${{ false }}
       runs-on: ${{ matrix.os }}
       timeout-minutes: 60
       strategy:
@@ -38,7 +63,7 @@ jobs:
             python -m pytest tests/
 
     trigger-prod-deployment:
-      if: ${{ github.ref == 'refs/heads/master' }}
+      if: ${{ github.ref == 'refs/heads/main' }}
       # remove dependency until unit tests issues are resolved
       needs: run-unit-tests
       runs-on: ubuntu-22.04
@@ -48,8 +73,8 @@ jobs:
         - name: Update Notebooks
           run: curl --fail-with-body -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=main -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks" ${{ secrets.GITLAB_TRIGGER_BASE }}projects/9565/trigger/pipeline | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
 
-    trigger-dev-deployment:
-      if: ${{ github.ref == 'refs/heads/dev' }}
+    trigger-next-deployment:
+      if: ${{ github.ref == 'refs/heads/next' }}
       # remove dependency until unit tests issues are resolved
       needs: run-unit-tests
       runs-on: ubuntu-22.04
@@ -58,3 +83,73 @@ jobs:
           run: curl --fail-with-body -sX POST -F token=${{ secrets.GITLAB_TRIGGER_TOKEN }} -F ref=main -F "variables[PLAY]=${{ secrets.GITLAB_TRIGGER_PLAYBOOK }}" -F "variables[CONDA_ENV]=neutron-imaging-dev" ${{ secrets.GITLAB_TRIGGER_BASE }}projects/7835/trigger/pipeline | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
         - name: Update Notebooks
           run: curl --fail-with-body -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=main -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks_testing" ${{ secrets.GITLAB_TRIGGER_BASE }}projects/9565/trigger/pipeline | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
+
+    trigger-deploy-conda-environment:
+      runs-on: ubuntu-22.04
+      needs: [linux]
+      # only trigger deploys from protected branches
+      if: ${{ github.ref_protected }}
+      steps:
+        - name: Determine the Conda Environment
+          id: conda_env_name
+          run: |
+            case ${{ github.ref }} in
+            refs/heads/next)
+              echo "::set-output name=name::neutron-imaging-dev"
+              ;;
+            refs/heads/main)
+              echo "::set-output name=name::neutron-imaging"
+              ;;
+            *)
+              echo "This job should not run on unprotected branches REF=${{ github.ref }}"
+              exit 1
+              ;;
+            esac
+        - name: Trigger deploy
+          id: trigger
+          uses: eic/trigger-gitlab-ci@main
+          with:
+            url: https://code.ornl.gov
+            token: ${{ secrets.GITLAB_TRIGGER_TOKEN_CONDA }}
+            project_id: 7835
+            ref_name: main
+            variables: |
+              PLAY="update"
+              CONDA_ENV="${{ steps.conda_env_name.outputs.name }}"
+        - name: Print web_url for further use
+          run: echo ${{ steps.trigger.outputs.web_url }}
+
+    trigger-deploy-notebooks:
+      runs-on: ubuntu-22.04
+      needs: [linux]
+      # only trigger deploys from protected branches
+      if: ${{ github.ref_protected}}
+      steps:
+        - name: Determine the Notebook Collection
+          id: notebook_collection
+          run: |
+            case ${{ github.ref }} in
+            refs/heads/next)
+              echo "::set-output name=name::IPTS_notebooks_testing_2"
+              ;;
+            refs/heads/main)
+              echo "::set-output name=name::IPTS_notebooks_2"
+              ;;
+            *)
+              echo "This job should not run on unprotected branches REF=${{ github.ref }}"
+              exit 1
+              ;;
+            esac
+        - name: Trigger deploy
+          id: trigger
+          uses: eic/trigger-gitlab-ci@main
+          with:
+            url: https://code.ornl.gov
+            token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
+            project_id: 11602
+            ref_name: main
+            variables: |
+              PLAY="imaging"
+              EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
+        - name: Print web_url for further use
+          run: echo ${{ steps.trigger.outputs.web_url }}
