@@ -1,9 +1,18 @@
 name: Test and Deploy
 on: [push, pull_request]
 jobs:
+    runner:
+      runs-on: ${{ matrix.os }}
+      timeout-minutes: 60
+      strategy:
+        fail-fast: false
+        matrix:
+          os: [ubuntu-22.04]
+          python-version: ["3.7", "3.8"]
+
     test-notebook-deployment:
-      runs-on: ubuntu-22.04
-      needs: [linux]
+      runs-on: ${{ runner.matrix.os }}
+      needs: [runner]
       if: github.ref == 'refs/heads/deployTrigger'
       steps:
         - name: Determine the Notebook Collection
@@ -22,26 +31,24 @@ jobs:
               ;;
             esac
         - name: Print info
-          run: echo "NOTEBOOK COLLETION = ${{ steps.notebook_collection.outputs.name }}"
+          run: |
+            echo "NOTEBOOK COLLETION = ${{ steps.notebook_collection.outputs.name }}"
+            echo "OS = $${{ runner.matrix.os }}"
+            echo "PYTHON = ${{ runner.matrix.python-version }}"
 
     run-unit-tests:
       # DEBUG: temporarily disable running this action
       if: ${{ false }}
-      runs-on: ${{ matrix.os }}
-      timeout-minutes: 60
-      strategy:
-        fail-fast: false
-        matrix:
-          python-version: [3.7, 3.8]
-          os: [ubuntu-latest]
-      name: ${{ matrix.os }} py${{ matrix.python-version }}
+      runs-on: ${{ runner.matrix.os }}
+      needs: runner
+      name: ${{ matrix.os }} py${{ runner.matrix.python-version }}
       steps:
         - uses: actions/checkout@v2
         - uses: jurplel/install-qt-action@v2
         - uses: s-weigand/setup-conda@v1.0.7
           name: Setup Conda
           with:
-            python-version: ${{ matrix.python-version }}
+            python-version: ${{ runner.matrix.python-version }}
             conda-channels: anaconda, conda-forge
             activate-conda: true
         - name: Check versions
@@ -85,8 +92,8 @@ jobs:
           run: curl --fail-with-body -sX POST -F token=${{ secrets.NOTEBOOKS_TRIGGER_TOKEN }} -F ref=main -F "variables[NOTEBOOKS_FOLDER]=IPTS_notebooks_testing" ${{ secrets.GITLAB_TRIGGER_BASE }}projects/9565/trigger/pipeline | jq '. | del( .user )' ; exit ${PIPESTATUS[0]}
 
     trigger-deploy-conda-environment:
-      runs-on: ubuntu-22.04
-      needs: [linux]
+      runs-on: ${{ runner.matrix.os }}
+      needs: [runner, run-unit-tests]
       # only trigger deploys from protected branches
       if: ${{ github.ref_protected }}
       steps:
@@ -120,8 +127,8 @@ jobs:
           run: echo ${{ steps.trigger.outputs.web_url }}
 
     trigger-deploy-notebooks:
-      runs-on: ubuntu-22.04
-      needs: [linux]
+      runs-on: ${{ runner.linux.matrix.os }}
+      needs: [runner, run-unit-tests]
       # only trigger deploys from protected branches
       if: ${{ github.ref_protected}}
       steps:
