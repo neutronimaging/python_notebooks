@@ -6,7 +6,7 @@ env:
 jobs:
 
     test-notebook-deployment:
-      runs-on: $UBUNTU_VERSION
+      runs-on: ubuntu-22.04
       if: github.ref == 'refs/heads/deployTrigger'
       steps:
         - name: Determine the Notebook Collection
