@@ -25,6 +25,17 @@ jobs:
         - name: Print info
           run: |
             echo "NOTEBOOK COLLECTION = ${{ steps.notebook_collection.outputs.name }}"
+        - name: Trigger deploy
+          id: trigger
+          uses: eic/trigger-gitlab-ci@main
+          with:
+            url: https://code.ornl.gov
+            token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
+            project_id: 11602
+            ref_name: imaging
+            variables: |
+              PLAY="imaging"
+              EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
 
     run-unit-tests:
       # DEBUG: temporarily disable running this action
