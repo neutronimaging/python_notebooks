@@ -25,7 +25,7 @@ jobs:
         - name: Print info
           run: |
             echo "NOTEBOOK COLLECTION = ${{ steps.notebook_collection.outputs.name }}"
-        - name: Trigger deploy
+        - name: Trigger the Deploy
           id: trigger
           uses: eic/trigger-gitlab-ci@v2
           with:
