@@ -27,7 +27,7 @@ jobs:
             echo "NOTEBOOK COLLECTION = ${{ steps.notebook_collection.outputs.name }}"
         - name: Trigger deploy
           id: trigger
-          uses: eic/trigger-gitlab-ci@main
+          uses: eic/trigger-gitlab-ci@v2
           with:
             url: https://code.ornl.gov
             token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
@@ -120,7 +120,7 @@ jobs:
             esac
         - name: Trigger deploy
           id: trigger
-          uses: eic/trigger-gitlab-ci@main
+          uses: eic/trigger-gitlab-ci@v2
           with:
             url: https://code.ornl.gov
             token: ${{ secrets.GITLAB_TRIGGER_TOKEN_CONDA }}
@@ -155,7 +155,7 @@ jobs:
             esac
         - name: Trigger deploy
           id: trigger
-          uses: eic/trigger-gitlab-ci@main
+          uses: eic/trigger-gitlab-ci@v2
           with:
             url: https://code.ornl.gov
             token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
