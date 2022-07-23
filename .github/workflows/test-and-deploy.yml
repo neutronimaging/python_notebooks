@@ -8,26 +8,15 @@ jobs:
       timeout-minutes: 60
       strategy:
         fail-fast: false
-        matrix:
-          os: [ubuntu-22.04]
-          python-version: ["3.8"]
-      name: ${{ matrix.os }} py${{ matrix.python-version }}
       steps:
         - uses: actions/checkout@v2
         - uses: jurplel/install-qt-action@v2
         - uses: s-weigand/setup-conda@v1.0.7
           name: Setup Conda
           with:
-            python-version: ${{ runner.matrix.python-version }}
+            python-version: 3.8
             conda-channels: anaconda, conda-forge
             activate-conda: true
-        - name: Check versions
-          run: |
-            conda --version
-            which python
-            python --version
-            pwd
-            ls
         - name: Install dependencies
           timeout-minutes: 40
           run: |
