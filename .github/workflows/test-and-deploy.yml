@@ -8,6 +8,7 @@ jobs:
       timeout-minutes: 60
       strategy:
         fail-fast: false
+      name: ubuntu-22.04 python 3.8
       steps:
         - uses: actions/checkout@v2
         - uses: jurplel/install-qt-action@v2
@@ -17,6 +18,13 @@ jobs:
             python-version: 3.8
             conda-channels: anaconda, conda-forge
             activate-conda: true
+        - name: Check versions
+          run: |
+            conda --version
+            which python
+            python --version
+            pwd
+            ls
         - name: Install dependencies
           timeout-minutes: 40
           run: |
