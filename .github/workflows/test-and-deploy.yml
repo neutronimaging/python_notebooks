@@ -44,21 +44,12 @@ jobs:
       runs-on: ubuntu-22.04
       if: github.ref == 'refs/heads/deployTrigger'
       steps:
-        - name: Determine the Notebook Collection
+        - name: Map the Branch Name to a Notebook Collection
+          uses: neutrons/branch-mapper@main
           id: notebook_collection
-          run: |
-            case ${{ github.ref }} in
-            refs/heads/next)
-              echo "::set-output name=name::IPTS_notebooks_testing"
-              ;;
-            refs/heads/deployTrigger)
-              echo "::set-output name=name::IPTS_notebooks"
-              ;;
-            *)
-              echo "This job should not run on unprotected branches REF=${{ github.ref }}"
-              exit 1
-              ;;
-            esac
+          with:
+            prefix: "IPTS_notebooks"
+            suffix-default: "_testing"
         - name: Print info
           run: |
             echo "NOTEBOOK COLLECTION = ${{ steps.notebook_collection.outputs.name }}"
@@ -73,6 +64,11 @@ jobs:
             variables: |
               PLAY="imaging"
               EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
+      - name: Annotate commit
+        uses: peter-evans/commit-comment@v2
+        with:
+          body: |
+            GitLab pipeline for ${{ steps.notebook_collection.outputs.name }} has been submitted for this commit: ${{ steps.trigger.outputs.web_url }}
 
     trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
