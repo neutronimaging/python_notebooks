@@ -52,11 +52,11 @@ jobs:
             variables: |
               PLAY="imaging"
               EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
-      - name: Annotate commit
-        uses: peter-evans/commit-comment@v2
-        with:
-          body: |
-            GitLab pipeline for ${{ steps.notebook_collection.outputs.name }} has been submitted for this commit: ${{ steps.trigger.outputs.web_url }}
+        - name: Annotate commit
+          uses: peter-evans/commit-comment@v2
+          with:
+            body: |
+              GitLab pipeline submitted for commit ${{ steps.trigger.outputs.web_url }}
 
     trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
