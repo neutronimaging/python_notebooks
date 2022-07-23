@@ -27,58 +27,18 @@ jobs:
             cd notebooks
             python -m pytest tests/
 
-    test-notebook-deployment:
-      needs: run-unit-tests
-      runs-on: ubuntu-22.04
-      if: github.ref == 'refs/heads/deployTrigger'
-      steps:
-        - name: Map the Branch Name to a Notebook Collection
-          uses: neutrons/branch-mapper@main
-          id: notebook_collection
-          with:
-            prefix: "IPTS_notebooks"
-            suffix-default: "_testing"
-        - name: Print info
-          run: |
-            echo "NOTEBOOK COLLECTION = ${{ steps.notebook_collection.outputs.name }}"
-        - name: Trigger the Deploy
-          id: trigger
-          uses: eic/trigger-gitlab-ci@v2
-          with:
-            url: https://code.ornl.gov
-            token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
-            project_id: 11602
-            ref_name: imaging
-            variables: |
-              PLAY="imaging"
-              EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
-        - name: Annotate commit
-          uses: peter-evans/commit-comment@v2
-          with:
-            body: |
-              GitLab pipeline submitted for commit ${{ steps.trigger.outputs.web_url }}
-
     trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
       needs: run-unit-tests
       # only trigger deploys from protected branches
       if: ${{ github.ref_protected }}
       steps:
-        - name: Determine the Conda Environment
+        - name: Map the Branch Name to a Conda Environment
+          uses: neutrons/branch-mapper@main
           id: conda_env_name
-          run: |
-            case ${{ github.ref }} in
-            refs/heads/next)
-              echo "::set-output name=name::neutron-imaging-dev"
-              ;;
-            refs/heads/main)
-              echo "::set-output name=name::neutron-imaging"
-              ;;
-            *)
-              echo "This job should not run on unprotected branches REF=${{ github.ref }}"
-              exit 1
-              ;;
-            esac
+          with:
+            prefix: "neutron-imaging"
+            suffix-default: "-dev"
         - name: Trigger deploy
           id: trigger
           uses: eic/trigger-gitlab-ci@v2
@@ -90,8 +50,11 @@ jobs:
             variables: |
               PLAY="update"
               CONDA_ENV="${{ steps.conda_env_name.outputs.name }}"
-        - name: Print web_url for further use
-          run: echo ${{ steps.trigger.outputs.web_url }}
+        - name: Annotate commit
+          uses: peter-evans/commit-comment@v2
+          with:
+            body: |
+              GitLab pipeline with CONDA_ENV=${{ steps.conda_env_name.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}
 
     trigger-deploy-notebooks:
       runs-on: ubuntu-22.04
@@ -99,21 +62,12 @@ jobs:
       # only trigger deploys from protected branches
       if: ${{ github.ref_protected}}
       steps:
-        - name: Determine the Notebook Collection
+        - name: Map the Branch Name to a Notebook Collection
+          uses: neutrons/branch-mapper@main
           id: notebook_collection
-          run: |
-            case ${{ github.ref }} in
-            refs/heads/next)
-              echo "::set-output name=name::IPTS_notebooks_testing"
-              ;;
-            refs/heads/main)
-              echo "::set-output name=name::IPTS_notebooks"
-              ;;
-            *)
-              echo "This job should not run on unprotected branches REF=${{ github.ref }}"
-              exit 1
-              ;;
-            esac
+          with:
+            prefix: "IPTS_notebooks"
+            suffix-default: "_testing"
         - name: Trigger deploy
           id: trigger
           uses: eic/trigger-gitlab-ci@v2
@@ -125,5 +79,8 @@ jobs:
             variables: |
               PLAY="imaging"
               EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
-        - name: Print web_url for further use
-          run: echo ${{ steps.trigger.outputs.web_url }}
+        - name: Annotate commit
+          uses: peter-evans/commit-comment@v2
+          with:
+            body: |
+              GitLab pipeline with NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}
