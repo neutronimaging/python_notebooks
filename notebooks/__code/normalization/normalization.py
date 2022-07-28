@@ -477,7 +477,7 @@ class NormalizationHandler(object):
                          "<tr>" \
                          "<th style='background-color: grey'>Nbr of Samples</th>" \
                          "<th style='background-color: grey'>Nbr of OBs</th>" \
-                         "<th style='background-color: grey'>Nbr of DFs</th>" \
+                         "<th style='background-color: grey'>Nbr of DCs</th>" \
                          "<th style='background-color: grey; width:60%'>Description of Process</th>" \
                          "</tr>" \
                          "<tr>" \
