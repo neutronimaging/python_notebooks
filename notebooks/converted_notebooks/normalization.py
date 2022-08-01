@@ -36,7 +36,7 @@ custom_style.style()
 # %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Images (Sample, OB, and DF)
+# # Select Images: Sample, open beam (OB) , and dark current (DC)
 
 # + run_control={"frozen": false, "read_only": false}
 files = Files()
