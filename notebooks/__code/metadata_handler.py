@@ -24,11 +24,13 @@ class MetadataHandler(object):
                 time_stamp = MetadataHandler._convert_epics_timestamp_to_rfc3339_timestamp(time_stamp)
 
             except:
-                time_stamp = os.path.getctime(file_name)
+                time_stamp = os.path.getmtime(file_name)
         elif ext == 'fits':
-            time_stamp = os.path.getctime(file_name)
+            time_stamp = os.path.getmtime(file_name)
         elif ext == 'jpg':
-            time_stamp = os.path.getctime(file_name)
+            #time_stamp = os.path.getctime(file_name)
+            time_stamp = os.path.getmtime(file_name)
+
 
         else:
             raise NotImplemented
