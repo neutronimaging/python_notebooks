@@ -59,9 +59,9 @@ class ExtractEvenlySpacedFiles(object):
                                                     layout=widgets.Layout(width="100px")),
                                       widgets.Dropdown(options=np.arange(1, self.number_of_files),
                                                        value=2,
-                                                       layout=widgets.Layout(width="60px")),
+                                                       layout=widgets.Layout(width="50px")),
                                       widgets.Label("files",
-                                                    layout=widgets.Layout(width="20px"))])
+                                                    layout=widgets.Layout(width="60px"))])
         self.extracting_ui = hori_layout_1.children[1]
 
         # number of files that will be extracted

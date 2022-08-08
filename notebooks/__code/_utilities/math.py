@@ -16,6 +16,6 @@ def mean_square_error(imageA, imageB):
     Note: the two images must have the same dimension
     """
     err = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
-    err /= float(imageA.shape[0] * imageA.shape[1])
+    err /= float(imageA.shape[0] * imageA.shape[1])t
 
     return err
