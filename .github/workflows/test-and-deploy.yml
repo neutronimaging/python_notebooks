@@ -8,19 +8,34 @@ jobs:
       timeout-minutes: 60
       name: ubuntu-22.04  python 3.8
       steps:
-        - name: Insert new file
+        - uses: actions/checkout@v2
+
+        - name: Change text file
           run: |
-            ls
-        - name: Verify Conda Env Files Changed
+            echo "Modified" > new.txt
+
+        - name: Change file in directory
+          run: |
+            echo "Changed" > conda/new.txt
+
+        - name: Verify Changed files
           uses: tj-actions/verify-changed-files@v10.1
-          id: envfiles
+          id: verify-changed-files
           with:
             files: |
-              conda/neutron-imaging*.yml
-              conda/new*.txt
-        - name: Checking
-          run: |
-            "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
+               *.txt
+               test_directory
+               action.yml
+               **/*.py
+               **/*.jpeg
+               *.sql
+
+      - name: Run step only when files change.
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        run: |
+          echo "Changed files: ${{ steps.verify-changed-files.outputs.changed_files }}"
+        # Outputs: "Changed files: new.txt conda/new.txt"
+
 
     run-unit-tests:
       # DEBUG: delete the line below. Should run on all branches
