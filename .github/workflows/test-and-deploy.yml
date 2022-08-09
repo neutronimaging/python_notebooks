@@ -6,7 +6,7 @@ jobs:
     debugging:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
-      name: ubuntu-22.04  python 3.8
+      name: debugging
       steps:
         - uses: actions/checkout@v2
         - name: Change text file
@@ -17,7 +17,7 @@ jobs:
             echo "Changed" > conda/new.txt
         - name: envfiles
           uses: tj-actions/verify-changed-files@v10.1
-          id: Verify Changed files
+          id: envfiles
           with:
             files: |
               *.txt
