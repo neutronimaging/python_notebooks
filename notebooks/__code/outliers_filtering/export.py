@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import os
 
-from __code._utilities.file import make_or_reset_folder
+from __code._utilities.file import make_or_increment_folder_name
 from __code.outliers_filtering.event_handler import EventHandler
 from __code.outliers_filtering.algorithm import Algorithm
 
@@ -23,8 +23,7 @@ class Export:
         if _export_folder:
 
             export_folder_name = os.path.join(_export_folder, str(base_folder.name) + "_outliers_corrected")
-            make_or_reset_folder(export_folder_name)
-
+            export_folder_name = make_or_increment_folder_name(export_folder_name)
             list_file = self.parent.list_files
             o_event = EventHandler(parent=self.parent)
 
@@ -48,4 +47,4 @@ class Export:
                 QApplication.processEvents()
 
             self.parent.eventProgress.setVisible(False)
-            QApplication.processEvents(True)
+            QApplication.processEvents()

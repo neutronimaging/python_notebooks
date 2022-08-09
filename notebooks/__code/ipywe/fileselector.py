@@ -4,6 +4,7 @@ import os, glob
 import time
 import ipywidgets as ipyw
 from IPython.display import display, HTML
+
 # This try-except should not be necessary anymore.
 # The testing is now done in ../tests.
 try:
@@ -14,18 +15,18 @@ except Exception:
 
 
 class FileSelectorPanel:
-
     """Files and directories selector"""
-    
-    #If ipywidgets version 5.3 or higher is used, the "width="
-    #statement should change the width of the file selector. "width="
-    #doesn't appear to work in earlier versions.
+
+    # If ipywidgets version 5.3 or higher is used, the "width="
+    # statement should change the width of the file selector. "width="
+    # doesn't appear to work in earlier versions.
     select_layout = ipyw.Layout(width="99%", height="260px")
     select_multiple_layout = ipyw.Layout(
-        width="99%", height="260px")  # , display="flex", flex_flow="column")
+            width="99%", height="260px")  # , display="flex", flex_flow="column")
     button_layout = ipyw.Layout(margin="5px 40px", border='1px solid gray')
     toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px", border='1px solid gray')
-    toolbar_box_layout=ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px', width='100%')
+    toolbar_box_layout = ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px',
+                                     width='100%')
     label_layout = ipyw.Layout(width="250px")
     layout = ipyw.Layout()
 
@@ -75,7 +76,8 @@ class FileSelectorPanel:
                 name = '%s_layout' % k
                 assert name in dir(self), "Invalid layout item: %s" % name
                 orig = getattr(self, name)
-                new = cloneLayout(orig); updateLayout(new, v)
+                new = cloneLayout(orig);
+                updateLayout(new, v)
                 setattr(self, name, new)
                 continue
         self.instruction = instruction
@@ -88,14 +90,12 @@ class FileSelectorPanel:
         self.createPanel(os.path.abspath(start_dir))
         self.next = next
         self.stay_alive = stay_alive
-        return
 
     def createPanel(self, curdir):
         self.header = ipyw.Label(self.instruction, layout=self.label_layout)
         self.footer = ipyw.HTML("")
         self.body = self.createBody(curdir)
         self.panel = ipyw.VBox(children=[self.header, self.body, self.footer])
-        return
 
     def createBody(self, curdir):
         self.curdir = curdir
@@ -111,8 +111,8 @@ class FileSelectorPanel:
         # |          _______________________                         |
         # |          _______________________             | Select |  |
         # ------------------------------------------------------------
-        self.createSelectWidget() # calculate entries and create the select widget
-        self.createSearchWidget() # create the search and optionally the filter widget
+        self.createSelectWidget()  # calculate entries and create the select widget
+        self.createSearchWidget()  # create the search and optionally the filter widget
         # left
         left_widgets = []
         left_widgets.append(self.search)
@@ -124,13 +124,14 @@ class FileSelectorPanel:
         self.changedir.on_click(self.handle_changedir)
         # select button
         ok_layout = cloneLayout(self.button_layout)
-        ok_layout.margin = 'auto 40px 5px'; ok_layout.border = "1px solid blue"
+        ok_layout.margin = 'auto 40px 5px';
+        ok_layout.border = "1px solid blue"
         self.ok = ipyw.Button(description='Select', layout=ok_layout)
         self.ok.on_click(self.validate)
         right_vbox = ipyw.VBox(children=[self.changedir, self.ok])
         select_panel = ipyw.HBox(
-            children=[left_vbox , right_vbox],
-            layout=ipyw.Layout(border='1px solid lightgrey', margin='5px', padding='10px')
+                children=[left_vbox, right_vbox],
+                layout=ipyw.Layout(border='1px solid lightgrey', margin='5px', padding='10px')
         )
         body = ipyw.VBox(children=[toolbar, select_panel], layout=self.layout)
         self.footer.value = ""
@@ -141,7 +142,7 @@ class FileSelectorPanel:
         # "jump to"
         curdir = self.curdir
         self.jumpto_input = jumpto_input = ipyw.Text(
-            value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width='100%'))
+                value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width='100%'))
         jumpto_button = ipyw.Button(description="Jump", layout=self.toolbar_button_layout)
         jumpto_button.on_click(self.handle_jumpto)
         jumpto = ipyw.HBox(children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout)
@@ -149,8 +150,8 @@ class FileSelectorPanel:
         if self.newdir_toolbar_button:
             # "new dir"
             self.newdir_input = newdir_input = ipyw.Text(
-                value = "", placeholder="new dir name", description="New subdir: ",
-                layout=ipyw.Layout(width='180px'))
+                    value="", placeholder="new dir name", description="New subdir: ",
+                    layout=ipyw.Layout(width='180px'))
             newdir_button = ipyw.Button(description="Create", layout=self.toolbar_button_layout)
             newdir_button.on_click(self.handle_newdir)
             newdir = ipyw.HBox(children=[newdir_input, newdir_button], layout=self.toolbar_box_layout)
@@ -172,7 +173,7 @@ class FileSelectorPanel:
         entries_paths = [os.path.join(curdir, e) for e in entries_files]
         entries_ftime = create_file_times(entries_paths)
         return create_nametime_labels(entries_files, entries_ftime)
-    
+
     def createSelectWidget(self):
         entries = self.getEntries()
         entries.sort()
@@ -180,15 +181,15 @@ class FileSelectorPanel:
         if self.multiple:
             value = []
             self.select = ipyw.SelectMultiple(
-                value=value, options=entries,
-                description="Select",
-                layout=self.select_multiple_layout)
+                    value=value, options=entries,
+                    description="Select",
+                    layout=self.select_multiple_layout)
         else:
             value = entries[0]
             self.select = ipyw.Select(
-                value=value, options=entries,
-                description="Select",
-                layout=self.select_layout)
+                    value=value, options=entries,
+                    description="Select",
+                    layout=self.select_layout)
         """When ipywidgets 7.0 is released, the old way that the select or select multiple 
            widget was set up (see below) should work so long as self.select_layout is changed
            to include the display="flex" and flex_flow="column" statements. In ipywidgets 6.0,
@@ -206,9 +207,10 @@ class FileSelectorPanel:
         self.search_text = ipyw.Text(self.searching_string, layout=ipyw.Layout(width='50%'))
         self.search_text.on_submit(self.handle_search_changed)
         elements = [label, self.search_text]
+
         if self.filter_widget: elements.append(self.filter_widget)
         self.search = ipyw.HBox(elements, layout=ipyw.Layout(justify_content='flex-end'))
-        return
+
 
     def handle_search_changed(self, sender):
         self.searching_string = sender.value.strip()
@@ -219,9 +221,9 @@ class FileSelectorPanel:
         if 'All' not in self.filters: self.filters.update(All=['*.*'])
         self.cur_filter = self.cur_filter or self.filters[self.default_filter or 'All']
         self.filter_widget = ipyw.Dropdown(
-            options=self.filters,
-            value=self.cur_filter,
-            layout=ipyw.Layout(align_self='flex-end', width='15%'))
+                options=self.filters,
+                value=self.cur_filter,
+                layout=ipyw.Layout(align_self='flex-end', width='15%'))
         self.filter_widget.observe(self.handle_filter_changed, names='value')
         return
 
@@ -236,13 +238,13 @@ class FileSelectorPanel:
         list_files = glob.glob(os.path.join(curdir, searching_tool + cur_filter))
         # filter out dirs, they will be added below
         list_files = filter(lambda o: not os.path.isdir(o), list_files)
-        list_files = list( map(os.path.basename, list_files) )
+        list_files = list(map(os.path.basename, list_files))
         list_dirs = [o for o in os.listdir(curdir) if os.path.isdir(os.path.join(curdir, o))]
         self.footer.value += '<p>' + ' '.join(list_dirs) + '</p>'
         entries = list_dirs + list_files
         entries.sort()
         return entries
-    
+
     def handle_filter_changed(self, value):
         self.cur_filter = value['new']
         self.changeDir(self.curdir)
@@ -260,7 +262,7 @@ class FileSelectorPanel:
         self.body = self.createBody(path)
         self.panel.children = [self.header, self.body, self.footer]
         return
-    
+
     def handle_jumpto(self, s):
         v = self.jumpto_input.value
         if not os.path.isdir(v): return
@@ -348,6 +350,7 @@ div.output_subarea > div {margin: 0.4em;}
 
 from ._utils import close, disable, enable, cloneLayout, updateLayout
 
+
 def create_file_times(paths):
     """returns a list of file modify time"""
     ftimes = []
@@ -366,11 +369,11 @@ def create_file_times(paths):
 
 
 def create_nametime_labels(entries, ftimes):
-    if not entries: 
+    if not entries:
         return []
     max_len = max(len(e) for e in entries)
     n_spaces = 5
-    fmt_str = ' %-' + str(max_len+n_spaces) + "s|" + ' '*n_spaces + '%s'
+    fmt_str = ' %-' + str(max_len + n_spaces) + "s|" + ' ' * n_spaces + '%s'
     label_list = [fmt_str % (e, f) for e, f in zip(entries, ftimes)]
     return label_list
 
@@ -379,11 +382,11 @@ def del_ftime(file_label):
     """file_label is either a str or a tuple of strings"""
     if isinstance(file_label, tuple):
         return tuple(del_ftime(s) for s in file_label)
-    else:    
+    else:
         file_label_new = file_label.strip()
         if file_label_new != "." and file_label_new != "..":
             file_label_new = file_label_new.split("|")[0].rstrip()
-    return(file_label_new)
+    return (file_label_new)
 
 
 '''def test1():

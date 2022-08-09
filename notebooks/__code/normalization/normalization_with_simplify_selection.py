@@ -14,6 +14,7 @@ from __code.normalization.get import Get
 from __code.normalization.metadata_handler import MetadataHandler, MetadataName, METADATA_KEYS
 from __code.normalization import utilities
 from __code.roi_selection_ui import Interface
+from __code._utilities.file import make_or_increment_folder_name
 
 from . import ROI_ICON, ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_ICON
 
@@ -153,7 +154,7 @@ class NormalizationWithSimplifySelection:
         folder_widget.show()
 
     def select_df_folder(self):
-        self.select_folder(message='dark field',
+        self.select_folder(message='dark current',
                            next_function=self.retrieve_df_metadata())
 
     def retrieve_df_metadata(self, selected_folder):
@@ -164,12 +165,12 @@ class NormalizationWithSimplifySelection:
         folder = os.path.join(self.working_dir, 'raw', 'df')
         list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
                                                                             extensions=['tiff', 'tif'])
-        logging.info(f"-> nbr of df files found: {len(list_of_df_files)}")
+        logging.info(f"-> nbr of dc files found: {len(list_of_df_files)}")
         self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files,
                                                                   label='df')
 
     def match_files(self):
-        """This is where the files will be associated with their respective OB, DF by using the metadata"""
+        """This is where the files will be associated with their respective OB, DC by using the metadata"""
 
         if not JSON_DEBUGGING:
             self.create_master_sample_dict()
@@ -569,7 +570,7 @@ class NormalizationWithSimplifySelection:
         o_get = Get(parent=self)
         if value is None:
             _message = "Select the <b><font color='red'>OBs</font></b> and " \
-                       "<b><font color='red'>DFs</font></b> to use in the normalization"
+                       "<b><font color='red'>DCs</font></b> to use in the normalization"
             # _message = "Use <b><font color='red'>All </b> " \
             #            "<font color='black'>OBs and DFs " \
             #            "matching the samples images</font>"
@@ -645,7 +646,7 @@ class NormalizationWithSimplifySelection:
                      "<tr>" \
                      "<th style='background-color: cyan'>Nbr of Samples</th>" \
                      "<th style='background-color: cyan'>Nbr of OBs</th>" \
-                     "<th style='background-color: cyan'>Nbr of DFs</th>" \
+                     "<th style='background-color: cyan'>Nbr of DCs</th>" \
                      "<th style='background-color: cyan; width:60%'>Description of Process</th>" \
                      "</tr>" \
                      "<tr>" \
@@ -763,7 +764,7 @@ class NormalizationWithSimplifySelection:
                  "<th style='background-color: cyan'>Config. name</th>" \
                  "<th style='background-color: cyan'>Nbr sample</th>" \
                  "<th style='background-color: cyan'>Nbr OB</th>" \
-                 "<th style='background-color: cyan'>Nbr DF</th>" \
+                 "<th style='background-color: cyan'>Nbr DC</th>" \
                  "<th style='background-color: cyan'>Combined OBs?</th>" \
                  "<th style='background-color: cyan'>How to combine the OBs</th>" \
                  "<th style='background-color: cyan'>ROI</th>" \
@@ -810,7 +811,7 @@ class NormalizationWithSimplifySelection:
 
     def normalization(self, output_folder):
         display(HTML('<span style="font-size: 20px; color:blue">Make sure you do not close the notebook until'
-                     'the busy signal (dark circle top right) is gone!</span>'))
+                     ' the busy signal (dark circle top right) is gone!</span>'))
 
         self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
 

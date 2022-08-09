@@ -45,4 +45,11 @@ To turn debugging mode on, add the flag -d (--use_debugging_mode) to the command
 $ python before_and_after_github_script.py -a -d
 ``` -->
 
-last updated 04/01/2022
+To run the tests
+```
+$ cd notebooks
+$ export PYTHONPATH=$PWD:$PYTHONPATH
+$ pytest
+```
+
+last updated 04/07/2022

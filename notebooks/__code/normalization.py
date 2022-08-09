@@ -355,12 +355,12 @@ class NormalizationHandler(object):
 
     def with_or_without_roi(self):
         label1 = widgets.Label("Do you want to select a region of interest (ROI) that will make sure that the " +
-                              "sample background matches the OB background")
+                               "sample background matches the OB background")
         label2 = widgets.Label("-> Make sure your selection do not overlap your sample!")
         box = widgets.HBox([widgets.Label("With or Without ROI?"),
-                            widgets.RadioButtons(options=['yes','no'],
-                                                value='yes',
-                                                layout=widgets.Layout(width='50%'))])
+                            widgets.RadioButtons(options=['yes', 'no'],
+                                                 value='yes',
+                                                 layout=widgets.Layout(width='50%'))])
         self.with_or_without_radio_button = box.children[1]
         vertical = widgets.VBox([label1, label2, box])
         display(vertical)

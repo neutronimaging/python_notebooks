@@ -13,6 +13,7 @@ from NeuNorm.roi import ROI
 from __code import utilities, file_handler
 from __code.config import gamma_filtering_coefficient
 from __code.ipywe import fileselector
+from __code._utilities.file import make_or_increment_folder_name
 
 
 def close(w):
@@ -476,7 +477,7 @@ class NormalizationHandler(object):
                          "<tr>" \
                          "<th style='background-color: grey'>Nbr of Samples</th>" \
                          "<th style='background-color: grey'>Nbr of OBs</th>" \
-                         "<th style='background-color: grey'>Nbr of DFs</th>" \
+                         "<th style='background-color: grey'>Nbr of DCs</th>" \
                          "<th style='background-color: grey; width:60%'>Description of Process</th>" \
                          "</tr>" \
                          "<tr>" \
@@ -645,7 +646,7 @@ class NormalizationHandler(object):
 
         base_folder = os.path.basename(os.path.dirname(self.list_file_names[0])) + '_normalized'
         output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected, base_folder))
-        utilities.make_dir(dir=output_folder)
+        output_folder = make_or_increment_folder_name(output_folder)
 
         w = widgets.IntProgress()
         w.max = len(self.files.sample)

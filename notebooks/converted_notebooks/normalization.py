@@ -73,3 +73,6 @@ o_norm.select_export_folder(ipts_folder=sample_panel.ipts_dir)
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm.export()
+# -
+
+

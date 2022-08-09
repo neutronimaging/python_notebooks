@@ -15,6 +15,7 @@ import datetime
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 
+from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code.metadata_handler import MetadataHandler
 
 
@@ -174,6 +175,22 @@ def make_or_reset_folder(folder_name):
     if os.path.exists(folder_name):
          shutil.rmtree(folder_name)
     os.makedirs(folder_name)
+
+
+def make_or_increment_folder_name(folder_name):
+    """
+    if the folder does not exist, the folder is created
+    if the folder already exists, the date and time of the day is appended to it
+    ex:
+        my_folder_exists -> my_folder_exists_04_05_2022_13_14
+    """
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+    else:
+        new_folder_name = "_".join([folder_name, get_current_time_in_special_file_name_format()])
+        os.makedirs(new_folder_name)
+        folder_name = new_folder_name
+    return folder_name
 
 
 def copy_files_to_folder(list_files=[], output_folder=""):

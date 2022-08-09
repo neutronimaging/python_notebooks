@@ -12,6 +12,10 @@
 #     name: python3
 # ---
 
+# # Table of contents
+#
+# Last release: 07/25/22 17:04
+
 # # B
 
 # * [bin images](bin_images.ipynb) 
@@ -62,6 +66,7 @@
 # # G
 
 # * [group images by cycle for panoramic stitching](group_images_by_cycle_for_panoramic_stitching.ipynb)
+# * [group_images_by_cycle_for_grating_experiment](group_images_by_cycle_for_grating_experiment.ipynb)
 
 # # H
 
@@ -126,3 +131,12 @@
 
 # * [water intake profile_calculator](water_intake_profile_calculator.ipynb)
 # * [wave front dynamics](wave_front_dynamics.ipynb)
+
+# # Super User 
+
+from __code.super_user import SuperUser
+a = SuperUser()
+
+
+
+

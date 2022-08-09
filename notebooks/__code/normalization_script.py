@@ -8,8 +8,9 @@ parser = argparse.ArgumentParser(description='Neutron Imaging Normalization')
 parser.add_argument('-o', '--output', help='output folder', type=str)
 parser.add_argument('-sf', '--sample_files', help='comma separated list of samples', type=str)
 parser.add_argument('-of', '--ob_files', help='comma separated list of open beams', type=str)
-parser.add_argument('-df', '--df_files', help='comma separated list of dark fields', type=str)
+parser.add_argument('-dc', '--dc_files', help='comma separated list of dark current', type=str)
 parser.add_argument('-rois', help='colon string of each roi: x0,y0,x1,y1')
+
 
 def normalization():
 
@@ -42,8 +43,8 @@ def normalization():
     # loading
     o_norm.load(file=list_samples)
     o_norm.load(file=list_obs, data_type='ob')
-    if args.df_files:
-        list_dfs = args.df_files.split(',')
+    if args.dc_files:
+        list_dfs = args.dc_files.split(',')
         list_dfs = remove_back_slash(list_dfs)
         o_norm.load(file=list_dfs, data_type='df')
         o_norm.df_correction()
@@ -52,7 +53,7 @@ def normalization():
         list_rois = args.rois.split(':')
         array_roi_object = []
         for _rois in list_rois:
-            [x0,y0,x1,y1] = _rois.split(',')  #x0,y0,x1,y1
+            [x0, y0, x1, y1] = _rois.split(',')  #x0,y0,x1,y1
             _roi = ROI(x0=np.int(x0), y0=np.int(y0), x1=np.int(x1), y1=np.int(y1))
             array_roi_object.append(_roi)
 

@@ -84,12 +84,21 @@ class Interface(QMainWindow):
         self.table_selection_changed()
 
     def table_selection_changed(self):
-        o_event = EventHandler(parent=self)
-        o_event.table_selection_changed()
+        try:
+            o_event = EventHandler(parent=self)
+            o_event.table_selection_changed()
+        except Exception:
+            self.close()
 
     def algorithm_changed(self):
-        o_event = EventHandler(parent=self)
-        o_event.algorithm_changed()
+        try:
+            o_event = EventHandler(parent=self)
+            o_event.algorithm_changed()
+        except Exception:
+            display(HTML('<span style="font-size: 20px; color:red">Issue loading the data! Make sure you '
+                         'are not working with normalized data!</span>'))
+            return
+            self.close()
 
     def mouse_moved_in_any_image(self, evt, image='raw'):
         o_event = EventHandler(parent=self)

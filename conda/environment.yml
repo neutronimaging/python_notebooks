@@ -21,6 +21,9 @@ dependencies:
   - jupyterlab
   - ipykernel
   - jupytext
+  - xlrd
+  - openpyxl
+  - xlsxwriter
   - pip
   - pip:
     - pyqtgraph==0.12.1
@@ -29,7 +32,7 @@ dependencies:
     - ipywe==0.1.3a1
     - lmfit
     - neutronbraggedge==2.0.6
-    - NeuNorm
+    - NeuNorm==1.5.3
     - sectorizedradialprofile
     - inflect
     - ImagingReso==1.7.5

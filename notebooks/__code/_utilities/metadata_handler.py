@@ -1,10 +1,25 @@
-from PIL import Image
 import datetime
 import os
 from collections import OrderedDict
+from PIL import Image
+import collections
 
 
 class MetadataHandler(object):
+
+    @staticmethod
+    def get_list_of_metadata(tiff_file=None):
+        if tiff_file is None:
+            return
+
+        o_image0 = Image.open(tiff_file)
+
+        info = collections.OrderedDict(sorted(o_image0.tag_v2.items()))
+        display_format = []
+        for tag, value in info.items():
+            display_format.append("{} -> {}".format(tag, value))
+
+        return display_format
 
     @staticmethod
     def get_time_stamp(file_name='', ext='tif'):
