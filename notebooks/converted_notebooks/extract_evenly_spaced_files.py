@@ -45,7 +45,7 @@ o_extract.select_folder()
 
 o_extract.how_to_extract()
 
-# # Manual review and/or selection of files (optional)
+# # Manual review of working files (OPTIONAL)
 #
 # **WARNING** This step will require to load the entire stack of images you selected, so that may take some time!
 

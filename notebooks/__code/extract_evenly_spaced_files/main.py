@@ -56,12 +56,12 @@ class ExtractEvenlySpacedFiles(object):
 
         # how to extract
         hori_layout_1 = widgets.HBox([widgets.Label("Extract 1 over ",
-                                                    layout=widgets.Layout(width="10%")),
+                                                    layout=widgets.Layout(width="100px")),
                                       widgets.Dropdown(options=np.arange(1, self.number_of_files),
                                                        value=2,
-                                                       layout=widgets.Layout(width="5%")),
+                                                       layout=widgets.Layout(width="50px")),
                                       widgets.Label("files",
-                                                    layout=widgets.Layout(width="10%"))])
+                                                    layout=widgets.Layout(width="60px"))])
         self.extracting_ui = hori_layout_1.children[1]
 
         # number of files that will be extracted
@@ -114,7 +114,7 @@ class ExtractEvenlySpacedFiles(object):
 
     def renamed_files(self):
         o_get = Get(parent=self)
-        basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
+        self.basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
         question_widget = widgets.Checkbox(value=True,
                                            description="Rename files?")
         question_widget.observe(self.renaming_checkbox_changed, names='value')
@@ -128,7 +128,8 @@ class ExtractEvenlySpacedFiles(object):
 
         self.left_vertical_layout = widgets.VBox([widgets.Label("Before renaming",
                                                                 layout=widgets.Layout(width='100%')),
-                                                  widgets.Select(options=basename_list_of_files_that_will_be_extracted,
+                                                  widgets.Select(
+                                                          options=self.basename_list_of_files_that_will_be_extracted,
                                                                  layout=widgets.Layout(width='90%',
                                                                                   height='400px'))],
                                                   layout=widgets.Layout(width='40%'))
@@ -156,8 +157,14 @@ class ExtractEvenlySpacedFiles(object):
 
     def extract(self, output_folder):
         self.output_folder_ui.shortcut_buttons.close()  # hack to hide the buttons
+
         list_of_files_to_extract = self.list_of_files_to_extract
-        name_of_parent_folder = os.path.basename(os.path.dirname(list_of_files_to_extract[0]))
+        full_path_to_file = os.path.dirname(list_of_files_to_extract[0])
+        name_of_parent_folder = os.path.basename(full_path_to_file)
+        basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
+        fullname_list_of_files_that_will_be_extracted = [os.path.join(full_path_to_file,
+                                                                      _file) for _file in basename_list_of_files_that_will_be_extracted]
+
         extracting_value = self.extracting_ui.value
 
         new_folder = name_of_parent_folder + "_extracted_1_every_{}_files".format(extracting_value)
@@ -166,9 +173,11 @@ class ExtractEvenlySpacedFiles(object):
         file_handler.make_or_reset_folder(full_output_folder_name)
         if self.renaming_files_widget.value:
             list_files_new_name = self.renamed_basename_list_of_files
-            display(HTML('<span style="font-size: 15px; color:green">Copying and renaming ' + str(len(list_of_files_to_extract)) +
+            display(HTML('<span style="font-size: 15px; color:green">Copying and renaming ' +
+                         str(len(list_of_files_to_extract)) +
                          ' files into ' + full_output_folder_name + '... IN PROGRESS!</span>'))
-            file_handler.copy_and_rename_files_to_folder(list_files=list_of_files_to_extract,
+
+            file_handler.copy_and_rename_files_to_folder(list_files=fullname_list_of_files_that_will_be_extracted,
                                                          new_list_files_names=list_files_new_name,
                                                          output_folder=full_output_folder_name)
             display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
@@ -176,8 +185,7 @@ class ExtractEvenlySpacedFiles(object):
         else:
             display(HTML('<span style="font-size: 15px; color:green">Copying ' + str(len(list_of_files_to_extract)) +
                          ' files into ' + full_output_folder_name + '... IN PROGRESS!</span>'))
-            file_handler.copy_files_to_folder(list_files=list_of_files_to_extract,
+            file_handler.copy_files_to_folder(list_files=fullname_list_of_files_that_will_be_extracted,
                                               output_folder=full_output_folder_name)
             display(HTML('<span style="font-size: 15px; color:blue">' + str(len(list_of_files_to_extract)) +
                      ' files have been copied into ' + full_output_folder_name + '</span>'))
-
