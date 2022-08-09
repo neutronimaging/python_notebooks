@@ -9,33 +9,22 @@ jobs:
       name: ubuntu-22.04  python 3.8
       steps:
         - uses: actions/checkout@v2
-
         - name: Change text file
           run: |
             echo "Modified" > new.txt
-
         - name: Change file in directory
           run: |
             echo "Changed" > conda/new.txt
-
-        - name: Verify Changed files
+        - name: envfiles
           uses: tj-actions/verify-changed-files@v10.1
-          id: verify-changed-files
+          id: Verify Changed files
           with:
             files: |
-               *.txt
-               test_directory
-               action.yml
-               **/*.py
-               **/*.jpeg
-               *.sql
-
-      - name: Run step only when files change.
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
-        run: |
-          echo "Changed files: ${{ steps.verify-changed-files.outputs.changed_files }}"
-        # Outputs: "Changed files: new.txt conda/new.txt"
-
+              *.txt
+              conda
+        - name: Checking
+          run: |
+            "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
 
     run-unit-tests:
       # DEBUG: delete the line below. Should run on all branches
