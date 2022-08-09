@@ -1,6 +1,8 @@
-debugging = True
+debugging = False
 debugger_username = 'j35'
-debugger_folder = ['/Volumes/G-DRIVE/IPTS/', '/Volumes/Buffalo/IPTS/', '/Users/j35/IPTS/',
+debugger_folder = ['/Volumes/G-DRIVE/IPTS/',
+                   '/Volumes/Buffalo/work/2022/VENUS/photos/time_lapse/',
+                   '/Volumes/Buffalo/IPTS/', '/Users/j35/IPTS/',
                    '/Volumes/my_book_thunderbolt_duo/IPTS/',
                    '/Volumes/my_book_thunderbolt_duo/IPTS/']
 project_folder = 'IPTS_16259'
