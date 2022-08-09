@@ -24,7 +24,7 @@ jobs:
               conda
         - name: Checking
           run: |
-            "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
+            echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
 
     run-unit-tests:
       # DEBUG: delete the line below. Should run on all branches
