@@ -10,7 +10,7 @@ jobs:
       steps:
         - name: Insert new file
           run: |
-            echo "Hello World!" > conda/new_file.txt
+            ls
         - name: Verify Conda Env Files Changed
           uses: tj-actions/verify-changed-files@v10.1
           id: envfiles
