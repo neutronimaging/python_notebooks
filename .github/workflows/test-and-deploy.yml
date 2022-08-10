@@ -3,42 +3,7 @@ on: [push, pull_request]
 
 jobs:
 
-    debugging:
-      runs-on: ubuntu-22.04
-      timeout-minutes: 60
-      name: debugging
-      steps:
-        - uses: actions/checkout@v2
-        - name: Change file in directory
-          run: |
-            echo "Changed" > conda/new-dev.yml
-        - name: envfiles
-          uses: tj-actions/verify-changed-files@v10.1
-          id: envfiles
-          with:
-            files: |
-              conda
-        - name: Map the Branch Name to a Conda Environment
-          uses: neutrons/branch-mapper@modifiedMain
-          id: envname
-          with:
-            prefix: "new"
-            suffix-default: "-dev"
-        - name: Checking
-          if: contains(steps.envfiles.outputs.changed_files, 'conda/old.yml')
-          run: |
-            echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
-        - name: Checking2
-          if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name}}.yml')
-          run: |
-            echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
-        - name: Checking3
-          run: |
-            echo "Conda env: conda/${{ steps.envname.outputs.name}}.yml"
-
     run-unit-tests:
-      # DEBUG: delete the line below. Should run on all branches
-      if: ${{ github.ref_protected }}
       runs-on: ubuntu-22.04
       timeout-minutes: 60
       name: ubuntu-22.04  python 3.8
@@ -65,7 +30,7 @@ jobs:
     trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
       needs: run-unit-tests
-      # only trigger deploys from protected branches
+      # only trigger deploy from protected branches `main` and `next`
       if: ${{ github.ref_protected }}
       steps:
         - name: Verify Conda Env Files Changed
@@ -73,7 +38,9 @@ jobs:
           id: envfiles
           with:
             files: |
-              conda/neutron-imaging*.yml
+              conda
+        # `main` maps to `neutron-imaging`
+        # `next` maps to `neutron-imaging-dev`
         - name: Map the Branch Name to a Conda Environment
           uses: neutrons/branch-mapper@modifiedMain
           id: envname
@@ -82,7 +49,7 @@ jobs:
             suffix-default: "-dev"
         - name: Trigger deploy
           id: trigger
-          if: contains(steps.envfiles.outputs.changed_files, "conda/${{ steps.envname.outputs.name }}.yml")
+          if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name}}.yml')
           uses: eic/trigger-gitlab-ci@v2
           with:
             url: https://code.ornl.gov
