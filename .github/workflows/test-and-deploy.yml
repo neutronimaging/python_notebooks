@@ -9,9 +9,6 @@ jobs:
       name: debugging
       steps:
         - uses: actions/checkout@v2
-        - name: Change text file
-          run: |
-            echo "Modified" > new.txt
         - name: Change file in directory
           run: |
             echo "Changed" > conda/new.txt
@@ -20,7 +17,6 @@ jobs:
           id: envfiles
           with:
             files: |
-              *.txt
               conda
         - name: Checking
           run: |
