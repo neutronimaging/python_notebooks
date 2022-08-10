@@ -19,6 +19,7 @@ jobs:
             files: |
               conda
         - name: Checking
+          if: contains(steps.envfiles.outputs.changed_files, "conda/old.txt")
           run: |
             echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
 
