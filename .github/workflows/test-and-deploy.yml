@@ -11,21 +11,30 @@ jobs:
         - uses: actions/checkout@v2
         - name: Change file in directory
           run: |
-            echo "Changed" > conda/new.txt
+            echo "Changed" > conda/new-dev.yml
         - name: envfiles
           uses: tj-actions/verify-changed-files@v10.1
           id: envfiles
           with:
             files: |
               conda
+        - name: Map the Branch Name to a Conda Environment
+          uses: neutrons/branch-mapper@modifiedMain
+          id: envname
+          with:
+            prefix: "new"
+            suffix-default: "-dev"
         - name: Checking
-          if: contains(steps.envfiles.outputs.changed_files, "conda/old.txt")
+          if: contains(steps.envfiles.outputs.changed_files, 'conda/old.yml')
           run: |
             echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
         - name: Checking2
-          if: contains(steps.envfiles.outputs.changed_files, "conda/new.txt")
+          if: contains(steps.envfiles.outputs.changed_files, 'conda/new-dev.yml')
           run: |
             echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
+        - name: Checking3
+          run: |
+            echo "Conda env: ${{ steps.envname.outputs.name}}"
 
     run-unit-tests:
       # DEBUG: delete the line below. Should run on all branches
