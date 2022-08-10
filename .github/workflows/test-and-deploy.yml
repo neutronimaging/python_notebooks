@@ -22,6 +22,10 @@ jobs:
           if: contains(steps.envfiles.outputs.changed_files, "conda/old.txt")
           run: |
             echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
+        - name: Checking2
+          if: contains(steps.envfiles.outputs.changed_files, "conda/new.txt")
+          run: |
+            echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
 
     run-unit-tests:
       # DEBUG: delete the line below. Should run on all branches
