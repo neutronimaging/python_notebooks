@@ -34,7 +34,7 @@ jobs:
             echo "Changed files: ${{ steps.envfiles.outputs.changed_files }}"
         - name: Checking3
           run: |
-            echo "Conda env: ${{ steps.envname.outputs.name}}"
+            echo "Conda env: conda/${{ steps.envname.outputs.name}}.yml"
 
     run-unit-tests:
       # DEBUG: delete the line below. Should run on all branches
