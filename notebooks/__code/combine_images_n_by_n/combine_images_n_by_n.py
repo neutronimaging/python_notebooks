@@ -308,7 +308,7 @@ class CombineImagesNByN(object):
 
             o_save = Normalization()
             o_save.load(data=combined_data)
-            o_save.data['sample']['metadata'] = metadata
+            o_save.data['sample']['metadata'] = [metadata[0]]
             o_save.data['sample']['file_name'] = [output_file_name]
             o_save.export(folder=output_folder_name, data_type='sample')
             del o_save
