@@ -92,12 +92,14 @@ class CombineImagesNByN(object):
 
     def how_many_files(self):
         nbr_files = len(self.list_files)
+        if nbr_files > 30:
+            nbr_files = 30
         radio_list_string = [str(_index) for _index in np.arange(2, nbr_files + 1)]
 
         vertical_layout = widgets.VBox([widgets.Dropdown(options=radio_list_string,
-                                                      value=radio_list_string[0]),
-                                     widgets.Label("",
-                                                   layout=widgets.Layout(width='100%'))])
+                                                         value=radio_list_string[0]),
+                                        widgets.Label("",
+                                                      layout=widgets.Layout(width='100%'))])
         display(vertical_layout)
 
         self.bin_size_ui = vertical_layout.children[0]
