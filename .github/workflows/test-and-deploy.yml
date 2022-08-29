@@ -25,6 +25,7 @@ jobs:
           run: |
             cd notebooks
             conda init bash
+            source ~/.bashrc
             conda activate base
             python -m pytest tests/
 
