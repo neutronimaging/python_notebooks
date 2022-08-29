@@ -10,7 +10,7 @@ jobs:
       steps:
         - uses: actions/checkout@v2
         - uses: jurplel/install-qt-action@v2
-        - uses: s-weigand/setup-conda@v1.0.7
+        - uses: s-weigand/setup-conda@v1.1.1
           name: Setup Conda
           with:
             python-version: 3.8
