@@ -27,20 +27,24 @@ jobs:
             cd notebooks
             python -m pytest tests/
 
+    # Trigger the CI/CD pipeline of repo "jupyter-notebooks-deploy", which
+    # will update (deploy) the conda environment in selected target computers
     trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
       needs: run-unit-tests
-      # only trigger deploy from protected branches `main` and `next`
+      # only trigger deploy from protected branches (supposedly `main` and `next`)
       if: ${{ github.ref_protected }}
       steps:
+        # Scan directory conda/ and collect the name any file that changed
         - name: Verify Conda Env Files Changed
           uses: tj-actions/verify-changed-files@v10.1
           id: envfiles
           with:
             files: |
               conda
-        # `main` maps to `neutron-imaging`
-        # `next` maps to `neutron-imaging-dev`
+        # Find which conda YML file we should use for the update
+        # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
+        # branch `next` maps to `neutron-imaging-dev`
         - name: Map the Branch Name to a Conda Environment
           uses: neutrons/branch-mapper@modifiedMain
           id: envname
@@ -49,6 +53,7 @@ jobs:
             suffix-default: "-dev"
         - name: Trigger deploy
           id: trigger
+          # proceed only if the appropriate conda YML file changed
           if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name}}.yml')
           uses: eic/trigger-gitlab-ci@v2
           with:
