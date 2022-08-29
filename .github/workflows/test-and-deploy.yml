@@ -24,6 +24,7 @@ jobs:
         - name: Run tests
           run: |
             cd notebooks
+            conda activate base
             python -m pytest tests/
 
     # Trigger the CI/CD pipeline of repo "jupyter-notebooks-deploy", which
