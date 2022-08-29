@@ -10,12 +10,12 @@ jobs:
       steps:
         - uses: actions/checkout@v2
         - uses: jurplel/install-qt-action@v2
-        - uses: s-weigand/setup-conda@v1.1.1
-          name: Setup Conda
+        - uses: conda-incubator/setup-miniconda@v2
           with:
+            auto-update-conda: true
             python-version: 3.8
-            conda-channels: anaconda, conda-forge
-            activate-conda: true
+            channels: conda-forge
+            auto-activate-base: true
         - name: Install dependencies
           timeout-minutes: 40
           run: |
@@ -24,9 +24,6 @@ jobs:
         - name: Run tests
           run: |
             cd notebooks
-            conda init bash
-            source ~/.bashrc
-            conda activate base
             python -m pytest tests/
 
     # Trigger the CI/CD pipeline of repo "jupyter-notebooks-deploy", which
