@@ -24,6 +24,7 @@ jobs:
         - name: Run tests
           run: |
             cd notebooks
+            conda init base
             conda activate base
             python -m pytest tests/
 
