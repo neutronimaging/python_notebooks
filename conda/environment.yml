@@ -24,6 +24,7 @@ dependencies:
   - xlrd
   - openpyxl
   - xlsxwriter
+  - pytest
   - pip
   - pip:
     - pyqtgraph==0.12.1
