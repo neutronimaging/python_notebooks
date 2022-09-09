@@ -7,14 +7,14 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
 # # Table of contents
 #
-# Last release: 08/09/22 10:10
+# Last release: 09/09/22 09:30
 
 # # B
 
