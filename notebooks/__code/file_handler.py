@@ -581,6 +581,7 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
     pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
     return {'data': pd_data, 'metadata': metadata}
 
+
 class ListMostDominantExtension(object):
     Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))
 

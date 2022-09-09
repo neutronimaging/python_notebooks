@@ -22,7 +22,7 @@ class FileSelectorPanel:
     # doesn't appear to work in earlier versions.
     select_layout = ipyw.Layout(width="99%", height="260px")
     select_multiple_layout = ipyw.Layout(
-            width="99%", height="260px")  # , display="flex", flex_flow="column")
+            width="99%", height="360px")  # , display="flex", flex_flow="column")
     button_layout = ipyw.Layout(margin="5px 40px", border='1px solid gray')
     toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px", border='1px solid gray')
     toolbar_box_layout = ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px',
@@ -67,7 +67,7 @@ class FileSelectorPanel:
             each key will be the search message for the user, such as "Ascii", "notebooks"
             the value will be the search engine, such as "*.txt" or "*.ipynb"
         stay_alive: bool (False by default)
-            if True, the fileselector won't disapear after selection of a file/directory
+            if True, the fileselector won't disappear after selection of a file/directory
         """
         if type not in ['file', 'directory']:
             raise ValueError("type must be either file or directory")

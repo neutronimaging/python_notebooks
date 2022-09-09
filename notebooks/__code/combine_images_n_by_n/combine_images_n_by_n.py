@@ -5,6 +5,7 @@ import numpy as np
 from pathlib import Path, PurePath
 import os
 import glob
+import random
 
 from NeuNorm.normalization import Normalization
 
@@ -16,6 +17,10 @@ from __code._utilities.file import make_or_increment_folder_name
 
 
 FILE_PREFIX = "image"
+
+RENAMING_OPTIONS = ['use image_####.ext format',
+                    'use <original_name>_####.ext format',
+                    're-use name of first image of group']
 
 
 class CombineImagesNByN(object):
@@ -70,7 +75,69 @@ class CombineImagesNByN(object):
             if "_Spectra.txt" in _file:
                 self.timespectra_file_name = _file
 
+    @staticmethod
+    def extract_index(full_file_name):
+        basename = os.path.basename(full_file_name)
+        base, ext = os.path.splitext(basename)
+        split_by = base.split("_")
+        return split_by[-1]
+
+    def sort_by_index(self):
+        list_files = self.list_files
+        dict_list_files_by_index = {}
+        for _file in list_files:
+            _index = CombineImagesNByN.extract_index(_file)
+            dict_list_files_by_index[_index] = _file
+
+        list_index = list(dict_list_files_by_index.keys())
+        list_index.sort()
+
+        list_files_sorted_by_index = [dict_list_files_by_index[_key] for _key in list_index]
+        return list_files_sorted_by_index
+
+    def sorting_the_files(self):
+        random_file = random.randint(0, len(self.list_files))
+        template_file_name = os.path.basename(self.list_files[random_file])
+        base_name, ext = os.path.splitext(template_file_name)
+        split_name = base_name.split("_")
+        base_name_before_index = "_".join(split_name[:-1])
+        index = split_name[-1]
+
+        # tab 1 - full name
+        list_files_base_name_only = [os.path.basename(_file) for _file in self.list_files]
+        vertical_layout_tab1 = widgets.VBox([widgets.HTML(value=f"<b>{base_name}</b>{ext}",
+                                                          layout=widgets.Layout(width='100%')),
+                                             widgets.Select(options=list_files_base_name_only,
+                                                            layout=widgets.Layout(width='100%',
+                                                                                  height='700px')),
+                                             ])
+
+        # tab 2 - file_index
+        self.list_files_by_index = self.sort_by_index()
+        list_files_by_index_base_name_only = [os.path.basename(_file) for _file in self.list_files_by_index]
+        vertical_layout_tab2 = widgets.VBox([widgets.HTML(value=f"{base_name_before_index}_<b>{index}</b>{ext}",
+                                                          layout=widgets.Layout(width='100%')),
+                                             widgets.Select(options=list_files_by_index_base_name_only,
+                                                            layout=widgets.Layout(width='100%',
+                                                                                  height='700px')),
+                                             ])
+
+        # main tab
+        tab = widgets.Tab()
+        tab.children = [vertical_layout_tab1, vertical_layout_tab2]
+        tab.set_title(0, 'by Full Name')
+        tab.set_title(1, 'by File Index')
+        tab.layout = widgets.Layout(height='800px')
+        display(tab)
+        self.sorting_tab = tab
+
     def how_to_combine(self):
+        # saving first the sorted list of files
+        if self.sorting_tab.selected_index == 0:
+            self.list_files_sorted = self.list_files
+        else:
+            self.list_files_sorted = self.list_files_by_index
+
         _file = open("__docs/combine_images/geometric_mean.png", 'rb')
         _geo_image = _file.read()
         geo_box = widgets.HBox([widgets.Label("Geometric Mean",
@@ -91,7 +158,7 @@ class CombineImagesNByN(object):
         display(vertical)
 
     def how_many_files(self):
-        nbr_files = len(self.list_files)
+        nbr_files = len(self.list_files_sorted)
         if nbr_files > 30:
             nbr_files = 30
         radio_list_string = [str(_index) for _index in np.arange(2, nbr_files + 1)]
@@ -109,7 +176,7 @@ class CombineImagesNByN(object):
         self.update_how_many_files()
 
     def _get_number_of_files_will_be_created(self, bin_value=2):
-        return np.int(len(self.list_files)/bin_value)
+        return np.int(len(self.list_files_sorted)/bin_value)
 
     def update_how_many_files(self, bin_value_object=None):
         if bin_value_object:
@@ -118,7 +185,7 @@ class CombineImagesNByN(object):
         else:
             nbr_images = self._get_number_of_files_will_be_created()
         message = "You are about to create {} files out of {} files selected.".format(nbr_images,
-                                                                                      len(self.list_files))
+                                                                                      len(self.list_files_sorted))
         self.bin_size_label.value = message
 
     def select_output_folder(self):
@@ -143,24 +210,51 @@ class CombineImagesNByN(object):
         else:
             raise NotImplementedError(f"Algorithm {_algo} not implemented yet!")
 
+    @staticmethod
+    def files_shared_same_base_name(list_files):
+        list_base_file_name = []
+        for _file in list_files:
+            split_base_name = _file.split("_")
+            list_base_file_name.append("_".join(split_base_name[:-1]))
+
+        set_list = set(list_base_file_name)
+        if len(set_list) > 1:
+            return False
+
+        return True
+
     def create_list_of_files_to_merge(self):
+        """
+        create the dictionaries of groups, good and bad ones
+        a group is bad when outside of the index part, the base file name changes within the group
+            ex:   102020_cool_05_sample_0001.tiff
+                  102020_heat_05_sample_0002.tiff
+        """
         bin_value = np.int(self.bin_size_ui.value)
         self.bin_value = bin_value
-        list_files = self.list_files
+        list_files = self.list_files_sorted
         nbr_files = len(list_files)
 
         dict_list_files = {}
+        bad_dict_list_files = {}
         global_index = 0
+        bad_global_index = 0
         for _index in np.arange(0, nbr_files, bin_value):
             # make sure we don't go over board
             right_threshold = _index + bin_value
             if right_threshold > nbr_files:
                 break
-            dict_list_files[global_index] = list_files[_index: _index+bin_value]
-            global_index += 1
+
+            _working_list_files = list_files[_index: _index+bin_value]
+            if CombineImagesNByN.files_shared_same_base_name(_working_list_files):
+                dict_list_files[global_index] = _working_list_files
+                global_index += 1
+            else:
+                bad_dict_list_files[bad_global_index] = _working_list_files
+                bad_global_index += 1
 
         self.dict_list_files = dict_list_files
-        return dict_list_files
+        self.bad_dict_list_files = bad_dict_list_files
 
     def get_merging_algorithm(self):
         # get merging algorithm
@@ -190,8 +284,18 @@ class CombineImagesNByN(object):
         raise NotImplementedError(f"merging algo {merging_algo} not implemented!")
 
     def preview_result(self):
-        self.dict_list_files = self.create_list_of_files_to_merge()
-        self.dict_list_new_files = self.create_dictionary_of_new_file_names()
+        how_to_rename_layout = widgets.VBox([widgets.Label("How to name output files:",
+                                                           layout=widgets.Layout(width='100%')),
+                                             widgets.RadioButtons(options=RENAMING_OPTIONS,
+                                                                  layout=widgets.Layout(width='100%'),
+                                                                  value=RENAMING_OPTIONS[-1])])
+        display(how_to_rename_layout)
+        self.how_to_rename_ui = how_to_rename_layout.children[1]
+
+        self.create_list_of_files_to_merge()
+        self.create_dictionary_of_new_file_names()
+
+        # tab1
         list_groups = list(self.dict_list_files.keys())
         self.group_dropdown = widgets.Dropdown(options=list_groups,
                                                description="Groups")
@@ -200,7 +304,7 @@ class CombineImagesNByN(object):
                                                    layout=widgets.Layout(width='100%',
                                                                          height='400px'))
 
-        new_file_name_label = widgets.Label("Combined file name:",
+        new_file_name_label = widgets.Label("Output file name:",
                                             layout=widgets.Layout(width='150px',
                                                                   height='80px'))
         self.new_file_name = widgets.Label(self.dict_list_new_files[0],
@@ -208,18 +312,31 @@ class CombineImagesNByN(object):
                                                                  height='80px'))
         hori1 = widgets.HBox([new_file_name_label, self.new_file_name])
 
-        self.keep_file_name = widgets.Checkbox(value=True,
-                                               description="Preserve file names?")
-
-        vbox = widgets.VBox([self.group_dropdown,
+        vbox1 = widgets.VBox([self.group_dropdown,
                              self.list_files_per_group,
-                             hori1,
-                             self.keep_file_name],
+                             hori1],
                             layout=widgets.Layout(height="600px"))
-        display(vbox)
+
+        # tab2
+        list_groups = list(self.bad_dict_list_files.keys())
+        self.bad_group_dropdown = widgets.Dropdown(options=list_groups,
+                                                   description="Bad Groups")
+        self.bad_list_files_per_group = widgets.Select(options=self.bad_dict_list_files[list_groups[0]],
+                                                   description="Files",
+                                                   layout=widgets.Layout(width='100%',
+                                                                         height='500px'))
+        vbox2 = widgets.VBox([self.bad_group_dropdown,
+                             self.bad_list_files_per_group],
+                            layout=widgets.Layout(height="600px"))
+
+        accordion = widgets.Accordion(children=[vbox1, vbox2])
+        accordion.set_title(0, 'Good groups')
+        accordion.set_title(1, 'Groupse with errors')
+
+        display(accordion)
 
         self.group_dropdown.observe(self.group_changed, names='value')
-        self.keep_file_name.observe(self.keep_file_name_changed, names='value')
+        self.how_to_rename_ui.observe(self.how_to_name_output_changed, names='value')
         self.update_combined_file_name_widget()
 
     def create_dictionary_of_new_file_names(self):
@@ -236,25 +353,45 @@ class CombineImagesNByN(object):
         """
         dict_list_files = self.dict_list_files
         dict_list_new_files = {}
-        for _key in dict_list_files.keys():
-            list_files = dict_list_files[_key]
-            base_list_files = [os.path.basename(_file) for _file in list_files]
-            _common_part = get_beginning_common_part_of_string_from_list(list_of_text=base_list_files)
-            new_file_name = _common_part + '_{:03d}.tiff'.format(_key)
-            dict_list_new_files[_key] = new_file_name
-        return dict_list_new_files
+
+        renaming_option = self.how_to_rename_ui.value
+        if renaming_option == RENAMING_OPTIONS[0]:
+            # using image_####.ext
+
+            for _key in dict_list_files.keys():
+                new_file_name = 'image_{:04d}.tiff'.format(_key)
+                dict_list_new_files[_key] = new_file_name
+
+        elif renaming_option == RENAMING_OPTIONS[1]:
+            # using base original name
+
+            for _key in dict_list_files.keys():
+                list_files = dict_list_files[_key]
+                base_list_files = [os.path.basename(_file) for _file in list_files]
+                _common_part = get_beginning_common_part_of_string_from_list(list_of_text=base_list_files)
+                new_file_name = _common_part + '_{:03d}.tiff'.format(_key)
+                dict_list_new_files[_key] = new_file_name
+
+        elif renaming_option == RENAMING_OPTIONS[2]:
+            # using first image name of group
+
+            for _key in dict_list_files.keys():
+                list_files = dict_list_files[_key]
+                base_file_name = os.path.basename(list_files[0])
+                dict_list_new_files[_key] = base_file_name
+
+        self.dict_list_new_files = dict_list_new_files
 
     def update_combined_file_name_widget(self):
         group_selected = self.group_dropdown.value
-        preserve_file_name_flag = self.keep_file_name.value
-        if preserve_file_name_flag:
-            self.dict_list_new_files = self.create_dictionary_of_new_file_names()
-            output_file_name = self.dict_list_new_files[group_selected]
-        else:
-            output_file_name = CombineImagesNByN.__create_merged_file_name(index=group_selected)
+        self.create_dictionary_of_new_file_names()
+        output_file_name = self.dict_list_new_files[group_selected]
         self.new_file_name.value = output_file_name
 
     def keep_file_name_changed(self, value):
+        self.update_combined_file_name_widget()
+
+    def how_to_name_output_changed(self, value):
         self.update_combined_file_name_widget()
 
     def group_changed(self, value):
@@ -266,7 +403,9 @@ class CombineImagesNByN(object):
     def merging(self, output_folder):
         """combine images using algorithm provided"""
 
-        dict_list_files = self.create_list_of_files_to_merge()
+        # self.create_list_of_files_to_merge()
+        dict_list_files = self.dict_list_files
+
         nbr_of_files_to_create = len(dict_list_files.keys())
         algorithm = self.get_merging_algorithm()
 
@@ -303,10 +442,7 @@ class CombineImagesNByN(object):
             combined_data = CombineImagesNByN.merging_algorithm(algorithm, _data)
             del o_load
 
-            if self.keep_file_name.value:
-                output_file_name = self.dict_list_new_files[_key]
-            else:
-                output_file_name = CombineImagesNByN.__create_merged_file_name(index=_key)
+            output_file_name = self.dict_list_new_files[_key]
 
             o_save = Normalization()
             o_save.load(data=combined_data)
