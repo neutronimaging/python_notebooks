@@ -317,26 +317,32 @@ class CombineImagesNByN(object):
                              hori1],
                             layout=widgets.Layout(height="600px"))
 
-        # tab2
-        list_groups = list(self.bad_dict_list_files.keys())
-        self.bad_group_dropdown = widgets.Dropdown(options=list_groups,
-                                                   description="Bad Groups")
-        self.bad_list_files_per_group = widgets.Select(options=self.bad_dict_list_files[list_groups[0]],
-                                                   description="Files",
-                                                   layout=widgets.Layout(width='100%',
-                                                                         height='500px'))
-        vbox2 = widgets.VBox([self.bad_group_dropdown,
-                             self.bad_list_files_per_group],
-                            layout=widgets.Layout(height="600px"))
+        accordion_widgets = [vbox1]
 
-        accordion = widgets.Accordion(children=[vbox1, vbox2])
+        # tab2
+        if len(self.bad_dict_list_files.keys()) > 0:
+            list_groups = list(self.bad_dict_list_files.keys())
+            self.bad_group_dropdown = widgets.Dropdown(options=list_groups,
+                                                       description="Bad Groups")
+            self.bad_list_files_per_group = widgets.Select(options=self.bad_dict_list_files[list_groups[0]],
+                                                       description="Files",
+                                                       layout=widgets.Layout(width='100%',
+                                                                             height='500px'))
+            vbox2 = widgets.VBox([self.bad_group_dropdown,
+                                 self.bad_list_files_per_group],
+                                layout=widgets.Layout(height="600px"))
+            self.bad_group_dropdown.observe(self.bad_group_changed, names='value')
+            accordion_widgets.append(vbox2)
+
+        accordion = widgets.Accordion(children=accordion_widgets)
         accordion.set_title(0, 'Good groups')
-        accordion.set_title(1, 'Groupse with errors')
+
+        if len(self.bad_dict_list_files.keys()) > 0:
+            accordion.set_title(1, 'Groups with errors')
 
         display(accordion)
 
         self.group_dropdown.observe(self.group_changed, names='value')
-        self.bad_group_dropdown.observe(self.bad_group_changed, names='value')
         self.how_to_rename_ui.observe(self.how_to_name_output_changed, names='value')
         self.update_combined_file_name_widget()
 
