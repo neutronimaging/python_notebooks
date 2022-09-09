@@ -192,6 +192,7 @@ class CombineImagesNByN(object):
         self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
                                                                                'combined image ...',
                                                                    start_dir=self.working_dir,
+                                                                   newdir_toolbar_button=True,
                                                                    next=self.merging,
                                                                    type='directory')
 
