@@ -336,6 +336,7 @@ class CombineImagesNByN(object):
         display(accordion)
 
         self.group_dropdown.observe(self.group_changed, names='value')
+        self.bad_group_dropdown.observe(self.bad_group_changed, names='value')
         self.how_to_rename_ui.observe(self.how_to_name_output_changed, names='value')
         self.update_combined_file_name_widget()
 
@@ -399,6 +400,11 @@ class CombineImagesNByN(object):
         new_list_files = self.dict_list_files[new_group]
         self.list_files_per_group.options = new_list_files
         self.update_combined_file_name_widget()
+
+    def bad_group_changed(self, value):
+        new_group = value['new']
+        new_bad_list_files = self.bad_dict_list_files[new_group]
+        self.bad_list_files_per_group.options = new_bad_list_files
 
     def merging(self, output_folder):
         """combine images using algorithm provided"""
