@@ -18,10 +18,12 @@ jobs:
             auto-activate-base: true
         - name: Install dependencies
           timeout-minutes: 40
+          shell: bash -l {0}
           run: |
             python -m pip install --upgrade pip
             conda env update -n base --file=conda/environment.yml
         - name: Run tests
+          shell: bash -l {0}
           run: |
             cd notebooks
             conda activate base
