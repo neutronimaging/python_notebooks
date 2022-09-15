@@ -9,6 +9,7 @@ jobs:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
       name: test-trigger-deploy-conda-environment
+      id: test-trigger-conda
       # only trigger deploy from protected branches (supposedly `main` and `next`)
       # DEBUG: remove this statement, uncomment the next one
       if: github.ref == 'refs/heads/conditionalCondaDeploy'
@@ -45,7 +46,7 @@ jobs:
           run: |
             echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
 
-        - name: Trigger deploy
+        - name: Trigger Deploy
           id: trigger
           # proceed only if the appropriate conda YML file changed
           if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
@@ -62,6 +63,7 @@ jobs:
         # DEBUG: remove this whole action-step
         # the purpose is to verify is a step executes even if the previous step is not executed
         - name: echo WE ARE RUNNING THIS
+          needs: test-trigger-conda.trigger
           run: |
             echo "WE ARE RUNNING THIS"
 
