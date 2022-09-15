@@ -57,7 +57,7 @@ jobs:
             echo "contains successful"
             echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
             echo "envname = conda/${{ steps.envname.outputs.name }}.yml"
-            echo "conda_env_file = $${ conda_env_file }}
+            echo "conda_env_file = ${{ conda_env_file }}"
 
         - name: Trigger Deploy
           id: trigger
