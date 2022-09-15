@@ -9,6 +9,7 @@ jobs:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
 
+
       name: test-trigger-deploy-conda-environment
       # only trigger deploy from protected branches (supposedly `main` and `next`)
       # DEBUG: remove this statement, uncomment the next one
@@ -47,6 +48,10 @@ jobs:
           run: |
             echo "steps.envname.conclusion = ${{ steps.envname.conclusion }}"
             echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
+
+        - name: test contains
+          if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
+          run: echo "contains successful"
 
         - name: Trigger Deploy
           id: trigger
