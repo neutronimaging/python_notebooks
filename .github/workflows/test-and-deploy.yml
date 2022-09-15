@@ -5,6 +5,69 @@ on: [push]
 
 jobs:
 
+    test-trigger-deploy-conda-environment:
+      runs-on: ubuntu-22.04
+      timeout-minutes: 60
+      name: test-trigger-deploy-conda-environment
+      # only trigger deploy from protected branches (supposedly `main` and `next`)
+      # DEBUG: remove this statement, uncomment the next one
+      if: github.ref == 'refs/heads/conditionalCondaDeploy'
+      #if: ${{ github.ref_protected }}
+      steps:
+        # Scan directory conda/ and collect the name any file that changed
+        - name: Verify Conda Env Files Changed
+          uses: tj-actions/verify-changed-files@v10.1
+          id: envfiles
+          with:
+            files: |
+              conda
+
+        # DEBUG: remove this whole step
+        - name: echo CHANGED FILES
+          run: |
+            echo "CHANGED FILES = ${{ steps.envfiles.outputs.changed_files }}"
+
+        # Find which conda YML file we should use for the update
+        # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
+        # branch `next` maps to `neutron-imaging-dev`
+        - name: Map the Branch Name to a Conda Environment
+          uses: neutrons/branch-mapper@modifiedMain
+          id: envname
+          with:
+            prefix: "neutron-imaging"
+            suffix-default: "-dev"
+
+          # DEBUG: remove this whole step
+        - name: echo SELECTED CONDA ENV
+          run: |
+            echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
+
+        - name: Trigger deploy
+          id: trigger
+          # proceed only if the appropriate conda YML file changed
+          if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
+          uses: eic/trigger-gitlab-ci@v2
+          with:
+            url: https://code.ornl.gov
+            token: ${{ secrets.GITLAB_TRIGGER_TOKEN_CONDA }}
+            project_id: 11833
+            ref_name: main
+            variables: |
+              PLAY="update"
+              CONDA_ENV="${{ steps.envname.outputs.name }}"
+
+        # DEBUG: remove this whole action-step
+        # the purpose is to verify is a step executes even if the previous step is not executed
+        - name: echo WE ARE RUNNING THIS
+          run: |
+            echo "WE ARE RUNNING THIS"
+
+        - name: Annotate commit
+          uses: peter-evans/commit-comment@v2
+          with:
+            body: |
+              GitLab pipeline with CONDA_ENV=${{ steps.conda_env_name.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}
+
     run-unit-tests:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
