@@ -48,7 +48,9 @@ jobs:
           with:
             files: |
               conda
-          # DEBUG: remove this 'run' block
+
+        # DEBUG: remove this whole step
+        - name: echo CHANGED FILES
           run: |
             echo "CHANGED FILES = ${{ steps.envfiles.outputs.changed_files }}"
 
@@ -61,9 +63,12 @@ jobs:
           with:
             prefix: "neutron-imaging"
             suffix-default: "-dev"
-          # DEBUG: remove this 'run' block
+
+          # DEBUG: remove this whole step
+        - name: echo SELECTED CONDA ENV
           run: |
             echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
+
         - name: Trigger deploy
           id: trigger
           # proceed only if the appropriate conda YML file changed
@@ -77,11 +82,13 @@ jobs:
             variables: |
               PLAY="update"
               CONDA_ENV="${{ steps.envname.outputs.name }}"
+
         # DEBUG: remove this whole action-step
         # the purpose is to verify is a step executes even if the previous step is not executed
-        - name: Do We Run this?
+        - name: echo WE ARE RUNNING THIS
           run: |
             echo "WE ARE RUNNING THIS"
+
         - name: Annotate commit
           uses: peter-evans/commit-comment@v2
           with:
