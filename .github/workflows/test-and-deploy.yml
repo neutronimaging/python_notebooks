@@ -50,7 +50,7 @@ jobs:
             echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
 
         - name: test contains
-          if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
+          if: contains(steps.envfiles.outputs.changed_files, 'conda/'steps.envname.outputs.name'.yml')
           run: |
             echo "contains successful"
             echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
