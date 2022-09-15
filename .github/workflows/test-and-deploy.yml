@@ -50,11 +50,14 @@ jobs:
             echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
 
         - name: test contains
-          if: contains(steps.envfiles.outputs.changed_files, 'conda/'steps.envname.outputs.name'.yml')
+          env:
+            conda_env_file: 'conda/${{ steps.envname.outputs.name}}.yml'
+          if: contains(steps.envfiles.outputs.changed_files, 'conda_env_file')
           run: |
             echo "contains successful"
             echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
             echo "envname = conda/${{ steps.envname.outputs.name }}.yml"
+            echo "conda_env_file = $${ conda_env_file }}
 
         - name: Trigger Deploy
           id: trigger
