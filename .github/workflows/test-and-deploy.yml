@@ -51,9 +51,7 @@ jobs:
         - name: Trigger Deploy
           id: trigger
           # proceed only if the appropriate conda YML file changed
-          if: |
-            ${{ steps.envfiles.outputs.changed_files }} &&
-            contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
+          if: ${{ steps.envname.outputs.name }} && contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
           uses: eic/trigger-gitlab-ci@v2
           with:
             url: https://code.ornl.gov
