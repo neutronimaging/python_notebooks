@@ -16,7 +16,7 @@ jobs:
       steps:
         # Scan directory conda/ and collect the name any file that changed
         - name: Verify Conda Env Files Changed
-          uses: tj-actions/verify-changed-files@v10.1
+          uses: tj-actions/verify-changed-files@v11.1
           id: envfiles
           with:
             files: |
@@ -72,6 +72,8 @@ jobs:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
       name: ubuntu-22.04  python 3.8
+      # DEBUG: remove this statement, uncomment the next one
+      if: ${{ github.ref_protected }}
       steps:
         - uses: actions/checkout@v2
         - uses: jurplel/install-qt-action@v2
