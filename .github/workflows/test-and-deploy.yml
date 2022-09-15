@@ -9,7 +9,6 @@ jobs:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
       name: test-trigger-deploy-conda-environment
-      id: test-trigger-conda
       # only trigger deploy from protected branches (supposedly `main` and `next`)
       # DEBUG: remove this statement, uncomment the next one
       if: github.ref == 'refs/heads/conditionalCondaDeploy'
@@ -63,11 +62,12 @@ jobs:
         # DEBUG: remove this whole action-step
         # the purpose is to verify is a step executes even if the previous step is not executed
         - name: echo WE ARE RUNNING THIS
-          needs: test-trigger-conda.trigger
+          if: steps.trigger.conclusion == 'success'
           run: |
             echo "WE ARE RUNNING THIS"
 
         - name: Annotate commit
+          if: steps.trigger.conclusion == 'success'
           uses: peter-evans/commit-comment@v2
           with:
             body: |
