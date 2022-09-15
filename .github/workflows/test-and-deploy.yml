@@ -1,5 +1,7 @@
 name: Test and Deploy
-on: [push, pull_request]
+# DEBUG: remove next statement, uncomment the next one
+on: [push]
+#on: [push, pull_request]
 
 jobs:
 
@@ -35,7 +37,9 @@ jobs:
       runs-on: ubuntu-22.04
       needs: run-unit-tests
       # only trigger deploy from protected branches (supposedly `main` and `next`)
-      if: ${{ github.ref_protected }}
+      # DEBUG: remove this statement, uncomment the next one
+      if: github.ref == 'refs/heads/conditionalCondaDeploy'
+      #if: ${{ github.ref_protected }}
       steps:
         # Scan directory conda/ and collect the name any file that changed
         - name: Verify Conda Env Files Changed
@@ -44,6 +48,10 @@ jobs:
           with:
             files: |
               conda
+          # DEBUG: remove this 'run' block
+          run: |
+            echo "CHANGED FILES = ${{ steps.envfiles.outputs.changed_files }}"
+
         # Find which conda YML file we should use for the update
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
         # branch `next` maps to `neutron-imaging-dev`
@@ -53,10 +61,13 @@ jobs:
           with:
             prefix: "neutron-imaging"
             suffix-default: "-dev"
+          # DEBUG: remove this 'run' block
+          run: |
+            echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
         - name: Trigger deploy
           id: trigger
           # proceed only if the appropriate conda YML file changed
-          if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name}}.yml')
+          if: contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
           uses: eic/trigger-gitlab-ci@v2
           with:
             url: https://code.ornl.gov
@@ -66,6 +77,11 @@ jobs:
             variables: |
               PLAY="update"
               CONDA_ENV="${{ steps.envname.outputs.name }}"
+        # DEBUG: remove this whole action-step
+        # the purpose is to verify is a step executes even if the previous step is not executed
+        - name: Do We Run this?
+          run: |
+            echo "WE ARE RUNNING THIS"
         - name: Annotate commit
           uses: peter-evans/commit-comment@v2
           with:
