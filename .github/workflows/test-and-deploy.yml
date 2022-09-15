@@ -14,6 +14,9 @@ jobs:
       if: github.ref == 'refs/heads/conditionalCondaDeploy'
       #if: ${{ github.ref_protected }}
       steps:
+        # DEBUG: remove the following action statement
+        - uses: actions/checkout@v2
+
         # Scan directory conda/ and collect the name any file that changed
         - name: Verify Conda Env Files Changed
           uses: tj-actions/verify-changed-files@v11.1
