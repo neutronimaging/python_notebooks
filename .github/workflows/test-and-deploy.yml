@@ -37,6 +37,15 @@ jobs:
             echo "${{ steps.changed-files.outputs.all_changed_files }}"
             echo $CONDAENVFILE
 
+        - name: Fake Trigger Deploy
+          id: fake-trigger
+          # proceed only if the appropriate conda YML file changed
+          #if: ${{ steps.envname.outputs.name }} && contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
+          env:
+            CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
+          if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
+          run: echo "trigger successful"
+
         # DEBUG: remove this whole step
         - name: exit workflow
           run: exit 1
