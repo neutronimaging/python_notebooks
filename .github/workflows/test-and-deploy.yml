@@ -9,7 +9,7 @@ jobs:
       timeout-minutes: 60
       name: test-trigger-deploy-conda-environment
       # only trigger deploy from protected branches (supposedly `main` and `next`)
-      # DEBUG: uncomment the next one
+      # DEBUG: uncomment this
       #if: ${{ github.ref_protected }}
       steps:
         # DEBUG: remove the following action statement
@@ -31,8 +31,8 @@ jobs:
           run: echo '::set-output name=SELECTED_COLOR::green'
           id: random-color-generator
 
-       - name: Get color
-         run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
+        - name: Get color
+          run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
 
         - name: test contains
           id: testcontains
