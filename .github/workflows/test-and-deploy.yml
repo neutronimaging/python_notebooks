@@ -8,65 +8,38 @@ jobs:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
       name: test-trigger-deploy-conda-environment
-      # only trigger deploy from protected branches (supposedly `main` and `next`)
       # DEBUG: uncomment this
       #if: ${{ github.ref_protected }}
       steps:
-        # DEBUG: remove the following action statement
         - uses: actions/checkout@v2
 
         - name: Get changed files
           id: changed-files
           uses: tj-actions/changed-files@v29.0.7
 
-        # DEBUG: remove this whole step
-        - name: List all changed files
-          run: |
-            for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-              echo "$file was changed"
-            done
-            echo "${{ steps.changed-files.outputs.all_changed_files }}"
-
-        - name: Map the Branch Name to a Conda Environment
-          run: echo '::set-output name=name::junk'
-          id: fake-envname
-
-        - name: Get Conda Env File
-          env:
-            GETCONDAENV: "conda/${{ steps.fake-envname.outputs.name }}.yml"
-          run: |
-            echo "The selected conda env file is conda/${{ steps.fake-envname.outputs.name }}.yml"
-            echo "The selected conda env file is $GETCONDAENV"
-
-        - name: test contains
-          id: testcontains
-          env:
-            CONDAENVFILE: 'conda/${{ steps.fake-envname.outputs.name }}.yml'
-          if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
-          run: |
-            echo "contains successful"
-
-        # DEBUG: remove this whole step
-        - name: exit workflow
-          run: exit 1
-
-
         # Find which conda YML file we should use for the update
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
         # branch `next` maps to `neutron-imaging-dev`
         - name: Map the Branch Name to a Conda Environment
-          if: ${{ steps.envfiles.outputs.changed_files }}
           uses: neutrons/branch-mapper@modifiedMain
           id: envname
           with:
             prefix: "neutron-imaging"
             suffix-default: "-dev"
 
-          # DEBUG: remove this whole step
-        - name: echo SELECTED CONDA ENV
+        - name: test contains
+          id: testcontains
+          env:
+            CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
+          #if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           run: |
-            echo "steps.envname.conclusion = ${{ steps.envname.conclusion }}"
-            echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
+            echo "contains successful"
+            echo "${{ steps.changed-files.outputs.all_changed_files }}"
+            echo $CONDAENVFILE
+
+        # DEBUG: remove this whole step
+        - name: exit workflow
+          run: exit 1
 
         - name: Trigger Deploy
           id: trigger
