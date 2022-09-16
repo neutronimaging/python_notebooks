@@ -53,7 +53,7 @@ jobs:
           id: testcontains
           env:
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name}}.yml'
-          if: contains(steps.envfiles.outputs.changed_files, 'conda/.yml')
+          if: ${{ contains(steps.envfiles.outputs.changed_files, env.CONDAENVFILE) }}
           #if: ${{ env.CONDAENVFILE == 'conda/.yml' }}
           run: |
             echo "contains successful"
