@@ -27,12 +27,12 @@ jobs:
             done
             echo "${{ steps.changed-files.outputs.all_changed_files }}"
 
-        - name: Set selected color
-          run: echo '::set-output name=SELECTED_COLOR::green'
-          id: random-color-generator
+        - name: Map the Branch Name to a Conda Environment
+          run: echo '::set-output name=name::junk'
+          id: fake-envname
 
-        - name: Get color
-          run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
+        - name: Get Conda Env File
+          run: echo "The selected conda env file is conda/${{ steps.fake-envname.outputs.name }}.yml"
 
         - name: test contains
           id: testcontains
