@@ -52,9 +52,10 @@ jobs:
         - name: test contains
           id: testcontains
           env:
+            SEARCHSTRING: ''
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name}}.yml'
-          if: ${{ contains(steps.envfiles.outputs.changed_files, env.CONDAENVFILE) }}
-          #if: ${{ env.CONDAENVFILE == 'conda/.yml' }}
+          #if: ${{ contains(steps.envfiles.outputs.changed_files, env.CONDAENVFILE) }}
+          if: contains(env.SEARCHSTRING, env.CONDAENVFILE)
           run: |
             echo "contains successful"
             echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
