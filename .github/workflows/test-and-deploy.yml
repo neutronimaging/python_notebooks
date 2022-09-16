@@ -1,7 +1,6 @@
 name: Test and Deploy
 # DEBUG: remove next statement, uncomment the next one
-on: [push]
-#on: [push, pull_request]
+on: [push, pull_request]
 
 jobs:
 
@@ -12,14 +11,13 @@ jobs:
 
       name: test-trigger-deploy-conda-environment
       # only trigger deploy from protected branches (supposedly `main` and `next`)
-      # DEBUG: remove this statement, uncomment the next one
-      if: github.ref == 'refs/heads/conditionalCondaDeploy'
+      # DEBUG: uncomment the next one
       #if: ${{ github.ref_protected }}
       steps:
         # DEBUG: remove the following action statement
         - uses: actions/checkout@v2
 
-        # Scan directory conda/ and collect the name any file that changed
+        # Scan directory conda/ and collect the name of any file that changed
         - name: Verify Conda Env Files Changed
           uses: tj-actions/verify-changed-files@v11.1
           id: envfiles
@@ -42,6 +40,10 @@ jobs:
             echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
             echo "CONDAENVFILE = $CONDAENVFILE"
             exit 1
+
+        # DEBUG: remove this whole step
+        - name: exit workflow
+          run: exit 1
 
         # Find which conda YML file we should use for the update
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
