@@ -23,11 +23,12 @@ jobs:
           id: envfiles
           with:
             files: |
-              conda/*
+              **/conda/*
 
         # DEBUG: remove this whole step
         - name: echo CHANGED FILES
           run: |
+            echo "FILES CHAGED = ${{ steps.envfiles.outputs.files_changed }}"
             echo "CHANGED FILES = ${{ steps.envfiles.outputs.changed_files }}"
 
         - name: test contains
