@@ -23,7 +23,7 @@ jobs:
           id: envfiles
           with:
             files: |
-              conda
+              conda/*
 
         # DEBUG: remove this whole step
         - name: echo CHANGED FILES
