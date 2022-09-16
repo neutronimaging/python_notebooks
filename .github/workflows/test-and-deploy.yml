@@ -15,19 +15,20 @@ jobs:
         # DEBUG: remove the following action statement
         - uses: actions/checkout@v2
 
-        # Scan directory conda/ and collect the name of any file that changed
-        - name: Verify Conda Env Files Changed
-          uses: tj-actions/verify-changed-files@v11.1
-          id: envfiles
-          with:
-            files: |
-              **/*.yml
+        - name: Get changed files
+          id: changed-files
+          uses: tj-actions/changed-files@v29.0.7
 
         # DEBUG: remove this whole step
-        - name: echo CHANGED FILES
-          run: |
-            echo "FILES CHAGED = ${{ steps.envfiles.outputs.files_changed }}"
-            echo "CHANGED FILES = ${{ steps.envfiles.outputs.changed_files }}"
+         - name: List all changed files
+           run: |
+             for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+               echo "$file was changed"
+             done
+
+        # DEBUG: remove this whole step
+        - name: exit workflow
+          run: exit 1
 
         - name: test contains
           id: testcontains
@@ -39,10 +40,6 @@ jobs:
             echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
             echo "CONDAENVFILE = $CONDAENVFILE"
             exit 1
-
-        # DEBUG: remove this whole step
-        - name: exit workflow
-          run: exit 1
 
         # Find which conda YML file we should use for the update
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
