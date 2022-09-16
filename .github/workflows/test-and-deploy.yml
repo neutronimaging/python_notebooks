@@ -32,6 +32,17 @@ jobs:
           run: |
             echo "CHANGED FILES = ${{ steps.envfiles.outputs.changed_files }}"
 
+        - name: test contains
+          id: testcontains
+          env:
+            CONDAENVFILE: 'conda/junk.yml'
+          if: ${{ contains(steps.envfiles.outputs.changed_files, env.CONDAENVFILE) }}
+          run: |
+            echo "contains successful"
+            echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
+            echo "CONDAENVFILE = $CONDAENVFILE"
+            exit 1
+
         # Find which conda YML file we should use for the update
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
         # branch `next` maps to `neutron-imaging-dev`
@@ -48,19 +59,6 @@ jobs:
           run: |
             echo "steps.envname.conclusion = ${{ steps.envname.conclusion }}"
             echo "SELECTED CONDA ENV = ${{ steps.envname.outputs.name }}"
-
-        - name: test contains
-          id: testcontains
-          env:
-            SEARCHSTRING: ''
-            CONDAENVFILE: 'conda/${{ steps.envname.outputs.name}}.yml'
-          #if: ${{ contains(steps.envfiles.outputs.changed_files, env.CONDAENVFILE) }}
-          if: contains(env.SEARCHSTRING, env.CONDAENVFILE)
-          run: |
-            echo "contains successful"
-            echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
-            echo "envname = conda/${{ steps.envname.outputs.name }}.yml"
-            echo "conda_env_file = $CONDAENVFILE"
 
         - name: Trigger Deploy
           id: trigger
