@@ -27,20 +27,18 @@ jobs:
             done
             echo "${{ steps.changed-files.outputs.all_changed_files }}"
 
-        # DEBUG: remove this whole step
-        - name: exit workflow
-          run: exit 1
-
         - name: test contains
           id: testcontains
           env:
             CONDAENVFILE: 'conda/junk.yml'
-          if: ${{ contains(steps.envfiles.outputs.changed_files, env.CONDAENVFILE) }}
+          if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           run: |
             echo "contains successful"
-            echo "changed_files = ${{ steps.envfiles.outputs.changed_files }}"
-            echo "CONDAENVFILE = $CONDAENVFILE"
-            exit 1
+
+        # DEBUG: remove this whole step
+        - name: exit workflow
+          run: exit 1
+
 
         # Find which conda YML file we should use for the update
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
