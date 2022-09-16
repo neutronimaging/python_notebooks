@@ -7,8 +7,6 @@ jobs:
     test-trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
-
-
       name: test-trigger-deploy-conda-environment
       # only trigger deploy from protected branches (supposedly `main` and `next`)
       # DEBUG: uncomment the next one
@@ -23,7 +21,7 @@ jobs:
           id: envfiles
           with:
             files: |
-              **/conda/*
+              **/*.yml
 
         # DEBUG: remove this whole step
         - name: echo CHANGED FILES
