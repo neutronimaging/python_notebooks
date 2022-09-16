@@ -32,12 +32,16 @@ jobs:
           id: fake-envname
 
         - name: Get Conda Env File
-          run: echo "The selected conda env file is conda/${{ steps.fake-envname.outputs.name }}.yml"
+          env:
+            GETCONDAENV: "conda/${{ steps.fake-envname.outputs.name }}.yml"
+          run: |
+            echo "The selected conda env file is conda/${{ steps.fake-envname.outputs.name }}.yml"
+            echo "The selected conda env file is $GETCONDAENV"
 
         - name: test contains
           id: testcontains
           env:
-            CONDAENVFILE: 'conda/junk.yml'
+            CONDAENVFILE: 'conda/${{ steps.fake-envname.outputs.name }}.yml'
           if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           run: |
             echo "contains successful"
