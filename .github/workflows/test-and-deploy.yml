@@ -20,11 +20,11 @@ jobs:
           uses: tj-actions/changed-files@v29.0.7
 
         # DEBUG: remove this whole step
-         - name: List all changed files
-           run: |
-             for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-               echo "$file was changed"
-             done
+        - name: List all changed files
+          run: |
+            for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+              echo "$file was changed"
+            done
 
         # DEBUG: remove this whole step
         - name: exit workflow
