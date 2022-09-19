@@ -1,6 +1,7 @@
 name: Test and Deploy
 # DEBUG: remove next statement, uncomment the next one
-on: [push, pull_request]
+on: [pull_request]
+#on: [push, pull_request]
 
 jobs:
 
