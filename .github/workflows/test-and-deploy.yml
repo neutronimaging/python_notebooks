@@ -46,14 +46,12 @@ jobs:
             echo "CONDAENVFILE=$CONDAENVFILE"
             echo "CHANGED FILES=${{ steps.changed-files.outputs.all_changed_files }}"
 
-        # DEBUG: remove this whole step
-        - name: exit workflow
-          run: exit 1
-
         - name: Trigger Deploy
           id: trigger
           env:
-            BRANCHNAME: '${{ steps.extract_branch.outputs.branch }}'
+            # DEBUG: uncomment next line, delete the following one
+            #BRANCHNAME: '${{ steps.extract_branch.outputs.branch }}'
+            BRANCHNAME: 'conditionalCondaDeploy'
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
           if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           uses: eic/trigger-gitlab-ci@v2
@@ -67,6 +65,10 @@ jobs:
               PLAY="update"
               CONDA_ENV="${{ steps.envname.outputs.name }}"
               CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/$BRANCHNAME/$CONDAENVFILE"
+
+        # DEBUG: remove this whole step
+        - name: exit workflow
+          run: exit 1
 
         - name: Annotate commit
           if: ${{ steps.trigger.conclusion == 'success' }}
