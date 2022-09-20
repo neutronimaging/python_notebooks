@@ -33,7 +33,6 @@ jobs:
           shell: bash -l {0}
           run: |
             cd notebooks
-            conda activate base
             python -m pytest tests/
 
     trigger-deploy-conda-environment:
