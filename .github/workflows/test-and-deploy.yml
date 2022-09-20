@@ -1,16 +1,46 @@
 name: Test and Deploy
-# DEBUG: remove next statement, uncomment the next one
-on: [pull_request]
-#on: [push, pull_request]
+on: [push, pull_request]
 
 jobs:
+
+    run-unit-tests:
+      runs-on: ubuntu-22.04
+      timeout-minutes: 60
+      name: ubuntu-22.04  python 3.8
+      steps:
+        - uses: actions/checkout@v2
+        - uses: jurplel/install-qt-action@v2
+        - uses: conda-incubator/setup-miniconda@v2
+          with:
+            auto-update-conda: true
+            python-version: 3.8
+            channels: conda-forge
+            auto-activate-base: true
+        - name: Map the Branch Name to a Conda Environment
+          uses: neutrons/branch-mapper@modifiedMain
+          id: envname
+          with:
+            prefix: "neutron-imaging"
+            suffix-default: "-dev"
+        - name: Install dependencies
+          timeout-minutes: 40
+          shell: bash -l {0}
+          run: |
+            python -m pip install --upgrade pip
+            conda env update -n base --file=conda/${{ steps.envname.outputs.name }}.yml
+            conda install --yes --name base pytest
+        - name: Run tests
+          shell: bash -l {0}
+          run: |
+            cd notebooks
+            conda activate base
+            python -m pytest tests/
 
     test-trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
       name: test-trigger-deploy-conda-environment
-      # DEBUG: uncomment this
-      #if: ${{ github.ref_protected }}
+      if: ${{ github.ref_protected }}
       steps:
         - uses: actions/checkout@v2
 
@@ -20,7 +50,7 @@ jobs:
 
         # Find which conda environment file we should use for the deployment
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
-        # branch `next` maps to `neutron-imaging-dev`
+        # branch `next` (and any other branch) maps to `neutron-imaging-dev`
         - name: Map the Branch Name to a Conda Environment
           uses: neutrons/branch-mapper@modifiedMain
           id: envname
@@ -30,21 +60,8 @@ jobs:
 
         - name: Extract branch name
           shell: bash
-          # DEBUG: uncomment next line, delete the following one
-          #run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          run: echo "##[set-output name=branch;]$(echo conditionalCondaDeploy)"
+          run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
           id: extract_branch
-
-        - name: Fake Trigger Deploy
-          id: fake-trigger
-          env:
-            CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
-          if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
-          run: |
-            echo "trigger successful"
-            echo "CONDA_ENV_SOURCE=https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
-            echo "CONDAENVFILE=$CONDAENVFILE"
-            echo "CHANGED FILES=${{ steps.changed-files.outputs.all_changed_files }}"
 
         - name: Trigger Deploy
           id: trigger
@@ -56,16 +73,11 @@ jobs:
             url: https://code.ornl.gov
             token: ${{ secrets.GITLAB_TRIGGER_TOKEN_CONDA }}
             project_id: 11833
-          # DEBUG: set branch name to "main" instead of test_deploy
-            ref_name: test_deploy
+            ref_name: main
             variables: |
               PLAY="update"
               CONDA_ENV="${{ steps.envname.outputs.name }}"
               CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
-
-        # DEBUG: remove this whole step
-        - name: exit workflow
-          run: exit 1
 
         - name: Annotate commit
           if: ${{ steps.trigger.conclusion == 'success' }}
@@ -73,34 +85,6 @@ jobs:
           with:
             body: |
               GitLab pipeline with CONDA_ENV=${{ steps.conda_env_name.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}
-
-    run-unit-tests:
-      runs-on: ubuntu-22.04
-      timeout-minutes: 60
-      name: ubuntu-22.04  python 3.8
-      # DEBUG: remove this statement, uncomment the next one
-      if: ${{ github.ref_protected }}
-      steps:
-        - uses: actions/checkout@v2
-        - uses: jurplel/install-qt-action@v2
-        - uses: conda-incubator/setup-miniconda@v2
-          with:
-            auto-update-conda: true
-            python-version: 3.8
-            channels: conda-forge
-            auto-activate-base: true
-        - name: Install dependencies
-          timeout-minutes: 40
-          shell: bash -l {0}
-          run: |
-            python -m pip install --upgrade pip
-            conda env update -n base --file=conda/environment.yml
-        - name: Run tests
-          shell: bash -l {0}
-          run: |
-            cd notebooks
-            conda activate base
-            python -m pytest tests/
 
     trigger-deploy-notebooks:
       runs-on: ubuntu-22.04

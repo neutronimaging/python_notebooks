@@ -20,7 +20,9 @@ dependencies:
   - jupyterlab
   - ipykernel
   - jupytext
-  - flake8
+  - xlrd
+  - openpyxl
+  - xlsxwriter
   - pip
   - pip:
     - PyQt5
