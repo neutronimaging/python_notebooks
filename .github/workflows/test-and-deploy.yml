@@ -36,11 +36,13 @@ jobs:
         - name: Fake Trigger Deploy
           id: fake-trigger
           env:
+            BRANCHNAME: '${{ steps.extract_branch.outputs.branch }}'
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
           if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           run: |
             echo "trigger successful"
-            echo "CONDA_ENV_SOURCE=https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
+            echo "CONDA_ENV_SOURCE=https://raw.githubusercontent.com/neutronimaging/python_notebooks/$BRANCHNAME/$CONDAENVFILE"
+            echo "BRANCHNAME=$BRANCHNAME"
             echo "CONDAENVFILE=$CONDAENVFILE"
             echo "CHANGED FILES=${{ steps.changed-files.outputs.all_changed_files }}"
 
@@ -51,6 +53,7 @@ jobs:
         - name: Trigger Deploy
           id: trigger
           env:
+            BRANCHNAME: '${{ steps.extract_branch.outputs.branch }}'
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
           if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           uses: eic/trigger-gitlab-ci@v2
@@ -63,7 +66,7 @@ jobs:
             variables: |
               PLAY="update"
               CONDA_ENV="${{ steps.envname.outputs.name }}"
-              CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
+              CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/$BRANCHNAME/$CONDAENVFILE"
 
         - name: Annotate commit
           if: ${{ steps.trigger.conclusion == 'success' }}
