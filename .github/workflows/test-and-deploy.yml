@@ -88,7 +88,7 @@ jobs:
 
     trigger-deploy-notebooks:
       runs-on: ubuntu-22.04
-      needs: run-unit-tests
+      timeout-minutes: 60
       # only trigger deploys from protected branches
       if: ${{ github.ref_protected}}
       steps:
