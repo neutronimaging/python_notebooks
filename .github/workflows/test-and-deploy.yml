@@ -36,7 +36,7 @@ jobs:
             conda activate base
             python -m pytest tests/
 
-    test-trigger-deploy-conda-environment:
+    trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
       name: test-trigger-deploy-conda-environment
