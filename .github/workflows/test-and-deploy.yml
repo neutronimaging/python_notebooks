@@ -30,7 +30,9 @@ jobs:
 
         - name: Extract branch name
           shell: bash
-          run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          # DEBUG: uncomment next line, delete the following one
+          #run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          run: echo "##[set-output name=branch;]$(echo conditionalCondaDeploy)"
           id: extract_branch
 
         - name: Fake Trigger Deploy
@@ -41,17 +43,17 @@ jobs:
           if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           run: |
             echo "trigger successful"
-            echo "CONDA_ENV_SOURCE=https://raw.githubusercontent.com/neutronimaging/python_notebooks/$BRANCHNAME/$CONDAENVFILE"
-            echo "BRANCHNAME=$BRANCHNAME"
+            echo "CONDA_ENV_SOURCE=https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
             echo "CONDAENVFILE=$CONDAENVFILE"
             echo "CHANGED FILES=${{ steps.changed-files.outputs.all_changed_files }}"
+
+        # DEBUG: remove this whole step
+        - name: exit workflow
+          run: exit 1
 
         - name: Trigger Deploy
           id: trigger
           env:
-            # DEBUG: uncomment next line, delete the following one
-            #BRANCHNAME: '${{ steps.extract_branch.outputs.branch }}'
-            BRANCHNAME: 'conditionalCondaDeploy'
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
           if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           uses: eic/trigger-gitlab-ci@v2
@@ -64,11 +66,7 @@ jobs:
             variables: |
               PLAY="update"
               CONDA_ENV="${{ steps.envname.outputs.name }}"
-              CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/$BRANCHNAME/$CONDAENVFILE"
-
-        # DEBUG: remove this whole step
-        - name: exit workflow
-          run: exit 1
+              CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
 
         - name: Annotate commit
           if: ${{ steps.trigger.conclusion == 'success' }}
