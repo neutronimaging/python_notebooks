@@ -10,37 +10,64 @@ jobs:
       steps:
         - uses: actions/checkout@v2
         - uses: jurplel/install-qt-action@v2
-        - uses: s-weigand/setup-conda@v1.0.7
-          name: Setup Conda
+        - uses: conda-incubator/setup-miniconda@v2
           with:
+            auto-update-conda: true
             python-version: 3.8
-            conda-channels: anaconda, conda-forge
-            activate-conda: true
+            channels: conda-forge
+            auto-activate-base: true
+        - name: Map the Branch Name to a Conda Environment
+          uses: neutrons/branch-mapper@modifiedMain
+          id: envname
+          with:
+            prefix: "neutron-imaging"
+            suffix-default: "-dev"
         - name: Install dependencies
           timeout-minutes: 40
+          shell: bash -l {0}
           run: |
             python -m pip install --upgrade pip
-            conda env update -n base --file=conda/environment.yml
-            conda install pytest
+            conda env update -n base --file=conda/${{ steps.envname.outputs.name }}.yml
+            conda install --yes --name base pytest
         - name: Run tests
+          shell: bash -l {0}
           run: |
             cd notebooks
+            conda activate base
             python -m pytest tests/
 
     trigger-deploy-conda-environment:
       runs-on: ubuntu-22.04
-      needs: run-unit-tests
-      # only trigger deploys from protected branches
+      timeout-minutes: 60
+      name: test-trigger-deploy-conda-environment
       if: ${{ github.ref_protected }}
       steps:
+        - uses: actions/checkout@v2
+
+        - name: Get changed files
+          id: changed-files
+          uses: tj-actions/changed-files@v29.0.7
+
+        # Find which conda environment file we should use for the deployment
+        # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
+        # branch `next` (and any other branch) maps to `neutron-imaging-dev`
         - name: Map the Branch Name to a Conda Environment
           uses: neutrons/branch-mapper@modifiedMain
-          id: conda_env_name
+          id: envname
           with:
             prefix: "neutron-imaging"
             suffix-default: "-dev"
-        - name: Trigger deploy
+
+        - name: Extract branch name
+          shell: bash
+          run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          id: extract_branch
+
+        - name: Trigger Deploy
           id: trigger
+          env:
+            CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
+          if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           uses: eic/trigger-gitlab-ci@v2
           with:
             url: https://code.ornl.gov
@@ -49,8 +76,11 @@ jobs:
             ref_name: main
             variables: |
               PLAY="update"
-              CONDA_ENV="${{ steps.conda_env_name.outputs.name }}"
+              CONDA_ENV="${{ steps.envname.outputs.name }}"
+              CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
+
         - name: Annotate commit
+          if: ${{ steps.trigger.conclusion == 'success' }}
           uses: peter-evans/commit-comment@v2
           with:
             body: |
@@ -58,7 +88,7 @@ jobs:
 
     trigger-deploy-notebooks:
       runs-on: ubuntu-22.04
-      needs: run-unit-tests
+      timeout-minutes: 60
       # only trigger deploys from protected branches
       if: ${{ github.ref_protected}}
       steps:
