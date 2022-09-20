@@ -37,7 +37,7 @@ jobs:
           id: fake-trigger
           env:
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
-          #if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
+          if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
           run: |
             echo "trigger successful"
             echo "CONDA_ENV_SOURCE=https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
@@ -50,8 +50,6 @@ jobs:
 
         - name: Trigger Deploy
           id: trigger
-          # proceed only if the appropriate conda YML file changed
-          #if: ${{ steps.envname.outputs.name }} && contains(steps.envfiles.outputs.changed_files, 'conda/${{ steps.envname.outputs.name }}.yml')
           env:
             CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
           if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
