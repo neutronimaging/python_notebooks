@@ -1,4 +1,9 @@
-from skimage.feature import register_translation
+try:
+    from skimage.feature import register_translation
+except ImportError:
+    from skimage.registration import phase_cross_correlation as register_translation
+
+
 from qtpy import QtGui
 
 
