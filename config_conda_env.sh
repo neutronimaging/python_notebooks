@@ -15,7 +15,7 @@ conda install -y      \
     numpy             \
     scipy             \
     pandas            \
-    scikit-image      \
+    scikit-image=0.18.0 \
     matplotlib        \
     plotly            \
     jupyter           \

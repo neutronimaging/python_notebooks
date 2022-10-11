@@ -10,7 +10,7 @@ dependencies:
   - h5py
   - scipy
   - pandas
-  - scikit-image
+  - scikit-image=0.18.0
   - matplotlib
   - plotly
   - nodejs=15.14.0

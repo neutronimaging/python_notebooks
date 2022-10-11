@@ -79,7 +79,7 @@ class RegistrationUi(QMainWindow):
 
         super(QMainWindow, self).__init__(parent)
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
+        display(HTML('<span style="font-size: 20px; color:blue">Check UI that will pop up in a few seconds \
             (maybe hidden behind this browser!)</span>'))
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
@@ -91,7 +91,7 @@ class RegistrationUi(QMainWindow):
         # self.ui.setupUi(self)
         self.setWindowTitle("Registration")
 
-        self.data_dict = data_dict # Normalization data dictionary  {'filename': [],
+        self.data_dict = data_dict  # Normalization data dictionary  {'filename': [],
                                                                      #'data': [[...],[...]]],
                                                                      #'metadata': [],
                                                                      #'shape': {}}

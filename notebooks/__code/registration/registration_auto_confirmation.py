@@ -27,7 +27,7 @@ class RegistrationManualAutoConfirmation(QDialog):
         super(QDialog, self).__init__(parent)
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
-                                                 ' ui_registration_auto_confirmation.ui'))
+                                                 'ui_registration_auto_confirmation.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
         self.initialize_widgets()
