@@ -317,7 +317,7 @@
            <item>
             <widget class="QPushButton" name="pushButton">
              <property name="text">
-              <string>Registered Images and Return to Main UI</string>
+              <string>Register Images and Return to Main UI</string>
              </property>
             </widget>
            </item>
@@ -336,8 +336,11 @@
            </item>
            <item>
             <widget class="QPushButton" name="export_button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
-              <string>Register Images and Export ...</string>
+              <string>Export ...</string>
              </property>
             </widget>
            </item>

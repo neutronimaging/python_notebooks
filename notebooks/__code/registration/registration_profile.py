@@ -8,10 +8,11 @@ from changepy import pelt
 from changepy.costs import normal_var
 from scipy.ndimage.interpolation import shift
 import copy
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QFileDialog, QApplication
 from qtpy import QtGui, QtCore
 
 from NeuNorm.normalization import Normalization
+from __code._utilities.file import make_or_reset_folder
 
 from __code.color import Color
 from __code import load_ui
@@ -24,7 +25,7 @@ class RegistrationProfileLauncher:
     def __init__(self, parent=None):
         self.parent = parent
 
-        if self.parent.registration_profile_ui == None:
+        if self.parent.registration_profile_ui is None:
             profile_ui = RegistrationProfileUi(parent=parent)
             profile_ui.show()
             self.parent.registration_profile_ui = profile_ui
@@ -820,6 +821,7 @@ class RegistrationProfileUi(QMainWindow):
     def registered_all_images_button_clicked(self):
         self.register_images()
         self._display_selected_row()
+        self.ui.export_button.setEnabled(True)
 
     def registered_all_images_and_return_to_main_ui_button_clicked(self):
         self.register_images()
@@ -834,13 +836,15 @@ class RegistrationProfileUi(QMainWindow):
 
     def export_button_clicked(self):
         """save registered images back to the main UI"""
-        self.registered_all_images_button_clicked()
+        # self.registered_all_images_button_clicked()
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=self.working_dir,
-                                                          caption = "Select Output Folder",
+                                                          caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
         if _export_folder:
-            o_export = ExportRegistration(parent=self, export_folder=_export_folder)
+            o_export = ExportRegistration(parent=self,
+                                          input_working_dir=self.working_dir,
+                                          export_folder=_export_folder)
             o_export.run()
             QtGui.QApplication.processEvents()
 
@@ -909,8 +913,7 @@ class Settings(QMainWindow):
                                                  'ui_registration_profile_settings.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
-
-        self.ui = UiMainWindowSettings()
+        # self.ui = UiMainWindowSettings()
         self.ui.setupUi(self)
 
         self.init_widgets()
@@ -949,8 +952,9 @@ class MeanRangeCalculation(object):
 
 class ExportRegistration(object):
 
-    def __init__(self, parent=None, export_folder=''):
+    def __init__(self, parent=None, input_working_dir="", export_folder=''):
         self.parent = parent
+        self.input_dir_name = os.path.basename(input_working_dir)
         self.export_folder = export_folder
 
     def run(self):
@@ -962,6 +966,9 @@ class ExportRegistration(object):
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
 
+        export_folder = os.path.join(self.export_folder, self.input_dir_name + "_registered")
+        make_or_reset_folder(export_folder)
+
         for _row, _data in enumerate(data_dict['data']):
             _filename = list_file_names[_row]
             _data_registered = np.array(_data)
@@ -971,10 +978,9 @@ class ExportRegistration(object):
             #o_norm.data['sample']['metadata'] = [data_dict['metadata'][_row]]
             o_norm.data['sample']['metadata'] = ['']
             o_norm.data['sample']['file_name'][0] = _filename
-            o_norm.export(folder=self.export_folder, data_type='sample')
+            o_norm.export(folder=export_folder, data_type='sample')
 
             self.parent.eventProgress.setValue(_row+1)
             QApplication.processEvents()
 
         self.parent.eventProgress.setVisible(False)
-
