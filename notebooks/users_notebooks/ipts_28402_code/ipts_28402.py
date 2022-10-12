@@ -50,7 +50,7 @@ class IPTS_28402:
             self.working_dir = working_dir
 
         # load config
-        with open("./config.json") as f:
+        with open("./ipts_28402_code/config.json") as f:
             self.config = json.load(f)
 
     def select_images(self):

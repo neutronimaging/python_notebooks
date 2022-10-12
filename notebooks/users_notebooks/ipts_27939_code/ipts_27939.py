@@ -51,7 +51,7 @@ class IPTS_27939:
             self.working_dir = working_dir
 
         # load config
-        with open("./config.json") as f:
+        with open("./ipts_27939_code/config.json") as f:
             self.config = json.load(f)
 
     def select_images(self):
@@ -107,11 +107,11 @@ class IPTS_27939:
             ax1.imshow(data, vmin=0, vmax=1)
             ax1.axvline(x=vert_marker, color='green')
 
-        v = interactive(plot,
-                        rot_value=widgets.FloatSlider(min=0.,
-                                                           max=5.,
-                                                           value=0.,
-                                                           layout=widgets.Layout(width='50%')),
+        self.v = interactive(plot,
+                        rot_value=widgets.FloatSlider(min=-5.,
+                                                      max=5.,
+                                                      value=0.,
+                                                      layout=widgets.Layout(width='50%')),
                         image_index=widgets.IntSlider(min=0,
                                                       max=len(self.data) - 1,
                                                       value=0,
@@ -121,8 +121,11 @@ class IPTS_27939:
                                                       value=int(self.width/2),
                                                       layout=widgets.Layout(width="50%")))
 
-        display(v)
+        display(self.v)
 
+    def apply_rotation(self):
+        rotation_value = self.v.children[0].value
+        self.data = [rotate(_data, rotation_value) for _data in self.data]
 
     def select_crop_region(self):
         fig, ax1 = plt.subplots(num="Select Region to Crop")
@@ -169,21 +172,43 @@ class IPTS_27939:
                         image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
         display(v)
 
-    def selection_of_profiles_limit(self):
-        fig, ax1 = plt.subplots(num="Select top and bottom profile limits")
+    def background_range_selection(self):
+        fig, ax1 = plt.subplots(num="Select top and bottom of background range")
         [height, _] = np.shape(self.cropped_data[0])
 
         def plot(image_index, top, bottom):
             ax1.cla()
             ax1.imshow(self.cropped_data[image_index], vmin=0, vmax=1)
-            ax1.axis('off')
+            # ax1.axis('off')
+            ax1.axhline(y=top, color='red')
+            ax1.axhline(y=bottom, color='red')
+            return top, bottom
+
+        default_top = self.config["default_background"]["y0"]
+        default_bottom = self.config["default_background"]["y1"]
+
+        self.background_limit_ui = interactive(plot,
+                                            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                          value=0),
+                                            top=widgets.IntSlider(min=0, max=height - 1, value=default_top),
+                                            bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom))
+        display(self.background_limit_ui)
+
+    def selection_of_profiles_limit(self):
+        fig, ax1 = plt.subplots(num="Select top and bottom of sample range")
+        [height, _] = np.shape(self.cropped_data[0])
+
+        def plot(image_index, top, bottom):
+            ax1.cla()
+            ax1.imshow(self.cropped_data[image_index], vmin=0, vmax=1)
+            # ax1.axis('off')
             ax1.axhline(y=top, color='blue')
             ax1.axhline(y=bottom, color='blue')
 
             return top, bottom
 
-        default_top = self.config["profiles_limit"]["top"]
-        default_bottom = self.config["profiles_limit"]["bottom"]
+        default_top = self.config["default_sample"]["y0"]
+        default_bottom = self.config["default_sample"]["y1"]
 
         self.profile_limit_ui = interactive(plot,
                                             image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
