@@ -1,4 +1,4 @@
-debugging = False
+debugging = True
 debugger_username = 'j35'
 debugger_folder = ['/Volumes/G-DRIVE/IPTS/',
                    '/Volumes/Buffalo/IPTS/', '/Users/j35/IPTS/',

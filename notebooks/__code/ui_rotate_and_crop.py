@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_rotate_and_crop.ui'
+# Form implementation generated from reading ui file '/Volumes/G-DRIVE/git/python_notebooks/notebooks/ui/ui_rotate_and_crop.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.15.4
 #
 # WARNING! All changes made in this file will be lost!
 
