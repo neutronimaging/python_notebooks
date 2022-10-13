@@ -13,7 +13,6 @@ dependencies:
   - scikit-image=0.18.0
   - matplotlib
   - plotly
-  - nodejs=15.14.0
   - qtpy
   - nodejs=15.14.0
   - astropy

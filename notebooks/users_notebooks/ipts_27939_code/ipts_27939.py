@@ -105,7 +105,9 @@ class IPTS_27939:
             data = self.data[image_index]
             data = rotate(data, rot_value)
             ax1.imshow(data, vmin=0, vmax=1)
-            ax1.axvline(x=vert_marker, color='green')
+            ax1.axvline(x=vert_marker,
+                        color='red',
+                        linestyle="--")
 
         self.v = interactive(plot,
                         rot_value=widgets.FloatSlider(min=-5.,
@@ -119,7 +121,8 @@ class IPTS_27939:
                         vert_marker=widgets.IntSlider(min=0,
                                                       max=self.width-1,
                                                       value=int(self.width/2),
-                                                      layout=widgets.Layout(width="50%")))
+                                                      layout=widgets.Layout(width="50%"),
+                                                      continuous_update=False))
 
         display(self.v)
 
@@ -139,10 +142,10 @@ class IPTS_27939:
             ax1.cla()
             ax1.imshow(self.data[image_index], vmin=0, vmax=1)
             ax1.axis('off')
-            ax1.axvline(x=left, color='green')
-            ax1.axvline(x=right, color='green')
-            ax1.axhline(y=top, color='blue')
-            ax1.axhline(y=bottom, color='blue')
+            ax1.axvline(x=left, color='red', linestyle='--')
+            ax1.axvline(x=right, color='red', linestyle='--')
+            ax1.axhline(y=top, color='red', linestyle='-.')
+            ax1.axhline(y=bottom, color='red', linestyle='-.')
 
             return left, right, top, bottom
 
@@ -194,7 +197,7 @@ class IPTS_27939:
                                             bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom))
         display(self.background_limit_ui)
 
-    def selection_of_profiles_limit(self):
+    def sample_region_selection(self):
         fig, ax1 = plt.subplots(num="Select top and bottom of sample range")
         [height, _] = np.shape(self.cropped_data[0])
 
@@ -202,8 +205,8 @@ class IPTS_27939:
             ax1.cla()
             ax1.imshow(self.cropped_data[image_index], vmin=0, vmax=1)
             # ax1.axis('off')
-            ax1.axhline(y=top, color='blue')
-            ax1.axhline(y=bottom, color='blue')
+            ax1.axhline(y=top, color='red')
+            ax1.axhline(y=bottom, color='red')
 
             return top, bottom
 
@@ -239,7 +242,7 @@ class IPTS_27939:
             ax1.cla()
             data = self.profiles[image_index]
             ax1.plot(data, '.')
-            plt.tight_layout()
+            # plt.tight_layout()
 
         v = interactive(plot,
                         image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
