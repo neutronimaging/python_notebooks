@@ -213,12 +213,42 @@ class IPTS_27939:
         default_top = self.config["default_sample"]["y0"]
         default_bottom = self.config["default_sample"]["y1"]
 
-        self.profile_limit_ui = interactive(plot,
+        self.sample_limit_ui = interactive(plot,
                                             image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
                                                                           value=0),
                                             top=widgets.IntSlider(min=0, max=height - 1, value=default_top),
                                             bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom))
-        display(self.profile_limit_ui)
+        display(self.sample_limit_ui)
+
+    def remove_background_signal(self):
+        """
+        this is where the vertical integrated signal from the background selected is removed from the signal
+        range selected
+        """
+        y0_background = self.background_limit_ui.children[1].value
+        y1_background = self.background_limit_ui.children[2].value
+        background_signal_integrated = [np.mean(_data[y0_background: y1_background+1, :], axis=0) for _data in self.cropped_data]
+
+        y0_sample = self.sample_limit_ui.children[1].value
+        y1_sample = self.sample_limit_ui.children[2].value
+        sample_without_background = []
+        for _background, _sample in zip(background_signal_integrated, self.cropped_data):
+            _data = _sample[y0_sample: y1_sample+1]
+            sample_without_background.append(np.abs((_data - _background)))
+
+        print(np.shape(sample_without_background))
+        self.sample_without_background = sample_without_background
+
+        fig, ax1 = plt.subplots(num="Sample without background")
+        def plot(image_index):
+            ax1.cla()
+            ax1.imshow(self.sample_without_background[image_index], vmin=0, vmax=1)
+
+        self.sample_no_background_ui = interactive(plot,
+                                            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1,
+                                                                          value=0))
+        display(self.sample_no_background_ui)
+
 
     def extraction_of_profiles(self):
         [top_profile, bottom_profile] = self.profile_limit_ui.result

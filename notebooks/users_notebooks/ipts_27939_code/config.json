@@ -21,8 +21,8 @@
     "y1": 153
   },
   "default_sample": {
-    "y0": 253,
-    "y1": 636
+    "y0": 373,
+    "y1": 1034
   },
   "profiles_limit": {
     "description": "range to use and to combine to extract profile. Mean algorithm is used to combine profiles",
