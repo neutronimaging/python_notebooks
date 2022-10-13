@@ -11,10 +11,10 @@
     "right_inner_cylinder": 0
   },
   "default_crop": {
-    "x0": 386,
-    "x1": 529,
-    "y0": 1001,
-    "y1": 1655
+    "x0": 801,
+    "x1": 940,
+    "y0": 725,
+    "y1": 1797
   },
   "default_background": {
     "y0": 35,

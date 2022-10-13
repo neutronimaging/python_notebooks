@@ -165,8 +165,8 @@ class IPTS_27939:
 
         def plot(image_index):
             data = cropped_data[image_index]
-            ax1 = plt.imshow(data, vmin=0, vmax=1)
-            plt.tight_layout()
+            ax1.imshow(data, vmin=0, vmax=1)
+            # plt.tight_layout()
 
         v = interactive(plot,
                         image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
