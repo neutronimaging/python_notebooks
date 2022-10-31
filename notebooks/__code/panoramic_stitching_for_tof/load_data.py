@@ -8,7 +8,7 @@ import numpy as np
 from NeuNorm.normalization import Normalization
 
 THIS_FILE_PATH = os.path.dirname(__file__)
-CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config.json')
+CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config_work.json')
 
 
 class MetadataData:

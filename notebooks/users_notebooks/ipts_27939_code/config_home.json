@@ -11,18 +11,20 @@
     "right_inner_cylinder": 0
   },
   "default_crop": {
-    "x0": 801,
-    "x1": 940,
-    "y0": 725,
-    "y1": 1797
+    "x0": 386,
+    "x1": 540,
+    "y0": 889,
+    "y1": 1824,
+    "marker": 1000
   },
+  "default_rotate_angle": 0.2,
   "default_background": {
     "y0": 35,
-    "y1": 153
+    "y1": 282
   },
   "default_sample": {
-    "y0": 373,
-    "y1": 1034
+    "y0": 415,
+    "y1": 935
   },
   "profiles_limit": {
     "description": "range to use and to combine to extract profile. Mean algorithm is used to combine profiles",
