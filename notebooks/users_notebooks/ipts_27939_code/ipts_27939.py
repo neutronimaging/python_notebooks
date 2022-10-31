@@ -313,53 +313,86 @@ class IPTS_27939:
         display(v)
 
     def correct_cylinder_geometry(self):
+        """
+        apply the cylindrical geometry correction to the sample cropped, over the entire images
+        """
 
         sample_without_background = self.sample_without_background
         width = np.shape(sample_without_background)[2]
+        height = np.shape(sample_without_background)[1]
 
         radius = int(width/2.)
 
-        list_expected_array = []
+        list_images_corrected = np.zeros(np.shape(sample_without_background))
 
         # looping over all images
-        for list_profiles in sample_without_background:
+        for image_index, image in enumerate(sample_without_background):
 
-            # looping from top to bottom through profiles
-            for profile in list_profiles:
+            for h in np.arange(height):
+
+                profile = image[h, :]
 
                 number_of_pixels = []
                 expected_array = []
-                for _index, x in enumerate(profile):
-                    measure = x[_index]
-                    number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x,
+                for x_index, x in enumerate(profile):
+                    measure = x
+                    number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x_index,
                                                                                             radius=radius)
                     number_of_pixels.append(number_of_pixels_through_thickness)
                     expected_array.append(measure / number_of_pixels_through_thickness)
 
-                list_expected_array.append(expected_array)
+                list_images_corrected[image_index][h, :] = expected_array
 
-            self.list_expected_array = list_expected_array
+        self.list_images_corrected = list_images_corrected
+
+        fig, ax = plt.subplots(nrows=2, ncols=1, num="Sample and profiles corrected ")
+        ax0, ax1 = ax
+
+        def plot(image_index, index1, index2, plot_max):
+            ax0.cla()
+            ax0.imshow(self.list_images_corrected[image_index], vmin=0, vmax=0.01)
+            ax0.axhline(y=index1, linestyle='--', color='r')
+            ax0.axhline(y=index2, linestyle='--', color='b')
+
+            ax1.cla()
+            ax1.plot(self.list_images_corrected[image_index][index1, :], '.', color='r')
+            ax1.plot(self.list_images_corrected[image_index][index2, :], '.', color='b')
+            plt.ylim([0, plot_max])
+
+        self.sample_corrected = interactive(plot,
+                                            image_index=widgets.IntSlider(min=0,
+                                                                          max=self.number_of_images - 1,
+                                                                          value=0),
+                                            index1=widgets.IntSlider(min=0,
+                                                                            max=height-1,
+                                                                            value=int((height-1)/3)),
+                                            index2=widgets.IntSlider(min=0,
+                                                                             max=height - 1,
+                                                                             value=2*int((height-1)/3)),
+                                            plot_max=widgets.FloatSlider(min=1e-5,
+                                                                         max=1.,
+                                                                         step=0.001,
+                                                                         value=0.02))
+        display(self.sample_corrected)
 
 
-
-
-        def plot_final_inner(image_index):
-            trace = go.Scatter(y=list_expected_array[image_index], mode='markers')
-            layout = go.Layout(title=f"Expected Array of image #{image_index}",
-                               xaxis=dict(title="pixel"),
-                               yaxis=dict(title="Counts per pixel",
-                                          range=[0, .0015],
-                                          ))
-
-            figure = go.Figure(data=[trace], layout=layout)
-            iplot(figure)
-
-        self.plot_final_inner_ui = interactive(plot_final_inner,
-                                               image_index=widgets.IntSlider(min=0,
-                                                                             max=self.number_of_images - 1,
-                                                                             value=0),
-                                               )
-        display(self.plot_final_inner_ui)
+        # def plot_final_inner(image_index):
+        #     trace = go.Scatter(y=self.list_images_corrected[image_index], mode='markers')
+        #     layout = go.Layout(title=f"Expected Array of image #{image_index}",
+        #                        xaxis=dict(title="pixel"),
+        #                        yaxis=dict(title="Counts per pixel",
+        #                                   range=[0, .0015],
+        #                                   ))
+        #
+        #     figure = go.Figure(data=[trace], layout=layout)
+        #     iplot(figure)
+        #
+        # self.plot_final_inner_ui = interactive(plot_final_inner,
+        #                                        image_index=widgets.IntSlider(min=0,
+        #                                                                      max=self.number_of_images - 1,
+        #                                                                      value=0),
+        #                                        )
+        # display(self.plot_final_inner_ui)
 
     def export_profiles(self):
         working_dir = self.working_dir
