@@ -104,18 +104,56 @@ class IPTS_27939:
         display(v)
 
     def rotate_images(self):
-        fig, ax1 = plt.subplots(num="Rotation of images")
+        fig, ax = plt.subplots(ncols=1, nrows=2, num="Rotation of images")
+        ax0, ax1 = ax
 
         default_rotate_angle = self.config["default_rotate_angle"]
 
-        def plot(rot_value, image_index, vert_marker):
-            ax1.cla()
+        profile_margin = 100
+
+        def plot(rot_value, image_index, vert_guide, profile1_h, profile2_h):
+
+            ax0.cla()
             data = self.data[image_index]
             data = rotate(data, rot_value)
-            ax1.imshow(data, vmin=0, vmax=1)
-            ax1.axvline(x=vert_marker,
+            ax0.imshow(data, vmin=0, vmax=1)
+            ax0.axvline(x=vert_guide,
                         color='red',
                         linestyle="--")
+
+            point1 = [vert_guide - profile_margin, profile1_h]
+            point2 = [vert_guide + profile_margin, profile1_h]
+            x_values = [point1[0], point2[0]]
+            y_values = [point1[1], point2[1]]
+            ax0.plot(x_values, y_values, linestyle="--", color='b')
+
+            point3 = [vert_guide - profile_margin, profile2_h]
+            point4 = [vert_guide + profile_margin, profile2_h]
+            x_values = [point3[0], point4[0]]
+            y_values = [point3[1], point4[1]]
+            ax0.plot(x_values, y_values, linestyle="--", color='g')
+
+            # ax0.axhline(y=profile1_h,
+            #             xmin=vert_guide - profile_margin,
+            #             xmax=vert_guide + profile_margin,
+            #             color='b',
+            #             linestyle="--")
+            # ax0.axhline(y=profile2_h,
+            #             xmin=vert_guide - profile_margin,
+            #             xmax=vert_guide + profile_margin,
+            #             color='g',
+            #             linestyle="--")
+
+            profile1 = data[profile1_h, vert_guide-profile_margin: vert_guide + profile_margin]
+            profile2 = data[profile2_h, vert_guide-profile_margin: vert_guide + profile_margin]
+
+            ax1.cla()
+            ax1.plot(profile1, 'b', label='profile 1')
+            ax1.plot(profile2, 'g', label='profile 2')
+            plt.ylabel("Counts")
+            plt.xlabel("Pixels")
+            plt.title("horizontal profiles around vertical guide")
+            plt.tight_layout()
 
         self.v = interactive(plot,
                         rot_value=widgets.FloatSlider(min=-5.,
@@ -126,11 +164,17 @@ class IPTS_27939:
                                                       max=len(self.data) - 1,
                                                       value=0,
                                                       layout=widgets.Layout(width='50%')),
-                        vert_marker=widgets.IntSlider(min=0,
+                        vert_guide=widgets.IntSlider(min=0,
                                                       max=self.width-1,
                                                       value=int(self.width/2),
                                                       layout=widgets.Layout(width="50%"),
-                                                      continuous_update=False))
+                                                      continuous_update=False),
+                        profile1_h=widgets.IntSlider(min=0,
+                                                     max=self.height-1,
+                                                     value=1135),
+                        profile2_h=widgets.IntSlider(min=0,
+                                                     max=self.height-1,
+                                                     value=1794))
 
         display(self.v)
 
