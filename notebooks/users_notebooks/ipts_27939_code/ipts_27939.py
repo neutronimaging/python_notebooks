@@ -25,7 +25,7 @@ from NeuNorm.normalization import Normalization
 
 from __code.file_folder_browser import FileFolderBrowser
 from __code._utilities.folder import make_folder
-from __code._utilities.file import make_ascii_file
+from __code._utilities.file import make_ascii_file, make_or_increment_folder_name
 from .cylindrical_geometry_correction import number_of_pixels_at_that_position1, number_of_pixel_at_that_position2
 
 if socket.gethostname() == 'mac113775': #home machine
@@ -419,27 +419,8 @@ class IPTS_27939:
                                                                          value=0.02))
         display(self.sample_corrected)
 
-
-        # def plot_final_inner(image_index):
-        #     trace = go.Scatter(y=self.list_images_corrected[image_index], mode='markers')
-        #     layout = go.Layout(title=f"Expected Array of image #{image_index}",
-        #                        xaxis=dict(title="pixel"),
-        #                        yaxis=dict(title="Counts per pixel",
-        #                                   range=[0, .0015],
-        #                                   ))
-        #
-        #     figure = go.Figure(data=[trace], layout=layout)
-        #     iplot(figure)
-        #
-        # self.plot_final_inner_ui = interactive(plot_final_inner,
-        #                                        image_index=widgets.IntSlider(min=0,
-        #                                                                      max=self.number_of_images - 1,
-        #                                                                      value=0),
-        #                                        )
-        # display(self.plot_final_inner_ui)
-
     def export_profiles(self):
-        working_dir = self.working_dir
+        working_dir = os.path.dirname(self.working_dir)
         output_folder_browser = FileFolderBrowser(working_dir=working_dir,
                                                   next_function=self.export)
         output_folder_browser.select_output_folder()
@@ -447,55 +428,65 @@ class IPTS_27939:
     def export(self, output_folder):
 
         output_folder = os.path.abspath(output_folder)
-        make_folder(output_folder)
+        working_dir = self.working_dir
+        base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected")
+        make_or_increment_folder_name(base_working_dir)
 
-        list_expected_array = self.list_expected_array
-        list_images = self.list_of_images
+        # export images
+        list_images_corrected = self.list_images_corrected
+        list_of_images = self.list_of_images
 
-        pixel_index = np.arange(len(list_expected_array[0]))
-        list_of_ascii_file_created = []
-        for _index, _image in enumerate(list_images):
+        
 
-            array_for_this_image = list_expected_array[_index]
+        # export profiles
 
-            base_name = os.path.basename(_image)
-            base_name_without_suffix = PurePosixPath(base_name).stem
-            base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
-            full_name_of_ascii_file = os.path.join(output_folder, base_name_of_ascii_file)
-            list_of_ascii_file_created.append(full_name_of_ascii_file)
-
-            metadata = [f"# input working file: {_image}"]
-
-            x0 = self.crop['x0']
-            x1 = self.crop['x1']
-            y0 = self.crop['y0']
-            y1 = self.crop['y1']
-            metadata.append(f"# crop: x0={x0}, x1={x1}, y0={y0}, y1={y1}")
-
-            top_profile = self.config["profiles_limit"]["top"]
-            bottom_profile = self.config["profiles_limit"]["bottom"]
-            metadata.append(f"# profile range (those horizontal profiles will be combined via mean): top_profile="
-                            f"{top_profile}, bottom_profile={bottom_profile}")
-
-            center = self.config["cylinders_position"]["center"]
-            inner_radius = self.config["cylinders_position"]["inner_radius"]
-            outer_radius = self.config["cylinders_position"]["outer_radius"]
-            metadata.append(f"# cylinders center: {center}")
-            metadata.append(f"# inner_radius (pixels): {inner_radius}")
-            metadata.append(f"# outer_radius (pixels): {outer_radius}")
-
-            metadata.append("#")
-
-            metadata.append("# pixel, counts per pixels")
-
-            data_array = [f"{x}, {y}" for (x, y) in zip(pixel_index, array_for_this_image)]
-
-            make_ascii_file(metadata=metadata,
-                            data=data_array,
-                            output_file_name=full_name_of_ascii_file,
-                            dim="1d")
-
-        display(HTML('<span style="font-size: 20px; color:blue">The following ASCII (csv) files have been '
-                     'created: </span>'))
-        for _ascii_file in list_of_ascii_file_created:
-            display(HTML('<span style="font-size: 20px; color:blue"> - ' + _ascii_file + '</span>'))
+        # list_expected_array = self.list_expected_array
+        # list_images = self.list_of_images
+        #
+        # pixel_index = np.arange(len(list_expected_array[0]))
+        # list_of_ascii_file_created = []
+        # for _index, _image in enumerate(list_images):
+        #
+        #     array_for_this_image = list_expected_array[_index]
+        #
+        #     base_name = os.path.basename(_image)
+        #     base_name_without_suffix = PurePosixPath(base_name).stem
+        #     base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
+        #     full_name_of_ascii_file = os.path.join(output_folder, base_name_of_ascii_file)
+        #     list_of_ascii_file_created.append(full_name_of_ascii_file)
+        #
+        #     metadata = [f"# input working file: {_image}"]
+        #
+        #     x0 = self.crop['x0']
+        #     x1 = self.crop['x1']
+        #     y0 = self.crop['y0']
+        #     y1 = self.crop['y1']
+        #     metadata.append(f"# crop: x0={x0}, x1={x1}, y0={y0}, y1={y1}")
+        #
+        #     top_profile = self.config["profiles_limit"]["top"]
+        #     bottom_profile = self.config["profiles_limit"]["bottom"]
+        #     metadata.append(f"# profile range (those horizontal profiles will be combined via mean): top_profile="
+        #                     f"{top_profile}, bottom_profile={bottom_profile}")
+        #
+        #     center = self.config["cylinders_position"]["center"]
+        #     inner_radius = self.config["cylinders_position"]["inner_radius"]
+        #     outer_radius = self.config["cylinders_position"]["outer_radius"]
+        #     metadata.append(f"# cylinders center: {center}")
+        #     metadata.append(f"# inner_radius (pixels): {inner_radius}")
+        #     metadata.append(f"# outer_radius (pixels): {outer_radius}")
+        #
+        #     metadata.append("#")
+        #
+        #     metadata.append("# pixel, counts per pixels")
+        #
+        #     data_array = [f"{x}, {y}" for (x, y) in zip(pixel_index, array_for_this_image)]
+        #
+        #     make_ascii_file(metadata=metadata,
+        #                     data=data_array,
+        #                     output_file_name=full_name_of_ascii_file,
+        #                     dim="1d")
+        #
+        # display(HTML('<span style="font-size: 20px; color:blue">The following ASCII (csv) files have been '
+        #              'created: </span>'))
+        # for _ascii_file in list_of_ascii_file_created:
+        #     display(HTML('<span style="font-size: 20px; color:blue"> - ' + _ascii_file + '</span>'))
