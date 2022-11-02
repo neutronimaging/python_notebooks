@@ -24,8 +24,7 @@ import matplotlib.pyplot as plt
 from NeuNorm.normalization import Normalization
 
 from __code.file_folder_browser import FileFolderBrowser
-from __code._utilities.folder import make_folder
-from __code._utilities.file import make_ascii_file, make_or_increment_folder_name
+from __code._utilities.file import make_ascii_file, make_or_increment_folder_name, make_tiff
 from .cylindrical_geometry_correction import number_of_pixels_at_that_position1, number_of_pixel_at_that_position2
 
 if socket.gethostname() == 'mac113775': #home machine
@@ -430,13 +429,27 @@ class IPTS_27939:
         output_folder = os.path.abspath(output_folder)
         working_dir = self.working_dir
         base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected")
-        make_or_increment_folder_name(base_working_dir)
+        base_working_dir = make_or_increment_folder_name(base_working_dir)
 
         # export images
         list_images_corrected = self.list_images_corrected
         list_of_images = self.list_of_images
 
-        
+        nbr_images = len(list_of_images)
+        progress_bar = widgets.IntProgress(min=0,
+                                           max=nbr_images-1)
+        display(progress_bar)
+
+        for index, image in enumerate(list_images_corrected):
+            _name = os.path.basename(list_of_images[index])
+            full_name = os.path.join(base_working_dir, _name)
+            make_tiff(filename=full_name,
+                      data=image)
+            progress_bar.value = index + 1
+
+        progress_bar.close()
+        display(HTML('<span style="font-size: 20px; color:blue">Images created in ' + \
+                     base_working_dir + '</span>'))
 
         # export profiles
 
