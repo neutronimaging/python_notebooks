@@ -3,6 +3,8 @@ import glob
 import os
 from pathlib import PurePosixPath
 from scipy.ndimage import rotate
+import pandas as pd
+import json
 
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
@@ -179,6 +181,7 @@ class IPTS_27939:
 
     def apply_rotation(self):
         rotation_value = self.v.children[0].value
+        self.rotation_value = rotation_value
         self.data = [rotate(_data, rotation_value) for _data in self.data]
 
     def select_crop_region(self):
@@ -448,58 +451,49 @@ class IPTS_27939:
             progress_bar.value = index + 1
 
         progress_bar.close()
-        display(HTML('<span style="font-size: 20px; color:blue">Images created in ' + \
-                     base_working_dir + '</span>'))
+        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + ' images created!</span>'))
 
         # export profiles
 
-        # list_expected_array = self.list_expected_array
-        # list_images = self.list_of_images
-        #
-        # pixel_index = np.arange(len(list_expected_array[0]))
-        # list_of_ascii_file_created = []
-        # for _index, _image in enumerate(list_images):
-        #
-        #     array_for_this_image = list_expected_array[_index]
-        #
-        #     base_name = os.path.basename(_image)
-        #     base_name_without_suffix = PurePosixPath(base_name).stem
-        #     base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
-        #     full_name_of_ascii_file = os.path.join(output_folder, base_name_of_ascii_file)
-        #     list_of_ascii_file_created.append(full_name_of_ascii_file)
-        #
-        #     metadata = [f"# input working file: {_image}"]
-        #
-        #     x0 = self.crop['x0']
-        #     x1 = self.crop['x1']
-        #     y0 = self.crop['y0']
-        #     y1 = self.crop['y1']
-        #     metadata.append(f"# crop: x0={x0}, x1={x1}, y0={y0}, y1={y1}")
-        #
-        #     top_profile = self.config["profiles_limit"]["top"]
-        #     bottom_profile = self.config["profiles_limit"]["bottom"]
-        #     metadata.append(f"# profile range (those horizontal profiles will be combined via mean): top_profile="
-        #                     f"{top_profile}, bottom_profile={bottom_profile}")
-        #
-        #     center = self.config["cylinders_position"]["center"]
-        #     inner_radius = self.config["cylinders_position"]["inner_radius"]
-        #     outer_radius = self.config["cylinders_position"]["outer_radius"]
-        #     metadata.append(f"# cylinders center: {center}")
-        #     metadata.append(f"# inner_radius (pixels): {inner_radius}")
-        #     metadata.append(f"# outer_radius (pixels): {outer_radius}")
-        #
-        #     metadata.append("#")
-        #
-        #     metadata.append("# pixel, counts per pixels")
-        #
-        #     data_array = [f"{x}, {y}" for (x, y) in zip(pixel_index, array_for_this_image)]
-        #
-        #     make_ascii_file(metadata=metadata,
-        #                     data=data_array,
-        #                     output_file_name=full_name_of_ascii_file,
-        #                     dim="1d")
-        #
-        # display(HTML('<span style="font-size: 20px; color:blue">The following ASCII (csv) files have been '
-        #              'created: </span>'))
-        # for _ascii_file in list_of_ascii_file_created:
-        #     display(HTML('<span style="font-size: 20px; color:blue"> - ' + _ascii_file + '</span>'))
+        progress_bar = widgets.IntProgress(min=0,
+                                           max=nbr_images-1)
+        display(progress_bar)
+
+        metadata = {}
+        metadata['rotation value (degrees)'] = self.rotation_value
+        x0 = self.crop['x0']
+        x1 = self.crop['x1']
+        y0 = self.crop['y0']
+        y1 = self.crop['y1']
+
+        metadata['crop'] = {'crop': {'x0': x0,
+                                     'y0': y0,
+                                     'x1': x1,
+                                     'y1': y1
+                                     },
+                            }
+        metadata['input folder'] = working_dir
+        metadata['output folder'] = base_working_dir
+
+        for index, image in enumerate(list_images_corrected):
+
+            _name = os.path.basename(list_of_images[index])
+            base_name_without_suffix = PurePosixPath(_name).stem
+            base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
+            full_name_of_ascii_file = os.path.join(base_working_dir, base_name_of_ascii_file)
+
+            df = pd.DataFrame(image)
+            df.to_csv(full_name_of_ascii_file)
+
+            progress_bar.value = index + 1
+
+        progress_bar.close()
+
+        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + ' ASCII files created!</span>'))
+
+        json_file_name = os.path.join(base_working_dir, 'metadata.json')
+        with open(json_file_name, 'w') as outfile:
+            json.dump(metadata, outfile)
+        display(HTML('<span style="font-size: 12px; color:blue"> metadata json file created (metadata.json)!</span>'))
+
+        display(HTML('<span style="font-size: 12px; color:blue"> Output folder: ' + base_working_dir + '!</span>'))
