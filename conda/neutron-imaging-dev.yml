@@ -19,6 +19,7 @@ dependencies:
   - nbstripout
   - jupyterlab
   - ipykernel
+  - ipympl
   - jupytext
   - xlrd
   - openpyxl
