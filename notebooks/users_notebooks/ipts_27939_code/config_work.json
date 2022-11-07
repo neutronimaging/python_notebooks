@@ -14,7 +14,8 @@
     "x0": 801,
     "x1": 940,
     "y0": 725,
-    "y1": 1797
+    "y1": 1797,
+    "marker": 1000
   },
   "default_rotate_angle": 0,
   "default_background": {
