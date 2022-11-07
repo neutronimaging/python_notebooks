@@ -51,5 +51,8 @@ $ cd notebooks
 $ export PYTHONPATH=$PWD:$PYTHONPATH
 $ pytest
 ```
+## Deployment repos
 
-last updated 04/07/2022
+- Repo in charge of deploying the notebooks: [jupyter-notebooks-deploy](https://code.ornl.gov/sns-hfir-scse/deployments/jupyter-notebooks-deploy)
+- Repo in charge of updating the conda environments in target machines (such as the analysis
+  cluster and the jupyter-notebooks nodes): [imaging-conda-deploy](https://code.ornl.gov/sns-hfir-scse/deployments/imaging-conda-deploy)

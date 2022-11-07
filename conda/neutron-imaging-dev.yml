@@ -1,4 +1,4 @@
-name: neutron-imaging
+name: neutron-imaging-dev
 channels:
   - defaults
   - conda-forge
@@ -10,33 +10,32 @@ dependencies:
   - h5py
   - scipy
   - pandas
-  - scikit-image=0.18.0
+  - scikit-image
   - matplotlib
   - plotly
-  - qtpy
   - nodejs=15.14.0
+  - qtpy
   - astropy
   - nbstripout
   - jupyterlab
   - ipykernel
+  - ipympl
   - jupytext
   - xlrd
   - openpyxl
   - xlsxwriter
   - pip
   - pip:
+    - PyQt5
     - pyqtgraph==0.12.1
-    - PyQt5==5.15.4
-    - changepy==0.3.1
-    - ipywe==0.1.3a1
+    - changepy
+    - ipywe
     - lmfit
-    - neutronbraggedge==2.0.6
-    - NeuNorm==1.5.3
+    - neutronbraggedge
+    - NeuNorm
     - sectorizedradialprofile
     - inflect
-    - ImagingReso==1.7.5
+    - ImagingReso
     - ipywidgets
     - https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl
-    - dash
-    - werkzeug==2.0.1
-prefix: /opt/anaconda/envs/neutron-imaging
+prefix: /opt/anaconda/envs/neutron-imaging-dev
