@@ -20,6 +20,7 @@
 # * *Notebook*: load images
 # * **User**: rotate the images to make sure the sample to work with is perfectly vertical
 # * **User**: select region to work with by cropping the raw data
+# * *OPTIONAL*: **User** export the cropped images
 # * **User**: select part of the image that does not contain the sample
 # * **User**: select part of the image that does containt the sample
 # * *Notebook*: remove background from sample part
@@ -93,6 +94,10 @@ o_ipts.select_crop_region()
 # ## Visualize result of cropping 
 
 o_ipts.visualize_crop()
+
+# ## Export cropped images (optional)
+
+o_ipts.export_cropped_images()
 
 # # Select background
 #
