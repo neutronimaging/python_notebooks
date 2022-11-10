@@ -236,10 +236,10 @@ class IPTS_27939:
                                                             max=height-1,
                                                             value=self.config["default_crop"]['y1']),
                                    profile_mker=widgets.IntSlider(min=0,
-                                                                       max=height-1,
-                                                                       value=self.config['default_crop'][
-                                                                                      'marker'])
-                                   )
+                                                                  max=height-1,
+                                                                  value=self.config['default_crop'][
+                                                                                    'marker'])
+                                                                  )
         display(self.crop_ui)
 
     def visualize_crop(self):
@@ -259,6 +259,38 @@ class IPTS_27939:
         v = interactive(plot,
                         image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
         display(v)
+
+    def export_cropped_images(self):
+        display(HTML(
+            '<span style="font-size: 15px; color:blue">Select a folder if you want to export the cropped images!</span>'))
+        working_dir = os.path.dirname(self.working_dir)
+        self.file_selection_ui = FileFolderBrowser(working_dir=working_dir,
+                                                   next_function=self.export_cropped_images_step2)
+        self.file_selection_ui.select_output_folder()
+
+    def export_cropped_images_step2(self, output_folder):
+        output_folder = os.path.abspath(output_folder)
+        working_dir = self.working_dir
+        base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cropped")
+        base_working_dir = make_or_increment_folder_name(base_working_dir)
+
+        list_images_corrected = self.cropped_data
+        list_of_images = self.list_of_images
+
+        nbr_images = len(list_of_images)
+        progress_bar = widgets.IntProgress(min=0,
+                                           max=nbr_images - 1)
+        display(progress_bar)
+
+        for index, image in enumerate(list_images_corrected):
+            _name = os.path.basename(list_of_images[index])
+            full_name = os.path.join(base_working_dir, _name)
+            make_tiff(filename=full_name,
+                      data=image)
+            progress_bar.value = index + 1
+
+        progress_bar.close()
+        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + ' images created!</span>'))
 
     def background_range_selection(self):
         fig, ax1 = plt.subplots(num="Select top and bottom of background range")
