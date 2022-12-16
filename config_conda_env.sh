@@ -15,13 +15,13 @@ conda install -y      \
     numpy             \
     scipy             \
     pandas            \
-    scikit-image=0.18.0 \
+    scikit-image=0.18.1 \
     matplotlib        \
     plotly            \
     jupyter           \
     jupyterlab        \
     qtpy              \
-    pyqtgraph=0.12.0  \
+    pyqtgraph         \
     astropy
 
 # install dependencies from conda-forge
