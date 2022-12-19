@@ -5,19 +5,24 @@ import os
 from ipywidgets import widgets
 from IPython.core.display import display
 from IPython.core.display import HTML
-from IPython.display import clear_output
+from __code._utilities.time import get_current_time_in_special_file_name_format
+from __code import LOGGER_FILE
+from __code._utilities.file import append_to_file
 
 list_instrument_per_facility = {'HFIR': ['CG1D'],
                                 'SNS': ['SNAP', 'VENUS']}
 
 
-class System(object):
+class System:
 
     working_dir = ''
     start_path = ''
 
     @classmethod
-    def select_working_dir(cls, debugger_folder='', system_folder='', facility='HFIR', instrument='CG1D'):
+    def select_working_dir(cls, debugger_folder='', system_folder='',
+                           facility='HFIR',
+                           instrument='CG1D',
+                           notebook="N/A"):
 
         try:
 
@@ -84,6 +89,15 @@ class System(object):
             cls.working_dir = os.path.expanduser("~")
             display(HTML('<span style="font-size: 15px; color:blue">working dir set to -> ' + cls.working_dir +
                          '</span>'))
+
+        cls.log_use(notebook=notebook)
+
+    @classmethod
+    def log_use(cls, notebook="N/A"):
+        username = getpass.getuser()
+        date = get_current_time_in_special_file_name_format()
+        data = [f"{date}: {username} started using {notebook}"]
+        append_to_file(data=data, output_file_name=LOGGER_FILE)
 
     @classmethod
     def get_full_list_instrument(cls):

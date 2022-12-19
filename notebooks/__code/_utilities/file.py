@@ -237,6 +237,12 @@ def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','
     f.close()
 
 
+def append_to_file(data=[], output_file_name=""):
+    with open(output_file_name, "a") as f:
+        for _line in data:
+            f.write(_line + "\n")
+
+
 def make_ascii_file_from_2dim_array(metadata=None, col1=None, col2=None, output_file_name=None, sep=', '):
     with open(output_file_name, 'w') as f:
         for _meta in metadata:
