@@ -94,10 +94,12 @@ class System:
 
     @classmethod
     def log_use(cls, notebook="N/A"):
-        username = getpass.getuser()
-        date = get_current_time_in_special_file_name_format()
-        data = [f"{date}: {username} started using {notebook}"]
-        append_to_file(data=data, output_file_name=LOGGER_FILE)
+        if os.path.exists(os.path.dirname(LOGGER_FILE)):
+            # no dot log usage if notebooks are run locally
+            username = getpass.getuser()
+            date = get_current_time_in_special_file_name_format()
+            data = [f"{date}: {username} started using {notebook}"]
+            append_to_file(data=data, output_file_name=LOGGER_FILE)
 
     @classmethod
     def get_full_list_instrument(cls):
