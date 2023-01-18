@@ -13,7 +13,7 @@ from IPython.core.display import HTML
 
 from plotly.offline import plot, init_notebook_mode, iplot
 init_notebook_mode()
-import plotly.plotly as py
+# import plotly.plotly as py
 import plotly.graph_objs as go
 
 from __code.utilities import display_html_message

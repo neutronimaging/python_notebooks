@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Volumes/G-DRIVE/git/python_notebooks/notebooks/ui/ui_rotate_and_crop.ui'
+# Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_rotate_and_crop.ui'
 #
-# Created by: PyQt5 UI code generator 5.15.4
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -84,4 +86,3 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* The<span style=\" font-weight:600;\"> selection box </span>within the image defines the cropping region</p></body></html>"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel"))
         self.apply_button.setText(_translate("MainWindow", "Apply on all Images"))
-

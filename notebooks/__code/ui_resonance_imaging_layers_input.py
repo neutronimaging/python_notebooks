@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_resonance_imaging_layers_input.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -385,4 +387,3 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "Total Iso. Ratio:"))
         self.total_iso_ratio.setText(_translate("MainWindow", "N/A"))
         self.ok_button.setText(_translate("MainWindow", "OK"))
-
