@@ -10,7 +10,7 @@ from __code.ipywe import fileselector
 from __code import utilities, file_handler
 
 
-class BinHandler(object):
+class BinHandler:
 
     working_dir = ''
     images_ui = None
