@@ -1,8 +1,6 @@
 debugging = False
 debugger_username = 'j35'
-debugger_folder = ['/Volumes/G-DRIVE/IPTS/', '/Users/j35/HFIR/',
-                   '/Volumes/Buffalo/IPTS/', '/Users/j35/IPTS/',
-                   '/Volumes/my_book_thunderbolt_duo/IPTS/']
+debugger_folder = ['/Volumes/G-DRIVE/IPTS/', '/Users/j35/HFIR/', '/Volumes/Buffalo/IPTS/', '/Users/j35/IPTS/', '/Volumes/my_book_thunderbolt_duo/IPTS/']
 project_folder = 'IPTS_16259'
 # system_folder = '/HFIR/CG1D/'
 # system_folder_SNS = '/SNS/'
