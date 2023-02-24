@@ -1,3 +1,4 @@
+import os
 from __code.ipywe import fileselector
 from ipywidgets import interactive
 import ipywidgets as widgets
@@ -34,9 +35,11 @@ class Main:
     def load(self, filename):
         self.ascii_filename = filename
         self.import_ascii()
+        display(HTML('<span style="font-size: 20px; color:blue">' + str(os.path.basename(filename)) + ' '
+                                                                                                  'has been loaded !</span>'))
 
     def import_ascii(self):
-        self.file_object = pd.read_csv(self.ascii_filename, sep='\t')
+        self.file_object = pd.read_csv(self.ascii_filename, sep=', ')
 
     def preview_ascii(self):
         print(self.file_object)
@@ -51,7 +54,7 @@ class Main:
         list_set_y0.sort()
 
         lambda_2d = np.zeros((len(list_set_y0), len(list_set_x0)))
-        microstrain_2d = np.zeros((len(list_set_y0), len(list_set_x0)))
+        strain_2d = np.zeros((len(list_set_y0), len(list_set_x0)))
         d_2d = np.zeros((len(list_set_y0), len(list_set_x0)))
 
         for _location in np.arange(len(self.file_object)):
@@ -63,18 +66,17 @@ class Main:
             _lambda = self.file_object.iloc[_location]['lambda hkl val']
             lambda_2d[_y, _x] = _lambda
 
-            _microstrain = self.file_object.iloc[_location]['ustrain']
-            microstrain_2d[_y, _x] = _microstrain
+            _strain = self.file_object.iloc[_location]['strain']
+            strain_2d[_y, _x] = _strain
 
             _d = self.file_object.iloc[_location]['d value']
             d_2d[_y, _x] = _d
 
         self.data_dict = {'lambda': lambda_2d,
-                          'microstrain': microstrain_2d,
+                          'strain': strain_2d,
                           'd': d_2d}
 
     def display(self):
-
         fig, ax = plt.subplots()
         self.im = ax.imshow(self.data_dict[DEFAULT_DATA_TYPE])
         self.cb = plt.colorbar(self.im, ax=ax)
@@ -91,7 +93,7 @@ class Main:
             plt.show()
 
         v = interactive(plot,
-                    data_type=widgets.Dropdown(options=['lambda', 'd', 'microstrain'],
+                    data_type=widgets.Dropdown(options=['lambda', 'd', 'strain'],
                                                value=DEFAULT_DATA_TYPE,
                                                layout=widgets.Layout(width="300px")),
                     colormap=widgets.Dropdown(options=CMAPS,
