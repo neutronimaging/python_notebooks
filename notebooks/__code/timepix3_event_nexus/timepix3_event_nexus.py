@@ -64,13 +64,15 @@ class Timepix3EventNexus:
             bin_value = bins_array[1] - bins_array[0]
             ax.cla()
             ax.plot(bins_array[:-1], histo_data, '.')
+            ax.set_xlabel(u"TOF offset (\u03bcs)")
+            ax.set_ylabel("Counts")
 
             bin_size.value = f"{bin_value: .2f}"
 
         v = interactive(plot_rebinned_data,
                         nbrs_bins=widgets.IntSlider(value=10,
                                                     min=1,
-                                                    max=10000),
+                                                    max=100000),
                         )
         display(v)
 
