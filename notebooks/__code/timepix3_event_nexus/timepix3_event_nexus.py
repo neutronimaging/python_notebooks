@@ -6,7 +6,11 @@ from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
 
+from neutronbraggedge.experiment_handler import *
+from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
+
 from __code._utilities.file import get_full_home_file_name
+from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 
 LOG_FILE_NAME = ".timepix3_event_nexus.log"
@@ -54,25 +58,69 @@ class Timepix3EventNexus:
 
         bin_size = hbox.children[1]
 
-        fig, ax = plt.subplots(figsize=(7, 7),
+        fig, ax = plt.subplots(figsize=(5, 5),
                                nrows=1,
                                ncols=1,
                                num="Histogram of He3 detector")
 
-        def plot_rebinned_data(nbrs_bins=2):
+        def plot_rebinned_data(x_axis='TOF',
+                               nbrs_bins=2,
+                               dSD=19.855,
+                               det_offset=0,
+                               element='Ni'):
+
+            _handler = BraggEdgeLibrary(material=[element],
+                                        number_of_bragg_edges=5)
+            self.bragg_edges = _handler.bragg_edges
+            self.hkl = _handler.hkl
+            self.handler = _handler
+
             histo_data, bins_array = np.histogram(self.event_data, nbrs_bins)
             bin_value = bins_array[1] - bins_array[0]
-            ax.cla()
-            ax.plot(bins_array[:-1], histo_data, '.')
-            ax.set_xlabel(u"TOF offset (\u03bcs)")
-            ax.set_ylabel("Counts")
 
+            if x_axis == 'TOF':
+                tof_array = bins_array[:-1]  # micros
+                x_axis_array = tof_array
+                ax.set_xlabel("TOF offset (" + MICRO + "s)")
+            else:
+                _exp = Experiment(tof=bins_array[:-1],
+                                  distance_source_detector_m=dSD,
+                                  detector_offset_micros=det_offset)
+                lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
+                x_axis_array = lambda_array
+                ax.set_xlabel(LAMBDA + "(" + ANGSTROMS + ")")
+
+            ax.cla()
+            ax.plot(x_axis_array, histo_data, '.')
+            ax.set_ylabel("Counts")
             bin_size.value = f"{bin_value: .2f}"
 
+            if x_axis == 'lambda':
+
+                logging.info(f"for {element}: {self.hkl[element] =}")
+                for _index, _x in enumerate(self.bragg_edges[element]):
+                    _hkl_array = self.hkl[element][_index]
+                    _str_hkl_array = [str(value) for value in _hkl_array]
+                    _hkl = ",".join(_str_hkl_array)
+                    print(f"{_x =}")
+                    ax.axvline(x=_x, color='b', label=f"{_hkl}")
+
         v = interactive(plot_rebinned_data,
+                        x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
+                                                    ),
                         nbrs_bins=widgets.IntSlider(value=10,
                                                     min=1,
-                                                    max=100000),
+                                                    max=100000,
+                                                    continuous_update=False),
+                        dSD=widgets.FloatSlider(value=19.855,
+                                                min=15,
+                                                max=25,
+                                                continuous_update=False),
+                        det_offset=widgets.IntSlider(value=0,
+                                                     min=0,
+                                                     max=15000,
+                                                     continuous_update=False),
+                        element=widgets.Dropdown(options=['Ta', 'He', 'Ni'],
+                                                 value='Ni')
                         )
         display(v)
-
