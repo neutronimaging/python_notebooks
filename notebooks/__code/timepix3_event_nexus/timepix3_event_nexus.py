@@ -81,18 +81,19 @@ class Timepix3EventNexus:
             if x_axis == 'TOF':
                 tof_array = bins_array[:-1]  # micros
                 x_axis_array = tof_array
-                ax.set_xlabel("TOF offset (" + MICRO + "s)")
+                xlabel = "TOF offset (" + MICRO + "s)"
             else:
                 _exp = Experiment(tof=bins_array[:-1],
                                   distance_source_detector_m=dSD,
                                   detector_offset_micros=det_offset)
                 lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
                 x_axis_array = lambda_array
-                ax.set_xlabel(LAMBDA + "(" + ANGSTROMS + ")")
+                xlabel = LAMBDA + "(" + ANGSTROMS + ")"
 
             ax.cla()
             ax.plot(x_axis_array, histo_data, '.')
             ax.set_ylabel("Counts")
+            ax.set_xlabel(xlabel)
             bin_size.value = f"{bin_value: .2f}"
 
             if x_axis == 'lambda':
@@ -102,20 +103,27 @@ class Timepix3EventNexus:
                     _hkl_array = self.hkl[element][_index]
                     _str_hkl_array = [str(value) for value in _hkl_array]
                     _hkl = ",".join(_str_hkl_array)
-                    print(f"{_x =}")
-                    ax.axvline(x=_x, color='b', label=f"{_hkl}")
+
+                    # to display _x in the right axis
+                    _x = _x * 1e6
+
+                    ax.axvline(x=_x, color='r', linestyle='--')
+
 
         v = interactive(plot_rebinned_data,
                         x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
+                                                    value='lambda',
                                                     ),
-                        nbrs_bins=widgets.IntSlider(value=10,
+                        nbrs_bins=widgets.IntSlider(value=10000,
                                                     min=1,
                                                     max=100000,
                                                     continuous_update=False),
                         dSD=widgets.FloatSlider(value=19.855,
                                                 min=15,
                                                 max=25,
-                                                continuous_update=False),
+                                                step=0.001,
+                                                continuous_update=False,
+                                                readout_format=".3f"),
                         det_offset=widgets.IntSlider(value=0,
                                                      min=0,
                                                      max=15000,
