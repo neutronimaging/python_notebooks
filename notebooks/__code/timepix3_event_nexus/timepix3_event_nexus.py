@@ -96,6 +96,8 @@ class Timepix3EventNexus:
             ax.set_xlabel(xlabel)
             bin_size.value = f"{bin_value: .2f}"
 
+            max_counts = np.max(histo_data)
+
             if x_axis == 'lambda':
 
                 logging.info(f"for {element}: {self.hkl[element] =}")
@@ -108,6 +110,13 @@ class Timepix3EventNexus:
                     _x = _x * 1e6
 
                     ax.axvline(x=_x, color='r', linestyle='--')
+
+                    ax.text(_x, (max_counts - max_counts/7),
+                            _hkl,
+                            ha="center",
+                            rotation=45,
+                            size=15,
+                                )
 
 
         v = interactive(plot_rebinned_data,
