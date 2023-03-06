@@ -73,7 +73,7 @@ class Main:
             d_2d[_y, _x] = _d
 
         self.data_dict = {'lambda': lambda_2d,
-                          'strain': strain_2d,
+                          'microstrain': strain_2d * 1e6,
                           'd': d_2d}
 
     def display(self):
@@ -84,16 +84,48 @@ class Main:
 
         def plot(data_type=None, colormap=None, interpolation_method=None):
 
+            from matplotlib.text import Text
+
             self.cb.remove()
             plt.title(f"{data_type}")
             self.im = ax.imshow(self.data_dict[data_type],
                                  interpolation=interpolation_method,
                                  cmap=colormap)
             self.cb = plt.colorbar(self.im, ax=ax)
+
+            # adding digit in colorbar scale
+            ticks = self.cb.ax.get_yticklabels()
+            for _index, _tick in enumerate(ticks):
+                (_x, _y) = _tick.get_position()
+                _text = _tick.get_text()
+
+                # trick to fix error with matplotlib '-' that is not the normal negative character
+                if _text[0].encode() == b'\xe2\x88\x92':
+                    _text_fixed = "-" + _text[1:]
+                    _text = _text_fixed
+
+                _new_text = f"{float(_text):.4f}"
+                ticks[_index] = Text(_x, _y, _new_text)
+
+            self.cb.ax.set_yticklabels(ticks)
+
+            # adding digits in cursor z value
+            numrows, numcols = self.data_dict[data_type].shape
+            def format_coord(x, y):
+                col = int(x + 0.5)
+                row = int(y + 0.5)
+                if col >= 0 and col < numcols and row >= 0 and row < numrows:
+                    z = self.data_dict[data_type][row, col]
+                    return 'x=%d, y=%d, z=%1.4f' % (x, y, z)
+                else:
+                    return 'x=%d, y=%d' % (x, y)
+
+            ax.format_coord = format_coord
+
             plt.show()
 
         v = interactive(plot,
-                    data_type=widgets.Dropdown(options=['lambda', 'd', 'strain'],
+                    data_type=widgets.Dropdown(options=['lambda', 'd', 'microstrain'],
                                                value=DEFAULT_DATA_TYPE,
                                                layout=widgets.Layout(width="300px")),
                     colormap=widgets.Dropdown(options=CMAPS,
