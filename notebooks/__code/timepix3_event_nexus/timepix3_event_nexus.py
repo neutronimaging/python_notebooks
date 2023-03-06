@@ -23,6 +23,9 @@ class Timepix3EventNexus:
     # event data
     event_data = None
 
+    # mode is 'h3' or 'mcp'
+    mode = 'h3'
+
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
 
@@ -37,16 +40,39 @@ class Timepix3EventNexus:
         self.nexus_ui = fileselector.FileSelectorPanel(instruction='Select NeXus file ...',
                                                        start_dir=self.working_dir,
                                                        next=self.load_nexus,
-                                                       filters={'NeXus': ".nxs.h5"},
+                                                       filters={'NeXus': ".h5"},
                                                        multiple=False)
         self.nexus_ui.show()
 
     def load_nexus(self, nexus_file_name=None):
         logging.info(f"Loading NeXus: {nexus_file_name}")
         with h5py.File(nexus_file_name, 'r') as f:
-            self.event_data = np.array(f['entry']['monitor2']['event_time_offset'])
+            try:
+                self.event_data = np.array(f['entry']['monitor2']['event_time_offset'])
+                logging.info("Loading a H3 NeXus event file!")
+            except KeyError:
+                logging.info("Loading a MCP event file!")
+                self.x_array = np.array(f['events']['x'])
+                self.y_array = np.array(f['events']['y'])
+                self.tof_ns_array = np.array(f['events']['tof_ns'])
+                self.mode = 'mcp'
 
     def rebin_and_display_data(self):
+
+        if self.mode == 'h3':
+            self.rebin_and_display_h3_data()
+
+        elif self.mode == 'mcp':
+            self.rebin_and_display_mcp_data()
+
+        else:
+            raise NotImplementedError("detector type not implemented yet!")
+
+    def rebin_and_display_mcp_data(self):
+        pass
+
+
+    def rebin_and_display_h3_data(self):
 
         hbox = widgets.HBox([widgets.Label("Bin size:",
                                            layout=widgets.Layout(width="100px")),
