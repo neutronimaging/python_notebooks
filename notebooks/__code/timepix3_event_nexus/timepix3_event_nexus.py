@@ -17,7 +17,6 @@ LOG_FILE_NAME = ".timepix3_event_nexus.log"
 
 
 class Timepix3EventNexus:
-
     # histogram data
     histo_data = None
 
@@ -33,7 +32,6 @@ class Timepix3EventNexus:
                             format='[%(levelname)s] - %(asctime)s - %(message)s',
                             level=logging.INFO)
         logging.info("*** Starting a new session ***")
-
 
     def select_nexus(self):
         self.nexus_ui = fileselector.FileSelectorPanel(instruction='Select NeXus file ...',
@@ -65,12 +63,20 @@ class Timepix3EventNexus:
 
         def plot_rebinned_data(x_axis='TOF',
                                nbrs_bins=2,
-                               dSD=19.855,
-                               det_offset=0,
-                               element='Ni'):
+                               dSD_m=19.855,
+                               offset_micros=0,
+                               element='Ni'
+                               ):
 
-            _handler = BraggEdgeLibrary(material=[element],
-                                        number_of_bragg_edges=5)
+            if element == 'Ni':
+                _handler = BraggEdgeLibrary(material=[element],
+                                            number_of_bragg_edges=5)
+            else:  # Ta
+                _handler = BraggEdgeLibrary(new_material=[{'name': 'Ta',
+                                                           'lattice': 3.3058,
+                                                           'crystal_structure': 'BCC'}],
+                                            number_of_bragg_edges=5)
+
             self.bragg_edges = _handler.bragg_edges
             self.hkl = _handler.hkl
             self.handler = _handler
@@ -83,9 +89,9 @@ class Timepix3EventNexus:
                 x_axis_array = tof_array
                 xlabel = "TOF offset (" + MICRO + "s)"
             else:
-                _exp = Experiment(tof=bins_array[:-1],
-                                  distance_source_detector_m=dSD,
-                                  detector_offset_micros=det_offset)
+                _exp = Experiment(tof=bins_array[:-1] * 1e-6,  # to convert to seconds
+                                  distance_source_detector_m=dSD_m,
+                                  detector_offset_micros=offset_micros)
                 lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
                 x_axis_array = lambda_array
                 xlabel = LAMBDA + "(" + ANGSTROMS + ")"
@@ -100,24 +106,21 @@ class Timepix3EventNexus:
 
             if x_axis == 'lambda':
 
-                logging.info(f"for {element}: {self.hkl[element] =}")
+                logging.info(f"for Ni: {self.hkl[element] =}")
                 for _index, _x in enumerate(self.bragg_edges[element]):
                     _hkl_array = self.hkl[element][_index]
                     _str_hkl_array = [str(value) for value in _hkl_array]
                     _hkl = ",".join(_str_hkl_array)
 
                     # to display _x in the right axis
-                    _x = _x * 1e6
-
                     ax.axvline(x=_x, color='r', linestyle='--')
 
-                    ax.text(_x, (max_counts - max_counts/7),
+                    ax.text(_x, (max_counts - max_counts / 7),
                             _hkl,
                             ha="center",
                             rotation=45,
                             size=15,
-                                )
-
+                            )
 
         v = interactive(plot_rebinned_data,
                         x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
@@ -127,17 +130,17 @@ class Timepix3EventNexus:
                                                     min=1,
                                                     max=100000,
                                                     continuous_update=False),
-                        dSD=widgets.FloatSlider(value=19.855,
-                                                min=15,
-                                                max=25,
-                                                step=0.001,
-                                                continuous_update=False,
-                                                readout_format=".3f"),
-                        det_offset=widgets.IntSlider(value=0,
-                                                     min=0,
-                                                     max=15000,
-                                                     continuous_update=False),
-                        element=widgets.Dropdown(options=['Ta', 'He', 'Ni'],
-                                                 value='Ni')
+                        dSD_m=widgets.FloatSlider(value=19.855,
+                                                  min=15,
+                                                  max=25,
+                                                  step=0.001,
+                                                  continuous_update=False,
+                                                  readout_format=".3f"),
+                        offset_micros=widgets.IntSlider(value=0,
+                                                        min=0,
+                                                        max=15000,
+                                                        continuous_update=False),
+                        element=widgets.RadioButtons(options=['Ni', 'Ta'],
+                                                     value='Ni'),
                         )
         display(v)
