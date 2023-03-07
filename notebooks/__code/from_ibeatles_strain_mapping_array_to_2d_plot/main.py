@@ -6,6 +6,7 @@ from IPython.core.display import display, HTML
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.text import Text
 
 INTERPOLATION_METHODS = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16',
                          'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
@@ -16,6 +17,7 @@ CMAPS = ['viridis', 'jet']
 DEFAULT_CMAPS = 'viridis'
 
 DEFAULT_DATA_TYPE = 'lambda'
+NBR_POINTS_IN_SCALE = 100
 
 
 class Main:
@@ -77,20 +79,34 @@ class Main:
                           'd': d_2d}
 
     def display(self):
+
         fig, ax = plt.subplots()
         self.im = ax.imshow(self.data_dict[DEFAULT_DATA_TYPE])
         self.cb = plt.colorbar(self.im, ax=ax)
         plt.show()
 
-        def plot(data_type=None, colormap=None, interpolation_method=None):
+        self.current_data_type = DEFAULT_DATA_TYPE
 
-            from matplotlib.text import Text
+        def plot(min_value=0, max_value=0, data_type=None, colormap=None, interpolation_method=None):
+
+            if not (data_type == self.current_data_type):
+                min_value = self.scale[data_type]['min_value']
+                max_value = self.scale[data_type]['max_value']
+                self.current_data_type = data_type
+            else:
+                self.scale[data_type]['min_value'] = min_value
+                self.scale[data_type]['max_value'] = max_value
 
             self.cb.remove()
             plt.title(f"{data_type}")
-            self.im = ax.imshow(self.data_dict[data_type],
-                                 interpolation=interpolation_method,
-                                 cmap=colormap)
+
+            data = self.data_dict[data_type]
+
+            self.im = ax.imshow(data,
+                                interpolation=interpolation_method,
+                                cmap=colormap,
+                                vmin=min_value,
+                                vmax=max_value)
             self.cb = plt.colorbar(self.im, ax=ax)
 
             # adding digit in colorbar scale
@@ -128,15 +144,79 @@ class Main:
 
             plt.show()
 
+            minimum = self.scale[data_type]['min']
+            maximum = self.scale[data_type]['max']
+            step = self.scale[data_type]['step']
+
+            # print(f"{minimum = }")
+            # print(f"{maximum = }")
+            # print(f"{min_value = }")
+            # print(f"{max_value =}")
+            # print(f"{step =}")
+
+            try:
+
+                # update min slider
+                v.children[0].min = minimum
+                v.children[0].max = maximum
+                v.children[0].step = step
+                v.children[0].value = min_value
+
+                # update max slider
+                v.children[1].min = minimum
+                v.children[1].max = maximum
+                v.children[1].step = step
+                v.children[1].value = max_value
+
+            except NameError:
+                print("error generated!")
+                return
+
+        self.scale = {'lambda': {'min': np.nanmin(self.data_dict['lambda']),
+                                 'max': np.nanmax(self.data_dict['lambda']),
+                                 'step': (np.nanmax(self.data_dict['lambda']) -
+                                          np.nanmin(self.data_dict['lambda'])) / NBR_POINTS_IN_SCALE,
+                                 'min_value': np.nanmin(self.data_dict['lambda']),
+                                 'max_value': np.nanmax(self.data_dict['lambda']),
+                                 },
+                      'd': {'min': np.nanmin(self.data_dict['d']),
+                            'max': np.nanmax(self.data_dict['d']),
+                            'step': (np.nanmax(self.data_dict['d']) - np.min(self.data_dict['d'])) / NBR_POINTS_IN_SCALE,
+                            'min_value': np.nanmin(self.data_dict['d']),
+                            'max_value': np.nanmax(self.data_dict['d']),
+                            },
+                      'microstrain': {'min': np.nanmin(self.data_dict['microstrain']),
+                                      'max': np.nanmax(self.data_dict['microstrain']),
+                                      'step': (np.nanmax(self.data_dict['microstrain']) -
+                                               np.nanmin(self.data_dict['microstrain'])) / NBR_POINTS_IN_SCALE,
+                                      'min_value': np.nanmin(self.data_dict['microstrain']),
+                                      'max_value': np.nanmax(self.data_dict['microstrain']),
+                                      },
+                      }
+
+        minimum = self.scale[DEFAULT_DATA_TYPE]['min']
+        maximum = self.scale[DEFAULT_DATA_TYPE]['max']
+        step = self.scale[DEFAULT_DATA_TYPE]['step']
+        min_value = self.scale[DEFAULT_DATA_TYPE]['min_value']
+        max_value = self.scale[DEFAULT_DATA_TYPE]['max_value']
+
         v = interactive(plot,
-                    data_type=widgets.Dropdown(options=['lambda', 'd', 'microstrain'],
-                                               value=DEFAULT_DATA_TYPE,
-                                               layout=widgets.Layout(width="300px")),
-                    colormap=widgets.Dropdown(options=CMAPS,
-                                              value=DEFAULT_CMAPS,
-                                              layout=widgets.Layout(width="300px")),
-                    interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
-                                                          value=DEFAULT_INTERPOLATION,
-                                                          description="Interpolation",
-                                                          layout=widgets.Layout(width="300px")))
+                        min_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=min_value,
+                                                      step=step),
+                        max_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=max_value,
+                                                      step=step),
+                        data_type=widgets.Dropdown(options=['lambda', 'd', 'microstrain'],
+                                                   value=DEFAULT_DATA_TYPE,
+                                                   layout=widgets.Layout(width="300px")),
+                        colormap=widgets.Dropdown(options=CMAPS,
+                                                  value=DEFAULT_CMAPS,
+                                                  layout=widgets.Layout(width="300px")),
+                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+                                                              value=DEFAULT_INTERPOLATION,
+                                                              description="Interpolation",
+                                                              layout=widgets.Layout(width="300px")))
         display(v)
