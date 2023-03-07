@@ -16,7 +16,7 @@ from __code.ipywe import fileselector
 LOG_FILE_NAME = ".timepix3_event_nexus.log"
 
 
-class Timepix3EventNexus:
+class Timepix3:
     # histogram data
     histo_data = None
 
@@ -48,14 +48,68 @@ class Timepix3EventNexus:
         logging.info(f"Loading NeXus: {nexus_file_name}")
         with h5py.File(nexus_file_name, 'r') as f:
             try:
-                self.event_data = np.array(f['entry']['monitor2']['event_time_offset'])
-                logging.info("Loading a H3 NeXus event file!")
-            except KeyError:
                 logging.info("Loading a MCP event file!")
                 self.x_array = np.array(f['events']['x'])
                 self.y_array = np.array(f['events']['y'])
                 self.tof_ns_array = np.array(f['events']['tof_ns'])
                 self.mode = 'mcp'
+            except KeyError:
+                logging.info("Nexus file not supported! Only working with MCP data set")
+                print("Only works with the MCP data set created by Su-Ann")
+
+    def collect_metadata(self):
+        nbr_events = len(self.x_array)
+        min_x = np.min(self.x_array)
+        max_x = np.max(self.x_array)
+        min_y = np.min(self.y_array)
+        max_y = np.max(self.y_array)
+        min_tof = np.min(self.tof_ns_array)
+        max_tof = np.max(self.tof_ns_array)
+
+        self.metadata = {'nbr_events': nbr_events,
+                         'x': {'min': min_x,
+                               'max': max_x,
+                               },
+                         'y': {'min': min_y,
+                               'max': max_y,
+                               },
+                         'tof': {'min': min_tof,
+                                 'max': max_tof,
+                                 },
+                         }
+
+    def format_metadata(self):
+        metadata = [f"Number of events: {self.metadata['nbr_events']}"]
+        metadata.append(f"x array:")
+        metadata.append(f"  min: {self.metadata['x']['min']}")
+        metadata.append(f"  max: {self.metadata['x']['max']}")
+        metadata.append(f"y array:")
+        metadata.append(f"  min: {self.metadata['y']['min']}")
+        metadata.append(f"  max: {self.metadata['y']['max']}")
+        metadata.append(f"tof array:")
+        metadata.append(f"  min: {self.metadata['tof']['min']}")
+        metadata.append(f"  max: {self.metadata['tof']['max']}")
+        return "\n".join(metadata)
+
+    def display_infos(self):
+
+        self.collect_metadata()
+        metadata = self.format_metadata()
+
+        vbox = widgets.VBox([widgets.Label("Metadata"),
+                             widgets.Textarea(value=metadata,
+                                              disabled=True)])
+        display(vbox)
+
+
+
+
+
+
+
+
+
+
 
     def rebin_and_display_data(self):
 
