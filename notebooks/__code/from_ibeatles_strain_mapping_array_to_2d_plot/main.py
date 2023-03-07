@@ -104,7 +104,11 @@ class Main:
                     _text_fixed = "-" + _text[1:]
                     _text = _text_fixed
 
-                _new_text = f"{float(_text):.4f}"
+                if data_type == 'microstrain':
+                    _new_text = f"{float(_text)}"
+                else:
+                    _new_text = f"{float(_text):.4f}"
+
                 ticks[_index] = Text(_x, _y, _new_text)
 
             self.cb.ax.set_yticklabels(ticks)
