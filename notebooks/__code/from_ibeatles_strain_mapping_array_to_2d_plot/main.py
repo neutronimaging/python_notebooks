@@ -169,7 +169,7 @@ class Main:
                 v.children[1].value = max_value
 
             except NameError:
-                print("error generated!")
+                # print("error generated!")
                 return
 
         self.scale = {'lambda': {'min': np.nanmin(self.data_dict['lambda']),
