@@ -1,3 +1,4 @@
+import os
 import logging
 import h5py
 import numpy as np
@@ -13,6 +14,7 @@ from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
+from __code.file_folder_browser import FileFolderBrowser
 
 LOG_FILE_NAME = ".timepix3_event_nexus.log"
 
@@ -26,6 +28,9 @@ class Timepix3FromEventToHistoNexus:
 
     # mode is 'h3' or 'mcp'
     mode = 'h3'
+
+    # array of tof bins
+    bins_tof = None
 
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
@@ -48,6 +53,8 @@ class Timepix3FromEventToHistoNexus:
     def display_tree_structure(self, nexus_file_name=None):
         logging.info(f"Display tree structure of {nexus_file_name}")
         losa.get_hdf_tree(nexus_file_name)
+        self.input_nexus_file_name = nexus_file_name
+        self.working_dir = os.path.dirname(nexus_file_name)
 
     def collect_metadata(self):
         nbr_events = len(self.x_array)
@@ -169,6 +176,8 @@ class Timepix3FromEventToHistoNexus:
             stack_images[_location, y, x] += 1
 
         self.stack_images = stack_images
+        self.bins_tof = bins_tof
+        self.nbr_bins = bin_value
 
     def display_integrated_stack(self):
 
@@ -224,120 +233,32 @@ class Timepix3FromEventToHistoNexus:
                         )
         display(v)
 
+    def define_output_filename(self):
+        input_nexus_filename = os.path.basename(self.input_nexus_file_name)
+        export_id = widgets.HBox([widgets.Label("Output file name:",
+                                                layout=widgets.Layout(width="150px")),
+                                  widgets.Text(value=input_nexus_filename,
+                                               layout=widgets.Layout(width="300px")),
+                                  ])
+        display(export_id)
+        self.output_file_name_id = export_id.children[1]
 
+    def select_output_location(self):
+        o_output_folder = FileFolderBrowser(working_dir=self.working_dir,
+                                            next_function=self.export_h5)
+        o_output_folder.select_output_folder(instruction="Select output folder ...")
 
+    def export_h5(self, output_folder):
+        logging.info(f"Export h5 to {output_folder}")
+        output_filename = self.output_file_name_id.value
+        logging.info(f"\t output file name: {output_filename}")
 
+        full_output_filename = os.path.join(output_folder, output_filename)
 
-
-    def rebin_and_display_data(self):
-
-        if self.mode == 'h3':
-            self.rebin_and_display_h3_data()
-
-        elif self.mode == 'mcp':
-            self.rebin_and_display_mcp_data()
-
-        else:
-            raise NotImplementedError("detector type not implemented yet!")
-
-    def rebin_and_display_mcp_data(self):
-        pass
-
-    def rebin_and_display_h3_data(self):
-
-        hbox = widgets.HBox([widgets.Label("Bin size:",
-                                           layout=widgets.Layout(width="100px")),
-                             widgets.Label("NaN",
-                                           layout=widgets.Layout(width="200px"))])
-        display(hbox)
-
-        bin_size = hbox.children[1]
-
-        fig, ax = plt.subplots(figsize=(5, 5),
-                               nrows=1,
-                               ncols=1,
-                               num="Histogram of He3 detector")
-
-        def plot_rebinned_data(x_axis='TOF',
-                               nbrs_bins=2,
-                               dSD_m=19.855,
-                               offset_micros=0,
-                               element='Ni'
-                               ):
-
-            if element == 'Ni':
-                _handler = BraggEdgeLibrary(material=[element],
-                                            number_of_bragg_edges=5)
-            else:  # Ta
-                _handler = BraggEdgeLibrary(new_material=[{'name': 'Ta',
-                                                           'lattice': 3.3058,
-                                                           'crystal_structure': 'BCC'}],
-                                            number_of_bragg_edges=5)
-
-            self.bragg_edges = _handler.bragg_edges
-            self.hkl = _handler.hkl
-            self.handler = _handler
-
-            histo_data, bins_array = np.histogram(self.event_data, nbrs_bins)
-            bin_value = bins_array[1] - bins_array[0]
-
-            if x_axis == 'TOF':
-                tof_array = bins_array[:-1]  # micros
-                x_axis_array = tof_array
-                xlabel = "TOF offset (" + MICRO + "s)"
-            else:
-                _exp = Experiment(tof=bins_array[:-1] * 1e-6,  # to convert to seconds
-                                  distance_source_detector_m=dSD_m,
-                                  detector_offset_micros=offset_micros)
-                lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
-                x_axis_array = lambda_array
-                xlabel = LAMBDA + "(" + ANGSTROMS + ")"
-
-            ax.cla()
-            ax.plot(x_axis_array, histo_data, '.')
-            ax.set_ylabel("Counts")
-            ax.set_xlabel(xlabel)
-            bin_size.value = f"{bin_value: .2f}"
-
-            max_counts = np.max(histo_data)
-
-            if x_axis == 'lambda':
-
-                logging.info(f"for Ni: {self.hkl[element] =}")
-                for _index, _x in enumerate(self.bragg_edges[element]):
-                    _hkl_array = self.hkl[element][_index]
-                    _str_hkl_array = [str(value) for value in _hkl_array]
-                    _hkl = ",".join(_str_hkl_array)
-
-                    # to display _x in the right axis
-                    ax.axvline(x=_x, color='r', linestyle='--')
-
-                    ax.text(_x, (max_counts - max_counts / 7),
-                            _hkl,
-                            ha="center",
-                            rotation=45,
-                            size=15,
-                            )
-
-        v = interactive(plot_rebinned_data,
-                        x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
-                                                    value='lambda',
-                                                    ),
-                        nbrs_bins=widgets.IntSlider(value=10000,
-                                                    min=1,
-                                                    max=100000,
-                                                    continuous_update=False),
-                        dSD_m=widgets.FloatSlider(value=19.855,
-                                                  min=15,
-                                                  max=25,
-                                                  step=0.001,
-                                                  continuous_update=False,
-                                                  readout_format=".3f"),
-                        offset_micros=widgets.IntSlider(value=0,
-                                                        min=0,
-                                                        max=15000,
-                                                        continuous_update=False),
-                        element=widgets.RadioButtons(options=['Ni', 'Ta'],
-                                                     value='Ni'),
-                        )
-        display(v)
+        with h5py.File(full_output_filename, mode='w') as f:
+            f.create_group('entry/histo')
+            f.create_dataset('entry/histo/stack', data=self.stack_images)
+            f.create_dataset('entry/histo/number_of_bins', data=self.nbr_bin)
+            f.create_dataset('entry/histo/tof_ns', data=self.bins_tof)
+            f.create_group('entry/infos')
+            f.create_dataset('entry/infos/input_nexus_filename', data=self.input_nexus_file_name)
