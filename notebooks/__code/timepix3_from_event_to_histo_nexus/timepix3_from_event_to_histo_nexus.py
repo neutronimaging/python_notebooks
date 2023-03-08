@@ -172,19 +172,19 @@ class Timepix3FromEventToHistoNexus:
 
     def display_integrated_stack(self):
 
-        integrated_stack = self.stack_images.sum(axis=0)
+        self.integrated_stack = self.stack_images.sum(axis=0)
         fig, ax = plt.subplots(figsize=(7, 7),
                                nrows=1, ncols=1)
-        image = ax.imshow(integrated_stack)
+        image = ax.imshow(self.integrated_stack)
         self.cb = plt.colorbar(image, ax=ax)
         plt.show()
 
-        max_counts = np.max(integrated_stack)
+        max_counts = np.max(self.integrated_stack)
 
         def plot_integrated(vmin, vmax):
             self.cb.remove()
             plt.title("Integrated slices (sum)")
-            image = ax.imshow(integrated_stack, vmin=vmin, vmax=vmax)
+            image = ax.imshow(self.integrated_stack, vmin=vmin, vmax=vmax)
             self.cb = plt.colorbar(image, ax=ax)
             plt.show()
 
@@ -198,6 +198,35 @@ class Timepix3FromEventToHistoNexus:
                         )
 
         display(v)
+
+    def display_slices(self):
+
+        fig1, ax1 = plt.subplots(figsize=(7, 7),
+                                 nrows=1, ncols=1)
+        first_image = self.stack_images[0]
+        image_id = ax1.imshow(first_image)
+        self.cb1 =  plt.colorbar(image_id, ax=ax1)
+        plt.show()
+
+        def plot_slices(index):
+
+            self.cb1.remove()
+            plt.title(f"Slice #{index}")
+            image_id = ax1.imshow(self.stack_images[index])
+            self.cb1 = plt.colorbar(image_id, ax=ax1)
+
+            plt.show()
+
+        v = interactive(plot_slices,
+                        index=widgets.IntSlider(min=0,
+                                                max=len(self.integrated_stack)-1,
+                                                value=0),
+                        )
+        display(v)
+
+
+
+
 
 
     def rebin_and_display_data(self):
