@@ -205,7 +205,6 @@ class Timepix3FromEventToHistoNexus:
                                                max=max_counts,
                                                value=max_counts),
                         )
-
         display(v)
 
     def display_slices(self):
@@ -214,7 +213,7 @@ class Timepix3FromEventToHistoNexus:
                                  nrows=1, ncols=1)
         first_image = self.stack_images[0]
         image_id = ax1.imshow(first_image)
-        self.cb1 =  plt.colorbar(image_id, ax=ax1)
+        self.cb1 = plt.colorbar(image_id, ax=ax1)
         plt.show()
 
         def plot_slices(index):
@@ -226,9 +225,11 @@ class Timepix3FromEventToHistoNexus:
 
             plt.show()
 
+        print(np.shape(self.stack_images))
+
         v = interactive(plot_slices,
                         index=widgets.IntSlider(min=0,
-                                                max=len(self.integrated_stack)-1,
+                                                max=len(self.stack_images)-1,
                                                 value=0),
                         )
         display(v)
@@ -258,7 +259,10 @@ class Timepix3FromEventToHistoNexus:
         with h5py.File(full_output_filename, mode='w') as f:
             f.create_group('entry/histo')
             f.create_dataset('entry/histo/stack', data=self.stack_images)
-            f.create_dataset('entry/histo/number_of_bins', data=self.nbr_bin)
+            f.create_dataset('entry/histo/number_of_bins', data=self.nbr_bins)
             f.create_dataset('entry/histo/tof_ns', data=self.bins_tof)
             f.create_group('entry/infos')
             f.create_dataset('entry/infos/input_nexus_filename', data=self.input_nexus_file_name)
+
+        display(HTML(f"hdf5 file created: {full_output_filename}"))
+        logging.info(f"hdf5 file created: {full_output_filename}")
