@@ -34,6 +34,7 @@ conda install -c conda-forge nbstripout
 # install additional from pip
 pip install \
     h5py \
+    algotom \
     neutronbraggedge \
     NeuNorm \
     sectorizedradialprofile \
@@ -44,6 +45,7 @@ pip install \
     tqdm \
     $PYONCAT_LOCATION
     werkzeug=2.0.1
+
 
 # build Jupyter lab
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
