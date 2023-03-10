@@ -6,6 +6,8 @@ from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
 
+from __code.roi_selection_ui import Interface
+
 from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 
@@ -73,4 +75,13 @@ class Timepix3HistoHdf5McpDetector:
         display(v)
 
     def select_roi(self):
+        # use the integrated image and ROI tool to select
+        # ROIs
+        o_gui = Interface(list_of_files=list_sample,
+                          callback=self.returning_from_roi_selection,
+                          display_info_message=False)
+
+        pass
+
+    def returning_from_roi_selection(self, roi_selected):
         pass
