@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
+from qtpy import QtGui
 
 from __code.roi_selection_ui import Interface
 
@@ -77,11 +78,12 @@ class Timepix3HistoHdf5McpDetector:
     def select_roi(self):
         # use the integrated image and ROI tool to select
         # ROIs
-        o_gui = Interface(list_of_files=list_sample,
+        o_gui = Interface(array2d=self.integrated_stack,
                           callback=self.returning_from_roi_selection,
                           display_info_message=False)
 
-        pass
+        o_gui.show()
+        # QtGui.QGuiApplication.processEvents()
 
     def returning_from_roi_selection(self, roi_selected):
         pass

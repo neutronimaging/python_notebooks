@@ -27,6 +27,8 @@ class Interface(QMainWindow):
     integrated_image = None
     integrated_image_size = {'width': -1, 'height': -1}
 
+    array2d = None
+
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
@@ -42,7 +44,7 @@ class Interface(QMainWindow):
             display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
                 (maybe hidden behind this browser!)</span>'))
 
-        if array2d:
+        if not (array2d is None):
             # we are giving the 2d array directly
             self.array2d = array2d
 
@@ -128,11 +130,10 @@ class Interface(QMainWindow):
 
     def integrate_images(self):
 
-        if self.array2d:
+        if not(self.array2d is None):
             self.integrated_image = self.array2d
 
         else:
-
             percentage_of_data_to_use = self.percentage_of_data_to_use
 
             if self.o_norm:

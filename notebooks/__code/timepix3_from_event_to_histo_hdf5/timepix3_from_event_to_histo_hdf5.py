@@ -256,6 +256,8 @@ class Timepix3FromEventToHistoHdf5:
 
         full_output_filename = os.path.join(output_folder, output_filename)
 
+        display(HTML(f"Writing HDF5 file .... in progress"))
+
         with h5py.File(full_output_filename, mode='w') as f:
             f.create_group('entry/histo')
             f.create_dataset('entry/histo/stack', data=self.stack_images)
@@ -264,5 +266,6 @@ class Timepix3FromEventToHistoHdf5:
             f.create_group('entry/infos')
             f.create_dataset('entry/infos/input_nexus_filename', data=self.input_nexus_file_name)
 
+        display(HTML(f"Writing HDF5 file .... Done!"))
         display(HTML(f"hdf5 file created: {full_output_filename}"))
         logging.info(f"hdf5 file created: {full_output_filename}")
