@@ -16,10 +16,10 @@ from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 from __code.file_folder_browser import FileFolderBrowser
 
-LOG_FILE_NAME = ".timepix3_event_nexus.log"
+LOG_FILE_NAME = ".timepix3_from_event_to_histo_hdf5.log"
 
 
-class Timepix3FromEventToHistoNexus:
+class Timepix3FromEventToHistoHdf5:
     # histogram data
     histo_data = None
 

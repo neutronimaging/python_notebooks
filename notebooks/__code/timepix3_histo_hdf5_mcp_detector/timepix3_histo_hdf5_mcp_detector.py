@@ -13,7 +13,7 @@ from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 
-LOG_FILE_NAME = ".timepix3_event_hdf5_he3_detector.log"
+LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
 
 
 class Timepix3EventHdf5:
