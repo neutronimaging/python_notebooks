@@ -49,7 +49,7 @@ class Timepix3HistoHdf5McpDetector:
         logging.info(f"Loading HDF5: {nexus_file_name}")
         with h5py.File(nexus_file_name, 'r') as f:
             self.stack = np.array(f['entry']['histo']['stack'])
-            self.time_spectra = np.array(f['entry']['histo']['tof_ns'])
+            self.time_spectra = np.array(f['entry']['histo']['tof_ns']) / 1000  # to convert to micros
 
     def preview_integrated_stack(self):
         self.integrated_stack = self.stack.sum(axis=0)
