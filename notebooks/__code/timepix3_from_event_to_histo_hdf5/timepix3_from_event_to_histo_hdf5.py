@@ -255,6 +255,9 @@ class Timepix3FromEventToHistoHdf5:
         logging.info(f"\t output file name: {output_filename}")
 
         full_output_filename = os.path.join(output_folder, output_filename)
+        if os.path.exists(full_output_filename):
+            display(HTML('<span style="font-size: 15px; color:red">File already exists! Select a different file name!</span>'))
+            return
 
         display(HTML(f"Writing HDF5 file .... in progress"))
 
@@ -267,5 +270,5 @@ class Timepix3FromEventToHistoHdf5:
             f.create_dataset('entry/infos/input_nexus_filename', data=self.input_nexus_file_name)
 
         display(HTML(f"Writing HDF5 file .... Done!"))
-        display(HTML(f"hdf5 file created: {full_output_filename}"))
+        display(HTML('<span style="font-size: 15px; color:blue">hdf5 file created:' + full_output_filename + '!</span>'))
         logging.info(f"hdf5 file created: {full_output_filename}")
