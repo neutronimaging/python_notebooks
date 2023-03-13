@@ -64,7 +64,7 @@ def retrieve_exposure_time(filename=''):
     metadata = image.tag_v2.as_dict()
 
     exposure_label_and_time = metadata[65021][0].split(':')
-    exposure_time = np.float(exposure_label_and_time[1])
+    exposure_time = float(exposure_label_and_time[1])
     
     return exposure_time
 

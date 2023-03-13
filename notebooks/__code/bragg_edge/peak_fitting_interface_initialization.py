@@ -238,7 +238,7 @@ class Initialization:
         self.parent.ui.roi_size_slider.setMinimum(1)
         max_value = np.min([self.parent.image_size['width'], self.parent.image_size['height']])
         self.parent.ui.roi_size_slider.setMaximum(max_value)
-        default_roi_size = np.int(max_value / 3)
+        default_roi_size = int(max_value / 3)
         self.parent.ui.roi_size_slider.setValue(default_roi_size)
         self.parent.ui.roi_width.setText(str(default_roi_size))
         self.parent.ui.roi_height.setText(str(default_roi_size))

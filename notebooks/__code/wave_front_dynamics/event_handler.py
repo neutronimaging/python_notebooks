@@ -168,11 +168,11 @@ class EventHandler(Parent):
             if _state:
 
                 if t0 == -1:
-                    t0 = np.float(list_timestamp[_index])
+                    t0 = float(list_timestamp[_index])
                     list_of_timestamp_of_data_prepared.append(0)
 
                 else:
-                    relative_time = np.float(list_timestamp[_index]) - t0
+                    relative_time = float(list_timestamp[_index]) - t0
                     list_of_timestamp_of_data_prepared.append(relative_time)
 
         self.parent.list_of_timestamp_of_data_prepared = list_of_timestamp_of_data_prepared

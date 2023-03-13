@@ -30,6 +30,6 @@ class MarkerDefaultSettings:
     def __init__(self, image_reference=[]):
         if not image_reference == []:
             [height, width] = np.shape(image_reference)
-            self.x = np.int(width / 2)
-            self.y = np.int(height / 2)
+            self.x = int(width / 2)
+            self.y = int(height / 2)
 

@@ -103,7 +103,7 @@ class BraggEdge:
         list_of_elements_selected = self.list_elements_ui.value
         list_of_elements = list_of_elements_selected.split(',')
         list_of_elements = [_element.strip() for _element in list_of_elements]
-        number_of_bragg_edges = np.int(self.nbr_bragg_edges_ui.value)
+        number_of_bragg_edges = int(self.nbr_bragg_edges_ui.value)
 
         _handler = BraggEdgeLibrary(material=list_of_elements,
                                     number_of_bragg_edges=number_of_bragg_edges)
@@ -159,8 +159,8 @@ class BraggEdge:
     def load_time_spectra(self):
         _tof_handler = TOF(filename=self.spectra_file)
         _exp = Experiment(tof=_tof_handler.tof_array,
-                          distance_source_detector_m=np.float(self.dSD_ui.value),
-                          detector_offset_micros=np.float(self.detector_offset_ui.value))
+                          distance_source_detector_m=float(self.dSD_ui.value),
+                          detector_offset_micros=float(self.detector_offset_ui.value))
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
         self.tof_array = _tof_handler.tof_array
 
@@ -188,7 +188,7 @@ class BraggEdge:
 
     def how_many_data_to_use_to_select_sample_roi(self):
         nbr_images = len(self.data)
-        init_value = np.int(nbr_images/10)
+        init_value = int(nbr_images/10)
         if init_value == 0:
             init_value = 1
         box1 = widgets.HBox([widgets.Label("Nbr of images to use:",
@@ -203,7 +203,7 @@ class BraggEdge:
         self.number_of_data_to_use_ui = box1.children[1]
 
     def define_sample_roi(self):
-        nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
+        nbr_data_to_use = int(self.number_of_data_to_use_ui.value)
         nbr_images = len(self.data)
         list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
         final_array = []
@@ -213,7 +213,7 @@ class BraggEdge:
         self.final_image = final_image
 
     def define_integrated_sample_to_use(self):
-        nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
+        nbr_data_to_use = int(self.number_of_data_to_use_ui.value)
         nbr_images = len(self.data)
         list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
         final_array = []
@@ -231,10 +231,10 @@ class BraggEdge:
 
             for _roi in list_roi.keys():
 
-                x0 = np.int(list_roi[_roi]['x0'])
-                y0 = np.int(list_roi[_roi]['y0'])
-                x1 = np.int(list_roi[_roi]['x1'])
-                y1 = np.int(list_roi[_roi]['y1'])
+                x0 = int(list_roi[_roi]['x0'])
+                y0 = int(list_roi[_roi]['y0'])
+                x1 = int(list_roi[_roi]['x1'])
+                y1 = int(list_roi[_roi]['y1'])
 
                 _array_data.append(np.mean(_data[y0:y1, x0:x1]))
 
@@ -340,7 +340,7 @@ class BraggEdge:
         for _index in np.arange(len(bragg_edges)):
             _hkl_str = [str(i) for i in hkl[_index]]
             _hkl = "".join(_hkl_str)
-            _bragg_edges = np.float(bragg_edges[_index])
+            _bragg_edges = float(bragg_edges[_index])
             _d = _bragg_edges/2.
             _row = "{}, {}, {}".format(_hkl, _d, _bragg_edges)
             data.append(_row)
@@ -560,7 +560,7 @@ class Interface(QMainWindow):
         """Make sure the ROI selected or defined stays within the image size"""
         min_value = 0
 
-        value = np.int(value)
+        value = int(value)
 
         if x_axis:
             max_value = self.integrated_image_size['width']
@@ -617,10 +617,10 @@ class Interface(QMainWindow):
         for _row in list_roi.keys():
             _roi = list_roi[_row]
 
-            _x0 = np.int(_roi['x0'])
-            _y0 = np.int(_roi['y0'])
-            _x1 = np.int(_roi['x1'])
-            _y1 = np.int(_roi['y1'])
+            _x0 = int(_roi['x0'])
+            _y0 = int(_roi['y0'])
+            _x1 = int(_roi['x1'])
+            _y1 = int(_roi['y1'])
 
             _width = np.abs(_x1 - _x0)
             _height = np.abs(_y1 - _y0)
@@ -707,16 +707,16 @@ class Interface(QMainWindow):
             _roi = {}
 
             _x0 = self._get_item_value(_row, 0)
-            _roi['x0'] = np.int(_x0)
+            _roi['x0'] = int(_x0)
 
             _y0 = self._get_item_value(_row, 1)
-            _roi['y0'] = np.int(_y0)
+            _roi['y0'] = int(_y0)
 
             _x1 = self._get_item_value(_row, 2)
-            _roi['x1'] = np.int(_x1)
+            _roi['x1'] = int(_x1)
 
             _y1 = self._get_item_value(_row, 3)
-            _roi['y1'] = np.int(_y1)
+            _roi['y1'] = int(_y1)
 
             x0_int = int(_x0)
             y0_int = int(_y0)

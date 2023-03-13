@@ -27,7 +27,7 @@ class Get(TopGet):
         title = self.parent.acquisition_tab.get_title(active_acquisition_tab_index)
         [_, time_s] = title.split(": ")
         acquisition_key = time_s[:-1]
-        return np.float(acquisition_key)
+        return float(acquisition_key)
 
     def active_tab_config_key(self):
         [active_acquisition, _] = self.active_tabs()

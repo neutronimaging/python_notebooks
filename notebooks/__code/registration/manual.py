@@ -163,7 +163,7 @@ class Manual(QMainWindow):
 
             if not rotation == 0:  # column 3
 
-                _old_value = np.float(self.parent.ui.tableWidget.item(_row, 3).text())
+                _old_value = float(self.parent.ui.tableWidget.item(_row, 3).text())
                 _new_value = _old_value + rotation
                 self.parent.ui.tableWidget.item(_row, 3).setText("{:.2f}".format(_new_value))
 

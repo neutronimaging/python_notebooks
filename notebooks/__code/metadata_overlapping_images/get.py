@@ -45,7 +45,7 @@ class Get:
             else:
                 _row_str = split_row_str[1]
             try:
-                _row_value = np.float(_row_str)
+                _row_value = float(_row_str)
             except:
                 self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph!", 10000)
                 self.parent.ui.statusbar.setStyleSheet("color: red")

@@ -48,14 +48,14 @@ class BinHandler:
 
     def __bin_parameter_changed(self, sender):
 
-        new_bin = np.int(self.bin_para.value)
+        new_bin = int(self.bin_para.value)
         self.bin_value = new_bin
 
         old_width = self.image_dimension['width']
         old_height = self.image_dimension['height']
 
-        new_width = np.int(old_width / new_bin)
-        new_height = np.int(old_height / new_bin)
+        new_width = int(old_width / new_bin)
+        new_height = int(old_height / new_bin)
 
         self.right_widgets.children[1].value = "Width: {} pixels".format(new_width)
         self.right_widgets.children[2].value = "Height: {} pixels".format(new_height)

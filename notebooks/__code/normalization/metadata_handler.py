@@ -91,7 +91,7 @@ class MetadataHandler:
                 if _raw_value is not None:
                     split_raw_value = _raw_value.split(":")
                     try:
-                        _value = np.float(split_raw_value[1])
+                        _value = float(split_raw_value[1])
                     except ValueError:
                         _value = split_raw_value[1]
                     finally:

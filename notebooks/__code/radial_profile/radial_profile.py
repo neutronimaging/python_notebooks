@@ -345,8 +345,8 @@ class SelectRadialParameters(QMainWindow):
 
     def apply_clicked(self):
         _center = {}
-        _center['x0'] = np.float(str(self.ui.circle_x.text()))
-        _center['y0'] = np.float(str(self.ui.circle_y.text()))
+        _center['x0'] = float(str(self.ui.circle_x.text()))
+        _center['y0'] = float(str(self.ui.circle_y.text()))
         self.center = _center
 
         _angle_range = {}
@@ -354,8 +354,8 @@ class SelectRadialParameters(QMainWindow):
             _from_angle = 0
             _to_angle = 360
         else:
-            _from_angle = np.float(self.ui.from_angle_slider.value())
-            _to_angle = np.float(self.ui.to_angle_slider.value())
+            _from_angle = float(self.ui.from_angle_slider.value())
+            _to_angle = float(self.ui.to_angle_slider.value())
         _angle_range['from'] = _from_angle
         _angle_range['to'] = _to_angle
         self.angle_range = _angle_range

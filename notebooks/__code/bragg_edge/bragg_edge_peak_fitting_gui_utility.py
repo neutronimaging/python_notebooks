@@ -163,7 +163,7 @@ class GuiUtility:
                     elif (_col == 0):
                         _label = QLabel()
                         try:
-                            str_format = "{:0.6f}".format(np.float(initial_parameters[parameter_key]))
+                            str_format = "{:0.6f}".format(float(initial_parameters[parameter_key]))
                         except ValueError:
                             str_format = initial_parameters[parameter_key]
 

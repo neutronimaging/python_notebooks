@@ -46,7 +46,7 @@ class EventHandler:
         # [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
 
         if self.parent.ui.transparency_checkBox.isChecked():
-            transparency = np.float(self.parent.transparency) / 100
+            transparency = float(self.parent.transparency) / 100
             image = transparency * hres_image + (1 - transparency) * lres_image
         else:
             image = self.parent.resize_and_overlay_images[row_selected]
@@ -310,7 +310,7 @@ class EventHandler:
         self.parent.ui.statusbar.setStyleSheet("color: green")
 
     def manual_overlay_of_selected_image_only(self):
-        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+        scaling_factor = float(str(self.parent.ui.scaling_factor_lineEdit.text()))
 
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
@@ -357,7 +357,7 @@ class EventHandler:
         return high_res_image
 
     def manual_overlay_stack_of_images_clicked(self):
-        scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+        scaling_factor = float(str(self.parent.ui.scaling_factor_lineEdit.text()))
 
         [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
         new_image_height = np.int(image_height * scaling_factor)
@@ -488,7 +488,7 @@ class EventHandler:
         center_x = overlay_1_dict['x'] + np.int(width/2)
         center_y = overlay_1_dict['y'] + np.int(height/2)
 
-        # scaling_factor = np.float(str(self.parent.ui.scaling_factor_lineEdit.text()))
+        # scaling_factor = float(str(self.parent.ui.scaling_factor_lineEdit.text()))
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
 

@@ -54,7 +54,7 @@ def normalization():
         array_roi_object = []
         for _rois in list_rois:
             [x0, y0, x1, y1] = _rois.split(',')  #x0,y0,x1,y1
-            _roi = ROI(x0=np.int(x0), y0=np.int(y0), x1=np.int(x1), y1=np.int(y1))
+            _roi = ROI(x0=int(x0), y0=int(y0), x1=int(x1), y1=int(y1))
             array_roi_object.append(_roi)
 
         o_norm.normalization(roi=array_roi_object)

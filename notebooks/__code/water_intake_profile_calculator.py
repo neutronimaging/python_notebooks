@@ -85,7 +85,7 @@ class WaterIntakeHandler(object):
 
     def are_data_from_max_to_min(self, ydata):
         nbr_points = len(ydata)
-        nbr_point_for_investigation = np.int(nbr_points * 0.1)
+        nbr_point_for_investigation = int(nbr_points * 0.1)
 
         mean_first_part = np.mean(ydata[0:nbr_point_for_investigation])
 
@@ -162,7 +162,7 @@ class WaterIntakeHandler(object):
                            'n': popt[3]}
 
             error = np.sqrt(np.diag(pcov))
-            _peak = np.int(popt[0] + (popt[1]/np.sqrt(2)))
+            _peak = int(popt[0] + (popt[1]/np.sqrt(2)))
             water_intake_peaks_erf.append(_peak)
 
             for _i, _err in enumerate(error):
@@ -173,7 +173,7 @@ class WaterIntakeHandler(object):
                 else:
                     error[_i] = _err
 
-            _peak_error = np.int(error[0] + (error[1]/np.sqrt(2)))
+            _peak_error = int(error[0] + (error[1]/np.sqrt(2)))
 
             water_intake_peaks_erf_error.append(_peak_error)
             delta_time.append(xdata)
@@ -580,10 +580,10 @@ class WaterIntakeProfileSelector(QMainWindow):
             # due to the fact that the pixel reported may be from the right
             if self.is_inte_along_x_axis:
                 if not self.is_data_from_max_to_min:
-                    peak = [np.int(self.roi['height'] - _peak) for _peak in peak]
+                    peak = [int(self.roi['height'] - _peak) for _peak in peak]
             else:
                 if not self.is_data_from_max_to_min:
-                    peak = [np.int(self.roi['width'] - peak) for peak in peak]
+                    peak = [int(self.roi['width'] - peak) for peak in peak]
 
         elif algorithm_selected == 'change_point':
             peak = o_water_intake_handler.water_intake_peaks_change_point
@@ -595,14 +595,14 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         # we want absolute pixel value
         if self.is_inte_along_x_axis:
-            peak = [_peak + np.int(self.roi['y0']) for _peak in peak]
+            peak = [_peak + int(self.roi['y0']) for _peak in peak]
         else:
-            peak = [_peak + np.int(self.roi['x0']) for _peak in peak]
+            peak = [_peak + int(self.roi['x0']) for _peak in peak]
 
         if self.ui.pixel_radioButton.isChecked():  # pixel
             y_label = 'Pixel Position'
         else:  # distance
-            peak = [np.float(_peak) * pixel_size for _peak in peak]
+            peak = [float(_peak) * pixel_size for _peak in peak]
             y_label = 'Distance (mm)'
 
         self.dict_water_intake = {}
@@ -655,29 +655,29 @@ class WaterIntakeProfileSelector(QMainWindow):
         if algorithm_selected == 'sliding_average':
             _water_intake_peaks = self.water_intake_peaks_sliding_average.copy()
             if self.is_inte_along_x_axis:
-                _offset = np.int(self.roi['y0'])
+                _offset = int(self.roi['y0'])
             else:
-                _offset = np.int(self.roi['x0'])
+                _offset = int(self.roi['x0'])
             peak_value = _water_intake_peaks[index_selected] +_offset
         elif algorithm_selected == 'error_function':
             _water_intake_peaks = self.water_intake_peaks_erf.copy()
             is_data_from_max_to_min = self.is_data_from_max_to_min
             if self.is_inte_along_x_axis:
                 if is_data_from_max_to_min:
-                    peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['y0'])
+                    peak_value = _water_intake_peaks[index_selected] + int(self.roi['y0'])
                 else:
-                    peak_value = np.int(self.roi['height'] + self.roi['y0'] - _water_intake_peaks[index_selected])
+                    peak_value = int(self.roi['height'] + self.roi['y0'] - _water_intake_peaks[index_selected])
             else:
                 if is_data_from_max_to_min:
-                    peak_value = _water_intake_peaks[index_selected] + np.int(self.roi['x0'])
+                    peak_value = _water_intake_peaks[index_selected] + int(self.roi['x0'])
                 else:
-                    peak_value = np.int(self.roi['width'] + self.roi['x0'] - _water_intake_peaks[index_selected])
+                    peak_value = int(self.roi['width'] + self.roi['x0'] - _water_intake_peaks[index_selected])
         elif algorithm_selected == 'change_point':
             _water_intake_peaks = self.water_intake_peaks_change_point.copy()
             if self.is_inte_along_x_axis:
-                _offset = np.int(self.roi['y0'])
+                _offset = int(self.roi['y0'])
             else:
-                _offset = np.int(self.roi['x0'])
+                _offset = int(self.roi['x0'])
             peak_value = _water_intake_peaks[index_selected] +_offset
         else:
             raise NotImplemented
@@ -951,7 +951,7 @@ class WaterIntakeProfileSelector(QMainWindow):
                 raise ValueError
             else:
                 part1 = m.group('part1')
-                index = np.int(m.group('index'))
+                index = int(m.group('index'))
                 new_index = "{:04d}".format(index)
                 new_file = os.path.join(dirname, part1 + '_' + new_index + ext)
                 formated_list_files.append(new_file)
@@ -1185,7 +1185,7 @@ class ProfileHandler(object):
         # make sure the size of profile agrees with the bin size defined
         if not (np.mod(len(_profile), bin_size) == 0):
             _profile = _profile[:-np.mod(len(_profile), bin_size)]
-        _profile = np.reshape(_profile, (np.int(len(_profile)/bin_size), bin_size))
+        _profile = np.reshape(_profile, (int(len(_profile)/bin_size), bin_size))
         _profile = np.mean(_profile, axis=1)
 
         self._profile = _profile
@@ -1203,9 +1203,9 @@ class ProfileHandler(object):
             delta_time = time_stamp - time_stamp_first_file
 
             if self.parent.is_inte_along_x_axis:
-                x_axis = self._bins + np.int(self.y0)
+                x_axis = self._bins + int(self.y0)
             else:
-                x_axis = self._bins + np.int(self.x0)
+                x_axis = self._bins + int(self.x0)
 
             x_axis = x_axis[:len(self._profile)]
 
@@ -1217,10 +1217,10 @@ class ProfileHandler(object):
         self.parent.profile.clear()
         if self.parent.is_inte_along_x_axis:
             y_axis_label = 'Y pixels'
-            x_axis = self._bins + np.int(self.y0)
+            x_axis = self._bins + int(self.y0)
         else:
             y_axis_label = 'X pixels'
-            x_axis = self._bins + np.int(self.x0)
+            x_axis = self._bins + int(self.x0)
 
         x_axis = x_axis[:len(self._profile)]
 

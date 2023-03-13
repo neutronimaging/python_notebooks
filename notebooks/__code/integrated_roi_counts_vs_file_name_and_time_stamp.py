@@ -379,11 +379,11 @@ class IntegratedRoiUi(QMainWindow):
     def get_profile_dimensions(self, row=-1):
         [x0, y0, width, height] = self.get_item_row(row=row)
 
-        x_left = np.int(x0)
-        x_right = np.int(x0) + np.int(width)
+        x_left = int(x0)
+        x_right = int(x0) + int(width)
 
-        y_top = np.int(y0)
-        y_bottom = np.int(y0) + np.int(height)
+        y_top = int(y0)
+        y_bottom = int(y0) + int(height)
 
         Profile = collections.namedtuple('Profile', ['x_left', 'x_right', 'y_top', 'y_bottom'])
         result = Profile(x_left, x_right, y_top, y_bottom)
@@ -426,13 +426,13 @@ class IntegratedRoiUi(QMainWindow):
 
     def get_profile_width(self, row=0):
         _widget = self.ui.tableWidget_2.cellWidget(row, 0).children()[1]
-        return np.int(str(_widget.currentText()))
+        return int(str(_widget.currentText()))
 
     def get_item_row(self, row=0):
-        x0 = np.int(str(self.ui.tableWidget.item(row, 1).text()))
-        y0 = np.int(str(self.ui.tableWidget.item(row, 2).text()))
-        width = np.int(str(self.ui.tableWidget.item(row, 3).text()))
-        height = np.int(str(self.ui.tableWidget.item(row, 4).text()))
+        x0 = int(str(self.ui.tableWidget.item(row, 1).text()))
+        y0 = int(str(self.ui.tableWidget.item(row, 2).text()))
+        width = int(str(self.ui.tableWidget.item(row, 3).text()))
+        height = int(str(self.ui.tableWidget.item(row, 4).text()))
         return (x0, y0, width, height)
 
     def get_selected_row(self, source='tableWidget'):
@@ -799,8 +799,8 @@ class Initializer(object):
     def parameters(self):        
         # init the position of the measurement ROI
         [height, width] = np.shape(self.parent.data_dict['data'][0])
-        self.parent.default_guide_roi['width'] = np.int(width/10)
-        self.parent.default_guide_roi['height'] = np.int(height/5)
+        self.parent.default_guide_roi['width'] = int(width/10)
+        self.parent.default_guide_roi['height'] = int(height/5)
         self.parent.default_guide_roi['x0'] = np.int(width/2)
         self.parent.default_guide_roi['y0'] = np.int(height/2)
         self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
@@ -945,7 +945,7 @@ class DisplayImages(object):
             adj = pos_adj_dict['adj']
 
             line_color = self.parent.grid_view['color']
-            _transparency_value = 255 - (np.float(str(self.parent.ui.transparency_slider.value()))/100) * 255
+            _transparency_value = 255 - (float(str(self.parent.ui.transparency_slider.value()))/100) * 255
             _list_line_color = list(line_color)
             _list_line_color[3] = _transparency_value
             line_color = tuple(_list_line_color)

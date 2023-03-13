@@ -112,7 +112,7 @@ class BraggEdge(BraggEdgeParent):
 
     def get_nbr_of_images_to_use_in_preview(self):
         nbr_images = len(self.o_norm.data['sample']['data'])
-        init_value = np.int(nbr_images / 10)
+        init_value = int(nbr_images / 10)
         if init_value == 0:
             init_value = 1
         return init_value
@@ -179,11 +179,11 @@ class BraggEdge(BraggEdgeParent):
         display(self.accordion)
 
     def select_roi_with_ob(self, status):
-        nbr_data_to_use = np.int(self.nbr_images_slider_with_ob.value)
+        nbr_data_to_use = int(self.nbr_images_slider_with_ob.value)
         self.select_roi(nbr_data_to_use=nbr_data_to_use)
 
     def select_roi_without_ob(self, status):
-        nbr_data_to_use = np.int(self.nbr_images_slider_without_ob.value)
+        nbr_data_to_use = int(self.nbr_images_slider_without_ob.value)
         self.select_roi(nbr_data_to_use=nbr_data_to_use)
 
     def select_roi(self, nbr_data_to_use=2):
@@ -245,7 +245,7 @@ class BraggEdge(BraggEdgeParent):
 
     def how_many_data_to_use_to_select_sample_roi(self):
         nbr_images = len(self.o_norm.data['sample']['data'])
-        init_value = np.int(nbr_images / 10)
+        init_value = int(nbr_images / 10)
         if init_value == 0:
             init_value = 1
         box1 = widgets.HBox([widgets.Label("Nbr of images to use:",
@@ -386,10 +386,10 @@ class BraggEdge(BraggEdgeParent):
             else:
                 _array_data = []
                 for _roi in list_roi.keys():
-                    x0 = np.int(list_roi[_roi]['x0'])
-                    y0 = np.int(list_roi[_roi]['y0'])
-                    x1 = np.int(list_roi[_roi]['x1'])
-                    y1 = np.int(list_roi[_roi]['y1'])
+                    x0 = int(list_roi[_roi]['x0'])
+                    y0 = int(list_roi[_roi]['y0'])
+                    x1 = int(list_roi[_roi]['x1'])
+                    y1 = int(list_roi[_roi]['y1'])
 
                     _array_data.append(np.nanmean(_data[y0:y1, x0:x1]))
 

@@ -54,8 +54,8 @@ class EventHandler(Parent):
 
         x0 = float(self.parent.ui.circle_x.text())
         y0 = float(self.parent.ui.circle_y.text())
-        from_angle = np.float(str(self.parent.ui.sector_from_value.text()))
-        to_angle = np.float(str(self.parent.ui.sector_to_value.text()))
+        from_angle = float(str(self.parent.ui.sector_from_value.text()))
+        to_angle = float(str(self.parent.ui.sector_to_value.text()))
 
         self.calculate_corners_angles()
         self.update_angle_label_position()

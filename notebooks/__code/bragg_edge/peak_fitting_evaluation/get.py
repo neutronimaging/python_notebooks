@@ -98,8 +98,8 @@ class Get(TopGet):
             x1 = region[0][0].stop
             y0 = region[0][1].start
             y1 = region[0][1].stop
-            width = np.int(x1 - x0)
-            height = np.int(y1 - y0)
+            width = int(x1 - x0)
+            height = int(y1 - y0)
 
         else:
             x0, y0, x1, y1, width, height = self.parent.roi_dimension_from_config_file

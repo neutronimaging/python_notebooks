@@ -50,22 +50,22 @@ class BraggEdgeSelectionTab:
 
     def get_coordinates_of_new_inside_selection_box(self):
         # get width and height defined in fitting labels (top right)
-        width_requested = np.int(str(self.parent.ui.profile_of_bin_size_width.text()))
-        height_requested = np.int(str(self.parent.ui.profile_of_bin_size_height.text()))
+        width_requested = int(str(self.parent.ui.profile_of_bin_size_width.text()))
+        height_requested = int(str(self.parent.ui.profile_of_bin_size_height.text()))
 
         # retrieve x0, y0, width and height of full selection
         region = self.parent.roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
         x0 = region[0][0].start
         y0 = region[0][1].start
         # [x0, y0] = self.parentselection_x0y0
-        width_full_selection = np.int(str(self.parent.ui.roi_width.text()))
-        height_full_selection = np.int(str(self.parent.ui.roi_height.text()))
+        width_full_selection = int(str(self.parent.ui.roi_width.text()))
+        height_full_selection = int(str(self.parent.ui.roi_height.text()))
 
         delta_width = width_full_selection - width_requested
         delta_height = height_full_selection - height_requested
 
-        new_x0 = x0 + np.int(delta_width / 2)
-        new_y0 = y0 + np.int(delta_height / 2)
+        new_x0 = x0 + int(delta_width / 2)
+        new_y0 = y0 + int(delta_height / 2)
 
         return {'x0'   : new_x0, 'y0': new_y0,
                 'x1'   : new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
@@ -186,8 +186,8 @@ class BraggEdgeSelectionTab:
                 new_width = new_value
                 new_height = new_value
             else:
-                initial_roi_width = np.int(str(self.parent.ui.roi_width.text()))
-                initial_roi_height = np.int(str(self.parent.ui.roi_height.text()))
+                initial_roi_width = int(str(self.parent.ui.roi_width.text()))
+                initial_roi_height = int(str(self.parent.ui.roi_height.text()))
                 if initial_roi_width == initial_roi_height:
                     new_width = new_value
                     new_height = new_value

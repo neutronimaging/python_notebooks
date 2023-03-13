@@ -485,8 +485,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#fitting peak range in file index: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['bragg_edge_range'] = [np.int(m.group('left_index')),
-                                                    np.int(m.group('right_index'))]
+                    metadata['bragg_edge_range'] = [int(m.group('left_index')),
+                                                    int(m.group('right_index'))]
                 else:
                     metadata['bragg_edge_range'] = [None, None]
                 line_number += 1

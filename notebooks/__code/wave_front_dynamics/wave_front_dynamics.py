@@ -48,7 +48,7 @@ class WaveFrontDynamics:
                                 skiprows=6,
                                 delimiter=",",
                                 names=['pixel', 'mean counts'],
-                                dtype=np.float,
+                                dtype=float,
                                 index_col=0)
             list_of_data.append(_data)
             _original_image_file = retrieve_metadata_value_from_ascii_file(filename=_file,

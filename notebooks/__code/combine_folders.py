@@ -208,7 +208,7 @@ class CombineFolders(object):
 
     def __create_merging_dictionary(self):
         """where we will figure out which file goes with witch one"""
-        merging_value = np.int(self.bin_size.value)
+        merging_value = int(self.bin_size.value)
         _list_folders_short = self.list_folders_short
         _list_files_dict = self.list_files_dict
 

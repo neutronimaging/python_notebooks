@@ -262,7 +262,7 @@ class EventHandler:
 
         if self.parent.ui.apply_contrast_correction_checkBox.isChecked():
 
-            coefficient = np.float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
+            coefficient = float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
             index_of_chip_to_correct = self.o_get.get_index_of_chip_to_correct()
             gap_index = self.parent.image_size.gap_index
 

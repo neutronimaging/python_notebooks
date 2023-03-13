@@ -88,8 +88,8 @@ class MarchDollaseFittingJobHandler:
 
     def isolate_left_center_right_axis(self, row=-1):
         bragg_edge_range = self.parent.fitting_input_dictionary['bragg_edge_range']
-        [global_left_index, global_right_index] = [np.int(bragg_edge_range[0]),
-                                                   np.int(bragg_edge_range[1])]
+        [global_left_index, global_right_index] = [int(bragg_edge_range[0]),
+                                                   int(bragg_edge_range[1])]
         # get full x-axis (lambda)
         full_lambda_x_axis = self.parent.fitting_input_dictionary['xaxis']['lambda'][0]
         lambda_x_axis = full_lambda_x_axis[global_left_index: global_right_index]
@@ -173,8 +173,8 @@ class MarchDollaseFittingJobHandler:
         lambda_axis = self.parent.fitting_input_dictionary['xaxis']['lambda']
         bragg_edge_range = self.parent.march_dollase_fitting_range_selected
 
-        from_lambda = np.float(lambda_axis[0][np.int(bragg_edge_range[0])])
-        to_lambda = np.float(lambda_axis[0][np.int(bragg_edge_range[1])])
+        from_lambda = float(lambda_axis[0][int(bragg_edge_range[0])])
+        to_lambda = float(lambda_axis[0][int(bragg_edge_range[1])])
 
         average_lambda = np.mean([from_lambda, to_lambda])
         d_spacing = average_lambda / 2.
@@ -203,7 +203,7 @@ class MarchDollaseFittingJobHandler:
 
         def set_params(params_object, name_of_parameter, dict_entry, parameter_flag):
             params_object.add(name_of_parameter,
-                              value=np.float(dict_entry[name_of_parameter]),
+                              value=float(dict_entry[name_of_parameter]),
                               vary=parameter_flag)
 
         def record_result_into_dict(entry_dict, result_object, name_of_parameter, parameter_flag):

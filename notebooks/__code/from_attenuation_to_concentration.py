@@ -49,8 +49,8 @@ class FromAttenuationToConcentration(object):
     def converting_data(self):
 
         try:
-            a = np.float(self.box.children[1].value)
-            b = np.float(self.box.children[3].value)
+            a = float(self.box.children[1].value)
+            b = float(self.box.children[3].value)
             symbol = self.box.children[2].value
 
             coeff = 1

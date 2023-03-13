@@ -122,7 +122,7 @@ class BraggEdge(BraggEdgeParent):
 
     def get_nbr_of_images_to_use_in_preview(self):
         nbr_images = len(self.o_norm.data['sample']['data'])
-        init_value = np.int(nbr_images / 10)
+        init_value = int(nbr_images / 10)
         if init_value == 0:
             init_value = 1
         return init_value
@@ -189,11 +189,11 @@ class BraggEdge(BraggEdgeParent):
         display(self.accordion)
 
     def select_roi_with_ob(self, status):
-        nbr_data_to_use = np.int(self.nbr_images_slider_with_ob.value)
+        nbr_data_to_use = int(self.nbr_images_slider_with_ob.value)
         self.select_roi(nbr_data_to_use=nbr_data_to_use)
 
     def select_roi_without_ob(self, status):
-        nbr_data_to_use = np.int(self.nbr_images_slider_without_ob.value)
+        nbr_data_to_use = int(self.nbr_images_slider_without_ob.value)
         self.select_roi(nbr_data_to_use=nbr_data_to_use)
 
     def select_roi(self, nbr_data_to_use=2):
@@ -245,8 +245,8 @@ class BraggEdge(BraggEdgeParent):
     def load_time_spectra(self):
         _tof_handler = TOF(filename=self.spectra_file)
         _exp = Experiment(tof=_tof_handler.tof_array,
-                          distance_source_detector_m=np.float(self.dSD_ui.value),
-                          detector_offset_micros=np.float(self.detector_offset_ui.value))
+                          distance_source_detector_m=float(self.dSD_ui.value),
+                          detector_offset_micros=float(self.detector_offset_ui.value))
 
         nbr_sample = len(self.o_norm.data['sample']['file_name'])
 
@@ -255,7 +255,7 @@ class BraggEdge(BraggEdgeParent):
 
     def how_many_data_to_use_to_select_sample_roi(self):
         nbr_images = len(self.o_norm.data['sample']['data'])
-        init_value = np.int(nbr_images / 10)
+        init_value = int(nbr_images / 10)
         if init_value == 0:
             init_value = 1
         box1 = widgets.HBox([widgets.Label("Nbr of images to use:",
@@ -396,10 +396,10 @@ class BraggEdge(BraggEdgeParent):
             else:
                 _array_data = []
                 for _roi in list_roi.keys():
-                    x0 = np.int(list_roi[_roi]['x0'])
-                    y0 = np.int(list_roi[_roi]['y0'])
-                    x1 = np.int(list_roi[_roi]['x1'])
-                    y1 = np.int(list_roi[_roi]['y1'])
+                    x0 = int(list_roi[_roi]['x0'])
+                    y0 = int(list_roi[_roi]['y0'])
+                    x1 = int(list_roi[_roi]['x1'])
+                    y1 = int(list_roi[_roi]['y1'])
 
                     _array_data.append(np.nanmean(_data[y0:y1, x0:x1]))
 
@@ -507,7 +507,7 @@ class BraggEdge(BraggEdgeParent):
         for _index in np.arange(len(bragg_edges)):
             _hkl_str = [str(i) for i in hkl[_index]]
             _hkl = "".join(_hkl_str)
-            _bragg_edges = np.float(bragg_edges[_index])
+            _bragg_edges = float(bragg_edges[_index])
             _d = _bragg_edges / 2.
             _row = "{}, {}, {}".format(_hkl, _d, _bragg_edges)
             data.append(_row)

@@ -152,11 +152,11 @@ class RotateAndCropImages(QMainWindow):
 
         pos_adj_dict = {}
 
-        nbr_height_bins = np.float(height) / np.float(bin_size)
-        real_height = y0 + np.int(nbr_height_bins) * np.int(bin_size)
+        nbr_height_bins = float(height) / float(bin_size)
+        real_height = y0 + int(nbr_height_bins) * int(bin_size)
 
-        nbr_width_bins = np.float(width) / np.float(bin_size)
-        read_width = x0 + np.int(nbr_width_bins) * np.int(bin_size)
+        nbr_width_bins = float(width) / float(bin_size)
+        read_width = x0 + int(nbr_width_bins) * int(bin_size)
 
         # pos (each matrix is one side of the lines)
         pos = []
@@ -202,7 +202,7 @@ class RotateAndCropImages(QMainWindow):
         self.line_view_binning = line_view_binning
 
     def rotation_value_changed(self):
-        _rotation_value = np.float(str(self.ui.rotation_value.text()))
+        _rotation_value = float(str(self.ui.rotation_value.text()))
 
         if self.nbr_files > 1:
             _file_index = self.ui.slider.value()
@@ -230,7 +230,7 @@ class RotateAndCropImages(QMainWindow):
         self.eventProgress.setMaximum(self.nbr_files)
         self.eventProgress.setVisible(True)
 
-        _rotation_value = np.float(str(self.ui.rotation_value.text()))
+        _rotation_value = float(str(self.ui.rotation_value.text()))
         self.rotated_working_data = []
         for _index in np.arange(self.nbr_files):
             if self.nbr_files == 1:
@@ -264,7 +264,7 @@ class RotateAndCropImages(QMainWindow):
 
     def closeEvent(self, event=None):
         global rotation_angle
-        rotation_angle = np.float(str(self.ui.rotation_value.text()))
+        rotation_angle = float(str(self.ui.rotation_value.text()))
 
 
 class Export(object):

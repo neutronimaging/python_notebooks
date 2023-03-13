@@ -82,7 +82,7 @@ class ConfigurationHandler:
 
     def get_config_dict(self):
         # ring
-        x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
+        x_central_pixel = float(str(self.parent.ui.circle_x.text()))
         y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
         ring_radius = self.parent.ui.ring_inner_radius_doubleSpinBox.value()
         ring_thickness = self.parent.ui.ring_thickness_doubleSpinBox.value()

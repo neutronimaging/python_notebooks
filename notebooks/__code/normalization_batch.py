@@ -289,7 +289,7 @@ class NormalizationHandler(object):
 
         if nbr_full_list_sampled > 3:
             new_list_sample = [full_list_sample[0],
-                               full_list_sample[np.int(nbr_full_list_sampled/2)],
+                               full_list_sample[int(nbr_full_list_sampled/2)],
                                full_list_sample[-1]]
             list_sample = new_list_sample
 

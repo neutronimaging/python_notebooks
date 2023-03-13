@@ -23,7 +23,7 @@ class MetadataData:
         for key in list_key:
             _metadata_value = self.metadata[key]
             _name, _value = _metadata_value.split(":")
-            metadata_to_keep[_name] = np.float(_value)
+            metadata_to_keep[_name] = float(_value)
         self.metadata = metadata_to_keep
 
 

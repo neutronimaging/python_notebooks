@@ -193,7 +193,7 @@ def format_file_index(filename='', number_of_digits=4):
     _basename = os.path.basename(filename)
     [_base, _ext] = os.path.splitext(_basename)
     _base_slitted = _base.split('_')
-    _number = np.int(_base_slitted[-1])
+    _number = int(_base_slitted[-1])
 
     return ''
 
@@ -307,7 +307,7 @@ class ListRunsParser(object):
         self.list_current_runs = new_list_current_runs
 
         # go from string to int
-        int_new_list_current_runs = [np.int(_run) for _run in new_list_current_runs]
+        int_new_list_current_runs = [int(_run) for _run in new_list_current_runs]
 
         # sort them to prepare them for output format
         int_new_list_current_runs.sort()

@@ -92,7 +92,7 @@ class SelectionTab:
         self.parent.ui.selection_bin_size_value.setText(str(bin_size_value))
 
     def calculate_bin_size_in_all_units(self):
-        current_value = np.float(self.parent.ui.selection_bin_size_value.text())
+        current_value = float(self.parent.ui.selection_bin_size_value.text())
         o_get = Get(parent=self.parent)
         current_axis_name = o_get.x_axis_name_checked()
 
@@ -100,7 +100,7 @@ class SelectionTab:
         lambda_array = self.parent.lambda_array
 
         if current_axis_name == 'index':
-            current_value = np.int(current_value)
+            current_value = int(current_value)
             bin_index = current_value
             bin_tof = tof_array_s[current_value]
             bin_lambda = lambda_array[current_value]
@@ -187,14 +187,14 @@ class SelectionTab:
     # 	x0 = region[0][0].start
     # 	y0 = region[0][1].start
     # 	# [x0, y0] = self.parentselection_x0y0
-    # 	width_full_selection = np.int(str(self.parent.ui.roi_width.text()))
-    # 	height_full_selection = np.int(str(self.parent.ui.roi_height.text()))
+    # 	width_full_selection = int(str(self.parent.ui.roi_width.text()))
+    # 	height_full_selection = int(str(self.parent.ui.roi_height.text()))
     #
     # 	delta_width = width_full_selection - width_requested
     # 	delta_height = height_full_selection - height_requested
     #
-    # 	new_x0 = x0 + np.int(delta_width / 2)
-    # 	new_y0 = y0 + np.int(delta_height / 2)
+    # 	new_x0 = x0 + int(delta_width / 2)
+    # 	new_y0 = y0 + int(delta_height / 2)
     #
     # 	return {'x0'   : new_x0, 'y0': new_y0,
     # 	        'x1'   : new_x0 + width_requested + 1, 'y1': new_y0 + height_requested + 1,
@@ -267,8 +267,8 @@ class SelectionTab:
                 new_width = new_value
                 new_height = new_value
             else:
-                initial_roi_width = np.int(str(self.parent.ui.roi_width.text()))
-                initial_roi_height = np.int(str(self.parent.ui.roi_height.text()))
+                initial_roi_width = int(str(self.parent.ui.roi_width.text()))
+                initial_roi_height = int(str(self.parent.ui.roi_height.text()))
                 if initial_roi_width == initial_roi_height:
                     new_width = new_value
                     new_height = new_value

@@ -14,10 +14,10 @@ class Display(Parent):
 
         pos_adj_dict = {}
 
-        nbr_height_bins = np.float(height) / np.float(bin_size)
+        nbr_height_bins = float(height) / float(bin_size)
         real_height = y0 + np.int(nbr_height_bins) * np.int(bin_size)
 
-        nbr_width_bins = np.float(width) / np.float(bin_size)
+        nbr_width_bins = float(width) / float(bin_size)
         read_width = x0 + np.int(nbr_width_bins) * np.int(bin_size)
 
         # pos (each matrix is one side of the lines)

@@ -230,10 +230,10 @@ class CalibratedTransmissionUi(QMainWindow):
     def init_parameters(self):
         # init the position of the measurement ROI
         [height, width] = np.shape(self.data_dict['data'][0])
-        self.default_measurement_roi['width'] = np.int(width/10)
-        self.default_measurement_roi['height'] = np.int(height/10)
-        self.default_measurement_roi['x0'] = np.int(width/2)
-        self.default_measurement_roi['y0'] = np.int(height/2)
+        self.default_measurement_roi['width'] = int(width/10)
+        self.default_measurement_roi['height'] = int(height/10)
+        self.default_measurement_roi['x0'] = int(width/2)
+        self.default_measurement_roi['y0'] = int(height/2)
 
         self.calibrated_roi['2']['x0'] = width - self.calibrated_roi['2']['width']
         self.calibrated_roi['2']['y0'] = height - self.calibrated_roi['2']['height']
@@ -280,7 +280,7 @@ class CalibratedTransmissionUi(QMainWindow):
             slider_index = self.ui.file_slider.value()
 
             # calibration1
-            cal1_file_index = np.int(self.ui.calibration1_index.text())
+            cal1_file_index = int(self.ui.calibration1_index.text())
             if slider_index == cal1_file_index:
                 self.ui.image_view.addItem(self.roi_ui_calibrated[0])
 
@@ -289,24 +289,24 @@ class CalibratedTransmissionUi(QMainWindow):
             slider_index = self.ui.file_slider.value()
 
             # calibration2
-            cal2_file_index = np.int(self.ui.calibration2_index.text())
+            cal2_file_index = int(self.ui.calibration2_index.text())
             if slider_index == cal2_file_index:
                 self.ui.image_view.addItem(self.roi_ui_calibrated[1])
 
     def record_calibration(self, index=1):
-        x0 = np.int(str(self.calibration_widgets[str(index)]['x0'].text()))
-        y0 = np.int(str(self.calibration_widgets[str(index)]['y0'].text()))
-        width = np.int(str(self.calibration_widgets[str(index)]['width'].text()))
-        height = np.int(str(self.calibration_widgets[str(index)]['height'].text()))
-        if np.isnan(np.float(str(self.calibration_widgets[str(index)]['value'].text()))):
+        x0 = int(str(self.calibration_widgets[str(index)]['x0'].text()))
+        y0 = int(str(self.calibration_widgets[str(index)]['y0'].text()))
+        width = int(str(self.calibration_widgets[str(index)]['width'].text()))
+        height = int(str(self.calibration_widgets[str(index)]['height'].text()))
+        if np.isnan(float(str(self.calibration_widgets[str(index)]['value'].text()))):
             return
 
-        value = np.float(str(self.calibration_widgets[str(index)]['value'].text()))
+        value = float(str(self.calibration_widgets[str(index)]['value'].text()))
 
         if index == 1:
-            file_index = np.int(str(self.ui.calibration1_index.text()))
+            file_index = int(str(self.ui.calibration1_index.text()))
         else:
-            file_index = np.int(str(self.ui.calibration2_index.text()))
+            file_index = int(str(self.ui.calibration2_index.text()))
 
         _file_data = self.data_dict['data'][file_index]
         _region_data = _file_data[y0:y0+height, x0:x0+width]
@@ -524,7 +524,7 @@ class CalibratedTransmissionUi(QMainWindow):
         else:
             ui = self.ui.calibration2_index
 
-        file_index = np.int(str(ui.text()))
+        file_index = int(str(ui.text()))
         self.ui.file_slider.setValue(file_index)
         self.slider_file_changed(-1)
 
@@ -555,10 +555,10 @@ class CalibratedTransmissionUi(QMainWindow):
     def calibration_widgets_changed(self, index=1):
         roi_ui = self.roi_ui_calibrated[index-1]
         widgets_ui = self.calibration_widgets[str(index)]
-        x0 = np.int(widgets_ui['x0'].text())
-        y0 = np.int(widgets_ui['y0'].text())
-        width = np.int(widgets_ui['width'].text())
-        height = np.int(widgets_ui['height'].text())
+        x0 = int(widgets_ui['x0'].text())
+        y0 = int(widgets_ui['y0'].text())
+        width = int(widgets_ui['width'].text())
+        height = int(widgets_ui['height'].text())
 
         roi_ui.setPos((x0, y0))
         roi_ui.setSize((width, height))
@@ -627,8 +627,8 @@ class CalibratedTransmissionUi(QMainWindow):
             return -1
 
     def get_item_row(self, row=0):
-        x0 = np.int(str(self.ui.tableWidget.item(row, 0).text()))
-        y0 = np.int(str(self.ui.tableWidget.item(row, 1).text()))
+        x0 = int(str(self.ui.tableWidget.item(row, 0).text()))
+        y0 = int(str(self.ui.tableWidget.item(row, 1).text()))
         width = np.int(str(self.ui.tableWidget.item(row, 2).text()))
         height = np.int(str(self.ui.tableWidget.item(row, 3).text()))
         return (x0, y0, width, height)

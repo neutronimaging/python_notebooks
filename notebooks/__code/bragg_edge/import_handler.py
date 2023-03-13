@@ -178,9 +178,9 @@ class ImportHandler:
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['high']['xaxis_to_fit'] = \
             xaxis_to_fit
 
-            kropff_a0 = np.NaN if columns_roi[str_col]['kropff']['a0'] == 'None' else np.float(columns_roi[str_col][
+            kropff_a0 = np.NaN if columns_roi[str_col]['kropff']['a0'] == 'None' else float(columns_roi[str_col][
                                                                                                 'kropff']['a0'])
-            kropff_b0 = np.NaN if columns_roi[str_col]['kropff']['b0'] == 'None' else np.float(columns_roi[str_col][
+            kropff_b0 = np.NaN if columns_roi[str_col]['kropff']['b0'] == 'None' else float(columns_roi[str_col][
                                                                                                 'kropff']['b0'])
             yaxis_fitted = kropff_high_lambda(xaxis_to_fit,
                                               kropff_a0,
@@ -203,9 +203,9 @@ class ImportHandler:
             self.parent.fitting_input_dictionary['rois'][col_index]['fitting']['kropff']['low']['xaxis_to_fit'] = \
             xaxis_to_fit
 
-            kropff_ahkl = np.NaN if columns_roi[str_col]['kropff']['ahkl'] == 'None' else np.float(columns_roi[str_col][
+            kropff_ahkl = np.NaN if columns_roi[str_col]['kropff']['ahkl'] == 'None' else float(columns_roi[str_col][
                                                                                                 'kropff']['ahkl'])
-            kropff_bhkl = np.NaN if columns_roi[str_col]['kropff']['bhkl'] == 'None' else np.float(columns_roi[str_col][
+            kropff_bhkl = np.NaN if columns_roi[str_col]['kropff']['bhkl'] == 'None' else float(columns_roi[str_col][
                                                                                                 'kropff']['bhkl'])
 
             yaxis_fitted = kropff_low_lambda(xaxis_to_fit,
@@ -237,14 +237,14 @@ class ImportHandler:
                 = \
             xaxis_to_fit
 
-            kropff_tau = np.NaN if columns_roi[str_col]['kropff']['tau'] == 'None' else np.float(columns_roi[
+            kropff_tau = np.NaN if columns_roi[str_col]['kropff']['tau'] == 'None' else float(columns_roi[
                                                                                                      str_col][
                                                                                                      'kropff']['tau'])
-            kropff_ldahkl = np.NaN if columns_roi[str_col]['kropff']['ldahkl'] == 'None' else np.float(columns_roi[
+            kropff_ldahkl = np.NaN if columns_roi[str_col]['kropff']['ldahkl'] == 'None' else float(columns_roi[
                                                                                                      str_col][
                                                                                                      'kropff'][
                                                                                                            'ldahkl'])
-            kropff_sigma = np.NaN if columns_roi[str_col]['kropff']['sigma'] == 'None' else np.float(columns_roi[
+            kropff_sigma = np.NaN if columns_roi[str_col]['kropff']['sigma'] == 'None' else float(columns_roi[
                                                                                                      str_col][
                                                                                                      'kropff'][
                                                                                                          'sigma'])

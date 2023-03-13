@@ -345,7 +345,7 @@ class Extract(FileFolderBrowser):
 	@staticmethod
 	def format_array(str_array):
 
-		if type(str_array) == np.float64:
+		if type(str_array) == float64:
 			return str_array
 
 		if str_array[0] == '[':
@@ -359,7 +359,7 @@ class Extract(FileFolderBrowser):
 			format3 = []
 			for val in format2:
 				try:
-					new_val = np.float(val.strip())
+					new_val = float(val.strip())
 				except ValueError:
 					new_val = str(val.strip())
 				format3.append(new_val)

@@ -212,7 +212,7 @@ class SequentialCombineImagesUsingMetadata(object):
         will return: 300.345454
         """
         metadata_split = metadata_string.split(":")
-        return np.float(metadata_split[1])
+        return float(metadata_split[1])
 
     def isolate_run_text_from_filename(self, full_file_name):
         basename = os.path.basename(full_file_name)

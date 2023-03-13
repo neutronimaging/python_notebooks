@@ -278,7 +278,7 @@ class Interface(QMainWindow):
         if DEBUGGING:
             final_array = self.o_norm.data['sample']['data']
         else:
-            nbr_data_to_use = np.int(self.number_of_data_to_use_ui.value)
+            nbr_data_to_use = int(self.number_of_data_to_use_ui.value)
 
             _data = self.o_norm.data['sample']['data']
 
@@ -315,8 +315,8 @@ class Interface(QMainWindow):
         new_width = x1-x0-1
         new_height = y1-y0-1
 
-        if ((np.abs(new_width - np.int(self.ui.roi_width.text())) <= error) and
-            (np.abs(new_height) - np.int(self.ui.roi_height.text())) <= error):
+        if ((np.abs(new_width - int(self.ui.roi_width.text())) <= error) and
+            (np.abs(new_height) - int(self.ui.roi_height.text())) <= error):
             return True
 
         return False
@@ -332,8 +332,8 @@ class Interface(QMainWindow):
         self.bragg_edge_range = [left_index, right_index]
 
     def reset_profile_of_bin_size_slider(self):
-        max_value = np.min([np.int(str(self.ui.profile_of_bin_size_width.text())),
-                            np.int(str(self.ui.profile_of_bin_size_height.text()))])
+        max_value = np.min([int(str(self.ui.profile_of_bin_size_width.text())),
+                            int(str(self.ui.profile_of_bin_size_height.text()))])
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
         self.ui.profile_of_bin_size_slider.setValue(max_value)
 
@@ -347,8 +347,8 @@ class Interface(QMainWindow):
                                      mode=mode)
 
     def update_profile_of_bin_size_infos(self):
-        _width = np.int(self.ui.roi_width.text())
-        _height = np.int(self.ui.roi_height.text())
+        _width = int(self.ui.roi_width.text())
+        _height = int(self.ui.roi_height.text())
         self.ui.profile_of_bin_size_width.setText(str(_width))
         self.ui.profile_of_bin_size_height.setText(str(_height))
         self.ui.profile_of_bin_size_slider.setValue(np.min([_width, _height]))
@@ -649,12 +649,12 @@ class Interface(QMainWindow):
     def roi_radiobuttons_changed(self):
         if self.ui.square_roi_radiobutton.isChecked():
             slider_visible = True
-            new_width = np.min([np.int(str(self.ui.roi_width.text())),
-                                np.int(str(self.ui.roi_height.text()))])
+            new_width = np.min([int(str(self.ui.roi_width.text())),
+                                int(str(self.ui.roi_height.text()))])
             mode = 'square'
         else:
             slider_visible = False
-            new_width = np.int(str(self.ui.roi_width.text()))
+            new_width = int(str(self.ui.roi_width.text()))
             self.selection_roi_slider_changed(new_width)
             mode = 'free'
 

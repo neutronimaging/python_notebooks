@@ -164,7 +164,7 @@ class RegistrationMarkers(QDialog):
         nbr_row = table_ui.rowCount()
         for _row in np.arange(nbr_row):
             file_name = str(table_ui.item(_row, 0).text())
-            x = np.int(str(table_ui.item(_row, 1).text()))
+            x = int(str(table_ui.item(_row, 1).text()))
             y = np.int(str(table_ui.item(_row, 2).text()))
 
             table_data[file_name]['x'] = x

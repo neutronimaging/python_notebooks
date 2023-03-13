@@ -144,7 +144,7 @@ class Interface(QMainWindow):
             if nbr_files < minimum_number_of_images_to_use_for_roi_selection:
                 nbr_files_to_use = nbr_files
             else:
-                nbr_files_to_use = np.int(percentage_of_data_to_use * nbr_files)
+                nbr_files_to_use = int(percentage_of_data_to_use * nbr_files)
                 if nbr_files_to_use < minimum_number_of_images_to_use_for_roi_selection:
                     nbr_files_to_use = minimum_number_of_images_to_use_for_roi_selection
             random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
@@ -262,7 +262,7 @@ class Interface(QMainWindow):
         """Make sure the ROI selected or defined stays within the image size"""
         min_value = 0
 
-        value = np.int(value)
+        value = int(value)
 
         if x_axis:
             max_value = self.integrated_image_size['width']
@@ -319,10 +319,10 @@ class Interface(QMainWindow):
         for _row in list_roi.keys():
             _roi = list_roi[_row]
 
-            _x0 = np.int(_roi['x0'])
-            _y0 = np.int(_roi['y0'])
-            _x1 = np.int(_roi['x1'])
-            _y1 = np.int(_roi['y1'])
+            _x0 = int(_roi['x0'])
+            _y0 = int(_roi['y0'])
+            _x1 = int(_roi['x1'])
+            _y1 = int(_roi['y1'])
 
             _width = np.abs(_x1 - _x0)
             _height = np.abs(_y1 - _y0)
@@ -409,16 +409,16 @@ class Interface(QMainWindow):
             _roi = {}
 
             _x0 = self._get_item_value(_row, 0)
-            _roi['x0'] = np.int(_x0)
+            _roi['x0'] = int(_x0)
 
             _y0 = self._get_item_value(_row, 1)
-            _roi['y0'] = np.int(_y0)
+            _roi['y0'] = int(_y0)
 
             _x1 = self._get_item_value(_row, 2)
-            _roi['x1'] = np.int(_x1)
+            _roi['x1'] = int(_x1)
 
             _y1 = self._get_item_value(_row, 3)
-            _roi['y1'] = np.int(_y1)
+            _roi['y1'] = int(_y1)
 
             x0_int = int(_x0)
             y0_int = int(_y0)

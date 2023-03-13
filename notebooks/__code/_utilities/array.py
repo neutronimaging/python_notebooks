@@ -10,8 +10,8 @@ def exclude_y_value_when_error_is_nan(axis, error_axis):
             axis_cleaned.append(np.NaN)
             error_axis_cleaned.append(np.NaN)
         else:
-            axis_cleaned.append(np.float(_x))
-            error_axis_cleaned.append(np.float(_error))
+            axis_cleaned.append(float(_x))
+            error_axis_cleaned.append(float(_error))
 
     return axis_cleaned, error_axis_cleaned
 
@@ -25,7 +25,7 @@ def check_size(x_axis=None, y_axis=None):
 
 def get_n_random_int_of_max_value_m(n=1, max=10):
     list_random = np.random.random(n) * max
-    list_random_int = [np.int(_value) for _value in list_random]
+    list_random_int = [int(_value) for _value in list_random]
     return list_random_int
 
 

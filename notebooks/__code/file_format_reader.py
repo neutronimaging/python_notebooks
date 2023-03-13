@@ -49,7 +49,7 @@ class DscReader(object):
         for _file in _dsc_metadata.keys():
             m = re.match(re_string, _file)
             if m:
-                index = np.int(m.group('index'))
+                index = int(m.group('index'))
                 base = m.group('base')
                 correspoinding_tif_file_name = "{}_{}.tif".format(base, index)
                 _dsc_metadata[_file]['tif_file_name'] = correspoinding_tif_file_name
