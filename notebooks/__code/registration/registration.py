@@ -12,7 +12,7 @@ from qtpy import QtGui, QtCore
 import webbrowser
 
 from __code import load_ui
-from __code.color import Color
+from __code._utilities.color import Color
 from __code._utilities.table_handler import TableHandler
 
 from __code.registration.marker_default_settings import MarkerDefaultSettings

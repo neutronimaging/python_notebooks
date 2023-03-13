@@ -2,6 +2,7 @@ import logging
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
@@ -14,7 +15,9 @@ from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 
 from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
+from __code._utilities.color import Color
 from __code.ipywe import fileselector
+
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
 
@@ -86,4 +89,43 @@ class Timepix3HistoHdf5McpDetector:
         # QtGui.QGuiApplication.processEvents()
 
     def returning_from_roi_selection(self, roi_selected):
-        pass
+        logging.info(f"User selected: {roi_selected}")
+        self.roi_selected = roi_selected
+
+    def calculate_profiles(self):
+        roi_selected = self.roi_selected
+
+        list_matplotlib_colors = Color.list_matplotlib
+
+        profile_dict = {}
+        rect_array = []
+        for _roi_index in roi_selected.keys():
+            x0 = roi_selected[_roi_index]['x0']
+            y0 = roi_selected[_roi_index]['y0']
+            x1 = roi_selected[_roi_index]['x1']
+            y1 = roi_selected[_roi_index]['y1']
+
+            profile_dict[_roi_index] = []
+
+            for _index_image, _image in enumerate(self.stack):
+                mean_counts = np.nanmean(_image[y0:y1+1, x0:x1+1])
+                profile_dict[_roi_index].append(mean_counts)
+
+            _rect = patches.Rectangle((y0, x0),
+                                      y1-y0,
+                                      x1-x0,
+                                      linewidth=1,
+                                      edgecolor=list_matplotlib_colors[_roi_index],
+                                      facecolor='none')
+            rect_array.append(_rect)
+
+        fig1, ax = plt.subplots(figsize=(10, 20),
+                                nrows=2, ncols=1)
+        for _profile_key in profile_dict.keys():
+            ax[1].plot(profile_dict[_profile_key],
+                       label=f"ROI #{_profile_key}",
+                       color=list_matplotlib_colors[_profile_key])
+
+        ax[0].imshow(self.integrated_stack)
+        for _patch in rect_array:
+            ax[0].add_patch(_patch)
