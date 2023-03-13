@@ -92,7 +92,7 @@ class Timepix3HistoHdf5McpDetector:
         logging.info(f"User selected: {roi_selected}")
         self.roi_selected = roi_selected
 
-    def calculate_profiles(self):
+    def calculate_and_display_profiles(self):
         roi_selected = self.roi_selected
 
         list_matplotlib_colors = Color.list_matplotlib
@@ -119,13 +119,94 @@ class Timepix3HistoHdf5McpDetector:
                                       facecolor='none')
             rect_array.append(_rect)
 
-        fig1, ax = plt.subplots(figsize=(10, 20),
-                                nrows=2, ncols=1)
+        max_counts = []
         for _profile_key in profile_dict.keys():
-            ax[1].plot(profile_dict[_profile_key],
-                       label=f"ROI #{_profile_key}",
-                       color=list_matplotlib_colors[_profile_key])
+            max_counts.append(np.max(profile_dict[_profile_key]))
+        total_max_counts = np.max(max_counts)
 
-        ax[0].imshow(self.integrated_stack)
+        fig1, ax1 = plt.subplots(figsize=(8, 8),
+                                 nrows=1,
+                                 ncols=1)
+
+        preview = ax1.imshow(self.integrated_stack)
+        cb = plt.colorbar(preview, ax=ax1)
+        plt.show()
+
         for _patch in rect_array:
-            ax[0].add_patch(_patch)
+            ax1.add_patch(_patch)
+
+        fig2, ax2 = plt.subplots(figsize=(8, 8),
+                                 nrows=1,
+                                 ncols=1)
+
+        def plot_profiles(x_axis, dSD_m, offset_micros, element):
+
+            if element == 'Ni':
+                _handler = BraggEdgeLibrary(material=[element],
+                                            number_of_bragg_edges=5)
+            else:  # Ta
+                _handler = BraggEdgeLibrary(new_material=[{'name': 'Ta',
+                                                           'lattice': 3.3058,
+                                                           'crystal_structure': 'BCC'}],
+                                            number_of_bragg_edges=5)
+
+            self.bragg_edges = _handler.bragg_edges
+            self.hkl = _handler.hkl
+            self.handler = _handler
+
+            if x_axis == 'TOF':
+                tof_array = self.time_spectra
+                x_axis_array = tof_array
+                xlabel = "TOF offset (" + MICRO + "s)"
+            else:
+                _exp = Experiment(tof=self.time_spectra * 1e-6,  # to convert to seconds
+                                  distance_source_detector_m=dSD_m,
+                                  detector_offset_micros=offset_micros)
+                lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
+                x_axis_array = lambda_array
+                xlabel = LAMBDA + "(" + ANGSTROMS + ")"
+
+            ax2.cla()
+            for _profile_key in profile_dict.keys():
+                ax2.plot(x_axis_array[:-1], profile_dict[_profile_key],
+                         label=f"ROI #{_profile_key}",
+                         color=list_matplotlib_colors[_profile_key])
+                ax2.set_ylabel("Mean counts of ROI")
+                ax2.set_xlabel(xlabel)
+
+            if x_axis == 'lambda':
+
+                logging.info(f"for Ni: {self.hkl[element] =}")
+                for _index, _x in enumerate(self.bragg_edges[element]):
+                    _hkl_array = self.hkl[element][_index]
+                    _str_hkl_array = [str(value) for value in _hkl_array]
+                    _hkl = ",".join(_str_hkl_array)
+
+                    # to display _x in the right axis
+                    ax2.axvline(x=_x, color='r', linestyle='--')
+
+                    ax2.text(_x, (total_max_counts - total_max_counts / 7),
+                             _hkl,
+                             ha="center",
+                             rotation=45,
+                             size=15,
+                             )
+
+        v = interactive(plot_profiles,
+                        x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
+                                                    value='lambda',
+                                                    ),
+                        dSD_m=widgets.FloatSlider(value=19.855,
+                                                  min=15,
+                                                  max=25,
+                                                  step=0.001,
+                                                  continuous_update=False,
+                                                  readout_format=".3f"),
+                        offset_micros=widgets.IntSlider(value=0,
+                                                        min=0,
+                                                        max=15000,
+                                                        continuous_update=False),
+                        element=widgets.RadioButtons(options=['Ni', 'Ta'],
+                                                     value='Ni'),
+                        )
+        display(v)
