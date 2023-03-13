@@ -21,7 +21,7 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
-from __code.color import  Color
+from __code._utilities.color import Color
 from __code.file_handler import retrieve_time_stamp, make_ascii_file
 from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
 

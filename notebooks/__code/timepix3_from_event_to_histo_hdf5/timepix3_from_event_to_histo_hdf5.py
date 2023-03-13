@@ -16,10 +16,10 @@ from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 from __code.file_folder_browser import FileFolderBrowser
 
-LOG_FILE_NAME = ".timepix3_event_nexus.log"
+LOG_FILE_NAME = ".timepix3_from_event_to_histo_hdf5.log"
 
 
-class Timepix3FromEventToHistoNexus:
+class Timepix3FromEventToHistoHdf5:
     # histogram data
     histo_data = None
 
@@ -255,6 +255,11 @@ class Timepix3FromEventToHistoNexus:
         logging.info(f"\t output file name: {output_filename}")
 
         full_output_filename = os.path.join(output_folder, output_filename)
+        if os.path.exists(full_output_filename):
+            display(HTML('<span style="font-size: 15px; color:red">File already exists! Select a different file name!</span>'))
+            return
+
+        display(HTML(f"Writing HDF5 file .... in progress"))
 
         with h5py.File(full_output_filename, mode='w') as f:
             f.create_group('entry/histo')
@@ -264,5 +269,6 @@ class Timepix3FromEventToHistoNexus:
             f.create_group('entry/infos')
             f.create_dataset('entry/infos/input_nexus_filename', data=self.input_nexus_file_name)
 
-        display(HTML(f"hdf5 file created: {full_output_filename}"))
+        display(HTML(f"Writing HDF5 file .... Done!"))
+        display(HTML('<span style="font-size: 15px; color:blue">hdf5 file created:' + full_output_filename + '!</span>'))
         logging.info(f"hdf5 file created: {full_output_filename}")

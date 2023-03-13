@@ -14,7 +14,7 @@ from qtpy import QtGui, QtCore
 from NeuNorm.normalization import Normalization
 from __code._utilities.file import make_or_reset_folder
 
-from __code.color import Color
+from __code._utilities.color import Color
 from __code import load_ui
 
 

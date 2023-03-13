@@ -9,7 +9,7 @@ from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProf
 
 from __code import load_ui
 from __code import file_handler
-from __code.color import Color
+from __code._utilities.color import Color
 from __code.radial_profile.event_handler import EventHandler
 from __code.radial_profile.initialization import Initialization
 from __code.radial_profile.display import Display

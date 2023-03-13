@@ -27,11 +27,14 @@ class Interface(QMainWindow):
     integrated_image = None
     integrated_image_size = {'width': -1, 'height': -1}
 
+    array2d = None
+
     list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
     default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
 
     def __init__(self, parent=None,
                  o_norm=None,
+                 array2d=None,
                  list_of_files=None,
                  percentage_of_data_to_use=None,
                  callback=None,
@@ -41,15 +44,21 @@ class Interface(QMainWindow):
             display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
                 (maybe hidden behind this browser!)</span>'))
 
-        if o_norm:
-            self.o_norm = o_norm
+        if not (array2d is None):
+            # we are giving the 2d array directly
+            self.array2d = array2d
 
-        if list_of_files:
-            self.list_of_files = list_of_files
+        else:
+            # we are working with the full stack
+            if o_norm:
+                self.o_norm = o_norm
 
-        if percentage_of_data_to_use is None:
-            percentage_of_data_to_use = percentage_of_images_to_use_for_roi_selection
-        self.percentage_of_data_to_use = percentage_of_data_to_use
+            if list_of_files:
+                self.list_of_files = list_of_files
+
+            if percentage_of_data_to_use is None:
+                percentage_of_data_to_use = percentage_of_images_to_use_for_roi_selection
+            self.percentage_of_data_to_use = percentage_of_data_to_use
 
         # method called when leaving the application, if any
         self.callback = callback
@@ -120,31 +129,37 @@ class Interface(QMainWindow):
         display(HTML(html))
 
     def integrate_images(self):
-        percentage_of_data_to_use = self.percentage_of_data_to_use
 
-        if self.o_norm:
-            nbr_files = len(self.o_norm.data['sample']['data'])
-        else:
-            nbr_files = len(self.list_of_files)
+        if not(self.array2d is None):
+            self.integrated_image = self.array2d
 
-        if nbr_files < minimum_number_of_images_to_use_for_roi_selection:
-            nbr_files_to_use = nbr_files
         else:
-            nbr_files_to_use = np.int(percentage_of_data_to_use * nbr_files)
-            if nbr_files_to_use < minimum_number_of_images_to_use_for_roi_selection:
-                nbr_files_to_use = minimum_number_of_images_to_use_for_roi_selection
-        random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
+            percentage_of_data_to_use = self.percentage_of_data_to_use
 
-        if self.o_norm:
-            list_data_to_use = [self.o_norm.data['sample']['data'][_index] for _index in random_list]
-        else:
-            o_norm = Normalization()
-            list_of_files = np.array(self.list_of_files)
-            list_of_files = list(list_of_files[random_list])
-            o_norm.load(file=list_of_files, notebook=True)
+            if self.o_norm:
+                nbr_files = len(self.o_norm.data['sample']['data'])
+            else:
+                nbr_files = len(self.list_of_files)
+
+            if nbr_files < minimum_number_of_images_to_use_for_roi_selection:
+                nbr_files_to_use = nbr_files
+            else:
+                nbr_files_to_use = np.int(percentage_of_data_to_use * nbr_files)
+                if nbr_files_to_use < minimum_number_of_images_to_use_for_roi_selection:
+                    nbr_files_to_use = minimum_number_of_images_to_use_for_roi_selection
+            random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
+
+            if self.o_norm:
+                list_data_to_use = [self.o_norm.data['sample']['data'][_index] for _index in random_list]
+            else:
+                o_norm = Normalization()
+                list_of_files = np.array(self.list_of_files)
+                list_of_files = list(list_of_files[random_list])
+                o_norm.load(file=list_of_files, notebook=True)
+
             list_data_to_use = o_norm.data['sample']['data']
+            self.integrated_image = np.mean(list_data_to_use, axis=0)
 
-        self.integrated_image = np.mean(list_data_to_use, axis=0)
         [_height, _width] = np.shape(self.integrated_image)
         self.integrated_image_size['height'] = _height
         self.integrated_image_size['width'] = _width

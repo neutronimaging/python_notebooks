@@ -13,18 +13,15 @@ from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 
-LOG_FILE_NAME = ".timepix3_event_nexus.log"
+LOG_FILE_NAME = ".timepix3_event_hdf5_he3_detector.log"
 
 
-class Timepix3EventNexus:
+class Timepix3EventHdf5:
     # histogram data
     histo_data = None
 
     # event data
     event_data = None
-
-    # mode is 'h3' or 'mcp'
-    mode = 'h3'
 
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
@@ -50,26 +47,10 @@ class Timepix3EventNexus:
             try:
                 self.event_data = np.array(f['entry']['monitor2']['event_time_offset'])
                 logging.info("Loading a H3 NeXus event file!")
+                self.rebin_and_display_h3_data()
             except KeyError:
-                logging.info("Loading a MCP event file!")
-                self.x_array = np.array(f['events']['x'])
-                self.y_array = np.array(f['events']['y'])
-                self.tof_ns_array = np.array(f['events']['tof_ns'])
-                self.mode = 'mcp'
-
-    def rebin_and_display_data(self):
-
-        if self.mode == 'h3':
-            self.rebin_and_display_h3_data()
-
-        elif self.mode == 'mcp':
-            self.rebin_and_display_mcp_data()
-
-        else:
-            raise NotImplementedError("detector type not implemented yet!")
-
-    def rebin_and_display_mcp_data(self):
-        pass
+                logging.info("Wrong NeXus file format!")
+                display(HTML("Wrong file format!"))
 
     def rebin_and_display_h3_data(self):
 
@@ -81,7 +62,7 @@ class Timepix3EventNexus:
 
         bin_size = hbox.children[1]
 
-        fig, ax = plt.subplots(figsize=(5, 5),
+        fig, ax = plt.subplots(figsize=(8, 8),
                                nrows=1,
                                ncols=1,
                                num="Histogram of He3 detector")
