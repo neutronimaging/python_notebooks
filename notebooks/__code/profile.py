@@ -328,7 +328,7 @@ class ProfileUi(QMainWindow):
         hori_layout.addItem(spacerItem_left)
         hori_layout.addWidget(widget)
         hori_layout.addItem(spacerItem_right)
-        cell_widget = QWidget()()
+        cell_widget = QWidget()
         cell_widget.setLayout(hori_layout)
         self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
         widget.blockSignals(False)
@@ -345,7 +345,7 @@ class ProfileUi(QMainWindow):
             hori_layout.addItem(spacerItem_left)
             hori_layout.addWidget(widget)
             hori_layout.addItem(spacerItem_right)
-            cell_widget = QWidget()()
+            cell_widget = QWidget()
             cell_widget.setLayout(hori_layout)
             if value is True:
                 widget.setCheckState(QtCore.Qt.Checked)
