@@ -10,7 +10,7 @@ import plotly.graph_objs as go
 from ipywidgets import widgets
 import pyqtgraph as pg
 
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QProgressBar, QVBoxLayout, QTableWidgetSelectionRange, QTableWidgetItem
 from qtpy import QtGui, QtCore
 
 from __code import load_ui
@@ -403,7 +403,7 @@ class Interface(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
 
-        top_layout = QtGui.QVBoxLayout()
+        top_layout = QVBoxLayout()
         top_layout.addWidget(self.ui.image_view)
         self.ui.widget.setLayout(top_layout)
         self.init_widgets(instruction=instruction)
@@ -421,7 +421,7 @@ class Interface(QMainWindow):
             self.ui.instruction.setText(instruction)
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(20, 14)
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
@@ -509,7 +509,7 @@ class Interface(QMainWindow):
         if row == (old_nbr_row-1):
             row = new_nbr_row - 1
 
-        _new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, 3)
+        _new_selection = QTableWidgetSelectionRange(row, 0, row, 3)
         self.ui.table_roi.setRangeSelected(_new_selection, True)
 
     def clear_table(self):
@@ -532,19 +532,19 @@ class Interface(QMainWindow):
             self.ui.table_roi.insertRow(_index_row)
 
             self._set_item_value(_index_row, 0, _roi['x0'])
-            # _item = QtGui.QTableWidgetItem(str(_roi['x0']))
+            # _item = QTableWidgetItem(str(_roi['x0']))
             # self.ui.table_roi.setItem(_index_row, 0, _item)
 
             self._set_item_value(_index_row, 1, _roi['y0'])
-            # _item = QtGui.QTableWidgetItem(str(_roi['y0']))
+            # _item = QTableWidgetItem(str(_roi['y0']))
             # self.ui.table_roi.setItem(_index_row, 1, _item)
 
             self._set_item_value(_index_row, 2, _roi['x1'])
-            # _item = QtGui.QTableWidgetItem(str(_roi['x1']))
+            # _item = QTableWidgetItem(str(_roi['x1']))
             # self.ui.table_roi.setItem(_index_row, 2, _item)
 
             self._set_item_value(_index_row, 3, _roi['y1'])
-            # _item = QtGui.QTableWidgetItem(str(_roi['y1']))
+            # _item = QTableWidgetItem(str(_roi['y1']))
             # self.ui.table_roi.setItem(_index_row, 3, _item)
 
             _index_row += 1
@@ -553,7 +553,7 @@ class Interface(QMainWindow):
         #self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
 
     def _set_item_value(self, row=0, column=0, value=-1):
-        _item = QtGui.QTableWidgetItem(str(value))
+        _item = QTableWidgetItem(str(value))
         self.ui.table_roi.setItem(row, column, _item)
 
     def check_roi_validity(self, value, x_axis=True):
@@ -688,16 +688,16 @@ class Interface(QMainWindow):
         self.ui.table_roi.insertRow(row)
         _default_roi = self.default_roi
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['x0']))
+        _item = QTableWidgetItem(str(_default_roi['x0']))
         self.ui.table_roi.setItem(row, 0, _item)
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['y0']))
+        _item = QTableWidgetItem(str(_default_roi['y0']))
         self.ui.table_roi.setItem(row, 1, _item)
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['x1']))
+        _item = QTableWidgetItem(str(_default_roi['x1']))
         self.ui.table_roi.setItem(row, 2, _item)
 
-        _item = QtGui.QTableWidgetItem(str(_default_roi['y1']))
+        _item = QTableWidgetItem(str(_default_roi['y1']))
         self.ui.table_roi.setItem(row, 3, _item)
 
         # save new list_roi dictionary
@@ -735,7 +735,7 @@ class Interface(QMainWindow):
         self.check_add_remove_button_widgets_status()
 
         if not _selection:
-            _new_selection = QtGui.QTableWidgetSelectionRange(0, 0, 0, 3)
+            _new_selection = QTableWidgetSelectionRange(0, 0, 0, 3)
             self.ui.table_roi.setRangeSelected(_new_selection, True)
 
     def init_roi(self, x0=0, y0=0, width=0, height=0):

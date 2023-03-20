@@ -1,6 +1,6 @@
 import numpy as np
 from collections import OrderedDict
-from qtpy import QtGui
+from qtpy.QtGui import QGuiApplication
 import copy
 import os
 
@@ -18,7 +18,7 @@ class CalculateProfiles:
         self.parent.eventProgress.setMaximum(len(self.parent.data))
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
-        QtGui.QGuiApplication.processEvents()
+        QGuiApplication.processEvents()
 
         # create profile_dictionary
         angle_bin = self.parent.angle_bin_horizontalSlider.value() / 100
@@ -40,7 +40,7 @@ class CalculateProfiles:
             dict_profile[_row] = {'y_profile': y_profile}
             _index += 1
             self.parent.eventProgress.setValue(_index)
-            QtGui.QGuiApplication.processEvents()
+            QGuiApplication.processEvents()
 
         self.parent.dict_profile = dict_profile
         self.parent.eventProgress.setVisible(False)

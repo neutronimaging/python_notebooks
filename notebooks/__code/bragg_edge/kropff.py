@@ -1,6 +1,8 @@
 import numpy as np
 from qtpy import QtGui
+from qtpy.QtWidgets import QMenu
 from qtpy.QtWidgets import QFileDialog
+from qtpy.QtGui import QGuiApplication
 from pathlib import Path
 import pyqtgraph as pg
 
@@ -97,14 +99,14 @@ class Kropff:
             o_table.set_item_with_float(_row, _col + 5, _entry['sigma_error'])
 
     def bragg_peak_right_click(self, position=None):
-        menu = QtGui.QMenu(self.parent)
+        menu = QMenu(self.parent)
 
-        selected_rows_submenu = QtGui.QMenu("Selected Rows")
+        selected_rows_submenu = QMenu("Selected Rows")
         menu.addMenu(selected_rows_submenu)
         _fit = selected_rows_submenu.addAction("Fit")
         _export = selected_rows_submenu.addAction("Export ...")
 
-        advanced_selection_submenu = QtGui.QMenu("Advanced Rows Selection")
+        advanced_selection_submenu = QMenu("Advanced Rows Selection")
         menu.addMenu(advanced_selection_submenu)
         _negative_thkl = advanced_selection_submenu.addAction("Where t_hkl < 0")
 
@@ -117,7 +119,7 @@ class Kropff:
         elif action == _negative_thkl:
             self.select_all_rows_with_negative_thkl()
 
-        QtGui.QGuiApplication.processEvents()  # to close QFileDialog
+        QGuiApplication.processEvents()  # to close QFileDialog
 
     def fit_bragg_peak_selected_rows(self):
         o_gui = GuiUtility(parent=self.parent)
@@ -130,7 +132,7 @@ class Kropff:
                                                           directory=working_dir,
                                                           caption="Select Output Folder")
 
-        QtGui.QGuiApplication.processEvents()  # to close QFileDialog
+        QGuiApplication.processEvents()  # to close QFileDialog
 
         if _export_folder:
 

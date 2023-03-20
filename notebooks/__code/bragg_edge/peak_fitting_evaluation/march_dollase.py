@@ -1,7 +1,7 @@
 from qtpy import QtGui
 import numpy as np
 import pyqtgraph as pg
-from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QFileDialog, QMenu
 from pathlib import Path
 import os
 import logging
@@ -109,7 +109,7 @@ class MarchDollase:
         if not list_state:
             table_is_empty = True
 
-        menu = QtGui.QMenu(self.parent)
+        menu = QMenu(self.parent)
 
         insert_row = -1
 
@@ -356,7 +356,7 @@ class MarchDollase:
         self.parent.ui.march_dollase_to_bragg_peak_range_units.setText(units)
 
     def result_table_right_click(self):
-        menu = QtGui.QMenu(self.parent)
+        menu = QMenu(self.parent)
         export_data = menu.addAction("Export Data ...")
         action = menu.exec_(QtGui.QCursor.pos())
 

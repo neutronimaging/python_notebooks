@@ -6,6 +6,7 @@ from IPython.display import display
 import pyqtgraph as pg
 from qtpy.QtWidgets import QMainWindow
 from qtpy import QtGui
+from qtpy.QtGui import QGuiApplication
 
 from neutronbraggedge.experiment_handler import *
 
@@ -648,19 +649,19 @@ class Interface(QMainWindow):
         self.ui.eventProgress.setMaximum(4)
         self.ui.eventProgress.setValue(1)
         self.ui.eventProgress.setVisible(True)
-        QtGui.QGuiApplication.processEvents()
+        QGuiApplication.processEvents()
 
         self.kropff_fit_high_lambda_region_clicked()
         self.ui.eventProgress.setValue(2)
-        QtGui.QGuiApplication.processEvents()
+        QGuiApplication.processEvents()
 
         self.kropff_fit_low_lambda_region_clicked()
         self.ui.eventProgress.setValue(3)
-        QtGui.QGuiApplication.processEvents()
+        QGuiApplication.processEvents()
 
         self.kropff_fit_bragg_peak_region_clicked()
         self.ui.eventProgress.setValue(4)
-        QtGui.QGuiApplication.processEvents()
+        QGuiApplication.processEvents()
 
         self.ui.eventProgress.setVisible(False)
         self.ui.statusbar.setStyleSheet("color: blue")

@@ -7,7 +7,7 @@ matplotlib.use('Qt5Agg')
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from qtpy.QtWidgets import QProgressBar, QVBoxLayout
+from qtpy.QtWidgets import QProgressBar, QVBoxLayout, QAbstractItemView
 from qtpy import QtGui
 import pyqtgraph as pg
 
@@ -136,7 +136,7 @@ class Initialization:
         self.parent.ui.calculation_bin_table = MyTableWidget(parent=self.parent)
         self.parent.ui.calculation_bin_table.cellClicked['int', 'int'].connect(
                 self.parent.calculation_table_cell_clicked)
-        self.parent.ui.calculation_bin_table.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.parent.ui.calculation_bin_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.parent.ui.verticalLayout_table.addWidget(self.parent.ui.calculation_bin_table)
 
     def roi_setup(self):

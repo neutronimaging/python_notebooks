@@ -9,6 +9,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 from qtpy import QtGui
+from qtpy.QtGui import QIcon
 import pyqtgraph as pg
 
 from __code.table_handler import TableHandler
@@ -164,10 +165,10 @@ class Initialization:
         # init widgets
         _file_path = os.path.dirname(__file__)
         up_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/up_arrow_black.png'))
-        self.parent.ui.march_dollase_user_input_up.setIcon(QtGui.QIcon(up_arrow_file))
+        self.parent.ui.march_dollase_user_input_up.setIcon(QIcon(up_arrow_file))
 
         down_arrow_file = os.path.abspath(os.path.join(_file_path, '../static/down_arrow_black.png'))
-        self.parent.ui.march_dollase_user_input_down.setIcon(QtGui.QIcon(down_arrow_file))
+        self.parent.ui.march_dollase_user_input_down.setIcon(QIcon(down_arrow_file))
 
         o_gui = GuiUtility(parent=self.parent)
         o_gui.fill_march_dollase_table(list_state=self.march_dollase_history_state,

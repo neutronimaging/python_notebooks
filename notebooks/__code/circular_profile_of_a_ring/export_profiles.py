@@ -1,6 +1,7 @@
 import numpy as np
 from qtpy.QtWidgets import QFileDialog, QApplication
-from qtpy import QtCore, QtGui
+from qtpy import QtCore
+from qtpy.QtGui import QGuiApplication
 import os
 
 from __code.circular_profile_of_a_ring.configuration_handler import ConfigurationHandler
@@ -29,7 +30,7 @@ class ExportProfiles:
             self.parent.ui.statusbar.setStyleSheet("color: blue")
 
             QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-            QtGui.QGuiApplication.processEvents()
+            QGuiApplication.processEvents()
 
             dict_profile = self.parent.dict_profile
 
@@ -71,4 +72,4 @@ class ExportProfiles:
             self.parent.ui.statusbar.setStyleSheet("color: green")
 
             QApplication.restoreOverrideCursor()
-            QtGui.QGuiApplication.processEvents()
+            QGuiApplication.processEvents()

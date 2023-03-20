@@ -3,6 +3,7 @@ from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
 import pyqtgraph as pg
 import numpy as np
 from qtpy import QtGui, QtCore
+from qtpy.QtGui import QGuiApplication
 import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -699,7 +700,7 @@ class Interface(QMainWindow):
 
     def calculate_profiles_clicked(self):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        QtGui.QGuiApplication.processEvents()
+        QGuiApplication.processEvents()
         self.ui.setEnabled(False)
         self.ui.statusbar.showMessage("Calculating profiles ... IN PROGRESS")
         self.ui.statusbar.setStyleSheet("color: blue")
@@ -711,7 +712,7 @@ class Interface(QMainWindow):
         self.ui.statusbar.showMessage("Calculating profiles ... Done!", 10000)
         self.ui.statusbar.setStyleSheet("color: green")
         QApplication.restoreOverrideCursor()
-        QtGui.QGuiApplication.processEvents()
+        QGuiApplication.processEvents()
 
     def angle_bin_slider_moved(self, slider_value):
         real_bin_value = slider_value/100
