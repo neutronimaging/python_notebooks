@@ -161,10 +161,10 @@ class Get:
     def get_x_y_width_height_of_roi(roi_id=None):
         x, y = roi_id.pos()
         width, height = roi_id.size()
-        return {'x'     : np.int(x),
-                'y'     : np.int(y),
-                'width' : np.int(width),
-                'height': np.int(height)}
+        return {'x'     : int(x),
+                'y'     : int(y),
+                'width' : int(width),
+                'height': int(height)}
 
     @staticmethod
     def full_home_file_name(base_file_name):

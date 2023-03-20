@@ -108,7 +108,7 @@ class Interface(QMainWindow):
         o_event.populate_elements_position_table()
 
     def click_on_elements_position_plot(self, event):
-        file_index = np.int(event.ydata)
+        file_index = int(event.ydata)
         list_of_images = self.list_of_images
         self.ui.elements_position_file_name_label.setText(list_of_images[file_index])
 

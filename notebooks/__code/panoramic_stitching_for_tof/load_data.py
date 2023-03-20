@@ -86,4 +86,4 @@ class LoadData:
 
     @staticmethod
     def calculate_integrated_data(list_arrays=None):
-        return np.sum(list_arrays, 0, dtype=np.int16)
+        return np.sum(list_arrays, 0, dtype=int16)

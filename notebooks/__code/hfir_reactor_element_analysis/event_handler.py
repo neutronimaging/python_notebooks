@@ -228,7 +228,7 @@ class EventHandler:
     def display_background_error_in_elements_position_table(self):
         median_number_of_elements = self.get_median_number_of_elements()
         nbr_row = len(self.parent.list_of_images)
-        nbr_column = np.int(median_number_of_elements)
+        nbr_column = int(median_number_of_elements)
 
         ideal_table_data_error = np.zeros((nbr_row, nbr_column))
         error_table = list()
@@ -328,7 +328,7 @@ class EventHandler:
         median_number_of_elements = self.get_median_number_of_elements()
 
         nbr_row = len(self.parent.list_of_images)
-        nbr_column = np.int(median_number_of_elements)
+        nbr_column = int(median_number_of_elements)
         elements_position_error_table = np.zeros((nbr_row, nbr_column))
         # mean_angle_offset_between_elements = self.get_mean_angle_offset_between_elements()
         self.parent.list_mean_position_of_elements = self.get_list_mean_position_of_elements()
@@ -390,7 +390,7 @@ class EventHandler:
         # table = self.parent.elements_position_formatted_raw_table
         # [nbr_row, nbr_column] = np.shape(table)
         #
-        # number_of_outliers_to_reject = np.int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
+        # number_of_outliers_to_reject = int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
         # list_mean_value = []
         # for _column_index in np.arange(nbr_column):
         #     _col_value = table[:, _column_index]
@@ -427,7 +427,7 @@ class EventHandler:
 
         # trying to calculate manually ideal list mean
         nbr_elements = self.parent.ui.number_of_elements_spinBox.value()
-        angle_step = np.float(360) / np.float(nbr_elements)
+        angle_step = float(360) / float(nbr_elements)
         list_mean_value = np.arange(mean_first_element, 360, angle_step)
 
         return list_mean_value

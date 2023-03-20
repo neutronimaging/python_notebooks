@@ -190,7 +190,7 @@ class Kropff:
         list_of_rows_to_select = []
         fitting_input_dictionary_rois = self.parent.fitting_input_dictionary['rois']
         for _row in fitting_input_dictionary_rois.keys():
-            _thkl = np.float(fitting_input_dictionary_rois[_row]['fitting']['kropff']['bragg_peak']['ldahkl'])
+            _thkl = float(fitting_input_dictionary_rois[_row]['fitting']['kropff']['bragg_peak']['ldahkl'])
             if _thkl < 0:
                 list_of_rows_to_select.append(_row)
 

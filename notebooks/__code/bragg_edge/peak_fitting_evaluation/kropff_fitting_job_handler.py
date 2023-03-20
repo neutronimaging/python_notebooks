@@ -45,8 +45,8 @@ class KropffFittingJobHandler:
         lda = self.xaxis_to_fit
         o_gui = GuiUtility(parent=self.parent)
 
-        a0_init = np.float(str(self.parent.kropff_high_lda_a0_init.text()))
-        b0_init = np.float(str(self.parent.kropff_high_lda_b0_init.text()))
+        a0_init = float(str(self.parent.kropff_high_lda_a0_init.text()))
+        b0_init = float(str(self.parent.kropff_high_lda_b0_init.text()))
         for _index, yaxis in enumerate(self.list_yaxis_to_fit):
             yaxis = -np.log(yaxis)
             _result = gmodel.fit(yaxis, lda=lda, a0=a0_init, b0=b0_init)
@@ -79,14 +79,14 @@ class KropffFittingJobHandler:
         lda = self.xaxis_to_fit
         o_gui = GuiUtility(parent=self.parent)
 
-        ahkl_init = np.float(str(self.parent.kropff_low_lda_ahkl_init.text()))
-        bhkl_init = np.float(str(self.parent.kropff_low_lda_bhkl_init.text()))
+        ahkl_init = float(str(self.parent.kropff_low_lda_ahkl_init.text()))
+        bhkl_init = float(str(self.parent.kropff_low_lda_bhkl_init.text()))
 
         for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
             _entry = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
-            a0 = np.float(_entry['a0'])
-            b0 = np.float(_entry['b0'])
+            a0 = float(_entry['a0'])
+            b0 = float(_entry['b0'])
 
             yaxis = -np.log(yaxis)
             _result = gmodel.fit(yaxis, lda=lda,
@@ -125,9 +125,9 @@ class KropffFittingJobHandler:
         lda = self.xaxis_to_fit
         o_gui = GuiUtility(parent=self.parent)
 
-        ldahkl_init = np.float(str(self.parent.ui.kropff_bragg_peak_ldahkl_init.text()))
-        tau_init = np.float(str(self.parent.kropff_bragg_peak_tau_init.text()))
-        sigma_init = np.float(self.parent.kropff_bragg_peak_sigma_comboBox.currentText())
+        ldahkl_init = float(str(self.parent.ui.kropff_bragg_peak_ldahkl_init.text()))
+        tau_init = float(str(self.parent.kropff_bragg_peak_tau_init.text()))
+        sigma_init = float(self.parent.kropff_bragg_peak_sigma_comboBox.currentText())
 
         for _row, yaxis in enumerate(self.list_yaxis_to_fit):
 
@@ -136,12 +136,12 @@ class KropffFittingJobHandler:
                     continue
 
             _entry_high = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['high']
-            a0 = np.float(_entry_high['a0'])
-            b0 = np.float(_entry_high['b0'])
+            a0 = float(_entry_high['a0'])
+            b0 = float(_entry_high['b0'])
 
             _entry_low = self.parent.fitting_input_dictionary['rois'][_row]['fitting']['kropff']['low']
-            ahkl = np.float(_entry_low['ahkl'])
-            bhkl = np.float(_entry_low['bhkl'])
+            ahkl = float(_entry_low['ahkl'])
+            bhkl = float(_entry_low['bhkl'])
 
             yaxis = -np.log(yaxis)
 

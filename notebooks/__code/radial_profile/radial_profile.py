@@ -319,10 +319,10 @@ class SelectRadialParameters(QMainWindow):
                 self.ui.sector_from_value.setText(str(to_angle))
 
     def manual_circle_center_changed(self):
-        new_x0 = np.int(self.vLine.value())
+        new_x0 = int(self.vLine.value())
         self.ui.circle_x.setText("{}".format(new_x0))
 
-        new_y0 = np.int(self.hLine.value())
+        new_y0 = int(self.hLine.value())
         self.ui.circle_y.setText("{}".format(new_y0))
 
         o_event = EventHandler(parent=self)

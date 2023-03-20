@@ -79,8 +79,8 @@ class EventHandler(Parent):
         self.parent.sector_g.setData(pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False)
         
     def update_angle_label_position(self):
-        x0 = np.int(str(self.parent.ui.circle_x.text()))
-        y0 = np.int(str(self.parent.ui.circle_y.text()))
+        x0 = int(str(self.parent.ui.circle_x.text()))
+        y0 = int(str(self.parent.ui.circle_y.text()))
 
         # add angle 0, 90, 180 and 270 labels
         if self.parent.angle_0 is None:
@@ -94,7 +94,7 @@ class EventHandler(Parent):
             self.parent.ui.image_view.addItem(self.parent.angle_180)
             self.parent.ui.image_view.addItem(self.parent.angle_270)
 
-        self.parent.angle_0.setPos(np.int(x0), 0)
+        self.parent.angle_0.setPos(int(x0), 0)
         self.parent.angle_90.setPos(self.parent.height, y0)
         self.parent.angle_180.setPos(x0, self.parent.width)
         self.parent.angle_270.setPos(0, y0)

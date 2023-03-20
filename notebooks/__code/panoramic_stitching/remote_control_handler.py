@@ -85,7 +85,7 @@ class RemoteControlWindow(QMainWindow):
             self.parent.ui.image_view.removeItem(horizontal_profile['id'])
             horizontal_profile['id'] = None
 
-        length = np.int(x1 - x0)/2
+        length = int(x1 - x0)/2
         horizontal_profile['x0'] = x0 + BORDER_RANGE
         horizontal_profile['x1'] = horizontal_profile['x0'] + length
         horizontal_profile['y'] = y0 + BORDER_RANGE
@@ -102,7 +102,7 @@ class RemoteControlWindow(QMainWindow):
             self.parent.ui.image_view.removeItem(vertical_profile['id'])
             vertical_profile['id'] = None
 
-        length = np.int(y1 - y0)/2
+        length = int(y1 - y0)/2
         vertical_profile['y0'] = y0 + BORDER_RANGE
         vertical_profile['y1'] = vertical_profile['y0'] + length
         vertical_profile['x'] = x0 + BORDER_RANGE
@@ -117,14 +117,14 @@ class RemoteControlWindow(QMainWindow):
 
         # from widgets
         from_roi = self.parent.from_roi
-        from_roi['x'] = x0 + np.int((x1 - x0)/2)
-        from_roi['y'] = np.int((y1 - y0)/3) + y0
+        from_roi['x'] = x0 + int((x1 - x0)/2)
+        from_roi['y'] = int((y1 - y0)/3) + y0
         self.parent.from_roi = from_roi
 
         # to widgets
         to_roi = self.parent.to_roi
-        to_roi['x'] = x0 + np.int((x1 - x0)/2)
-        to_roi['y'] = 2 * np.int((y1 - y0)/3) + y0
+        to_roi['x'] = x0 + int((x1 - x0)/2)
+        to_roi['y'] = 2 * int((y1 - y0)/3) + y0
         self.parent.to_roi = to_roi
 
         is_from_to_enabled = self.parent.ui.from_to_checkbox.isChecked()

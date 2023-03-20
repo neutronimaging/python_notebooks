@@ -204,18 +204,18 @@ class GuiInitialization:
             master_dict_row = master_dict[_row]
 
             roi_row_reference = configuration_roi_row['reference']
-            master_dict_row['reference_roi'] = {'x0': np.int(roi_row_reference['x0']),
-                                                'y0': np.int(roi_row_reference['y0']),
-                                                'width': np.int(roi_row_reference['width']),
-                                                'height': np.int(roi_row_reference['height'])}
-            master_dict_row['reference_combobox_file_index'] = np.int(roi_row_reference['file_index'])
+            master_dict_row['reference_roi'] = {'x0': int(roi_row_reference['x0']),
+                                                'y0': int(roi_row_reference['y0']),
+                                                'width': int(roi_row_reference['width']),
+                                                'height': int(roi_row_reference['height'])}
+            master_dict_row['reference_combobox_file_index'] = int(roi_row_reference['file_index'])
 
             roi_row_target = configuration_roi_row['target']
-            master_dict_row['target_combobox_file_index'] = np.int(roi_row_target['file_index'])
-            master_dict_row['target_roi'] = {'x0': np.int(roi_row_target['x0']),
-                                             'y0': np.int(roi_row_target['y0']),
-                                             'width': np.int(roi_row_target['width']),
-                                             'height': np.int(roi_row_target['height'])}
+            master_dict_row['target_combobox_file_index'] = int(roi_row_target['file_index'])
+            master_dict_row['target_roi'] = {'x0': int(roi_row_target['x0']),
+                                             'y0': int(roi_row_target['y0']),
+                                             'width': int(roi_row_target['width']),
+                                             'height': int(roi_row_target['height'])}
 
             configuration_roi[str(_row)] = configuration_roi_row
 

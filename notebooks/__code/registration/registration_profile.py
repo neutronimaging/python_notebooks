@@ -625,7 +625,7 @@ class RegistrationProfileUi(QMainWindow):
 
             peak_value = delta_array.index(max(delta_array[0: nbr_pixels -5]))
 
-        self.peak[label][file_index] = np.int(peak_value)
+        self.peak[label][file_index] = int(peak_value)
 
     def plot_peaks(self):
         xaxis = np.arange(len(self.data_dict['file_name']))

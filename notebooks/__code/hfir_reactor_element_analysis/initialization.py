@@ -45,14 +45,14 @@ class Initialization:
             list_max.append(np.nanmax(_y_axis))
             list_min.append(np.nanmin(_y_axis))
 
-        global_max = np.int(np.nanmax(list_max))
-        global_min = np.int(np.nanmin(list_min))
+        global_max = int(np.nanmax(list_max))
+        global_min = int(np.nanmin(list_min))
 
         self.parent.ui.threshold_slider.setMaximum(global_max)
         self.parent.ui.threshold_slider.setMinimum(global_min)
 
         delta_global = (global_max - global_min)/3
-        self.parent.ui.threshold_slider.setValue(np.int(2*delta_global))
+        self.parent.ui.threshold_slider.setValue(int(2*delta_global))
 
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)

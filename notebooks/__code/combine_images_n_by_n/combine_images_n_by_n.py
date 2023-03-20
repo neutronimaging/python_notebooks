@@ -176,7 +176,7 @@ class CombineImagesNByN(object):
         self.update_how_many_files()
 
     def _get_number_of_files_will_be_created(self, bin_value=2):
-        return np.int(len(self.list_files_sorted)/bin_value)
+        return int(len(self.list_files_sorted)/bin_value)
 
     def update_how_many_files(self, bin_value_object=None):
         if bin_value_object:

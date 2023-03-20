@@ -93,13 +93,13 @@ class Stitching:
 
 				roi_to_export[str(_row)] = {'reference': {'x0': str(ref_x0),
 				                                          'y0': str(ref_y0),
-				                                          'width': str(np.int(ref_width)),
-				                                          'height': str(np.int(ref_height)),
+				                                          'width': str(int(ref_width)),
+				                                          'height': str(int(ref_height)),
 				                                          'file_index': str(_target_file_index)},
 				                            'target': {'x0': str(starting_target_x0),
 				                                       'y0': str(starting_target_y0),
-				                                       'width': str(np.int(target_width)),
-				                                       'height': str(np.int(target_height)),
+				                                       'width': str(int(target_width)),
+				                                       'height': str(int(target_height)),
 				                                       'file_index': str(_reference_file_index)}}
 
 			counts_and_x0_position_dict = defaultdict(list)

@@ -416,8 +416,8 @@ class SelectionTab:
 
     def fill_summary_table(self, bin_index_1=None, bin_index_2=None):
         o_table = TableHandler(table_ui=self.parent.ui.summary_table)
-        o_table.insert_item(row=0, column=0, value=np.int(bin_index_1), format_str="{:d}")
-        o_table.insert_item(row=1, column=0, value=np.int(bin_index_2), format_str="{:d}")
+        o_table.insert_item(row=0, column=0, value=int(bin_index_1), format_str="{:d}")
+        o_table.insert_item(row=1, column=0, value=int(bin_index_2), format_str="{:d}")
 
         list_bin_positions = self.parent.list_bin_positions
 

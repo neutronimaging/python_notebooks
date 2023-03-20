@@ -159,8 +159,8 @@ class BraggEdge:
     def load_time_spectra(self):
         _tof_handler = TOF(filename=self.spectra_file)
         _exp = Experiment(tof=_tof_handler.tof_array,
-                          distance_source_detector_m=np.float(self.dSD_ui.value),
-                          detector_offset_micros=np.float(self.detector_offset_ui.value))
+                          distance_source_detector_m=float(self.dSD_ui.value),
+                          detector_offset_micros=float(self.detector_offset_ui.value))
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
         self.tof_array = _tof_handler.tof_array
 
@@ -340,7 +340,7 @@ class BraggEdge:
         for _index in np.arange(len(bragg_edges)):
             _hkl_str = [str(i) for i in hkl[_index]]
             _hkl = "".join(_hkl_str)
-            _bragg_edges = np.float(bragg_edges[_index])
+            _bragg_edges = float(bragg_edges[_index])
             _d = _bragg_edges/2.
             _row = "{}, {}, {}".format(_hkl, _d, _bragg_edges)
             data.append(_row)

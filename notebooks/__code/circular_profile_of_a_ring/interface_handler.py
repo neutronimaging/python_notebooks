@@ -127,8 +127,8 @@ class Interface(QMainWindow):
 
     def click_on_profile_plot(self, event):
         angle = event.xdata
-        x0 = np.float(str(self.ui.circle_x.text()))
-        y0 = np.float(str(self.ui.circle_y.text()))
+        x0 = float(str(self.ui.circle_x.text()))
+        y0 = float(str(self.ui.circle_y.text()))
 
         if self.angle_line:
             self.ui.image_view.removeItem(self.angle_line)
@@ -202,7 +202,7 @@ class Interface(QMainWindow):
 
         # ring settings
         max_ring_value = self.width
-        default_inner_ring_value = np.int(self.width/4)
+        default_inner_ring_value = int(self.width/4)
         default_ring_thickness = 100
         self.ui.ring_inner_radius_slider.setMaximum(max_ring_value*100)  # *100 because slider is int
         self.ui.ring_inner_radius_slider.setValue(default_inner_ring_value*100)
@@ -239,10 +239,10 @@ class Interface(QMainWindow):
         x0 = 0
         y0 = 0
 
-        nbr_height_bins = np.float(height) / np.float(bin_size)
-        real_height = y0 + np.int(nbr_height_bins) * np.int(bin_size)
+        nbr_height_bins = float(height) / float(bin_size)
+        real_height = y0 + int(nbr_height_bins) * int(bin_size)
 
-        nbr_width_bins = np.float(width) / np.float(bin_size)
+        nbr_width_bins = float(width) / float(bin_size)
         read_width = x0 + np.int(nbr_width_bins) * np.int(bin_size)
 
         # pos (each matrix is one side of the lines)
@@ -300,8 +300,8 @@ class Interface(QMainWindow):
             self.ui.image_view.removeItem(self.inner_ring_roi)
             self.ui.image_view.removeItem(self.outer_ring_roi)
 
-        x_central_pixel = np.float(str(self.ui.circle_x.text()))
-        y_central_pixel = np.float(str(self.ui.circle_y.text()))
+        x_central_pixel = float(str(self.ui.circle_x.text()))
+        y_central_pixel = float(str(self.ui.circle_y.text()))
 
         ring_radius = self.ui.ring_inner_radius_doubleSpinBox.value()
         ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
@@ -590,10 +590,10 @@ class Interface(QMainWindow):
         self.manual_circle_center_changed()
 
     def manual_circle_center_changed(self):
-        new_x0 = np.float(self.vLine.value())
+        new_x0 = float(self.vLine.value())
         self.ui.circle_x.setText("{:.2f}".format(new_x0))
 
-        new_y0 = np.float(self.hLine.value())
+        new_y0 = float(self.hLine.value())
         self.ui.circle_y.setText("{:.2f}".format(new_y0))
         self.display_ring()
 
@@ -750,7 +750,7 @@ class Interface(QMainWindow):
 
     @staticmethod
     def format_angle_degrees(value):
-        value = np.float(value)
+        value = float(value)
         if value >= 180:
             value -= 180
         else:
@@ -759,7 +759,7 @@ class Interface(QMainWindow):
 
     @staticmethod
     def format_angle_minutes(value):
-        value = np.float(value)
+        value = float(value)
         if value >= 50:
             value -= 50
         else:
@@ -781,7 +781,7 @@ class Interface(QMainWindow):
         value = Interface.format_angle_minutes(value)
         left_comma_value = Interface.format_angle_degrees(self.ui.angle_cursor_dial.value())
 
-        full_value = np.float(left_comma_value + value/100.)
+        full_value = float(left_comma_value + value/100.)
         self.ui.angle_cursor_value.setText(str(full_value))
 
         o_event = Event(value=full_value)

@@ -629,8 +629,8 @@ class CalibratedTransmissionUi(QMainWindow):
     def get_item_row(self, row=0):
         x0 = int(str(self.ui.tableWidget.item(row, 0).text()))
         y0 = int(str(self.ui.tableWidget.item(row, 1).text()))
-        width = np.int(str(self.ui.tableWidget.item(row, 2).text()))
-        height = np.int(str(self.ui.tableWidget.item(row, 3).text()))
+        width = int(str(self.ui.tableWidget.item(row, 2).text()))
+        height = int(str(self.ui.tableWidget.item(row, 3).text()))
         return (x0, y0, width, height)
 
     def change_slider(self, offset=+1):

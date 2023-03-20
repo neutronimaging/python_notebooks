@@ -49,7 +49,7 @@ class HfirReactorElementAnalysis:
                                       skiprows=_line_number + 2,
                                       delimiter=", ",
                                       names=column_labels,
-                                      dtype=np.float,
+                                      dtype=float,
                                       index_col=0)
 
         clear_output(wait=False)

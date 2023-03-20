@@ -52,7 +52,7 @@ class BestContrastTabHandler:
 
     def calculate_best_contrast(self):
         nbr_images = self.parent.nbr_files_per_folder
-        bin_size = np.int(self.parent.ui.best_contrast_bin_size_value.text())
+        bin_size = int(self.parent.ui.best_contrast_bin_size_value.text())
         list_bin = np.arange(0, nbr_images, bin_size)
 
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)

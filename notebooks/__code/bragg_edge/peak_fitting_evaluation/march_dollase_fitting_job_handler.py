@@ -200,8 +200,8 @@ class MarchDollaseFittingJobHandler:
         bragg_edge_range = self.parent.march_dollase_fitting_range_selected
         logging.info(f"-> bragg_edge_range: {bragg_edge_range}")
 
-        from_lambda = np.float(lambda_axis[0][int(bragg_edge_range[0])])
-        to_lambda = np.float(lambda_axis[0][int(bragg_edge_range[1])])
+        from_lambda = float(lambda_axis[0][int(bragg_edge_range[0])])
+        to_lambda = float(lambda_axis[0][int(bragg_edge_range[1])])
 
         average_lambda = np.mean([from_lambda, to_lambda])
         d_spacing = average_lambda / 2.
@@ -234,7 +234,7 @@ class MarchDollaseFittingJobHandler:
 
         def set_params(params_object, name_of_parameter, dict_entry, parameter_flag):
             params_object.add(name_of_parameter,
-                              value=np.float(dict_entry[name_of_parameter]),
+                              value=float(dict_entry[name_of_parameter]),
                               vary=parameter_flag)
 
         def record_result_into_dict(entry_dict, result_object, name_of_parameter, parameter_flag):

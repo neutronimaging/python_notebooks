@@ -347,7 +347,7 @@ class NamingSchemaDefinition(object):
             prefix = old_file_name[start_index: end_index + 1]
 
         try:
-            _index = np.int(_name_separated[-1]) + offset
+            _index = int(_name_separated[-1]) + offset
             new_name = prefix + new_index_separator + \
                        '{:0{}}'.format(_index, new_number_of_digits) + \
                        _ext

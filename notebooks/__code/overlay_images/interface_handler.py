@@ -206,7 +206,7 @@ class Interface(QMainWindow):
         self.check_export_button_status()
 
     def _xoffset_value_to_add(self, to_add=0):
-        current_value = np.int(str(self.ui.xoffset_lineEdit.text()))
+        current_value = int(str(self.ui.xoffset_lineEdit.text()))
         new_value = current_value + to_add
         if new_value < 0:
             new_value = 0
@@ -215,7 +215,7 @@ class Interface(QMainWindow):
         self.ui.xoffset_lineEdit.setText(str(new_value))
 
     def _yoffset_value_to_add(self, to_add=0):
-        current_value = np.int(str(self.ui.yoffset_lineEdit.text()))
+        current_value = int(str(self.ui.yoffset_lineEdit.text()))
         new_value = current_value + to_add
         if new_value < 0:
             new_value = 0

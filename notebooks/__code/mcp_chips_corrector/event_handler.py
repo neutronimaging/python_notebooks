@@ -78,19 +78,19 @@ class EventHandler:
         image_height = self.parent.image_size.height
         image_width = self.parent.image_size.width
 
-        contour_width = np.int(image_width / 2)
-        contour_height = np.int(image_height / 2)
+        contour_width = int(image_width / 2)
+        contour_height = int(image_height / 2)
         if chip_index == 0:
             x0, y0 = 0, 0
         elif chip_index == 1:
-            x0 = np.int(image_width/2)
+            x0 = int(image_width/2)
             y0 = 0
         elif chip_index == 2:
             x0 = 0
-            y0 = np.int(image_height/2)
+            y0 = int(image_height/2)
         else:
-            x0 = np.int(image_width/2)
-            y0 = np.int(image_height/2)
+            x0 = int(image_width/2)
+            y0 = int(image_height/2)
 
         _pen = QPen()
         _pen.setColor(COLOR_CONTOUR)

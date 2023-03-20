@@ -139,7 +139,7 @@ class Manual(QMainWindow):
 
                 # left and right - > we works with xoffset, column 1
                 if motion in ['left', 'right']:
-                    _old_value = np.int(self.parent.ui.tableWidget.item(_row, 1).text())
+                    _old_value = int(self.parent.ui.tableWidget.item(_row, 1).text())
 
                     if motion == 'left':
                         xoffset = -1
@@ -151,7 +151,7 @@ class Manual(QMainWindow):
 
                 else:  # up and down -> yoffset, column 2
 
-                    _old_value = np.int(self.parent.ui.tableWidget.item(_row, 2).text())
+                    _old_value = int(self.parent.ui.tableWidget.item(_row, 2).text())
 
                     if motion == 'up':
                         yoffset = -1

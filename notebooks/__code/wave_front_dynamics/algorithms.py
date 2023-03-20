@@ -82,7 +82,7 @@ class Algorithms:
 
     def are_data_from_max_to_min(self, ydata):
         nbr_points = len(ydata)
-        nbr_point_for_investigation = np.int(nbr_points * 0.1)
+        nbr_point_for_investigation = int(nbr_points * 0.1)
 
         mean_first_part = np.mean(ydata[0:nbr_point_for_investigation])
 
@@ -177,7 +177,7 @@ class Algorithms:
                            'n': popt[3]}
 
             error = np.sqrt(np.diag(pcov))
-            _peak = np.int(popt[0] + (popt[1]/np.sqrt(2)))
+            _peak = int(popt[0] + (popt[1]/np.sqrt(2)))
 
             if not is_data_from_max_to_min:
                 _peak = len(ydata) - _peak
@@ -192,7 +192,7 @@ class Algorithms:
                 else:
                     error[_i] = _err
 
-            _peak_error = np.int(error[0] + (error[1]/np.sqrt(2)))
+            _peak_error = int(error[0] + (error[1]/np.sqrt(2)))
 
             peak_error_function_data_error.append(_peak_error)
             dict_error_function_parameters[str(_index_file)] = _local_dict
@@ -270,7 +270,7 @@ class Algorithms:
         if bin_size == 1:
             return numpy_data
 
-        nbr_bin = np.int(len(numpy_data) / bin_size)
+        nbr_bin = int(len(numpy_data) / bin_size)
         data_to_rebinned = numpy_data[0: nbr_bin * bin_size]
         binned_array_step1 = np.reshape(data_to_rebinned, [nbr_bin, bin_size])
         if bin_type == "mean":

@@ -124,12 +124,12 @@ class EventHandler:
             # target_length = self.parent.markers['target']['length']
             # target_border = self.parent.markers['target']['border']
 
-            pos.append([np.int(x + width / 2), y - length - np.int(height/2)])
-            pos.append([np.int(x + width / 2), y + length + np.int(height/2)])
+            pos.append([int(x + width / 2), y - length - int(height/2)])
+            pos.append([int(x + width / 2), y + length + int(height/2)])
             adj.append([0, 1])
 
-            pos.append([x - length - np.int(width/2), np.int(y + height / 2)])
-            pos.append([x + length + np.int(width/2), np.int(y + height / 2)])
+            pos.append([x - length - int(width/2), int(y + height / 2)])
+            pos.append([x + length + int(width/2), int(y + height / 2)])
             adj.append([2, 3])
 
             pos = np.array(pos)
@@ -173,20 +173,20 @@ class EventHandler:
         target_length = self.parent.markers['target']['length']
         target_border = self.parent.markers['target']['border']
 
-        pos.append([np.int(x + width / 2), y + target_border])
-        pos.append([np.int(x + width / 2), y + target_border + target_length])
+        pos.append([int(x + width / 2), y + target_border])
+        pos.append([int(x + width / 2), y + target_border + target_length])
         adj.append([0, 1])
 
-        pos.append([np.int(x + width / 2), y + height - target_length - target_border])
-        pos.append([np.int(x + width / 2), y + height - target_border])
+        pos.append([int(x + width / 2), y + height - target_length - target_border])
+        pos.append([int(x + width / 2), y + height - target_border])
         adj.append([2, 3])
 
-        pos.append([x + target_border, np.int(y + height / 2)])
-        pos.append([x + target_border + target_length, np.int(y + height / 2)])
+        pos.append([x + target_border, int(y + height / 2)])
+        pos.append([x + target_border + target_length, int(y + height / 2)])
         adj.append([4, 5])
 
-        pos.append([x + width - target_border - target_length, np.int(y + height / 2)])
-        pos.append([x + width - target_border, np.int(y + height / 2)])
+        pos.append([x + width - target_border - target_length, int(y + height / 2)])
+        pos.append([x + width - target_border, int(y + height / 2)])
         adj.append([6, 7])
 
         pos = np.array(pos)
@@ -234,8 +234,8 @@ class EventHandler:
         self.parent.ui.scaling_factor_lineEdit.setText("{:.2f}".format(scaling_factor))
 
         [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
-        new_image_height = np.int(image_height * scaling_factor)
-        new_image_width = np.int(image_width * scaling_factor)
+        new_image_height = int(image_height * scaling_factor)
+        new_image_width = int(image_width * scaling_factor)
 
         self.parent.eventProgress.setMaximum(len(self.parent.o_norm_high_res.data['sample']['data']))
         self.parent.eventProgress.setValue(0)
@@ -252,8 +252,8 @@ class EventHandler:
         x_1_h = region1['high_res']['x']
         y_1_h = region1['high_res']['y']
 
-        x_index_array_resized_array = np.int(x_1_l * scaling_factor - x_1_h)
-        y_index_array_resized_array = np.int(y_1_l * scaling_factor - y_1_h)
+        x_index_array_resized_array = int(x_1_l * scaling_factor - x_1_h)
+        y_index_array_resized_array = int(y_1_l * scaling_factor - y_1_h)
         self.parent.ui.xoffset_lineEdit.setText(str(x_index_array_resized_array))
         self.parent.ui.yoffset_lineEdit.setText(str(y_index_array_resized_array))
 
@@ -318,10 +318,10 @@ class EventHandler:
         o_table.set_item_with_str(row=row_selected, column=2, cell_str="Manual")
 
         [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
-        new_image_height = np.int(image_height * scaling_factor)
-        new_image_width = np.int(image_width * scaling_factor)
-        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
-        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+        new_image_height = int(image_height * scaling_factor)
+        new_image_width = int(image_width * scaling_factor)
+        x_index_array_resized_array = int(str(self.parent.ui.xoffset_lineEdit.text()))
+        y_index_array_resized_array = int(str(self.parent.ui.yoffset_lineEdit.text()))
 
         resize_and_overlay_images = self.parent.resize_and_overlay_images
         _high_res_image = self.parent.o_norm_high_res.data['sample']['data'][row_selected]
@@ -360,16 +360,16 @@ class EventHandler:
         scaling_factor = float(str(self.parent.ui.scaling_factor_lineEdit.text()))
 
         [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
-        new_image_height = np.int(image_height * scaling_factor)
-        new_image_width = np.int(image_width * scaling_factor)
+        new_image_height = int(image_height * scaling_factor)
+        new_image_width = int(image_width * scaling_factor)
 
         self.parent.eventProgress.setMaximum(len(self.parent.o_norm_high_res.data['sample']['data']))
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
         QtGui.QGuiApplication.processEvents()
 
-        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
-        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+        x_index_array_resized_array = int(str(self.parent.ui.xoffset_lineEdit.text()))
+        y_index_array_resized_array = int(str(self.parent.ui.yoffset_lineEdit.text()))
 
         resize_and_overlay_images = []
         resize_and_overlay_modes = []
@@ -431,7 +431,7 @@ class EventHandler:
         status_plus_button = True
         status_plus_plus_button = True
 
-        xoffset_value = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
+        xoffset_value = int(str(self.parent.ui.xoffset_lineEdit.text()))
         if xoffset_value == 0:
             status_minus_button = False
             status_minus_minus_button = False
@@ -455,7 +455,7 @@ class EventHandler:
         status_plus_button = True
         status_plus_plus_button = True
 
-        yoffset_value = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+        yoffset_value = int(str(self.parent.ui.yoffset_lineEdit.text()))
         if yoffset_value == 0:
             status_minus_button = False
             status_minus_minus_button = False
@@ -485,22 +485,22 @@ class EventHandler:
         height = self.parent.markers['height']
         length = self.parent.markers['overlay']['1']['length']
 
-        center_x = overlay_1_dict['x'] + np.int(width/2)
-        center_y = overlay_1_dict['y'] + np.int(height/2)
+        center_x = overlay_1_dict['x'] + int(width/2)
+        center_y = overlay_1_dict['y'] + int(height/2)
 
         # scaling_factor = float(str(self.parent.ui.scaling_factor_lineEdit.text()))
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
 
         # [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data['sample']['data'][0])
-        # new_image_height = np.int(image_height * scaling_factor)
-        # new_image_width = np.int(image_width * scaling_factor)
+        # new_image_height = int(image_height * scaling_factor)
+        # new_image_width = int(image_width * scaling_factor)
 
         # _high_res_image = self.parent.o_norm_high_res.data['sample']['data'][row_selected]
         # _low_res_image = self.parent.o_norm_low_res.data['sample']['data'][row_selected]
 
-        x_index_array_resized_array = np.int(str(self.parent.ui.xoffset_lineEdit.text()))
-        y_index_array_resized_array = np.int(str(self.parent.ui.yoffset_lineEdit.text()))
+        x_index_array_resized_array = int(str(self.parent.ui.xoffset_lineEdit.text()))
+        y_index_array_resized_array = int(str(self.parent.ui.yoffset_lineEdit.text()))
 
         # low_res_image = self.parent.np.array(Image.fromarray(_low_res_image).resize((new_image_width,
         #                                                                              new_image_height)))

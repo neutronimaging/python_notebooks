@@ -9,7 +9,7 @@ class ImageSize:
     gap_index = 0
 
     def __init__(self, width=0, height=0):
-        gap_index = np.int(height/2)
+        gap_index = int(height/2)
         self.gap_index = gap_index
         self.width = width
         self.height = height

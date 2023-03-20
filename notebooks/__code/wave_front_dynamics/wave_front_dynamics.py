@@ -122,8 +122,8 @@ class WaveFrontDynamicsUI(QMainWindow):
         self.prepare_data_bin_size_pressed()
 
         # first file used as reference
-        t0 = np.float(self.list_timestamp[0])
-        self.list_relative_timestamp = [np.float(_time) - t0 for _time in self.list_timestamp]
+        t0 = float(self.list_timestamp[0])
+        self.list_relative_timestamp = [float(_time) - t0 for _time in self.list_timestamp]
         o_event = EventHandler(parent=self)
         o_event.update_list_of_relative_timestamp_of_prepared_data()
 

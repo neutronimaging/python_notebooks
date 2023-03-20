@@ -111,7 +111,7 @@ class Profile:
     def get_x_y_width_height_of_roi(roi_id=None):
         x, y = roi_id.pos()
         width, height = roi_id.size()
-        return {'x'     : np.int(x) - HORIZONTAL_MARGIN,
-                'y'     : np.int(y) - VERTICAL_MARGIN,
-                'width' : np.int(width),
-                'height': np.int(height)}
+        return {'x'     : int(x) - HORIZONTAL_MARGIN,
+                'y'     : int(y) - VERTICAL_MARGIN,
+                'width' : int(width),
+                'height': int(height)}

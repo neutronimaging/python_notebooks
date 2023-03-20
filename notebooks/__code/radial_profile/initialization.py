@@ -59,10 +59,10 @@ class Initialization(Parent):
         self.parent.ui.image_view.addItem(self.parent.hLine, ignoreBounds=False)
 
     def widgets(self):
-        # self.parent.ui.circle_y.setText(str(np.int(self.parent.width / 2)))
+        # self.parent.ui.circle_y.setText(str(int(self.parent.width / 2)))
         self.parent.ui.circle_y.setText(str(600))
 
-        self.parent.ui.circle_x.setText(str(np.int(self.parent.height / 2)))
+        self.parent.ui.circle_x.setText(str(int(self.parent.height / 2)))
         # self.parent.ui.lineEdit.setText(str(self.parent.grid_size))
 
         self.parent.ui.guide_red_slider.setValue(self.parent.guide_color_slider['red'])
@@ -85,7 +85,7 @@ class Initialization(Parent):
         o_event = EventHandler(parent=self.parent)
         max_radius = o_event.retrieve_max_radius_possible()
         self.parent.ui.max_radius_slider.setMaximum(max_radius)
-        self.parent.ui.max_radius_slider.setValue(np.int(max_radius/2))
+        self.parent.ui.max_radius_slider.setValue(int(max_radius/2))
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)

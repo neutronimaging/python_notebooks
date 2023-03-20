@@ -86,8 +86,8 @@ class AutomaticallyStitch:
                 long_axis_value = data_dictionary[_file].metadata['MotLongAxis.RBV'] - long_axis_value_image_reference
                 lift_axis_value = data_dictionary[_file].metadata['MotLiftTable.RBV'] - lift_axis_value_image_reference
 
-                xoffset_of_this_file = np.int(long_axis_value * list_pixel_vs_motor_long_axis_value[_file_index])
-                yoffset_of_this_file = np.int(lift_axis_value * list_pixel_vs_motor_lift_axis_value[_file_index])
+                xoffset_of_this_file = int(long_axis_value * list_pixel_vs_motor_long_axis_value[_file_index])
+                yoffset_of_this_file = int(lift_axis_value * list_pixel_vs_motor_lift_axis_value[_file_index])
 
                 group_offset_dictionary[_file]['xoffset'] = xoffset_of_this_file
                 group_offset_dictionary[_file]['yoffset'] = yoffset_of_this_file

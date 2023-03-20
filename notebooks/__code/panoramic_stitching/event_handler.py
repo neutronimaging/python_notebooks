@@ -34,7 +34,7 @@ class EventHandler:
 
         offset_dictionary = self.parent.offset_dictionary
         if (column == 1) or (column == 2):
-            offset_value = np.int(o_table.get_item_str_from_cell(row=row, column=column))
+            offset_value = int(o_table.get_item_str_from_cell(row=row, column=column))
 
         if column == 1:
             offset_dictionary[folder_selected][file_name]['xoffset'] = offset_value
@@ -190,12 +190,12 @@ class EventHandler:
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
 
-        current_xoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=1))
-        new_xoffset = np.int(current_xoffset_of_selected_row - delta_x)
+        current_xoffset_of_selected_row = int(o_table.get_item_str_from_cell(row=row_selected, column=1))
+        new_xoffset = int(current_xoffset_of_selected_row - delta_x)
         self.parent.ui.tableWidget.item(row_selected, 1).setText(str(new_xoffset))
         self.save_table_offset_of_this_cell(row=row_selected, column=1)
 
-        current_yoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=2))
+        current_yoffset_of_selected_row = int(o_table.get_item_str_from_cell(row=row_selected, column=2))
         new_yoffset = current_yoffset_of_selected_row - delta_y
         self.parent.ui.tableWidget.item(row_selected, 2).setText(str(new_yoffset))
         self.save_table_offset_of_this_cell(row=row_selected, column=2)
@@ -289,7 +289,7 @@ class EventHandler:
         row_selected = o_table.get_row_selected()
         current_offset = o_table.get_item_str_from_cell(row=row_selected, column=column)
 
-        new_offset = np.int(current_offset) + nbr_pixel
+        new_offset = int(current_offset) + nbr_pixel
         o_table.set_item_with_str(row=row_selected, column=column, cell_str=str(new_offset))
 
         self.parent.table_of_offset_cell_changed(row_selected, column)

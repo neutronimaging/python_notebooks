@@ -147,13 +147,13 @@ class FineTabHandler:
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
 
-        current_xoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=1))
-        new_xoffset = np.int(current_xoffset_of_selected_row - delta_x)
+        current_xoffset_of_selected_row = int(o_table.get_item_str_from_cell(row=row_selected, column=1))
+        new_xoffset = int(current_xoffset_of_selected_row - delta_x)
         self.parent.ui.tableWidget.item(row_selected, 1).setText(str(new_xoffset))
         o_event = TOFEventHandler(parent=self.parent)
         o_event.save_table_offset_of_this_cell(row=row_selected, column=1)
 
-        current_yoffset_of_selected_row = np.int(o_table.get_item_str_from_cell(row=row_selected, column=2))
+        current_yoffset_of_selected_row = int(o_table.get_item_str_from_cell(row=row_selected, column=2))
         new_yoffset = current_yoffset_of_selected_row - delta_y
         self.parent.ui.tableWidget.item(row_selected, 2).setText(str(new_yoffset))
         o_event.save_table_offset_of_this_cell(row=row_selected, column=2)

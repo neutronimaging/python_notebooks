@@ -59,7 +59,7 @@ class TOFEventHandler:
         folder_name = o_table.get_item_str_from_cell(row=row, column=0)
         offset_dictionary = self.parent.offset_dictionary
         if (column == 1) or (column == 2):
-            offset_value = np.int(o_table.get_item_str_from_cell(row=row, column=column))
+            offset_value = int(o_table.get_item_str_from_cell(row=row, column=column))
 
         if column == 1:
             offset_dictionary[folder_name]['xoffset'] = offset_value

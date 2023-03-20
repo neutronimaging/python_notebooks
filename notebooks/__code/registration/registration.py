@@ -7,7 +7,8 @@ from scipy.ndimage.interpolation import shift
 import copy
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QFileDialog, QMainWindow
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QTableWidgetSelectionRange, \
+    QProgressBar, QTableWidgetItem, QApplication
 from qtpy import QtGui, QtCore
 import webbrowser
 
@@ -117,7 +118,7 @@ class RegistrationUi(QMainWindow):
 
     # initialization
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(300, 20)
         self.eventProgress.setMaximumSize(300, 20)
         self.eventProgress.setVisible(False)
@@ -158,7 +159,7 @@ class RegistrationUi(QMainWindow):
         d2.addWidget(self.ui.profile)
 
         # set up layout
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(area)
 
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
@@ -214,18 +215,18 @@ class RegistrationUi(QMainWindow):
         self.select_row_in_table(0)
 
     def table_right_click(self):
-        top_menu = QtGui.QMenu(self)
+        top_menu = QMenu(self)
 
         state_of_paste = True
         if self.value_to_copy is None:
             state_of_paste = False
 
-        copy_menu = QtGui.QMenu("Copy ...")
+        copy_menu = QMenu("Copy ...")
         top_menu.addMenu(copy_menu)
         copy_xoffset_menu = copy_menu.addAction("From first xoffset cell selected")
         copy_yoffset_menu = copy_menu.addAction("From first yoffset cell selected")
 
-        paste_menu = QtGui.QMenu("Paste ...")
+        paste_menu = QMenu("Paste ...")
         paste_menu.setEnabled(state_of_paste)
         top_menu.addMenu(paste_menu)
         paste_xoffset_menu = paste_menu.addAction("In all xoffset cell selected")
@@ -403,8 +404,8 @@ class RegistrationUi(QMainWindow):
 
         for _row in list_row:
 
-            xoffset = np.int(float(self.ui.tableWidget.item(_row, 1).text()))
-            yoffset = np.int(float(self.ui.tableWidget.item(_row, 2).text()))
+            xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
+            yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
             rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
 
             _data = data_raw[_row].copy()
@@ -422,12 +423,12 @@ class RegistrationUi(QMainWindow):
         """
 
         # nb_points ?
-        nb_points = np.int(3 * max([np.abs(p1[0] - p2[0]), np.abs(p2[1] - p1[1])]))
+        nb_points = int(3 * max([np.abs(p1[0] - p2[0]), np.abs(p2[1] - p1[1])]))
 
         x_spacing = (p2[0] - p1[0]) / (nb_points + 1)
         y_spacing = (p2[1] - p1[1]) / (nb_points + 1)
 
-        full_array = [[np.int(p1[0] + i * x_spacing), np.int(p1[1] + i * y_spacing)]
+        full_array = [[int(p1[0] + i * x_spacing), int(p1[1] + i * y_spacing)]
                       for i in range(1, nb_points + 1)]
 
         clean_array = []
@@ -470,8 +471,8 @@ class RegistrationUi(QMainWindow):
         if self.ui.selection_groupBox.isVisible():
 
             if self.ui.selection_all.isChecked():
-                min_row = np.int(self.ui.opacity_selection_slider.minimum()/100)
-                max_row = np.int(self.ui.opacity_selection_slider.maximum()/100)
+                min_row = int(self.ui.opacity_selection_slider.minimum()/100)
+                max_row = int(self.ui.opacity_selection_slider.maximum()/100)
 
                 for _index in np.arange(min_row, max_row+1):
                     if _index == self.reference_image_index:
@@ -486,7 +487,7 @@ class RegistrationUi(QMainWindow):
 
             else: # selection slider
                 slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
-                from_index = np.int(slider_index)
+                from_index = int(slider_index)
                 _data = np.transpose(self.data_dict['data'][from_index])
                 _filename = os.path.basename(self.data_dict['file_name'][from_index])
                 _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
@@ -499,7 +500,7 @@ class RegistrationUi(QMainWindow):
                     pass
 
                 else:
-                    to_index = np.int(slider_index + 1)
+                    to_index = int(slider_index + 1)
                     _data = np.transpose(self.data_dict['data'][to_index])
                     _filename = os.path.basename(self.data_dict['file_name'][to_index])
                     _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
@@ -575,7 +576,7 @@ class RegistrationUi(QMainWindow):
         self.set_item(row, 3, infos['rotation'], is_reference_image=is_reference_image)
 
     def set_item(self, row=0, col=0, value='', is_reference_image=False):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if is_reference_image:
             item.setBackground(self.color_reference_background)
@@ -609,8 +610,8 @@ class RegistrationUi(QMainWindow):
                 # retrieve slider infos
                 slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
 
-                from_index = np.int(slider_index)
-                to_index = np.int(slider_index + 1)
+                from_index = int(slider_index)
+                to_index = int(slider_index + 1)
 
                 if from_index == slider_index:
                     _image = self.data_dict['data'][from_index]
@@ -776,11 +777,11 @@ class RegistrationUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
 
         # clear previous selection
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
 
         # select file of interest
-        selection_range = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+        selection_range = QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(selection_range, True)
 
         self.ui.tableWidget.showRow(row)
@@ -922,7 +923,7 @@ class RegistrationUi(QMainWindow):
         if _export_folder:
             o_export = ExportRegistration(parent=self, export_folder=_export_folder)
             o_export.run()
-            QtGui.QApplication.processEvents()
+            QApplication.processEvents()
 
     def closeEvent(self, event=None):
         if self.registration_tool_ui:

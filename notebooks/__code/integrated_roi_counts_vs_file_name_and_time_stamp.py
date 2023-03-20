@@ -801,8 +801,8 @@ class Initializer(object):
         [height, width] = np.shape(self.parent.data_dict['data'][0])
         self.parent.default_guide_roi['width'] = int(width/10)
         self.parent.default_guide_roi['height'] = int(height/5)
-        self.parent.default_guide_roi['x0'] = np.int(width/2)
-        self.parent.default_guide_roi['y0'] = np.int(height/2)
+        self.parent.default_guide_roi['x0'] = int(width/2)
+        self.parent.default_guide_roi['y0'] = int(height/2)
         self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
 
     def widgets(self):

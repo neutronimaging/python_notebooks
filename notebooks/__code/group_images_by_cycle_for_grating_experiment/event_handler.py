@@ -66,7 +66,7 @@ class EventHandler:
         new_group_selected = value['new']
         _, new_group_index = new_group_selected.split(" # ")
         o_get = Get(parent=self.parent)
-        short_list_files = o_get.list_of_files_basename_only(np.int(new_group_index))
+        short_list_files = o_get.list_of_files_basename_only(int(new_group_index))
         self.parent.list_of_files_ui.options = short_list_files
         short_list_new_files = o_get.list_of_new_files_basename_only(np.int(new_group_index))
         self.parent.list_of_new_files_ui.options = short_list_new_files

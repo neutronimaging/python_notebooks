@@ -72,8 +72,8 @@ class CalculateProfiles:
         return y_profile
 
     def calculate_matrices(self, display=True):
-        x_central_pixel = np.float(str(self.parent.ui.circle_x.text()))
-        y_central_pixel = np.float(str(self.parent.ui.circle_y.text()))
+        x_central_pixel = float(str(self.parent.ui.circle_x.text()))
+        y_central_pixel = float(str(self.parent.ui.circle_y.text()))
 
         inner_radius = self.parent.ui.ring_inner_radius_doubleSpinBox.value()
         thickness = self.parent.ui.ring_thickness_doubleSpinBox.value()
@@ -115,7 +115,7 @@ class CalculateProfiles:
         full_angles_matrix = np.zeros((image_height, image_width))
 
         # bottom right corner of matrix
-        right_bottom_corner_width = np.int(image_width - x_central_pixel)
+        right_bottom_corner_width = int(image_width - x_central_pixel)
         right_bottom_corner_height = np.int(image_height - y_central_pixel)
 
         x_right_bottom = np.arange(right_bottom_corner_width) + x_central_pixel

@@ -71,7 +71,7 @@ def all_metadata_match(metadata_1={}, metadata_2={}, list_key_to_check=None):
     for _key in list_key:
         try:
             if np.abs(float(
-                    metadata_1[_key]['value']) - np.float(metadata_2[_key]['value'])) > METADATA_ERROR_ALLOWED:
+                    metadata_1[_key]['value']) - float(metadata_2[_key]['value'])) > METADATA_ERROR_ALLOWED:
                 return False
         except ValueError:
             if metadata_1[_key]['value'] != metadata_2[_key]['value']:

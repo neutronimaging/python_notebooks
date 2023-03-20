@@ -228,8 +228,8 @@ class Alignment:
         image_height, image_width = self.parent.image_size.height, \
                                     self.parent.image_size.width
 
-        mid_width = np.int(image_width / 2)
-        mid_height = np.int(image_height / 2)
+        mid_width = int(image_width / 2)
+        mid_height = int(image_height / 2)
 
         return {'width': mid_width, 'height': mid_height}
 

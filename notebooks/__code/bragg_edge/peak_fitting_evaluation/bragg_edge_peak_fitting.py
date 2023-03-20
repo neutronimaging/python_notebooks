@@ -254,7 +254,7 @@ class Interface(QMainWindow):
 
     def update_time_spectra(self):
         try:
-            distance_source_detector_m = np.float(self.ui.distance_detector_sample.text())
+            distance_source_detector_m = float(self.ui.distance_detector_sample.text())
             self.ui.statusbar.showMessage("", 100)  # 10s
         except ValueError:
             self.ui.statusbar.showMessage("distance source detector input is WRONG", 120000)  # 2mn
@@ -262,7 +262,7 @@ class Interface(QMainWindow):
             return
 
         try:
-            detector_offset_micros = np.float(self.ui.detector_offset.text())
+            detector_offset_micros = float(self.ui.detector_offset.text())
             self.ui.statusbar.showMessage("", 100)  # 10s
         except ValueError:
             self.ui.statusbar.showMessage("detector offset input is WRONG", 120000)  # 2mn
@@ -789,7 +789,7 @@ class Interface(QMainWindow):
                 _textedit.setVisible(not state)
             elif column == 0:
                 _label = _widget
-                _label.setText("{:0.6f}".format(np.float(o_march.get_initial_parameter_value(column=column))))
+                _label.setText("{:0.6f}".format(float(o_march.get_initial_parameter_value(column=column))))
                 _label.setVisible(not state)
             else:
                 _label = _widget

@@ -115,7 +115,7 @@ class ImageHandler:
         list_xoffset = [offset_dictionary[_key]['xoffset'] for _key in offset_dictionary.keys()]
         list_yoffset = [offset_dictionary[_key]['yoffset'] for _key in offset_dictionary.keys()]
 
-        return np.int(np.max(list_yoffset)), np.int(np.max(list_xoffset))
+        return int(np.max(list_yoffset)), int(np.max(list_xoffset))
 
     def update_from_to_roi(self, state=False):
 
