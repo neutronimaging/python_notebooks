@@ -972,7 +972,7 @@ class RegistrationUi(QMainWindow):
     def markers_registration_button_clicked(self):
         o_markers_registration = RegistrationMarkersLauncher(parent=self)
         self.set_widget_status(list_ui=[self.ui.auto_registration_button],
-                           enabled=False)
+                              enabled=False)
 
     def profiler_registration_button_clicked(self):
         o_registration_profile = RegistrationProfileLauncher(parent=self)

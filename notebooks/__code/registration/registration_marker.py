@@ -1,5 +1,6 @@
 from qtpy.QtWidgets import QDialog, QApplication
 from qtpy import QtGui, QtCore
+from qtpy.QtWidgets import QTableWidget, QTableWidgetItem, QMenu, QApplication
 import os
 import numpy as np
 
@@ -89,7 +90,7 @@ class RegistrationMarkers(QDialog):
     def populate_using_markers_table(self):
         for _key_tab_name in self.parent.markers_table:
 
-            _table = QtGui.QTableWidget(self.nbr_files, 3)
+            _table = QTableWidget(self.nbr_files, 3)
             _table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
             _table.setAlternatingRowColors(True)
             _table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -114,16 +115,16 @@ class RegistrationMarkers(QDialog):
 
     def __populate_table_row(self, table_ui, row, file, x, y):
         # file name
-        _item = QtGui.QTableWidgetItem(file)
+        _item = QTableWidgetItem(file)
         table_ui.setItem(row, 0, _item)
         _item.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
 
         # x
-        _item = QtGui.QTableWidgetItem(str(x))
+        _item = QTableWidgetItem(str(x))
         table_ui.setItem(row, 1, _item)
 
         # y
-        _item = QtGui.QTableWidgetItem(str(y))
+        _item = QTableWidgetItem(str(y))
         table_ui.setItem(row, 2, _item)
 
     def get_marker_name(self):
@@ -149,7 +150,7 @@ class RegistrationMarkers(QDialog):
                 _width = _table_ui.columnWidth(_col)
                 table_column_width.append(_width)
             break
-        self.parent.markers_table_column_width = table_column_width
+            self.parent.markers_table_column_width = table_column_width
 
     def save_current_table(self):
         _current_tab = self.ui.tabWidget.currentIndex()
@@ -251,7 +252,7 @@ class RegistrationMarkers(QDialog):
         copy_cell = None
         paste_cell = None
 
-        menu = QtGui.QMenu(self)
+        menu = QMenu(self)
         if bottom_row_selected == top_row_selected:
             copy_cell = menu.addAction("Copy")
         if not (self.parent.marker_table_buffer_cell is None):
@@ -280,7 +281,7 @@ class RegistrationMarkers(QDialog):
         return (MarkerDefaultSettings.color[color], color)
 
     def add_marker_button_clicked(self):
-        table = QtGui.QTableWidget(self.nbr_files, 3)
+        table = QTableWidget(self.nbr_files, 3)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
         table.setAlternatingRowColors(True)
         table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -351,7 +352,7 @@ class RegistrationMarkers(QDialog):
         self.parent.eventProgress.setMaximum(8)
         self.parent.eventProgress.setValue(step)
         self.parent.eventProgress.setVisible(True)
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
 
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         markers_table = self.parent.markers_table
@@ -370,7 +371,7 @@ class RegistrationMarkers(QDialog):
 
         step += 1
         self.parent.eventProgress.setValue(step)
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
         for _marker in markers_table.keys():
             _list_files = markers_table[_marker]['data']
             for _file in _list_files:
@@ -379,7 +380,7 @@ class RegistrationMarkers(QDialog):
 
         step += 1
         self.parent.eventProgress.setValue(step)
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
         for _file in markers_list.keys():
             markers_list[_file]['mean_x'] = np.mean(markers_list[_file]['x'])
             markers_list[_file]['mean_y'] = np.mean(markers_list[_file]['y'])
@@ -392,7 +393,7 @@ class RegistrationMarkers(QDialog):
         # table automatically
         step += 1
         self.parent.eventProgress.setValue(step)
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
         for _index, _file in enumerate(self.parent.data_dict['file_name']):
             _short_file = os.path.basename(_file)
 
@@ -407,17 +408,17 @@ class RegistrationMarkers(QDialog):
 
         step += 1
         self.parent.eventProgress.setValue(step)
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
         self.parent.modified_images(all_row=True)
 
         step += 1
         self.parent.eventProgress.setValue(step)
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
         self.parent.display_image()
 
         step += 1
         self.parent.eventProgress.setValue(step)
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
         self.parent.profile_line_moved()
 
         QApplication.restoreOverrideCursor()

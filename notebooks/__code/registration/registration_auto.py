@@ -4,7 +4,7 @@ except ImportError:
     from skimage.registration import phase_cross_correlation as register_translation
 
 
-from qtpy import QtGui
+from qtpy.QtWidgets import QApplication
 
 
 class RegistrationAuto:
@@ -33,6 +33,6 @@ class RegistrationAuto:
                 self.parent.set_item(row=_row, col=2, value=yoffset)
 
             self.parent.eventProgress.setValue(_row+1)
-            QtGui.QApplication.processEvents()
+            QApplication.processEvents()
 
         self.parent.eventProgress.setVisible(False)

@@ -8,7 +8,9 @@ from changepy import pelt
 from changepy.costs import normal_var
 from scipy.ndimage.interpolation import shift
 import copy
-from qtpy.QtWidgets import QMainWindow, QFileDialog, QApplication
+from qtpy.QtWidgets import QMainWindow, QFileDialog, QApplication, QProgressBar, QLabel, QSlider, QHBoxLayout, \
+    QVBoxLayout, QWidget, QTableWidgetSelectionRange, QTableWidgetItem
+
 from qtpy import QtGui, QtCore
 
 from NeuNorm.normalization import Normalization
@@ -168,7 +170,7 @@ class RegistrationProfileUi(QMainWindow):
         self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(300, 20)
         self.eventProgress.setMaximumSize(300, 20)
         self.eventProgress.setVisible(False)
@@ -245,31 +247,31 @@ class RegistrationProfileUi(QMainWindow):
         self.ui.hori_profile = pg.PlotWidget()
         self.ui.hori_profile.plot()
         # slider and height
-        label1 = QtGui.QLabel("Length")
-        hori_length = QtGui.QSlider(QtCore.Qt.Horizontal)
+        label1 = QLabel("Length")
+        hori_length = QSlider(QtCore.Qt.Horizontal)
         hori_length.setMinimum(self.roi['horizontal']['min_length'])
         hori_length.setMaximum(self.roi['horizontal']['max_length'])
         hori_length.setValue(self.roi['horizontal']['length'])
         hori_length.valueChanged.connect(self.horizontal_slider_length_changed)
         self.horizontal_length_slider = hori_length
-        label2 = QtGui.QLabel("Width")
-        hori_width = QtGui.QSlider(QtCore.Qt.Horizontal)
+        label2 = QLabel("Width")
+        hori_width = QSlider(QtCore.Qt.Horizontal)
         hori_width.setMinimum(self.roi['horizontal']['min_width'])
         hori_width.setMaximum(self.roi['horizontal']['max_width'])
         hori_width.setValue(self.roi['horizontal']['width'])
         hori_width.valueChanged.connect(self.horizontal_slider_width_changed)
         self.horizontal_width_slider = hori_width
-        hori_layout= QtGui.QHBoxLayout()
+        hori_layout= QHBoxLayout()
         hori_layout.addWidget(label1)
         hori_layout.addWidget(hori_length)
         hori_layout.addWidget(label2)
         hori_layout.addWidget(hori_width)
-        hori_widget = QtGui.QWidget()
+        hori_widget = QWidget()
         hori_widget.setLayout(hori_layout)
-        full_hori_layout = QtGui.QVBoxLayout()
+        full_hori_layout = QVBoxLayout()
         full_hori_layout.addWidget(self.ui.hori_profile)
         full_hori_layout.addWidget(hori_widget)
-        full_hori_widget = QtGui.QWidget()
+        full_hori_widget = QWidget()
         full_hori_widget.setLayout(full_hori_layout)
         d2.addWidget(full_hori_widget)
 
@@ -277,31 +279,31 @@ class RegistrationProfileUi(QMainWindow):
         self.ui.verti_profile = pg.PlotWidget()
         self.ui.verti_profile.plot()
         # slider and height
-        label1 = QtGui.QLabel("Length")
-        verti_length = QtGui.QSlider(QtCore.Qt.Horizontal)
+        label1 = QLabel("Length")
+        verti_length = QSlider(QtCore.Qt.Horizontal)
         verti_length.setMinimum(self.roi['vertical']['min_length'])
         verti_length.setMaximum(self.roi['vertical']['max_length'])
         verti_length.setValue(self.roi['vertical']['length'])
         verti_length.valueChanged.connect(self.vertical_slider_length_changed)
         self.vertical_length_slider = verti_length
-        label2 = QtGui.QLabel("Width")
-        verti_width = QtGui.QSlider(QtCore.Qt.Horizontal)
+        label2 = QLabel("Width")
+        verti_width = QSlider(QtCore.Qt.Horizontal)
         verti_width.setMinimum(self.roi['vertical']['min_width'])
         verti_width.setMaximum(self.roi['vertical']['max_width'])
         verti_width.setValue(self.roi['vertical']['width'])
         verti_width.valueChanged.connect(self.vertical_slider_width_changed)
         self.vertical_width_slider = verti_width
-        verti_layout = QtGui.QHBoxLayout()
+        verti_layout = QHBoxLayout()
         verti_layout.addWidget(label1)
         verti_layout.addWidget(verti_length)
         verti_layout.addWidget(label2)
         verti_layout.addWidget(verti_width)
-        verti_widget = QtGui.QWidget()
+        verti_widget = QWidget()
         verti_widget.setLayout(verti_layout)
-        full_verti_layout = QtGui.QVBoxLayout()
+        full_verti_layout = QVBoxLayout()
         full_verti_layout.addWidget(self.ui.verti_profile)
         full_verti_layout.addWidget(verti_widget)
-        full_verti_widget = QtGui.QWidget()
+        full_verti_widget = QWidget()
         full_verti_widget.setLayout(full_verti_layout)
         d3.addWidget(full_verti_widget)
 
@@ -311,7 +313,7 @@ class RegistrationProfileUi(QMainWindow):
         d4.addWidget(self.ui.peaks)
 
         # set up layout
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(area)
 
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
@@ -409,18 +411,18 @@ class RegistrationProfileUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
 
         # clear previous selection
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
 
         # select file of interest
-        selection_range = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+        selection_range = QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(selection_range, True)
 
         self.ui.tableWidget.showRow(row)
         self.ui.tableWidget.blockSignals(False)
 
     def __set_item(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if row == self.reference_image_index:
             item.setBackground(self.color_reference_background)
@@ -846,7 +848,7 @@ class RegistrationProfileUi(QMainWindow):
                                           input_working_dir=self.working_dir,
                                           export_folder=_export_folder)
             o_export.run()
-            QtGui.QApplication.processEvents()
+            QApplication.processEvents()
 
 
     def opacity_slider_moved(self, _):

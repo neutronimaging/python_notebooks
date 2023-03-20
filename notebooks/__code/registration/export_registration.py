@@ -1,8 +1,8 @@
 import numpy as np
 import copy
-from qtpy import QtGui
 from skimage import transform
 from scipy.ndimage.interpolation import shift
+from qtpy.QtWidgets import QApplication
 
 from NeuNorm.normalization import Normalization
 
@@ -48,8 +48,7 @@ class ExportRegistration:
             o_norm.export(folder=self.export_folder, data_type='sample')
 
             self.parent.eventProgress.setValue(_row+1)
-            QtGui.QApplication.processEvents()
-
+            QApplication.processEvents()
 
         self.parent.eventProgress.setVisible(False)
 
