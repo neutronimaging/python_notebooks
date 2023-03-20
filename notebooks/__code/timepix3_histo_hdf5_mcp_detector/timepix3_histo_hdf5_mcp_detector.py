@@ -20,6 +20,7 @@ from __code.ipywe import fileselector
 
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
+MAX_TIME_PER_PULSE = 1.667e4
 
 
 class Timepix3HistoHdf5McpDetector:
@@ -139,7 +140,7 @@ class Timepix3HistoHdf5McpDetector:
                                  nrows=1,
                                  ncols=1)
 
-        def plot_profiles(x_axis, dSD_m, offset_micros, element):
+        def plot_profiles(x_axis, dSD_m, offset_micros, time_shift, element):
 
             if element == 'Ni':
                 _handler = BraggEdgeLibrary(material=[element],
@@ -154,12 +155,15 @@ class Timepix3HistoHdf5McpDetector:
             self.hkl = _handler.hkl
             self.handler = _handler
 
+            # applying the shift to the tof axis
+            tof_array = self.time_spectra[:-1]
+            condition = np.array(tof_array) < time_shift
+
             if x_axis == 'TOF':
-                tof_array = self.time_spectra
                 x_axis_array = tof_array
                 xlabel = "TOF offset (" + MICRO + "s)"
             else:
-                _exp = Experiment(tof=self.time_spectra * 1e-6,  # to convert to seconds
+                _exp = Experiment(tof=tof_array * 1e-6,  # to convert to seconds
                                   distance_source_detector_m=dSD_m,
                                   detector_offset_micros=offset_micros)
                 lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
@@ -168,7 +172,11 @@ class Timepix3HistoHdf5McpDetector:
 
             ax2.cla()
             for _profile_key in profile_dict.keys():
-                ax2.plot(x_axis_array[:-1], profile_dict[_profile_key],
+
+                _profile = np.array(profile_dict[_profile_key])
+                _profile_shifted = np.hstack((_profile[~condition], _profile[condition]))
+
+                ax2.plot(x_axis_array, _profile_shifted,
                          label=f"ROI #{_profile_key}",
                          color=list_matplotlib_colors[_profile_key])
                 ax2.set_ylabel("Mean counts of ROI")
@@ -206,6 +214,11 @@ class Timepix3HistoHdf5McpDetector:
                                                         min=0,
                                                         max=15000,
                                                         continuous_update=False),
+                        time_shift=widgets.IntSlider(value=0,
+                                                     min=0,
+                                                     max=MAX_TIME_PER_PULSE,
+                                                     step=1,
+                                                     continuous_update=False),
                         element=widgets.RadioButtons(options=['Ni', 'Ta'],
                                                      value='Ni'),
                         )
