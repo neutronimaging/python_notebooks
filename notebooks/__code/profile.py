@@ -11,6 +11,7 @@ from skimage import transform
 from qtpy.QtWidgets import QFileDialog, QMainWindow, QTableWidgetSelectionRange, QTableWidgetItem, \
     QVBoxLayout, QSpacerItem, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QWidget
 from qtpy import QtCore
+from qtpy.QtGui import QGuiApplication
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -566,25 +567,25 @@ class ProfileUi(QMainWindow):
     def transparency_slider_moved(self, value):
         self.display_image()
 
-    @wait_cursor
+    # @wait_cursor
     def right_rotation_slow_clicked(self):
         self.rotation_angle -= 0.1
         self.display_image(recalculate_image=True)
         self.display_profiles()
 
-    @wait_cursor
+    # @wait_cursor
     def left_rotation_slow_clicked(self):
         self.rotation_angle += 0.1
         self.display_image(recalculate_image=True)
         self.display_profiles()
 
-    @wait_cursor
+    # @wait_cursor
     def right_rotation_fast_clicked(self):
         self.rotation_angle -= 1
         self.display_image(recalculate_image=True)
         self.display_profiles()
 
-    @wait_cursor
+    # @wait_cursor
     def left_rotation_fast_clicked(self):
         self.rotation_angle += 1
         self.display_image(recalculate_image=True)

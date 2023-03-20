@@ -22,7 +22,7 @@ class Color(object):
 
         # make sure we will produce enough color
         nbr_rgb = len(self.list_rgb)
-        repetition = np.int(np.divide(nbr_color, nbr_rgb)) + 1
+        repetition = int(np.divide(nbr_color, nbr_rgb)) + 1
 
         for _ in np.arange(repetition):
             for _color in self.list_rgb:

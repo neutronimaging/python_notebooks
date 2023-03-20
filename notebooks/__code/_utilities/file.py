@@ -508,8 +508,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#march-dollase bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['march-dollase bragg peak selection range'] = [np.int(m.group('left_index')),
-                                                                            np.int(m.group('right_index'))]
+                    metadata['march-dollase bragg peak selection range'] = [int(m.group('left_index')),
+                                                                            int(m.group('right_index'))]
                 line_number += 1
                 continue
             if "#march-dollase fitting procedure started: " in line:
@@ -522,8 +522,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#Bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['bragg_peak_selection_range'] = [np.int(m.group('left_index')),
-                                                              np.int(m.group('right_index'))]
+                    metadata['bragg_peak_selection_range'] = [int(m.group('left_index')),
+                                                              int(m.group('right_index'))]
                 line_number += 1
                 continue
             if "#kropff " in line:
@@ -531,8 +531,8 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                           r"(?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['kropff_{}'.format(m.group('type'))] = [np.int(m.group('left_index')),
-                                                                     np.int(m.group('right_index'))]
+                    metadata['kropff_{}'.format(m.group('type'))] = [int(m.group('left_index')),
+                                                                     int(m.group('right_index'))]
                 line_number += 1
                 continue
             if "#fitting algorithm selected: " in line:
