@@ -5,7 +5,7 @@ from ipywidgets.widgets import interact
 from ipywidgets import widgets
 import numpy as np
 import os
-import ipywe.fileselector
+from __code.ipywe.fileselector import FileSelectorPanel
 from IPython.core.display import display, HTML
 
 from NeuNorm.normalization import Normalization
@@ -18,7 +18,7 @@ class DisplayExportScreenshots(object):
         self.working_dir = working_dir
 
     def select_input_folder(self):
-        self.folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Input Folder ...',
+        self.folder_ui = FileSelectorPanel(instruction='Select Input Folder ...',
                                                               start_dir=self.working_dir,
                                                               type='directory',
                                                               multiple=False)
@@ -26,7 +26,7 @@ class DisplayExportScreenshots(object):
         self.folder_ui.show()
 
     def select_metadata_file(self):
-        self.metadata_file_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select Metadata File (created by file_name_and_metadata_vs_time_stamp.ipynb ...',
+        self.metadata_file_ui = FileSelectorPanel(instruction='Select Metadata File (created by file_name_and_metadata_vs_time_stamp.ipynb ...',
                                                               start_dir=self.working_dir,
                                                               multiple=False)
         self.metadata_file_ui.show()

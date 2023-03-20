@@ -8,14 +8,9 @@ import collections
 import pyqtgraph as pg
 from skimage import transform
 
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui, QtWidgets
-    from PyQt4.QtGui import QMainWindow, QDialog
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QTableWidgetSelectionRange, QTableWidgetItem, \
+    QVBoxLayout, QSpacerItem, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QWidget
+from qtpy import QtCore
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -199,9 +194,9 @@ class ProfileUi(QMainWindow):
 
         if nbr_row > 0:
             nbr_col = self.ui.tableWidget.columnCount()
-            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+            new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
             self.ui.tableWidget.setRangeSelected(new_selection, True)
-            new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
+            new_selection_2 = QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
 
     def update_guide_roi_using_guide_table(self, row=-1):
@@ -283,9 +278,9 @@ class ProfileUi(QMainWindow):
         # select new entry
         nbr_row = self.ui.tableWidget.rowCount()
         nbr_col = self.ui.tableWidget.columnCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.ui.tableWidget.blockSignals(False)
 
@@ -296,9 +291,9 @@ class ProfileUi(QMainWindow):
 
         # select new entry
         nbr_col = self.ui.tableWidget_2.columnCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget_2.setRangeSelected(full_range, False)
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget_2.setRangeSelected(new_selection, True)
         self.ui.tableWidget_2.blockSignals(False)
 
@@ -317,39 +312,39 @@ class ProfileUi(QMainWindow):
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):
-        item = QtGui.QTableWidgetItem("Profile # {}".format(row))
+        item = QTableWidgetItem("Profile # {}".format(row))
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
         self.ui.all_plots_profiles_table.setItem(row, 0, item)
 
     def set_item_profile_table(self, row=0):
-        spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        widget = QtGui.QComboBox()
+        spacerItem_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        widget = QComboBox()
         widget.addItems(self.default_profile_width_values)
         widget.blockSignals(True)
         widget.currentIndexChanged.connect(self.profile_width_changed)
-        spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        hori_layout = QtGui.QHBoxLayout()
+        spacerItem_right = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        hori_layout = QHBoxLayout()
         hori_layout.addItem(spacerItem_left)
         hori_layout.addWidget(widget)
         hori_layout.addItem(spacerItem_right)
-        cell_widget = QtGui.QWidget()
+        cell_widget = QWidget()()
         cell_widget.setLayout(hori_layout)
         self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
         widget.blockSignals(False)
 
     def set_item_main_table(self, row=0, col=0, value=''):
         if col == 0:
-            spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            widget = QtGui.QCheckBox()
+            spacerItem_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            widget = QCheckBox()
             widget.blockSignals(True)
             self.list_table_widget_checkbox.insert(row, widget)
             widget.stateChanged.connect(self.guide_state_changed)
-            spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            hori_layout = QtGui.QHBoxLayout()
+            spacerItem_right = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            hori_layout = QHBoxLayout()
             hori_layout.addItem(spacerItem_left)
             hori_layout.addWidget(widget)
             hori_layout.addItem(spacerItem_right)
-            cell_widget = QtGui.QWidget()
+            cell_widget = QWidget()()
             cell_widget.setLayout(hori_layout)
             if value is True:
                 widget.setCheckState(QtCore.Qt.Checked)
@@ -358,7 +353,7 @@ class ProfileUi(QMainWindow):
             self.ui.tableWidget.setCellWidget(row, col, cell_widget)
             widget.blockSignals(False)
         else:
-            item = QtGui.QTableWidgetItem(str(value))
+            item = QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
 
     def get_profile_dimensions(self, row=-1):
@@ -514,10 +509,10 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget_2.blockSignals(True)
         nbr_col = self.ui.tableWidget_2.columnCount()
         nbr_row = self.ui.tableWidget_2.rowCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget_2.setRangeSelected(full_range, False)
         row = self.get_selected_row()
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget_2.setRangeSelected(new_selection, True)
         self.highlight_guide_profile_pyqt_rois(row=row)
         self.ui.tableWidget_2.blockSignals(False)
@@ -527,10 +522,10 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget.blockSignals(True)
         nbr_col = self.ui.tableWidget.columnCount()
         nbr_row = self.ui.tableWidget.rowCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
         row = self.get_selected_row(source='tableWidget_2')
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+        new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.highlight_guide_profile_pyqt_rois(row=row)
         self.ui.tableWidget.blockSignals(False)
@@ -621,7 +616,7 @@ class ProfileUi(QMainWindow):
             o_export = ExportProfiles(parent=self,
                                       export_folder=_export_folder)
             o_export.run()
-            QtGui.QGuiApplication.processEvents()
+            QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
         self.change_slider(offset=-1)
@@ -889,7 +884,7 @@ class Initializer(object):
         self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.image_view.ui.menuBtn.hide()
         self.parent.ui.image_view.ui.roiBtn.hide()
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
@@ -897,7 +892,7 @@ class Initializer(object):
         self.parent.ui.profile_view = pg.PlotWidget()
         self.parent.ui.profile_view.plot()
         self.parent.legend = self.parent.ui.profile_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2 = QVBoxLayout()
         vertical_layout2.addWidget(self.parent.ui.profile_view)
         self.parent.ui.profile_widget.setLayout(vertical_layout2)
 
@@ -905,17 +900,17 @@ class Initializer(object):
         self.parent.ui.all_plots_view = pg.PlotWidget()
         self.parent.ui.all_plots_view.plot()
         self.parent.all_plots_legend = self.parent.ui.all_plots_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2 = QVBoxLayout()
         vertical_layout2.addWidget(self.parent.ui.all_plots_view)
         self.parent.ui.all_plots_widget.setLayout(vertical_layout2)
 
     def set_item_all_plot_file_name_table(self, row=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def set_item_summary_table(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.parent.ui.summary_table.setItem(row, col, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
