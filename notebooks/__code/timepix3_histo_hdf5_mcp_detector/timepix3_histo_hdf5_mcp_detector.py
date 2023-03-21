@@ -17,6 +17,8 @@ from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code._utilities.color import Color
 from __code.ipywe import fileselector
+from __code.timepix3_histo_hdf5_mcp_detector.fit_regions import FitRegions
+
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
 MAX_TIME_PER_PULSE = 1.667e4
@@ -328,44 +330,44 @@ class Timepix3HistoHdf5McpDetector:
 
         text_width = '80px'   # px
         display(HTML('<span style="font-size: 15px; color:green">High lambda</span>'))
-        a0_layout = widgets.HBox([widgets.Label(u"a\u2080"),
+        self.a0_layout = widgets.HBox([widgets.Label(u"a\u2080"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
-        b0_layout = widgets.HBox([widgets.Label(u"b\u2080"),
+        self.b0_layout = widgets.HBox([widgets.Label(u"b\u2080"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
-        high_layout = widgets.VBox([a0_layout,
-                                    b0_layout])
+        high_layout = widgets.VBox([self.a0_layout,
+                                    self.b0_layout])
         display(high_layout)
 
         display(HTML(''))
 
         display(HTML('<span style="font-size: 15px; color:green">Low lambda</span>'))
-        ahkl_layout = widgets.HBox([widgets.Label(u"a\u2095\u2096\u2097"),
+        self.ahkl_layout = widgets.HBox([widgets.Label(u"a\u2095\u2096\u2097"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
-        bhkl_layout = widgets.HBox([widgets.Label(u"b\u2095\u2096\u2097"),
+        self.bhkl_layout = widgets.HBox([widgets.Label(u"b\u2095\u2096\u2097"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
-        low_layout = widgets.VBox([ahkl_layout,
-                                   bhkl_layout])
+        low_layout = widgets.VBox([self.ahkl_layout,
+                                   self.bhkl_layout])
         display(low_layout)
 
         display(HTML(''))
 
         display(HTML('<span style="font-size: 15px; color:green">Bragg peak</span>'))
-        lambdahkl_layout = widgets.HBox([widgets.Label(u"\u03bb\u2095\u2096\u2097"),
+        self.lambdahkl_layout = widgets.HBox([widgets.Label(u"\u03bb\u2095\u2096\u2097"),
                                   widgets.FloatText(5e-8,
                                                     layout=widgets.Layout(width=text_width))])
-        tau_layout = widgets.HBox([widgets.Label(u"\u03C4"),
+        self.tau_layout = widgets.HBox([widgets.Label(u"\u03C4"),
                                   widgets.FloatText(1,
                                                     layout=widgets.Layout(width=text_width))])
-        sigma_layout = widgets.HBox([widgets.Label(u"\u03C3"),
+        self.sigma_layout = widgets.HBox([widgets.Label(u"\u03C3"),
                                    widgets.FloatText(1e-3,
                                                      layout=widgets.Layout(width=text_width))])
-        bragg_peak_layout = widgets.VBox([lambdahkl_layout,
-                                          tau_layout,
-                                          sigma_layout])
+        bragg_peak_layout = widgets.VBox([self.lambdahkl_layout,
+                                          self.tau_layout,
+                                          self.sigma_layout])
         display(bragg_peak_layout)
 
     def prepare_data_to_fit(self):
@@ -396,9 +398,28 @@ class Timepix3HistoHdf5McpDetector:
         x_axis_to_fit = self.x_axis_to_fit
         list_of_y_axis_to_fit = self.list_of_y_axis_to_fit
 
-        self.fit_high_lambda()
-        self.fit_low_lambda()
-        self.fit_bragg_peak()
+        a0 = self.a0_layout.children[1].value
+        b0 = self.b0_layout.children[1].value
+
+        ahkl = self.ahkl_layout.children[1].value
+        bhkl = self.bhkl_layout.children[1].value
+
+        lambdahkl = self.lambdahkl_layout.children[1].value
+        tau = self.tau_layout.children[1].value
+        sigma = self.sigma_layout.children[1].value
+
+        for _y_axis_to_fit in list_of_y_axis_to_fit:
+
+            o_fit_regions = FitRegions(a0=a0,
+                                       b0=b0,
+                                       ahkl=ahkl,
+                                       bhkl=bhkl,
+                                       lambdahkl=lambdahkl,
+                                       sigma=sigma,
+                                       tau=tau,
+                                       x_axis_to_fit=x_axis_to_fit,
+                                       y_axis_to_fit=_y_axis_to_fit)
+        
 
     def fit_high_lambda(self):
         pass
