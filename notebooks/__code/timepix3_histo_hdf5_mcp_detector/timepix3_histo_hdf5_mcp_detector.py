@@ -28,6 +28,9 @@ class Timepix3HistoHdf5McpDetector:
     # histogram data
     histo_data = None
 
+    # list of profiles
+    profile_dict = None
+
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
 
@@ -120,6 +123,8 @@ class Timepix3HistoHdf5McpDetector:
                                       facecolor='none')
             rect_array.append(_rect)
 
+        self.profile_dict = profile_dict
+
         max_counts = []
         for _profile_key in profile_dict.keys():
             max_counts.append(np.max(profile_dict[_profile_key]))
@@ -200,7 +205,7 @@ class Timepix3HistoHdf5McpDetector:
                              size=15,
                              )
 
-        v = interactive(plot_profiles,
+        self.v = interactive(plot_profiles,
                         x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
                                                     value='lambda',
                                                     ),
@@ -222,4 +227,72 @@ class Timepix3HistoHdf5McpDetector:
                         element=widgets.RadioButtons(options=['Ni', 'Ta'],
                                                      value='Ni'),
                         )
-        display(v)
+        display(self.v)
+
+    def select_peak_to_fit(self):
+        lambda_x_axis, profiles_shifted_dict = self.prepare_data_to_fit()
+
+        list_matplotlib_colors = Color.list_matplotlib
+        fig3, ax3 = plt.subplots(figsize=(8, 8),
+                                 nrows=1,
+                                 ncols=1)
+
+        def plot_peaks(left_range, right_range):
+
+            ax3.cla()
+
+            for _profile_key in profiles_shifted_dict.keys():
+
+                _profile = np.array(profiles_shifted_dict[_profile_key])
+
+                ax3.plot(lambda_x_axis, _profile,
+                         label=f"ROI #{_profile_key}",
+                         color=list_matplotlib_colors[_profile_key])
+            ax3.set_ylabel("Mean counts of ROI")
+            ax3.set_xlabel(LAMBDA + "(" + ANGSTROMS + ")")
+
+            # display range
+            ax3.axvline(x=left_range, color='g')
+            ax3.axvline(x=right_range, color='r')
+
+        self.peak_to_fit = interactive(plot_peaks,
+                                       left_range=widgets.FloatSlider(min=np.min(lambda_x_axis),
+                                                                      max=np.max(lambda_x_axis),
+                                                                      # value=np.min(lambda_x_axis),
+                                                                      value=0.8,  # FIXME for debugging only
+                                                                      readout_format=".3f"),
+                                       right_range=widgets.FloatSlider(min=np.min(lambda_x_axis),
+                                                                       max=np.max(lambda_x_axis),
+                                                                       # value=np.max(lambda_x_axis),
+                                                                       value=1.5,  # FIXME for debugging only
+                                                                       readout_format=".3f"))
+        display(self.peak_to_fit)
+
+    def prepare_data_to_fit(self):
+        """
+        this is where the y-axis to fit and x_axis (lambda scale) are calculated using the instrument
+        settings and the time shift define in the previous cells.
+        """
+
+        profiles_dict = self.profile_dict
+        profiles_shifted_dict = {}
+
+        dSD_m = self.v.children[1].value
+        offset_micros = self.v.children[2].value
+        time_shift = self.v.children[3].value
+        # element = self.v.children[4].value
+
+        tof_array = self.time_spectra[:-1]
+        condition = np.array(tof_array) < time_shift
+
+        _exp = Experiment(tof=tof_array * 1e-6,  # to convert to seconds
+                          distance_source_detector_m=dSD_m,
+                          detector_offset_micros=offset_micros)
+        lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
+
+        for _profile_key in profiles_dict.keys():
+            _profile = np.array(profiles_dict[_profile_key])
+            _profile_shifted = np.hstack((_profile[~condition], _profile[condition]))
+            profiles_shifted_dict[_profile_key] = _profile_shifted
+
+        return lambda_array, profiles_shifted_dict
