@@ -114,9 +114,9 @@ class Timepix3HistoHdf5McpDetector:
                 mean_counts = np.nanmean(_image[y0:y1+1, x0:x1+1])
                 profile_dict[_roi_index].append(mean_counts)
 
-            _rect = patches.Rectangle((y0, x0),
-                                      y1-y0,
+            _rect = patches.Rectangle((x0, y0),
                                       x1-x0,
+                                      y1-y0,
                                       linewidth=1,
                                       edgecolor=list_matplotlib_colors[_roi_index],
                                       facecolor='none')
