@@ -328,10 +328,10 @@ class Timepix3HistoHdf5McpDetector:
 
         text_width = '80px'   # px
         display(HTML('<span style="font-size: 15px; color:green">High lambda</span>'))
-        a0_layout = widgets.HBox([widgets.Label("a0"),
+        a0_layout = widgets.HBox([widgets.Label(u"a\u2080"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
-        b0_layout = widgets.HBox([widgets.Label("b0"),
+        b0_layout = widgets.HBox([widgets.Label(u"b\u2080"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
         high_layout = widgets.VBox([a0_layout,
@@ -341,10 +341,10 @@ class Timepix3HistoHdf5McpDetector:
         display(HTML(''))
 
         display(HTML('<span style="font-size: 15px; color:green">Low lambda</span>'))
-        ahkl_layout = widgets.HBox([widgets.Label("ahkl"),
+        ahkl_layout = widgets.HBox([widgets.Label(u"a\u2095\u2096\u2097"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
-        bhkl_layout = widgets.HBox([widgets.Label("bhkl"),
+        bhkl_layout = widgets.HBox([widgets.Label(u"b\u2095\u2096\u2097"),
                                   widgets.IntText(1,
                                                   layout=widgets.Layout(width=text_width))])
         low_layout = widgets.VBox([ahkl_layout,
@@ -354,13 +354,13 @@ class Timepix3HistoHdf5McpDetector:
         display(HTML(''))
 
         display(HTML('<span style="font-size: 15px; color:green">Bragg peak</span>'))
-        lambdahkl_layout = widgets.HBox([widgets.Label("lambda_hkl"),
+        lambdahkl_layout = widgets.HBox([widgets.Label(u"\u03bb\u2095\u2096\u2097"),
                                   widgets.FloatText(5e-8,
                                                     layout=widgets.Layout(width=text_width))])
-        tau_layout = widgets.HBox([widgets.Label("tau"),
+        tau_layout = widgets.HBox([widgets.Label(u"\u03C4"),
                                   widgets.FloatText(1,
                                                     layout=widgets.Layout(width=text_width))])
-        sigma_layout = widgets.HBox([widgets.Label("sigma"),
+        sigma_layout = widgets.HBox([widgets.Label(u"\u03C3"),
                                    widgets.FloatText(1e-3,
                                                      layout=widgets.Layout(width=text_width))])
         bragg_peak_layout = widgets.VBox([lambdahkl_layout,
