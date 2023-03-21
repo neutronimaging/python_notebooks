@@ -6,7 +6,7 @@ import matplotlib.patches as patches
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
-from qtpy import QtGui
+from lmfit import Model, Parameter
 
 from __code.roi_selection_ui import Interface
 
@@ -17,7 +17,6 @@ from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code._utilities.color import Color
 from __code.ipywe import fileselector
-
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
 MAX_TIME_PER_PULSE = 1.667e4
@@ -230,14 +229,20 @@ class Timepix3HistoHdf5McpDetector:
         display(self.v)
 
     def select_peak_to_fit(self):
-        lambda_x_axis, profiles_shifted_dict = self.prepare_data_to_fit()
+
+        display(HTML('<span style="font-size: 20px; color:green">Full range of peak to fit (left_range, right_range)</span>'))
+        display(HTML('<span style="font-size: 20px; color:red">Peak threshold (left_peak, right_peak)</span>'))
+
+        lambda_x_axis, profiles_shifted_dict = self.prepare_data()
+        self.lambda_x_axis = lambda_x_axis
+        self.profiles_shifted_dict = profiles_shifted_dict
 
         list_matplotlib_colors = Color.list_matplotlib
         fig3, ax3 = plt.subplots(figsize=(8, 8),
                                  nrows=1,
                                  ncols=1)
 
-        def plot_peaks(left_range, right_range):
+        def plot_peaks(left_range, right_range, left_edge, right_edge):
 
             ax3.cla()
 
@@ -253,7 +258,11 @@ class Timepix3HistoHdf5McpDetector:
 
             # display range
             ax3.axvline(x=left_range, color='g')
-            ax3.axvline(x=right_range, color='r')
+            ax3.axvline(x=right_range, color='g')
+
+            # display range of edge
+            ax3.axvline(x=left_edge, color='r')
+            ax3.axvline(x=right_edge, color='r')
 
         self.peak_to_fit = interactive(plot_peaks,
                                        left_range=widgets.FloatSlider(min=np.min(lambda_x_axis),
@@ -264,11 +273,19 @@ class Timepix3HistoHdf5McpDetector:
                                        right_range=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                        max=np.max(lambda_x_axis),
                                                                        # value=np.max(lambda_x_axis),
-                                                                       value=1.5,  # FIXME for debugging only
-                                                                       readout_format=".3f"))
+                                                                       value=1.9,  # FIXME for debugging only
+                                                                       readout_format=".3f"),
+                                       left_edge=widgets.FloatSlider(min=np.min(lambda_x_axis),
+                                                                     max=np.max(lambda_x_axis),
+                                                                     value=1.2,  # FIXME for debugging only
+                                                                     readout_format=".3f"),
+                                       right_edge=widgets.FloatSlider(min=np.min(lambda_x_axis),
+                                                                      max=np.max(lambda_x_axis),
+                                                                      value=1.4,   # FIXME for debugging only
+                                                                      readout_format=".3f"))
         display(self.peak_to_fit)
 
-    def prepare_data_to_fit(self):
+    def prepare_data(self):
         """
         this is where the y-axis to fit and x_axis (lambda scale) are calculated using the instrument
         settings and the time shift define in the previous cells.
@@ -282,6 +299,9 @@ class Timepix3HistoHdf5McpDetector:
         time_shift = self.v.children[3].value
         # element = self.v.children[4].value
 
+        # left_range = self.peak_to_fit.children[0].value
+        # right_range = self.peak_to_fit.children[1].value
+
         tof_array = self.time_spectra[:-1]
         condition = np.array(tof_array) < time_shift
 
@@ -293,6 +313,98 @@ class Timepix3HistoHdf5McpDetector:
         for _profile_key in profiles_dict.keys():
             _profile = np.array(profiles_dict[_profile_key])
             _profile_shifted = np.hstack((_profile[~condition], _profile[condition]))
+            # _profile_shifted = _profile_shifted[left_range: right_range]
             profiles_shifted_dict[_profile_key] = _profile_shifted
 
+        # self.x_axis_to_fit = lambda_array[left_range: right_range]
+        self.x_axis_to_fit = lambda_array
+        self.list_of_y_axis_to_fit = profiles_shifted_dict
+
         return lambda_array, profiles_shifted_dict
+
+    def setup_fitting_parameters(self):
+
+        display(HTML('<span style="font-size: 20px; color:blue">Init parameters</span>'))
+
+        text_width = '80px'   # px
+        display(HTML('<span style="font-size: 15px; color:green">High lambda</span>'))
+        a0_layout = widgets.HBox([widgets.Label("a0"),
+                                  widgets.IntText(1,
+                                                  layout=widgets.Layout(width=text_width))])
+        b0_layout = widgets.HBox([widgets.Label("b0"),
+                                  widgets.IntText(1,
+                                                  layout=widgets.Layout(width=text_width))])
+        high_layout = widgets.VBox([a0_layout,
+                                    b0_layout])
+        display(high_layout)
+
+        display(HTML(''))
+
+        display(HTML('<span style="font-size: 15px; color:green">Low lambda</span>'))
+        ahkl_layout = widgets.HBox([widgets.Label("ahkl"),
+                                  widgets.IntText(1,
+                                                  layout=widgets.Layout(width=text_width))])
+        bhkl_layout = widgets.HBox([widgets.Label("bhkl"),
+                                  widgets.IntText(1,
+                                                  layout=widgets.Layout(width=text_width))])
+        low_layout = widgets.VBox([ahkl_layout,
+                                   bhkl_layout])
+        display(low_layout)
+
+        display(HTML(''))
+
+        display(HTML('<span style="font-size: 15px; color:green">Bragg peak</span>'))
+        lambdahkl_layout = widgets.HBox([widgets.Label("lambda_hkl"),
+                                  widgets.FloatText(5e-8,
+                                                    layout=widgets.Layout(width=text_width))])
+        tau_layout = widgets.HBox([widgets.Label("tau"),
+                                  widgets.FloatText(1,
+                                                    layout=widgets.Layout(width=text_width))])
+        sigma_layout = widgets.HBox([widgets.Label("sigma"),
+                                   widgets.FloatText(1e-3,
+                                                     layout=widgets.Layout(width=text_width))])
+        bragg_peak_layout = widgets.VBox([lambdahkl_layout,
+                                          tau_layout,
+                                          sigma_layout])
+        display(bragg_peak_layout)
+
+    def prepare_data_to_fit(self):
+        """
+        this is where the y-axis to fit and x_axis (lambda scale) are calculated using the instrument
+        settings and the time shift define in the previous cells.
+        """
+
+        lambda_x_axis = self.lambda_x_axis
+        profiles_shifted_dict = self.profiles_shifted_dict
+
+        left_range = self.peak_to_fit.children[0].value
+        right_range = self.peak_to_fit.children[1].value
+
+        for _profile_key in profiles_shifted_dict.keys():
+            _profile = np.array(profiles_shifted_dict[_profile_key])
+            _profile_to_fit = _profile[left_range: right_range+1]
+
+        self.x_axis_to_fit = lambda_x_axis[left_range: right_range]
+
+        self.x_axis_to_fit = lambda_x_axis
+        self.list_of_y_axis_to_fit = profiles_shifted_dict
+
+    def fit_peak(self):
+
+        self.prepare_data_to_fit()
+
+        x_axis_to_fit = self.x_axis_to_fit
+        list_of_y_axis_to_fit = self.list_of_y_axis_to_fit
+
+        self.fit_high_lambda()
+        self.fit_low_lambda()
+        self.fit_bragg_peak()
+
+    def fit_high_lambda(self):
+        pass
+
+    def fit_low_lambda(self):
+        pass
+
+    def fit_bragg_peak(self):
+        pass
