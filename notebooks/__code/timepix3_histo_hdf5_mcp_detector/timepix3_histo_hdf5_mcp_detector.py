@@ -8,7 +8,7 @@ import ipywidgets as widgets
 from IPython.core.display import display, HTML
 from lmfit import Model, Parameter
 
-from __code.roi_selection_ui import Interface
+from __code.advanced_roi_selection_ui.advanced_roi_selection_ui import Interface
 
 from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
@@ -34,6 +34,9 @@ class Timepix3HistoHdf5McpDetector:
     # list of profiles
     profile_dict = None
 
+    # dict of fitting result for each region of interest
+    dict_of_fit_dict = {}
+
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
 
@@ -54,6 +57,7 @@ class Timepix3HistoHdf5McpDetector:
 
     def load_nexus(self, nexus_file_name=None):
         logging.info(f"Loading HDF5: {nexus_file_name}")
+        self.input_nexus_filename = nexus_file_name
         with h5py.File(nexus_file_name, 'r') as f:
             self.stack = np.array(f['entry']['histo']['stack'])
             self.time_spectra = np.array(f['entry']['histo']['tof_ns']) / 1000  # to convert to micros
@@ -99,13 +103,15 @@ class Timepix3HistoHdf5McpDetector:
         logging.info(f"User selected: {roi_selected}")
         self.roi_selected = roi_selected
 
-    def calculate_and_display_profiles(self):
+    def calculate_and_display_profile(self):
         roi_selected = self.roi_selected
 
         list_matplotlib_colors = Color.list_matplotlib
 
         profile_dict = {}
         rect_array = []
+        total_counts = 0
+        total_pixels = 0
         for _roi_index in roi_selected.keys():
             x0 = roi_selected[_roi_index]['x0']
             y0 = roi_selected[_roi_index]['y0']
@@ -148,7 +154,7 @@ class Timepix3HistoHdf5McpDetector:
                                  nrows=1,
                                  ncols=1)
 
-        def plot_profiles(x_axis, dSD_m, offset_micros, time_shift, element):
+        def plot_profile(x_axis, dSD_m, offset_micros, time_shift, element):
 
             if element == 'Ni':
                 _handler = BraggEdgeLibrary(material=[element],
@@ -208,7 +214,7 @@ class Timepix3HistoHdf5McpDetector:
                              size=15,
                              )
 
-        self.v = interactive(plot_profiles,
+        self.v = interactive(plot_profile,
                         x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
                                                     value='lambda',
                                                     ),
@@ -447,6 +453,7 @@ class Timepix3HistoHdf5McpDetector:
                      color=list_matplotlib_colors[_key])
 
         max_counts = 0
+        dict_of_fit_dict = {}
         for key_of_y_axis_to_fit in list_of_y_axis_to_fit.keys():
 
             _y_axis_to_fit = list_of_y_axis_to_fit[key_of_y_axis_to_fit]
@@ -464,6 +471,8 @@ class Timepix3HistoHdf5McpDetector:
                                        left_edge_index=self.left_edge_index,
                                        right_edge_index=self.right_edge_index)
             o_fit_regions.all_regions()
+
+            dict_of_fit_dict[key_of_y_axis_to_fit] = o_fit_regions.fit_dict
 
             # display fitting
             # high lambda
@@ -497,6 +506,8 @@ class Timepix3HistoHdf5McpDetector:
                      size=15,
                      )
 
+        self.dict_of_fit_dict = dict_of_fit_dict
+
         element = self.v.children[4].value
         if element == 'Ni':
             _handler = BraggEdgeLibrary(material=[element],
@@ -521,4 +532,24 @@ class Timepix3HistoHdf5McpDetector:
                      rotation=45,
                      size=15,
                      )
-    
+
+    def saving_session(self):
+
+        # select output location
+
+        # create output file name based on input nexus loaded
+
+        # record all parameters
+        input_nexus_filename = self.input_nexus_filename
+        regions_of_interest = self.roi_selected
+        dSD_m = self.v.children[1].value
+        offset_micros = self.v.children[2].value
+        time_shift = self.v.children[3].value
+        element = self.v.children[4].value
+
+        left_range = self.peak_to_fit.children[0].value
+        right_range = self.peak_to_fit.children[1].value
+        left_edge = self.peak_to_fit.children[2].value
+        right_edge = self.peak_to_fit.children[3].value
+
+
