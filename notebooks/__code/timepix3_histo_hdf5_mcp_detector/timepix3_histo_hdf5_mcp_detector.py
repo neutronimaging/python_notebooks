@@ -385,6 +385,9 @@ class Timepix3HistoHdf5McpDetector:
         left_range = find_nearest_index(lambda_x_axis, left_lambda_range)
         right_range = find_nearest_index(lambda_x_axis, right_lambda_range)
 
+        self.left_edge_index = left_range
+        self.right_edge_index = right_range
+
         logging.info(f"Prepare data to fit:")
         logging.info(f"\tleft_range: {left_lambda_range}" + u"\u212b " + f"-> index: {left_range}")
         logging.info(f"\tright_range: {right_lambda_range}" + u"\u212b " + f"-> index: {right_range}")
@@ -428,4 +431,6 @@ class Timepix3HistoHdf5McpDetector:
                                        sigma=sigma,
                                        tau=tau,
                                        x_axis_to_fit=x_axis_to_fit,
-                                       y_axis_to_fit=_y_axis_to_fit)
+                                       y_axis_to_fit=_y_axis_to_fit,
+                                       left_edge_index=self.left_edge_index,
+                                       right_edge_index=self.right_edge_index)

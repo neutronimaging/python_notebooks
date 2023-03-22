@@ -20,8 +20,12 @@ from __code.timepix3_histo_hdf5_mcp_detector import FittingRegions
 
 class FitRegions:
 
-    def __init__(self, a0=None, b0=None, ahkl=None, bhkl=None, lambdahkl=None, tau=None, sigma=None,
-                 x_axis_to_fit=None, y_axis_to_fit=None):
+    def __init__(self, a0=None, b0=None,
+                 ahkl=None, bhkl=None,
+                 lambdahkl=None, tau=None, sigma=None,
+                 x_axis_to_fit=None, y_axis_to_fit=None,
+                 left_edge_index=0,
+                 right_edge_index=0):
         self.a0 = a0
         self.b0 = b0
         self.ahkl = ahkl
@@ -29,6 +33,8 @@ class FitRegions:
         self.lambdahkl = lambdahkl
         self.tau = tau
         self.sigma = sigma
+        self.left_edge_index = left_edge_index
+        self.right_edge_index = right_edge_index
 
         self.fit_dict = {'a0': {'value': None,
                                 'error': None},
@@ -90,26 +96,34 @@ class FitRegions:
     #     return False
 
     def high_lambda(self):
+        logging.info(f"fitting high lambda:")
         gmodel = Model(kropff_high_lambda, missing='drop', independent_vars=['lda'])
 
         a0 = self.a0
         b0 = self.b0
 
-        xaxis = self.x_axis_to_fit
-        yaxis = self.y_axis_to_fit
+        right_edge_index = self.right_edge_index
+
+        xaxis = self.x_axis_to_fit[right_edge_index:]
+        yaxis = self.y_axis_to_fit[right_edge_index:]
         yaxis = -np.log(yaxis)
 
         try:
             _result = gmodel.fit(yaxis, lda=xaxis, a0=a0, b0=b0)
         except ValueError:
-            raise ValueError("Fitting failed!")
+            raise ValueError("high lambda fitting failed!")
         except TypeError:
-            raise TypeError("Fitting failed!")
+            raise TypeError("high lambda fitting failed!")
 
         a0_value = _result.params['a0'].value
         a0_error = _result.params['a0'].stderr
         b0_value = _result.params['b0'].value
         b0_error = _result.params['b0'].stderr
+
+        logging.info(f"\t{a0_value =}")
+        logging.info(f"\t{a0_error =}")
+        logging.info(f"\t{b0_value =}")
+        logging.info(f"\t{b0_error =}")
 
         yaxis_fitted = kropff_high_lambda(xaxis, a0_value, b0_value)
 
@@ -121,64 +135,49 @@ class FitRegions:
                                                      'yaxis': yaxis_fitted}
 
     def low_lambda(self):
+        logging.info(f"fitting low lambda:")
         gmodel = Model(kropff_low_lambda, missing='drop', independent_vars=['lda'])
 
-        ahkl = self.o_get.ahkl()
-        bhkl = self.o_get.bhkl()
+        ahkl = self.ahkl
+        bhkl = self.bhkl
 
-        table_dictionary = self.table_dictionary
-        common_xaxis = None
-        nearest_index = -1
-        for _key in table_dictionary.keys():
+        left_edge_index = self.left_edge_index
 
-            # if row is locked, continue
-            if table_dictionary[_key]['lock']:
-                continue
+        xaxis = self.x_axis_to_fit[:left_edge_index]
+        yaxis = self.y_axis_to_fit[:left_edge_index]
+        yaxis = -np.log(yaxis)
 
-            if table_dictionary[_key]['rejected']:
-                continue
+        try:
+            _result = gmodel.fit(yaxis,
+                                 lda=xaxis,
+                                 a0=Parameter('a0', value=self.fit_dict['a0']['value'], vary=False),
+                                 b0=Parameter('b0', value=self.fit_dict['b0']['value'], vary=False),
+                                 ahkl=ahkl,
+                                 bhkl=bhkl)
+        except ValueError:
+            raise ValueError("low lambda fitting failed!")
 
-            table_entry = table_dictionary[_key]
+        ahkl_value = _result.params['ahkl'].value
+        ahkl_error = _result.params['ahkl'].stderr
+        bhkl_value = _result.params['bhkl'].value
+        bhkl_error = _result.params['bhkl'].stderr
 
-            if nearest_index == -1:
-                xaxis = table_entry['xaxis']
+        logging.info(f"\t{ahkl_value =}")
+        logging.info(f"\t{ahkl_error =}")
+        logging.info(f"\t{bhkl_value =}")
+        logging.info(f"\t{bhkl_error =}")
 
-                left = table_entry['bragg peak threshold']['left']
+        yaxis_fitted = kropff_low_lambda(xaxis,
+                                         self.fit_dict['a0']['value'],
+                                         self.fit_dict['b0']['value'],
+                                         ahkl_value, bhkl_value)
 
-                nearest_index = find_nearest_index(xaxis, left)
-                xaxis = xaxis[: nearest_index+1]
-                common_xaxis = xaxis
-
-            a0 = table_entry['a0']['val']
-            b0 = table_entry['b0']['val']
-
-            yaxis = table_entry['yaxis']
-            yaxis = yaxis[: nearest_index+1]
-            yaxis = -np.log(yaxis)
-
-            try:
-                _result = gmodel.fit(yaxis,
-                                     lda=common_xaxis,
-                                     a0=Parameter('a0', value=a0, vary=False),
-                                     b0=Parameter('b0', value=b0, vary=False),
-                                     ahkl=ahkl,
-                                     bhkl=bhkl)
-            except ValueError:
-                table_dictionary[_key]['rejected'] = True
-                continue
-
-            ahkl_value = _result.params['ahkl'].value
-            ahkl_error = _result.params['ahkl'].stderr
-            bhkl_value = _result.params['bhkl'].value
-            bhkl_error = _result.params['bhkl'].stderr
-            yaxis_fitted = kropff_low_lambda(common_xaxis, a0, b0, ahkl_value, bhkl_value)
-
-            table_dictionary[_key]['ahkl'] = {'val': ahkl_value,
-                                              'err': ahkl_error}
-            table_dictionary[_key]['bhkl'] = {'val': bhkl_value,
-                                              'err': bhkl_error}
-            table_dictionary[_key]['fitted'][KropffTabSelected.low_tof] = {'xaxis': common_xaxis,
-                                                                           'yaxis': yaxis_fitted}
+        self.fit_dict['ahkl'] = {'value': ahkl_value,
+                                 'error': ahkl_error}
+        self.fit_dict['bhkl'] = {'value': bhkl_value,
+                                 'error': bhkl_error}
+        self.fit_dict[FittingRegions.low_lambda] = {'xaxis': xaxis,
+                                                    'yaxis': yaxis_fitted}
 
     def bragg_peak(self):
         if self.parent.kropff_lambda_settings['state'] == 'fix':
