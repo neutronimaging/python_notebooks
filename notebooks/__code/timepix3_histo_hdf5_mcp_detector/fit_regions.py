@@ -7,7 +7,6 @@ import logging
 # from ibeatles.utilities.status_message_config import StatusMessageStatus, show_status_message
 # import ibeatles.utilities.error as fitting_error
 # from ibeatles.fitting.kropff.get import Get
-# from ibeatles.fitting.kropff.fitting_functions import kropff_high_lambda, kropff_bragg_peak_tof, kropff_low_lambda
 # from ibeatles.fitting import KropffTabSelected
 # from ibeatles.utilities.array_utilities import find_nearest_index
 # from ibeatles.fitting.kropff.checking_fitting_conditions import CheckingFittingConditions
@@ -15,6 +14,8 @@ import logging
 
 from __code.timepix3_histo_hdf5_mcp_detector.fitting_functions import kropff_high_lambda, kropff_low_lambda, \
     kropff_bragg_peak_tof
+import __code.timepix3_histo_hdf5_mcp_detector.error as fitting_error
+from __code.timepix3_histo_hdf5_mcp_detector import FittingRegions
 
 
 class FitRegions:
@@ -29,6 +30,25 @@ class FitRegions:
         self.tau = tau
         self.sigma = sigma
 
+        self.fit_dict = {'a0': {'value': None,
+                                'error': None},
+                         'b0': {'value': None,
+                                'error': None},
+                         'ahkl': {'value': None,
+                                  'error': None},
+                         'bhkl': {'value': None,
+                                  'error': None},
+                         'lambdahkl': {'value': None,
+                                       'error': None},
+                         'tau': {'value': None,
+                                 'error': None},
+                         'sigma': {'value': None,
+                                   'error': None},
+                         FittingRegions.high_lambda: None,
+                         FittingRegions.low_lambda: None,
+                         FittingRegions.bragg_peak: None,
+                         }
+
         self.x_axis_to_fit = x_axis_to_fit
         self.y_axis_to_fit = y_axis_to_fit
 
@@ -37,33 +57,27 @@ class FitRegions:
     #     self.o_get = Get(parent=parent)
     #     self.table_dictionary = self.grand_parent.kropff_table_dictionary
 
-    # def all_regions(self):
-    #     type_error = ""
-    #
-    #     # o_event = KropffBraggPeakThresholdCalculator(parent=self.parent,
-    #     #                                              grand_parent=self.grand_parent)
-    #     # o_event.save_all_profiles()
-    #
-    #     # o_display = Display(parent=self.parent,
-    #     #                     grand_parent=self.grand_parent)
-    #     # o_display.display_bragg_peak_threshold()
-    #
-    #     try:
-    #         self.high_lambda()
-    #         self.low_lambda()
-    #         self.bragg_peak()
-    #     except fitting_error.HighLambdaFittingError as err:
-    #         type_error = err
-    #     except fitting_error.LowLambdaFittingError as err:
-    #         type_error = err
-    #     except fitting_error.BraggPeakFittingError as err:
-    #         type_error = err
-    #
-    #     if type_error:
-    #         show_status_message(parent=self.parent,
-    #                             message=f"Error fitting {type_error}",
-    #                             status=StatusMessageStatus.error,
-    #                             duration_s=5)
+    def all_regions(self):
+        type_error = ""
+
+        # o_event = KropffBraggPeakThresholdCalculator(parent=self.parent,
+        #                                              grand_parent=self.grand_parent)
+        # o_event.save_all_profiles()
+
+        # o_display = Display(parent=self.parent,
+        #                     grand_parent=self.grand_parent)
+        # o_display.display_bragg_peak_threshold()
+
+        try:
+            self.high_lambda()
+            # self.low_lambda()
+            # self.bragg_peak()
+        except fitting_error.HighLambdaFittingError as err:
+            type_error = err
+        except fitting_error.LowLambdaFittingError as err:
+            type_error = err
+        except fitting_error.BraggPeakFittingError as err:
+            type_error = err
 
     # @staticmethod
     # def error_outside_of_tolerance(list_error):
@@ -78,59 +92,33 @@ class FitRegions:
     def high_lambda(self):
         gmodel = Model(kropff_high_lambda, missing='drop', independent_vars=['lda'])
 
-        a0 = self.o_get.a0()
-        b0 = self.o_get.b0()
+        a0 = self.a0
+        b0 = self.b0
 
-        table_dictionary = self.table_dictionary
-        common_xaxis = None
-        nearest_index = -1
+        xaxis = self.x_axis_to_fit
+        yaxis = self.y_axis_to_fit
+        yaxis = -np.log(yaxis)
 
-        xaxis_common = table_dictionary['0']['xaxis']
+        try:
+            _result = gmodel.fit(yaxis, lda=xaxis, a0=a0, b0=b0)
+        except ValueError:
+            raise ValueError("Fitting failed!")
+        except TypeError:
+            raise TypeError("Fitting failed!")
 
-        for _key in table_dictionary.keys():
+        a0_value = _result.params['a0'].value
+        a0_error = _result.params['a0'].stderr
+        b0_value = _result.params['b0'].value
+        b0_error = _result.params['b0'].stderr
 
-            # if row is locked, continue
-            if table_dictionary[_key]['lock']:
-                continue
+        yaxis_fitted = kropff_high_lambda(xaxis, a0_value, b0_value)
 
-            right = table_dictionary[_key]['bragg peak threshold']['right']
-
-            nearest_index = find_nearest_index(xaxis_common, right)
-            xaxis = xaxis_common[nearest_index:-1]
-            if len(xaxis) == 0:
-                table_dictionary[_key]['rejected'] = True
-                continue
-
-            yaxis = table_dictionary[_key]['yaxis']
-            yaxis = yaxis[nearest_index:-1]
-            yaxis = -np.log(yaxis)
-
-            try:
-                _result = gmodel.fit(yaxis, lda=xaxis, a0=a0, b0=b0)
-            except ValueError:
-                table_dictionary[_key]['rejected'] = True
-                continue
-            except TypeError:
-                table_dictionary[_key]['rejected'] = True
-                continue
-
-            a0_value = _result.params['a0'].value
-            a0_error = _result.params['a0'].stderr
-            b0_value = _result.params['b0'].value
-            b0_error = _result.params['b0'].stderr
-
-            if FitRegions.error_outside_of_tolerance([a0_error, b0_error]):
-                table_dictionary[_key]['rejected'] = True
-                continue
-
-            yaxis_fitted = kropff_high_lambda(xaxis, a0_value, b0_value)
-
-            table_dictionary[_key]['a0'] = {'val': a0_value,
-                                            'err': a0_error}
-            table_dictionary[_key]['b0'] = {'val': b0_value,
-                                            'err': b0_error}
-            table_dictionary[_key]['fitted'][KropffTabSelected.high_tof] = {'xaxis': xaxis,
-                                                                            'yaxis': yaxis_fitted}
+        self.fit_dict['a0'] = {'value': a0_value,
+                               'error': a0_error}
+        self.fit_dict['b0'] = {'value': b0_value,
+                               'error': b0_error}
+        self.fit_dict[FittingRegions.high_lambda] = {'xaxis': xaxis,
+                                                     'yaxis': yaxis_fitted}
 
     def low_lambda(self):
         gmodel = Model(kropff_low_lambda, missing='drop', independent_vars=['lda'])
