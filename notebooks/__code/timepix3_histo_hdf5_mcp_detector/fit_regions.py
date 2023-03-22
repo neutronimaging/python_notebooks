@@ -24,6 +24,8 @@ class FitRegions:
                  ahkl=None, bhkl=None,
                  lambdahkl=None, tau=None, sigma=None,
                  x_axis_to_fit=None, y_axis_to_fit=None,
+                 left_peak_index=0,
+                 right_peak_index=0,
                  left_edge_index=0,
                  right_edge_index=0):
         self.a0 = a0
@@ -33,6 +35,8 @@ class FitRegions:
         self.lambdahkl = lambdahkl
         self.tau = tau
         self.sigma = sigma
+        self.left_peak_index = left_peak_index
+        self.right_peak_index = right_peak_index
         self.left_edge_index = left_edge_index
         self.right_edge_index = right_edge_index
 
@@ -76,8 +80,8 @@ class FitRegions:
 
         try:
             self.high_lambda()
-            # self.low_lambda()
-            # self.bragg_peak()
+            self.low_lambda()
+            self.bragg_peak()
         except fitting_error.HighLambdaFittingError as err:
             type_error = err
         except fitting_error.LowLambdaFittingError as err:
@@ -103,10 +107,13 @@ class FitRegions:
         b0 = self.b0
 
         right_edge_index = self.right_edge_index
+        right_peak_index = self.right_peak_index
 
-        xaxis = copy.deepcopy(self.x_axis_to_fit)[right_edge_index:]
-        yaxis = copy.deepcopy(self.y_axis_to_fit)[right_edge_index:]
+        xaxis = copy.deepcopy(self.x_axis_to_fit)[right_edge_index: right_peak_index]
+        yaxis = copy.deepcopy(self.y_axis_to_fit)[right_edge_index: right_peak_index]
         yaxis = -np.log(yaxis)
+
+        logging.info(f"{xaxis =}")
 
         try:
             _result = gmodel.fit(yaxis, lda=xaxis, a0=a0, b0=b0)
@@ -142,10 +149,13 @@ class FitRegions:
         bhkl = self.bhkl
 
         left_edge_index = self.left_edge_index
+        left_peak_index = self.left_peak_index
 
-        xaxis = copy.deepcopy(self.x_axis_to_fit)[:left_edge_index]
-        yaxis = copy.deepcopy(self.y_axis_to_fit)[:left_edge_index]
+        xaxis = copy.deepcopy(self.x_axis_to_fit)[left_peak_index: left_edge_index]
+        yaxis = copy.deepcopy(self.y_axis_to_fit)[left_peak_index: left_edge_index]
         yaxis = -np.log(yaxis)
+
+        logging.info(f"{xaxis =}")
 
         try:
             _result = gmodel.fit(yaxis,
@@ -282,9 +292,14 @@ class FitRegions:
         tau = self.tau
         sigma = self.sigma
 
-        xaxis = copy.deepcopy(self.x_axis_to_fit)
-        yaxis = copy.deepcopy(self.y_axis_to_fit)
+        left_peak_index = self.left_edge_index
+        right_peak_index = self.right_edge_index
+
+        xaxis = copy.deepcopy(self.x_axis_to_fit)[left_peak_index: right_peak_index+1]
+        yaxis = copy.deepcopy(self.y_axis_to_fit)[left_peak_index: right_peak_index+1]
         yaxis = -np.log(yaxis)
+
+        logging.info(f"{xaxis =}")
 
         a0 = self.fit_dict['a0']['value']
         b0 = self.fit_dict['b0']['value']

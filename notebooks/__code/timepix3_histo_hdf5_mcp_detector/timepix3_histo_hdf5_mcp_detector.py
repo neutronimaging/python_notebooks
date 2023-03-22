@@ -19,6 +19,8 @@ from __code._utilities.color import Color
 from __code.ipywe import fileselector
 from __code.timepix3_histo_hdf5_mcp_detector.fit_regions import FitRegions
 from __code._utilities.array import find_nearest_index
+from __code.timepix3_histo_hdf5_mcp_detector import FittingRegions
+from __code.timepix3_histo_hdf5_mcp_detector import DefaultFittingParameters
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
 MAX_TIME_PER_PULSE = 1.667e4
@@ -301,9 +303,6 @@ class Timepix3HistoHdf5McpDetector:
         time_shift = self.v.children[3].value
         # element = self.v.children[4].value
 
-        # left_range = self.peak_to_fit.children[0].value
-        # right_range = self.peak_to_fit.children[1].value
-
         tof_array = self.time_spectra[:-1]
         condition = np.array(tof_array) < time_shift
 
@@ -315,10 +314,8 @@ class Timepix3HistoHdf5McpDetector:
         for _profile_key in profiles_dict.keys():
             _profile = np.array(profiles_dict[_profile_key])
             _profile_shifted = np.hstack((_profile[~condition], _profile[condition]))
-            # _profile_shifted = _profile_shifted[left_range: right_range]
             profiles_shifted_dict[_profile_key] = _profile_shifted
 
-        # self.x_axis_to_fit = lambda_array[left_range: right_range]
         self.x_axis_to_fit = lambda_array
         self.list_of_y_axis_to_fit = profiles_shifted_dict
 
@@ -331,10 +328,10 @@ class Timepix3HistoHdf5McpDetector:
         text_width = '80px'   # px
         display(HTML('<span style="font-size: 15px; color:green">High lambda</span>'))
         self.a0_layout = widgets.HBox([widgets.Label(u"a\u2080"),
-                                  widgets.IntText(1,
+                                  widgets.IntText(DefaultFittingParameters.a0,
                                                   layout=widgets.Layout(width=text_width))])
         self.b0_layout = widgets.HBox([widgets.Label(u"b\u2080"),
-                                  widgets.IntText(1,
+                                  widgets.IntText(DefaultFittingParameters.b0,
                                                   layout=widgets.Layout(width=text_width))])
         high_layout = widgets.VBox([self.a0_layout,
                                     self.b0_layout])
@@ -344,10 +341,10 @@ class Timepix3HistoHdf5McpDetector:
 
         display(HTML('<span style="font-size: 15px; color:green">Low lambda</span>'))
         self.ahkl_layout = widgets.HBox([widgets.Label(u"a\u2095\u2096\u2097"),
-                                  widgets.IntText(1,
+                                  widgets.IntText(DefaultFittingParameters.ahkl,
                                                   layout=widgets.Layout(width=text_width))])
         self.bhkl_layout = widgets.HBox([widgets.Label(u"b\u2095\u2096\u2097"),
-                                  widgets.IntText(1,
+                                  widgets.IntText(DefaultFittingParameters.bhkl,
                                                   layout=widgets.Layout(width=text_width))])
         low_layout = widgets.VBox([self.ahkl_layout,
                                    self.bhkl_layout])
@@ -357,13 +354,13 @@ class Timepix3HistoHdf5McpDetector:
 
         display(HTML('<span style="font-size: 15px; color:green">Bragg peak</span>'))
         self.lambdahkl_layout = widgets.HBox([widgets.Label(u"\u03bb\u2095\u2096\u2097"),
-                                  widgets.FloatText(5e-8,
+                                  widgets.FloatText(DefaultFittingParameters.lambdahkl,
                                                     layout=widgets.Layout(width=text_width))])
         self.tau_layout = widgets.HBox([widgets.Label(u"\u03C4"),
-                                  widgets.FloatText(1,
+                                  widgets.FloatText(DefaultFittingParameters.tau,
                                                     layout=widgets.Layout(width=text_width))])
         self.sigma_layout = widgets.HBox([widgets.Label(u"\u03C3"),
-                                   widgets.FloatText(1e-3,
+                                   widgets.FloatText(DefaultFittingParameters.sigma,
                                                      layout=widgets.Layout(width=text_width))])
         bragg_peak_layout = widgets.VBox([self.lambdahkl_layout,
                                           self.tau_layout,
@@ -379,27 +376,37 @@ class Timepix3HistoHdf5McpDetector:
         lambda_x_axis = self.lambda_x_axis
         profiles_shifted_dict = self.profiles_shifted_dict
 
+        # threshold of peak to fit
         left_lambda_range = self.peak_to_fit.children[0].value
         right_lambda_range = self.peak_to_fit.children[1].value
+        left_peak = find_nearest_index(lambda_x_axis, left_lambda_range)
+        right_peak = find_nearest_index(lambda_x_axis, right_lambda_range)
+        self.left_peak_index = left_peak
+        self.right_peak_index = right_peak
 
-        left_range = find_nearest_index(lambda_x_axis, left_lambda_range)
-        right_range = find_nearest_index(lambda_x_axis, right_lambda_range)
-
-        self.left_edge_index = left_range
-        self.right_edge_index = right_range
+        # edge of peak to fit
+        left_lambda_edge = self.peak_to_fit.children[2].value
+        right_lambda_edge = self.peak_to_fit.children[3].value
+        left_edge = find_nearest_index(lambda_x_axis, left_lambda_edge)
+        right_edge = find_nearest_index(lambda_x_axis, right_lambda_edge)
+        self.left_edge_index = left_edge
+        self.right_edge_index = right_edge
 
         logging.info(f"Prepare data to fit:")
-        logging.info(f"\tleft_range: {left_lambda_range}" + u"\u212b " + f"-> index: {left_range}")
-        logging.info(f"\tright_range: {right_lambda_range}" + u"\u212b " + f"-> index: {right_range}")
+        logging.info(f"\tpeak left_range: {left_lambda_range}" + u"\u212b " + f"-> index: {left_peak}")
+        logging.info(f"\tpeak right_range: {right_lambda_range}" + u"\u212b " + f"-> index: {right_peak}")
+        logging.info(f"\tedge left_range: {left_lambda_edge}" + u"\u212b " + f"-> index: {left_edge}")
+        logging.info(f"\tedge right_range: {right_lambda_edge}" + u"\u212b " + f"-> index: {right_edge}")
         logging.info(f"\tlambda_x_axis: {lambda_x_axis}")
         logging.info(f"\tnumber of profiles: {len(profiles_shifted_dict.keys())}")
 
         for _profile_key in profiles_shifted_dict.keys():
             logging.info(f"\t{_profile_key}: size is {len(profiles_shifted_dict[_profile_key])}")
             _profile = np.array(profiles_shifted_dict[_profile_key])
-            _profile_to_fit = _profile[left_range: right_range+1]
+            # _profile_to_fit = _profile[left_range: right_range+1]
 
-        self.x_axis_to_fit = lambda_x_axis[left_range: right_range]
+        # self.x_axis_to_fit = lambda_x_axis[left_range: right_range]
+        self.x_axis_to_fit = lambda_x_axis
 
         self.x_axis_to_fit = lambda_x_axis
         self.list_of_y_axis_to_fit = profiles_shifted_dict
@@ -421,8 +428,23 @@ class Timepix3HistoHdf5McpDetector:
         tau = self.tau_layout.children[1].value
         sigma = self.sigma_layout.children[1].value
 
-        for _y_axis_to_fit in list_of_y_axis_to_fit:
+        full_x_axis = self.x_axis_to_fit
+        full_y_axis = self.list_of_y_axis_to_fit
 
+        fig4, ax4 = plt.subplots(figsize=(8, 8),
+                                 nrows=1,
+                                 ncols=1)
+
+        # display full spectrum
+        list_matplotlib_colors = Color.list_matplotlib
+        for _key in full_y_axis.keys():
+            y_axis = full_y_axis[_key]
+            ax4.plot(full_x_axis, -np.log(y_axis), '*',
+                     color=list_matplotlib_colors[_key])
+
+        for key_of_y_axis_to_fit in list_of_y_axis_to_fit.keys():
+
+            _y_axis_to_fit = list_of_y_axis_to_fit[key_of_y_axis_to_fit]
             o_fit_regions = FitRegions(a0=a0,
                                        b0=b0,
                                        ahkl=ahkl,
@@ -432,5 +454,39 @@ class Timepix3HistoHdf5McpDetector:
                                        tau=tau,
                                        x_axis_to_fit=x_axis_to_fit,
                                        y_axis_to_fit=_y_axis_to_fit,
+                                       left_peak_index=self.left_peak_index,
+                                       right_peak_index=self.right_peak_index,
                                        left_edge_index=self.left_edge_index,
                                        right_edge_index=self.right_edge_index)
+            o_fit_regions.all_regions()
+
+            # display fitting
+            # high lambda
+            x_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]['xaxis']
+            y_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]['yaxis']
+            ax4.plot(x_axis_fitted_high_lambda, y_axis_fitted_high_lambda, 'r-')
+
+            # low lambda
+            x_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]['xaxis']
+            y_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]['yaxis']
+            ax4.plot(x_axis_fitted_low_lambda, y_axis_fitted_low_lambda, 'y-')
+
+            # bragg peak
+            x_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['xaxis']
+            y_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['yaxis']
+            ax4.plot(x_axis_fitted, y_axis_fitted, 'g-')
+
+            ax4.set_ylabel("Cross Section (a.u.)")
+
+            lambdahkl = o_fit_regions.fit_dict['lambdahkl']['value']
+            print(f"lambda_hkl: {lambdahkl:.3f}" + u"\u212b")
+            ax4.axvline(lambdahkl,
+                        color='r', linestyle='--')
+            y = np.max(-np.log(y_axis))
+            ax4.text(lambdahkl,
+                     (y-y/7),
+                     f"{lambdahkl}",
+                     ha="center",
+                     rotation=45,
+                     size=15,
+                     )
