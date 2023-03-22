@@ -18,7 +18,7 @@ from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code._utilities.color import Color
 from __code.ipywe import fileselector
 from __code.timepix3_histo_hdf5_mcp_detector.fit_regions import FitRegions
-
+from __code._utilities.array import find_nearest_index
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
 MAX_TIME_PER_PULSE = 1.667e4
@@ -379,10 +379,20 @@ class Timepix3HistoHdf5McpDetector:
         lambda_x_axis = self.lambda_x_axis
         profiles_shifted_dict = self.profiles_shifted_dict
 
-        left_range = self.peak_to_fit.children[0].value
-        right_range = self.peak_to_fit.children[1].value
+        left_lambda_range = self.peak_to_fit.children[0].value
+        right_lambda_range = self.peak_to_fit.children[1].value
+
+        left_range = find_nearest_index(lambda_x_axis, left_lambda_range)
+        right_range = find_nearest_index(lambda_x_axis, right_lambda_range)
+
+        logging.info(f"Prepare data to fit:")
+        logging.info(f"\tleft_range: {left_lambda_range}" + u"\u212b " + f"-> index: {left_range}")
+        logging.info(f"\tright_range: {right_lambda_range}" + u"\u212b " + f"-> index: {right_range}")
+        logging.info(f"\tlambda_x_axis: {lambda_x_axis}")
+        logging.info(f"\tnumber of profiles: {len(profiles_shifted_dict.keys())}")
 
         for _profile_key in profiles_shifted_dict.keys():
+            logging.info(f"\t{_profile_key}: size is {len(profiles_shifted_dict[_profile_key])}")
             _profile = np.array(profiles_shifted_dict[_profile_key])
             _profile_to_fit = _profile[left_range: right_range+1]
 
@@ -419,13 +429,3 @@ class Timepix3HistoHdf5McpDetector:
                                        tau=tau,
                                        x_axis_to_fit=x_axis_to_fit,
                                        y_axis_to_fit=_y_axis_to_fit)
-        
-
-    def fit_high_lambda(self):
-        pass
-
-    def fit_low_lambda(self):
-        pass
-
-    def fit_bragg_peak(self):
-        pass
