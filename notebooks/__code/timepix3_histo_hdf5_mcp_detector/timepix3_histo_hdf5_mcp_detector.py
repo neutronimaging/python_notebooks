@@ -152,12 +152,12 @@ class Timepix3HistoHdf5McpDetector:
 
             if element == 'Ni':
                 _handler = BraggEdgeLibrary(material=[element],
-                                            number_of_bragg_edges=5)
+                                            number_of_bragg_edges=6)
             else:  # Ta
                 _handler = BraggEdgeLibrary(new_material=[{'name': 'Ta',
                                                            'lattice': 3.3058,
                                                            'crystal_structure': 'BCC'}],
-                                            number_of_bragg_edges=5)
+                                            number_of_bragg_edges=6)
 
             self.bragg_edges = _handler.bragg_edges
             self.hkl = _handler.hkl
@@ -271,20 +271,24 @@ class Timepix3HistoHdf5McpDetector:
         self.peak_to_fit = interactive(plot_peaks,
                                        left_range=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                       max=np.max(lambda_x_axis),
+                                                                      step=0.001,
                                                                       # value=np.min(lambda_x_axis),
                                                                       value=0.8,  # FIXME for debugging only
                                                                       readout_format=".3f"),
                                        right_range=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                        max=np.max(lambda_x_axis),
+                                                                       step=0.001,
                                                                        # value=np.max(lambda_x_axis),
                                                                        value=1.9,  # FIXME for debugging only
                                                                        readout_format=".3f"),
                                        left_edge=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                      max=np.max(lambda_x_axis),
+                                                                     step=0.001,
                                                                      value=1.2,  # FIXME for debugging only
                                                                      readout_format=".3f"),
                                        right_edge=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                       max=np.max(lambda_x_axis),
+                                                                      step=0.001,
                                                                       value=1.4,   # FIXME for debugging only
                                                                       readout_format=".3f"))
         display(self.peak_to_fit)
@@ -442,6 +446,7 @@ class Timepix3HistoHdf5McpDetector:
             ax4.plot(full_x_axis, -np.log(y_axis), '*',
                      color=list_matplotlib_colors[_key])
 
+        max_counts = 0
         for key_of_y_axis_to_fit in list_of_y_axis_to_fit.keys():
 
             _y_axis_to_fit = list_of_y_axis_to_fit[key_of_y_axis_to_fit]
@@ -474,7 +479,7 @@ class Timepix3HistoHdf5McpDetector:
             # bragg peak
             x_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['xaxis']
             y_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['yaxis']
-            ax4.plot(x_axis_fitted, y_axis_fitted, 'g-')
+            ax4.plot(x_axis_fitted, y_axis_fitted, 'w-')
 
             ax4.set_ylabel("Cross Section (a.u.)")
 
@@ -482,11 +487,38 @@ class Timepix3HistoHdf5McpDetector:
             print(f"lambda_hkl: {lambdahkl:.3f}" + u"\u212b")
             ax4.axvline(lambdahkl,
                         color='r', linestyle='--')
-            y = np.max(-np.log(y_axis))
+            _local_max_counts = np.max(-np.log(y_axis))
+            max_counts = _local_max_counts if _local_max_counts > max_counts else max_counts
             ax4.text(lambdahkl,
-                     (y-y/7),
-                     f"{lambdahkl}",
+                     (max_counts-max_counts/2),
+                     f"{lambdahkl:.3f}",
                      ha="center",
                      rotation=45,
                      size=15,
                      )
+
+        element = self.v.children[4].value
+        if element == 'Ni':
+            _handler = BraggEdgeLibrary(material=[element],
+                                        number_of_bragg_edges=6)
+        else:  # Ta
+            _handler = BraggEdgeLibrary(new_material=[{'name': 'Ta',
+                                                       'lattice': 3.3058,
+                                                       'crystal_structure': 'BCC'}],
+                                        number_of_bragg_edges=6)
+
+        self.bragg_edges = _handler.bragg_edges
+        self.hkl = _handler.hkl
+        self.handler = _handler
+
+        for _index, _lambda in enumerate(self.bragg_edges[element]):
+            # to display _x in the right axis
+            ax4.axvline(x=_lambda, color='r', linestyle='--')
+
+            ax4.text(_lambda, (max_counts - max_counts/7),
+                     f"{element}\n{_lambda:.3f}",
+                     ha="center",
+                     rotation=45,
+                     size=15,
+                     )
+    
