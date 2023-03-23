@@ -69,6 +69,28 @@ class Timepix3HistoHdf5McpDetector:
                             level=logging.INFO)
         logging.info("*** Starting a new session ***")
 
+    def hdf5_or_config_file_input(self):
+        self.toggle_button = widgets.ToggleButtons(
+            options=['HDF5 MCP', 'Config File'],
+            description="",
+            button_style='',
+            tooltips=['Select HDF5 MCP Histo File', 'Select Config File'],
+        )
+        display(self.toggle_button)
+
+        validate_button = widgets.Button(description="SELECT",
+                                         icon="folder-open",
+                                         layout=widgets.Layout(width="310px"))
+        display(validate_button)
+
+        validate_button.on_click(self.input_selection_made)
+
+    def input_selection_made(self, _):
+        if self.toggle_button.value == "HDF5 MCP":
+            self.select_nexus()
+        else:
+            self.select_config()
+
     def select_nexus(self):
         self.nexus_ui = fileselector.FileSelectorPanel(instruction='Select Histo HDF5 file ...',
                                                        start_dir=self.working_dir,
@@ -76,6 +98,37 @@ class Timepix3HistoHdf5McpDetector:
                                                        filters={'NeXus': ".h5"},
                                                        multiple=False)
         self.nexus_ui.show()
+
+    def select_config(self):
+        self.config_ui = fileselector.FileSelectorPanel(instruction='Select Config file ...',
+                                                       start_dir=self.working_dir,
+                                                       next=self.load_config,
+                                                       filters={'Config': ".json"},
+                                                       multiple=False)
+        self.config_ui.show()
+
+    def load_config(self, config_file_name):
+        with open(config_file_name) as f:
+            config = json.load(f)
+        self.json_dict = config
+
+        input_nexus_filename = config[JSONKeys.input_nexus_filename]
+        self.load_nexus(nexus_file_name=input_nexus_filename)
+
+        dSD_ = config[JSONKeys.dSD_m]
+        rois_selected = config[JSONKeys.rois_selected]
+        offset_micros = config[JSONKeys.offset_micros]
+        time_shift = config[JSONKeys.time_shift]
+        element = config[JSONKeys.element]
+
+        left_range = config[JSONKeys.left_range]
+        right_range = config[JSONKeys.right_range]
+        left_edge = config[JSONKeys.left_edge]
+        right_edge = config[JSONKeys.right_edge]
+
+        #FIXME
+
+
 
     def load_nexus(self, nexus_file_name=None):
         logging.info(f"Loading HDF5: {nexus_file_name}")
@@ -548,7 +601,6 @@ class Timepix3HistoHdf5McpDetector:
                      )
 
     def saving_session(self):
-
         # select output location
         o_output_folder = FileFolderBrowser(working_dir=self.working_dir,
                                             next_function=self.export_session)
