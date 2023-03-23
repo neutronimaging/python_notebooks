@@ -39,8 +39,8 @@ class Interface(QMainWindow):
                  percentage_of_data_to_use=None,
                  callback=None,
                  display_info_message=True,
-                 mandatory_1_region=False,
-                 default_roi=None):         # if provided, should have the format {'x0':None, 'y0': None, 'x1': None, 'y1': None}
+                 mandatory_regions=False,
+                 list_roi=None):         # if provided, should have the format {0: {'x0':None, 'y0': None, 'x1': None, 'y1': None}}
 
         if display_info_message:
             display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
@@ -62,13 +62,14 @@ class Interface(QMainWindow):
                 percentage_of_data_to_use = percentage_of_images_to_use_for_roi_selection
             self.percentage_of_data_to_use = percentage_of_data_to_use
 
-        self.mandatory_1_region = mandatory_1_region
-        if default_roi:
-            self.default_roi = {'x0': default_roi['x0'],
-                                'y0': default_roi['y0'],
-                                'x1': default_roi['x1'],
-                                'y1': default_roi['y1'],
-                                'id': None}
+        self.mandatory_regions = mandatory_regions
+        if list_roi:
+            for key in list_roi.keys():
+                self.list_roi[key] = {'x0': list_roi[key]['x0'],
+                                      'y0': list_roi[key]['y0'],
+                                      'x1': list_roi[key]['x1'],
+                                      'y1': list_roi[key]['y1'],
+                                      'id': None}
 
         # method called when leaving the application, if any
         self.callback = callback
@@ -92,18 +93,18 @@ class Interface(QMainWindow):
         self.integrate_images()
         self.display_image()
 
-        if self.mandatory_1_region:
-            # let's add the mandatory region
-            self.add_roi_button_clicked()
+        if self.mandatory_regions:
+            if self.list_roi:
+                # add the region passed in
+                self.add_rois(list_roi=self.list_roi)
+            else:
+                # let's add the mandatory region
+                self.add_roi_button_clicked()
 
     def init_widgets(self):
         nbr_columns = self.ui.table_roi.columnCount()
         for _col in range(nbr_columns):
             self.ui.table_roi.setColumnWidth(_col, self.roi_column_width)
-
-        if self.mandatory_1_region:
-            self.ui.remove_roi_button.setVisible(False)
-            self.ui.add_roi_button.setVisible(False)
 
     def init_statusbar(self):
         self.eventProgress = QProgressBar(self.ui.statusbar)
@@ -111,11 +112,6 @@ class Interface(QMainWindow):
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
-        # self.parent.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
-        # self.parent.eventProgress.setMinimumSize(20, 14)
-        # self.parent.eventProgress.setMaximumSize(540, 100)
-        # self.parent.eventProgress.setVisible(False)
-        # self.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def __get_recap(self, data_array):
         if data_array:
@@ -389,10 +385,50 @@ class Interface(QMainWindow):
         list_roi = self.list_roi
 
         for _row in list_roi.keys():
-
             _roi = list_roi[_row]
             roi_id = _roi['id']
             self.ui.image_view.removeItem(roi_id)
+
+    def add_rois(self, list_roi=None):
+        # self.clear_roi_on_image_view()
+
+        self.ui.table_roi.blockSignals(True)
+        _selection = self.ui.table_roi.selectedRanges()
+        if _selection:
+            row = _selection[0].topRow()
+        else:
+            row = 0
+
+        for key in list_roi.keys():
+
+            # init new row with default value
+            self.ui.table_roi.insertRow(row)
+            _roi = list_roi[key]
+
+            _item = QTableWidgetItem(str(_roi['x0']))
+            self.ui.table_roi.setItem(row, 0, _item)
+
+            _item = QTableWidgetItem(str(_roi['y0']))
+            self.ui.table_roi.setItem(row, 1, _item)
+
+            _item = QTableWidgetItem(str(_roi['x1']))
+            self.ui.table_roi.setItem(row, 2, _item)
+
+            _item = QTableWidgetItem(str(_roi['y1']))
+            self.ui.table_roi.setItem(row, 3, _item)
+
+            x0_int = int(_roi['x0'])
+            y0_int = int(_roi['y0'])
+            width_int = np.abs(x0_int - int(_roi['x1']))
+            height_int = np.abs(y0_int - int(_roi['y1']))
+
+            _roi_id = self.init_roi(x0=x0_int, y0=y0_int,
+                                    width=width_int, height=height_int)
+            list_roi[key]['id'] = _roi_id
+
+        self.list_roi = list_roi
+        self.ui.table_roi.blockSignals(False)
+        self.check_add_remove_button_widgets_status()
 
     def add_roi_button_clicked(self):
         self.clear_roi_on_image_view()
@@ -472,14 +508,22 @@ class Interface(QMainWindow):
         return _roi_id
 
     def check_add_remove_button_widgets_status(self):
-        if self.mandatory_1_region:
-            return
-
         nbr_row = self.ui.table_roi.rowCount()
-        if nbr_row > 0:
-            self.ui.remove_roi_button.setEnabled(True)
+        if self.mandatory_regions:
+            # we need to have at least one region selected at all time
+            if nbr_row == 1:
+                self.ui.remove_roi_button.setVisible(False)
+            elif nbr_row > 1:
+                self.ui.remove_roi_button.setVisible(True)
+                self.ui.remove_roi_button.setEnabled(True)
+            else:
+                raise ValueError("Nbr rows should not be 0 for mandatory regions!")
+
         else:
-            self.ui.remove_roi_button.setEnabled(False)
+            if nbr_row > 0:
+                self.ui.remove_roi_button.setEnabled(True)
+            else:
+                self.ui.remove_roi_button.setEnabled(False)
 
     def format_roi(self):
         roi_selected = {}

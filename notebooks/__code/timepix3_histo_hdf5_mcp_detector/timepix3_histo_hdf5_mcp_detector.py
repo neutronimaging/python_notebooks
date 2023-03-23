@@ -95,8 +95,8 @@ class Timepix3HistoHdf5McpDetector:
         o_gui = Interface(array2d=self.integrated_stack,
                           callback=self.returning_from_roi_selection,
                           display_info_message=False,
-                          mandatory_1_region=True,
-                          default_roi={'x0': 467, 'y0': 99, 'x1': 975, 'y1': 429})
+                          mandatory_regions=True,
+                          list_roi={0: {'x0': 467, 'y0': 99, 'x1': 975, 'y1': 429}})
         o_gui.show()
         # QtGui.QGuiApplication.processEvents()
 
