@@ -31,11 +31,29 @@ class Timepix3HistoHdf5McpDetector:
     # histogram data
     histo_data = None
 
-    # list of profiles
-    profile_dict = None
+    # profile of all ROIs, without and with shifting
+    profile = None
+    profile_shifted = None
 
-    # dict of fitting result for each region of interest
-    dict_of_fit_dict = {}
+    # list of rois selected
+    # {{0: {'x0': 0, 'x1': 10, 'y0': 20, 'y1': 50},
+    #  {1: ...},
+    # }
+    rois_selected = None
+
+    # dict of fitting result
+    # {'a0': {'value': None, 'error': None},
+    #  'b0': {'value': None, 'error': None},
+    #  'ahkl': {'value': None, 'error': None},
+    #  'bhkl': {'value': None, 'error': None},
+    #  'lambdahkl': {'value': None, 'error': None},
+    #  'tau': {'value': None, 'error': None},
+    #  'sigma': {'value': None, 'error': None},
+    #  FittingRegions.bragg_peak: {'xaxis': None,
+    #                              'yaxis': None,
+    #                             },
+    #  }
+    fit_dict = {}
 
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
@@ -100,30 +118,29 @@ class Timepix3HistoHdf5McpDetector:
         o_gui.show()
         # QtGui.QGuiApplication.processEvents()
 
-    def returning_from_roi_selection(self, roi_selected):
-        logging.info(f"User selected: {roi_selected}")
-        self.roi_selected = roi_selected
+    def returning_from_roi_selection(self, rois_selected):
+        logging.info(f"User selected: {rois_selected}")
+        self.rois_selected = rois_selected
 
     def calculate_and_display_profile(self):
-        roi_selected = self.roi_selected
+        rois_selected = self.rois_selected
 
         list_matplotlib_colors = Color.list_matplotlib
 
-        profile_dict = {}
+        # calculate the number of pixels in all ROIs
+        # this will be needed to calculate mean counts per image
+        # also record rectangle of ROIs for display only
+        total_pixels_in_rois = 0
         rect_array = []
-        total_counts = 0
-        total_pixels = 0
-        for _roi_index in roi_selected.keys():
-            x0 = roi_selected[_roi_index]['x0']
-            y0 = roi_selected[_roi_index]['y0']
-            x1 = roi_selected[_roi_index]['x1']
-            y1 = roi_selected[_roi_index]['y1']
+        for _roi_index in rois_selected.keys():
+            x0 = rois_selected[_roi_index]['x0']
+            y0 = rois_selected[_roi_index]['y0']
+            x1 = rois_selected[_roi_index]['x1']
+            y1 = rois_selected[_roi_index]['y1']
 
-            profile_dict[_roi_index] = []
-
-            for _index_image, _image in enumerate(self.stack):
-                mean_counts = np.nanmean(_image[y0:y1+1, x0:x1+1])
-                profile_dict[_roi_index].append(mean_counts)
+            width = np.abs(x1-x0)
+            height = np.abs(y1-y0)
+            total_pixels_in_rois += width * height
 
             _rect = patches.Rectangle((x0, y0),
                                       x1-x0,
@@ -133,12 +150,22 @@ class Timepix3HistoHdf5McpDetector:
                                       facecolor='none')
             rect_array.append(_rect)
 
-        self.profile_dict = profile_dict
+        profile = []
+        for _index_image, _image in enumerate(self.stack):
 
-        max_counts = []
-        for _profile_key in profile_dict.keys():
-            max_counts.append(np.max(profile_dict[_profile_key]))
-        total_max_counts = np.max(max_counts)
+            total_counts_for_this_image = 0
+            for _roi_index in rois_selected.keys():
+                x0 = rois_selected[_roi_index]['x0']
+                y0 = rois_selected[_roi_index]['y0']
+                x1 = rois_selected[_roi_index]['x1']
+                y1 = rois_selected[_roi_index]['y1']
+
+                total_counts_for_this_image += np.nansum(_image[y0:y1+1, x0:x1+1])
+
+            profile.append(total_counts_for_this_image / total_pixels_in_rois)
+
+        self.profile =  profile
+        max_counts = np.max(profile)
 
         fig1, ax1 = plt.subplots(figsize=(8, 8),
                                  nrows=1,
@@ -186,16 +213,13 @@ class Timepix3HistoHdf5McpDetector:
                 xlabel = LAMBDA + "(" + ANGSTROMS + ")"
 
             ax2.cla()
-            for _profile_key in profile_dict.keys():
+            _profile = np.array(profile)
+            _profile_shifted = np.hstack((_profile[~condition], _profile[condition]))
 
-                _profile = np.array(profile_dict[_profile_key])
-                _profile_shifted = np.hstack((_profile[~condition], _profile[condition]))
-
-                ax2.plot(x_axis_array, _profile_shifted,
-                         label=f"ROI #{_profile_key}",
-                         color=list_matplotlib_colors[_profile_key])
-                ax2.set_ylabel("Mean counts of ROI")
-                ax2.set_xlabel(xlabel)
+            ax2.plot(x_axis_array, _profile_shifted,
+                     color=list_matplotlib_colors[0])
+            ax2.set_ylabel("Mean counts of ROI")
+            ax2.set_xlabel(xlabel)
 
             if x_axis == 'lambda':
 
@@ -208,7 +232,7 @@ class Timepix3HistoHdf5McpDetector:
                     # to display _x in the right axis
                     ax2.axvline(x=_x, color='r', linestyle='--')
 
-                    ax2.text(_x, (total_max_counts - total_max_counts / 7),
+                    ax2.text(_x, (max_counts - max_counts / 7),
                              _hkl,
                              ha="center",
                              rotation=45,
@@ -244,9 +268,9 @@ class Timepix3HistoHdf5McpDetector:
         display(HTML('<span style="font-size: 20px; color:green">Full range of peak to fit (left_range, right_range)</span>'))
         display(HTML('<span style="font-size: 20px; color:red">Peak threshold (left_peak, right_peak)</span>'))
 
-        lambda_x_axis, profiles_shifted_dict = self.prepare_data()
+        lambda_x_axis, profile_shifted = self.prepare_data()
         self.lambda_x_axis = lambda_x_axis
-        self.profiles_shifted_dict = profiles_shifted_dict
+        self.profile_shifted = profile_shifted
 
         list_matplotlib_colors = Color.list_matplotlib
         fig3, ax3 = plt.subplots(figsize=(8, 8),
@@ -257,13 +281,10 @@ class Timepix3HistoHdf5McpDetector:
 
             ax3.cla()
 
-            for _profile_key in profiles_shifted_dict.keys():
+            _profile = np.array(self.profile)
 
-                _profile = np.array(profiles_shifted_dict[_profile_key])
-
-                ax3.plot(lambda_x_axis, _profile,
-                         label=f"ROI #{_profile_key}",
-                         color=list_matplotlib_colors[_profile_key])
+            ax3.plot(lambda_x_axis, _profile,
+                     color=list_matplotlib_colors[0])
             ax3.set_ylabel("Mean counts of ROI")
             ax3.set_xlabel(LAMBDA + "(" + ANGSTROMS + ")")
 
@@ -306,8 +327,7 @@ class Timepix3HistoHdf5McpDetector:
         settings and the time shift define in the previous cells.
         """
 
-        profiles_dict = self.profile_dict
-        profiles_shifted_dict = {}
+        profile = self.profile
 
         dSD_m = self.v.children[1].value
         offset_micros = self.v.children[2].value
@@ -322,15 +342,13 @@ class Timepix3HistoHdf5McpDetector:
                           detector_offset_micros=offset_micros)
         lambda_array = _exp.lambda_array[:] * 1e10  # to be in Angstroms
 
-        for _profile_key in profiles_dict.keys():
-            _profile = np.array(profiles_dict[_profile_key])
-            _profile_shifted = np.hstack((_profile[~condition], _profile[condition]))
-            profiles_shifted_dict[_profile_key] = _profile_shifted
+        profile = np.array(profile)
+        profile_shifted = np.hstack((profile[~condition], profile[condition]))
 
         self.x_axis_to_fit = lambda_array
-        self.list_of_y_axis_to_fit = profiles_shifted_dict
+        self.y_axis_to_fit = profile_shifted
 
-        return lambda_array, profiles_shifted_dict
+        return lambda_array, profile_shifted
 
     def setup_fitting_parameters(self):
 
@@ -383,9 +401,8 @@ class Timepix3HistoHdf5McpDetector:
         this is where the y-axis to fit and x_axis (lambda scale) are calculated using the instrument
         settings and the time shift define in the previous cells.
         """
-
         lambda_x_axis = self.lambda_x_axis
-        profiles_shifted_dict = self.profiles_shifted_dict
+        profile_shifted = self.profile_shifted
 
         # threshold of peak to fit
         left_lambda_range = self.peak_to_fit.children[0].value
@@ -409,25 +426,19 @@ class Timepix3HistoHdf5McpDetector:
         logging.info(f"\tedge left_range: {left_lambda_edge}" + u"\u212b " + f"-> index: {left_edge}")
         logging.info(f"\tedge right_range: {right_lambda_edge}" + u"\u212b " + f"-> index: {right_edge}")
         logging.info(f"\tlambda_x_axis: {lambda_x_axis}")
-        logging.info(f"\tnumber of profiles: {len(profiles_shifted_dict.keys())}")
 
-        for _profile_key in profiles_shifted_dict.keys():
-            logging.info(f"\t{_profile_key}: size is {len(profiles_shifted_dict[_profile_key])}")
-            _profile = np.array(profiles_shifted_dict[_profile_key])
-            # _profile_to_fit = _profile[left_range: right_range+1]
+        logging.info(f"\tsize of profile: {len(profile_shifted)}")
 
         # self.x_axis_to_fit = lambda_x_axis[left_range: right_range]
         self.x_axis_to_fit = lambda_x_axis
-
-        self.x_axis_to_fit = lambda_x_axis
-        self.list_of_y_axis_to_fit = profiles_shifted_dict
+        self.y_axis_to_fit = profile_shifted
 
     def fit_peak(self):
 
         self.prepare_data_to_fit()
 
         x_axis_to_fit = self.x_axis_to_fit
-        list_of_y_axis_to_fit = self.list_of_y_axis_to_fit
+        y_axis_to_fit = self.y_axis_to_fit
 
         a0 = self.a0_layout.children[1].value
         b0 = self.b0_layout.children[1].value
@@ -439,8 +450,8 @@ class Timepix3HistoHdf5McpDetector:
         tau = self.tau_layout.children[1].value
         sigma = self.sigma_layout.children[1].value
 
-        full_x_axis = self.x_axis_to_fit
-        full_y_axis = self.list_of_y_axis_to_fit
+        # full_x_axis = self.x_axis_to_fit
+        # full_y_axis = self.y_axis_to_fit
 
         fig4, ax4 = plt.subplots(figsize=(8, 8),
                                  nrows=1,
@@ -448,66 +459,60 @@ class Timepix3HistoHdf5McpDetector:
 
         # display full spectrum
         list_matplotlib_colors = Color.list_matplotlib
-        for _key in full_y_axis.keys():
-            y_axis = full_y_axis[_key]
-            ax4.plot(full_x_axis, -np.log(y_axis), '*',
-                     color=list_matplotlib_colors[_key])
+        ax4.plot(x_axis_to_fit, -np.log(y_axis_to_fit), '*',
+                 color=list_matplotlib_colors[0])
 
         max_counts = 0
         dict_of_fit_dict = {}
-        for key_of_y_axis_to_fit in list_of_y_axis_to_fit.keys():
 
-            _y_axis_to_fit = list_of_y_axis_to_fit[key_of_y_axis_to_fit]
-            o_fit_regions = FitRegions(a0=a0,
-                                       b0=b0,
-                                       ahkl=ahkl,
-                                       bhkl=bhkl,
-                                       lambdahkl=lambdahkl,
-                                       sigma=sigma,
-                                       tau=tau,
-                                       x_axis_to_fit=x_axis_to_fit,
-                                       y_axis_to_fit=_y_axis_to_fit,
-                                       left_peak_index=self.left_peak_index,
-                                       right_peak_index=self.right_peak_index,
-                                       left_edge_index=self.left_edge_index,
-                                       right_edge_index=self.right_edge_index)
-            o_fit_regions.all_regions()
+        o_fit_regions = FitRegions(a0=a0,
+                                   b0=b0,
+                                   ahkl=ahkl,
+                                   bhkl=bhkl,
+                                   lambdahkl=lambdahkl,
+                                   sigma=sigma,
+                                   tau=tau,
+                                   x_axis_to_fit=x_axis_to_fit,
+                                   y_axis_to_fit=y_axis_to_fit,
+                                   left_peak_index=self.left_peak_index,
+                                   right_peak_index=self.right_peak_index,
+                                   left_edge_index=self.left_edge_index,
+                                   right_edge_index=self.right_edge_index)
+        o_fit_regions.all_regions()
 
-            dict_of_fit_dict[key_of_y_axis_to_fit] = o_fit_regions.fit_dict
+        self.fit_dict = o_fit_regions.fit_dict
 
-            # display fitting
-            # high lambda
-            x_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]['xaxis']
-            y_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]['yaxis']
-            ax4.plot(x_axis_fitted_high_lambda, y_axis_fitted_high_lambda, 'r-')
+        # display fitting
+        # high lambda
+        x_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]['xaxis']
+        y_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]['yaxis']
+        ax4.plot(x_axis_fitted_high_lambda, y_axis_fitted_high_lambda, 'r-')
 
-            # low lambda
-            x_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]['xaxis']
-            y_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]['yaxis']
-            ax4.plot(x_axis_fitted_low_lambda, y_axis_fitted_low_lambda, 'y-')
+        # low lambda
+        x_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]['xaxis']
+        y_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]['yaxis']
+        ax4.plot(x_axis_fitted_low_lambda, y_axis_fitted_low_lambda, 'y-')
 
-            # bragg peak
-            x_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['xaxis']
-            y_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['yaxis']
-            ax4.plot(x_axis_fitted, y_axis_fitted, 'w-')
+        # bragg peak
+        x_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['xaxis']
+        y_axis_fitted = o_fit_regions.fit_dict[FittingRegions.bragg_peak]['yaxis']
+        ax4.plot(x_axis_fitted, y_axis_fitted, 'w-')
 
-            ax4.set_ylabel("Cross Section (a.u.)")
+        ax4.set_ylabel("Cross Section (a.u.)")
 
-            lambdahkl = o_fit_regions.fit_dict['lambdahkl']['value']
-            print(f"lambda_hkl: {lambdahkl:.3f}" + u"\u212b")
-            ax4.axvline(lambdahkl,
-                        color='r', linestyle='--')
-            _local_max_counts = np.max(-np.log(y_axis))
-            max_counts = _local_max_counts if _local_max_counts > max_counts else max_counts
-            ax4.text(lambdahkl,
-                     (max_counts-max_counts/2),
-                     f"{lambdahkl:.3f}",
-                     ha="center",
-                     rotation=45,
-                     size=15,
-                     )
-
-        self.dict_of_fit_dict = dict_of_fit_dict
+        lambdahkl = o_fit_regions.fit_dict['lambdahkl']['value']
+        print(f"lambda_hkl: {lambdahkl:.3f}" + u"\u212b")
+        ax4.axvline(lambdahkl,
+                    color='r', linestyle='--')
+        _local_max_counts = np.max(-np.log(y_axis_to_fit))
+        max_counts = _local_max_counts if _local_max_counts > max_counts else max_counts
+        ax4.text(lambdahkl,
+                 (max_counts-max_counts/2),
+                 f"{lambdahkl:.3f}",
+                 ha="center",
+                 rotation=45,
+                 size=15,
+                 )
 
         element = self.v.children[4].value
         if element == 'Ni':
@@ -539,9 +544,9 @@ class Timepix3HistoHdf5McpDetector:
         # select output location
 
         # create output file name based on input nexus loaded
+        input_nexus_filename = self.input_nexus_filename
 
         # record all parameters
-        input_nexus_filename = self.input_nexus_filename
         regions_of_interest = self.roi_selected
         dSD_m = self.v.children[1].value
         offset_micros = self.v.children[2].value
@@ -553,4 +558,5 @@ class Timepix3HistoHdf5McpDetector:
         left_edge = self.peak_to_fit.children[2].value
         right_edge = self.peak_to_fit.children[3].value
 
+        # list_roi =
 
