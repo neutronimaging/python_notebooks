@@ -74,7 +74,7 @@ class Interface(QMainWindow):
         self.callback = callback
 
         super(QMainWindow, self).__init__(parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui', 'ui_roi_selection.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
@@ -472,6 +472,9 @@ class Interface(QMainWindow):
         return _roi_id
 
     def check_add_remove_button_widgets_status(self):
+        if self.mandatory_1_region:
+            return
+
         nbr_row = self.ui.table_roi.rowCount()
         if nbr_row > 0:
             self.ui.remove_roi_button.setEnabled(True)
