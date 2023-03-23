@@ -70,12 +70,12 @@ def retrieve_exposure_time(filename=''):
     return exposure_time
 
 
-def keep_s_precision(time_s):
-    time_10s = time_s / _coeff
-    time_10s_int = int(time_10s)
-    delta_time_10s = time_10s - time_10s_int
-    delta_time_s = delta_time_10s * _coeff
-    return delta_time_s
+# def keep_s_precision(time_s):
+#     time_10s = time_s / _coeff
+#     time_10s_int = int(time_10s)
+#     delta_time_10s = time_10s - time_10s_int
+#     delta_time_s = delta_time_10s * _coeff
+#     return delta_time_s
 
 
 def get_dict_of_time_stamps(file, index_file=-1, time_zero=-1, coeff=1):

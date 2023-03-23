@@ -1,4 +1,5 @@
 import logging
+import os
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ import matplotlib.patches as patches
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
-from lmfit import Model, Parameter
+import json
 
 from __code.advanced_roi_selection_ui.advanced_roi_selection_ui import Interface
 
@@ -16,11 +17,14 @@ from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code._utilities.color import Color
+from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code.ipywe import fileselector
 from __code.timepix3_histo_hdf5_mcp_detector.fit_regions import FitRegions
 from __code._utilities.array import find_nearest_index
 from __code.timepix3_histo_hdf5_mcp_detector import FittingRegions
 from __code.timepix3_histo_hdf5_mcp_detector import DefaultFittingParameters
+from __code.timepix3_histo_hdf5_mcp_detector import JSONKeys
+from __code.file_folder_browser import FileFolderBrowser
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
 MAX_TIME_PER_PULSE = 1.667e4
@@ -76,6 +80,10 @@ class Timepix3HistoHdf5McpDetector:
     def load_nexus(self, nexus_file_name=None):
         logging.info(f"Loading HDF5: {nexus_file_name}")
         self.input_nexus_filename = nexus_file_name
+
+        # updating the working folder
+        self.working_dir = os.path.dirname(nexus_file_name)
+
         with h5py.File(nexus_file_name, 'r') as f:
             self.stack = np.array(f['entry']['histo']['stack'])
             self.time_spectra = np.array(f['entry']['histo']['tof_ns']) / 1000  # to convert to micros
@@ -542,12 +550,23 @@ class Timepix3HistoHdf5McpDetector:
     def saving_session(self):
 
         # select output location
+        o_output_folder = FileFolderBrowser(working_dir=self.working_dir,
+                                            next_function=self.export_session)
+        o_output_folder.select_output_folder(instruction="Select output folder ...")
+
+    def export_session(self, output_folder=None):
+
+        logging.info(f"Export session")
 
         # create output file name based on input nexus loaded
         input_nexus_filename = self.input_nexus_filename
+        base, _ = os.path.splitext(os.path.basename(input_nexus_filename))
+        current_time = get_current_time_in_special_file_name_format()
+
+        output_file_name = os.path.join(output_folder, f"config_{base}_{current_time}.json")
 
         # record all parameters
-        regions_of_interest = self.roi_selected
+        rois_selected = self.rois_selected
         dSD_m = self.v.children[1].value
         offset_micros = self.v.children[2].value
         time_shift = self.v.children[3].value
@@ -558,5 +577,31 @@ class Timepix3HistoHdf5McpDetector:
         left_edge = self.peak_to_fit.children[2].value
         right_edge = self.peak_to_fit.children[3].value
 
-        # list_roi =
+        # make json compatible rois_selected
+        json_friendly_rois_selected = {}
+        for _key in rois_selected.keys():
+            json_friendly_rois_selected[str(_key)] = {JSONKeys.x0: str(rois_selected[_key][JSONKeys.x0]),
+                                                      JSONKeys.y0: str(rois_selected[_key][JSONKeys.y0]),
+                                                      JSONKeys.x1: str(rois_selected[_key][JSONKeys.x1]),
+                                                      JSONKeys.y1: str(rois_selected[_key][JSONKeys.y1]),
+                                                      }
 
+        json_dict = {JSONKeys.infos: f"config file created on {current_time}",
+                     JSONKeys.input_nexus_filename: input_nexus_filename,
+                     JSONKeys.dSD_m: f"{dSD_m:.4f}",
+                     JSONKeys.offset_micros: f"{offset_micros:.4f}",
+                     JSONKeys.time_shift: f"{time_shift:.4f}",
+                     JSONKeys.element: element,
+                     JSONKeys.left_range: f"{left_range:.4f}",
+                     JSONKeys.right_range: f"{right_range:.4f}",
+                     JSONKeys.left_edge: f"{left_edge:.4f}",
+                     JSONKeys.right_edge: f"{right_edge:.4f}",
+                     JSONKeys.rois_selected: json_friendly_rois_selected}
+
+        logging.info(json_dict)
+
+        with open(output_file_name, 'w') as json_file:
+            json.dump(json_dict, json_file)
+
+        display(HTML('<span>Created config file: </span><span style="font-size: 20px; color:blue">' +
+                     output_file_name + '</span>'))
