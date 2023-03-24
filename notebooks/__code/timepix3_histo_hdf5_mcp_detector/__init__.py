@@ -35,3 +35,12 @@ class JSONKeys:
     y0 = "y0"
     x1 = "x1"
     y1 = "y1"
+
+    fitting_parameters = "fitting parameters"
+    a0 = "a0"
+    b0 = "b0"
+    ahkl = "ahkl"
+    bhkl = "bhkl"
+    lambdahkl = "lambdahkl"
+    tau = "tau"
+    sigma = "sigma"

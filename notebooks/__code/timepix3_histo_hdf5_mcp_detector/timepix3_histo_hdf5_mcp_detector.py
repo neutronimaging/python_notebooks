@@ -45,6 +45,27 @@ class Timepix3HistoHdf5McpDetector:
     # }
     rois_selected = None
 
+    default_parameters = {JSONKeys.dSD_m: 19.855,
+                          JSONKeys.rois_selected: {0: {JSONKeys.x0: 467,
+                                                       JSONKeys.y0: 99,
+                                                       JSONKeys.x1: 975,
+                                                       JSONKeys.y1: 429}},
+                          JSONKeys.offset_micros: 0,
+                          JSONKeys.time_shift: 0,
+                          JSONKeys.element: 'Ni',
+                          JSONKeys.left_range: 0.8,
+                          JSONKeys.right_range: 1.9,
+                          JSONKeys.left_edge: 1.2,
+                          JSONKeys.right_edge: 1.4,
+                          JSONKeys.fitting_parameters: {JSONKeys.a0: DefaultFittingParameters.a0,
+                                                        JSONKeys.b0: DefaultFittingParameters.b0,
+                                                        JSONKeys.ahkl: DefaultFittingParameters.ahkl,
+                                                        JSONKeys.bhkl: DefaultFittingParameters.bhkl,
+                                                        JSONKeys.lambdahkl: DefaultFittingParameters.lambdahkl,
+                                                        JSONKeys.tau: DefaultFittingParameters.tau,
+                                                        JSONKeys.sigma: DefaultFittingParameters.sigma}
+                          }
+
     # dict of fitting result
     # {'a0': {'value': None, 'error': None},
     #  'b0': {'value': None, 'error': None},
@@ -103,7 +124,7 @@ class Timepix3HistoHdf5McpDetector:
         self.config_ui = fileselector.FileSelectorPanel(instruction='Select Config file ...',
                                                        start_dir=self.working_dir,
                                                        next=self.load_config,
-                                                       filters={'Config': ".json"},
+                                                       filters={'Config': ".cfg"},
                                                        multiple=False)
         self.config_ui.show()
 
@@ -115,7 +136,7 @@ class Timepix3HistoHdf5McpDetector:
         input_nexus_filename = config[JSONKeys.input_nexus_filename]
         self.load_nexus(nexus_file_name=input_nexus_filename)
 
-        dSD_ = config[JSONKeys.dSD_m]
+        dSD = config[JSONKeys.dSD_m]
         rois_selected = config[JSONKeys.rois_selected]
         offset_micros = config[JSONKeys.offset_micros]
         time_shift = config[JSONKeys.time_shift]
@@ -126,9 +147,32 @@ class Timepix3HistoHdf5McpDetector:
         left_edge = config[JSONKeys.left_edge]
         right_edge = config[JSONKeys.right_edge]
 
-        #FIXME
+        a0 = config[JSONKeys.a0]
+        b0 = config[JSONKeys.b0]
+        ahkl = config[JSONKeys.ahkl]
+        bhkl = config[JSONKeys.bhkl]
+        lambdahkl = config[JSONKeys.lambdahkl]
+        tau = config[JSONKeys.tau]
+        sigma = config[JSONKeys.sigma]
 
+        self.default_parameters[JSONKeys.dSD_m] = float(dSD)
+        self.default_parameters[JSONKeys.rois_selected] = rois_selected
+        self.default_parameters[JSONKeys.offset_micros] = float(offset_micros)
+        self.default_parameters[JSONKeys.time_shift] = float(time_shift)
+        self.default_parameters[JSONKeys.element] = element
 
+        self.default_parameters[JSONKeys.left_range] = float(left_range)
+        self.default_parameters[JSONKeys.right_range] = float(right_range)
+        self.default_parameters[JSONKeys.left_edge] = float(left_edge)
+        self.default_parameters[JSONKeys.right_edge] = float(right_edge)
+
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.a0] = float(a0)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.b0] = float(b0)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.ahkl] = float(ahkl)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.bhkl] = float(bhkl)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.lambdahkl] = float(lambdahkl)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.tau] = float(tau)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.sigma] = float(sigma)
 
     def load_nexus(self, nexus_file_name=None):
         logging.info(f"Loading HDF5: {nexus_file_name}")
@@ -304,23 +348,23 @@ class Timepix3HistoHdf5McpDetector:
                         x_axis=widgets.RadioButtons(options=['TOF', 'lambda'],
                                                     value='lambda',
                                                     ),
-                        dSD_m=widgets.FloatSlider(value=19.855,
+                        dSD_m=widgets.FloatSlider(value=self.default_parameters[JSONKeys.dSD_m],
                                                   min=15,
                                                   max=25,
                                                   step=0.001,
                                                   continuous_update=False,
                                                   readout_format=".3f"),
-                        offset_micros=widgets.IntSlider(value=0,
+                        offset_micros=widgets.IntSlider(value=self.default_parameters[JSONKeys.offset_micros],
                                                         min=0,
                                                         max=15000,
                                                         continuous_update=False),
-                        time_shift=widgets.IntSlider(value=0,
+                        time_shift=widgets.IntSlider(value=self.default_parameters[JSONKeys.time_shift],
                                                      min=0,
                                                      max=MAX_TIME_PER_PULSE,
                                                      step=1,
                                                      continuous_update=False),
                         element=widgets.RadioButtons(options=['Ni', 'Ta'],
-                                                     value='Ni'),
+                                                     value=self.default_parameters[JSONKeys.element]),
                         )
         display(self.v)
 
@@ -342,7 +386,7 @@ class Timepix3HistoHdf5McpDetector:
 
             ax3.cla()
 
-            _profile = np.array(self.profile)
+            _profile = np.array(self.profile_shifted)
 
             ax3.plot(lambda_x_axis, _profile,
                      color=list_matplotlib_colors[0])
@@ -362,23 +406,23 @@ class Timepix3HistoHdf5McpDetector:
                                                                       max=np.max(lambda_x_axis),
                                                                       step=0.001,
                                                                       # value=np.min(lambda_x_axis),
-                                                                      value=0.8,  # FIXME for debugging only
+                                                                      value=self.default_parameters[JSONKeys.left_range],
                                                                       readout_format=".3f"),
                                        right_range=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                        max=np.max(lambda_x_axis),
                                                                        step=0.001,
                                                                        # value=np.max(lambda_x_axis),
-                                                                       value=1.9,  # FIXME for debugging only
+                                                                       value=self.default_parameters[JSONKeys.right_range],
                                                                        readout_format=".3f"),
                                        left_edge=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                      max=np.max(lambda_x_axis),
                                                                      step=0.001,
-                                                                     value=1.2,  # FIXME for debugging only
+                                                                     value=self.default_parameters[JSONKeys.left_edge],
                                                                      readout_format=".3f"),
                                        right_edge=widgets.FloatSlider(min=np.min(lambda_x_axis),
                                                                       max=np.max(lambda_x_axis),
                                                                       step=0.001,
-                                                                      value=1.4,   # FIXME for debugging only
+                                                                      value=self.default_parameters[JSONKeys.right_edge],
                                                                       readout_format=".3f"))
         display(self.peak_to_fit)
 
@@ -411,17 +455,20 @@ class Timepix3HistoHdf5McpDetector:
 
         return lambda_array, profile_shifted
 
-    def setup_fitting_parameters(self):
+    def fitting(self):
 
+        # setup parameters
         display(HTML('<span style="font-size: 20px; color:blue">Init parameters</span>'))
 
         text_width = '80px'   # px
         display(HTML('<span style="font-size: 15px; color:green">High lambda</span>'))
+        default_a0 = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.a0]
         self.a0_layout = widgets.HBox([widgets.Label(u"a\u2080"),
-                                  widgets.IntText(DefaultFittingParameters.a0,
+                                  widgets.IntText(default_a0,
                                                   layout=widgets.Layout(width=text_width))])
+        default_b0 = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.b0]
         self.b0_layout = widgets.HBox([widgets.Label(u"b\u2080"),
-                                  widgets.IntText(DefaultFittingParameters.b0,
+                                  widgets.IntText(default_b0,
                                                   layout=widgets.Layout(width=text_width))])
         high_layout = widgets.VBox([self.a0_layout,
                                     self.b0_layout])
@@ -430,11 +477,13 @@ class Timepix3HistoHdf5McpDetector:
         display(HTML(''))
 
         display(HTML('<span style="font-size: 15px; color:green">Low lambda</span>'))
+        default_ahkl = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.ahkl]
         self.ahkl_layout = widgets.HBox([widgets.Label(u"a\u2095\u2096\u2097"),
-                                  widgets.IntText(DefaultFittingParameters.ahkl,
+                                  widgets.IntText(default_ahkl,
                                                   layout=widgets.Layout(width=text_width))])
+        default_bhkl = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.bhkl]
         self.bhkl_layout = widgets.HBox([widgets.Label(u"b\u2095\u2096\u2097"),
-                                  widgets.IntText(DefaultFittingParameters.bhkl,
+                                  widgets.IntText(default_bhkl,
                                                   layout=widgets.Layout(width=text_width))])
         low_layout = widgets.VBox([self.ahkl_layout,
                                    self.bhkl_layout])
@@ -443,19 +492,29 @@ class Timepix3HistoHdf5McpDetector:
         display(HTML(''))
 
         display(HTML('<span style="font-size: 15px; color:green">Bragg peak</span>'))
+        default_lambdahkl = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.lambdahkl]
         self.lambdahkl_layout = widgets.HBox([widgets.Label(u"\u03bb\u2095\u2096\u2097"),
-                                  widgets.FloatText(DefaultFittingParameters.lambdahkl,
+                                  widgets.FloatText(default_lambdahkl,
                                                     layout=widgets.Layout(width=text_width))])
+        default_tau = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.tau]
         self.tau_layout = widgets.HBox([widgets.Label(u"\u03C4"),
-                                  widgets.FloatText(DefaultFittingParameters.tau,
+                                  widgets.FloatText(default_tau,
                                                     layout=widgets.Layout(width=text_width))])
+        default_sigma = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.sigma]
         self.sigma_layout = widgets.HBox([widgets.Label(u"\u03C3"),
-                                   widgets.FloatText(DefaultFittingParameters.sigma,
+                                   widgets.FloatText(default_sigma,
                                                      layout=widgets.Layout(width=text_width))])
         bragg_peak_layout = widgets.VBox([self.lambdahkl_layout,
                                           self.tau_layout,
                                           self.sigma_layout])
         display(bragg_peak_layout)
+
+        display(widgets.HTML("<hr"))
+
+        self.fitting_button = widgets.Button(description="FIT",
+                                             layout=widgets.Layout(width="100%"))
+        display(self.fitting_button)
+        self.fitting_button.on_click(self.fit_peak)
 
     def prepare_data_to_fit(self):
         """
@@ -494,8 +553,7 @@ class Timepix3HistoHdf5McpDetector:
         self.x_axis_to_fit = lambda_x_axis
         self.y_axis_to_fit = profile_shifted
 
-    def fit_peak(self):
-
+    def fit_peak(self, _):
         self.prepare_data_to_fit()
 
         x_axis_to_fit = self.x_axis_to_fit
@@ -560,11 +618,12 @@ class Timepix3HistoHdf5McpDetector:
         ax4.plot(x_axis_fitted, y_axis_fitted, 'w-')
 
         ax4.set_ylabel("Cross Section (a.u.)")
+        ax4.set_xlabel(u"\u03bb (\u212b)")
 
         lambdahkl = o_fit_regions.fit_dict['lambdahkl']['value']
-        print(f"lambda_hkl: {lambdahkl:.3f}" + u"\u212b")
+        print(f"\u03bb\u2095\u2096\u2097: {lambdahkl:.3f}" + u"\u212b")
         ax4.axvline(lambdahkl,
-                    color='r', linestyle='--')
+                    color='b', linestyle='-.')
         _local_max_counts = np.max(-np.log(y_axis_to_fit))
         max_counts = _local_max_counts if _local_max_counts > max_counts else max_counts
         ax4.text(lambdahkl,
@@ -615,7 +674,7 @@ class Timepix3HistoHdf5McpDetector:
         base, _ = os.path.splitext(os.path.basename(input_nexus_filename))
         current_time = get_current_time_in_special_file_name_format()
 
-        output_file_name = os.path.join(output_folder, f"config_{base}_{current_time}.json")
+        output_file_name = os.path.abspath(os.path.join(output_folder, f"config_{base}_{current_time}.cfg"))
 
         # record all parameters
         rois_selected = self.rois_selected
@@ -628,6 +687,14 @@ class Timepix3HistoHdf5McpDetector:
         right_range = self.peak_to_fit.children[1].value
         left_edge = self.peak_to_fit.children[2].value
         right_edge = self.peak_to_fit.children[3].value
+
+        init_a0 = self.a0_layout.children[1].value
+        init_b0 = self.b0_layout.children[1].value
+        init_ahkl = self.ahkl_layout.children[1].value
+        init_bhkl = self.bhkl_layout.children[1].value
+        init_lambdahkl = self.lambdahkl_layout.children[1].value
+        init_tau = self.tau_layout.children[1].value
+        init_sigma = self.sigma_layout.children[1].value
 
         # make json compatible rois_selected
         json_friendly_rois_selected = {}
@@ -648,7 +715,15 @@ class Timepix3HistoHdf5McpDetector:
                      JSONKeys.right_range: f"{right_range:.4f}",
                      JSONKeys.left_edge: f"{left_edge:.4f}",
                      JSONKeys.right_edge: f"{right_edge:.4f}",
-                     JSONKeys.rois_selected: json_friendly_rois_selected}
+                     JSONKeys.rois_selected: json_friendly_rois_selected,
+                     JSONKeys.a0: init_a0,
+                     JSONKeys.b0: init_b0,
+                     JSONKeys.ahkl: init_ahkl,
+                     JSONKeys.bhkl: init_bhkl,
+                     JSONKeys.lambdahkl: init_lambdahkl,
+                     JSONKeys.tau: init_tau,
+                     JSONKeys.sigma: init_sigma,
+                     }
 
         logging.info(json_dict)
 
