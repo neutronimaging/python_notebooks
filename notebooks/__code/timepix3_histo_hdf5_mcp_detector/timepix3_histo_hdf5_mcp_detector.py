@@ -516,6 +516,11 @@ class Timepix3HistoHdf5McpDetector:
         display(self.fitting_button)
         self.fitting_button.on_click(self.fit_peak)
 
+        self.fig4, self.ax4 = plt.subplots(figsize=(8, 8),
+                                             nrows=1,
+                                             ncols=1)
+
+
     def prepare_data_to_fit(self):
         """
         this is where the y-axis to fit and x_axis (lambda scale) are calculated using the instrument
@@ -572,9 +577,11 @@ class Timepix3HistoHdf5McpDetector:
         # full_x_axis = self.x_axis_to_fit
         # full_y_axis = self.y_axis_to_fit
 
-        fig4, ax4 = plt.subplots(figsize=(8, 8),
-                                 nrows=1,
-                                 ncols=1)
+        # fig4, ax4 = plt.subplots(figsize=(8, 8),
+        #                          nrows=1,
+        #                          ncols=1)
+        fig4 = self.fig4
+        ax4 = self.ax4
 
         # display full spectrum
         list_matplotlib_colors = Color.list_matplotlib
