@@ -44,3 +44,7 @@ class JSONKeys:
     lambdahkl = "lambdahkl"
     tau = "tau"
     sigma = "sigma"
+
+
+LIST_ELEMENTS = ['Ni', 'Ta', 'Al']
+LIST_ELEMENTS_SUPPORTED = ['Ni', 'Al']

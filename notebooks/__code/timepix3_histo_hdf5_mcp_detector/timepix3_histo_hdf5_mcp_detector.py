@@ -24,6 +24,7 @@ from __code._utilities.array import find_nearest_index
 from __code.timepix3_histo_hdf5_mcp_detector import FittingRegions
 from __code.timepix3_histo_hdf5_mcp_detector import DefaultFittingParameters
 from __code.timepix3_histo_hdf5_mcp_detector import JSONKeys
+from __code.timepix3_histo_hdf5_mcp_detector import LIST_ELEMENTS, LIST_ELEMENTS_SUPPORTED
 from __code.file_folder_browser import FileFolderBrowser
 
 LOG_FILE_NAME = ".timepix3_histo_hdf5_mcp_detector.log"
@@ -174,6 +175,9 @@ class Timepix3HistoHdf5McpDetector:
         self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.tau] = float(tau)
         self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.sigma] = float(sigma)
 
+        display(HTML('<span>Config file loaded: </span><span style="font-size: 20px; color:blue">' +
+                     config_file_name + '</span>'))
+
     def load_nexus(self, nexus_file_name=None):
         logging.info(f"Loading HDF5: {nexus_file_name}")
         self.input_nexus_filename = nexus_file_name
@@ -289,7 +293,7 @@ class Timepix3HistoHdf5McpDetector:
 
         def plot_profile(x_axis, dSD_m, offset_micros, time_shift, element):
 
-            if element == 'Ni':
+            if element in LIST_ELEMENTS_SUPPORTED:
                 _handler = BraggEdgeLibrary(material=[element],
                                             number_of_bragg_edges=6)
             else:  # Ta
@@ -363,7 +367,7 @@ class Timepix3HistoHdf5McpDetector:
                                                      max=MAX_TIME_PER_PULSE,
                                                      step=1,
                                                      continuous_update=False),
-                        element=widgets.RadioButtons(options=['Ni', 'Ta'],
+                        element=widgets.RadioButtons(options=LIST_ELEMENTS,
                                                      value=self.default_parameters[JSONKeys.element]),
                         )
         display(self.v)
@@ -517,8 +521,8 @@ class Timepix3HistoHdf5McpDetector:
         self.fitting_button.on_click(self.fit_peak)
 
         self.fig4, self.ax4 = plt.subplots(figsize=(8, 8),
-                                             nrows=1,
-                                             ncols=1)
+                                           nrows=1,
+                                           ncols=1)
 
 
     def prepare_data_to_fit(self):
@@ -642,7 +646,7 @@ class Timepix3HistoHdf5McpDetector:
                  )
 
         element = self.v.children[4].value
-        if element == 'Ni':
+        if element in LIST_ELEMENTS_SUPPORTED:
             _handler = BraggEdgeLibrary(material=[element],
                                         number_of_bragg_edges=6)
         else:  # Ta
