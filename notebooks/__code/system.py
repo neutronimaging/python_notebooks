@@ -24,71 +24,76 @@ class System:
                            instrument='CG1D',
                            notebook="N/A"):
 
-        try:
+        # try:
 
-            display(HTML("""
-                       <style>
-                       .result_label {
-                          font-style: bold;
-                          color: red;
-                          font-size: 18px;
-                       }
-                       </style>
-                       """))
+        debugging = config.debugging
+        if debugging:
+            print("** Using Debugging Mode! **")
 
-            full_list_instruments = cls.get_full_list_instrument()
-            full_list_instruments.sort()
-            start_path = cls.get_start_path(debugger_folder=debugger_folder,
-                                            system_folder=system_folder,
-                                            instrument=full_list_instruments[0])
+        display(HTML("""
+                   <style>
+                   .result_label {
+                      font-style: bold;
+                      color: red;
+                      font-size: 18px;
+                   }
+                   </style>
+                   """))
 
-            cls.start_path = start_path
+        full_list_instruments = cls.get_full_list_instrument()
+        full_list_instruments.sort()
+        start_path = cls.get_start_path(debugger_folder=debugger_folder,
+                                        system_folder=system_folder,
+                                        instrument=full_list_instruments[0])
 
-            list_and_default_folders = cls.get_list_folders(start_path=start_path)
-            user_list_folders = list_and_default_folders['user_list_folders']
-            default_value = list_and_default_folders['default_value']
+        cls.start_path = start_path
 
-            select_instrument_ui = widgets.HBox([widgets.Label("Select Instrument",
-                                                      layout=widgets.Layout(width='20%')),
-                                        widgets.Select(options=full_list_instruments,
-                                                       value=full_list_instruments[0],
-                                                       layout=widgets.Layout(width='20%'))])
-            cls.instrument_ui = select_instrument_ui.children[1]
-            cls.instrument_ui.observe(cls.check_instrument_input, names='value')
-
-            help_ui = widgets.Button(description="HELP",
-                                     button_style='info')
-            help_ui.on_click(cls.select_ipts_help)
-
-            top_hbox = widgets.HBox([widgets.Label("IPTS-"),
-                                     widgets.Text(value="",
-                                                  layout=widgets.Layout(width='10%')),
-                                     widgets.Label("DOES NOT EXIST!",
+        select_instrument_ui = widgets.HBox([widgets.Label("Select Instrument",
+                                                  layout=widgets.Layout(width='20%')),
+                                    widgets.Select(options=full_list_instruments,
+                                                   value=full_list_instruments[0],
                                                    layout=widgets.Layout(width='20%'))])
-            cls.result_label = top_hbox.children[2]
-            cls.ipts_number = top_hbox.children[1]
-            cls.result_label.add_class("result_label")
-            or_label = widgets.Label("OR")
-            bottom_hbox = widgets.HBox([widgets.Label("Select Folder",
-                                               layout=widgets.Layout(width="20%")),
-                                 widgets.Select(options=user_list_folders,
-                                                value=default_value,
-                                                layout=widgets.Layout(height='300px')),
-                                 ])
-            cls.user_list_folders = user_list_folders
-            box = widgets.VBox([select_instrument_ui, top_hbox, or_label, bottom_hbox, help_ui])
-            display(box)
+        cls.instrument_ui = select_instrument_ui.children[1]
+        cls.instrument_ui.observe(cls.check_instrument_input, names='value')
 
-            cls.working_dir_ui = bottom_hbox.children[1]
-            cls.manual_ipts_entry_ui = top_hbox.children[1]
-            cls.manual_ipts_entry_ui.observe(cls.check_ipts_input, names='value')
+        help_ui = widgets.Button(description="HELP",
+                                 button_style='info')
+        help_ui.on_click(cls.select_ipts_help)
 
-            cls.result_label.value = ""
+        top_hbox = widgets.HBox([widgets.Label("IPTS-"),
+                                 widgets.Text(value="",
+                                              layout=widgets.Layout(width='10%')),
+                                 widgets.Label("DOES NOT EXIST!",
+                                               layout=widgets.Layout(width='20%'))])
+        cls.result_label = top_hbox.children[2]
+        cls.ipts_number = top_hbox.children[1]
+        cls.result_label.add_class("result_label")
+        or_label = widgets.Label("OR")
 
-        except:
-            cls.working_dir = os.path.expanduser("~")
-            display(HTML('<span style="font-size: 15px; color:blue">working dir set to -> ' + cls.working_dir +
-                         '</span>'))
+        list_and_default_folders = cls.get_list_folders(start_path=start_path)
+        user_list_folders = list_and_default_folders['user_list_folders']
+        default_value = list_and_default_folders['default_value']
+
+        bottom_hbox = widgets.HBox([widgets.Label("Select Folder",
+                                           layout=widgets.Layout(width="20%")),
+                             widgets.Select(options=user_list_folders,
+                                            value=default_value,
+                                            layout=widgets.Layout(height='300px')),
+                             ])
+        cls.user_list_folders = user_list_folders
+        box = widgets.VBox([select_instrument_ui, top_hbox, or_label, bottom_hbox, help_ui])
+        display(box)
+
+        cls.working_dir_ui = bottom_hbox.children[1]
+        cls.manual_ipts_entry_ui = top_hbox.children[1]
+        cls.manual_ipts_entry_ui.observe(cls.check_ipts_input, names='value')
+
+        cls.result_label.value = ""
+
+        # except:
+        #     cls.working_dir = os.path.expanduser("~")
+        #     display(HTML('<span style="font-size: 15px; color:blue">working dir set to -> ' + cls.working_dir +
+        #                  '</span>'))
 
         cls.log_use(notebook=notebook)
 
@@ -115,7 +120,12 @@ class System:
     def get_list_folders(cls, start_path=''):
         debugging = config.debugging
 
-        list_folders = sorted(glob.glob(start_path + '*'))
+        if debugging:
+            instrument = cls.get_instrument_selected()
+            start_path = config.debugger_instrument_folder[instrument]
+            cls.start_path = start_path
+
+        list_folders = sorted(glob.glob(os.path.join(start_path, '*')))
         short_list_folders = [os.path.basename(_folder) for _folder in list_folders if os.path.isdir(_folder)]
         # short_list_folders = sorted(short_list_folders)
 
@@ -175,7 +185,7 @@ class System:
             debugger_folder = './'
 
         if debugging and (username == debugger_username):
-            print("** Using Debugging Mode! **")
+            # print("** Using Debugging Mode! **")
 
             # check that in debugging mode, on analysis machine, default folder exists
             import socket
@@ -207,6 +217,7 @@ class System:
         start_path = cls.get_start_path(instrument=instrument)
         cls.start_path = start_path
         list_and_default_folders = cls.get_list_folders(start_path=start_path)
+
         user_list_folders = list_and_default_folders['user_list_folders']
         default_value = list_and_default_folders['default_value']
 
