@@ -49,6 +49,9 @@ class Interface(QMainWindow):
             self.array2d = array2d
 
         else:
+
+            print(f"{o_norm =}")
+
             # we are working with the full stack
             if o_norm:
                 self.o_norm = o_norm
@@ -157,7 +160,8 @@ class Interface(QMainWindow):
                 list_of_files = list(list_of_files[random_list])
                 o_norm.load(file=list_of_files, notebook=True)
 
-            list_data_to_use = o_norm.data['sample']['data']
+                list_data_to_use = o_norm.data['sample']['data']
+
             self.integrated_image = np.mean(list_data_to_use, axis=0)
 
         [_height, _width] = np.shape(self.integrated_image)

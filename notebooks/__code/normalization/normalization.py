@@ -256,6 +256,7 @@ class OBSelectionPanel(Panel):
         _panel.init_ui(files=self.files)
         _panel.show()
 
+
 class DFSelectionPanel(Panel):
     def __init__(self, working_dir='', top_object=None):
         self.working_dir = working_dir
