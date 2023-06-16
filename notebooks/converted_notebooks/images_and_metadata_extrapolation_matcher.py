@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -22,7 +22,7 @@ from __code.select_files_and_folders import SelectAsciiFile, SelectFolder
 from __code.images_and_metadata_extrapolation_matcher import ImagesAndMetadataExtrapolationMatcher
 # %matplotlib notebook
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='images_and_metadata_extrapolation_matcher')
 from __code.__all import custom_style
 custom_style.style()
 

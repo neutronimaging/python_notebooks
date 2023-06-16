@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -23,7 +23,7 @@
 from __code import system
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP')
+system.System.select_working_dir(facility='SNS', instrument='SNAP', notebook='bragg_edge_normalization')
 from __code.__all import custom_style
 custom_style.style()
 

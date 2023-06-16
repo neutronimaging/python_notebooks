@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -26,7 +26,7 @@ warnings.filterwarnings('ignore')
 from __code.roi_statistics_vs_stack.main import ImageWindow, FileHandler
 
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='roi_statistics_vs_stack')
 from __code.__all import custom_style
 custom_style.style()
 

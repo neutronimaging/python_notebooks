@@ -7,13 +7,13 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/list_element_bragg_edges)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/list-element-bragg-edges/)
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
@@ -23,6 +23,8 @@
 # + run_control={"frozen": false, "read_only": false}
 from __code.bragg_edge.bragg_edge import BraggEdge, Interface
 from __code.__all import custom_style
+from __code import system
+system.System.log_use(notebook='list_element_bragg_edges')
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

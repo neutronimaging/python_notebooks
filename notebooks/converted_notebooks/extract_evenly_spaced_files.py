@@ -23,7 +23,7 @@
 from __code.extract_evenly_spaced_files.main import ExtractEvenlySpacedFiles as EESF
 from __code.extract_evenly_spaced_files.interface_handler import Interface
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='extract_evenly_spaced_files')
 from __code.__all import custom_style
 custom_style.style()
 # -

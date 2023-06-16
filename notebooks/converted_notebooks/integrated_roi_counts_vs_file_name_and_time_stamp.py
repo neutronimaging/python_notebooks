@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -37,7 +37,7 @@ from __code import system
 from __code.ipywe.myfileselector import FileSelection
 from __code.integrated_roi_counts_vs_file_name_and_time_stamp import IntegratedRoiUi
 
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='integrated_roi_counts_vs_file_name_and_time_stamp')
 from __code.__all import custom_style
 custom_style.style()
 

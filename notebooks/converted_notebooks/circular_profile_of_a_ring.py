@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -29,7 +29,7 @@ from __code.circular_profile_of_a_ring.interface_handler import InterfaceHandler
 from __code.circular_profile_of_a_ring.circular_profile_of_a_ring import CircularProfileOfARing
 
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='circular_profile_of_a_ring')
 from __code.__all import custom_style
 custom_style.style()
 

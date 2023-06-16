@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -26,7 +26,7 @@ warnings.filterwarnings('ignore')
 from __code import system
 from __code.mcp_chips_corrector.mcp_chips_corrector import McpChipsCorrector
 from __code.mcp_chips_corrector.interface import Interface
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='mcp_chips_corrector')
 from __code.__all import custom_style
 custom_style.style()
 # -

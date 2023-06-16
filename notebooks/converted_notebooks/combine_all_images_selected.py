@@ -12,7 +12,7 @@
 #     name: python3
 # ---
 
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/combine_all_images_selected)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorial/notebooks/combine_all_images_selected)
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
@@ -22,7 +22,7 @@
 # + run_control={"frozen": false, "read_only": false}
 from __code.combine_images import CombineImages
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='combine_all_images_selected')
 from __code.__all import custom_style
 custom_style.style()
 

@@ -7,12 +7,12 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/fix_images)
+# <!-- [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/fix_images) -->
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
@@ -27,7 +27,7 @@ from __code.fix_images import FixImages
 
 # %matplotlib notebook
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='fix_images')
 
 from __code.__all import custom_style
 custom_style.style()

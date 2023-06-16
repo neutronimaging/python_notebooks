@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -27,7 +27,7 @@ warnings.filterwarnings('ignore')
 
 from __code.wave_front_dynamics.wave_front_dynamics import WaveFrontDynamics, WaveFrontDynamicsUI
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='wave_front_dynamics')
 from __code.__all import custom_style
 custom_style.style()
 # -

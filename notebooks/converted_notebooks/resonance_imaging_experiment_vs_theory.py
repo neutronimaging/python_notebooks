@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -54,7 +54,7 @@ if debugging:
     ipts = IPTS
 else:
     ipts = utilities.get_ipts()
-working_dir = utilities.get_working_dir(ipts=ipts, debugging=debugging)
+working_dir = utilities.get_working_dir(ipts=ipts, debugging=debugging, notebook='resonance_imaging_experiment_vs_theory')
 print("Working dir: {}".format(working_dir))
 
 # + [markdown] cell_style="split" run_control={"frozen": false, "read_only": false}

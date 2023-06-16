@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -29,7 +29,7 @@ from __code.roi_selection_ui import Interface
 from __code import system
 from __code.water_intake_profile_calculator import WaterIntakeProfileCalculator, WaterIntakeProfileSelector
 
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='water_intake_profile_calculator')
 from __code.__all import custom_style
 custom_style.style()
 

@@ -7,27 +7,23 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
+
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/)
+#
+# <img src='__docs/__all/notebook_rules.png' />
 
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
 from __code.display_and_export_images_with_metadata_profile import DisplayExportScreenshots
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='display_and_export_images_with_metadata_profile')
 from __code.__all import custom_style
 custom_style.style() 
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Description 
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# This notebook will display (and save) the images with the metadata profile calculated in the [file_name_and_metadata_vs_time_stamp](file_name_and_metadata_vs_time_stamp.ipynb).
-#
-# Then you will also have the option to export all the images and metadata profile plots.
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Image Folder 

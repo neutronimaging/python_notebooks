@@ -7,7 +7,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -29,7 +29,7 @@ o_builder = UiBuilder(ui_name = 'ui_display_counts_of_region_vs_stack.ui')
 from __code.display_counts_of_region_vs_stack import ImageWindow, DisplayCountsVsStack
 
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='display_counts_of_region_vs_stack')
 from __code.__all import custom_style
 custom_style.style()
 
