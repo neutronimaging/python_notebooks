@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.14.6
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -35,6 +35,7 @@
 #     * [combine folders](combine_folders.ipynb)
 #     * [combine images n by n](combine_images_n_by_n.ipynb)
 #     * [combine images without outliers](combine_images_without_outliers.ipynb)
+#     * [sequential combine images using metadata](sequential_combine_images_using_metadata.ipynb)
 # * [create list of file name vs time stamp](create_list_of_file_name_vs_time_stamp.ipynb)
 # * [cylindrical geometry correction](cylindrical_geometry_correction.ipynb)
 
@@ -108,6 +109,7 @@
 # * [panoramic stitching for tof](panoramic_stitching_for_tof.ipynb)
 # * Profile
 #     * [bragg edge profile](bragg_edge_profile.ipynb)
+#     * [circular profile of a ring](circular_profile_of_a_ring.ipynb)
 #     * [profile](profile.ipynb)
 #     * [radial profile](radial_profile.ipynb)
 #     * [water intake profile_calculator](water_intake_profile_calculator.ipynb)
@@ -117,14 +119,13 @@
 # * [radial profile](radial_profile.ipynb)
 # * [registration](registration.ipynb)
 # * [rename files](rename_files.ipynb)
-# * [resonance imaging experiment vs theory](resonance_imaging_experiment_vs_theory.ipynb)
+# * [resonance imaging experiment vs theory](resonance_imaging_experiment_vs_theory.ipynb) (under development)
 # * [roi statistics for a stack of images](roi_statistics_vs_stack.ipynb)
 # * [rotate and crop images](rotate_and_crop_images.ipynb)
 
 # # S
 
 # * [scale overlapping images](scale_overlapping_images.ipynb)
-# * [sequential combine images using metadata](sequential_combine_images_using_metadata.ipynb)
 # * [shifting time offset](shifting_time_offset.ipynb)
 
 # # W
