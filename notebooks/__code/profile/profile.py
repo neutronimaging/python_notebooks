@@ -123,14 +123,11 @@ class ProfileUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
         self.ui.profile_view.clear()
         if nbr_row == 0:
-            # self.ui.profile_view.clear()
             return
 
         image = self.live_image
         color = Color()
         list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
-
-        # self.ui.profile_view.clear()
 
         self.legend = self.ui.profile_view.addLegend()
 
@@ -150,13 +147,9 @@ class ProfileUi(QMainWindow):
         color = Color()
         list_rgb_profile_color = color.get_list_rgb(nbr_color=(nbr_profile * nbr_file_selected))
         self.ui.all_plots_view.clear()
+
         if nbr_profile == 0:
             return
-
-        try:
-            self.ui.all_plots_view.scene().removeItem(self.all_plots_legend)
-        except Exception as e:
-            print(e)
 
         self.all_plots_legend = self.ui.all_plots_view.addLegend()
 
