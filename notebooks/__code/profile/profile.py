@@ -19,9 +19,9 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
+from __code import load_ui
 from __code._utilities.color import Color
 from __code.file_handler import retrieve_time_stamp, make_ascii_file
-from __code.ui_profile import Ui_MainWindow as UiMainWindow
 from __code.decorators import wait_cursor
 from __code.file_handler import make_ascii_file
 
@@ -73,8 +73,11 @@ class ProfileUi(QMainWindow):
             (maybe hidden behind this browser!)</span>'))
 
         QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_profile.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Profile")
 
         self.working_dir = working_dir
@@ -118,18 +121,16 @@ class ProfileUi(QMainWindow):
 
     def display_profiles(self):
         nbr_row = self.ui.tableWidget.rowCount()
+        self.ui.profile_view.clear()
         if nbr_row == 0:
+            # self.ui.profile_view.clear()
             return
 
         image = self.live_image
         color = Color()
         list_rgb_profile_color = color.get_list_rgb(nbr_color=nbr_row)
 
-        self.ui.profile_view.clear()
-        try:
-            self.ui.profile_view.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
+        # self.ui.profile_view.clear()
 
         self.legend = self.ui.profile_view.addLegend()
 
@@ -354,8 +355,10 @@ class ProfileUi(QMainWindow):
             self.ui.tableWidget.setCellWidget(row, col, cell_widget)
             widget.blockSignals(False)
         else:
+            # self.ui.tableWidget.blockSignals(True)
             item = QTableWidgetItem(str(value))
             self.ui.tableWidget.setItem(row, col, item)
+            # self.ui.tableWidget.blockSignals(False)
 
     def get_profile_dimensions(self, row=-1):
         is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
@@ -701,7 +704,7 @@ class ExportProfiles(object):
             display(HTML("Exported Profile file {}".format(_output_file_name)))
 
 
-class GuideAndProfileRoisHandler(object):
+class GuideAndProfileRoisHandler:
     __profile = None
 
     def __init__(self, parent=None, row=-1):
@@ -834,25 +837,25 @@ class Initializer(object):
     def widgets(self):
         _file_path = os.path.dirname(__file__)
         left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_fast.png'))
+                                                               '../static/profile/button_rotation_left_fast.png'))
         self.parent.ui.left_rotation_button_fast.setStyleSheet("background-image: "
                                                                "url('" + left_rotation_fast_file + "'); " + \
                                                                "background-repeat: no-repeat")
 
         right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_fast.png'))
+                                                                '../static/profile/button_rotation_right_fast.png'))
         self.parent.ui.right_rotation_button_fast.setStyleSheet("background-image: "
                                                                 "url('" + right_rotation_fast_file + "'); " + \
                                                                 "background-repeat: no-repeat")
 
         left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_slow.png'))
+                                                               '../static/profile/button_rotation_left_slow.png'))
         self.parent.ui.left_rotation_button_slow.setStyleSheet("background-image: "
                                                                "url('" + left_rotation_slow_file + "'); " + \
                                                                "background-repeat: no-repeat")
 
         right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_slow.png'))
+                                                                '../static/profile/button_rotation_right_slow.png'))
         self.parent.ui.right_rotation_button_slow.setStyleSheet("background-image: "
                                                                 "url('" + right_rotation_slow_file + "'); " + \
                                                                 "background-repeat: no-repeat")
