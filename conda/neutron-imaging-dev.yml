@@ -3,7 +3,7 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=3.7
+  - python=3.10
   - requests
   - requests-oauthlib
   - numpy
@@ -27,7 +27,7 @@ dependencies:
   - pip
   - pip:
     - PyQt5
-    - pyqtgraph==0.12.1
+    - pyqtgraph
     - changepy
     - ipywe
     - lmfit
