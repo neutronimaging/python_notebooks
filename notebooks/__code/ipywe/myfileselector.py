@@ -406,23 +406,45 @@ class FileSelection(object):
         o_norm.load(file=files, notebook=True)
         self.data_dict = o_norm.data
 
-    def select_data(self):
+    def load_files_without_checking_shape(self, files):
+        o_norm = Normalization()
+        files.sort()
+        o_norm.load(file=files, notebook=True, check_shape=False)
+        self.data_dict = o_norm.data
+
+    def select_data(self, check_shape=True):
         help_ui = widgets.Button(description="HELP",
                                  button_style='info')
         help_ui.on_click(self.select_file_help)
         display(help_ui)
 
-        if self.filter:
-            self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
-                                                           start_dir=self.working_dir,
-                                                           next=self.load_files,
-                                                           filters=self.filter,
-                                                           multiple=True)
+        if check_shape:
+
+            if self.filter:
+                self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                               start_dir=self.working_dir,
+                                                               next=self.load_files,
+                                                               filters=self.filter,
+                                                               multiple=True)
+            else:
+                 self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                                start_dir=self.working_dir,
+                                                                next=self.load_files,
+                                                                multiple=True)
+
         else:
-             self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
-                                                                 start_dir=self.working_dir,
-                                                                 next=self.load_files,
-                                                                 multiple=True)
+
+            if self.filter:
+                self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                               start_dir=self.working_dir,
+                                                               next=self.load_files_without_checking_shape,
+                                                               filters=self.filter,
+                                                               multiple=True)
+            else:
+                self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                                                               start_dir=self.working_dir,
+                                                               next=self.load_files_without_checking_shape,
+                                                               multiple=True)
 
         self.files_ui.show()
 

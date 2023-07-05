@@ -84,7 +84,7 @@ class Initialization(Parent):
         # defines the maximum value of the radius slider
         o_event = EventHandler(parent=self.parent)
         max_radius = o_event.retrieve_max_radius_possible()
-        self.parent.ui.max_radius_slider.setMaximum(max_radius)
+        self.parent.ui.max_radius_slider.setMaximum(int(max_radius))
         self.parent.ui.max_radius_slider.setValue(int(max_radius/2))
 
     def statusbar(self):

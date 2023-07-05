@@ -51,7 +51,8 @@ class LoadImages(object):
         self.o_norm.load(file=list_images, notebook=True, check_shape=False)
 
         self.nbr_files = len(list_images)
-        [self.images_dimension['height'], self.images_dimension['width']] = \
-            np.shape(self.o_norm.data['sample']['data'][0])
-        self.working_data = np.squeeze(self.o_norm.data['sample']['data'])
+        # [self.images_dimension['height'], self.images_dimension['width']] = \
+        #     np.shape(self.o_norm.data['sample']['data'][0])
+        self.working_data = self.o_norm.data['sample']['data']
         self.list_images = list_images
+        self.working_metadata = self.o_norm.data['sample']['metadata']
