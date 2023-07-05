@@ -16,6 +16,9 @@ from __code.radial_profile.display import Display
 from __code._utilities.metadata_handler import MetadataHandler
 from __code._utilities.folder import make_or_reset_folder
 
+import warnings
+warnings.filterwarnings('ignore')
+
 
 class RadialProfile:
 
@@ -184,10 +187,6 @@ class SelectRadialParameters(QMainWindow):
     # def __init__(self, parent=None, o_profile=None):
     def __init__(self, parent=None, working_dir='', data_dict=None):
 
-        display(HTML('<span style="font-size: 20px; color:blue">Select the center of the circle and the angular '
-                     'sector in the UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
-
         # o_profile.load_images()
         self.list_images = data_dict['file_name']
         self.working_data = data_dict['data']
@@ -209,11 +208,25 @@ class SelectRadialParameters(QMainWindow):
         o_init.widgets()
 
         o_display = Display(parent=self)
-        # o_display.grid()
-        # self.file_index_changed()
-        # o_init.crosshair()
-        #
-        # self.apply_clicked()
+
+        try:
+            o_display.grid()
+            self.file_index_changed()
+            o_init.crosshair()
+
+            self.apply_clicked()
+
+            display(HTML('<span style="font-size: 20px; color:blue">Select the center of the circle and the angular '
+                         'sector in the UI that popped up \
+                (maybe hidden behind this browser!)</span>'))
+
+        except (AttributeError, ValueError):
+            display(HTML('<span style="font-size: 20px; color:red">Error displaying the data. This is probably '
+                         'due the fact that the images do not have the same shape. Please use the notebook </span>'
+                         '<span style="font-size: 20px; color:blue">match_images_shapes</span>'
+                         '<span style="font-size: 20px; color:red"> to fix the error!</span>'))
+
+            self.close()
 
     def help_button_clicked(self):
         import webbrowser
@@ -386,4 +399,5 @@ class SelectRadialParameters(QMainWindow):
         self.ui.image_view.setImage(image)
 
     def closeEvent(self, eventhere=None):
-        print("Leaving Parameters Selection UI")
+        pass
+        # print("Leaving Parameters Selection UI")

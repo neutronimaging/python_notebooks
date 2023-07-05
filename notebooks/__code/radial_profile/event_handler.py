@@ -329,7 +329,7 @@ class EventHandler(Parent):
         return max_distance
 
     def update_max_radius_value(self):
-        max_radius = self.retrieve_max_radius_possible()
+        max_radius = int(self.retrieve_max_radius_possible())
         current_radius_value = self.parent.ui.max_radius_slider.value()
         if current_radius_value > max_radius:
             self.parent.ui.max_radius_slider.setValue(max_radius)
