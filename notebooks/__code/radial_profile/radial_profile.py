@@ -209,11 +209,11 @@ class SelectRadialParameters(QMainWindow):
         o_init.widgets()
 
         o_display = Display(parent=self)
-        o_display.grid()
-        self.file_index_changed()
-        o_init.crosshair()
-
-        self.apply_clicked()
+        # o_display.grid()
+        # self.file_index_changed()
+        # o_init.crosshair()
+        #
+        # self.apply_clicked()
 
     def help_button_clicked(self):
         import webbrowser
