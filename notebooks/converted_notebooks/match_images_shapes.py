@@ -12,7 +12,7 @@
 #     name: python3
 # ---
 
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/match_images_shape/)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/match-images-shapes/)
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
@@ -23,7 +23,7 @@ from __code.match_images_shapes.load_images import LoadImages
 from __code.match_images_shapes.main import Main
 
 from __code import system
-system.System.select_working_dir(notebook='rotate_and_crop_images')
+system.System.select_working_dir(notebook='math_images_shapes')
 from __code.__all import custom_style
 custom_style.style()
 

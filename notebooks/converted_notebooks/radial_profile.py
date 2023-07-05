@@ -22,9 +22,6 @@
 # # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-import warnings
-warnings.filterwarnings('ignore')
-
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
 from __code.radial_profile.radial_profile import RadialProfile, SelectRadialParameters
