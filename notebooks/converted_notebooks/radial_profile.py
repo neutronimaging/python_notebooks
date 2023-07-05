@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.6
+#       jupytext_version: 1.14.1
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -22,6 +22,9 @@
 # # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
+import warnings
+warnings.filterwarnings('ignore')
+
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
 from __code.radial_profile.radial_profile import RadialProfile, SelectRadialParameters
@@ -41,7 +44,7 @@ custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
 o_selection = FileSelection(working_dir=system.System.get_working_dir())
-o_selection.select_data()
+o_selection.select_data(check_shape=False)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Launch User Interface
