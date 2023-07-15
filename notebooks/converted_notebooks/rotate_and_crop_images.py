@@ -19,11 +19,11 @@
 # # Select Your IPTS
 
 # +
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_rotate_and_crop.ui')
+import warnings
+warnings.filterwarnings('ignore')
 
 from __code.load_images import LoadImages
-from __code.rotate_and_crop_images import RotateAndCropImages, Export
+from __code.rotate_and_crop_images.rotate_and_crop_images import RotateAndCropImages, Export
 
 from __code import system
 system.System.select_working_dir(notebook='rotate_and_crop_images')
