@@ -85,6 +85,7 @@ class ProfileUi(QMainWindow):
         # 'data': [[...],[...]]],
         # 'metadata': [],
         # 'shape': {}}
+        self.list_filenames = data_dict['file_name']
 
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
@@ -932,11 +933,18 @@ class DisplayImages(object):
         _image = self.parent.data_dict['data'][slider_index]
         return _image
 
+    def get_image_filename(self):
+        slider_index = self.parent.ui.file_slider.value()
+        return self.parent.list_filenames[slider_index]
+
     def display_images(self):
         _image = self.get_image_selected(recalculate_image=self.recalculate_image)
         _view = self.parent.ui.image_view.getView()
         _view_box = _view.getViewBox()
         _state = _view_box.getState()
+
+        _file_name = self.get_image_filename()
+        self.parent.ui.filename.setText(_file_name)
 
         first_update = False
         if self.parent.histogram_level == []:

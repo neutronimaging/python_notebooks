@@ -259,6 +259,30 @@
                    </item>
                   </layout>
                  </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_8">
+                   <item>
+                    <widget class="QLabel" name="label_6">
+                     <property name="text">
+                      <string>File name:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="filename">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>N/A</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
                 </layout>
                </item>
                <item>
@@ -665,7 +689,7 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QWidget" name="all_plots_widget" native="true"/>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
              <widget class="QLabel" name="label_5">
@@ -807,7 +831,7 @@
      <x>0</x>
      <y>0</y>
      <width>1365</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

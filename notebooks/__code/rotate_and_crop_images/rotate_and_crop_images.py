@@ -1,11 +1,6 @@
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QLabel, QHBoxLayout, QSlider, QSpacerItem
+from qtpy.QtWidgets import QSizePolicy, QLineEdit, QWidget, QVBoxLayout, QProgressBar, QApplication
+from qtpy import QtCore, QtGui
 
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
@@ -15,8 +10,8 @@ import scipy.ndimage
 import numpy as np
 import os
 
+from __code import load_ui
 from __code import file_handler
-from __code.ui_rotate_and_crop import Ui_MainWindow as UiMainWindow
 from __code.ipywe import fileselector
 
 
@@ -50,8 +45,10 @@ class RotateAndCropImages(QMainWindow):
         self.list_images = o_load.list_images
 
         QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui', 'ui_rotate_and_crop.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.init_statusbar()
         self.setWindowTitle("Select Rotation Angle for All Images")
 
@@ -59,22 +56,22 @@ class RotateAndCropImages(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
 
-        bottom_layout = QtGui.QHBoxLayout()
+        bottom_layout = QHBoxLayout()
 
         # file index slider
-        label_1 = QtGui.QLabel("File Index")
-        self.ui.slider = QtGui.QSlider(QtCore.Qt.Horizontal)
+        label_1 = QLabel("File Index")
+        self.ui.slider = QSlider(QtCore.Qt.Horizontal)
         self.ui.slider.setMaximum(len(self.list_images) - 1)
         self.ui.slider.setMinimum(0)
         self.ui.slider.valueChanged.connect(self.file_index_changed)
 
         # spacer
-        spacer = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding,
-                                   QtGui.QSizePolicy.Minimum)
+        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding,
+                                   QSizePolicy.Minimum)
 
         # rotation value
-        label_2 = QtGui.QLabel("Rotation (degrees)")
-        self.ui.rotation_value = QtGui.QLineEdit('0')
+        label_2 = QLabel("Rotation (degrees)")
+        self.ui.rotation_value = QLineEdit('0')
         self.ui.rotation_value.setMaximumWidth(50)
         self.ui.rotation_value.returnPressed.connect(
             self.rotation_value_changed)
@@ -87,10 +84,10 @@ class RotateAndCropImages(QMainWindow):
         bottom_layout.addWidget(label_2)
         bottom_layout.addWidget(self.ui.rotation_value)
 
-        bottom_widget = QtGui.QWidget()
+        bottom_widget = QWidget()
         bottom_widget.setLayout(bottom_layout)
 
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.ui.image_view)
         vertical_layout.addWidget(bottom_widget)
 
@@ -102,7 +99,7 @@ class RotateAndCropImages(QMainWindow):
         self.rotation_value_changed()
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(20, 14)
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
@@ -122,7 +119,7 @@ class RotateAndCropImages(QMainWindow):
 
     def get_selected_image(self, file_index):
         if type(self.working_data) is list:
-            return self.working_data[_file_index]
+            return self.working_data[file_index]
         else:
             return self.working_data
 
@@ -243,7 +240,7 @@ class RotateAndCropImages(QMainWindow):
             rotated_data = rotated_data[x0:x1, y0:y1]
             self.rotated_working_data.append(rotated_data)
             self.eventProgress.setValue(_index + 1)
-            QtGui.QApplication.processEvents()
+            QApplication.processEvents()
             self.rotation_angle = _rotation_value
 
         # self.file_index_changed()
@@ -271,9 +268,9 @@ class Export(object):
 
     def __init__(self, working_dir='', data=None, list_files=None, rotation_angle=0):
         self.working_dir = working_dir
-        self.data=data
-        self.list_files=list_files
-        self.rotation_angle=rotation_angle
+        self.data = data
+        self.list_files = list_files
+        self.rotation_angle = rotation_angle
 
     def select_folder(self):
 
