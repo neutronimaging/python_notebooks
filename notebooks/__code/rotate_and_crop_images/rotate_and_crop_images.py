@@ -156,9 +156,9 @@ class RotateAndCropImages(QMainWindow):
             self.data_dict[0][DataDictKeys.data] = data
 
         else:
-            _data = self.data_dict[0][DataDictKeys.data]
+            data = self.data_dict[0][DataDictKeys.data]
 
-        [width, height] = np.shape(_data)
+        [width, height] = np.shape(data)
 
         self.width = width
         self.height = height
@@ -237,7 +237,7 @@ class RotateAndCropImages(QMainWindow):
             self.data_dict[file_index][DataDictKeys.data] = data
             return data
         else:
-            data = self.data_dict[file_index][DataDictKeys.data]
+            return self.data_dict[file_index][DataDictKeys.data]
 
     def rotation_value_changed(self):
         _rotation_value = float(str(self.ui.rotation_value.text()))
@@ -250,6 +250,8 @@ class RotateAndCropImages(QMainWindow):
         self.live_data = rotated_data
         #        self.ui.image_view.removeItem(self.line_view_binning)
         #       self.display_grid()
+
+        rotated_data = np.transpose(rotated_data)
         self.ui.image_view.setImage(rotated_data)
 
     def rotate_and_crop_all(self):
