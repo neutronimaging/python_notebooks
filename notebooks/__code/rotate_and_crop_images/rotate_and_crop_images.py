@@ -285,9 +285,12 @@ class RotateAndCropImages(QMainWindow):
         self.rotated_data_dict = {}
         for file_index in self.data_dict.keys():
             data = self.get_selected_image(file_index=file_index)
-            rotated_data = scipy.ndimage.interpolation.rotate(data,
-                                                              _rotation_value)
-            rotated_data = rotated_data[y0:y1, x0:x1]
+            if float(_rotation_value) != float(0.0):
+                rotated_data = scipy.ndimage.interpolation.rotate(data,
+                                                                  _rotation_value)
+                rotated_data = rotated_data[y0:y1, x0:x1]
+            else:
+                rotated_data = data[y0:y1, x0:x1]
 
             self.rotated_data_dict[file_index] = {DataDictKeys.filename: self.data_dict[file_index][DataDictKeys.filename],
                                                   DataDictKeys.data: rotated_data}
