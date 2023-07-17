@@ -284,7 +284,6 @@ class Export(object):
 
         self.output_folder_ui.show()
 
-
     def export(self, output_folder):
 
         new_folder = 'rotated_{}deg'.format(self.rotation_angle)
