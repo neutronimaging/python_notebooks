@@ -267,10 +267,12 @@ class RotateAndCropImages(QMainWindow):
         # data = self.live_data
         region = self.roi.getArraySlice(np.transpose(data),
                                         self.ui.image_view.imageItem)
+
+        x0 = region[0][0].start
         x1 = region[0][0].stop - 1
+
         y1 = region[0][1].stop - 1
-        x0 = region[0][1].start
-        y0 = region[0][0].start
+        y0 = region[0][1].start
 
         return [x0, x1, y0, y1]
 
