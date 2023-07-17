@@ -20,7 +20,7 @@ class LoadImages:
     list_images = []
 
     # use with virtual array (data are loaded on the fly)
-    data_dict = []
+    data_dict = None
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
@@ -49,15 +49,15 @@ class LoadImages:
 
     def prepare_images_array(self, list_images):
         self.message.close()
+        self.list_images = list_images
 
         self.data_dict = {}
         if list_images == []:
             return
 
-        for image in list_images:
-            self.data_dict[image] = None
-
-        self.html_ui = ""
+        for index, image in enumerate(list_images):
+            self.data_dict[index] = {'filename': image,
+                                     'data': None}
 
     def load_images(self, list_images=[]):
         if list_images == []:

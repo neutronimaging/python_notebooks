@@ -1,6 +1,7 @@
-from qtpy.QtWidgets import QFileDialog, QMainWindow, QLabel, QHBoxLayout, QSlider, QSpacerItem
+from qtpy.QtWidgets import QMainWindow, QLabel, QHBoxLayout, QSlider, QSpacerItem
 from qtpy.QtWidgets import QSizePolicy, QLineEdit, QWidget, QVBoxLayout, QProgressBar, QApplication
-from qtpy import QtCore, QtGui
+from qtpy import QtCore
+import copy
 
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
@@ -10,9 +11,16 @@ import scipy.ndimage
 import numpy as np
 import os
 
+from NeuNorm.normalization import Normalization
+
 from __code import load_ui
 from __code import file_handler
 from __code.ipywe import fileselector
+
+
+class DataDictKeys:
+    filename = "filename"
+    data = "data"
 
 
 class RotateAndCropImages(QMainWindow):
@@ -30,6 +38,12 @@ class RotateAndCropImages(QMainWindow):
     rotation_angle = 0
     list_files = []
 
+    # {0: {'filename': "/filename0", 'data': None},
+    #  1: {'filename': "/filename1", 'data': None},
+    #  ...
+    # }
+    data_dict = None
+
     def __init__(self, parent=None, o_load=None):
 
         display(
@@ -38,8 +52,11 @@ class RotateAndCropImages(QMainWindow):
                 'hidden behind this browser!)</span>'
             ))
 
-        self.working_data = o_load.working_data
-        self.rotated_working_data = o_load.working_data
+        self.data_dict = o_load.data_dict
+        self.rotated_data_dict = copy.deepcopy(self.data_dict)
+
+        # self.working_data = o_load.working_data
+        # self.rotated_working_data = o_load.working_data
         self.nbr_files = o_load.nbr_files
 
         self.list_images = o_load.list_images
@@ -66,8 +83,7 @@ class RotateAndCropImages(QMainWindow):
         self.ui.slider.valueChanged.connect(self.file_index_changed)
 
         # spacer
-        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding,
-                                   QSizePolicy.Minimum)
+        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         # rotation value
         label_2 = QLabel("Rotation (degrees)")
@@ -94,7 +110,7 @@ class RotateAndCropImages(QMainWindow):
         self.ui.widget.setLayout(vertical_layout)
 
         self.get_image_size()
-        #        self.display_grid()
+        # self.display_grid()
         self.display_crop_region()
         self.rotation_value_changed()
 
@@ -133,10 +149,16 @@ class RotateAndCropImages(QMainWindow):
         self.live_data = image
 
     def get_image_size(self):
-        if len(np.shape(self.rotated_working_data)) > 2:
-            [width, height] = np.shape(self.rotated_working_data[0])
+
+        # first image
+        if self.data_dict[0][DataDictKeys.data] is None:
+            data = RotateAndCropImages.load_data(filename=self.data_dict[0][DataDictKeys.filename])
+            self.data_dict[0][DataDictKeys.data] = data
+
         else:
-            [width, height] = np.shape(self.rotated_working_data)
+            _data = self.data_dict[0][DataDictKeys.data]
+
+        [width, height] = np.shape(_data)
 
         self.width = width
         self.height = height
@@ -198,14 +220,30 @@ class RotateAndCropImages(QMainWindow):
 
         self.line_view_binning = line_view_binning
 
+    @staticmethod
+    def load_data(filename):
+        o_norm = Normalization()
+        o_norm.load(file=filename, notebook=False)
+        data = np.squeeze(o_norm.data['sample']['data'][0])
+        return data
+
+    def get_or_load_data(self, file_index=0):
+        """
+        check if the data has already been loaded in self.data_dict. If it didn't, load it and return the
+        array. If it's already there, just return the array
+        """
+        if self.data_dict[file_index][DataDictKeys.data] is None:
+            data = RotateAndCropImages.load_data(self.data_dict[file_index][DataDictKeys.filename])
+            self.data_dict[file_index][DataDictKeys.data] = data
+            return data
+        else:
+            data = self.data_dict[file_index][DataDictKeys.data]
+
     def rotation_value_changed(self):
         _rotation_value = float(str(self.ui.rotation_value.text()))
 
-        if self.nbr_files > 1:
-            _file_index = self.ui.slider.value()
-            _data = self.working_data[_file_index]
-        else:
-            _data = self.working_data
+        _file_index = self.ui.slider.value()
+        _data = self.get_or_load_data(file_index=_file_index)
 
         rotated_data = scipy.ndimage.interpolation.rotate(
             _data, _rotation_value)
