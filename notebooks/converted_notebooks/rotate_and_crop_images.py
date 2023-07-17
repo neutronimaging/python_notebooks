@@ -49,6 +49,9 @@ o_load.select_images(virtual_load=True)
 # + run_control={"frozen": false, "read_only": false}
 o_crop = RotateAndCropImages(o_load=o_load)
 o_crop.show()
+# -
+
+o_crop.get_crop_region()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Export Images 
