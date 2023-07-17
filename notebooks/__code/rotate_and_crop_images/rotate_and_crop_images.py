@@ -57,7 +57,7 @@ class RotateAndCropImages(QMainWindow):
 
         # self.working_data = o_load.working_data
         # self.rotated_working_data = o_load.working_data
-        self.nbr_files = o_load.nbr_files
+        self.nbr_files = len(self.data_dict.keys())
 
         self.list_images = o_load.list_images
 
@@ -75,13 +75,6 @@ class RotateAndCropImages(QMainWindow):
 
         bottom_layout = QHBoxLayout()
 
-        # file index slider
-        label_1 = QLabel("File Index")
-        self.ui.slider = QSlider(QtCore.Qt.Horizontal)
-        self.ui.slider.setMaximum(len(self.list_images) - 1)
-        self.ui.slider.setMinimum(0)
-        self.ui.slider.valueChanged.connect(self.file_index_changed)
-
         # spacer
         spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -93,8 +86,10 @@ class RotateAndCropImages(QMainWindow):
             self.rotation_value_changed)
 
         if self.nbr_files > 1:
-            bottom_layout.addWidget(label_1)
-            bottom_layout.addWidget(self.ui.slider)
+            self.ui.file_index_groupBox.setVisible(True)
+            self.ui.file_index_slider.setMaximum(self.nbr_files-1)
+        else:
+            self.ui.file_index_groupBox.setVisible(False)
 
         bottom_layout.addItem(spacer)
         bottom_layout.addWidget(label_2)
@@ -113,6 +108,7 @@ class RotateAndCropImages(QMainWindow):
         # self.display_grid()
         self.display_crop_region()
         self.rotation_value_changed()
+        self.ui.number_of_files_label.setText(str(len(self.list_images)-1))
 
     def init_statusbar(self):
         self.eventProgress = QProgressBar(self.ui.statusbar)
@@ -120,6 +116,15 @@ class RotateAndCropImages(QMainWindow):
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
+
+    def image_slider_pressed(self):
+        self.display_image()
+
+    def image_slider_moved(self, index):
+        self.display_image()
+
+    def image_slider_released(self):
+        self.display_image()
 
     def display_crop_region(self):
         [image_height, image_width] = [self.height, self.width]
@@ -134,14 +139,19 @@ class RotateAndCropImages(QMainWindow):
         self.roi = roi
 
     def get_selected_image(self, file_index):
-        if type(self.working_data) is list:
-            return self.working_data[file_index]
-        else:
-            return self.working_data
+        if self.data_dict[file_index][DataDictKeys.data] is None:
+            data = RotateAndCropImages.load_data(filename=self.data_dict[file_index][DataDictKeys.filename])
+            self.data_dict[file_index][DataDictKeys.data] = data
 
-    def display_image(self, image):
-        image = self.get_selected_image(0)
-        self.ui.image_view.setImage(image)
+        else:
+            data = self.data_dict[file_index][DataDictKeys.data]
+        return data
+
+    def display_image(self):
+        index_image = self.ui.file_index_slider.value()
+        self.ui.image_index_label.setText(str(index_image))
+        image = self.get_selected_image(index_image)
+        self.ui.image_view.setImage(np.transpose(image))
 
     def init_imageview(self):
         image = self.get_selected_image(0)
@@ -149,15 +159,7 @@ class RotateAndCropImages(QMainWindow):
         self.live_data = image
 
     def get_image_size(self):
-
-        # first image
-        if self.data_dict[0][DataDictKeys.data] is None:
-            data = RotateAndCropImages.load_data(filename=self.data_dict[0][DataDictKeys.filename])
-            self.data_dict[0][DataDictKeys.data] = data
-
-        else:
-            data = self.data_dict[0][DataDictKeys.data]
-
+        data = self.get_selected_image(0)
         [width, height] = np.shape(data)
 
         self.width = width
@@ -242,7 +244,7 @@ class RotateAndCropImages(QMainWindow):
     def rotation_value_changed(self):
         _rotation_value = float(str(self.ui.rotation_value.text()))
 
-        _file_index = self.ui.slider.value()
+        _file_index = self.ui.file_index_slider.value()
         _data = self.get_or_load_data(file_index=_file_index)
 
         rotated_data = scipy.ndimage.interpolation.rotate(
