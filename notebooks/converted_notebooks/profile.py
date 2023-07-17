@@ -22,12 +22,11 @@
 # # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_profile.ui')
-
+# from __code.ui_builder import UiBuilder
+# o_builder = UiBuilder(ui_name = 'ui_profile.ui')
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
-from __code.profile import ProfileUi
+from __code.profile.profile import ProfileUi
 
 system.System.select_working_dir(notebook='profile')
 from __code.__all import custom_style
