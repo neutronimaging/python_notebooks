@@ -53,7 +53,7 @@ class RotateAndCropImages(QMainWindow):
             ))
 
         self.data_dict = o_load.data_dict
-        self.rotated_data_dict = copy.deepcopy(self.data_dict)
+        # self.rotated_data_dict = copy.deepcopy(self.data_dict)
 
         # self.working_data = o_load.working_data
         # self.rotated_working_data = o_load.working_data
@@ -105,7 +105,7 @@ class RotateAndCropImages(QMainWindow):
         self.ui.widget.setLayout(vertical_layout)
 
         self.get_image_size()
-        # self.display_grid()
+        self.display_image()
         self.display_crop_region()
         self.rotation_value_changed()
         self.ui.number_of_files_label.setText(str(len(self.list_images)-1))
@@ -118,12 +118,15 @@ class RotateAndCropImages(QMainWindow):
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
 
     def image_slider_pressed(self):
+        # self.rotation_value_changed()
         self.display_image()
 
     def image_slider_moved(self, index):
+        # self.rotation_value_changed()
         self.display_image()
 
     def image_slider_released(self):
+        # self.rotation_value_changed()
         self.display_image()
 
     def display_crop_region(self):
@@ -133,12 +136,15 @@ class RotateAndCropImages(QMainWindow):
         height = image_height - 1
 
         roi = pg.ROI(
-            [x0, y0], [height, width], pen=(209, 230, 27), scaleSnap=True)
+            [x0, y0], [width, height], pen=(209, 230, 27), scaleSnap=True)
         roi.addScaleHandle([1, 1], [0, 0])
         self.ui.image_view.addItem(roi)
         self.roi = roi
 
-    def get_selected_image(self, file_index):
+    def get_selected_image(self, file_index=None):
+        if file_index is None:
+            file_index = self.ui.file_index_slider.value()
+
         if self.data_dict[file_index][DataDictKeys.data] is None:
             data = RotateAndCropImages.load_data(filename=self.data_dict[file_index][DataDictKeys.filename])
             self.data_dict[file_index][DataDictKeys.data] = data
@@ -160,7 +166,7 @@ class RotateAndCropImages(QMainWindow):
 
     def get_image_size(self):
         data = self.get_selected_image(0)
-        [width, height] = np.shape(data)
+        [height, width] = np.shape(data)
 
         self.width = width
         self.height = height
@@ -249,39 +255,44 @@ class RotateAndCropImages(QMainWindow):
 
         rotated_data = scipy.ndimage.interpolation.rotate(
             _data, _rotation_value)
-        self.live_data = rotated_data
-        #        self.ui.image_view.removeItem(self.line_view_binning)
-        #       self.display_grid()
+
+        # [x0, x1, y0, y1] = self.get_crop_region()
+        # rotated_data = rotated_data[x0:x1, y0:y1]
 
         rotated_data = np.transpose(rotated_data)
         self.ui.image_view.setImage(rotated_data)
 
-    def rotate_and_crop_all(self):
-
-        region = self.roi.getArraySlice(self.live_data,
+    def get_crop_region(self):
+        data = self.get_selected_image()
+        # data = self.live_data
+        region = self.roi.getArraySlice(np.transpose(data),
                                         self.ui.image_view.imageItem)
-        x0 = region[0][0].start
         x1 = region[0][0].stop - 1
-        y0 = region[0][1].start
         y1 = region[0][1].stop - 1
+        x0 = region[0][1].start
+        y0 = region[0][0].start
+
+        return [x0, x1, y0, y1]
+
+    def rotate_and_crop_all(self):
+        [x0, x1, y0, y1] = self.get_crop_region()
 
         self.eventProgress.setValue(0)
         self.eventProgress.setMaximum(self.nbr_files)
         self.eventProgress.setVisible(True)
 
         _rotation_value = float(str(self.ui.rotation_value.text()))
-        self.rotated_working_data = []
-        for _index in np.arange(self.nbr_files):
-            if self.nbr_files == 1:
-                _data = self.working_data
-            else:
-                _data = self.working_data[_index]
-
-            rotated_data = scipy.ndimage.interpolation.rotate(_data,
+        self.rotated_data_dict = {}
+        for file_index in self.data_dict.keys():
+            data = self.get_selected_image(file_index=file_index)
+            rotated_data = scipy.ndimage.interpolation.rotate(data,
                                                               _rotation_value)
-            rotated_data = rotated_data[x0:x1, y0:y1]
-            self.rotated_working_data.append(rotated_data)
-            self.eventProgress.setValue(_index + 1)
+            rotated_data = rotated_data[y0:y1, x0:x1]
+
+            self.rotated_data_dict[file_index] = {DataDictKeys.filename: self.data_dict[file_index][DataDictKeys.filename],
+                                                  DataDictKeys.data: rotated_data}
+
+            self.eventProgress.setValue(file_index + 1)
             QApplication.processEvents()
             self.rotation_angle = _rotation_value
 
@@ -302,16 +313,15 @@ class RotateAndCropImages(QMainWindow):
         self.rotation_value_changed()
 
     def closeEvent(self, event=None):
-        global rotation_angle
+        # global rotation_angle
         rotation_angle = float(str(self.ui.rotation_value.text()))
 
 
 class Export(object):
 
-    def __init__(self, working_dir='', data=None, list_files=None, rotation_angle=0):
+    def __init__(self, working_dir='', data_dict=None, rotation_angle=0):
         self.working_dir = working_dir
-        self.data = data
-        self.list_files = list_files
+        self.data_dict = data_dict
         self.rotation_angle = rotation_angle
 
     def select_folder(self):
@@ -330,11 +340,10 @@ class Export(object):
 
         new_folder = 'rotated_{}deg'.format(self.rotation_angle)
 
-        list_files = self.list_files
-        data = self.data
+        data_dict = self.data_dict
 
         w = widgets.IntProgress()
-        w.max = len(list_files)
+        w.max = len(data_dict.keys())
         display(w)
 
         output_folder = os.path.abspath(output_folder)
@@ -342,12 +351,13 @@ class Export(object):
         if not os.path.exists(full_output_folder):
             os.makedirs(full_output_folder)
 
-        for _index, _file in enumerate(list_files):
+        for _index in data_dict.keys():
+            _file = data_dict[_index][DataDictKeys.filename]
+            data = data_dict[_index][DataDictKeys.data]
             _base_file_name = os.path.basename(_file)
             [_base, _] = os.path.splitext(_base_file_name)
             _full_file_name = os.path.join(full_output_folder, _base + '.tiff')
-            file_handler.make_tiff(data=data[_index], filename=_full_file_name)
-
+            file_handler.make_tiff(data=data, filename=_full_file_name)
             w.value = _index + 1
 
         w.close()
