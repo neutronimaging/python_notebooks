@@ -18,6 +18,7 @@ from __code._utilities.file import make_or_reset_folder
 
 from __code._utilities.color import Color
 from __code import load_ui
+from __code.registration import interact_me_style, normal_style
 
 
 class RegistrationProfileLauncher:
@@ -143,6 +144,7 @@ class RegistrationProfileUi(QMainWindow):
         self.init_table()
         self.init_slider()
         self.init_parameters()
+        self.init_statusbar()
 
         self._display_selected_row()
         self._check_widgets()
@@ -150,6 +152,13 @@ class RegistrationProfileUi(QMainWindow):
         self.update_hori_verti_profile_plot_of_selected_file()
 
     ## Initialization
+
+    def init_statusbar(self):
+        self.eventProgress = QProgressBar(self.parent.ui.statusbar)
+        self.eventProgress.setMinimumSize(20, 14)
+        self.eventProgress.setMaximumSize(540, 100)
+        self.eventProgress.setVisible(False)
+        self.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def init_parameters(self):
         _color = Color()
@@ -190,6 +199,9 @@ class RegistrationProfileUi(QMainWindow):
 
         # splitter
         self.ui.splitter_2.setSizes([800, 100])
+
+        # next button to interact with
+        self.ui.calculate_markers_button.setStyleSheet(interact_me_style)
 
     def init_pyqtgraph(self):
         area = DockArea()
@@ -345,6 +357,14 @@ class RegistrationProfileUi(QMainWindow):
         self._select_table_row(0)
 
         self.ui.tableWidget.blockSignals(False)
+
+    def profiles_difference_minimization_clicked(self):
+        state_button = self.ui.actionProfiles_difference_minimization.isChecked()
+        self.ui.actionProfile_peak_calculation.setChecked(not state_button)
+
+    def profile_peak_calculation_clicked(self):
+        state_button = self.ui.actionProfile_peak_calculation.isChecked()
+        self.ui.actionProfiles_difference_minimization.setChecked(not state_button)
 
     def clear_table(self):
         nbr_row = self.ui.tableWidget.rowCount()
@@ -652,8 +672,20 @@ class RegistrationProfileUi(QMainWindow):
 
     def register_images(self):
         self.calculate_markers_button_clicked()
+        self.ui.calculate_markers_button.setStyleSheet(normal_style)
+        self.ui.full_reset_button.setEnabled(True)
+        self.ui.pushButton.setEnabled(True)
+        self.ui.registered_all_images_button.setEnabled(True)
+        self.ui.pushButton.setStyleSheet(interact_me_style)
+        self.ui.registered_all_images_button.setStyleSheet(interact_me_style)
 
         data = self.raw_data_dict['data']
+        nbr_steps = len(data)
+
+        self.eventProgress.setValue(0)
+        self.eventProgress.setMaximum(nbr_steps)
+        self.eventProgress.setVisible(True)
+
         for _row, _data in enumerate(data):
 
             xoffset = self.offset['horizontal'][_row]
@@ -662,6 +694,11 @@ class RegistrationProfileUi(QMainWindow):
             new_data = shift(_data, (yoffset, xoffset))
 
             self.data_dict['data'][_row] = new_data
+            self.eventProgress.setValue(_row+1)
+            QApplication.processEvents()
+
+        self.eventProgress.setVisible(False)
+        QApplication.processEvents()
 
     def calculate_and_display_current_peak(self, force_recalculation=True, is_horizontal=True):
         if is_horizontal:
@@ -786,6 +823,13 @@ class RegistrationProfileUi(QMainWindow):
         self.calculate_and_display_current_peak(is_horizontal=True)
 
     def calculate_markers_button_clicked(self):
+        self.ui.calculate_markers_button.setStyleSheet(normal_style)
+        self.ui.full_reset_button.setEnabled(True)
+        self.ui.pushButton.setEnabled(True)
+        self.ui.registered_all_images_button.setEnabled(True)
+        self.ui.pushButton.setStyleSheet(interact_me_style)
+        self.ui.registered_all_images_button.setStyleSheet(interact_me_style)
+
         self.calculate_all_profiles()
         self.calculate_all_peaks()
         self.calculate_all_offsets()
@@ -824,6 +868,9 @@ class RegistrationProfileUi(QMainWindow):
         self.register_images()
         self._display_selected_row()
         self.ui.export_button.setEnabled(True)
+        self.ui.registered_all_images_button.setStyleSheet(normal_style)
+        self.ui.export_button.setStyleSheet(interact_me_style)
+        self.ui.export_button.setEnabled(True)
 
     def registered_all_images_and_return_to_main_ui_button_clicked(self):
         self.register_images()
@@ -849,7 +896,6 @@ class RegistrationProfileUi(QMainWindow):
                                           export_folder=_export_folder)
             o_export.run()
             QApplication.processEvents()
-
 
     def opacity_slider_moved(self, _):
         self._display_selected_row()
@@ -889,7 +935,7 @@ class RegistrationProfileUi(QMainWindow):
         self.close()
 
 
-class SettingsLauncher(object):
+class SettingsLauncher:
 
     parent = None
 
@@ -909,7 +955,8 @@ class Settings(QMainWindow):
 
     def __init__(self, parent=None):
         self.parent = parent
-        self(QMainWindow, self).__init__(parent)
+        super(QMainWindow, self).__init__(parent)
+
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
                                                  'ui_registration_profile_settings.ui'))
