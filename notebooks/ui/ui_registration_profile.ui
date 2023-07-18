@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1007</width>
-    <height>1149</height>
+    <width>1013</width>
+    <height>1167</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -206,11 +206,48 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="calculate_markers_button">
-           <property name="text">
-            <string>Calculate offsets of each image relative to first image</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Algorithm</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QRadioButton" name="sliding_average_radioButton">
+                <property name="text">
+                 <string>Sliding average</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="profiles_difference_radioButton">
+                <property name="text">
+                 <string>Profiles difference</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="change_point_radioButton">
+                <property name="text">
+                 <string>Change point</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="calculate_markers_button">
+             <property name="text">
+              <string>Calculate offsets of each image relative to first image</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <widget class="QTableWidget" name="tableWidget">
@@ -367,7 +404,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1007</width>
+     <width>1013</width>
      <height>24</height>
     </rect>
    </property>
@@ -390,8 +427,6 @@
     <property name="title">
      <string>Algorithm</string>
     </property>
-    <addaction name="actionProfile_peak_calculation"/>
-    <addaction name="actionProfiles_difference_minimization"/>
    </widget>
    <addaction name="menuOptions"/>
    <addaction name="menuAlgorithm"/>
@@ -468,7 +503,7 @@
     <string>Tutorial ...</string>
    </property>
   </action>
-  <action name="actionProfile_peak_calculation">
+  <action name="action_sliding_average">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -476,15 +511,23 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Profile peak calculation</string>
+    <string>Sliding average</string>
    </property>
   </action>
-  <action name="actionProfiles_difference_minimization">
+  <action name="action_profiles_difference_minimization">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
     <string>Profiles difference minimization</string>
+   </property>
+  </action>
+  <action name="action_change_point">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Change point</string>
    </property>
   </action>
  </widget>
@@ -593,8 +636,8 @@
    <slot>calculate_markers_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>496</x>
-     <y>545</y>
+     <x>989</x>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
      <x>9</x>
@@ -657,8 +700,8 @@
    <slot>full_reset()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>1108</y>
+     <x>114</x>
+     <y>1126</y>
     </hint>
     <hint type="destinationlabel">
      <x>322</x>
@@ -699,34 +742,50 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionProfile_peak_calculation</sender>
-   <signal>triggered()</signal>
+   <sender>sliding_average_radioButton</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>profile_peak_calculation_clicked()</slot>
+   <slot>algorithm_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
+     <x>89</x>
+     <y>568</y>
     </hint>
     <hint type="destinationlabel">
-     <x>503</x>
-     <y>574</y>
+     <x>639</x>
+     <y>1130</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>actionProfiles_difference_minimization</sender>
-   <signal>triggered()</signal>
+   <sender>profiles_difference_radioButton</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>profiles_difference_minimization_clicked()</slot>
+   <slot>algorithm_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
+     <x>244</x>
+     <y>570</y>
     </hint>
     <hint type="destinationlabel">
-     <x>503</x>
-     <y>574</y>
+     <x>524</x>
+     <y>1138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>change_point_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>algorithm_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>403</x>
+     <y>564</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>1134</y>
     </hint>
    </hints>
   </connection>
@@ -744,7 +803,9 @@
   <slot>help_button_clicked()</slot>
   <slot>registered_all_images_and_return_to_main_ui_button_clicked()</slot>
   <slot>table_right_click()</slot>
-  <slot>profile_peak_calculation_clicked()</slot>
-  <slot>profiles_difference_minimization_clicked()</slot>
+  <slot>action_change_point_clicked()</slot>
+  <slot>action_sliding_average_clicked()</slot>
+  <slot>action_difference_minimization_clicked()</slot>
+  <slot>algorithm_changed()</slot>
  </slots>
 </ui>

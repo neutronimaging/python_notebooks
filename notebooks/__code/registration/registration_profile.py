@@ -19,6 +19,7 @@ from __code._utilities.file import make_or_reset_folder
 from __code._utilities.color import Color
 from __code import load_ui
 from __code.registration import interact_me_style, normal_style
+from __code.registration.calculate_profiles_difference import CalculateProfilesDifference
 
 
 class RegistrationProfileLauncher:
@@ -37,10 +38,17 @@ class RegistrationProfileLauncher:
             self.parent.registration_profile_ui.activateWindow()
 
 
+class Algorithm:
+
+    sliding_average = "sliding_average"
+    change_point = "change_point"
+    profiles_difference_minimization = "profiles_difference_minimization"
+
+
 class RegistrationProfileUi(QMainWindow):
 
     does_top_parent_exist = False
-    peak_algorithm = 'sliding_average'   # ''change_point'
+    peak_algorithm = Algorithm.sliding_average
 
     data_dict = None
     raw_data_dict = None
@@ -355,16 +363,17 @@ class RegistrationProfileUi(QMainWindow):
 
         # select first row by default
         self._select_table_row(0)
-
         self.ui.tableWidget.blockSignals(False)
 
-    def profiles_difference_minimization_clicked(self):
-        state_button = self.ui.actionProfiles_difference_minimization.isChecked()
-        self.ui.actionProfile_peak_calculation.setChecked(not state_button)
-
-    def profile_peak_calculation_clicked(self):
-        state_button = self.ui.actionProfile_peak_calculation.isChecked()
-        self.ui.actionProfiles_difference_minimization.setChecked(not state_button)
+    def algorithm_changed(self):
+        if self.ui.sliding_average_radioButton.isChecked():
+            self.peak_algorithm = Algorithm.sliding_average
+        elif self.ui.profiles_difference_radioButton.isChecked():
+            self.peak_algorithm = Algorithm.profiles_difference_minimization
+        elif self.ui.change_point_radioButton.isChecked():
+            self.peak_algorithm = Algorithm.change_point
+        else:
+            raise NotImplementedError("algorithm selected not implemented!")
 
     def clear_table(self):
         nbr_row = self.ui.tableWidget.rowCount()
@@ -612,7 +621,6 @@ class RegistrationProfileUi(QMainWindow):
             self.offset['horizontal'][_row] = xoffset
             self.offset['vertical'][_row] = yoffset
 
-
     def calculate_all_peaks(self):
         nbr_files = len(self.data_dict['file_name'])
         for _row in np.arange(nbr_files):
@@ -635,6 +643,8 @@ class RegistrationProfileUi(QMainWindow):
                 peak = np.mean(result[2:])
             else:
                 peak = np.mean(result[1:])
+
+            peak_value = peak
 
         else: # sliding average
             _o_range = MeanRangeCalculation(data=yaxis)
@@ -831,15 +841,24 @@ class RegistrationProfileUi(QMainWindow):
         self.ui.registered_all_images_button.setStyleSheet(interact_me_style)
 
         self.calculate_all_profiles()
-        self.calculate_all_peaks()
-        self.calculate_all_offsets()
-        self.plot_peaks()
+
+        if self.peak_algorithm in [Algorithm.sliding_average, Algorithm.change_point]:
+            self.calculate_all_peaks()
+            self.calculate_all_offsets()
+            self.plot_peaks()
+        else:
+            self.calculate_profiles_differences()
+
         self.update_table()
         self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
+    def calculate_profiles_differences(self):
+        o_calculate = CalculateProfilesDifference(parent=self)
+        o_calculate.run()
+
     def help_button_clicked(self):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/registration/")
+        webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/registration/")
 
     def slider_file_changed(self, value):
         self._select_table_row(value)
@@ -961,10 +980,6 @@ class Settings(QMainWindow):
                                     os.path.join('ui',
                                                  'ui_registration_profile_settings.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
-
-        # self.ui = UiMainWindowSettings()
-        self.ui.setupUi(self)
-
         self.init_widgets()
 
     def init_widgets(self):
