@@ -15,6 +15,8 @@ import webbrowser
 from __code import load_ui
 from __code._utilities.color import Color
 from __code._utilities.table_handler import TableHandler
+from __code._utilities.file import make_or_increment_folder_name
+from __code._utilities.check import is_float
 
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
@@ -236,6 +238,11 @@ class RegistrationUi(QMainWindow):
         o_table = TableHandler(table_ui=self.ui.tableWidget)
 
         def should_row_be_visible(row_value=None, filter_algo_selected="<=", filter_value=None):
+    
+            if is_float(filter_value):
+                o_table.set_all_row_hidden(False)
+                return
+
             if filter_algo_selected == "<=":
                 return float(row_value) <= float(filter_value)
             elif filter_algo_selected == ">=":
@@ -542,7 +549,7 @@ class RegistrationUi(QMainWindow):
                                          name=_filename,
                                          pen=self.list_rgb_profile_color[_index])
 
-            else: # selection slider
+            else:  # selection slider
                 slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
                 from_index = int(slider_index)
                 _data = np.transpose(self.data_dict['data'][from_index])
@@ -976,10 +983,16 @@ class RegistrationUi(QMainWindow):
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=self.working_dir,
-                                                          caption = "Select Output Folder",
+                                                          caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
         if _export_folder:
-            o_export = ExportRegistration(parent=self, export_folder=_export_folder)
+
+            # add custom folder name
+            working_dir_basename = os.path.basename(self.working_dir)
+            # append "registered" and "time_stamp"
+            full_output_folder_name = os.path.join(_export_folder, working_dir_basename + "_registered")
+            full_output_folder_name = make_or_increment_folder_name(full_output_folder_name)
+            o_export = ExportRegistration(parent=self, export_folder=full_output_folder_name)
             o_export.run()
             QApplication.processEvents()
 
