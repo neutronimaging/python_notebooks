@@ -7,7 +7,7 @@ from scipy.ndimage.interpolation import shift
 import copy
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QTableWidgetSelectionRange, \
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QMenu, QTableWidgetSelectionRange, \
     QProgressBar, QTableWidgetItem, QApplication
 from qtpy import QtGui, QtCore
 import webbrowser
@@ -23,6 +23,9 @@ from __code.registration.registration_auto import RegistrationAuto
 from __code.registration.registration_auto_confirmation import RegistrationAutoConfirmationLauncher
 from __code.registration.manual import ManualLauncher
 from __code.registration.registration_profile import RegistrationProfileLauncher
+
+import warnings
+warnings.filterwarnings('ignore')
 
 
 class RegistrationUi(QMainWindow):
@@ -219,19 +222,15 @@ class RegistrationUi(QMainWindow):
         self.update_table_according_to_filter()
 
     def filter_value_changed(self, value):
-        print("filter value changed")
         self.update_table_according_to_filter()
 
     def filter_algo_changed(self, index):
-        print("filter algo changed")
         self.update_table_according_to_filter()
 
     def filter_column_changed(self, index):
-        print("filter column changed")
         self.update_table_according_to_filter()
 
     def update_table_according_to_filter(self):
-        print("update table according to filter")
         filter_flag = self.ui.filter_radioButton.isChecked()
 
         o_table = TableHandler(table_ui=self.ui.tableWidget)
@@ -269,9 +268,6 @@ class RegistrationUi(QMainWindow):
         else:
             # all rows are visible
             o_table.set_all_row_hidden(False)
-
-
-
 
     def table_right_click(self):
         top_menu = QMenu(self)
@@ -449,7 +445,6 @@ class RegistrationUi(QMainWindow):
         for marker in self.markers_table.keys():
             self.close_markers_of_tab(marker_name = marker)
 
-
     def modified_images(self, list_row=[], all_row=False):
         """using data_dict_raw images, will apply offset and rotation parameters
         and will save them in data_dict for plotting"""
@@ -459,16 +454,19 @@ class RegistrationUi(QMainWindow):
         if all_row:
             list_row = np.arange(0, self.nbr_files)
         else:
-            list_row =list_row
+            list_row = list_row
 
         for _row in list_row:
 
-            xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
-            yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
-            rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
+            try:
+                xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
+                yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
+                rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
+            except AttributeError:
+                return
 
             _data = data_raw[_row].copy()
-            _data  = transform.rotate(_data, rotate_angle)
+            _data = transform.rotate(_data, rotate_angle)
             _data = shift(_data, (yoffset, xoffset), )
 
             self.data_dict['data'][_row] = _data
@@ -504,10 +502,10 @@ class RegistrationUi(QMainWindow):
             return
 
         self.ui.profile.clear()
-        try:
-            self.ui.profile.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
+        # try:
+        #     self.ui.profile.scene().removeItem(self.legend)
+        # except Exception as e:
+        #     pass
 
         self.legend = self.ui.profile.addLegend()
 
@@ -683,10 +681,10 @@ class RegistrationUi(QMainWindow):
                     _to_coefficient = np.abs(slider_index - from_index)
                     _image = _from_image * _from_coefficient + _to_image * _to_coefficient
 
-        else: # only 1 row selected
+        else:  # only 1 row selected
             _image = self.get_image_selected()
 
-        if _image == []: # display only reference image
+        if _image == []:  # display only reference image
             self.display_only_reference_image()
             return
 
@@ -702,7 +700,7 @@ class RegistrationUi(QMainWindow):
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
 
-        _opacity_coefficient = self.ui.opacity_slider.value()  # betwween 0 and 100
+        _opacity_coefficient = self.ui.opacity_slider.value()   # betwween 0 and 100
         _opacity_image = _opacity_coefficient / 100.
         _image = np.transpose(_image) * _opacity_image
 
@@ -945,6 +943,7 @@ class RegistrationUi(QMainWindow):
         else:
             self.ui.file_slider.setValue(row)
 
+        self.modified_images(list_row=[row])
         self.display_image()
         self.check_selection_slider_status()
         self.profile_line_moved()
@@ -1031,7 +1030,7 @@ class RegistrationUi(QMainWindow):
     def markers_registration_button_clicked(self):
         o_markers_registration = RegistrationMarkersLauncher(parent=self)
         self.set_widget_status(list_ui=[self.ui.auto_registration_button],
-                              enabled=False)
+                               enabled=False)
 
     def profiler_registration_button_clicked(self):
         o_registration_profile = RegistrationProfileLauncher(parent=self)
