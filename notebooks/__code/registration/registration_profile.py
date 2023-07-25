@@ -48,7 +48,7 @@ class Algorithm:
 class RegistrationProfileUi(QMainWindow):
 
     does_top_parent_exist = False
-    peak_algorithm = Algorithm.sliding_average
+    peak_algorithm = Algorithm.profiles_difference_minimization
 
     data_dict = None
     raw_data_dict = None
@@ -210,6 +210,16 @@ class RegistrationProfileUi(QMainWindow):
 
         # next button to interact with
         self.ui.calculate_markers_button.setStyleSheet(interact_me_style)
+
+        # default algorithm to use
+        if self.peak_algorithm == Algorithm.sliding_average:
+            self.ui.sliding_average_radioButton.setChecked(True)
+        elif self.peak_algorithm == Algorithm.profiles_difference_minimization:
+            self.ui.profiles_difference_radioButton.setChecked(True)
+        elif self.peak_algorithm == Algorithm.change_point:
+            self.ui.change_point_radioButton.setChecked(True)
+        else:
+            raise NotImplementedError("algorithm not implemented yet")
 
     def init_pyqtgraph(self):
         area = DockArea()
@@ -681,7 +691,7 @@ class RegistrationProfileUi(QMainWindow):
                            )
 
     def register_images(self):
-        self.calculate_markers_button_clicked()
+        # self.calculate_markers_button_clicked()
         self.ui.calculate_markers_button.setStyleSheet(normal_style)
         self.ui.full_reset_button.setEnabled(True)
         self.ui.pushButton.setEnabled(True)
@@ -845,10 +855,10 @@ class RegistrationProfileUi(QMainWindow):
         if self.peak_algorithm in [Algorithm.sliding_average, Algorithm.change_point]:
             self.calculate_all_peaks()
             self.calculate_all_offsets()
-            self.plot_peaks()
         else:
             self.calculate_profiles_differences()
 
+        self.plot_peaks()
         self.update_table()
         self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
