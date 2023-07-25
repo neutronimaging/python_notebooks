@@ -214,6 +214,65 @@ class RegistrationUi(QMainWindow):
         #select first row
         self.select_row_in_table(0)
 
+    def filter_radioButton_clicked(self):
+        self.ui.filter_groupBox.setEnabled(self.ui.filter_radioButton.isChecked())
+        self.update_table_according_to_filter()
+
+    def filter_value_changed(self, value):
+        print("filter value changed")
+        self.update_table_according_to_filter()
+
+    def filter_algo_changed(self, index):
+        print("filter algo changed")
+        self.update_table_according_to_filter()
+
+    def filter_column_changed(self, index):
+        print("filter column changed")
+        self.update_table_according_to_filter()
+
+    def update_table_according_to_filter(self):
+        print("update table according to filter")
+        filter_flag = self.ui.filter_radioButton.isChecked()
+
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+
+        def should_row_be_visible(row_value=None, filter_algo_selected="<=", filter_value=None):
+            if filter_algo_selected == "<=":
+                return float(row_value) <= float(filter_value)
+            elif filter_algo_selected == ">=":
+                return float(row_value) >= float(filter_value)
+            else:
+                raise NotImplementedError("algo not implemented!")
+
+        if filter_flag:
+            # select only rows according to filter
+            filter_column_selected = self.ui.filter_column_name_comboBox.currentText()
+            filter_algo_selected = self.ui.filter_logic_comboBox.currentText()
+            filter_value = self.ui.filter_value.text()
+
+            if filter_column_selected == "Xoffset":
+                filter_column_index = 1
+            elif filter_column_selected == "Yoffset":
+                filter_column_index = 2
+            elif filter_column_selected == "Rotation":
+                filter_column_index = 3
+            else:
+                raise NotImplementedError("column can not be used with filter!")
+
+            nbr_row = o_table.row_count()
+            for _row in np.arange(nbr_row):
+                _row_value = float(o_table.get_item_str_from_cell(row=_row, column=filter_column_index))
+                _should_row_be_visible = should_row_be_visible(row_value=_row_value,
+                                                               filter_algo_selected=filter_algo_selected,
+                                                               filter_value=filter_value)
+                o_table.set_row_hidden(_row, not _should_row_be_visible)
+        else:
+            # all rows are visible
+            o_table.set_all_row_hidden(False)
+
+
+
+
     def table_right_click(self):
         top_menu = QMenu(self)
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1007</width>
-    <height>1149</height>
+    <width>1293</width>
+    <height>1165</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -517,6 +517,122 @@
           </layout>
          </item>
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Expanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="filter_radioButton">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Filter</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="filter_groupBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>38</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>400</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="title">
+              <string/>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Filter:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="filter_column_name_comboBox">
+                <item>
+                 <property name="text">
+                  <string>Xoffset</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Yoffset</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Rotation</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="filter_logic_comboBox">
+                <item>
+                 <property name="text">
+                  <string>&gt;=</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>&lt;=</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="filter_value">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QTableWidget" name="tableWidget">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -658,7 +774,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1007</width>
+     <width>1293</width>
      <height>24</height>
     </rect>
    </property>
@@ -719,8 +835,8 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>993</x>
-     <y>1113</y>
+     <x>1067</x>
+     <y>1086</y>
     </hint>
     <hint type="destinationlabel">
      <x>685</x>
@@ -736,7 +852,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>112</x>
-     <y>1113</y>
+     <y>1086</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -751,8 +867,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>874</x>
-     <y>618</y>
+     <x>948</x>
+     <y>605</y>
     </hint>
     <hint type="destinationlabel">
      <x>8</x>
@@ -767,8 +883,8 @@
    <slot>slider_file_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>874</x>
-     <y>618</y>
+     <x>948</x>
+     <y>605</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -799,12 +915,12 @@
    <slot>opacity_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>970</x>
-     <y>391</y>
+     <x>1044</x>
+     <y>520</y>
     </hint>
     <hint type="destinationlabel">
      <x>917</x>
-     <y>-4</y>
+     <y>0</y>
     </hint>
    </hints>
   </connection>
@@ -996,7 +1112,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
-     <y>-10</y>
+     <y>0</y>
     </hint>
    </hints>
   </connection>
@@ -1007,8 +1123,8 @@
    <slot>profiler_registration_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>775</x>
-     <y>63</y>
+     <x>986</x>
+     <y>84</y>
     </hint>
     <hint type="destinationlabel">
      <x>1001</x>
@@ -1029,6 +1145,70 @@
     <hint type="destinationlabel">
      <x>1003</x>
      <y>854</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filter_radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>filter_radioButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>631</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>886</x>
+     <y>1094</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filter_column_name_comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>filter_column_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>774</x>
+     <y>687</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>853</x>
+     <y>1098</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filter_logic_comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>filter_algo_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>869</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>815</x>
+     <y>1090</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filter_value</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>filter_value_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>985</x>
+     <y>686</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1075</x>
+     <y>742</y>
     </hint>
    </hints>
   </connection>
@@ -1054,5 +1234,9 @@
   <slot>markers_registration_button_clicked()</slot>
   <slot>profiler_registration_button_clicked()</slot>
   <slot>table_right_click()</slot>
+  <slot>filter_radioButton_clicked()</slot>
+  <slot>filter_column_changed()</slot>
+  <slot>filter_algo_changed()</slot>
+  <slot>filter_value_changed()</slot>
  </slots>
 </ui>

@@ -35,6 +35,14 @@ class TableHandler:
             self.table_ui.setRangeSelected(selection_range, True)
         self.table_ui.blockSignals(False)
 
+    def set_row_hidden(self, row=0, hidden=True):
+        self.table_ui.setRowHidden(row, hidden)
+
+    def set_all_row_hidden(self, hidden=True):
+        nbr_row = self.row_count()
+        for row in np.arange(nbr_row):
+            self.set_row_hidden(row, hidden)
+
     def remove_all_rows(self):
         nbr_row = self.table_ui.rowCount()
         for _ in np.arange(nbr_row):
