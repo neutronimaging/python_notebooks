@@ -238,7 +238,7 @@ class RegistrationUi(QMainWindow):
         o_table = TableHandler(table_ui=self.ui.tableWidget)
 
         def should_row_be_visible(row_value=None, filter_algo_selected="<=", filter_value=None):
-    
+
             if is_float(filter_value):
                 o_table.set_all_row_hidden(False)
                 return
