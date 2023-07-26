@@ -32,7 +32,7 @@ warnings.filterwarnings('ignore')
 
 class RegistrationUi(QMainWindow):
 
-    table_registration = {} # dictionary that populate the table
+    table_registration = {}  # dictionary that populate the table
 
     table_column_width = [650, 80, 80, 80]
     value_to_copy = None
@@ -775,8 +775,8 @@ class RegistrationUi(QMainWindow):
         self.histogram_level = _histo_widget.getLevels()
 
         self.ui.image_view.setImage(live_image)
-
         _view_box.setState(_state)
+
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0],
                                     self.histogram_level[1])
@@ -812,7 +812,6 @@ class RegistrationUi(QMainWindow):
                      symbol=None,
                      pxMode=False)
         self.grid_view['item'] = grid
-
 
     def display_only_reference_image(self):
 
