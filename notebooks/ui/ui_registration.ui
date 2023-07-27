@@ -835,8 +835,8 @@
    <slot>export_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1067</x>
-     <y>1086</y>
+     <x>1279</x>
+     <y>1123</y>
     </hint>
     <hint type="destinationlabel">
      <x>685</x>
@@ -852,7 +852,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>112</x>
-     <y>1086</y>
+     <y>1123</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -915,7 +915,7 @@
    <slot>opacity_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1044</x>
+     <x>1256</x>
      <y>520</y>
     </hint>
     <hint type="destinationlabel">
@@ -947,8 +947,8 @@
    <slot>next_image_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>993</x>
-     <y>597</y>
+     <x>1205</x>
+     <y>615</y>
     </hint>
     <hint type="destinationlabel">
      <x>1000</x>
@@ -1011,7 +1011,7 @@
    <slot>manual_registration_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>472</x>
+     <x>687</x>
      <y>80</y>
     </hint>
     <hint type="destinationlabel">
@@ -1028,7 +1028,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>624</x>
-     <y>760</y>
+     <y>791</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
@@ -1107,7 +1107,7 @@
    <slot>markers_registration_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>700</x>
+     <x>914</x>
      <y>80</y>
     </hint>
     <hint type="destinationlabel">
@@ -1123,7 +1123,7 @@
    <slot>profiler_registration_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>986</x>
+     <x>1199</x>
      <y>84</y>
     </hint>
     <hint type="destinationlabel">
@@ -1155,8 +1155,8 @@
    <slot>filter_radioButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>631</x>
-     <y>690</y>
+     <x>843</x>
+     <y>714</y>
     </hint>
     <hint type="destinationlabel">
      <x>886</x>
@@ -1171,8 +1171,8 @@
    <slot>filter_column_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>774</x>
-     <y>687</y>
+     <x>986</x>
+     <y>711</y>
     </hint>
     <hint type="destinationlabel">
      <x>853</x>
@@ -1187,8 +1187,8 @@
    <slot>filter_algo_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>869</x>
-     <y>690</y>
+     <x>1081</x>
+     <y>714</y>
     </hint>
     <hint type="destinationlabel">
      <x>815</x>
@@ -1203,8 +1203,8 @@
    <slot>filter_value_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>985</x>
-     <y>686</y>
+     <x>1197</x>
+     <y>711</y>
     </hint>
     <hint type="destinationlabel">
      <x>1075</x>
@@ -1238,5 +1238,6 @@
   <slot>filter_column_changed()</slot>
   <slot>filter_algo_changed()</slot>
   <slot>filter_value_changed()</slot>
+  <slot>linear_interpolation_clicked()</slot>
  </slots>
 </ui>

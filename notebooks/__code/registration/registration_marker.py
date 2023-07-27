@@ -236,16 +236,22 @@ class RegistrationMarkers(QDialog):
     def table_right_click(self, position):
         """display context menu when user click the x or y column of the marker table.
         also do not allow to copy when more than 1 column and 1 row have been selected"""
-        [left_column_selected, right_column_selected]= self.get_columns_selected()
-        if left_column_selected == 0:
+        print("table right click!")
+
+        [left_column_selected, right_column_selected] = self.get_columns_selected()
+        # if left_column_selected == 0:
+        #     return
+
+        if left_column_selected == -1:
+            # no selection
             return
-        elif left_column_selected == -1:
-            return
-        elif (right_column_selected - left_column_selected) > 0:
-            return
+
+        # elif (right_column_selected - left_column_selected) > 0:
+        #     return
 
         [top_row_selected, bottom_row_selected] = self.get_rows_selected()
         if top_row_selected == -1:
+            # no selection
             return
 
         # initialize actions
@@ -253,19 +259,43 @@ class RegistrationMarkers(QDialog):
         paste_cell = None
 
         menu = QMenu(self)
-        if bottom_row_selected == top_row_selected:
-            copy_cell = menu.addAction("Copy")
-        if not (self.parent.marker_table_buffer_cell is None):
-            paste_cell = menu.addAction("Paste")
+        if left_column_selected in [1, 2]:
+
+            if bottom_row_selected == top_row_selected:
+                copy_cell = menu.addAction("Copy")
+
+            if not (self.parent.marker_table_buffer_cell is None):
+                paste_cell = menu.addAction("Paste")
+
+            menu.addSeparator()
+
+        self.start_marker = menu.addAction("Set marker interpolation initial position")
+        self.end_marker = menu.addAction("Set marker interpolation final position and process intermediate markers")
+        self.end_marker.setEnabled(False)
+
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == copy_cell:
             self.copy_cell(row_selected=top_row_selected,
                            column_selected=left_column_selected)
+
         elif action == paste_cell:
             self.paste_cell(top_row_selected=top_row_selected,
                             bottom_row_selected=bottom_row_selected,
                             column_selected=left_column_selected)
+
+        elif action == self.start_marker:
+            self.start_marker_initialized()
+
+        elif action == self.end_marker:
+            self.end_marker_initialized()
+
+    def start_marker_initialized(self):
+        print("start marker initialized")
+        self.end_marker.setEnabled(True)
+
+    def end_marker_initialized(self):
+        print("end marker initialized")
 
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
