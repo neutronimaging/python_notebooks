@@ -5,6 +5,7 @@ import os
 import numpy as np
 
 from __code import load_ui
+from __code._utilities.table_handler import TableHandler
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 
 
@@ -100,6 +101,10 @@ class RegistrationMarkers(QDialog):
                 _table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
             _table.horizontalHeader().sectionResized.connect(self.resizing_column)
+            _table.cellClicked.connect(lambda row=0, column=0, tab_index=_key_tab_name: self.table_row_clicked(
+                    row, column, tab_index))
+            _table.itemSelectionChanged.connect(lambda key_tab_name=_key_tab_name:
+                                                self.cell_clicked(key_tab_name=_key_tab_name))
 
             _data_dict = self.parent.markers_table[_key_tab_name]['data']
             for _row, _file in enumerate(self.parent.data_dict['file_name']):
@@ -113,11 +118,18 @@ class RegistrationMarkers(QDialog):
             _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
             self.parent.display_markers(all=False)
 
+    def cell_clicked(self, key_tab_name):
+        print(f"cell clicked {key_tab_name}")
+        #o_table = TableHandler
+
+    def table_row_clicked(self, row, column, tab_index):
+        print(f"table row clicked: {row =}, {column =} and {tab_index =}")
+
     def __populate_table_row(self, table_ui, row, file, x, y):
         # file name
         _item = QTableWidgetItem(file)
         table_ui.setItem(row, 0, _item)
-        _item.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+        _item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
         # x
         _item = QTableWidgetItem(str(x))
@@ -236,7 +248,6 @@ class RegistrationMarkers(QDialog):
     def table_right_click(self, position):
         """display context menu when user click the x or y column of the marker table.
         also do not allow to copy when more than 1 column and 1 row have been selected"""
-        print("table right click!")
 
         [left_column_selected, right_column_selected] = self.get_columns_selected()
         # if left_column_selected == 0:
@@ -350,6 +361,8 @@ class RegistrationMarkers(QDialog):
         number_of_tabs = self.ui.tabWidget.count()
         self.ui.tabWidget.setCurrentIndex(number_of_tabs - 1)
         table.itemChanged.connect(self.table_cell_modified)
+        table.itemSelectionChanged.connect(lambda key_tab_name=new_marker_name:
+                                                self.cell_clicked(key_tab_name=new_marker_name))
         self.parent.markers_table[new_marker_name] = _marker_dict
         self.parent.display_markers(all=False)
 
