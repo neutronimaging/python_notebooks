@@ -43,6 +43,9 @@ class RegistrationMarkers(QDialog):
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.nbr_files = len(self.parent.data_dict['file_name'])
 
+    def tab_changed(self, tab_index):
+        self.cell_clicked(str(tab_index+1))
+
     def resizing_column(self, index_column, old_size, new_size):
         """let's collect the size of the column in the current tab and then
         resize all the other columns of the other table"""
@@ -119,8 +122,18 @@ class RegistrationMarkers(QDialog):
             self.parent.display_markers(all=False)
 
     def cell_clicked(self, key_tab_name):
-        print(f"cell clicked {key_tab_name}")
-        #o_table = TableHandler
+        """
+        activate the same row in the main table
+        """
+        if self.parent.markers_table.get(key_tab_name, None):
+            table_ui = self.parent.markers_table[key_tab_name]['ui']
+            o_table = TableHandler(table_ui=table_ui)
+            row_selected = o_table.get_row_selected()
+
+            main_table_ui = self.parent.tableWidget
+            o_main_table = TableHandler(table_ui=main_table_ui)
+            o_main_table.select_rows(list_of_rows=[row_selected])
+            self.parent.table_row_clicked()
 
     def table_row_clicked(self, row, column, tab_index):
         print(f"table row clicked: {row =}, {column =} and {tab_index =}")
