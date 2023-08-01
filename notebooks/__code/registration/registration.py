@@ -77,9 +77,12 @@ class RegistrationUi(QMainWindow):
     #                                  'name': ""},
     #                 {'2': .... }
     markers_table = {}
-
-    markers_table_column_width = [330, 50, 50]
+    markers_table_column_width = [330, 50, 50, 250]
     marker_table_buffer_cell = None
+
+    # initial position of the marker (None means that no row has been selected yet)
+    markers_initial_position = {'row': None,
+                                'tab_name': '1'}
 
     def __init__(self, parent=None, data_dict=None):
 

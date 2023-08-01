@@ -8,6 +8,8 @@ from __code import load_ui
 from __code._utilities.table_handler import TableHandler
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 
+TABLE_NBR_COLUMNS = 4
+
 
 class RegistrationMarkersLauncher:
 
@@ -88,14 +90,15 @@ class RegistrationMarkers(QDialog):
             if _file_name_of_row == file:
                 table_ui.item(_row, 1).setText(x)
                 table_ui.item(_row, 2).setText(y)
+                table_ui.item(_row, 3).setText("")
 
         table_ui.blockSignals(False)
 
     def populate_using_markers_table(self):
         for _key_tab_name in self.parent.markers_table:
 
-            _table = QTableWidget(self.nbr_files, 3)
-            _table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
+            _table = QTableWidget(self.nbr_files, TABLE_NBR_COLUMNS)
+            _table.setHorizontalHeaderLabels(["File Name", "X", "Y", "Status"])
             _table.setAlternatingRowColors(True)
             _table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
             _table.customContextMenuRequested.connect(self.table_right_click)
@@ -120,6 +123,18 @@ class RegistrationMarkers(QDialog):
             self.parent.markers_table[_key_tab_name]['ui'] = _table
             _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
             self.parent.display_markers(all=False)
+
+    def get_current_active_tab(self):
+        tab_index = self.ui.tabWidget.currentIndex()
+        key_tab_name = str(tab_index + 1)
+        return key_tab_name
+
+    def get_row_selected_of_current_active_tab(self):
+        key_tab_name = self.get_current_active_tab()
+        table_ui = self.parent.markers_table[key_tab_name]['ui']
+        o_table = TableHandler(table_ui=table_ui)
+        row_selected = o_table.get_row_selected()
+        return row_selected
 
     def cell_clicked(self, key_tab_name):
         """
@@ -151,6 +166,10 @@ class RegistrationMarkers(QDialog):
         # y
         _item = QTableWidgetItem(str(y))
         table_ui.setItem(row, 2, _item)
+
+        # status
+        _item = QTableWidgetItem(str(""))
+        table_ui.setItem(row, 3, _item)
 
     def get_marker_name(self):
         markers_table = self.parent.markers_table
@@ -295,7 +314,11 @@ class RegistrationMarkers(QDialog):
 
         self.start_marker = menu.addAction("Set marker interpolation initial position")
         self.end_marker = menu.addAction("Set marker interpolation final position and process intermediate markers")
-        self.end_marker.setEnabled(False)
+
+        if self.parent.markers_initial_position['row'] is None:
+            self.end_marker.setEnabled(False)
+        else:
+            self.end_marker.setEnabled(True)
 
         action = menu.exec_(QtGui.QCursor.pos())
 
@@ -315,11 +338,57 @@ class RegistrationMarkers(QDialog):
             self.end_marker_initialized()
 
     def start_marker_initialized(self):
-        print("start marker initialized")
-        self.end_marker.setEnabled(True)
+        row_selected = self.get_row_selected_of_current_active_tab()
+        tab_selected = self.get_current_active_tab()
+        self.parent.markers_initial_position['row'] = row_selected
+        self.parent.markers_initial_position['tab_name'] = tab_selected
+        o_table = TableHandler(table_ui=self.parent.markers_table[tab_selected]['ui'])
+        o_table.set_item_with_str(row=row_selected, column=3, cell_str="Interpolation starting position")
 
     def end_marker_initialized(self):
-        print("end marker initialized")
+
+        ## FIXME - do the interpolation here
+
+        tab_selected = self.get_current_active_tab()
+        o_table = TableHandler(table_ui=self.parent.markers_table[tab_selected]['ui'])
+        from_row = self.parent.markers_initial_position['row']
+        to_row = o_table.get_row_selected()
+
+        starting_row_selected = self.parent.markers_initial_position['row']
+        o_table.set_item_with_str(row=starting_row_selected,
+                                  column=3,
+                                  cell_str="")
+
+        xoffset_from = o_table.get_item_str_from_cell(row=from_row,
+                                                      column=1)
+        yoffset_from = o_table.get_item_str_from_cell(row=from_row,
+                                                      column=2)
+
+        xoffset_to = o_table.get_item_str_from_cell(row=to_row,
+                                                    column=1)
+        yoffset_to = o_table.get_item_str_from_cell(row=to_row,
+                                                    column=2)
+
+        nbr_rows_between = np.abs(to_row - from_row) - 1
+        if nbr_rows_between >=1:
+
+            delta_xoffset = (xoffset_to - xoffset_from) / (nbr_rows_between + 1)
+            delta_yoffset = (yoffset_to - yoffset_from) / (nbr_rows_between + 1)
+
+            coeff = 1
+            for _row in np.arange(from_row+1, to_row):
+                xoffset_value = coeff * delta_xoffset
+                o_table.set_item_with_str(row=_row,
+                                          column=1,
+                                          cell_str=int(xoffset_value))
+
+                yoffset_value = coeff * delta_yoffset
+                o_table.set_item_with_str(row=_row,
+                                          column=2,
+                                          cell_str=int(yoffset_value))
+                coeff += 1
+
+        self.parent.markers_initial_position['row'] = None
 
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
@@ -335,7 +404,7 @@ class RegistrationMarkers(QDialog):
         return (MarkerDefaultSettings.color[color], color)
 
     def add_marker_button_clicked(self):
-        table = QTableWidget(self.nbr_files, 3)
+        table = QTableWidget(self.nbr_files, TABLE_NBR_COLUMNS)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
         table.setAlternatingRowColors(True)
         table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -349,6 +418,7 @@ class RegistrationMarkers(QDialog):
             table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
         table.horizontalHeader().sectionResized.connect(self.resizing_column)
+        table.horizontalHeader().setStretchLastSection(True)
         new_marker_name = self.get_marker_name()
         _ = self.ui.tabWidget.addTab(table, new_marker_name)
 
