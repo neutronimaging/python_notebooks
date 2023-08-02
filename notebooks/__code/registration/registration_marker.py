@@ -447,6 +447,9 @@ class RegistrationMarkers(QDialog):
         self.parent.markers_table[new_marker_name] = _marker_dict
         self.parent.display_markers(all=False)
 
+        o_table = TableHandler(table_ui=table)
+        o_table.select_row(0)
+
     def marker_color_changed(self, color):
         _current_tab = self.ui.tabWidget.currentIndex()
         _tab_title = self.ui.tabWidget.tabText(_current_tab)
