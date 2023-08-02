@@ -346,9 +346,6 @@ class RegistrationMarkers(QDialog):
         o_table.set_item_with_str(row=row_selected, column=3, cell_str="Interpolation starting position")
 
     def end_marker_initialized(self):
-
-        ## FIXME - do the interpolation here
-
         tab_selected = self.get_current_active_tab()
         o_table = TableHandler(table_ui=self.parent.markers_table[tab_selected]['ui'])
         from_row = self.parent.markers_initial_position['row']
@@ -359,36 +356,37 @@ class RegistrationMarkers(QDialog):
                                   column=3,
                                   cell_str="")
 
-        xoffset_from = o_table.get_item_str_from_cell(row=from_row,
-                                                      column=1)
-        yoffset_from = o_table.get_item_str_from_cell(row=from_row,
-                                                      column=2)
+        xoffset_from = int(o_table.get_item_str_from_cell(row=from_row,
+                                                          column=1))
+        yoffset_from = int(o_table.get_item_str_from_cell(row=from_row,
+                                                          column=2))
 
-        xoffset_to = o_table.get_item_str_from_cell(row=to_row,
-                                                    column=1)
-        yoffset_to = o_table.get_item_str_from_cell(row=to_row,
-                                                    column=2)
+        xoffset_to = int(o_table.get_item_str_from_cell(row=to_row,
+                                                        column=1))
+        yoffset_to = int(o_table.get_item_str_from_cell(row=to_row,
+                                                        column=2))
 
         nbr_rows_between = np.abs(to_row - from_row) - 1
-        if nbr_rows_between >=1:
+        if nbr_rows_between >= 1:
 
             delta_xoffset = (xoffset_to - xoffset_from) / (nbr_rows_between + 1)
             delta_yoffset = (yoffset_to - yoffset_from) / (nbr_rows_between + 1)
 
             coeff = 1
             for _row in np.arange(from_row+1, to_row):
-                xoffset_value = coeff * delta_xoffset
+                xoffset_value = int(np.round(xoffset_from + coeff * delta_xoffset))
                 o_table.set_item_with_str(row=_row,
                                           column=1,
-                                          cell_str=int(xoffset_value))
+                                          cell_str=str(xoffset_value))
 
-                yoffset_value = coeff * delta_yoffset
+                yoffset_value = int(np.round(yoffset_from + coeff * delta_yoffset))
                 o_table.set_item_with_str(row=_row,
                                           column=2,
-                                          cell_str=int(yoffset_value))
+                                          cell_str=str(yoffset_value))
                 coeff += 1
 
         self.parent.markers_initial_position['row'] = None
+        self.save_current_table()
 
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
