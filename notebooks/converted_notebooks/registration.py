@@ -41,18 +41,10 @@ custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Images to Process
-# -
-
-# DEBUGGING
-working_dir = "/Users/j35/HFIR/CG1D/IPTS-30750/23_06_09_left/"
-#working_dir = "/Volumes/JeanHardDrive/HFIR/CG1D/IPTS-30750/23_06_09_left_registered/"
-o_selection = FileSelection(working_dir=working_dir)
-o_selection.select_data()
-
 
 # + run_control={"frozen": false, "read_only": false}
-# o_selection = FileSelection(working_dir=system.System.get_working_dir())
-# o_selection.select_data()
+o_selection = FileSelection(working_dir=system.System.get_working_dir())
+o_selection.select_data()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Launch Registration UI 
