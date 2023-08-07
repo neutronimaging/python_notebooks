@@ -11,7 +11,7 @@ from matplotlib.text import Text
 INTERPOLATION_METHODS = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16',
                          'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
                          'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
-DEFAULT_INTERPOLATION = None
+DEFAULT_INTERPOLATION = 'none'
 
 CMAPS = ['viridis', 'jet']
 DEFAULT_CMAPS = 'viridis'
@@ -111,23 +111,29 @@ class Main:
 
             # adding digit in colorbar scale
             ticks = self.cb.ax.get_yticklabels()
-            for _index, _tick in enumerate(ticks):
-                (_x, _y) = _tick.get_position()
-                _text = _tick.get_text()
 
-                # trick to fix error with matplotlib '-' that is not the normal negative character
-                if _text[0].encode() == b'\xe2\x88\x92':
-                    _text_fixed = "-" + _text[1:]
-                    _text = _text_fixed
-
-                if data_type == 'microstrain':
-                    _new_text = f"{float(_text)}"
-                else:
-                    _new_text = f"{float(_text):.4f}"
-
-                ticks[_index] = Text(_x, _y, _new_text)
-
-            self.cb.ax.set_yticklabels(ticks)
+            # for _index, _tick in enumerate(ticks):
+            #
+            #     (_x, _y) = _tick.get_position()
+            #     _text = _tick.get_text()
+            #
+            #     # trick to fix error with matplotlib '-' that is not the normal negative character
+            #     if _text:
+            #         if _text[0].encode() == b'\xe2\x88\x92':
+            #             _text_fixed = "-" + _text[1:]
+            #             _text = _text_fixed
+            #
+            #         if data_type == 'microstrain':
+            #             _new_text = f"{float(_text)}"
+            #         else:
+            #             _new_text = f"{float(_text):.4f}"
+            #
+            #     else:
+            #         _new_text = _text
+            #
+            #     ticks[_index] = Text(_x, _y, _new_text)
+            #
+            # self.cb.ax.set_yticklabels(ticks)
 
             # adding digits in cursor z value
             numrows, numcols = self.data_dict[data_type].shape
@@ -157,14 +163,14 @@ class Main:
             try:
 
                 # update min slider
-                v.children[0].min = minimum
                 v.children[0].max = maximum
+                v.children[0].min = minimum
                 v.children[0].step = step
                 v.children[0].value = min_value
 
                 # update max slider
-                v.children[1].min = minimum
                 v.children[1].max = maximum
+                v.children[1].min = minimum
                 v.children[1].step = step
                 v.children[1].value = max_value
 
