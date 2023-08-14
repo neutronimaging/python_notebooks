@@ -7,6 +7,9 @@ import numpy as np
 
 from NeuNorm.normalization import Normalization
 
+from __code._utilities.error import NoFilesFound
+
+
 THIS_FILE_PATH = os.path.dirname(__file__)
 CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config.json')
 
@@ -56,9 +59,13 @@ class LoadData:
         master_dict = OrderedDict()
         for _folder_index, _folder in enumerate(self.list_folders):
             o_norm = Normalization()
-            list_files = glob.glob(_folder + "/*.tiff")
+            list_files = glob.glob(_folder + "/*.tif*")
+
             list_files.sort()
             o_norm.load(file=list_files, notebook=False)
+
+            if not o_norm.data['sample']['data']:
+                raise NoFilesFound
 
             # record size of images
             if _folder_index == 0:

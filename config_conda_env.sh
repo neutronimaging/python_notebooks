@@ -22,6 +22,7 @@ conda install -y      \
     jupyterlab        \
     qtpy              \
     pyqtgraph         \
+    inflect           \
     astropy
 
 # install dependencies from conda-forge
@@ -38,7 +39,6 @@ pip install \
     neutronbraggedge \
     NeuNorm \
     sectorizedradialprofile \
-    inflect \
     ImagingReso \
     ipywidgets \
     changepy \

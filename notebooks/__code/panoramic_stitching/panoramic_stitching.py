@@ -1,4 +1,4 @@
-from IPython.core.display import display
+from IPython.core.display import display, HTML
 from qtpy.QtWidgets import QMainWindow
 import os
 import inflect
@@ -6,6 +6,7 @@ import inflect
 from __code.ipywe import fileselector
 from __code._utilities.folder import get_list_of_folders_with_specified_file_type_and_same_number_of_files
 from __code._utilities.string import format_html_message
+from __code._utilities.error import NoFilesFound
 from __code import load_ui
 
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
@@ -62,7 +63,13 @@ class PanoramicStitching:
         o_interface = Interface(list_folders=final_list_folders,
                                 list_folders_rejected=list_folders_rejected)
         o_interface.show()
-        o_interface.load_data()
+        try:
+            o_interface.load_data()
+        except NoFilesFound:
+            display(HTML("No files (*.tif, *.tiff) found in that folder!"))
+            o_interface.close()
+            return
+
         o_interface.initialization_after_loading_data()
 
 
