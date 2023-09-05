@@ -7,6 +7,7 @@ from IPython.core.display import display
 from NeuNorm.normalization import Normalization
 
 from __code.ipywe import fileselector
+from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
 from __code import utilities, file_handler
 
 
@@ -109,12 +110,14 @@ class BinHandler:
         display(full_widget)
 
     def select_export_folder(self):
-        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
-                                                                     start_dir=self.working_dir,
-                                                                     multiple=False,
-                                                                     next=self.export,
-                                                                     type='directory')
-        self.output_folder_ui.show()
+        self.output_folder_ui = FileSelectorPanelWithJumpFolders(instruction='Select output folder...',
+                                                                 start_dir=self.working_dir,
+                                                                 multiple=False,
+                                                                 next=self.export,
+                                                                 type='directory',
+                                                                 show_jump_to_home=True,
+                                                                 show_jump_to_share=True)
+        # self.output_folder_ui.show()
 
     def rebin_data(self, data=[]):
         width_bin = self.bin_width_value
