@@ -109,7 +109,6 @@ class BinHandler:
         display(full_widget)
 
     def select_export_folder(self):
-
         self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
                                                                      start_dir=self.working_dir,
                                                                      multiple=False,
@@ -118,27 +117,27 @@ class BinHandler:
         self.output_folder_ui.show()
 
     def rebin_data(self, data=[]):
-
-        bin = self.bin_value
+        width_bin = self.bin_width_value
+        height_bin = self.bin_height_value
 
         height = self.image_dimension['height']
         width = self.image_dimension['width']
 
         # checking if last bin size match other bins
         new_height = height
-        _nbr_height_bin = int(np.floor(height / bin))
-        if not (np.mod(height, bin) == 0):
-            new_height = int(_nbr_height_bin * bin)
+        _nbr_height_bin = int(np.floor(height / height_bin))
+        if not (np.mod(height, height_bin) == 0):
+            new_height = int(_nbr_height_bin * height_bin)
         new_height = int(new_height)
 
         new_width = width
-        _nbr_width_bin = int(np.floor(width / bin))
-        if not (np.mod(width, bin) == 0):
-            new_width = int(_nbr_width_bin * bin)
+        _nbr_width_bin = int(np.floor(width / width_bin))
+        if not (np.mod(width, width_bin) == 0):
+            new_width = int(_nbr_width_bin * width_bin)
         new_width = int(new_width)
 
         _new_data = data[0: new_height, 0: new_width]
-        _new_data = _new_data.reshape(_nbr_height_bin, bin, _nbr_width_bin, bin)
+        _new_data = _new_data.reshape(_nbr_height_bin, height_bin, _nbr_width_bin, width_bin)
         data_rebinned = _new_data.mean(axis=3).mean(axis=1)
 
         return data_rebinned
@@ -154,7 +153,8 @@ class BinHandler:
         input_folder = self.get_input_folder()
         # output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected,
         #                                              "{}_rebin_by_{}".format(input_folder, self.bin_value)))
-        output_folder = os.path.abspath(os.path.join(output_folder, "{}_rebin_by_{}".format(input_folder, self.bin_value)))
+        bin_string = f"{self.bin_height_value}height_{self.bin_width_value}width"
+        output_folder = os.path.abspath(os.path.join(output_folder, "{}_rebin_by_{}".format(input_folder, bin_string)))
         utilities.make_dir(dir=output_folder, overwrite=False)
 
         w = widgets.IntProgress()
