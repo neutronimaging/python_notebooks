@@ -15,7 +15,7 @@ conda install -y      \
     numpy             \
     scipy             \
     pandas            \
-    scikit-image=0.18.1 \
+    scikit-image      \
     matplotlib        \
     plotly            \
     jupyter           \
@@ -33,6 +33,7 @@ conda install -c conda-forge nbstripout
 
 # install additional from pip
 pip install \
+    chardet \
     h5py \
     algotom \
     neutronbraggedge \

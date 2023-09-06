@@ -2,9 +2,11 @@ from __code import config
 import getpass
 import glob
 import os
+import platform
 from ipywidgets import widgets
 from IPython.core.display import display
 from IPython.core.display import HTML
+
 from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code import LOGGER_FILE
 from __code._utilities.file import append_to_file
@@ -45,7 +47,6 @@ class System:
         start_path = cls.get_start_path(debugger_folder=debugger_folder,
                                         system_folder=system_folder,
                                         instrument=full_list_instruments[0])
-
         cls.start_path = start_path
 
         select_instrument_ui = widgets.HBox([widgets.Label("Select Instrument",
@@ -122,7 +123,8 @@ class System:
 
         if debugging:
             instrument = cls.get_instrument_selected()
-            start_path = config.debugger_instrument_folder[instrument]
+            computer_name = cls.get_computer_name()
+            start_path = config.debugger_instrument_folder[computer_name][instrument]
             cls.start_path = start_path
 
         list_folders = sorted(glob.glob(os.path.join(start_path, '*')))
@@ -158,6 +160,10 @@ class System:
     @classmethod
     def get_instrument_selected(cls):
         return cls.instrument_ui.value
+
+    @classmethod
+    def get_computer_name(cls):
+        return platform.node()
 
     @classmethod
     def get_facility_selected(cls):
