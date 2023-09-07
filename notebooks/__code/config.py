@@ -1,4 +1,4 @@
-debugging = False
+debugging = True
 debugger_username = 'j35'
 debugger_folder = ['/Volumes/JeanHardDrive/', '/Users/j35/', '/Volumes/Buffalo/IPTS/', '/Users/j35/IPTS/']
 project_folder = 'IPTS_16259'
@@ -6,7 +6,7 @@ project_folder = 'IPTS_16259'
 debugger_instrument_folder = {'mac126807': {'CG1D': "/Volumes/JeanHardDrive/HFIR/CG1D",
                                             'SNAP': "/Volumes/JeanHardDrive/SNS/SNAP",
                                             'VENUS': "/Volumes/JeanHardDrive/SNS/VENUS"},
-                              'workmac': {'CG1D': "/Users/j35/HFIR/CG1D",
+                              'mac126455': {'CG1D': "/Users/j35/HFIR/CG1D",
                                           'SNAP': "/Users/j35/SNS/SNAP",
                                           'VENUS': "/Users/j35/SNS/VENUS"},
                               }

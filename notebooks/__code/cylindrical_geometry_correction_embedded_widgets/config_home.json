@@ -1,0 +1,34 @@
+{
+  "cylinders_position": {
+    "description": "pixel position in the cropped data image of the center, inner and outer radius",
+    "center": 757,
+    "inner_radius": 450,
+    "outer_radius": 643
+    },
+  "profiles_plot": {
+    "description": "pixel position of the inner cylinder left and right edges",
+    "left_inner_cylinder": 0,
+    "right_inner_cylinder": 0
+  },
+  "default_crop": {
+    "x0": 386,
+    "x1": 540,
+    "y0": 889,
+    "y1": 1824,
+    "marker": 1000
+  },
+  "default_rotate_angle": 0.18,
+  "default_background": {
+    "y0": 35,
+    "y1": 282
+  },
+  "default_sample": {
+    "y0": 415,
+    "y1": 935
+  },
+  "profiles_limit": {
+    "description": "range to use and to combine to extract profile. Mean algorithm is used to combine profiles",
+    "top": 89,
+    "bottom": 119
+  }
+}
