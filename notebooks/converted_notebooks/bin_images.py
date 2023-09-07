@@ -19,7 +19,7 @@
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Your IPTS 
 
-# + run_control={"frozen": false, "read_only": false}
+# + run_control={"frozen": false, "read_only": false} tags=[]
 from __code.bin.bin_images import BinHandler
 from __code import system
 system.System.select_working_dir(notebook='bin_images')
@@ -29,7 +29,7 @@ custom_style.style()
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Images to Rebin
 
-# + run_control={"frozen": false, "read_only": false}
+# + run_control={"frozen": false, "read_only": false} tags=[]
 o_bin = BinHandler(working_dir = system.System.get_working_dir())
 o_bin.select_images()
 
