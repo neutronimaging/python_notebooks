@@ -87,6 +87,7 @@
 
 # # M
 
+# * [match images shapes](match_images_shapes.ipynb)
 # * [math images](math_images.ipynb)
 # * [mcp chips corrector](mcp_chips_corrector.ipynb)
 # * Metadata

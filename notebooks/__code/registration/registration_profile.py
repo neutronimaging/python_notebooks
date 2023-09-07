@@ -18,6 +18,8 @@ from __code._utilities.file import make_or_reset_folder
 
 from __code._utilities.color import Color
 from __code import load_ui
+from __code.registration import interact_me_style, normal_style
+from __code.registration.calculate_profiles_difference import CalculateProfilesDifference
 
 
 class RegistrationProfileLauncher:
@@ -36,10 +38,17 @@ class RegistrationProfileLauncher:
             self.parent.registration_profile_ui.activateWindow()
 
 
+class Algorithm:
+
+    sliding_average = "sliding_average"
+    change_point = "change_point"
+    profiles_difference_minimization = "profiles_difference_minimization"
+
+
 class RegistrationProfileUi(QMainWindow):
 
     does_top_parent_exist = False
-    peak_algorithm = 'sliding_average'   # ''change_point'
+    peak_algorithm = Algorithm.profiles_difference_minimization
 
     data_dict = None
     raw_data_dict = None
@@ -143,6 +152,7 @@ class RegistrationProfileUi(QMainWindow):
         self.init_table()
         self.init_slider()
         self.init_parameters()
+        self.init_statusbar()
 
         self._display_selected_row()
         self._check_widgets()
@@ -150,6 +160,13 @@ class RegistrationProfileUi(QMainWindow):
         self.update_hori_verti_profile_plot_of_selected_file()
 
     ## Initialization
+
+    def init_statusbar(self):
+        self.eventProgress = QProgressBar(self.parent.ui.statusbar)
+        self.eventProgress.setMinimumSize(20, 14)
+        self.eventProgress.setMaximumSize(540, 100)
+        self.eventProgress.setVisible(False)
+        self.ui.statusbar.addPermanentWidget(self.parent.eventProgress)
 
     def init_parameters(self):
         _color = Color()
@@ -190,6 +207,19 @@ class RegistrationProfileUi(QMainWindow):
 
         # splitter
         self.ui.splitter_2.setSizes([800, 100])
+
+        # next button to interact with
+        self.ui.calculate_markers_button.setStyleSheet(interact_me_style)
+
+        # default algorithm to use
+        if self.peak_algorithm == Algorithm.sliding_average:
+            self.ui.sliding_average_radioButton.setChecked(True)
+        elif self.peak_algorithm == Algorithm.profiles_difference_minimization:
+            self.ui.profiles_difference_radioButton.setChecked(True)
+        elif self.peak_algorithm == Algorithm.change_point:
+            self.ui.change_point_radioButton.setChecked(True)
+        else:
+            raise NotImplementedError("algorithm not implemented yet")
 
     def init_pyqtgraph(self):
         area = DockArea()
@@ -343,8 +373,17 @@ class RegistrationProfileUi(QMainWindow):
 
         # select first row by default
         self._select_table_row(0)
-
         self.ui.tableWidget.blockSignals(False)
+
+    def algorithm_changed(self):
+        if self.ui.sliding_average_radioButton.isChecked():
+            self.peak_algorithm = Algorithm.sliding_average
+        elif self.ui.profiles_difference_radioButton.isChecked():
+            self.peak_algorithm = Algorithm.profiles_difference_minimization
+        elif self.ui.change_point_radioButton.isChecked():
+            self.peak_algorithm = Algorithm.change_point
+        else:
+            raise NotImplementedError("algorithm selected not implemented!")
 
     def clear_table(self):
         nbr_row = self.ui.tableWidget.rowCount()
@@ -592,7 +631,6 @@ class RegistrationProfileUi(QMainWindow):
             self.offset['horizontal'][_row] = xoffset
             self.offset['vertical'][_row] = yoffset
 
-
     def calculate_all_peaks(self):
         nbr_files = len(self.data_dict['file_name'])
         for _row in np.arange(nbr_files):
@@ -615,6 +653,8 @@ class RegistrationProfileUi(QMainWindow):
                 peak = np.mean(result[2:])
             else:
                 peak = np.mean(result[1:])
+
+            peak_value = peak
 
         else: # sliding average
             _o_range = MeanRangeCalculation(data=yaxis)
@@ -651,9 +691,21 @@ class RegistrationProfileUi(QMainWindow):
                            )
 
     def register_images(self):
-        self.calculate_markers_button_clicked()
+        # self.calculate_markers_button_clicked()
+        self.ui.calculate_markers_button.setStyleSheet(normal_style)
+        self.ui.full_reset_button.setEnabled(True)
+        self.ui.pushButton.setEnabled(True)
+        self.ui.registered_all_images_button.setEnabled(True)
+        self.ui.pushButton.setStyleSheet(interact_me_style)
+        self.ui.registered_all_images_button.setStyleSheet(interact_me_style)
 
         data = self.raw_data_dict['data']
+        nbr_steps = len(data)
+
+        self.eventProgress.setValue(0)
+        self.eventProgress.setMaximum(nbr_steps)
+        self.eventProgress.setVisible(True)
+
         for _row, _data in enumerate(data):
 
             xoffset = self.offset['horizontal'][_row]
@@ -662,6 +714,11 @@ class RegistrationProfileUi(QMainWindow):
             new_data = shift(_data, (yoffset, xoffset))
 
             self.data_dict['data'][_row] = new_data
+            self.eventProgress.setValue(_row+1)
+            QApplication.processEvents()
+
+        self.eventProgress.setVisible(False)
+        QApplication.processEvents()
 
     def calculate_and_display_current_peak(self, force_recalculation=True, is_horizontal=True):
         if is_horizontal:
@@ -786,16 +843,32 @@ class RegistrationProfileUi(QMainWindow):
         self.calculate_and_display_current_peak(is_horizontal=True)
 
     def calculate_markers_button_clicked(self):
+        self.ui.calculate_markers_button.setStyleSheet(normal_style)
+        self.ui.full_reset_button.setEnabled(True)
+        self.ui.pushButton.setEnabled(True)
+        self.ui.registered_all_images_button.setEnabled(True)
+        self.ui.pushButton.setStyleSheet(interact_me_style)
+        self.ui.registered_all_images_button.setStyleSheet(interact_me_style)
+
         self.calculate_all_profiles()
-        self.calculate_all_peaks()
-        self.calculate_all_offsets()
+
+        if self.peak_algorithm in [Algorithm.sliding_average, Algorithm.change_point]:
+            self.calculate_all_peaks()
+            self.calculate_all_offsets()
+        else:
+            self.calculate_profiles_differences()
+
         self.plot_peaks()
         self.update_table()
         self.calculate_and_display_hori_and_verti_peaks(force_recalculation=False)
 
+    def calculate_profiles_differences(self):
+        o_calculate = CalculateProfilesDifference(parent=self)
+        o_calculate.run()
+
     def help_button_clicked(self):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/registration/")
+        webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/registration/")
 
     def slider_file_changed(self, value):
         self._select_table_row(value)
@@ -824,6 +897,9 @@ class RegistrationProfileUi(QMainWindow):
         self.register_images()
         self._display_selected_row()
         self.ui.export_button.setEnabled(True)
+        self.ui.registered_all_images_button.setStyleSheet(normal_style)
+        self.ui.export_button.setStyleSheet(interact_me_style)
+        self.ui.export_button.setEnabled(True)
 
     def registered_all_images_and_return_to_main_ui_button_clicked(self):
         self.register_images()
@@ -849,7 +925,6 @@ class RegistrationProfileUi(QMainWindow):
                                           export_folder=_export_folder)
             o_export.run()
             QApplication.processEvents()
-
 
     def opacity_slider_moved(self, _):
         self._display_selected_row()
@@ -889,7 +964,7 @@ class RegistrationProfileUi(QMainWindow):
         self.close()
 
 
-class SettingsLauncher(object):
+class SettingsLauncher:
 
     parent = None
 
@@ -909,15 +984,12 @@ class Settings(QMainWindow):
 
     def __init__(self, parent=None):
         self.parent = parent
-        self(QMainWindow, self).__init__(parent)
+        super(QMainWindow, self).__init__(parent)
+
         ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                     os.path.join('ui',
                                                  'ui_registration_profile_settings.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
-
-        # self.ui = UiMainWindowSettings()
-        self.ui.setupUi(self)
-
         self.init_widgets()
 
     def init_widgets(self):

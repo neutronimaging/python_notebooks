@@ -12,7 +12,7 @@ class FileSelection:
         self.working_dir = working_dir
 
     def select_file_help(self, value):
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile")
+        webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/file-selector-tool/")
 
     def load_files(self, files):
         o_norm = Normalization()

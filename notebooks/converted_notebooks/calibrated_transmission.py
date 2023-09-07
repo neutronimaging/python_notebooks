@@ -22,12 +22,9 @@
 # # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_calibrated_transmission.ui')
-
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
-from __code.calibrated_transmission import CalibratedTransmissionUi
+from __code.calibrated_transmission.calibrated_transmission import CalibratedTransmissionUi
 
 system.System.select_working_dir(notebook='calibrated_transmission')
 from __code.__all import custom_style

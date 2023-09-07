@@ -1,11 +1,7 @@
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+from qtpy.QtWidgets import QMainWindow, QLabel, QHBoxLayout, QSlider, QSpacerItem
+from qtpy.QtWidgets import QSizePolicy, QLineEdit, QWidget, QVBoxLayout, QProgressBar, QApplication
+from qtpy import QtCore
+import copy
 
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
@@ -15,9 +11,16 @@ import scipy.ndimage
 import numpy as np
 import os
 
+from NeuNorm.normalization import Normalization
+
+from __code import load_ui
 from __code import file_handler
-from __code.ui_rotate_and_crop import Ui_MainWindow as UiMainWindow
 from __code.ipywe import fileselector
+
+
+class DataDictKeys:
+    filename = "filename"
+    data = "data"
 
 
 class RotateAndCropImages(QMainWindow):
@@ -35,6 +38,12 @@ class RotateAndCropImages(QMainWindow):
     rotation_angle = 0
     list_files = []
 
+    # {0: {'filename': "/filename0", 'data': None},
+    #  1: {'filename': "/filename1", 'data': None},
+    #  ...
+    # }
+    data_dict = None
+
     def __init__(self, parent=None, o_load=None):
 
         display(
@@ -43,15 +52,20 @@ class RotateAndCropImages(QMainWindow):
                 'hidden behind this browser!)</span>'
             ))
 
-        self.working_data = o_load.working_data
-        self.rotated_working_data = o_load.working_data
-        self.nbr_files = o_load.nbr_files
+        self.data_dict = o_load.data_dict
+        # self.rotated_data_dict = copy.deepcopy(self.data_dict)
+
+        # self.working_data = o_load.working_data
+        # self.rotated_working_data = o_load.working_data
+        self.nbr_files = len(self.data_dict.keys())
 
         self.list_images = o_load.list_images
 
         QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui', 'ui_rotate_and_crop.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.init_statusbar()
         self.setWindowTitle("Select Rotation Angle for All Images")
 
@@ -59,54 +73,61 @@ class RotateAndCropImages(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
         self.ui.image_view.ui.menuBtn.hide()
 
-        bottom_layout = QtGui.QHBoxLayout()
-
-        # file index slider
-        label_1 = QtGui.QLabel("File Index")
-        self.ui.slider = QtGui.QSlider(QtCore.Qt.Horizontal)
-        self.ui.slider.setMaximum(len(self.list_images) - 1)
-        self.ui.slider.setMinimum(0)
-        self.ui.slider.valueChanged.connect(self.file_index_changed)
+        bottom_layout = QHBoxLayout()
 
         # spacer
-        spacer = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding,
-                                   QtGui.QSizePolicy.Minimum)
+        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         # rotation value
-        label_2 = QtGui.QLabel("Rotation (degrees)")
-        self.ui.rotation_value = QtGui.QLineEdit('0')
+        label_2 = QLabel("Rotation (degrees)")
+        self.ui.rotation_value = QLineEdit('0')
         self.ui.rotation_value.setMaximumWidth(50)
         self.ui.rotation_value.returnPressed.connect(
             self.rotation_value_changed)
 
         if self.nbr_files > 1:
-            bottom_layout.addWidget(label_1)
-            bottom_layout.addWidget(self.ui.slider)
+            self.ui.file_index_groupBox.setVisible(True)
+            self.ui.file_index_slider.setMaximum(self.nbr_files-1)
+        else:
+            self.ui.file_index_groupBox.setVisible(False)
 
         bottom_layout.addItem(spacer)
         bottom_layout.addWidget(label_2)
         bottom_layout.addWidget(self.ui.rotation_value)
 
-        bottom_widget = QtGui.QWidget()
+        bottom_widget = QWidget()
         bottom_widget.setLayout(bottom_layout)
 
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.ui.image_view)
         vertical_layout.addWidget(bottom_widget)
 
         self.ui.widget.setLayout(vertical_layout)
 
         self.get_image_size()
-        #        self.display_grid()
+        self.display_image()
         self.display_crop_region()
         self.rotation_value_changed()
+        self.ui.number_of_files_label.setText(str(len(self.list_images)-1))
 
     def init_statusbar(self):
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(20, 14)
         self.eventProgress.setMaximumSize(540, 100)
         self.eventProgress.setVisible(False)
         self.ui.statusbar.addPermanentWidget(self.eventProgress)
+
+    def image_slider_pressed(self):
+        # self.rotation_value_changed()
+        self.display_image()
+
+    def image_slider_moved(self, index):
+        # self.rotation_value_changed()
+        self.display_image()
+
+    def image_slider_released(self):
+        # self.rotation_value_changed()
+        self.display_image()
 
     def display_crop_region(self):
         [image_height, image_width] = [self.height, self.width]
@@ -115,20 +136,28 @@ class RotateAndCropImages(QMainWindow):
         height = image_height - 1
 
         roi = pg.ROI(
-            [x0, y0], [height, width], pen=(209, 230, 27), scaleSnap=True)
+            [x0, y0], [width, height], pen=(209, 230, 27), scaleSnap=True)
         roi.addScaleHandle([1, 1], [0, 0])
         self.ui.image_view.addItem(roi)
         self.roi = roi
 
-    def get_selected_image(self, file_index):
-        if type(self.working_data) is list:
-            return self.working_data[_file_index]
-        else:
-            return self.working_data
+    def get_selected_image(self, file_index=None):
+        if file_index is None:
+            file_index = self.ui.file_index_slider.value()
 
-    def display_image(self, image):
-        image = self.get_selected_image(0)
-        self.ui.image_view.setImage(image)
+        if self.data_dict[file_index][DataDictKeys.data] is None:
+            data = RotateAndCropImages.load_data(filename=self.data_dict[file_index][DataDictKeys.filename])
+            self.data_dict[file_index][DataDictKeys.data] = data
+
+        else:
+            data = self.data_dict[file_index][DataDictKeys.data]
+        return data
+
+    def display_image(self):
+        index_image = self.ui.file_index_slider.value()
+        self.ui.image_index_label.setText(str(index_image))
+        image = self.get_selected_image(index_image)
+        self.ui.image_view.setImage(np.transpose(image))
 
     def init_imageview(self):
         image = self.get_selected_image(0)
@@ -136,10 +165,8 @@ class RotateAndCropImages(QMainWindow):
         self.live_data = image
 
     def get_image_size(self):
-        if len(np.shape(self.rotated_working_data)) > 2:
-            [width, height] = np.shape(self.rotated_working_data[0])
-        else:
-            [width, height] = np.shape(self.rotated_working_data)
+        data = self.get_selected_image(0)
+        [height, width] = np.shape(data)
 
         self.width = width
         self.height = height
@@ -201,49 +228,77 @@ class RotateAndCropImages(QMainWindow):
 
         self.line_view_binning = line_view_binning
 
+    @staticmethod
+    def load_data(filename):
+        o_norm = Normalization()
+        o_norm.load(file=filename, notebook=False)
+        data = np.squeeze(o_norm.data['sample']['data'][0])
+        return data
+
+    def get_or_load_data(self, file_index=0):
+        """
+        check if the data has already been loaded in self.data_dict. If it didn't, load it and return the
+        array. If it's already there, just return the array
+        """
+        if self.data_dict[file_index][DataDictKeys.data] is None:
+            data = RotateAndCropImages.load_data(self.data_dict[file_index][DataDictKeys.filename])
+            self.data_dict[file_index][DataDictKeys.data] = data
+            return data
+        else:
+            return self.data_dict[file_index][DataDictKeys.data]
+
     def rotation_value_changed(self):
         _rotation_value = float(str(self.ui.rotation_value.text()))
 
-        if self.nbr_files > 1:
-            _file_index = self.ui.slider.value()
-            _data = self.working_data[_file_index]
-        else:
-            _data = self.working_data
+        _file_index = self.ui.file_index_slider.value()
+        _data = self.get_or_load_data(file_index=_file_index)
 
         rotated_data = scipy.ndimage.interpolation.rotate(
             _data, _rotation_value)
-        self.live_data = rotated_data
-        #        self.ui.image_view.removeItem(self.line_view_binning)
-        #       self.display_grid()
+
+        # [x0, x1, y0, y1] = self.get_crop_region()
+        # rotated_data = rotated_data[x0:x1, y0:y1]
+
+        rotated_data = np.transpose(rotated_data)
         self.ui.image_view.setImage(rotated_data)
 
-    def rotate_and_crop_all(self):
-
-        region = self.roi.getArraySlice(self.live_data,
+    def get_crop_region(self):
+        data = self.get_selected_image()
+        # data = self.live_data
+        region = self.roi.getArraySlice(np.transpose(data),
                                         self.ui.image_view.imageItem)
+
         x0 = region[0][0].start
         x1 = region[0][0].stop - 1
-        y0 = region[0][1].start
+
         y1 = region[0][1].stop - 1
+        y0 = region[0][1].start
+
+        return [x0, x1, y0, y1]
+
+    def rotate_and_crop_all(self):
+        [x0, x1, y0, y1] = self.get_crop_region()
 
         self.eventProgress.setValue(0)
         self.eventProgress.setMaximum(self.nbr_files)
         self.eventProgress.setVisible(True)
 
         _rotation_value = float(str(self.ui.rotation_value.text()))
-        self.rotated_working_data = []
-        for _index in np.arange(self.nbr_files):
-            if self.nbr_files == 1:
-                _data = self.working_data
+        self.rotated_data_dict = {}
+        for file_index in self.data_dict.keys():
+            data = self.get_selected_image(file_index=file_index)
+            if float(_rotation_value) != float(0.0):
+                rotated_data = scipy.ndimage.interpolation.rotate(data,
+                                                                  _rotation_value)
+                rotated_data = rotated_data[y0:y1, x0:x1]
             else:
-                _data = self.working_data[_index]
+                rotated_data = data[y0:y1, x0:x1]
 
-            rotated_data = scipy.ndimage.interpolation.rotate(_data,
-                                                              _rotation_value)
-            rotated_data = rotated_data[x0:x1, y0:y1]
-            self.rotated_working_data.append(rotated_data)
-            self.eventProgress.setValue(_index + 1)
-            QtGui.QApplication.processEvents()
+            self.rotated_data_dict[file_index] = {DataDictKeys.filename: self.data_dict[file_index][DataDictKeys.filename],
+                                                  DataDictKeys.data: rotated_data}
+
+            self.eventProgress.setValue(file_index + 1)
+            QApplication.processEvents()
             self.rotation_angle = _rotation_value
 
         # self.file_index_changed()
@@ -263,17 +318,16 @@ class RotateAndCropImages(QMainWindow):
         self.rotation_value_changed()
 
     def closeEvent(self, event=None):
-        global rotation_angle
+        # global rotation_angle
         rotation_angle = float(str(self.ui.rotation_value.text()))
 
 
 class Export(object):
 
-    def __init__(self, working_dir='', data=None, list_files=None, rotation_angle=0):
+    def __init__(self, working_dir='', data_dict=None, rotation_angle=0):
         self.working_dir = working_dir
-        self.data=data
-        self.list_files=list_files
-        self.rotation_angle=rotation_angle
+        self.data_dict = data_dict
+        self.rotation_angle = rotation_angle
 
     def select_folder(self):
 
@@ -287,16 +341,14 @@ class Export(object):
 
         self.output_folder_ui.show()
 
-
     def export(self, output_folder):
 
         new_folder = 'rotated_{}deg'.format(self.rotation_angle)
 
-        list_files = self.list_files
-        data = self.data
+        data_dict = self.data_dict
 
         w = widgets.IntProgress()
-        w.max = len(list_files)
+        w.max = len(data_dict.keys())
         display(w)
 
         output_folder = os.path.abspath(output_folder)
@@ -304,12 +356,13 @@ class Export(object):
         if not os.path.exists(full_output_folder):
             os.makedirs(full_output_folder)
 
-        for _index, _file in enumerate(list_files):
+        for _index in data_dict.keys():
+            _file = data_dict[_index][DataDictKeys.filename]
+            data = data_dict[_index][DataDictKeys.data]
             _base_file_name = os.path.basename(_file)
             [_base, _] = os.path.splitext(_base_file_name)
             _full_file_name = os.path.join(full_output_folder, _base + '.tiff')
-            file_handler.make_tiff(data=data[_index], filename=_full_file_name)
-
+            file_handler.make_tiff(data=data, filename=_full_file_name)
             w.value = _index + 1
 
         w.close()

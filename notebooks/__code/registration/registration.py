@@ -7,7 +7,7 @@ from scipy.ndimage.interpolation import shift
 import copy
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QTableWidgetSelectionRange, \
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QMenu, QTableWidgetSelectionRange, \
     QProgressBar, QTableWidgetItem, QApplication
 from qtpy import QtGui, QtCore
 import webbrowser
@@ -15,6 +15,8 @@ import webbrowser
 from __code import load_ui
 from __code._utilities.color import Color
 from __code._utilities.table_handler import TableHandler
+from __code._utilities.file import make_or_increment_folder_name
+from __code._utilities.check import is_float
 
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
@@ -24,10 +26,13 @@ from __code.registration.registration_auto_confirmation import RegistrationAutoC
 from __code.registration.manual import ManualLauncher
 from __code.registration.registration_profile import RegistrationProfileLauncher
 
+import warnings
+warnings.filterwarnings('ignore')
+
 
 class RegistrationUi(QMainWindow):
 
-    table_registration = {} # dictionary that populate the table
+    table_registration = {}  # dictionary that populate the table
 
     table_column_width = [650, 80, 80, 80]
     value_to_copy = None
@@ -72,9 +77,12 @@ class RegistrationUi(QMainWindow):
     #                                  'name': ""},
     #                 {'2': .... }
     markers_table = {}
-
-    markers_table_column_width = [330, 50, 50]
+    markers_table_column_width = [330, 50, 50, 250]
     marker_table_buffer_cell = None
+
+    # initial position of the marker (None means that no row has been selected yet)
+    markers_initial_position = {'row': None,
+                                'tab_name': '1'}
 
     def __init__(self, parent=None, data_dict=None):
 
@@ -213,6 +221,63 @@ class RegistrationUi(QMainWindow):
 
         #select first row
         self.select_row_in_table(0)
+
+    def filter_radioButton_clicked(self):
+        self.ui.filter_groupBox.setEnabled(self.ui.filter_radioButton.isChecked())
+        self.update_table_according_to_filter()
+
+    def filter_value_changed(self, value):
+        self.update_table_according_to_filter()
+
+    def filter_algo_changed(self, index):
+        self.update_table_according_to_filter()
+
+    def filter_column_changed(self, index):
+        self.update_table_according_to_filter()
+
+    def update_table_according_to_filter(self):
+        filter_flag = self.ui.filter_radioButton.isChecked()
+
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+
+        def should_row_be_visible(row_value=None, filter_algo_selected="<=", filter_value=None):
+
+            if is_float(filter_value):
+                o_table.set_all_row_hidden(False)
+                return
+
+            if filter_algo_selected == "<=":
+                return float(row_value) <= float(filter_value)
+            elif filter_algo_selected == ">=":
+                return float(row_value) >= float(filter_value)
+            else:
+                raise NotImplementedError("algo not implemented!")
+
+        if filter_flag:
+            # select only rows according to filter
+            filter_column_selected = self.ui.filter_column_name_comboBox.currentText()
+            filter_algo_selected = self.ui.filter_logic_comboBox.currentText()
+            filter_value = self.ui.filter_value.text()
+
+            if filter_column_selected == "Xoffset":
+                filter_column_index = 1
+            elif filter_column_selected == "Yoffset":
+                filter_column_index = 2
+            elif filter_column_selected == "Rotation":
+                filter_column_index = 3
+            else:
+                raise NotImplementedError("column can not be used with filter!")
+
+            nbr_row = o_table.row_count()
+            for _row in np.arange(nbr_row):
+                _row_value = float(o_table.get_item_str_from_cell(row=_row, column=filter_column_index))
+                _should_row_be_visible = should_row_be_visible(row_value=_row_value,
+                                                               filter_algo_selected=filter_algo_selected,
+                                                               filter_value=filter_value)
+                o_table.set_row_hidden(_row, not _should_row_be_visible)
+        else:
+            # all rows are visible
+            o_table.set_all_row_hidden(False)
 
     def table_right_click(self):
         top_menu = QMenu(self)
@@ -390,7 +455,6 @@ class RegistrationUi(QMainWindow):
         for marker in self.markers_table.keys():
             self.close_markers_of_tab(marker_name = marker)
 
-
     def modified_images(self, list_row=[], all_row=False):
         """using data_dict_raw images, will apply offset and rotation parameters
         and will save them in data_dict for plotting"""
@@ -400,16 +464,19 @@ class RegistrationUi(QMainWindow):
         if all_row:
             list_row = np.arange(0, self.nbr_files)
         else:
-            list_row =list_row
+            list_row = list_row
 
         for _row in list_row:
 
-            xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
-            yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
-            rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
+            try:
+                xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
+                yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
+                rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
+            except AttributeError:
+                return
 
             _data = data_raw[_row].copy()
-            _data  = transform.rotate(_data, rotate_angle)
+            _data = transform.rotate(_data, rotate_angle)
             _data = shift(_data, (yoffset, xoffset), )
 
             self.data_dict['data'][_row] = _data
@@ -445,10 +512,10 @@ class RegistrationUi(QMainWindow):
             return
 
         self.ui.profile.clear()
-        try:
-            self.ui.profile.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
+        # try:
+        #     self.ui.profile.scene().removeItem(self.legend)
+        # except Exception as e:
+        #     pass
 
         self.legend = self.ui.profile.addLegend()
 
@@ -485,7 +552,7 @@ class RegistrationUi(QMainWindow):
                                          name=_filename,
                                          pen=self.list_rgb_profile_color[_index])
 
-            else: # selection slider
+            else:  # selection slider
                 slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
                 from_index = int(slider_index)
                 _data = np.transpose(self.data_dict['data'][from_index])
@@ -624,10 +691,10 @@ class RegistrationUi(QMainWindow):
                     _to_coefficient = np.abs(slider_index - from_index)
                     _image = _from_image * _from_coefficient + _to_image * _to_coefficient
 
-        else: # only 1 row selected
+        else:  # only 1 row selected
             _image = self.get_image_selected()
 
-        if _image == []: # display only reference image
+        if _image == []:  # display only reference image
             self.display_only_reference_image()
             return
 
@@ -643,7 +710,7 @@ class RegistrationUi(QMainWindow):
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
 
-        _opacity_coefficient = self.ui.opacity_slider.value()  # betwween 0 and 100
+        _opacity_coefficient = self.ui.opacity_slider.value()   # betwween 0 and 100
         _opacity_image = _opacity_coefficient / 100.
         _image = np.transpose(_image) * _opacity_image
 
@@ -711,8 +778,8 @@ class RegistrationUi(QMainWindow):
         self.histogram_level = _histo_widget.getLevels()
 
         self.ui.image_view.setImage(live_image)
-
         _view_box.setState(_state)
+
         if not first_update:
             _histo_widget.setLevels(self.histogram_level[0],
                                     self.histogram_level[1])
@@ -748,7 +815,6 @@ class RegistrationUi(QMainWindow):
                      symbol=None,
                      pxMode=False)
         self.grid_view['item'] = grid
-
 
     def display_only_reference_image(self):
 
@@ -886,6 +952,7 @@ class RegistrationUi(QMainWindow):
         else:
             self.ui.file_slider.setValue(row)
 
+        self.modified_images(list_row=[row])
         self.display_image()
         self.check_selection_slider_status()
         self.profile_line_moved()
@@ -918,10 +985,16 @@ class RegistrationUi(QMainWindow):
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(self,
                                                           directory=self.working_dir,
-                                                          caption = "Select Output Folder",
+                                                          caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
         if _export_folder:
-            o_export = ExportRegistration(parent=self, export_folder=_export_folder)
+
+            # add custom folder name
+            working_dir_basename = os.path.basename(self.working_dir)
+            # append "registered" and "time_stamp"
+            full_output_folder_name = os.path.join(_export_folder, working_dir_basename + "_registered")
+            full_output_folder_name = make_or_increment_folder_name(full_output_folder_name)
+            o_export = ExportRegistration(parent=self, export_folder=full_output_folder_name)
             o_export.run()
             QApplication.processEvents()
 
@@ -972,7 +1045,7 @@ class RegistrationUi(QMainWindow):
     def markers_registration_button_clicked(self):
         o_markers_registration = RegistrationMarkersLauncher(parent=self)
         self.set_widget_status(list_ui=[self.ui.auto_registration_button],
-                              enabled=False)
+                               enabled=False)
 
     def profiler_registration_button_clicked(self):
         o_registration_profile = RegistrationProfileLauncher(parent=self)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
-    <height>531</height>
+    <width>798</width>
+    <height>799</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -132,7 +132,7 @@
    <slot>add_marker_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>580</x>
+     <x>784</x>
      <y>49</y>
     </hint>
     <hint type="destinationlabel">
@@ -148,8 +148,8 @@
    <slot>remove_marker_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>580</x>
-     <y>475</y>
+     <x>784</x>
+     <y>737</y>
     </hint>
     <hint type="destinationlabel">
      <x>446</x>
@@ -164,8 +164,8 @@
    <slot>marker_color_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>500</y>
+     <x>142</x>
+     <y>782</y>
     </hint>
     <hint type="destinationlabel">
      <x>233</x>
@@ -196,12 +196,28 @@
    <slot>run_registration_button_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>480</x>
-     <y>505</y>
+     <x>785</x>
+     <y>783</y>
     </hint>
     <hint type="destinationlabel">
      <x>553</x>
      <y>375</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>Dialog</receiver>
+   <slot>tab_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>544</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>771</x>
+     <y>176</y>
     </hint>
    </hints>
   </connection>
@@ -212,5 +228,6 @@
   <slot>marker_color_changed()</slot>
   <slot>marker_tab_changed()</slot>
   <slot>run_registration_button_clicked()</slot>
+  <slot>tab_changed()</slot>
  </slots>
 </ui>

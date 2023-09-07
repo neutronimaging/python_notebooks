@@ -20,7 +20,7 @@
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.bin_images import BinHandler
+from __code.bin.bin_images import BinHandler
 from __code import system
 system.System.select_working_dir(notebook='bin_images')
 from __code.__all import custom_style

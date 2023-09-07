@@ -188,6 +188,8 @@ def make_or_increment_folder_name(folder_name):
         os.makedirs(folder_name)
     else:
         new_folder_name = "_".join([folder_name, get_current_time_in_special_file_name_format()])
+        if os.path.exists(new_folder_name):
+            os.removedirs(new_folder_name)
         os.makedirs(new_folder_name)
         folder_name = new_folder_name
     return folder_name

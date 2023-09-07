@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1013</width>
+    <height>733</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,6 +23,88 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="file_index_groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>70</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>70</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>File index</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QSlider" name="file_index_slider">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="image_index_label">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>/</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="number_of_files_label">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>N/A</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
@@ -76,9 +158,9 @@
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* Define &lt;span style=&quot; font-weight:600;&quot;&gt;angle value&lt;/span&gt; and hit ENTER to validate choice.&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* The&lt;span style=&quot; font-weight:600;&quot;&gt; selection box &lt;/span&gt;within the image defines the cropping region&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.SF NS Text';&quot;&gt;* Define &lt;/span&gt;&lt;span style=&quot; font-family:'.SF NS Text'; font-weight:600;&quot;&gt;angle value&lt;/span&gt;&lt;span style=&quot; font-family:'.SF NS Text';&quot;&gt; and hit ENTER to validate choice.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.SF NS Text';&quot;&gt;* The&lt;/span&gt;&lt;span style=&quot; font-family:'.SF NS Text'; font-weight:600;&quot;&gt; selection box &lt;/span&gt;&lt;span style=&quot; font-family:'.SF NS Text';&quot;&gt;within the image defines the cropping region&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -123,8 +205,8 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>22</height>
+     <width>1013</width>
+     <height>24</height>
     </rect>
    </property>
   </widget>
@@ -139,8 +221,8 @@ p, li { white-space: pre-wrap; }
    <slot>cancel_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>47</x>
-     <y>450</y>
+     <x>71</x>
+     <y>580</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -155,8 +237,8 @@ p, li { white-space: pre-wrap; }
    <slot>apply_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>711</x>
-     <y>459</y>
+     <x>1000</x>
+     <y>580</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -164,9 +246,60 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>file_index_slider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>image_slider_moved()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>333</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>662</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_index_slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>image_slider_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>585</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>file_index_slider</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>image_slider_released()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>395</x>
+     <y>331</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>569</x>
+     <y>653</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>cancel_clicked()</slot>
   <slot>apply_clicked()</slot>
+  <slot>image_slider_pressed()</slot>
+  <slot>image_slider_moved()</slot>
+  <slot>image_slider_released()</slot>
  </slots>
 </ui>

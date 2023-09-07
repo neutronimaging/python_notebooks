@@ -22,6 +22,9 @@
 # # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
+import warnings
+warnings.filterwarnings('ignore')
+
 from __code.registration.file_selection import FileSelection
 from __code.registration.registration import RegistrationUi
 

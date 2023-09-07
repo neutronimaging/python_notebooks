@@ -448,6 +448,7 @@ class FileSelection(object):
 
         self.files_ui.show()
 
+
 class FileSelectorPanelWithJumpFolders:
 
     def __init__(

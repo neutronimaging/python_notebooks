@@ -161,11 +161,15 @@ class NormalizationWithSimplifySelection:
         self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files)
 
     def auto_retrieve_df_metadata(self):
-        folder = os.path.join(self.working_dir, 'raw', 'df')
-        list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder,
+        folder_df = os.path.join(self.working_dir, 'raw', 'df')
+        folder_dc = os.path.join(self.working_dir, 'raw', 'dc')
+        list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder_df,
                                                                             extensions=['tiff', 'tif'])
-        logging.info(f"-> nbr of dc files found: {len(list_of_df_files)}")
-        self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files,
+        list_of_dc_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder_dc,
+                                                                            extensions=['tiff', 'tif'])
+        list_of_files = list_of_df_files + list_of_dc_files
+        logging.info(f"-> nbr of dc files found: {len(list_of_files)}")
+        self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_files,
                                                                   label='df')
 
     def match_files(self):

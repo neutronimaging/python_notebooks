@@ -5,7 +5,10 @@ import os
 import numpy as np
 
 from __code import load_ui
+from __code._utilities.table_handler import TableHandler
 from __code.registration.marker_default_settings import MarkerDefaultSettings
+
+TABLE_NBR_COLUMNS = 4
 
 
 class RegistrationMarkersLauncher:
@@ -41,6 +44,9 @@ class RegistrationMarkers(QDialog):
                                                  'ui_registration_markers.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.nbr_files = len(self.parent.data_dict['file_name'])
+
+    def tab_changed(self, tab_index):
+        self.cell_clicked(str(tab_index+1))
 
     def resizing_column(self, index_column, old_size, new_size):
         """let's collect the size of the column in the current tab and then
@@ -84,14 +90,15 @@ class RegistrationMarkers(QDialog):
             if _file_name_of_row == file:
                 table_ui.item(_row, 1).setText(x)
                 table_ui.item(_row, 2).setText(y)
+                table_ui.item(_row, 3).setText("")
 
         table_ui.blockSignals(False)
 
     def populate_using_markers_table(self):
         for _key_tab_name in self.parent.markers_table:
 
-            _table = QTableWidget(self.nbr_files, 3)
-            _table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
+            _table = QTableWidget(self.nbr_files, TABLE_NBR_COLUMNS)
+            _table.setHorizontalHeaderLabels(["File Name", "X", "Y", "Status"])
             _table.setAlternatingRowColors(True)
             _table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
             _table.customContextMenuRequested.connect(self.table_right_click)
@@ -100,6 +107,10 @@ class RegistrationMarkers(QDialog):
                 _table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
             _table.horizontalHeader().sectionResized.connect(self.resizing_column)
+            _table.cellClicked.connect(lambda row=0, column=0, tab_index=_key_tab_name: self.table_row_clicked(
+                    row, column, tab_index))
+            _table.itemSelectionChanged.connect(lambda key_tab_name=_key_tab_name:
+                                                self.cell_clicked(key_tab_name=_key_tab_name))
 
             _data_dict = self.parent.markers_table[_key_tab_name]['data']
             for _row, _file in enumerate(self.parent.data_dict['file_name']):
@@ -113,11 +124,40 @@ class RegistrationMarkers(QDialog):
             _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
             self.parent.display_markers(all=False)
 
+    def get_current_active_tab(self):
+        tab_index = self.ui.tabWidget.currentIndex()
+        key_tab_name = str(tab_index + 1)
+        return key_tab_name
+
+    def get_row_selected_of_current_active_tab(self):
+        key_tab_name = self.get_current_active_tab()
+        table_ui = self.parent.markers_table[key_tab_name]['ui']
+        o_table = TableHandler(table_ui=table_ui)
+        row_selected = o_table.get_row_selected()
+        return row_selected
+
+    def cell_clicked(self, key_tab_name):
+        """
+        activate the same row in the main table
+        """
+        if self.parent.markers_table.get(key_tab_name, None):
+            table_ui = self.parent.markers_table[key_tab_name]['ui']
+            o_table = TableHandler(table_ui=table_ui)
+            row_selected = o_table.get_row_selected()
+
+            main_table_ui = self.parent.tableWidget
+            o_main_table = TableHandler(table_ui=main_table_ui)
+            o_main_table.select_rows(list_of_rows=[row_selected])
+            self.parent.table_row_clicked()
+
+    def table_row_clicked(self, row, column, tab_index):
+        print(f"table row clicked: {row =}, {column =} and {tab_index =}")
+
     def __populate_table_row(self, table_ui, row, file, x, y):
         # file name
         _item = QTableWidgetItem(file)
         table_ui.setItem(row, 0, _item)
-        _item.setFlags(QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+        _item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
         # x
         _item = QTableWidgetItem(str(x))
@@ -126,6 +166,10 @@ class RegistrationMarkers(QDialog):
         # y
         _item = QTableWidgetItem(str(y))
         table_ui.setItem(row, 2, _item)
+
+        # status
+        _item = QTableWidgetItem(str(""))
+        table_ui.setItem(row, 3, _item)
 
     def get_marker_name(self):
         markers_table = self.parent.markers_table
@@ -236,16 +280,21 @@ class RegistrationMarkers(QDialog):
     def table_right_click(self, position):
         """display context menu when user click the x or y column of the marker table.
         also do not allow to copy when more than 1 column and 1 row have been selected"""
-        [left_column_selected, right_column_selected]= self.get_columns_selected()
-        if left_column_selected == 0:
+
+        [left_column_selected, right_column_selected] = self.get_columns_selected()
+        # if left_column_selected == 0:
+        #     return
+
+        if left_column_selected == -1:
+            # no selection
             return
-        elif left_column_selected == -1:
-            return
-        elif (right_column_selected - left_column_selected) > 0:
-            return
+
+        # elif (right_column_selected - left_column_selected) > 0:
+        #     return
 
         [top_row_selected, bottom_row_selected] = self.get_rows_selected()
         if top_row_selected == -1:
+            # no selection
             return
 
         # initialize actions
@@ -253,19 +302,91 @@ class RegistrationMarkers(QDialog):
         paste_cell = None
 
         menu = QMenu(self)
-        if bottom_row_selected == top_row_selected:
-            copy_cell = menu.addAction("Copy")
-        if not (self.parent.marker_table_buffer_cell is None):
-            paste_cell = menu.addAction("Paste")
+        if left_column_selected in [1, 2]:
+
+            if bottom_row_selected == top_row_selected:
+                copy_cell = menu.addAction("Copy")
+
+            if not (self.parent.marker_table_buffer_cell is None):
+                paste_cell = menu.addAction("Paste")
+
+            menu.addSeparator()
+
+        self.start_marker = menu.addAction("Set marker interpolation initial position")
+        self.end_marker = menu.addAction("Set marker interpolation final position and process intermediate markers")
+
+        if self.parent.markers_initial_position['row'] is None:
+            self.end_marker.setEnabled(False)
+        else:
+            self.end_marker.setEnabled(True)
+
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == copy_cell:
             self.copy_cell(row_selected=top_row_selected,
                            column_selected=left_column_selected)
+
         elif action == paste_cell:
             self.paste_cell(top_row_selected=top_row_selected,
                             bottom_row_selected=bottom_row_selected,
                             column_selected=left_column_selected)
+
+        elif action == self.start_marker:
+            self.start_marker_initialized()
+
+        elif action == self.end_marker:
+            self.end_marker_initialized()
+
+    def start_marker_initialized(self):
+        row_selected = self.get_row_selected_of_current_active_tab()
+        tab_selected = self.get_current_active_tab()
+        self.parent.markers_initial_position['row'] = row_selected
+        self.parent.markers_initial_position['tab_name'] = tab_selected
+        o_table = TableHandler(table_ui=self.parent.markers_table[tab_selected]['ui'])
+        o_table.set_item_with_str(row=row_selected, column=3, cell_str="Interpolation starting position")
+
+    def end_marker_initialized(self):
+        tab_selected = self.get_current_active_tab()
+        o_table = TableHandler(table_ui=self.parent.markers_table[tab_selected]['ui'])
+        from_row = self.parent.markers_initial_position['row']
+        to_row = o_table.get_row_selected()
+
+        starting_row_selected = self.parent.markers_initial_position['row']
+        o_table.set_item_with_str(row=starting_row_selected,
+                                  column=3,
+                                  cell_str="")
+
+        xoffset_from = int(o_table.get_item_str_from_cell(row=from_row,
+                                                          column=1))
+        yoffset_from = int(o_table.get_item_str_from_cell(row=from_row,
+                                                          column=2))
+
+        xoffset_to = int(o_table.get_item_str_from_cell(row=to_row,
+                                                        column=1))
+        yoffset_to = int(o_table.get_item_str_from_cell(row=to_row,
+                                                        column=2))
+
+        nbr_rows_between = np.abs(to_row - from_row) - 1
+        if nbr_rows_between >= 1:
+
+            delta_xoffset = (xoffset_to - xoffset_from) / (nbr_rows_between + 1)
+            delta_yoffset = (yoffset_to - yoffset_from) / (nbr_rows_between + 1)
+
+            coeff = 1
+            for _row in np.arange(from_row+1, to_row):
+                xoffset_value = int(np.round(xoffset_from + coeff * delta_xoffset))
+                o_table.set_item_with_str(row=_row,
+                                          column=1,
+                                          cell_str=str(xoffset_value))
+
+                yoffset_value = int(np.round(yoffset_from + coeff * delta_yoffset))
+                o_table.set_item_with_str(row=_row,
+                                          column=2,
+                                          cell_str=str(yoffset_value))
+                coeff += 1
+
+        self.parent.markers_initial_position['row'] = None
+        self.save_current_table()
 
     def remove_marker_button_clicked(self):
         _current_tab = self.ui.tabWidget.currentIndex()
@@ -281,7 +402,7 @@ class RegistrationMarkers(QDialog):
         return (MarkerDefaultSettings.color[color], color)
 
     def add_marker_button_clicked(self):
-        table = QTableWidget(self.nbr_files, 3)
+        table = QTableWidget(self.nbr_files, TABLE_NBR_COLUMNS)
         table.setHorizontalHeaderLabels(["File Name", "X", "Y"])
         table.setAlternatingRowColors(True)
         table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -295,6 +416,7 @@ class RegistrationMarkers(QDialog):
             table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
 
         table.horizontalHeader().sectionResized.connect(self.resizing_column)
+        table.horizontalHeader().setStretchLastSection(True)
         new_marker_name = self.get_marker_name()
         _ = self.ui.tabWidget.addTab(table, new_marker_name)
 
@@ -320,8 +442,13 @@ class RegistrationMarkers(QDialog):
         number_of_tabs = self.ui.tabWidget.count()
         self.ui.tabWidget.setCurrentIndex(number_of_tabs - 1)
         table.itemChanged.connect(self.table_cell_modified)
+        table.itemSelectionChanged.connect(lambda key_tab_name=new_marker_name:
+                                                self.cell_clicked(key_tab_name=new_marker_name))
         self.parent.markers_table[new_marker_name] = _marker_dict
         self.parent.display_markers(all=False)
+
+        o_table = TableHandler(table_ui=table)
+        o_table.select_row(0)
 
     def marker_color_changed(self, color):
         _current_tab = self.ui.tabWidget.currentIndex()

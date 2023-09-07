@@ -6,24 +6,16 @@ import os
 import copy
 import pyqtgraph as pg
 
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui, QtWidgets
-    from PyQt4.QtGui import QMainWindow, QDialog
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
+from qtpy.QtWidgets import QFileDialog, QMainWindow,QVBoxLayout, QTableWidgetItem, QTableWidgetSelectionRange
+from qtpy.QtWidgets import QApplication
+from qtpy import QtCore
 
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
+from __code import load_ui
 from __code._utilities.color import Color
 from __code.file_handler import retrieve_time_stamp, make_ascii_file
-from __code.ui_calibrated_transmission import Ui_MainWindow as UiMainWindow
+
+import warnings
+warnings.filterwarnings('ignore')
 
 
 class CalibratedTransmissionUi(QMainWindow):
@@ -49,13 +41,13 @@ class CalibratedTransmissionUi(QMainWindow):
                             'y0': 0,
                             'width': 200,
                             'height': 200,
-                            'value': 1,  #np.NaN
+                            'value': 1,  # np.NaN
                             },
                       '2': {'x0': np.NaN,
                             'y0': np.NaN,
                             'width': 200,
                             'height': 200,
-                            'value': 10, #np.NaN
+                            'value': 10, # np.NaN
                             },
                       }
 
@@ -69,13 +61,15 @@ class CalibratedTransmissionUi(QMainWindow):
         display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
             (maybe hidden behind this browser!)</span>'))
 
-        QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+        super(QMainWindow, self).__init__(parent=parent)
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                    os.path.join('ui',
+                                                 'ui_calibrated_transmission.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Calibrated Transmission")
 
         self.working_dir = working_dir
-        self.data_dict = data_dict # Normalization data dictionary  {'file_name': [],
+        self.data_dict = data_dict  # Normalization data dictionary  {'file_name': [],
                                                                      #'data': [[...],[...]]],
                                                                      #'metadata': [],
                                                                      #'shape': {}}
@@ -134,14 +128,14 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.ui.image_view.ui.menuBtn.hide()
         self.ui.image_view.ui.roiBtn.hide()
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.ui.image_view)
         self.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
         # measurement
         self.ui.measurement_view = pg.PlotWidget()
         self.legend = self.ui.measurement_view.addLegend()
-        vertical_layout2 = QtGui.QVBoxLayout()
+        vertical_layout2 = QVBoxLayout()
         vertical_layout2.addWidget(self.ui.measurement_view)
         self.ui.measurement_widget.setLayout(vertical_layout2)
 
@@ -273,7 +267,8 @@ class CalibratedTransmissionUi(QMainWindow):
 
         # first we remove the calibrated rois
         for _roi_id in self.roi_ui_calibrated:
-            self.ui.image_view.removeItem(_roi_id)
+            if _roi_id:
+                self.ui.image_view.removeItem(_roi_id)
 
         if self.ui.use_calibration1_checkbox.isChecked():
             # yes, we have calibrated rois
@@ -361,7 +356,7 @@ class CalibratedTransmissionUi(QMainWindow):
                                                      cali_2 = cali_2,
                                                      input_value = data_counts)
 
-                item = QtGui.QTableWidgetItem("{:.2f}".format(real_data_counts))
+                item = QTableWidgetItem("{:.2f}".format(real_data_counts))
                 _measurement_data.append(real_data_counts)
                 self.ui.summary_table.setItem(_data_index, _measurement_row+3, item)
 
@@ -374,10 +369,14 @@ class CalibratedTransmissionUi(QMainWindow):
         and display the measurement mean of all the rois defined
         """
         self.ui.measurement_view.clear()
-        try:
-            self.ui.measurement_view.scene().removeItem(self.legend)
-        except Exception as e:
-            print(e)
+
+        # if self.legend:
+        #     self.ui.measurement_view.scene().removeItem(self.legend)
+
+        # try:
+        #     self.ui.measurement_view.scene().removeItem(self.legend)
+        # except Exception as e:
+        #     print(e)
 
         self.legend = self.ui.measurement_view.addLegend()
 
@@ -406,7 +405,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
         if nbr_row > 0:
             nbr_col = self.ui.tableWidget.columnCount()
-            new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
+            new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
             self.ui.tableWidget.setRangeSelected(new_selection, True)
 
     def insert_row(self, row=-1):
@@ -425,9 +424,9 @@ class CalibratedTransmissionUi(QMainWindow):
         # select new entry
         nbr_row = self.ui.tableWidget.rowCount()
         nbr_col = self.ui.tableWidget.columnCount()
-        full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
-        new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+        new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.ui.tableWidget.blockSignals(False)
 
@@ -438,7 +437,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
         roi_index += col_offset
         self.ui.summary_table.insertColumn(roi_index)
-        item = QtWidgets.QTableWidgetItem()
+        item = QTableWidgetItem()
         self.ui.summary_table.setHorizontalHeaderItem(roi_index, item)
         self.renamed_summary_table_region_header()
 
@@ -490,7 +489,8 @@ class CalibratedTransmissionUi(QMainWindow):
             return
         old_roi = self.roi_ui_measurement[row]
         self.roi_ui_measurement.remove(old_roi)
-        self.ui.image_view.removeItem(old_roi)
+        if old_roi:
+            self.ui.image_view.removeItem(old_roi)
 
     def check_status_next_prev_image_button(self):
         """this will enable or not the prev or next button next to the slider file image"""
@@ -602,13 +602,13 @@ class CalibratedTransmissionUi(QMainWindow):
 
     # setter
     def set_item_main_table(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if col == 4:
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
     def set_item_summary_table(self, row=0, col=0, value=''):
-        item = QtGui.QTableWidgetItem(str(value))
+        item = QTableWidgetItem(str(value))
         self.ui.summary_table.setItem(row, col, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
@@ -751,7 +751,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/calibrated_transmission/")
+        webbrowser.open("https://neutronimaging.ornl.gov/calibrated-transmission/")
 
     def closeEvent(self, event=None):
         pass
@@ -816,7 +816,7 @@ class ExportCalibration(object):
                         output_file_name=full_export_file_name,
                         dim='1d')
 
-        QtGui.QApplication.processEvents()
+        QApplication.processEvents()
 
         # display name of file exported for 10s
         self.parent.ui.statusbar.showMessage("File Created: {}".format(full_export_file_name), 10000)

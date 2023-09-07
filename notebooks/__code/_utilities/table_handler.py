@@ -35,6 +35,14 @@ class TableHandler:
             self.table_ui.setRangeSelected(selection_range, True)
         self.table_ui.blockSignals(False)
 
+    def set_row_hidden(self, row=0, hidden=True):
+        self.table_ui.setRowHidden(row, hidden)
+
+    def set_all_row_hidden(self, hidden=True):
+        nbr_row = self.row_count()
+        for row in np.arange(nbr_row):
+            self.set_row_hidden(row, hidden)
+
     def remove_all_rows(self):
         nbr_row = self.table_ui.rowCount()
         for _ in np.arange(nbr_row):
@@ -188,7 +196,7 @@ class TableHandler:
     def insert_widget(self, row=0, column=0, widget=None):
         self.table_ui.setCellWidget(row, column, widget)
 
-    def insert_item(self, row=0, column=0, item=None):
+    def set_item(self, row=0, column=0, item=None):
         self.table_ui.setItem(row, column, item)
 
     def set_background_color(self, row=0, column=0, qcolor=QtGui.QColor(0, 255, 255)):
