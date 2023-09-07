@@ -27,9 +27,9 @@ class BinHandler:
     def select_images(self):
         _instruction = 'Select images to bin'
         self.images_ui = fileselector.FileSelectorPanel(instruction=_instruction,
-                                                              start_dir=self.working_dir,
-                                                              multiple=True,
-                                                              next=self.load)
+                                                        start_dir=self.working_dir,
+                                                        multiple=True,
+                                                        next=self.load)
         self.images_ui.show()
 
     def get_list_images(self):
