@@ -36,7 +36,40 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     data = None
     number_of_images = None
 
-    config = None
+    config = {
+          "cylinders_position": {
+            "description": "pixel position in the cropped data image of the center, inner and outer radius",
+            "center": 757,
+            "inner_radius": 450,
+            "outer_radius": 643
+            },
+          "profiles_plot": {
+            "description": "pixel position of the inner cylinder left and right edges",
+            "left_inner_cylinder": 0,
+            "right_inner_cylinder": 0
+          },
+          "default_crop": {
+            "x0": 386,
+            "x1": 540,
+            "y0": 889,
+            "y1": 1824,
+            "marker": 1000
+          },
+          "default_rotate_angle": 0,
+          "default_background": {
+            "y0": 35,
+            "y1": 282
+          },
+          "default_sample": {
+            "y0": 415,
+            "y1": 935
+          },
+          "profiles_limit": {
+            "description": "range to use and to combine to extract profile. Mean algorithm is used to combine profiles",
+            "top": 89,
+            "bottom": 119
+          }
+        }
 
     default_crop = {'x0': 369, 'x1': 522, 'y0': 756, 'y1': 1894}
     crop = {'x0': None, 'x1': None, 'y0': None, 'y1': None}
@@ -106,8 +139,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         display(v)
 
     def rotate_images(self):
-        fig, ax = plt.subplots(ncols=1, nrows=2, num="Rotation of images")
-        ax0, ax1 = ax
+        fig = plt.figure(num="Rotation of images")
+        ax0 = plt.subplot(221)
+        ax1 = plt.subplot(223)
+        ax2 = plt.subplot(122)
 
         default_rotate_angle = self.config["default_rotate_angle"]
 
@@ -157,10 +192,26 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             plt.title("horizontal profiles around vertical guide")
             plt.tight_layout()
 
+            print(f"{point1 =}")
+            print(f"{point2 =}")
+            print(f"{point3 =}")
+            print(f"{point4 =}")
+
+            ax2.cla()
+            top = point1[1]
+            bottom = point3[1]
+            left = point1[0]
+            right = point2[0]
+
+            tilted_data = data[top: bottom, left: right]
+            ax2.imshow(tilted_data, vmin=0, vmax=1)
+            ax2.axvline(profile_margin, linestyle='--', color='r')
+
         self.v = interactive(plot,
                         rot_value=widgets.FloatSlider(min=-5.,
                                                       max=5.,
                                                       value=default_rotate_angle,
+                                                      continuous_update=False,
                                                       layout=widgets.Layout(width='50%')),
                         image_index=widgets.IntSlider(min=0,
                                                       max=len(self.data) - 1,
@@ -173,9 +224,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                                       continuous_update=False),
                         profile1_h=widgets.IntSlider(min=0,
                                                      max=self.height-1,
+                                                     continuous_update=False,
                                                      value=1135),
                         profile2_h=widgets.IntSlider(min=0,
                                                      max=self.height-1,
+                                                     continuous_update=False,
                                                      value=1794))
 
         display(self.v)
@@ -186,8 +239,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.data = [rotate(_data, rotation_value) for _data in self.data]
 
     def select_crop_region(self):
-        fig, ax = plt.subplots(nrows=2, ncols=1, num="Select Region to Crop")
-        ax0, ax1 = ax
+        fig = plt.figure(num="Select Region to Crop")
+        ax0 = plt.subplot(221)
+        ax1 = plt.subplot(223)
+        ax2 = plt.subplot(122)
+
         # fig.set_figheight(6)
         # fig.set_figwidth(6)
 
@@ -217,6 +273,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             plt.title("Profile at marker's position (dotted blue line)")
             ax1.axvline(x=left, linestyle='--', color='red')
             ax1.axvline(x=right, linestyle='--', color='red')
+
+            ax2.cla()
+            cropped_data = self.data[image_index][top: bottom + 1, left: right + 1]
+            ax2.imshow(cropped_data, vmin=0, vmax=1)
 
             return left, right, top, bottom
 
