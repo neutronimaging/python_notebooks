@@ -29,16 +29,13 @@ from __code.file_folder_browser import FileFolderBrowser
 from __code._utilities.file import make_ascii_file, make_or_increment_folder_name, make_tiff
 from .cylindrical_geometry_correction import number_of_pixels_at_that_position1, number_of_pixel_at_that_position2
 
-if socket.gethostname() == 'mac113775': #home machine
-    CONFIG_FILE_NAME = "./ipts_27939_code/config_home.json"
-else:
-    CONFIG_FILE_NAME = "./ipts_27939_code/config_work.json"
-
 
 class CylindricalGeometryCorrectionEmbeddedWidgets:
     debugging = False
     data = None
     number_of_images = None
+
+    config = None
 
     default_crop = {'x0': 369, 'x1': 522, 'y0': 756, 'y1': 1894}
     crop = {'x0': None, 'x1': None, 'y0': None, 'y1': None}
@@ -52,18 +49,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     def __init__(self, working_dir="./"):
         self.working_dir = working_dir
 
-        # # load config
-        # with open(CONFIG_FILE_NAME) as f:
-        #     self.config = json.load(f)
-
     def select_images(self):
-        if self.debugging:
-            list_of_images = glob.glob(os.path.join(self.working_dir, "*.tif*"))
-            self.load_images(list_of_images=list_of_images)
-        else:
-            file_folder_browser = FileFolderBrowser(working_dir=self.working_dir,
-                                                    next_function=self.load_images)
-            file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
+        file_folder_browser = FileFolderBrowser(working_dir=self.working_dir,
+                                                next_function=self.load_images)
+        file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
 
     def load_images(self, list_of_images):
         self.number_of_images = len(list_of_images)
@@ -85,8 +74,24 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         display(HTML('<span>Number of images loaded: ' + str(len(list_of_images)) + '</span>'))
 
+    def select_config(self):
+        config_browser = FileFolderBrowser(working_dir=os.path.dirname(self.working_dir),
+                                           next_function=self.load_config)
+        config_browser.select_images(instruction="Select config file ...",
+                                     multiple_flag=False,
+                                     filters={"config": "*.json"},
+                                     default_filter="config")
+
+    def load_config(self, config_filename):
+        if config_filename:
+            with open(config_filename, 'r') as f:
+                self.config = json.load(f)
+
+            display(HTML('<span>Config file ' + config_filename + 'loaded!</span>'))
+
     def visualize_raw_images(self):
         fig, ax1 = plt.subplots(num="Raw Images")
+        fig.show()
 
         def plot(image_index):
             data = self.data[image_index]
