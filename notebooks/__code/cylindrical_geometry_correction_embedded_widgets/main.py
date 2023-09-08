@@ -1,10 +1,8 @@
 import sys
-import glob
 import os
 from pathlib import PurePosixPath
 from scipy.ndimage import rotate
 import pandas as pd
-import json
 
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
@@ -22,12 +20,15 @@ import ipywidgets as widgets
 from IPython.core.display import display, HTML
 
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.rcParams['figure.figsize'] = (10, 10)
 
 from NeuNorm.normalization import Normalization
 
 from __code.file_folder_browser import FileFolderBrowser
 from __code._utilities.file import make_ascii_file, make_or_increment_folder_name, make_tiff
-from .cylindrical_geometry_correction import number_of_pixels_at_that_position1, number_of_pixel_at_that_position2
+from __code.cylindrical_geometry_correction_embedded_widgets.cylindrical_geometry_correction import \
+    number_of_pixels_at_that_position1, number_of_pixel_at_that_position2
 
 
 class CylindricalGeometryCorrectionEmbeddedWidgets:
@@ -187,8 +188,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     def select_crop_region(self):
         fig, ax = plt.subplots(nrows=2, ncols=1, num="Select Region to Crop")
         ax0, ax1 = ax
-        fig.set_figheight(6)
-        fig.set_figwidth(6)
+        # fig.set_figheight(6)
+        # fig.set_figwidth(6)
 
         width = self.width
         height = self.height
@@ -521,11 +522,19 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         progress_bar.close()
 
+        config_filename = os.path.join(output_folder, "config.json")
+        self.export_config(output_folder=base_working_dir, config_filename=config_filename)
+
         display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + ' ASCII files created!</span>'))
 
         json_file_name = os.path.join(base_working_dir, 'metadata.json')
         with open(json_file_name, 'w') as outfile:
             json.dump(metadata, outfile)
         display(HTML('<span style="font-size: 12px; color:blue"> metadata json file created (metadata.json)!</span>'))
+        display(HTML('<span style="font-size: 12px; color:blue"> config file: ' + config_filename + '</span>'))
 
         display(HTML('<span style="font-size: 12px; color:blue"> Output folder: ' + base_working_dir + '!</span>'))
+
+    def export_config(self, output_folder=None, config_filename=None):
+        with open(config_filename, 'w') as outfile:
+            outfile.write(self.config)
