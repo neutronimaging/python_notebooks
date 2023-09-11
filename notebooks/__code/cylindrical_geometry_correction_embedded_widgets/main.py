@@ -73,6 +73,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     default_crop = {'x0': 369, 'x1': 522, 'y0': 756, 'y1': 1894}
     crop = {'x0': None, 'x1': None, 'y0': None, 'y1': None}
+    cropped_data = None
 
     # Profile, for each image loaded, of inner and outer cylinder with only outer cylinder corrected
     profile_with_outer_cylinder_removed = None
@@ -303,25 +304,17 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                                                   )
         display(self.crop_ui)
 
-    def visualize_crop(self):
+    def crop_region(self):
         [x0, x1, y0, y1] = self.crop_ui.result
         self.crop = {'x0': 0, 'x1': x1, 'y0': y0, 'y1': y1}
 
         cropped_data = [_data[y0: y1 + 1, x0: x1 + 1] for _data in self.data]
         self.cropped_data = cropped_data
 
-        fig, ax1 = plt.subplots(num="Result of Cropping")
-
-        def plot(image_index):
-            data = cropped_data[image_index]
-            ax1.imshow(data, vmin=0, vmax=1)
-            # plt.tight_layout()
-
-        v = interactive(plot,
-                        image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
-        display(v)
-
     def export_cropped_images(self):
+        if self.cropped_data is None:
+            self.crop_region()
+
         display(HTML(
             '<span style="font-size: 15px; color:blue">Select a folder if you want to export the cropped images!</span>'))
         working_dir = os.path.dirname(self.working_dir)
@@ -354,6 +347,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + ' images created!</span>'))
 
     def background_range_selection(self):
+
+        if self.cropped_data is None:
+            self.crop_region()
+
         fig, ax1 = plt.subplots(num="Select top and bottom of background range")
         [height, _] = np.shape(self.cropped_data[0])
 
@@ -597,4 +594,4 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def export_config(self, output_folder=None, config_filename=None):
         with open(config_filename, 'w') as outfile:
-            outfile.write(self.config)
+            json.dump(self.config, outfile)
