@@ -79,145 +79,38 @@ class Main:
                           'd': d_2d}
 
     def display(self):
+        self.display_lambda()
+        self.display_d()
+        self.display_microstrain()
 
-        fig, ax = plt.subplots()
-        self.im = ax.imshow(self.data_dict[DEFAULT_DATA_TYPE])
-        self.cb = plt.colorbar(self.im, ax=ax)
+    def display_lambda(self):
+
+        fig = plt.figure(figsize=(4, 4))
+
+        ax0 = fig.add_subplot(111)
+        self.im0 = ax0.imshow(self.data_dict['lambda'])
+        self.cb0 = plt.colorbar(self.im0, ax=ax0)
+        ax0.set_title(u"\u03BB (\u212B)")
+
+        minimum = np.nanmin(self.data_dict['lambda'])
+        maximum = np.nanmax(self.data_dict['lambda'])
+        step = int((maximum - minimum)/NBR_POINTS_IN_SCALE)
+
+        plt.tight_layout()
         plt.show()
 
-        self.current_data_type = DEFAULT_DATA_TYPE
+        def plot_lambda(min_value, max_value, colormap, interpolation_method):
+            pass
 
-        def plot(min_value=0, max_value=0, data_type=None, colormap=None, interpolation_method=None):
-
-            if not (data_type == self.current_data_type):
-                min_value = self.scale[data_type]['min_value']
-                max_value = self.scale[data_type]['max_value']
-                self.current_data_type = data_type
-            else:
-                self.scale[data_type]['min_value'] = min_value
-                self.scale[data_type]['max_value'] = max_value
-
-            self.cb.remove()
-            plt.title(f"{data_type}")
-
-            data = self.data_dict[data_type]
-
-            self.im = ax.imshow(data,
-                                interpolation=interpolation_method,
-                                cmap=colormap,
-                                vmin=min_value,
-                                vmax=max_value)
-            self.cb = plt.colorbar(self.im, ax=ax)
-
-            # adding digit in colorbar scale
-            ticks = self.cb.ax.get_yticklabels()
-
-            # for _index, _tick in enumerate(ticks):
-            #
-            #     (_x, _y) = _tick.get_position()
-            #     _text = _tick.get_text()
-            #
-            #     # trick to fix error with matplotlib '-' that is not the normal negative character
-            #     if _text:
-            #         if _text[0].encode() == b'\xe2\x88\x92':
-            #             _text_fixed = "-" + _text[1:]
-            #             _text = _text_fixed
-            #
-            #         if data_type == 'microstrain':
-            #             _new_text = f"{float(_text)}"
-            #         else:
-            #             _new_text = f"{float(_text):.4f}"
-            #
-            #     else:
-            #         _new_text = _text
-            #
-            #     ticks[_index] = Text(_x, _y, _new_text)
-            #
-            # self.cb.ax.set_yticklabels(ticks)
-
-            # adding digits in cursor z value
-            numrows, numcols = self.data_dict[data_type].shape
-            def format_coord(x, y):
-                col = int(x + 0.5)
-                row = int(y + 0.5)
-                if col >= 0 and col < numcols and row >= 0 and row < numrows:
-                    z = self.data_dict[data_type][row, col]
-                    return 'x=%d, y=%d, z=%1.4f' % (x, y, z)
-                else:
-                    return 'x=%d, y=%d' % (x, y)
-
-            ax.format_coord = format_coord
-
-            plt.show()
-
-            minimum = self.scale[data_type]['min']
-            maximum = self.scale[data_type]['max']
-            step = self.scale[data_type]['step']
-
-            # print(f"{minimum = }")
-            # print(f"{maximum = }")
-            # print(f"{min_value = }")
-            # print(f"{max_value =}")
-            # print(f"{step =}")
-
-            try:
-
-                # update min slider
-                v.children[0].max = maximum
-                v.children[0].min = minimum
-                v.children[0].step = step
-                v.children[0].value = min_value
-
-                # update max slider
-                v.children[1].max = maximum
-                v.children[1].min = minimum
-                v.children[1].step = step
-                v.children[1].value = max_value
-
-            except NameError:
-                # print("error generated!")
-                return
-
-        self.scale = {'lambda': {'min': np.nanmin(self.data_dict['lambda']),
-                                 'max': np.nanmax(self.data_dict['lambda']),
-                                 'step': (np.nanmax(self.data_dict['lambda']) -
-                                          np.nanmin(self.data_dict['lambda'])) / NBR_POINTS_IN_SCALE,
-                                 'min_value': np.nanmin(self.data_dict['lambda']),
-                                 'max_value': np.nanmax(self.data_dict['lambda']),
-                                 },
-                      'd': {'min': np.nanmin(self.data_dict['d']),
-                            'max': np.nanmax(self.data_dict['d']),
-                            'step': (np.nanmax(self.data_dict['d']) - np.min(self.data_dict['d'])) / NBR_POINTS_IN_SCALE,
-                            'min_value': np.nanmin(self.data_dict['d']),
-                            'max_value': np.nanmax(self.data_dict['d']),
-                            },
-                      'microstrain': {'min': np.nanmin(self.data_dict['microstrain']),
-                                      'max': np.nanmax(self.data_dict['microstrain']),
-                                      'step': (np.nanmax(self.data_dict['microstrain']) -
-                                               np.nanmin(self.data_dict['microstrain'])) / NBR_POINTS_IN_SCALE,
-                                      'min_value': np.nanmin(self.data_dict['microstrain']),
-                                      'max_value': np.nanmax(self.data_dict['microstrain']),
-                                      },
-                      }
-
-        minimum = self.scale[DEFAULT_DATA_TYPE]['min']
-        maximum = self.scale[DEFAULT_DATA_TYPE]['max']
-        step = self.scale[DEFAULT_DATA_TYPE]['step']
-        min_value = self.scale[DEFAULT_DATA_TYPE]['min_value']
-        max_value = self.scale[DEFAULT_DATA_TYPE]['max_value']
-
-        v = interactive(plot,
+        v = interactive(plot_lambda,
                         min_value=widgets.FloatSlider(min=minimum,
                                                       max=maximum,
-                                                      value=min_value,
+                                                      value=minimum,
                                                       step=step),
                         max_value=widgets.FloatSlider(min=minimum,
                                                       max=maximum,
-                                                      value=max_value,
+                                                      value=maximum,
                                                       step=step),
-                        data_type=widgets.Dropdown(options=['lambda', 'd', 'microstrain'],
-                                                   value=DEFAULT_DATA_TYPE,
-                                                   layout=widgets.Layout(width="300px")),
                         colormap=widgets.Dropdown(options=CMAPS,
                                                   value=DEFAULT_CMAPS,
                                                   layout=widgets.Layout(width="300px")),
@@ -226,3 +119,244 @@ class Main:
                                                               description="Interpolation",
                                                               layout=widgets.Layout(width="300px")))
         display(v)
+
+    def display_d(self):
+
+        fig = plt.figure(figsize=(4, 4))
+
+        ax0 = fig.add_subplot(111)
+        self.im0 = ax0.imshow(self.data_dict['d'])
+        self.cb0 = plt.colorbar(self.im0, ax=ax0)
+        ax0.set_title("d")
+
+        minimum = np.nanmin(self.data_dict['d'])
+        maximum = np.nanmax(self.data_dict['d'])
+        step = int((maximum - minimum) / NBR_POINTS_IN_SCALE)
+
+        plt.tight_layout()
+        plt.show()
+
+        def plot_d(min_value, max_value, colormap, interpolation_method):
+            pass
+
+        v = interactive(plot_d,
+                        min_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=minimum,
+                                                      step=step),
+                        max_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=maximum,
+                                                      step=step),
+                        colormap=widgets.Dropdown(options=CMAPS,
+                                                  value=DEFAULT_CMAPS,
+                                                  layout=widgets.Layout(width="300px")),
+                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+                                                              value=DEFAULT_INTERPOLATION,
+                                                              description="Interpolation",
+                                                              layout=widgets.Layout(width="300px")))
+        display(v)
+
+    def display_microstrain(self):
+        fig = plt.figure(figsize=(5, 5))
+
+        ax0 = fig.add_subplot(111)
+        self.im0 = ax0.imshow(self.data_dict['microstrain'])
+        self.cb0 = plt.colorbar(self.im0, ax=ax0)
+        ax0.set_title("microstrain")
+
+        minimum = np.nanmin(self.data_dict['microstrain'])
+        maximum = np.nanmax(self.data_dict['microstrain'])
+        step = int((maximum - minimum) / NBR_POINTS_IN_SCALE)
+
+        plt.tight_layout()
+        plt.show()
+
+        def plot_microstrain(min_value, max_value, colormap, interpolation_method):
+            pass
+
+        v = interactive(plot_microstrain,
+                        min_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=minimum,
+                                                      step=step),
+                        max_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=maximum,
+                                                      step=step),
+                        colormap=widgets.Dropdown(options=CMAPS,
+                                                  value=DEFAULT_CMAPS,
+                                                  layout=widgets.Layout(width="300px")),
+                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+                                                              value=DEFAULT_INTERPOLATION,
+                                                              description="Interpolation",
+                                                              layout=widgets.Layout(width="300px")))
+        display(v)
+
+
+        # ax1 = fig.add_subplot(222)
+        # self.im1 = ax1.imshow(self.data_dict['d'])
+        # self.cb1 = plt.colorbar(self.im1, ax=ax1)
+        # ax1.set_title('d')
+        #
+        # ax2 = fig.add_subplot(223)
+        # self.im2 = ax2.imshow(self.data_dict['microstrain'])
+        # self.cb2 = plt.colorbar(self.im2, ax=ax2)
+        # ax2.set_title(u"\u00B5strain")
+
+
+        # def plot(min_value=0, max_value=0, colormap=None, interpolation_method=None):
+        #
+        #     # lambda
+        #     min_value = self.scale['lambda']['min_value']
+        #     max_value = self.scale['lambda']['max_value']
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #     # lambda
+        #     if not (data_type == self.current_data_type):
+        #         min_value = self.scale[data_type]['min_value']
+        #         max_value = self.scale[data_type]['max_value']
+        #         self.current_data_type = data_type
+        #     else:
+        #         self.scale[data_type]['min_value'] = min_value
+        #         self.scale[data_type]['max_value'] = max_value
+        #
+        #     if self.cb:
+        #         self.cb.remove()
+        #
+        #     plt.title(f"{data_type}")
+        #
+        #     data = self.data_dict[data_type]
+        #
+        #     ax.cla()
+        #     self.im = ax.imshow(data,
+        #                         interpolation=interpolation_method,
+        #                         cmap=colormap,
+        #                         vmin=min_value,
+        #                         vmax=max_value)
+        #     self.cb = plt.colorbar(self.im, ax=ax)
+        #
+        #     # adding digit in colorbar scale
+        #     ticks = self.cb.ax.get_yticklabels()
+        #
+        #     # for _index, _tick in enumerate(ticks):
+        #     #
+        #     #     (_x, _y) = _tick.get_position()
+        #     #     _text = _tick.get_text()
+        #     #
+        #     #     # trick to fix error with matplotlib '-' that is not the normal negative character
+        #     #     if _text:
+        #     #         if _text[0].encode() == b'\xe2\x88\x92':
+        #     #             _text_fixed = "-" + _text[1:]
+        #     #             _text = _text_fixed
+        #     #
+        #     #         if data_type == 'microstrain':
+        #     #             _new_text = f"{float(_text)}"
+        #     #         else:
+        #     #             _new_text = f"{float(_text):.4f}"
+        #     #
+        #     #     else:
+        #     #         _new_text = _text
+        #     #
+        #     #     ticks[_index] = Text(_x, _y, _new_text)
+        #     #
+        #     # self.cb.ax.set_yticklabels(ticks)
+        #
+        #     # adding digits in cursor z value
+        #     numrows, numcols = self.data_dict[data_type].shape
+        #     def format_coord(x, y):
+        #         col = int(x + 0.5)
+        #         row = int(y + 0.5)
+        #         if col >= 0 and col < numcols and row >= 0 and row < numrows:
+        #             z = self.data_dict[data_type][row, col]
+        #             return 'x=%d, y=%d, z=%1.4f' % (x, y, z)
+        #         else:
+        #             return 'x=%d, y=%d' % (x, y)
+        #
+        #     ax.format_coord = format_coord
+        #
+        #     plt.show()
+        #
+        #     minimum = self.scale[data_type]['min']
+        #     maximum = self.scale[data_type]['max']
+        #     step = self.scale[data_type]['step']
+        #
+        #     # print(f"{minimum = }")
+        #     # print(f"{maximum = }")
+        #     # print(f"{min_value = }")
+        #     # print(f"{max_value =}")
+        #     # print(f"{step =}")
+        #
+        #     try:
+        #
+        #         print(f"{maximum =}")
+        #         print(f"{minimum =}")
+        #         print(f"{v.children[0].max =}")
+        #         print(f"{v.children[0].min =}")
+        #
+        #         # update min slider
+        #         v.children[0].max = maximum
+        #         v.children[0].min = minimum
+        #         v.children[0].step = step
+        #         v.children[0].value = min_value
+        #
+        #         # update max slider
+        #         v.children[1].max = maximum
+        #         v.children[1].min = minimum
+        #         v.children[1].step = step
+        #         v.children[1].value = max_value
+        #
+        #     except NameError:
+        #         # print("error generated!")
+        #         return
+        #
+        # self.scale = {'lambda': {'min': np.nanmin(self.data_dict['lambda']),
+        #                          'max': np.nanmax(self.data_dict['lambda']),
+        #                          'step': (np.nanmax(self.data_dict['lambda']) -
+        #                                   np.nanmin(self.data_dict['lambda'])) / NBR_POINTS_IN_SCALE,
+        #                          'min_value': np.nanmin(self.data_dict['lambda']),
+        #                          'max_value': np.nanmax(self.data_dict['lambda']),
+        #                          },
+        #               'd': {'min': np.nanmin(self.data_dict['d']),
+        #                     'max': np.nanmax(self.data_dict['d']),
+        #                     'step': (np.nanmax(self.data_dict['d']) - np.min(self.data_dict['d'])) / NBR_POINTS_IN_SCALE,
+        #                     'min_value': np.nanmin(self.data_dict['d']),
+        #                     'max_value': np.nanmax(self.data_dict['d']),
+        #                     },
+        #               'microstrain': {'min': np.nanmin(self.data_dict['microstrain']),
+        #                               'max': np.nanmax(self.data_dict['microstrain']),
+        #                               'step': (np.nanmax(self.data_dict['microstrain']) -
+        #                                        np.nanmin(self.data_dict['microstrain'])) / NBR_POINTS_IN_SCALE,
+        #                               'min_value': np.nanmin(self.data_dict['microstrain']),
+        #                               'max_value': np.nanmax(self.data_dict['microstrain']),
+        #                               },
+        #               }
+        #
+        # minimum = self.scale[DEFAULT_DATA_TYPE]['min']
+        # maximum = self.scale[DEFAULT_DATA_TYPE]['max']
+        # step = self.scale[DEFAULT_DATA_TYPE]['step']
+        # min_value = self.scale[DEFAULT_DATA_TYPE]['min_value']
+        # max_value = self.scale[DEFAULT_DATA_TYPE]['max_value']
+        #
+        # v = interactive(plot,
+        #                 min_value=widgets.FloatSlider(min=minimum,
+        #                                               max=maximum,
+        #                                               value=min_value,
+        #                                               step=step),
+        #                 max_value=widgets.FloatSlider(min=minimum,
+        #                                               max=maximum,
+        #                                               value=max_value,
+        #                                               step=step),
+        #                 colormap=widgets.Dropdown(options=CMAPS,
+        #                                           value=DEFAULT_CMAPS,
+        #                                           layout=widgets.Layout(width="300px")),
+        #                 interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+        #                                                       value=DEFAULT_INTERPOLATION,
+        #                                                       description="Interpolation",
+        #                                                       layout=widgets.Layout(width="300px")))
+        # display(v)
