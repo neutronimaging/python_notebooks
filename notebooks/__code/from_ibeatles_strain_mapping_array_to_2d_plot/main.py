@@ -23,6 +23,9 @@ NBR_POINTS_IN_SCALE = 100
 class Main:
 
     ascii_filename = None
+    cb0 = None
+    cb1 = None
+    cb2 = None
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
@@ -85,22 +88,34 @@ class Main:
 
     def display_lambda(self):
 
-        fig = plt.figure(figsize=(4, 4))
+        fig = plt.figure(figsize=(4, 4), num=u"\u03BB (\u212B)")
 
-        ax0 = fig.add_subplot(111)
-        self.im0 = ax0.imshow(self.data_dict['lambda'])
-        self.cb0 = plt.colorbar(self.im0, ax=ax0)
-        ax0.set_title(u"\u03BB (\u212B)")
+        self.ax0 = fig.add_subplot(111)
+        self.im0 = self.ax0.imshow(self.data_dict['lambda'])
+        self.cb0 = plt.colorbar(self.im0, ax=self.ax0)
+        self.ax0.set_title(u"\u03BB (\u212B)")
 
         minimum = np.nanmin(self.data_dict['lambda'])
         maximum = np.nanmax(self.data_dict['lambda'])
-        step = int((maximum - minimum)/NBR_POINTS_IN_SCALE)
+        step = float((maximum - minimum)/NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
         plt.show()
 
         def plot_lambda(min_value, max_value, colormap, interpolation_method):
-            pass
+
+            if self.cb0:
+                self.cb0.remove()
+
+            data = self.data_dict['lambda']
+            self.ax0.cla()
+
+            self.im0 = self.ax0.imshow(data,
+                                       interpolation=interpolation_method,
+                                       cmap=colormap,
+                                       vmin=min_value,
+                                       vmax=max_value)
+            self.cb0 = plt.colorbar(self.im0, ax=self.ax0)
 
         v = interactive(plot_lambda,
                         min_value=widgets.FloatSlider(min=minimum,
@@ -122,22 +137,34 @@ class Main:
 
     def display_d(self):
 
-        fig = plt.figure(figsize=(4, 4))
+        fig = plt.figure(figsize=(4, 4), num='d')
 
-        ax0 = fig.add_subplot(111)
-        self.im0 = ax0.imshow(self.data_dict['d'])
-        self.cb0 = plt.colorbar(self.im0, ax=ax0)
-        ax0.set_title("d")
+        self.ax1 = fig.add_subplot(111)
+        self.im1 = self.ax1.imshow(self.data_dict['d'])
+        self.cb1 = plt.colorbar(self.im1, ax=self.ax1)
+        self.ax1.set_title("d")
 
         minimum = np.nanmin(self.data_dict['d'])
         maximum = np.nanmax(self.data_dict['d'])
-        step = int((maximum - minimum) / NBR_POINTS_IN_SCALE)
+        step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
         plt.show()
 
         def plot_d(min_value, max_value, colormap, interpolation_method):
-            pass
+
+            if self.cb1:
+                self.cb1.remove()
+
+            data = self.data_dict['d']
+            self.ax1.cla()
+
+            self.im1 = self.ax1.imshow(data,
+                                       interpolation=interpolation_method,
+                                       cmap=colormap,
+                                       vmin=min_value,
+                                       vmax=max_value)
+            self.cb1 = plt.colorbar(self.im1, ax=self.ax1)
 
         v = interactive(plot_d,
                         min_value=widgets.FloatSlider(min=minimum,
@@ -158,22 +185,34 @@ class Main:
         display(v)
 
     def display_microstrain(self):
-        fig = plt.figure(figsize=(5, 5))
+        fig = plt.figure(figsize=(5, 5), num='microstrain')
 
-        ax0 = fig.add_subplot(111)
-        self.im0 = ax0.imshow(self.data_dict['microstrain'])
-        self.cb0 = plt.colorbar(self.im0, ax=ax0)
-        ax0.set_title("microstrain")
+        self.ax2 = fig.add_subplot(111)
+        self.im2 = self.ax2.imshow(self.data_dict['microstrain'])
+        self.cb2 = plt.colorbar(self.im2, ax=self.ax2)
+        self.ax2.set_title("microstrain")
 
         minimum = np.nanmin(self.data_dict['microstrain'])
         maximum = np.nanmax(self.data_dict['microstrain'])
-        step = int((maximum - minimum) / NBR_POINTS_IN_SCALE)
+        step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
         plt.show()
 
         def plot_microstrain(min_value, max_value, colormap, interpolation_method):
-            pass
+
+            if self.cb2:
+                self.cb2.remove()
+
+            data = self.data_dict['microstrain']
+            self.ax2.cla()
+
+            self.im2 = self.ax2.imshow(data,
+                                       interpolation=interpolation_method,
+                                       cmap=colormap,
+                                       vmin=min_value, 
+                                       vmax=max_value)
+            self.cb2 = plt.colorbar(self.im2, ax=self.ax2)
 
         v = interactive(plot_microstrain,
                         min_value=widgets.FloatSlider(min=minimum,
