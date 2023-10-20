@@ -78,7 +78,7 @@ class Main:
             d_2d[_y, _x] = _d
 
         self.data_dict = {'lambda': lambda_2d,
-                          'microstrain': strain_2d * 1e6,
+                          'microstrain': strain_2d,
                           'd': d_2d}
 
     def display(self):
@@ -166,6 +166,29 @@ class Main:
                                        vmax=max_value)
             self.cb1 = plt.colorbar(self.im1, ax=self.ax1)
 
+            #adding digit in colorbar scale
+            ticks = self.cb1.ax.get_yticklabels()
+
+            for _index, _tick in enumerate(ticks):
+
+                (_x, _y) = _tick.get_position()
+                _text = _tick.get_text()
+
+                # trick to fix error with matplotlib '-' that is not the normal negative character
+                if _text:
+                    if _text[0].encode() == b'\xe2\x88\x92':
+                        _text_fixed = "-" + _text[1:]
+                        _text = _text_fixed
+
+                    _new_text = f"{float(_text):.4f}"
+
+                else:
+                    _new_text = _text
+
+                ticks[_index] = Text(_x, _y, _new_text)
+
+            self.cb1.ax.set_yticklabels(ticks)
+
         v = interactive(plot_d,
                         min_value=widgets.FloatSlider(min=minimum,
                                                       max=maximum,
@@ -213,6 +236,45 @@ class Main:
                                        vmin=min_value, 
                                        vmax=max_value)
             self.cb2 = plt.colorbar(self.im2, ax=self.ax2)
+
+            # adding digit in colorbar scale
+            ticks = self.cb2.ax.get_yticklabels()
+
+            for _index, _tick in enumerate(ticks):
+
+                (_x, _y) = _tick.get_position()
+                _text = _tick.get_text()
+
+                # trick to fix error with matplotlib '-' that is not the normal negative character
+                if _text:
+                    if _text[0].encode() == b'\xe2\x88\x92':
+                        _text_fixed = "-" + _text[1:]
+                        _text = _text_fixed
+
+                    _new_text = f"{float(_text)}"
+
+                else:
+                    _new_text = _text
+
+                ticks[_index] = Text(_x, _y, _new_text)
+
+            self.cb2.ax.set_yticklabels(ticks)
+
+            # adding digits in cursor z value
+            numrows, numcols = data.shape
+            def format_coord(x, y):
+                col = int(x + 0.5)
+                row = int(y + 0.5)
+                if col >= 0 and col < numcols and row >= 0 and row < numrows:
+                    z = data[row, col]
+                    return 'x=%d, y=%d, z=%1.4f microstrain' % (x, y, z)
+                else:
+                    return 'x=%d, y=%d' % (x, y)
+
+            self.ax2.format_coord = format_coord
+
+
+
 
         v = interactive(plot_microstrain,
                         min_value=widgets.FloatSlider(min=minimum,
