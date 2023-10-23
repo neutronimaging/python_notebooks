@@ -26,9 +26,14 @@ class Main:
 
     integrated_normalized_radiographs = None
     metadata = None
+
     strain_mapping = None
     d = None
     lambda_hkl = None
+
+    strain_mapping_2d = None
+    d_2d = None
+    lambda_hkl_2d = None
 
     cb0 = None
     cb1 = None
@@ -69,16 +74,21 @@ class Main:
         # strain mapping
         self.strain_mapping = {}
         for _key in entry['strain mapping'].keys():
+            self.strain_mapping[_key] = {'val': entry['strain mapping'][_key]['val'][()],
+                                         'err': entry['strain mapping'][_key]['err'][()],
+                                         }
+
+        # bin
+        self.bin = {}
+        for _key in entry['strain mapping'].keys():
             key_entry = entry['strain mapping'][_key]
-            _key_dict = {'val': key_entry['val'][()],
-                         'err': key_entry['err'][()],
-                         'bin coordinates': {'x0': key_entry['bin coordinates']['x0'][()],
-                                             'x1': key_entry['bin coordinates']['x1'][()],
-                                             'y0': key_entry['bin coordinates']['y0'][()],
-                                             'y1': key_entry['bin coordinates']['y1'][()],
-                                             },
+            _key_dict = {{'x0': key_entry['bin coordinates']['x0'][()],
+                          'x1': key_entry['bin coordinates']['x1'][()],
+                          'y0': key_entry['bin coordinates']['y0'][()],
+                          'y1': key_entry['bin coordinates']['y1'][()],
+                          },
                          }
-            self.strain_mapping[_key] = _key_dict
+            self.bin[_key] = _key_dict
 
         self.d = {}
         kropff_entry = entry['fitting']['kropff']
@@ -89,40 +99,33 @@ class Main:
         for _key in kropff_entry.keys():
             self.lambda_hkl[_key] = kropff_entry[_key]['fitted']['lambda_hkl']['val'][()]
 
-
-
-
     def process_data(self):
-        original_x0 = list(self.file_object['bin x0'])
-        original_y0 = list(self.file_object['bin y0'])
 
-        list_set_x0 = list(set(original_x0))
-        list_set_x0.sort()
-        list_set_y0 = list(set(original_y0))
-        list_set_y0.sort()
+        [height, width] = np.shape(self.integrated_normalized_radiographs)
 
-        lambda_2d = np.zeros((len(list_set_y0), len(list_set_x0)))
-        strain_2d = np.zeros((len(list_set_y0), len(list_set_x0)))
-        d_2d = np.zeros((len(list_set_y0), len(list_set_x0)))
+        lambda_2d = np.empty((height, width))
+        lambda_2d[:] = np.nan
 
-        for _location in np.arange(len(self.file_object)):
-            _x0 = self.file_object.iloc[_location]['bin x0']
-            _y0 = self.file_object.iloc[_location]['bin y0']
-            _x = list_set_x0.index(_x0)
-            _y = list_set_y0.index(_y0)
+        strain_mapping_2d = np.empty((height, width))
+        strain_mapping_2d[:] = np.nan
 
-            _lambda = self.file_object.iloc[_location]['lambda hkl val']
-            lambda_2d[_y, _x] = _lambda
+        d_2d = np.empty((height, width))
+        d_2d[:] = np.nan
 
-            _strain = self.file_object.iloc[_location]['strain']
-            strain_2d[_y, _x] = _strain
+        for _key in self.bin.keys():
 
-            _d = self.file_object.iloc[_location]['d value']
-            d_2d[_y, _x] = _d
+            x0 = self.bin[_key]['x0']
+            y0 = self.bin[_key]['y0']
+            x1 = self.bin[_key]['x1']
+            y1 = self.bin[_key]['y1']
 
-        self.data_dict = {'lambda': lambda_2d,
-                          'microstrain': strain_2d * 1e6,   # to switch to microstrain
-                          'd': d_2d}
+            lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
+            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]
+            d_2d = self.d[_key]
+
+        self.lambda_hkl_2d = lambda_2d
+        self.strain_2d = strain_mapping_2d
+        self.d_2d = d_2d
 
     def display(self):
         self.display_lambda()
@@ -134,12 +137,16 @@ class Main:
         fig = plt.figure(figsize=(4, 4), num=u"\u03BB (\u212B)")
 
         self.ax0 = fig.add_subplot(111)
-        self.im0 = self.ax0.imshow(self.data_dict['lambda'])
+        self.ax0.imshow(self.integrated_normalized_radiographs,
+                                   vmin=0,
+                                   vmax=1,
+                                   cmap='gray')
+        self.im0 = self.ax0.imshow(self.lambda_hkl_2d, cmap='jet', alpha=0.5)
         self.cb0 = plt.colorbar(self.im0, ax=self.ax0)
         self.ax0.set_title(u"\u03BB (\u212B)")
 
-        minimum = np.nanmin(self.data_dict['lambda'])
-        maximum = np.nanmax(self.data_dict['lambda'])
+        minimum = np.nanmin(self.lambda_hkl_2d)
+        maximum = np.nanmax(self.lambda_hkl_2d)
         step = float((maximum - minimum)/NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
@@ -150,7 +157,7 @@ class Main:
             if self.cb0:
                 self.cb0.remove()
 
-            data = self.data_dict['lambda']
+            data = self.lambda_hkl_2d
             self.ax0.cla()
 
             self.im0 = self.ax0.imshow(data,
@@ -158,7 +165,17 @@ class Main:
                                        cmap=colormap,
                                        vmin=min_value,
                                        vmax=max_value)
+
+
+
+
             self.cb0 = plt.colorbar(self.im0, ax=self.ax0)
+
+
+
+
+
+
 
         v = interactive(plot_lambda,
                         min_value=widgets.FloatSlider(min=minimum,
