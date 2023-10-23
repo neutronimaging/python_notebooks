@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.text import Text
 
+from __code.ibeatles_strain_mapping_hdf5_loader.hdf5_handler import Hdf5Handler
+
 INTERPOLATION_METHODS = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16',
                          'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
                          'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
@@ -58,48 +60,11 @@ class Main:
                                                                                                   'has been loaded !</span>'))
 
     def import_hdf5(self):
-        f = h5py.File(self.hdf5_filename, 'r')
-        entry = f['entry']
-
-        # integrated image
-        self.integrated_normalized_radiographs = entry['integrated normalized radiographs']['2D array'][:]
-
-        # metadata
-        self.metadata = {}
-        list_key = ['detector_offset', 'distance_source_detector', 'hkl_value', 'material_name']
-        for _key in list_key:
-            self.metadata[_key] = entry['metadata'][_key][()].decode('utf-8')
-        self.metadata['d0'] = entry['metadata']['d0'][()]
-
-        # strain mapping
-        self.strain_mapping = {}
-        for _key in entry['strain mapping'].keys():
-            self.strain_mapping[_key] = {'val': entry['strain mapping'][_key]['val'][()],
-                                         'err': entry['strain mapping'][_key]['err'][()],
-                                         }
-
-        # bin
-        self.bin = {}
-        for _key in entry['strain mapping'].keys():
-            key_entry = entry['strain mapping'][_key]
-            _key_dict = {{'x0': key_entry['bin coordinates']['x0'][()],
-                          'x1': key_entry['bin coordinates']['x1'][()],
-                          'y0': key_entry['bin coordinates']['y0'][()],
-                          'y1': key_entry['bin coordinates']['y1'][()],
-                          },
-                         }
-            self.bin[_key] = _key_dict
-
-        self.d = {}
-        kropff_entry = entry['fitting']['kropff']
-        for _key in kropff_entry.keys():
-            self.d[_key] = kropff_entry[_key]['fitted']['d']['val'][()]
-
-        self.lambda_hkl = {}
-        for _key in kropff_entry.keys():
-            self.lambda_hkl[_key] = kropff_entry[_key]['fitted']['lambda_hkl']['val'][()]
+        o_import = Hdf5Handler(parent=self)
+        o_import.load(filename=self.hdf5_filename)
 
     def process_data(self):
+        # format the data to be able to display them
 
         [height, width] = np.shape(self.integrated_normalized_radiographs)
 
@@ -120,7 +85,7 @@ class Main:
             y1 = self.bin[_key]['y1']
 
             lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
-            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]
+            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
             d_2d = self.d[_key]
 
         self.lambda_hkl_2d = lambda_2d
@@ -129,8 +94,8 @@ class Main:
 
     def display(self):
         self.display_lambda()
-        self.display_d()
-        self.display_microstrain()
+        # self.display_d()
+        # self.display_microstrain()
 
     def display_lambda(self):
 
@@ -150,7 +115,7 @@ class Main:
         step = float((maximum - minimum)/NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
-        plt.show()
+        # plt.show()
 
         def plot_lambda(min_value, max_value, colormap, interpolation_method):
 
@@ -160,22 +125,16 @@ class Main:
             data = self.lambda_hkl_2d
             self.ax0.cla()
 
+            self.ax0.imshow(self.integrated_normalized_radiographs,
+                            vmin=0,
+                            vmax=1,
+                            cmap='gray')
             self.im0 = self.ax0.imshow(data,
                                        interpolation=interpolation_method,
                                        cmap=colormap,
                                        vmin=min_value,
                                        vmax=max_value)
-
-
-
-
             self.cb0 = plt.colorbar(self.im0, ax=self.ax0)
-
-
-
-
-
-
 
         v = interactive(plot_lambda,
                         min_value=widgets.FloatSlider(min=minimum,
