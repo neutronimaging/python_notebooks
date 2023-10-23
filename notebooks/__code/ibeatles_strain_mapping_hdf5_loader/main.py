@@ -3,7 +3,7 @@ from __code.ipywe import fileselector
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
-import pandas as pd
+import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.text import Text
@@ -22,7 +22,14 @@ NBR_POINTS_IN_SCALE = 100
 
 class Main:
 
-    ascii_filename = None
+    hdf5_filename = None
+
+    integrated_normalized_radiographs = None
+    metadata = None
+    strain_mapping = None
+    d = None
+    lambda_hkl = None
+
     cb0 = None
     cb1 = None
     cb2 = None
@@ -40,16 +47,50 @@ class Main:
         self.file_ui.show()
 
     def load(self, filename):
-        self.ascii_filename = filename
-        self.import_ascii()
+        self.hdf5_filename = filename
+        self.import_hdf5()
         display(HTML('<span style="font-size: 20px; color:blue">' + str(os.path.basename(filename)) + ' '
                                                                                                   'has been loaded !</span>'))
 
-    def import_ascii(self):
-        self.file_object = pd.read_csv(self.ascii_filename, sep=', ')
+    def import_hdf5(self):
+        f = h5py.File(self.hdf5_filename, 'r')
+        entry = f['entry']
 
-    def preview_ascii(self):
-        print(self.file_object)
+        # integrated image
+        self.integrated_normalized_radiographs = entry['integrated normalized radiographs']['2D array'][:]
+
+        # metadata
+        self.metadata = {}
+        list_key = ['detector_offset', 'distance_source_detector', 'hkl_value', 'material_name']
+        for _key in list_key:
+            self.metadata[_key] = entry['metadata'][_key][()].decode('utf-8')
+        self.metadata['d0'] = entry['metadata']['d0'][()]
+
+        # strain mapping
+        self.strain_mapping = {}
+        for _key in entry['strain mapping'].keys():
+            key_entry = entry['strain mapping'][_key]
+            _key_dict = {'val': key_entry['val'][()],
+                         'err': key_entry['err'][()],
+                         'bin coordinates': {'x0': key_entry['bin coordinates']['x0'][()],
+                                             'x1': key_entry['bin coordinates']['x1'][()],
+                                             'y0': key_entry['bin coordinates']['y0'][()],
+                                             'y1': key_entry['bin coordinates']['y1'][()],
+                                             },
+                         }
+            self.strain_mapping[_key] = _key_dict
+
+        self.d = {}
+        kropff_entry = entry['fitting']['kropff']
+        for _key in kropff_entry.keys():
+            self.d[_key] = kropff_entry[_key]['fitted']['d']['val'][()]
+
+        self.lambda_hkl = {}
+        for _key in kropff_entry.keys():
+            self.lambda_hkl[_key] = kropff_entry[_key]['fitted']['lambda_hkl']['val'][()]
+
+
+
 
     def process_data(self):
         original_x0 = list(self.file_object['bin x0'])
