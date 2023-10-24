@@ -9,7 +9,7 @@ jobs:
       name: ubuntu-22.04  python 3.8
       steps:
         - uses: actions/checkout@v2
-        - uses: jurplel/install-qt-action@v2
+        # - uses: jurplel/install-qt-action@v2
         - uses: conda-incubator/setup-miniconda@v2
           with:
             auto-update-conda: true
