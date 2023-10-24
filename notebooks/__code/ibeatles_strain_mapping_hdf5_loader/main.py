@@ -7,6 +7,7 @@ import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.text import Text
+from scipy import interpolate
 
 from __code.ibeatles_strain_mapping_hdf5_loader.hdf5_handler import Hdf5Handler
 
@@ -32,6 +33,9 @@ class Main:
     strain_mapping = None
     d = None
     lambda_hkl = None
+
+    nbr_row = 0
+    nbr_column = 0
 
     strain_mapping_2d = None
     d_2d = None
@@ -69,13 +73,15 @@ class Main:
         [height, width] = np.shape(self.integrated_normalized_radiographs)
 
         lambda_2d = np.empty((height, width))
-        lambda_2d[:] = np.nan
+        # lambda_2d[:] = np.nan
 
-        strain_mapping_2d = np.empty((height, width))
-        strain_mapping_2d[:] = np.nan
+        compact_lambda_2d = np.empty((self.nbr_row, self.nbr_column))
 
-        d_2d = np.empty((height, width))
-        d_2d[:] = np.nan
+        # strain_mapping_2d = np.empty((height, width))
+        # strain_mapping_2d[:] = np.nan
+        #
+        # d_2d = np.empty((height, width))
+        # d_2d[:] = np.nan
 
         for _key in self.bin.keys():
 
@@ -83,14 +89,33 @@ class Main:
             y0 = self.bin[_key]['y0']
             x1 = self.bin[_key]['x1']
             y1 = self.bin[_key]['y1']
+            row_index = self.bin[_key]['row_index']
+            column_index = self.bin[_key]['column_index']
 
-            lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
-            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
-            d_2d = self.d[_key]
+            compact_lambda_2d[row_index, column_index] = self.lambda_hkl[_key]
 
-        self.lambda_hkl_2d = lambda_2d
-        self.strain_2d = strain_mapping_2d
-        self.d_2d = d_2d
+            # lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
+            # strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
+            # d_2d = self.d[_key]
+
+        self.compact_lambda_2d = compact_lambda_2d
+      
+        # # let's interpolate
+        # X = np.arange(self.nbr_column)
+        # Y = np.arange(self.nbr_row)
+        # x, y = np.meshgrid(X, Y)
+        #
+        # f = interpolate.RectBivariateSpline(Y, X, compact_lambda_2d)
+        # Xnew = np.arange(width)
+        # Ynew = np.arange(height)
+        #
+        # lambda_2d = f(Xnew, Ynew)
+        #
+        # self.lambda_hkl_2d = lambda_2d
+        # self.compact_lambda_2d = compact_lambda_2d
+
+        # self.strain_2d = strain_mapping_2d
+        # self.d_2d = d_2d
 
     def display(self):
         self.display_lambda()
@@ -106,12 +131,16 @@ class Main:
                                    vmin=0,
                                    vmax=1,
                                    cmap='gray')
+        # self.im0 = self.ax0.imshow(self.compact_lambda_2d, cmap='jet', alpha=0.5)
+
         self.im0 = self.ax0.imshow(self.lambda_hkl_2d, cmap='jet', alpha=0.5)
         self.cb0 = plt.colorbar(self.im0, ax=self.ax0)
         self.ax0.set_title(u"\u03BB (\u212B)")
 
         minimum = np.nanmin(self.lambda_hkl_2d)
         maximum = np.nanmax(self.lambda_hkl_2d)
+        # minimum = np.nanmin(self.compact_lambda_2d)
+        # maximum = np.nanmax(self.compact_lambda_2d)
         step = float((maximum - minimum)/NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
@@ -123,6 +152,7 @@ class Main:
                 self.cb0.remove()
 
             data = self.lambda_hkl_2d
+            # data = self.compact_lambda_2d
             self.ax0.cla()
 
             self.ax0.imshow(self.integrated_normalized_radiographs,
