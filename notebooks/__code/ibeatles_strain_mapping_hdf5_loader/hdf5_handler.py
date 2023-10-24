@@ -37,14 +37,27 @@ class Hdf5Handler:
 
         # bin
         self.parent.bin = {}
+        list_row = []
+        list_column = []
         for _key in entry['strain mapping'].keys():
             key_entry = entry['strain mapping'][_key]
             _key_dict = {'x0': key_entry['bin coordinates']['x0'][()],
                          'x1': key_entry['bin coordinates']['x1'][()],
                          'y0': key_entry['bin coordinates']['y0'][()],
                          'y1': key_entry['bin coordinates']['y1'][()],
+                         'row_index': entry['fitting']['kropff'][_key]['fitted']['row_index'][()],
+                         'column_index': entry['fitting']['kropff'][_key]['fitted']['column_index'][()],
                          }
+
+            list_row.append(entry['fitting']['kropff'][_key]['fitted']['row_index'][()])
+            list_column.append(entry['fitting']['kropff'][_key]['fitted']['column_index'][()])
             self.parent.bin[_key] = _key_dict
+
+        set_list_row = set(list(list_row))
+        set_list_column = set(list(list_column))
+
+        self.parent.nbr_row = len(set_list_row)
+        self.parent.nbr_column = len(set_list_column)
 
         self.parent.d = {}
         kropff_entry = entry['fitting']['kropff']
