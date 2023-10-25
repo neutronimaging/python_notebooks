@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.text import Text
 from scipy import interpolate
+from matplotlib.image import _resample
+from matplotlib.transforms import Affine2D
 
 from __code.ibeatles_strain_mapping_hdf5_loader.hdf5_handler import Hdf5Handler
 
@@ -71,20 +73,23 @@ class Main:
         # format the data to be able to display them
 
         [height, width] = np.shape(self.integrated_normalized_radiographs)
+        self.image_height = height
+        self.image_width = width
 
         lambda_2d = np.empty((height, width))
-        # lambda_2d[:] = np.nan
-
+        lambda_2d[:] = np.nan
         compact_lambda_2d = np.empty((self.nbr_row, self.nbr_column))
 
-        # strain_mapping_2d = np.empty((height, width))
-        # strain_mapping_2d[:] = np.nan
-        #
-        # d_2d = np.empty((height, width))
-        # d_2d[:] = np.nan
+        strain_mapping_2d = np.empty((height, width))
+        strain_mapping_2d[:] = np.nan
+        compact_strain_mapping = np.empty((self.nbr_row, self.nbr_column))
+
+        d_2d = np.empty((height, width))
+        d_2d[:] = np.nan
+
+        top_left_corner_of_roi = [self.image_height, self.image_width]
 
         for _key in self.bin.keys():
-
             x0 = self.bin[_key]['x0']
             y0 = self.bin[_key]['y0']
             x1 = self.bin[_key]['x1']
@@ -92,14 +97,24 @@ class Main:
             row_index = self.bin[_key]['row_index']
             column_index = self.bin[_key]['column_index']
 
+            if x0 < top_left_corner_of_roi[1]:
+                top_left_corner_of_roi[1] = x0
+
+            if y0 < top_left_corner_of_roi[0]:
+                top_left_corner_of_roi[0] = y0
+
             compact_lambda_2d[row_index, column_index] = self.lambda_hkl[_key]
 
-            # lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
-            # strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
-            # d_2d = self.d[_key]
+            lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
+            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
+            compact_strain_mapping[row_index, column_index] = self.strain_mapping[_key]['val']
+
+            d_2d[y0: y1, x0: x1] = self.d[_key]
 
         self.compact_lambda_2d = compact_lambda_2d
-      
+        self.compact_strain_mapping = compact_strain_mapping
+        self.top_left_corner_of_roi = top_left_corner_of_roi
+
         # # let's interpolate
         # X = np.arange(self.nbr_column)
         # Y = np.arange(self.nbr_row)
@@ -111,16 +126,64 @@ class Main:
         #
         # lambda_2d = f(Xnew, Ynew)
         #
-        # self.lambda_hkl_2d = lambda_2d
-        # self.compact_lambda_2d = compact_lambda_2d
+        self.lambda_hkl_2d = lambda_2d
+        self.strain_2d = strain_mapping_2d
+        self.d_2d = d_2d
 
-        # self.strain_2d = strain_mapping_2d
-        # self.d_2d = d_2d
+    # def process_data(self):
+    #     # format the data to be able to display them
+    #
+    #     [height, width] = np.shape(self.integrated_normalized_radiographs)
+    #
+    #     lambda_2d = np.empty((height, width))
+    #     # lambda_2d[:] = np.nan
+    #
+    #     compact_lambda_2d = np.empty((self.nbr_row, self.nbr_column))
+    #
+    #     # strain_mapping_2d = np.empty((height, width))
+    #     # strain_mapping_2d[:] = np.nan
+    #     #
+    #     # d_2d = np.empty((height, width))
+    #     # d_2d[:] = np.nan
+    #
+    #     for _key in self.bin.keys():
+    #
+    #         x0 = self.bin[_key]['x0']
+    #         y0 = self.bin[_key]['y0']
+    #         x1 = self.bin[_key]['x1']
+    #         y1 = self.bin[_key]['y1']
+    #         row_index = self.bin[_key]['row_index']
+    #         column_index = self.bin[_key]['column_index']
+    #
+    #         compact_lambda_2d[row_index, column_index] = self.lambda_hkl[_key]
+    #
+    #         # lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
+    #         # strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
+    #         # d_2d = self.d[_key]
+    #
+    #     self.compact_lambda_2d = compact_lambda_2d
+    #
+    #     # # let's interpolate
+    #     # X = np.arange(self.nbr_column)
+    #     # Y = np.arange(self.nbr_row)
+    #     # x, y = np.meshgrid(X, Y)
+    #     #
+    #     # f = interpolate.RectBivariateSpline(Y, X, compact_lambda_2d)
+    #     # Xnew = np.arange(width)
+    #     # Ynew = np.arange(height)
+    #     #
+    #     # lambda_2d = f(Xnew, Ynew)
+    #     #
+    #     # self.lambda_hkl_2d = lambda_2d
+    #     # self.compact_lambda_2d = compact_lambda_2d
+    #
+    #     # self.strain_2d = strain_mapping_2d
+    #     # self.d_2d = d_2d
 
     def display(self):
         self.display_lambda()
-        # self.display_d()
-        # self.display_microstrain()
+        self.display_d()
+        self.display_microstrain()
 
     def display_lambda(self):
 
@@ -186,57 +249,44 @@ class Main:
 
     def display_d(self):
 
-        fig = plt.figure(figsize=(4, 4), num='d')
+        fig = plt.figure(figsize=(4, 4), num=u"d")
 
         self.ax1 = fig.add_subplot(111)
-        self.im1 = self.ax1.imshow(self.data_dict['d'])
-        self.cb1 = plt.colorbar(self.im1, ax=self.ax1)
-        self.ax1.set_title("d")
+        self.ax1.imshow(self.integrated_normalized_radiographs,
+                        vmin=0,
+                        vmax=1,
+                        cmap='gray')
+        # self.im0 = self.ax0.imshow(self.compact_lambda_2d, cmap='jet', alpha=0.5)
 
-        minimum = np.nanmin(self.data_dict['d'])
-        maximum = np.nanmax(self.data_dict['d'])
+        self.im1 = self.ax1.imshow(self.d_2d, cmap='jet', alpha=0.5)
+        self.cb1 = plt.colorbar(self.im1, ax=self.ax1)
+        self.ax1.set_title(u"d")
+
+        minimum = np.nanmin(self.d_2d)
+        maximum = np.nanmax(self.d_2d)
         step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
-        plt.show()
+
+        # plt.show()
 
         def plot_d(min_value, max_value, colormap, interpolation_method):
-
             if self.cb1:
                 self.cb1.remove()
 
-            data = self.data_dict['d']
+            data = self.d_2d
             self.ax1.cla()
 
+            self.ax1.imshow(self.integrated_normalized_radiographs,
+                            vmin=0,
+                            vmax=1,
+                            cmap='gray')
             self.im1 = self.ax1.imshow(data,
                                        interpolation=interpolation_method,
                                        cmap=colormap,
                                        vmin=min_value,
                                        vmax=max_value)
             self.cb1 = plt.colorbar(self.im1, ax=self.ax1)
-
-            #adding digit in colorbar scale
-            ticks = self.cb1.ax.get_yticklabels()
-
-            for _index, _tick in enumerate(ticks):
-
-                (_x, _y) = _tick.get_position()
-                _text = _tick.get_text()
-
-                # trick to fix error with matplotlib '-' that is not the normal negative character
-                if _text:
-                    if _text[0].encode() == b'\xe2\x88\x92':
-                        _text_fixed = "-" + _text[1:]
-                        _text = _text_fixed
-
-                    _new_text = f"{float(_text):.4f}"
-
-                else:
-                    _new_text = _text
-
-                ticks[_index] = Text(_x, _y, _new_text)
-
-            self.cb1.ax.set_yticklabels(ticks)
 
         v = interactive(plot_d,
                         min_value=widgets.FloatSlider(min=minimum,
@@ -257,72 +307,43 @@ class Main:
         display(v)
 
     def display_microstrain(self):
-        fig = plt.figure(figsize=(5, 5), num='microstrain')
+        fig = plt.figure(figsize=(4, 4), num=u"microstrain")
 
         self.ax2 = fig.add_subplot(111)
-        self.im2 = self.ax2.imshow(self.data_dict['microstrain'])
-        self.cb2 = plt.colorbar(self.im2, ax=self.ax2)
-        self.ax2.set_title("microstrain")
+        self.ax2.imshow(self.integrated_normalized_radiographs,
+                        vmin=0,
+                        vmax=1,
+                        cmap='gray')
 
-        minimum = np.nanmin(self.data_dict['microstrain'])
-        maximum = np.nanmax(self.data_dict['microstrain'])
+        self.im2 = self.ax2.imshow(self.strain_2d, cmap='jet', alpha=0.5)
+        self.cb2 = plt.colorbar(self.im2, ax=self.ax2)
+        self.ax2.set_title(u"microstrain")
+
+        minimum = np.nanmin(self.strain_2d)
+        maximum = np.nanmax(self.strain_2d)
         step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
 
         plt.tight_layout()
-        plt.show()
 
-        def plot_microstrain(min_value, max_value, colormap, interpolation_method):
-
+        def plot_strain(min_value, max_value, colormap, interpolation_method):
             if self.cb2:
                 self.cb2.remove()
 
-            data = self.data_dict['microstrain']
+            data = self.strain_2d
             self.ax2.cla()
 
+            self.ax2.imshow(self.integrated_normalized_radiographs,
+                            vmin=0,
+                            vmax=1,
+                            cmap='gray')
             self.im2 = self.ax2.imshow(data,
                                        interpolation=interpolation_method,
                                        cmap=colormap,
-                                       vmin=min_value, 
+                                       vmin=min_value,
                                        vmax=max_value)
             self.cb2 = plt.colorbar(self.im2, ax=self.ax2)
 
-            # adding digit in colorbar scale
-            ticks = self.cb2.ax.get_yticklabels()
-
-            for _index, _tick in enumerate(ticks):
-
-                (_x, _y) = _tick.get_position()
-                _text = _tick.get_text()
-
-                # trick to fix error with matplotlib '-' that is not the normal negative character
-                if _text:
-                    if _text[0].encode() == b'\xe2\x88\x92':
-                        _text_fixed = "-" + _text[1:]
-                        _text = _text_fixed
-
-                    _new_text = f"{float(_text)}"
-
-                else:
-                    _new_text = _text
-
-                ticks[_index] = Text(_x, _y, _new_text)
-
-            self.cb2.ax.set_yticklabels(ticks)
-
-            # adding digits in cursor z value
-            numrows, numcols = data.shape
-            def format_coord(x, y):
-                col = int(x + 0.5)
-                row = int(y + 0.5)
-                if col >= 0 and col < numcols and row >= 0 and row < numrows:
-                    z = data[row, col]
-                    return 'x=%d, y=%d, z=%1.4f microstrain' % (x, y, z)
-                else:
-                    return 'x=%d, y=%d' % (x, y)
-
-            self.ax2.format_coord = format_coord
-
-        v = interactive(plot_microstrain,
+        v = interactive(plot_strain,
                         min_value=widgets.FloatSlider(min=minimum,
                                                       max=maximum,
                                                       value=minimum,
@@ -339,3 +360,73 @@ class Main:
                                                               description="Interpolation",
                                                               layout=widgets.Layout(width="300px")))
         display(v)
+
+    def display_with_interpolation(self):
+        self.display_microstrain_with_interpolation()
+        # self.display_lambda_with_interpolation()
+
+
+    def display_lambda_with_interpolation(self):
+        data = self.compact_lambda_2d
+        grid = np.array(data)
+        index = np.isnan(grid)
+        # grid[index] = 0
+
+        scale_factor = self.bin_size
+        out_dimensions = (grid.shape[0] * scale_factor, grid.shape[1] * scale_factor)
+
+        fig, axs = plt.subplots(nrows=3, num='lambda interpolated', figsize=[5,15])
+
+        transform = Affine2D().scale(scale_factor, scale_factor)
+        # Have to get an image to be able to resample
+        # Resample takes an _ImageBase or subclass, which require an Axes
+        # img = axs[0].imshow(grid, interpolation='spline36', cmap='viridis')
+        img = axs[0].imshow(grid, cmap='viridis')
+        axs[0].imshow(grid, cmap='viridis')
+
+        img1 = axs[1].imshow(grid, interpolation='gaussian', cmap='viridis')
+        interpolated = _resample(img1, grid, out_dimensions, transform=transform)
+
+        # axs[2].imshow(integrated_image, vmin=0, vmax=1, cmap='gray')
+        axs[2].imshow(interpolated, cmap='viridis')
+
+    def display_microstrain_with_interpolation(self):
+        data = self.compact_strain_mapping
+        grid = np.array(data)
+        index = np.isnan(grid)
+        # grid[index] = 0
+
+        scale_factor = self.bin_size
+        out_dimensions = (grid.shape[0] * scale_factor, grid.shape[1] * scale_factor)
+
+        fig, axs = plt.subplots(nrows=3, num='Getting the interpolated data', figsize=[5,15])
+
+        transform = Affine2D().scale(scale_factor, scale_factor)
+        # Have to get an image to be able to resample
+        # Resample takes an _ImageBase or subclass, which require an Axes
+        # img = axs[0].imshow(grid, interpolation='spline36', cmap='viridis')
+        img = axs[0].imshow(grid, cmap='viridis')
+        axs[0].imshow(grid, cmap='viridis')
+
+        img1 = axs[1].imshow(grid, interpolation='gaussian', cmap='viridis')
+        interpolated = _resample(img1, grid, out_dimensions, transform=transform)
+
+        # axs[2].imshow(integrated_image, vmin=0, vmax=1, cmap='gray')
+        axs[2].imshow(interpolated, cmap='viridis')
+
+        # with overlap
+        interpolated_strain_mapping_2d = np.empty((self.image_height, self.image_width))
+        interpolated_strain_mapping_2d[:] = np.nan
+
+        [y0, x0] = self.top_left_corner_of_roi
+
+        inter_height, inter_width = np.shape(interpolated)
+        interpolated_strain_mapping_2d[y0: y0+inter_height, x0: x0+inter_width] = interpolated
+
+        fig = plt.figure(num='interpolation and overlaop', figsize=(6, 6))
+        ax = fig.add_subplot(111)
+        ax.imshow(self.integrated_normalized_radiographs,
+                  vmin=0,
+                  vmax=1,
+                  cmap='gray')
+        ax.imshow(interpolated_strain_mapping_2d, interpolation='gaussian')

@@ -53,6 +53,7 @@ class Hdf5Handler:
             list_column.append(entry['fitting']['kropff'][_key]['fitted']['column_index'][()])
             self.parent.bin[_key] = _key_dict
 
+        self.parent.bin_size = entry['metadata']['bin_size'][()]
         set_list_row = set(list(list_row))
         set_list_column = set(list(list_column))
 
