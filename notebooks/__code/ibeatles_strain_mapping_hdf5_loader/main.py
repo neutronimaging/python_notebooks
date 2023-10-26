@@ -3,11 +3,8 @@ from __code.ipywe import fileselector
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
-import h5py
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.text import Text
-from scipy import interpolate
 from matplotlib.image import _resample
 from matplotlib.transforms import Affine2D
 
@@ -106,7 +103,7 @@ class Main:
             compact_lambda_2d[row_index, column_index] = self.lambda_hkl[_key]
 
             lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
-            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
+            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']  # to go to microstrain
             compact_strain_mapping[row_index, column_index] = self.strain_mapping[_key]['val']
 
             d_2d[y0: y1, x0: x1] = self.d[_key]
@@ -399,7 +396,7 @@ class Main:
         scale_factor = self.bin_size
         out_dimensions = (grid.shape[0] * scale_factor, grid.shape[1] * scale_factor)
 
-        fig, axs = plt.subplots(nrows=3, num='Getting the interpolated data', figsize=[5,15])
+        fig1, axs = plt.subplots(nrows=4, num='microstrain interpolated', figsize=[5, 20])
 
         transform = Affine2D().scale(scale_factor, scale_factor)
         # Have to get an image to be able to resample
@@ -423,10 +420,72 @@ class Main:
         inter_height, inter_width = np.shape(interpolated)
         interpolated_strain_mapping_2d[y0: y0+inter_height, x0: x0+inter_width] = interpolated
 
-        fig = plt.figure(num='interpolation and overlaop', figsize=(6, 6))
-        ax = fig.add_subplot(111)
-        ax.imshow(self.integrated_normalized_radiographs,
-                  vmin=0,
-                  vmax=1,
-                  cmap='gray')
-        ax.imshow(interpolated_strain_mapping_2d, interpolation='gaussian')
+        axs[3].imshow(self.integrated_normalized_radiographs,
+                      vmin=0,
+                      vmax=1,
+                      cmap='gray')
+        im = axs[3].imshow(interpolated_strain_mapping_2d, interpolation='gaussian')
+        self.cb = plt.colorbar(im, ax=axs[3])
+
+        minimum = np.nanmin(interpolated_strain_mapping_2d)
+        maximum = np.nanmax(interpolated_strain_mapping_2d)
+        step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
+
+        # plt.tight_layout()
+
+        def plot_interpolated(min_value, max_value, colormap, interpolation_method):
+
+            img = axs[0].imshow(grid, cmap=colormap)
+            axs[0].imshow(grid, cmap=colormap)
+
+            axs[1].cla()
+            img1 = axs[1].imshow(grid, interpolation=interpolation_method, cmap=colormap)
+            interpolated = _resample(img1, grid, out_dimensions, transform=transform)
+
+            axs[2].cla()
+            axs[2].imshow(interpolated, vmin=min_value, vmax=max_value, cmap=colormap)
+
+            # with overlap
+            interpolated_strain_mapping_2d = np.empty((self.image_height, self.image_width))
+            interpolated_strain_mapping_2d[:] = np.nan
+
+            [y0, x0] = self.top_left_corner_of_roi
+
+            inter_height, inter_width = np.shape(interpolated)
+            interpolated_strain_mapping_2d[y0: y0 + inter_height, x0: x0 + inter_width] = interpolated
+
+            if self.cb:
+                self.cb.remove()
+
+            axs[3].cla()
+            axs[3].imshow(self.integrated_normalized_radiographs,
+                          vmin=0,
+                          vmax=1,
+                          cmap='gray')
+            im = axs[3].imshow(interpolated_strain_mapping_2d*1e6,
+                               interpolation=interpolation_method,
+                               cmap=colormap,
+                               vmin=min_value*1e6,
+                               vmax=max_value*1e6)
+            self.cb = plt.colorbar(im, ax=axs[3])
+
+        v = interactive(plot_interpolated,
+                        min_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=minimum,
+                                                      step=step,
+                                                      description='min (x1e6)'),
+                        max_value=widgets.FloatSlider(min=minimum,
+                                                      max=maximum,
+                                                      value=maximum,
+                                                      step=step,
+                                                      description='min (x1e6)'),
+                        colormap=widgets.Dropdown(options=CMAPS,
+                                                  value=DEFAULT_CMAPS,
+                                                  layout=widgets.Layout(width="300px")),
+                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+                                                              value=DEFAULT_INTERPOLATION,
+                                                              description="Interpolation",
+                                                              layout=widgets.Layout(width="300px")))
+
+        display(v)
