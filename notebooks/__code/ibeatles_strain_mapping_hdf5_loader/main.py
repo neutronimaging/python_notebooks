@@ -356,10 +356,6 @@ class Main:
         inter_height, inter_width = np.shape(interpolated)
         interpolated_strain_mapping_2d[y0: y0+inter_height, x0: x0+inter_width] = interpolated
 
-        # plt.show()
-
-        # fig1 = plt.figure(num='microstrain', figsize=(6, 6))
-        # ax1 = fig1.add_subplot(111)
         axs[3].imshow(self.integrated_normalized_radiographs,
                       vmin=0,
                       vmax=1,
@@ -372,7 +368,6 @@ class Main:
         step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
 
         # plt.tight_layout()
-        plt.show()
 
         def plot_interpolated(min_value, max_value, colormap, interpolation_method):
 
