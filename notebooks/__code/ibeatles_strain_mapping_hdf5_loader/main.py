@@ -333,7 +333,7 @@ class Main:
         scale_factor = self.bin_size
         out_dimensions = (grid.shape[0] * scale_factor, grid.shape[1] * scale_factor)
 
-        fig0, axs = plt.subplots(nrows=4, num='microstrain', figsize=[5, 15])
+        fig0, axs = plt.subplots(nrows=3, num='microstrain', figsize=[5, 15])
 
         transform = Affine2D().scale(scale_factor, scale_factor)
         # Have to get an image to be able to resample
@@ -356,21 +356,23 @@ class Main:
         inter_height, inter_width = np.shape(interpolated)
         interpolated_strain_mapping_2d[y0: y0+inter_height, x0: x0+inter_width] = interpolated
 
-        # fig = plt.figure(num='microstrain', figsize=(6, 6))
-        # self.ax = fig.add_subplot(111)
-        axs[3].imshow(self.integrated_normalized_radiographs,
+        plt.show()
+
+        fig1 = plt.figure(num='microstrain', figsize=(6, 6))
+        ax1 = fig1.add_subplot(111)
+        ax1.imshow(self.integrated_normalized_radiographs,
                       vmin=0,
                       vmax=1,
                       cmap='gray')
-        im = axs[3].imshow(interpolated_strain_mapping_2d, interpolation='gaussian')
-        self.cb = plt.colorbar(im, ax=axs[3])
+        im = ax1.imshow(interpolated_strain_mapping_2d, interpolation='gaussian')
+        self.cb = plt.colorbar(im, ax=ax1)
 
         minimum = np.nanmin(interpolated_strain_mapping_2d)
         maximum = np.nanmax(interpolated_strain_mapping_2d)
         step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
 
         # plt.tight_layout()
-        # plt.show()
+        plt.show()
 
         def plot_interpolated(min_value, max_value, colormap, interpolation_method):
 
@@ -396,17 +398,17 @@ class Main:
             if self.cb:
                 self.cb.remove()
 
-            axs[3].cla()
-            axs[3].imshow(self.integrated_normalized_radiographs,
+            ax1.cla()
+            ax1.imshow(self.integrated_normalized_radiographs,
                           vmin=0,
                           vmax=1,
                           cmap='gray')
-            im = axs[3].imshow(interpolated_strain_mapping_2d,
+            im = ax1.imshow(interpolated_strain_mapping_2d,
                                interpolation=interpolation_method,
                                cmap=colormap,
                                vmin=min_value,
                                vmax=max_value)
-            self.cb = plt.colorbar(im, ax=axs[3])
+            self.cb = plt.colorbar(im, ax=ax1)
 
         v = interactive(plot_interpolated,
                         min_value=widgets.FloatSlider(min=minimum,
