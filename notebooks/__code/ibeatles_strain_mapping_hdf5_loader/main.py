@@ -106,7 +106,7 @@ class Main:
             compact_lambda_2d[row_index, column_index] = self.lambda_hkl[_key]
 
             lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
-            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
+            strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']  # to go to microstrain
             compact_strain_mapping[row_index, column_index] = self.strain_mapping[_key]['val']
 
             d_2d[y0: y1, x0: x1] = self.d[_key]
@@ -333,7 +333,7 @@ class Main:
         scale_factor = self.bin_size
         out_dimensions = (grid.shape[0] * scale_factor, grid.shape[1] * scale_factor)
 
-        fig0, axs = plt.subplots(nrows=4, num='microstrain', figsize=[5, 15])
+        fig1, axs = plt.subplots(nrows=4, num='microstrain interpolated', figsize=[5, 20])
 
         transform = Affine2D().scale(scale_factor, scale_factor)
         # Have to get an image to be able to resample
@@ -356,8 +356,6 @@ class Main:
         inter_height, inter_width = np.shape(interpolated)
         interpolated_strain_mapping_2d[y0: y0+inter_height, x0: x0+inter_width] = interpolated
 
-        # fig = plt.figure(num='microstrain', figsize=(6, 6))
-        # self.ax = fig.add_subplot(111)
         axs[3].imshow(self.integrated_normalized_radiographs,
                       vmin=0,
                       vmax=1,
@@ -401,22 +399,24 @@ class Main:
                           vmin=0,
                           vmax=1,
                           cmap='gray')
-            im = axs[3].imshow(interpolated_strain_mapping_2d,
+            im = axs[3].imshow(interpolated_strain_mapping_2d*1e6,
                                interpolation=interpolation_method,
                                cmap=colormap,
-                               vmin=min_value,
-                               vmax=max_value)
+                               vmin=min_value*1e6,
+                               vmax=max_value*1e6)
             self.cb = plt.colorbar(im, ax=axs[3])
 
         v = interactive(plot_interpolated,
                         min_value=widgets.FloatSlider(min=minimum,
                                                       max=maximum,
                                                       value=minimum,
-                                                      step=step),
+                                                      step=step,
+                                                      description='min (x1e6)'),
                         max_value=widgets.FloatSlider(min=minimum,
                                                       max=maximum,
                                                       value=maximum,
-                                                      step=step),
+                                                      step=step,
+                                                      description='min (x1e6)'),
                         colormap=widgets.Dropdown(options=CMAPS,
                                                   value=DEFAULT_CMAPS,
                                                   layout=widgets.Layout(width="300px")),
