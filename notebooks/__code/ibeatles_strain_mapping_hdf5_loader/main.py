@@ -130,6 +130,56 @@ class Main:
         self.strain_2d = strain_mapping_2d
         self.d_2d = d_2d
 
+    # def process_data(self):
+    #     # format the data to be able to display them
+    #
+    #     [height, width] = np.shape(self.integrated_normalized_radiographs)
+    #
+    #     lambda_2d = np.empty((height, width))
+    #     # lambda_2d[:] = np.nan
+    #
+    #     compact_lambda_2d = np.empty((self.nbr_row, self.nbr_column))
+    #
+    #     # strain_mapping_2d = np.empty((height, width))
+    #     # strain_mapping_2d[:] = np.nan
+    #     #
+    #     # d_2d = np.empty((height, width))
+    #     # d_2d[:] = np.nan
+    #
+    #     for _key in self.bin.keys():
+    #
+    #         x0 = self.bin[_key]['x0']
+    #         y0 = self.bin[_key]['y0']
+    #         x1 = self.bin[_key]['x1']
+    #         y1 = self.bin[_key]['y1']
+    #         row_index = self.bin[_key]['row_index']
+    #         column_index = self.bin[_key]['column_index']
+    #
+    #         compact_lambda_2d[row_index, column_index] = self.lambda_hkl[_key]
+    #
+    #         # lambda_2d[y0: y1, x0: x1] = self.lambda_hkl[_key]
+    #         # strain_mapping_2d[y0: y1, x0: x1] = self.strain_mapping[_key]['val']
+    #         # d_2d = self.d[_key]
+    #
+    #     self.compact_lambda_2d = compact_lambda_2d
+    #
+    #     # # let's interpolate
+    #     # X = np.arange(self.nbr_column)
+    #     # Y = np.arange(self.nbr_row)
+    #     # x, y = np.meshgrid(X, Y)
+    #     #
+    #     # f = interpolate.RectBivariateSpline(Y, X, compact_lambda_2d)
+    #     # Xnew = np.arange(width)
+    #     # Ynew = np.arange(height)
+    #     #
+    #     # lambda_2d = f(Xnew, Ynew)
+    #     #
+    #     # self.lambda_hkl_2d = lambda_2d
+    #     # self.compact_lambda_2d = compact_lambda_2d
+    #
+    #     # self.strain_2d = strain_mapping_2d
+    #     # self.d_2d = d_2d
+
     def display(self):
         self.display_lambda()
         self.display_d()
@@ -159,7 +209,7 @@ class Main:
         plt.tight_layout()
         # plt.show()
 
-        def plot_lambda(min_value, max_value, colormap):
+        def plot_lambda(min_value, max_value, colormap, interpolation_method):
 
             if self.cb0:
                 self.cb0.remove()
@@ -173,6 +223,7 @@ class Main:
                             vmax=1,
                             cmap='gray')
             self.im0 = self.ax0.imshow(data,
+                                       interpolation=interpolation_method,
                                        cmap=colormap,
                                        vmin=min_value,
                                        vmax=max_value)
@@ -189,7 +240,11 @@ class Main:
                                                       step=step),
                         colormap=widgets.Dropdown(options=CMAPS,
                                                   value=DEFAULT_CMAPS,
-                                                  layout=widgets.Layout(width="300px")))
+                                                  layout=widgets.Layout(width="300px")),
+                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+                                                              value=DEFAULT_INTERPOLATION,
+                                                              description="Interpolation",
+                                                              layout=widgets.Layout(width="300px")))
         display(v)
 
     def display_d(self):
@@ -215,7 +270,7 @@ class Main:
 
         # plt.show()
 
-        def plot_d(min_value, max_value, colormap):
+        def plot_d(min_value, max_value, colormap, interpolation_method):
             if self.cb1:
                 self.cb1.remove()
 
@@ -227,6 +282,7 @@ class Main:
                             vmax=1,
                             cmap='gray')
             self.im1 = self.ax1.imshow(data,
+                                       interpolation=interpolation_method,
                                        cmap=colormap,
                                        vmin=min_value,
                                        vmax=max_value)
@@ -243,7 +299,11 @@ class Main:
                                                       step=step),
                         colormap=widgets.Dropdown(options=CMAPS,
                                                   value=DEFAULT_CMAPS,
-                                                  layout=widgets.Layout(width="300px")))
+                                                  layout=widgets.Layout(width="300px")),
+                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+                                                              value=DEFAULT_INTERPOLATION,
+                                                              description="Interpolation",
+                                                              layout=widgets.Layout(width="300px")))
         display(v)
 
     def display_microstrain(self):
@@ -265,7 +325,7 @@ class Main:
 
         plt.tight_layout()
 
-        def plot_strain(min_value, max_value, colormap):
+        def plot_strain(min_value, max_value, colormap, interpolation_method):
             if self.cb2:
                 self.cb2.remove()
 
@@ -277,6 +337,7 @@ class Main:
                             vmax=1,
                             cmap='gray')
             self.im2 = self.ax2.imshow(data,
+                                       interpolation=interpolation_method,
                                        cmap=colormap,
                                        vmin=min_value,
                                        vmax=max_value)
@@ -293,12 +354,17 @@ class Main:
                                                       step=step),
                         colormap=widgets.Dropdown(options=CMAPS,
                                                   value=DEFAULT_CMAPS,
-                                                  layout=widgets.Layout(width="300px")))
+                                                  layout=widgets.Layout(width="300px")),
+                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
+                                                              value=DEFAULT_INTERPOLATION,
+                                                              description="Interpolation",
+                                                              layout=widgets.Layout(width="300px")))
         display(v)
 
     def display_with_interpolation(self):
         self.display_microstrain_with_interpolation()
         # self.display_lambda_with_interpolation()
+
 
     def display_lambda_with_interpolation(self):
         data = self.compact_lambda_2d
@@ -333,11 +399,12 @@ class Main:
         scale_factor = self.bin_size
         out_dimensions = (grid.shape[0] * scale_factor, grid.shape[1] * scale_factor)
 
-        fig0, axs = plt.subplots(nrows=4, num='microstrain', figsize=[5, 15])
+        fig, axs = plt.subplots(nrows=3, num='Getting the interpolated data', figsize=[5,15])
 
         transform = Affine2D().scale(scale_factor, scale_factor)
         # Have to get an image to be able to resample
-
+        # Resample takes an _ImageBase or subclass, which require an Axes
+        # img = axs[0].imshow(grid, interpolation='spline36', cmap='viridis')
         img = axs[0].imshow(grid, cmap='viridis')
         axs[0].imshow(grid, cmap='viridis')
 
@@ -356,73 +423,10 @@ class Main:
         inter_height, inter_width = np.shape(interpolated)
         interpolated_strain_mapping_2d[y0: y0+inter_height, x0: x0+inter_width] = interpolated
 
-        # fig = plt.figure(num='microstrain', figsize=(6, 6))
-        # self.ax = fig.add_subplot(111)
-        axs[3].imshow(self.integrated_normalized_radiographs,
-                      vmin=0,
-                      vmax=1,
-                      cmap='gray')
-        im = axs[3].imshow(interpolated_strain_mapping_2d, interpolation='gaussian')
-        self.cb = plt.colorbar(im, ax=axs[3])
-
-        minimum = np.nanmin(interpolated_strain_mapping_2d)
-        maximum = np.nanmax(interpolated_strain_mapping_2d)
-        step = float((maximum - minimum) / NBR_POINTS_IN_SCALE)
-
-        # plt.tight_layout()
-        # plt.show()
-
-        def plot_interpolated(min_value, max_value, colormap, interpolation_method):
-
-            img = axs[0].imshow(grid, cmap=colormap)
-            axs[0].imshow(grid, cmap=colormap)
-
-            axs[1].cla()
-            img1 = axs[1].imshow(grid, interpolation=interpolation_method, cmap=colormap)
-            interpolated = _resample(img1, grid, out_dimensions, transform=transform)
-
-            axs[2].cla()
-            axs[2].imshow(interpolated, vmin=min_value, vmax=max_value, cmap=colormap)
-
-            # with overlap
-            interpolated_strain_mapping_2d = np.empty((self.image_height, self.image_width))
-            interpolated_strain_mapping_2d[:] = np.nan
-
-            [y0, x0] = self.top_left_corner_of_roi
-
-            inter_height, inter_width = np.shape(interpolated)
-            interpolated_strain_mapping_2d[y0: y0 + inter_height, x0: x0 + inter_width] = interpolated
-
-            if self.cb:
-                self.cb.remove()
-
-            axs[3].cla()
-            axs[3].imshow(self.integrated_normalized_radiographs,
-                          vmin=0,
-                          vmax=1,
-                          cmap='gray')
-            im = axs[3].imshow(interpolated_strain_mapping_2d,
-                               interpolation=interpolation_method,
-                               cmap=colormap,
-                               vmin=min_value,
-                               vmax=max_value)
-            self.cb = plt.colorbar(im, ax=axs[3])
-
-        v = interactive(plot_interpolated,
-                        min_value=widgets.FloatSlider(min=minimum,
-                                                      max=maximum,
-                                                      value=minimum,
-                                                      step=step),
-                        max_value=widgets.FloatSlider(min=minimum,
-                                                      max=maximum,
-                                                      value=maximum,
-                                                      step=step),
-                        colormap=widgets.Dropdown(options=CMAPS,
-                                                  value=DEFAULT_CMAPS,
-                                                  layout=widgets.Layout(width="300px")),
-                        interpolation_method=widgets.Dropdown(options=INTERPOLATION_METHODS,
-                                                              value=DEFAULT_INTERPOLATION,
-                                                              description="Interpolation",
-                                                              layout=widgets.Layout(width="300px")))
-
-        display(v)
+        fig = plt.figure(num='interpolation and overlaop', figsize=(6, 6))
+        ax = fig.add_subplot(111)
+        ax.imshow(self.integrated_normalized_radiographs,
+                  vmin=0,
+                  vmax=1,
+                  cmap='gray')
+        ax.imshow(interpolated_strain_mapping_2d, interpolation='gaussian')
