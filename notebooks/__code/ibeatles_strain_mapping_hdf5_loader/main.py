@@ -3,11 +3,8 @@ from __code.ipywe import fileselector
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
-import h5py
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.text import Text
-from scipy import interpolate
 from matplotlib.image import _resample
 from matplotlib.transforms import Affine2D
 
