@@ -16,6 +16,7 @@ from __code._utilities.table_handler import TableHandler
 from __code._utilities.file import make_or_increment_folder_name
 from __code._utilities.check import is_float
 
+from __code.registration.event_handler import EventHandler
 from __code.registration.initialization import Initialization
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
@@ -175,64 +176,67 @@ class RegistrationUi(QMainWindow):
             o_table.set_all_row_hidden(False)
 
     def table_right_click(self):
-        top_menu = QMenu(self)
+        o_event = EventHandler(parent=self)
+        o_event.table_right_click()
 
-        state_of_paste = True
-        if self.value_to_copy is None:
-            state_of_paste = False
+        # top_menu = QMenu(self)
+        #
+        # state_of_paste = True
+        # if self.value_to_copy is None:
+        #     state_of_paste = False
+        #
+        # copy_menu = QMenu("Copy ...")
+        # top_menu.addMenu(copy_menu)
+        # copy_xoffset_menu = copy_menu.addAction("From first xoffset cell selected")
+        # copy_yoffset_menu = copy_menu.addAction("From first yoffset cell selected")
+        #
+        # paste_menu = QMenu("Paste ...")
+        # paste_menu.setEnabled(state_of_paste)
+        # top_menu.addMenu(paste_menu)
+        # paste_xoffset_menu = paste_menu.addAction("In all xoffset cell selected")
+        # paste_yoffset_menu = paste_menu.addAction("In all yoffset cell selected")
+        #
+        # action = top_menu.exec_(QtGui.QCursor.pos())
+        #
+        # if action == copy_xoffset_menu:
+        #     self.copy_xoffset_value()
+        # elif action == copy_yoffset_menu:
+        #     self.copy_yoffset_value()
+        # elif action == paste_xoffset_menu:
+        #     self.paste_xoffset_value()
+        # elif action == paste_yoffset_menu:
+        #     self.paste_yoffset_value()
 
-        copy_menu = QMenu("Copy ...")
-        top_menu.addMenu(copy_menu)
-        copy_xoffset_menu = copy_menu.addAction("From first xoffset cell selected")
-        copy_yoffset_menu = copy_menu.addAction("From first yoffset cell selected")
+    # def copy_xoffset_value(self):
+    #     self.value_to_copy = self.get_value_to_copy(column=1)
+    #
+    # def copy_yoffset_value(self):
+    #     self.value_to_copy = self.get_value_to_copy(column=2)
+    #
+    # def get_value_to_copy(self, column=1):
+    #     o_table = TableHandler(self.ui.tableWidget)
+    #     row_selected = o_table.get_row_selected()
+    #     value_to_copy = o_table.get_item_str_from_cell(row=row_selected,
+    #                                                    column=column)
+    #     return value_to_copy
+    #
+    # def paste_xoffset_value(self):
+    #     self.paste_value_copied(column=1)
+    #
+    # def paste_yoffset_value(self):
+    #     self.paste_value_copied(column=2)
 
-        paste_menu = QMenu("Paste ...")
-        paste_menu.setEnabled(state_of_paste)
-        top_menu.addMenu(paste_menu)
-        paste_xoffset_menu = paste_menu.addAction("In all xoffset cell selected")
-        paste_yoffset_menu = paste_menu.addAction("In all yoffset cell selected")
-
-        action = top_menu.exec_(QtGui.QCursor.pos())
-
-        if action == copy_xoffset_menu:
-            self.copy_xoffset_value()
-        elif action == copy_yoffset_menu:
-            self.copy_yoffset_value()
-        elif action == paste_xoffset_menu:
-            self.paste_xoffset_value()
-        elif action == paste_yoffset_menu:
-            self.paste_yoffset_value()
-
-    def copy_xoffset_value(self):
-        self.value_to_copy = self.get_value_to_copy(column=1)
-
-    def copy_yoffset_value(self):
-        self.value_to_copy = self.get_value_to_copy(column=2)
-
-    def get_value_to_copy(self, column=1):
-        o_table = TableHandler(self.ui.tableWidget)
-        row_selected = o_table.get_row_selected()
-        value_to_copy = o_table.get_item_str_from_cell(row=row_selected,
-                                                       column=column)
-        return value_to_copy
-
-    def paste_xoffset_value(self):
-        self.paste_value_copied(column=1)
-
-    def paste_yoffset_value(self):
-        self.paste_value_copied(column=2)
-
-    def paste_value_copied(self, column=1):
-        o_table = TableHandler(self.ui.tableWidget)
-        row_selected = o_table.get_rows_of_table_selected()
-        self.ui.tableWidget.blockSignals(True)
-
-        for _row in row_selected:
-            o_table.set_item_with_str(row=_row,
-                                      column=column,
-                                      cell_str=self.value_to_copy)
-
-        self.ui.tableWidget.blockSignals(False)
+    # def paste_value_copied(self, column=1):
+    #     o_table = TableHandler(self.ui.tableWidget)
+    #     row_selected = o_table.get_rows_of_table_selected()
+    #     self.ui.tableWidget.blockSignals(True)
+    #
+    #     for _row in row_selected:
+    #         o_table.set_item_with_str(row=_row,
+    #                                   column=column,
+    #                                   cell_str=self.value_to_copy)
+    #
+    #     self.ui.tableWidget.blockSignals(False)
 
     def display_markers(self, all=False):
         if self.registration_markers_ui is None:
