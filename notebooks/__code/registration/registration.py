@@ -17,6 +17,7 @@ from __code._utilities.file import make_or_increment_folder_name
 from __code._utilities.check import is_float
 
 from __code.registration.event_handler import EventHandler
+from __code.registration.get import Get
 from __code.registration.initialization import Initialization
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
@@ -179,65 +180,6 @@ class RegistrationUi(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.table_right_click()
 
-        # top_menu = QMenu(self)
-        #
-        # state_of_paste = True
-        # if self.value_to_copy is None:
-        #     state_of_paste = False
-        #
-        # copy_menu = QMenu("Copy ...")
-        # top_menu.addMenu(copy_menu)
-        # copy_xoffset_menu = copy_menu.addAction("From first xoffset cell selected")
-        # copy_yoffset_menu = copy_menu.addAction("From first yoffset cell selected")
-        #
-        # paste_menu = QMenu("Paste ...")
-        # paste_menu.setEnabled(state_of_paste)
-        # top_menu.addMenu(paste_menu)
-        # paste_xoffset_menu = paste_menu.addAction("In all xoffset cell selected")
-        # paste_yoffset_menu = paste_menu.addAction("In all yoffset cell selected")
-        #
-        # action = top_menu.exec_(QtGui.QCursor.pos())
-        #
-        # if action == copy_xoffset_menu:
-        #     self.copy_xoffset_value()
-        # elif action == copy_yoffset_menu:
-        #     self.copy_yoffset_value()
-        # elif action == paste_xoffset_menu:
-        #     self.paste_xoffset_value()
-        # elif action == paste_yoffset_menu:
-        #     self.paste_yoffset_value()
-
-    # def copy_xoffset_value(self):
-    #     self.value_to_copy = self.get_value_to_copy(column=1)
-    #
-    # def copy_yoffset_value(self):
-    #     self.value_to_copy = self.get_value_to_copy(column=2)
-    #
-    # def get_value_to_copy(self, column=1):
-    #     o_table = TableHandler(self.ui.tableWidget)
-    #     row_selected = o_table.get_row_selected()
-    #     value_to_copy = o_table.get_item_str_from_cell(row=row_selected,
-    #                                                    column=column)
-    #     return value_to_copy
-    #
-    # def paste_xoffset_value(self):
-    #     self.paste_value_copied(column=1)
-    #
-    # def paste_yoffset_value(self):
-    #     self.paste_value_copied(column=2)
-
-    # def paste_value_copied(self, column=1):
-    #     o_table = TableHandler(self.ui.tableWidget)
-    #     row_selected = o_table.get_rows_of_table_selected()
-    #     self.ui.tableWidget.blockSignals(True)
-    #
-    #     for _row in row_selected:
-    #         o_table.set_item_with_str(row=_row,
-    #                                   column=column,
-    #                                   cell_str=self.value_to_copy)
-    #
-    #     self.ui.tableWidget.blockSignals(False)
-
     def display_markers(self, all=False):
         if self.registration_markers_ui is None:
             return
@@ -250,21 +192,15 @@ class RegistrationUi(QMainWindow):
             for _index, _marker_name in enumerate(self.markers_table.keys()):
                 self.display_markers_of_tab(marker_name=_marker_name)
 
-    def get_list_short_file_selected(self):
-        list_row_selected = self.get_list_row_selected()
-        full_list_files = np.array(self.data_dict['file_name'])
-        list_file_selected = full_list_files[list_row_selected]
-        list_short_file_selected = [os.path.basename(_file) for _file in
-                                    list_file_selected]
-        return list_short_file_selected
-
     def display_markers_of_tab(self, marker_name=''):
         self.close_markers_of_tab(marker_name=marker_name)
         # get short name of file selected
-        list_short_file_selected = self.get_list_short_file_selected()
+        o_get = Get(parent=self)
+        list_short_file_selected = o_get.list_short_file_selected()
         nbr_file_selected = len(list_short_file_selected)
         if nbr_file_selected > 1:
-            list_row_selected = self.get_list_row_selected()
+            o_get = Get(parent=self)
+            list_row_selected = o_get.list_row_selected()
         _color_marker = self.markers_table[marker_name]['color']['name']
 
         pen = self.markers_table[marker_name]['color']['qpen']
@@ -295,7 +231,8 @@ class RegistrationUi(QMainWindow):
         list_short_file_selected = self.get_list_short_file_selected()
         nbr_file_selected = len(list_short_file_selected)
         if nbr_file_selected > 1:
-            list_row_selected = self.get_list_row_selected()
+            o_get = Get(parent=self)
+            list_row_selected = o_get.list_row_selected()
 
         for _index_marker, _marker_name in enumerate(self.markers_table.keys()):
             _color_marker = self.markers_table[_marker_name]['color']['name']
@@ -810,19 +747,6 @@ class RegistrationUi(QMainWindow):
 
     # Utilities
 
-    def get_list_row_selected(self):
-        table_selection = self.ui.tableWidget.selectedRanges()
-
-        # that means we selected the first row
-        if table_selection is None:
-            return [0]
-
-        table_selection = table_selection[0]
-        top_row = table_selection.topRow()
-        bottom_row = table_selection.bottomRow() + 1
-
-        return np.arange(top_row, bottom_row)
-
     def check_registration_tool_widgets(self):
         """if the registration tool is active, and the reference image is the only row selected,
         disable the widgets"""
@@ -862,7 +786,8 @@ class RegistrationUi(QMainWindow):
         self.ui.file_slider.blockSignals(False)
 
     def table_cell_modified(self, row=-1, column=-1):
-        list_row_selected = self.get_list_row_selected()
+        o_get = Get(parent=self)
+        list_row_selected = o_get.list_row_selected()
         self.modified_images(list_row=list_row_selected)
         self.display_image()
         self.profile_line_moved()
