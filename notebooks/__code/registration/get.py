@@ -27,3 +27,19 @@ class Get:
         bottom_row = table_selection.bottomRow() + 1
 
         return np.arange(top_row, bottom_row)
+
+    def image_selected(self):
+        """to get the image selected, we will use the table selection as the new version
+        allows several rows"""
+        # index_selected = self.ui.file_slider.value()
+
+        table_selection = self.parent.ui.tableWidget.selectedRanges()
+        if table_selection is None:
+            return []
+
+        table_selection = table_selection[0]
+        top_row = table_selection.topRow()  # offset because first image is reference image
+        bottom_row = table_selection.bottomRow() + 1
+
+        _image = np.mean(self.parent.data_dict['data'][top_row:bottom_row], axis=0)
+        return _image

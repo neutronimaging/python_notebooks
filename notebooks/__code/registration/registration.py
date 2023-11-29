@@ -18,6 +18,7 @@ from __code._utilities.check import is_float
 
 from __code.registration.event_handler import EventHandler
 from __code.registration.get import Get
+from __code.registration.display import Display
 from __code.registration.initialization import Initialization
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
@@ -485,81 +486,9 @@ class RegistrationUi(QMainWindow):
             item.setBackground(self.color_reference_background)
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    def get_image_selected(self):
-        """to get the image iselected, we will use the table selection as the new version
-        allows several rows"""
-        # index_selected = self.ui.file_slider.value()
-
-        table_selection = self.ui.tableWidget.selectedRanges()
-        if table_selection is None:
-            return []
-
-        table_selection = table_selection[0]
-        top_row = table_selection.topRow()   # offset because first image is reference image
-        bottom_row = table_selection.bottomRow() + 1
-
-        _image = np.mean(self.data_dict['data'][top_row:bottom_row], axis=0)
-        return _image
-
     def display_image(self):
-
-        # if more than one row selected !
-        if self.ui.selection_groupBox.isVisible():
-            # if all selected
-            if self.ui.selection_all.isChecked():
-                _image = self.get_image_selected()
-            else:  # display selected images according to slider position
-
-                # retrieve slider infos
-                slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
-
-                from_index = int(slider_index)
-                to_index = int(slider_index + 1)
-
-                if from_index == slider_index:
-                    _image = self.data_dict['data'][from_index]
-                else:
-                    _from_image = self.data_dict['data'][from_index]
-
-                    _to_image = self.data_dict['data'][to_index]
-
-                    _from_coefficient = np.abs(to_index - slider_index)
-                    _to_coefficient = np.abs(slider_index - from_index)
-                    _image = _from_image * _from_coefficient + _to_image * _to_coefficient
-
-        else:  # only 1 row selected
-            _image = self.get_image_selected()
-
-        if _image is None:  # display only reference image
-            self.display_only_reference_image()
-            return
-
-        self.ui.selection_reference_opacity_groupBox.setVisible(True)
-
-        _view = self.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        first_update = False
-        if self.histogram_level is None:
-            first_update = True
-        _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget.getLevels()
-
-        _opacity_coefficient = self.ui.opacity_slider.value()   # betwween 0 and 100
-        _opacity_image = _opacity_coefficient / 100.
-        _image = np.transpose(_image) * _opacity_image
-
-        _opacity_selected = 1 - _opacity_image
-        _reference_image = np.transpose(self.reference_image) * _opacity_selected
-
-        _final_image = _reference_image + _image
-        self.ui.image_view.setImage(_final_image)
-        self.live_image = _final_image
-        _view_box.setState(_state)
-
-        if not first_update:
-            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
+        o_display = Display(parent=self)
+        o_display.image()
 
     def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
         """calculate the matrix that defines the vertical and horizontal lines
@@ -651,28 +580,6 @@ class RegistrationUi(QMainWindow):
                      symbol=None,
                      pxMode=False)
         self.grid_view['item'] = grid
-
-    def display_only_reference_image(self):
-
-        self.ui.selection_reference_opacity_groupBox.setVisible(False)
-
-        _view = self.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        first_update = False
-        if self.histogram_level is None:
-            first_update = True
-        _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget.getLevels()
-
-        _image = np.transpose(self.reference_image)
-        self.ui.image_view.setImage(_image)
-        self.live_image = _image
-        _view_box.setState(_state)
-
-        if not first_update:
-            _histo_widget.setLevels(self.histogram_level[0], self.histogram_level[1])
 
     def select_row_in_table(self, row=0):
         nbr_col = self.ui.tableWidget.columnCount()
