@@ -6,18 +6,17 @@ from skimage import transform
 from scipy.ndimage.interpolation import shift
 import copy
 import pyqtgraph as pg
-from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout, QMenu, QTableWidgetSelectionRange, \
-    QProgressBar, QTableWidgetItem, QApplication
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QMenu, QTableWidgetSelectionRange, \
+     QTableWidgetItem, QApplication
 from qtpy import QtGui, QtCore
 import webbrowser
 
 from __code import load_ui
-from __code._utilities.color import Color
 from __code._utilities.table_handler import TableHandler
 from __code._utilities.file import make_or_increment_folder_name
 from __code._utilities.check import is_float
 
+from __code.registration.initialization import Initialization
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
 from __code.registration.export_registration import ExportRegistration
@@ -38,11 +37,11 @@ class RegistrationUi(QMainWindow):
     value_to_copy = None
 
     # image view
-    histogram_level = []
+    histogram_level = None
 
     # by default, the reference image is the first image
     reference_image_index = 0
-    reference_image = []
+    reference_image = None
     reference_image_short_name = ''
     color_reference_background = QtGui.QColor(50, 250, 50)
     color_reference_profile = [50, 250, 50]
@@ -59,7 +58,7 @@ class RegistrationUi(QMainWindow):
                  'color': (0, 0, 255, 255, 1)}
 
     new_reference_image = True
-    list_rgb_profile_color = []
+    list_rgb_profile_color = None
 
     # external registration ui
     registration_tool_ui = None
@@ -95,9 +94,6 @@ class RegistrationUi(QMainWindow):
                                                  'ui_registration.ui'))
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
-        # QMainWindow.__init__(self, parent=parent)
-        # self.ui = UiMainWindow()
-        # self.ui.setupUi(self)
         self.setWindowTitle("Registration")
 
         self.data_dict = data_dict  # Normalization data dictionary  {'filename': [],
@@ -112,115 +108,14 @@ class RegistrationUi(QMainWindow):
         self.reference_image_short_name = str(os.path.basename(self.data_dict['file_name'][0]))
 
         # initialization
-        self.init_pyqtgrpah()
-        self.init_widgets()
-        self.init_table()
-        self.init_parameters()
-        self.init_statusbar()
+        o_init = Initialization(parent=self)
+        o_init.run_all()
 
         # display line profile
         self.profile_line_moved()
 
         self.new_reference_image = False
         self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
-
-    # initialization
-    def init_statusbar(self):
-        self.eventProgress = QProgressBar(self.ui.statusbar)
-        self.eventProgress.setMinimumSize(300, 20)
-        self.eventProgress.setMaximumSize(300, 20)
-        self.eventProgress.setVisible(False)
-        self.ui.statusbar.addPermanentWidget(self.eventProgress)
-
-    def init_parameters(self):
-        nbr_files = len(self.data_dict['file_name'])
-        self.nbr_files = nbr_files
-        _color = Color()
-        self.list_rgb_profile_color = _color.get_list_rgb(nbr_color=nbr_files)
-
-        o_marker = MarkerDefaultSettings(image_reference=self.reference_image)
-        self.o_MarkerDefaultSettings = o_marker
-
-    def init_pyqtgrpah(self):
-        area = DockArea()
-        area.setVisible(True)
-        d1 = Dock("Registered Image", size=(400, 600))
-        d2 = Dock("Profile", size=(400, 200))
-
-        area.addDock(d1, 'top')
-        area.addDock(d2, 'bottom')
-
-        # registered image
-        self.ui.image_view = pg.ImageView(view=pg.PlotItem())
-        self.ui.image_view.ui.menuBtn.hide()
-        self.ui.image_view.ui.roiBtn.hide()
-        # profile selection tool
-        self.ui.profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen='r')
-        self.ui.image_view.addItem(self.ui.profile_line)
-        d1.addWidget(self.ui.image_view)
-        self.ui.profile_line.sigRegionChanged.connect(self.profile_line_moved)
-
-        # profile
-        self.ui.profile = pg.PlotWidget(title='Profile')
-        self.ui.profile.plot()
-        self.legend = self.ui.profile.addLegend()
-        d2.addWidget(self.ui.profile)
-
-        # set up layout
-        vertical_layout = QVBoxLayout()
-        vertical_layout.addWidget(area)
-
-        self.ui.pyqtgraph_widget.setLayout(vertical_layout)
-
-    def init_widgets(self):
-        """size and label of any widgets"""
-        self.ui.splitter_2.setSizes([800, 100])
-
-        # update size of table columns
-        nbr_columns = self.ui.tableWidget.columnCount()
-        for _col in range(nbr_columns):
-            self.ui.tableWidget.setColumnWidth(_col, self.table_column_width[_col])
-
-        # update slide widget of files
-        nbr_files = len(self.data_dict['file_name'])
-        self.ui.file_slider.setMinimum(0)
-        self.ui.file_slider.setMaximum(nbr_files-1)
-
-        # selected image
-        reference_image = self.data_dict['file_name'][0]
-        self.ui.reference_image_label.setText(reference_image)
-
-        # selection slider
-        self.ui.selection_groupBox.setVisible(False)
-        self.ui.next_image_button.setEnabled(True)
-
-        # selected vs reference slider
-        self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
-
-    def init_table(self):
-        """populate the table with list of file names and default xoffset, yoffset and rotation"""
-        list_file_names = self.data_dict['file_name']
-        table_registration = {}
-
-        _row_index = 0
-        for _file_index, _file in enumerate(list_file_names):
-
-            _row_infos = {}
-
-            # col 0 - file name
-            _row_infos['filename'] = _file
-            _row_infos['xoffset'] = 0
-            _row_infos['yoffset'] = 0
-            _row_infos['rotation'] = 0
-
-            table_registration[_row_index] = _row_infos
-            _row_index += 1
-
-        self.table_registration = table_registration
-        self.populate_table()
-
-        #select first row
-        self.select_row_in_table(0)
 
     def filter_radioButton_clicked(self):
         self.ui.filter_groupBox.setEnabled(self.ui.filter_radioButton.isChecked())
@@ -508,7 +403,7 @@ class RegistrationUi(QMainWindow):
 
     def profile_line_moved(self):
         """update profile plot"""
-        if self.live_image == []:
+        if self.live_image is None:
             return
 
         self.ui.profile.clear()
@@ -579,7 +474,7 @@ class RegistrationUi(QMainWindow):
         else:
 
             table_selection = self.ui.tableWidget.selectedRanges()
-            if not table_selection == []:
+            if not (table_selection is None):
 
                 table_selection = table_selection[0]
                 row_selected = table_selection.topRow()
@@ -655,7 +550,7 @@ class RegistrationUi(QMainWindow):
         # index_selected = self.ui.file_slider.value()
 
         table_selection = self.ui.tableWidget.selectedRanges()
-        if table_selection == []:
+        if table_selection is None:
             return []
 
         table_selection = table_selection[0]
@@ -694,7 +589,7 @@ class RegistrationUi(QMainWindow):
         else:  # only 1 row selected
             _image = self.get_image_selected()
 
-        if _image == []:  # display only reference image
+        if _image is None:  # display only reference image
             self.display_only_reference_image()
             return
 
@@ -705,7 +600,7 @@ class RegistrationUi(QMainWindow):
         _state = _view_box.getState()
 
         first_update = False
-        if self.histogram_level == []:
+        if self.histogram_level is None:
             first_update = True
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
@@ -772,7 +667,7 @@ class RegistrationUi(QMainWindow):
         _view_box = _view.getViewBox()
         _state = _view_box.getState()
         first_update = False
-        if self.histogram_level == []:
+        if self.histogram_level is None:
             first_update = True
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
@@ -825,7 +720,7 @@ class RegistrationUi(QMainWindow):
         _state = _view_box.getState()
 
         first_update = False
-        if self.histogram_level == []:
+        if self.histogram_level is None:
             first_update = True
         _histo_widget = self.ui.image_view.getHistogramWidget()
         self.histogram_level = _histo_widget.getLevels()
@@ -915,7 +810,7 @@ class RegistrationUi(QMainWindow):
         table_selection = self.ui.tableWidget.selectedRanges()
 
         # that means we selected the first row
-        if table_selection == []:
+        if table_selection is None:
             return [0]
 
         table_selection = table_selection[0]

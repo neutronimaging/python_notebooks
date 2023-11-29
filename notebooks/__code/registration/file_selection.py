@@ -32,5 +32,5 @@ class FileSelection:
 
         self.files_ui.show()
 
-    def close(self):
-        self.parent.registration_tool_ui = None
+    # def close(self):
+    #     self.parent.registration_tool_ui = None

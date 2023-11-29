@@ -27,8 +27,8 @@ class MarkerDefaultSettings:
                   'black' : '000000',
                   }
 
-    def __init__(self, image_reference=[]):
-        if not image_reference == []:
+    def __init__(self, image_reference=None):
+        if not (image_reference is None):
             [height, width] = np.shape(image_reference)
             self.x = int(width / 2)
             self.y = int(height / 2)
