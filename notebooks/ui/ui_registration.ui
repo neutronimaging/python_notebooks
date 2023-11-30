@@ -477,154 +477,144 @@
        <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
            <item>
-            <widget class="QLabel" name="label">
-             <property name="maximumSize">
-              <size>
-               <width>110</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Reference Image:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="reference_image_label">
-             <property name="text">
-              <string>N/A</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>110</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Change ...</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_7">
-           <item>
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="filter_radioButton">
+            <widget class="QGroupBox" name="groupBox_3">
              <property name="minimumSize">
               <size>
-               <width>50</width>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Reference Image</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QLabel" name="reference_image_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_3">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>110</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Change ...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_4">
+             <property name="minimumSize">
+              <size>
+               <width>300</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>50</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Filter</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="filter_groupBox">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>38</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>70</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
                <width>400</width>
-               <height>70</height>
+               <height>16777215</height>
               </size>
              </property>
              <property name="title">
               <string/>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <widget class="QLabel" name="label_6">
+               <widget class="QCheckBox" name="filter_checkBox">
                 <property name="text">
-                 <string>Filter:</string>
+                 <string>filter</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="filter_column_name_comboBox">
-                <item>
-                 <property name="text">
-                  <string>Xoffset</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Yoffset</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Rotation</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="filter_logic_comboBox">
-                <item>
-                 <property name="text">
-                  <string>&gt;=</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>&lt;=</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="filter_value">
-                <property name="text">
-                 <string>0</string>
+               <widget class="QGroupBox" name="filter_groupBox">
+                <property name="enabled">
+                 <bool>false</bool>
                 </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>38</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>70</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>400</width>
+                  <height>70</height>
+                 </size>
+                </property>
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QComboBox" name="filter_column_name_comboBox">
+                   <item>
+                    <property name="text">
+                     <string>Xoffset</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Yoffset</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Rotation</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="filter_logic_comboBox">
+                   <item>
+                    <property name="text">
+                     <string>&gt;=</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>&lt;=</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="filter_value">
+                   <property name="text">
+                    <string>0</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
@@ -826,7 +816,9 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../__code/icons/icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>export_button</sender>
@@ -1149,22 +1141,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>filter_radioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>filter_radioButton_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>843</x>
-     <y>714</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>886</x>
-     <y>1094</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>filter_column_name_comboBox</sender>
    <signal>currentIndexChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -1212,6 +1188,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>filter_checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>filter_checkbox_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>918</x>
+     <y>640</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>886</x>
+     <y>1094</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -1234,10 +1226,10 @@
   <slot>markers_registration_button_clicked()</slot>
   <slot>profiler_registration_button_clicked()</slot>
   <slot>table_right_click()</slot>
-  <slot>filter_radioButton_clicked()</slot>
   <slot>filter_column_changed()</slot>
   <slot>filter_algo_changed()</slot>
   <slot>filter_value_changed()</slot>
   <slot>linear_interpolation_clicked()</slot>
+  <slot>filter_checkbox_clicked()</slot>
  </slots>
 </ui>

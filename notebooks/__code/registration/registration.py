@@ -11,6 +11,7 @@ import webbrowser
 
 from __code import load_ui
 
+from __code._utilities.table_handler import TableHandler
 from __code.registration.event_handler import EventHandler
 from __code.registration.marker_handler import MarkerHandler
 from __code.registration.get import Get
@@ -117,8 +118,8 @@ class RegistrationUi(QMainWindow):
         self.new_reference_image = False
         self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
 
-    def filter_radioButton_clicked(self):
-        self.ui.filter_groupBox.setEnabled(self.ui.filter_radioButton.isChecked())
+    def filter_checkbox_clicked(self):
+        self.ui.filter_groupBox.setEnabled(self.ui.filter_checkBox.isChecked())
         o_event = EventHandler(parent=self)
         o_event.update_table_according_to_filter()
 
@@ -137,32 +138,6 @@ class RegistrationUi(QMainWindow):
     def table_right_click(self):
         o_event = EventHandler(parent=self)
         o_event.table_right_click()
-
-    # def modified_images(self, list_row=[], all_row=False):
-    #     """using data_dict_raw images, will apply offset and rotation parameters
-    #     and will save them in data_dict for plotting"""
-    #
-    #     data_raw = self.data_dict_raw['data'].copy()
-    #
-    #     if all_row:
-    #         list_row = np.arange(0, self.nbr_files)
-    #     else:
-    #         list_row = list_row
-    #
-    #     for _row in list_row:
-    #
-    #         try:
-    #             xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
-    #             yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
-    #             rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
-    #         except AttributeError:
-    #             return
-    #
-    #         _data = data_raw[_row].copy()
-    #         _data = transform.rotate(_data, rotate_angle)
-    #         _data = shift(_data, (yoffset, xoffset), )
-    #
-    #         self.data_dict['data'][_row] = _data
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
@@ -206,7 +181,11 @@ class RegistrationUi(QMainWindow):
         o_display = Display(parent=self)
         o_display.image()
 
-    def select_row_in_table(self, row=0):
+    def select_row_in_table(self, row=0, user_selected_row=True):
+
+        if not user_selected_row:
+            self.ui.tableWidget.blockSignals(True)
+
         nbr_col = self.ui.tableWidget.columnCount()
         nbr_row = self.ui.tableWidget.rowCount()
 
@@ -220,11 +199,17 @@ class RegistrationUi(QMainWindow):
 
         self.ui.tableWidget.showRow(row)
 
+        if not user_selected_row:
+            self.ui.tableWidget.blockSignals(False)
+
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
+
         current_slider_value = self.ui.file_slider.value()
+
         new_row_selected = current_slider_value + offset
-        self.select_row_in_table(row=new_row_selected)
+
+        self.select_row_in_table(row=new_row_selected, user_selected_row=False)
         self.ui.file_slider.setValue(new_row_selected)
 
         o_check = Check(parent=self)
@@ -249,8 +234,6 @@ class RegistrationUi(QMainWindow):
         for _row in np.arange(nbr_row):
             o_event.modified_images(list_row=[_row])
             o_event.profile_line_moved()
-
-    # Event handler
 
     def opacity_changed(self, opacity_value):
         self.display_image()
