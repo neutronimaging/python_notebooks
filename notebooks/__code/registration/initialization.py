@@ -2,6 +2,7 @@ import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 from qtpy.QtWidgets import QVBoxLayout, QProgressBar
 
+from __code.icons import icons_rc  # do not remove
 from __code._utilities.color import Color
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 
@@ -17,6 +18,22 @@ class Initialization:
         self.table()
         self.parameters()
         self.statusbar()
+        self.splitter()
+
+    def splitter(self):
+        self.parent.ui.splitter_2.setStyleSheet("""
+                                     QSplitter::handle{
+                                     image: url(":/MPL Toolbar/vertical_splitter_handle.png");
+                                     }
+                                     """)
+        self.parent.ui.splitter_2.setHandleWidth(15)
+
+        self.parent.ui.splitter.setStyleSheet("""
+                                     QSplitter::handle{
+                                     image: url(":/MPL Toolbar/vertical_splitter_handle.png");
+                                     }
+                                     """)
+        self.parent.ui.splitter.setHandleWidth(15)
 
     def pyqtgrpah(self):
         area = DockArea()
