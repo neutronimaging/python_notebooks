@@ -14,13 +14,13 @@ import webbrowser
 from __code import load_ui
 from __code._utilities.table_handler import TableHandler
 from __code._utilities.file import make_or_increment_folder_name
-from __code._utilities.check import is_float
 
 from __code.registration.event_handler import EventHandler
+from __code.registration.marker_handler import MarkerHandler
 from __code.registration.get import Get
 from __code.registration.display import Display
 from __code.registration.initialization import Initialization
-from __code.registration.marker_default_settings import MarkerDefaultSettings
+# from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
 from __code.registration.export_registration import ExportRegistration
 from __code.registration.registration_auto import RegistrationAuto
@@ -122,60 +122,20 @@ class RegistrationUi(QMainWindow):
 
     def filter_radioButton_clicked(self):
         self.ui.filter_groupBox.setEnabled(self.ui.filter_radioButton.isChecked())
-        self.update_table_according_to_filter()
+        o_event = EventHandler(parent=self)
+        o_event.update_table_according_to_filter()
 
     def filter_value_changed(self, value):
-        self.update_table_according_to_filter()
+        o_event = EventHandler(parent=self)
+        o_event.update_table_according_to_filter()
 
     def filter_algo_changed(self, index):
-        self.update_table_according_to_filter()
+        o_event = EventHandler(parent=self)
+        o_event.update_table_according_to_filter()
 
     def filter_column_changed(self, index):
-        self.update_table_according_to_filter()
-
-    def update_table_according_to_filter(self):
-        filter_flag = self.ui.filter_radioButton.isChecked()
-
-        o_table = TableHandler(table_ui=self.ui.tableWidget)
-
-        def should_row_be_visible(row_value=None, filter_algo_selected="<=", filter_value=None):
-
-            if is_float(filter_value):
-                o_table.set_all_row_hidden(False)
-                return
-
-            if filter_algo_selected == "<=":
-                return float(row_value) <= float(filter_value)
-            elif filter_algo_selected == ">=":
-                return float(row_value) >= float(filter_value)
-            else:
-                raise NotImplementedError("algo not implemented!")
-
-        if filter_flag:
-            # select only rows according to filter
-            filter_column_selected = self.ui.filter_column_name_comboBox.currentText()
-            filter_algo_selected = self.ui.filter_logic_comboBox.currentText()
-            filter_value = self.ui.filter_value.text()
-
-            if filter_column_selected == "Xoffset":
-                filter_column_index = 1
-            elif filter_column_selected == "Yoffset":
-                filter_column_index = 2
-            elif filter_column_selected == "Rotation":
-                filter_column_index = 3
-            else:
-                raise NotImplementedError("column can not be used with filter!")
-
-            nbr_row = o_table.row_count()
-            for _row in np.arange(nbr_row):
-                _row_value = float(o_table.get_item_str_from_cell(row=_row, column=filter_column_index))
-                _should_row_be_visible = should_row_be_visible(row_value=_row_value,
-                                                               filter_algo_selected=filter_algo_selected,
-                                                               filter_value=filter_value)
-                o_table.set_row_hidden(_row, not _should_row_be_visible)
-        else:
-            # all rows are visible
-            o_table.set_all_row_hidden(False)
+        o_event = EventHandler(parent=self)
+        o_event.update_table_according_to_filter()
 
     def table_right_click(self):
         o_event = EventHandler(parent=self)
@@ -193,104 +153,33 @@ class RegistrationUi(QMainWindow):
             for _index, _marker_name in enumerate(self.markers_table.keys()):
                 self.display_markers_of_tab(marker_name=_marker_name)
 
-    def display_markers_of_tab(self, marker_name=''):
-        self.close_markers_of_tab(marker_name=marker_name)
-        # get short name of file selected
-        o_get = Get(parent=self)
-        list_short_file_selected = o_get.list_short_file_selected()
-        nbr_file_selected = len(list_short_file_selected)
-        if nbr_file_selected > 1:
-            o_get = Get(parent=self)
-            list_row_selected = o_get.list_row_selected()
-        _color_marker = self.markers_table[marker_name]['color']['name']
+    # def add_marker_label(self, file_index=0, marker_index=1, x=0, y=0, color='white'):
+    #     html_color = MarkerDefaultSettings.color_html[color]
+    #     html_text = '<div style="text-align: center">Marker#:'
+    #     html_text += '<span style="color:#' + str(html_color) + ';">' + str(int(marker_index)+1)
+    #     html_text += '</span> - File#:'
+    #     html_text += '<span style="color:#' + str(html_color) + ';">' + str(file_index)
+    #     html_text += '</span>'
+    #     text_ui = pg.TextItem(html=html_text, angle=45, border='w')
+    #     self.ui.image_view.addItem(text_ui)
+    #     text_ui.setPos(x + MarkerDefaultSettings.width, y)
+    #     return text_ui
 
-        pen = self.markers_table[marker_name]['color']['qpen']
-        for _index, _file in enumerate(list_short_file_selected):
-            _marker_data = self.markers_table[marker_name]['data'][_file]
-
-            x = _marker_data['x']
-            y = _marker_data['y']
-            width = MarkerDefaultSettings.width
-            height = MarkerDefaultSettings.height
-
-            _marker_ui = pg.RectROI([x,y], [width, height], pen=pen)
-            self.ui.image_view.addItem(_marker_ui)
-            _marker_ui.removeHandle(0)
-            _marker_ui.sigRegionChanged.connect(self.marker_has_been_moved)
-
-            if nbr_file_selected > 1: # more than 1 file selected, we need to add the index of the file
-                text_ui = self.add_marker_label(file_index=list_row_selected[_index],
-                                                marker_index=marker_name,
-                                                x=x,
-                                                y=y,
-                                                color=_color_marker)
-                self.markers_table[marker_name]['data'][_file]['label_ui'] = text_ui
-
-            _marker_data['marker_ui'] = _marker_ui
-
-    def marker_has_been_moved(self):
-        list_short_file_selected = self.get_list_short_file_selected()
-        nbr_file_selected = len(list_short_file_selected)
-        if nbr_file_selected > 1:
-            o_get = Get(parent=self)
-            list_row_selected = o_get.list_row_selected()
-
-        for _index_marker, _marker_name in enumerate(self.markers_table.keys()):
-            _color_marker = self.markers_table[_marker_name]['color']['name']
-            for _index_file, _file in enumerate(list_short_file_selected):
-                _marker_data = self.markers_table[_marker_name]['data'][_file]
-                marker_ui = _marker_data['marker_ui']
-
-                region = marker_ui.getArraySlice(self.live_image,
-                                                 self.ui.image_view.imageItem)
-
-                x0 = region[0][0].start
-                y0 = region[0][1].start
-
-                self.markers_table[_marker_name]['data'][_file]['x'] = x0
-                self.markers_table[_marker_name]['data'][_file]['y'] = y0
-
-                self.registration_markers_ui.update_markers_table_entry(marker_name=_marker_name,
-                                                                        file=_file)
-
-                if nbr_file_selected > 1:
-                    _label_ui = _marker_data['label_ui']
-                    self.ui.image_view.removeItem(_label_ui)
-                    _label_ui = self.add_marker_label(file_index = list_row_selected[_index_file],
-                                                      marker_index = _index_marker,
-                                                      x=x0,
-                                                      y=y0,
-                                                      color=_color_marker)
-                    self.ui.image_view.addItem(_label_ui)
-                    self.markers_table[_marker_name]['data'][_file]['label_ui'] = _label_ui
-
-    def add_marker_label(self, file_index=0, marker_index=1, x=0, y=0, color='white'):
-        html_color = MarkerDefaultSettings.color_html[color]
-        html_text = '<div style="text-align: center">Marker#:'
-        html_text += '<span style="color:#' + str(html_color) + ';">' + str(int(marker_index)+1)
-        html_text += '</span> - File#:'
-        html_text += '<span style="color:#' + str(html_color) + ';">' + str(file_index)
-        html_text += '</span>'
-        text_ui = pg.TextItem(html=html_text, angle=45, border='w')
-        self.ui.image_view.addItem(text_ui)
-        text_ui.setPos(x + MarkerDefaultSettings.width, y)
-        return text_ui
-
-    def close_markers_of_tab(self, marker_name=''):
-        """remove box and label (if they are there) of each marker"""
-        _data = self.markers_table[marker_name]['data']
-        for _file in _data:
-            _marker_ui = _data[_file]['marker_ui']
-            if _marker_ui:
-                self.ui.image_view.removeItem(_marker_ui)
-
-            _label_ui = _data[_file]['label_ui']
-            if _label_ui:
-                self.ui.image_view.removeItem(_label_ui)
-
-    def close_all_markers(self):
-        for marker in self.markers_table.keys():
-            self.close_markers_of_tab(marker_name = marker)
+    # def close_markers_of_tab(self, marker_name=''):
+    #     """remove box and label (if they are there) of each marker"""
+    #     _data = self.markers_table[marker_name]['data']
+    #     for _file in _data:
+    #         _marker_ui = _data[_file]['marker_ui']
+    #         if _marker_ui:
+    #             self.ui.image_view.removeItem(_marker_ui)
+    #
+    #         _label_ui = _data[_file]['label_ui']
+    #         if _label_ui:
+    #             self.ui.image_view.removeItem(_label_ui)
+    #
+    # def close_all_markers(self):
+    #     for marker in self.markers_table.keys():
+    #         self.close_markers_of_tab(marker_name = marker)
 
     def modified_images(self, list_row=[], all_row=False):
         """using data_dict_raw images, will apply offset and rotation parameters
@@ -528,59 +417,6 @@ class RegistrationUi(QMainWindow):
 
         return pos_adj_dict
 
-    def display_live_image(self):
-        """no calculation will be done. This will only display the reference image
-        but will display or not the grid on top"""
-        live_image = self.live_image
-
-        _view = self.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-        first_update = False
-        if self.histogram_level is None:
-            first_update = True
-        _histo_widget = self.ui.image_view.getHistogramWidget()
-        self.histogram_level = _histo_widget.getLevels()
-
-        self.ui.image_view.setImage(live_image)
-        _view_box.setState(_state)
-
-        if not first_update:
-            _histo_widget.setLevels(self.histogram_level[0],
-                                    self.histogram_level[1])
-
-        # we do not want a grid on top
-        if self.grid_view['item']:
-            self.ui.image_view.removeItem(self.grid_view['item'])
-
-        if not self.ui.grid_display_checkBox.isChecked():
-            return
-
-        grid_size = self.ui.grid_size_slider.value()
-        [height, width] = np.shape(live_image)
-
-        pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
-                                                  height=height,
-                                                  width=width)
-        pos = pos_adj_dict['pos']
-        adj = pos_adj_dict['adj']
-
-        line_color = self.grid_view['color']
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
-
-
-        grid = pg.GraphItem()
-        self.ui.image_view.addItem(grid)
-        grid.setData(pos=pos,
-                     adj=adj,
-                     pen=lines,
-                     symbol=None,
-                     pxMode=False)
-        self.grid_view['item'] = grid
-
     def select_row_in_table(self, row=0):
         nbr_col = self.ui.tableWidget.columnCount()
         nbr_row = self.ui.tableWidget.rowCount()
@@ -689,7 +525,10 @@ class RegistrationUi(QMainWindow):
         self.check_selection_slider_status()
         self.check_status_next_prev_image_button()
         self.check_registration_tool_widgets()
-        self.display_markers(all=True)
+
+        o_marker = MarkerHandler(parent=self)
+        o_marker.display_markers(all=True)
+
         self.ui.file_slider.blockSignals(False)
 
     def table_cell_modified(self, row=-1, column=-1):
@@ -738,10 +577,10 @@ class RegistrationUi(QMainWindow):
             self.registration_profile_ui.close()
 
     def previous_image_button_clicked(self):
-        self.change_slider(offset = -1)
+        self.change_slider(offset=-1)
 
     def next_image_button_clicked(self):
-        self.change_slider(offset = +1)
+        self.change_slider(offset=+1)
 
     def selection_all_clicked(self):
         _is_checked = self.ui.selection_all.isChecked()
@@ -788,10 +627,13 @@ class RegistrationUi(QMainWindow):
         o_auto_register.auto_align()
 
     def grid_display_checkBox_clicked(self):
-        self.display_live_image()
+        o_display = Display(parent=self)
+        o_display.live_image()
 
     def grid_size_slider_moved(self, position):
-        self.display_live_image()
+        o_display = Display(parent=self)
+        o_display.live_image()
 
     def grid_size_slider_pressed(self):
-        self.display_live_image()
+        o_display = Display(parent=self)
+        o_display.live_image()

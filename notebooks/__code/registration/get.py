@@ -7,6 +7,9 @@ class Get:
     def __init__(self, parent=None):
         self.parent = parent
 
+    def list_short_file_selected(self):
+        self.get_list_short_file_selected()
+
     def get_list_short_file_selected(self):
         list_row_selected = self.get_list_row_selected()
         full_list_files = np.array(self.parent.data_dict['file_name'])

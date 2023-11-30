@@ -1,7 +1,9 @@
 from qtpy.QtWidgets import QMenu
 from qtpy import QtGui
+import numpy as np
 
 from __code._utilities.table_handler import TableHandler
+from __code._utilities.check import is_float
 
 
 class EventHandler:
@@ -69,3 +71,63 @@ class EventHandler:
                                       cell_str=self.parent.value_to_copy)
 
         self.parent.ui.tableWidget.blockSignals(False)
+
+    def update_table_according_to_filter(self):
+        filter_flag = self.parent.ui.filter_radioButton.isChecked()
+    
+        o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+    
+        def should_row_be_visible(row_value=None, filter_algo_selected="<=", filter_value=None):
+    
+            if is_float(filter_value):
+                o_table.set_all_row_hidden(False)
+                return
+    
+            if filter_algo_selected == "<=":
+                return float(row_value) <= float(filter_value)
+            elif filter_algo_selected == ">=":
+                return float(row_value) >= float(filter_value)
+            else:
+                raise NotImplementedError("algo not implemented!")
+    
+        if filter_flag:
+            # select only rows according to filter
+            filter_column_selected = self.parent.ui.filter_column_name_comboBox.currentText()
+            filter_algo_selected = self.parent.ui.filter_logic_comboBox.currentText()
+            filter_value = self.parent.ui.filter_value.text()
+    
+            if filter_column_selected == "Xoffset":
+                filter_column_index = 1
+            elif filter_column_selected == "Yoffset":
+                filter_column_index = 2
+            elif filter_column_selected == "Rotation":
+                filter_column_index = 3
+            else:
+                raise NotImplementedError("column can not be used with filter!")
+    
+            nbr_row = o_table.row_count()
+            for _row in np.arange(nbr_row):
+                _row_value = float(o_table.get_item_str_from_cell(row=_row, column=filter_column_index))
+                _should_row_be_visible = should_row_be_visible(row_value=_row_value,
+                                                               filter_algo_selected=filter_algo_selected,
+                                                               filter_value=filter_value)
+                o_table.set_row_hidden(_row, not _should_row_be_visible)
+        else:
+            # all rows are visible
+            o_table.set_all_row_hidden(False)
+
+    def close_all_markers(self):
+        for marker in self.parent.markers_table.keys():
+            self.close_markers_of_tab(marker_name=marker)
+
+    def close_markers_of_tab(self, marker_name=''):
+        """remove box and label (if they are there) of each marker"""
+        _data = self.parent.markers_table[marker_name]['data']
+        for _file in _data:
+            _marker_ui = _data[_file]['marker_ui']
+            if _marker_ui:
+                self.parent.ui.image_view.removeItem(_marker_ui)
+
+            _label_ui = _data[_file]['label_ui']
+            if _label_ui:
+                self.parent.ui.image_view.removeItem(_label_ui)

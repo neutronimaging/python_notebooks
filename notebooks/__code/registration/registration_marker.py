@@ -7,6 +7,7 @@ import numpy as np
 from __code import load_ui
 from __code._utilities.table_handler import TableHandler
 from __code.registration.marker_default_settings import MarkerDefaultSettings
+from __code.registration.marker_handler import MarkerHandler
 
 TABLE_NBR_COLUMNS = 4
 
@@ -394,7 +395,10 @@ class RegistrationMarkers(QDialog):
 
         self.parent.markers_table.pop(_tab_title)
         self.ui.tabWidget.removeTab(_current_tab)
-        self.parent.close_all_markers()
+
+        o_event = MarkerHandler(parent=self.parent)
+        o_event.close_all_markers()
+
         self.parent.display_markers(all=True)
 
     def get_current_selected_color(self):
@@ -553,7 +557,10 @@ class RegistrationMarkers(QDialog):
 
     def closeEvent(self, c):
         self.save_column_size()
-        self.parent.close_all_markers()
+
+        o_event = MarkerHandler(parent=self.parent)
+        o_event.close_all_markers()
+
         self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button],
                            enabled=True)
         self.parent.registration_markers_ui = None

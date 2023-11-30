@@ -92,3 +92,55 @@ class Display:
 
         if not first_update:
             _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+
+    def live_image(self):
+        """no calculation will be done. This will only display the reference image
+        but will display or not the grid on top"""
+        live_image = self.parent.live_image
+
+        _view = self.parent.ui.image_view.getView()
+        _view_box = _view.getViewBox()
+        _state = _view_box.getState()
+        first_update = False
+        if self.parent.histogram_level is None:
+            first_update = True
+        _histo_widget = self.parent.ui.image_view.getHistogramWidget()
+        self.parent.histogram_level = _histo_widget.getLevels()
+
+        self.parent.ui.image_view.setImage(live_image)
+        _view_box.setState(_state)
+
+        if not first_update:
+            _histo_widget.setLevels(self.parent.histogram_level[0],
+                                    self.parent.histogram_level[1])
+
+        # we do not want a grid on top
+        if self.parent.grid_view['item']:
+            self.parent.ui.image_view.removeItem(self.parent.grid_view['item'])
+
+        if not self.parent.ui.grid_display_checkBox.isChecked():
+            return
+
+        grid_size = self.parent.ui.grid_size_slider.value()
+        [height, width] = np.shape(live_image)
+
+        pos_adj_dict = self.parent.calculate_matrix_grid(grid_size=grid_size,
+                                                  height=height,
+                                                  width=width)
+        pos = pos_adj_dict['pos']
+        adj = pos_adj_dict['adj']
+
+        line_color = self.parent.grid_view['color']
+        lines = np.array([line_color for n in np.arange(len(pos))],
+                         dtype=[('red', np.ubyte), ('green', np.ubyte),
+                                ('blue', np.ubyte), ('alpha', np.ubyte),
+                                ('width', float)])
+
+        grid = pg.GraphItem()
+        self.parent.ui.image_view.addItem(grid)
+        grid.setData(pos=pos,
+                     adj=adj,
+                     pen=lines,
+                     symbol=None,
+                     pxMode=False)
+        self.parent.grid_view['item'] = grid
