@@ -5,28 +5,24 @@ import os
 from skimage import transform
 from scipy.ndimage.interpolation import shift
 import copy
-import pyqtgraph as pg
-from qtpy.QtWidgets import QFileDialog, QMainWindow, QMenu, QTableWidgetSelectionRange, \
-     QTableWidgetItem, QApplication
+from qtpy.QtWidgets import QMainWindow,QTableWidgetSelectionRange, QTableWidgetItem
 from qtpy import QtGui, QtCore
 import webbrowser
 
 from __code import load_ui
-from __code._utilities.table_handler import TableHandler
-from __code._utilities.file import make_or_increment_folder_name
 
 from __code.registration.event_handler import EventHandler
 from __code.registration.marker_handler import MarkerHandler
 from __code.registration.get import Get
 from __code.registration.display import Display
 from __code.registration.initialization import Initialization
-# from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.registration_marker import RegistrationMarkersLauncher
-from __code.registration.export_registration import ExportRegistration
+from __code.registration.export import Export
 from __code.registration.registration_auto import RegistrationAuto
 from __code.registration.registration_auto_confirmation import RegistrationAutoConfirmationLauncher
 from __code.registration.manual import ManualLauncher
 from __code.registration.registration_profile import RegistrationProfileLauncher
+from __code.registration.check import Check
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -115,7 +111,8 @@ class RegistrationUi(QMainWindow):
         o_init.run_all()
 
         # display line profile
-        self.profile_line_moved()
+        o_event = EventHandler(parent=self)
+        o_event.profile_line_moved()
 
         self.new_reference_image = False
         self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
@@ -141,201 +138,31 @@ class RegistrationUi(QMainWindow):
         o_event = EventHandler(parent=self)
         o_event.table_right_click()
 
-    def display_markers(self, all=False):
-        if self.registration_markers_ui is None:
-            return
-
-        if all is False:
-            _current_tab = self.registration_markers_ui.ui.tabWidget.currentIndex()
-            _tab_title = self.registration_markers_ui.ui.tabWidget.tabText(_current_tab)
-            self.display_markers_of_tab(marker_name=_tab_title)
-        else:
-            for _index, _marker_name in enumerate(self.markers_table.keys()):
-                self.display_markers_of_tab(marker_name=_marker_name)
-
-    # def add_marker_label(self, file_index=0, marker_index=1, x=0, y=0, color='white'):
-    #     html_color = MarkerDefaultSettings.color_html[color]
-    #     html_text = '<div style="text-align: center">Marker#:'
-    #     html_text += '<span style="color:#' + str(html_color) + ';">' + str(int(marker_index)+1)
-    #     html_text += '</span> - File#:'
-    #     html_text += '<span style="color:#' + str(html_color) + ';">' + str(file_index)
-    #     html_text += '</span>'
-    #     text_ui = pg.TextItem(html=html_text, angle=45, border='w')
-    #     self.ui.image_view.addItem(text_ui)
-    #     text_ui.setPos(x + MarkerDefaultSettings.width, y)
-    #     return text_ui
-
-    # def close_markers_of_tab(self, marker_name=''):
-    #     """remove box and label (if they are there) of each marker"""
-    #     _data = self.markers_table[marker_name]['data']
-    #     for _file in _data:
-    #         _marker_ui = _data[_file]['marker_ui']
-    #         if _marker_ui:
-    #             self.ui.image_view.removeItem(_marker_ui)
+    # def modified_images(self, list_row=[], all_row=False):
+    #     """using data_dict_raw images, will apply offset and rotation parameters
+    #     and will save them in data_dict for plotting"""
     #
-    #         _label_ui = _data[_file]['label_ui']
-    #         if _label_ui:
-    #             self.ui.image_view.removeItem(_label_ui)
+    #     data_raw = self.data_dict_raw['data'].copy()
     #
-    # def close_all_markers(self):
-    #     for marker in self.markers_table.keys():
-    #         self.close_markers_of_tab(marker_name = marker)
-
-    def modified_images(self, list_row=[], all_row=False):
-        """using data_dict_raw images, will apply offset and rotation parameters
-        and will save them in data_dict for plotting"""
-
-        data_raw = self.data_dict_raw['data'].copy()
-
-        if all_row:
-            list_row = np.arange(0, self.nbr_files)
-        else:
-            list_row = list_row
-
-        for _row in list_row:
-
-            try:
-                xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
-                yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
-                rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
-            except AttributeError:
-                return
-
-            _data = data_raw[_row].copy()
-            _data = transform.rotate(_data, rotate_angle)
-            _data = shift(_data, (yoffset, xoffset), )
-
-            self.data_dict['data'][_row] = _data
-
-    def _intermediates_points(self, p1, p2):
-        """"Return a list of nb_points equally spaced points
-        between p1 and p2
-
-        p1 = [x0, y0]
-        p2 = [x1, y1]
-        """
-
-        # nb_points ?
-        nb_points = int(3 * max([np.abs(p1[0] - p2[0]), np.abs(p2[1] - p1[1])]))
-
-        x_spacing = (p2[0] - p1[0]) / (nb_points + 1)
-        y_spacing = (p2[1] - p1[1]) / (nb_points + 1)
-
-        full_array = [[int(p1[0] + i * x_spacing), int(p1[1] + i * y_spacing)]
-                      for i in range(1, nb_points + 1)]
-
-        clean_array = []
-        for _points in full_array:
-            if _points in clean_array:
-                continue
-            clean_array.append(_points)
-
-        return clean_array
-
-    def profile_line_moved(self):
-        """update profile plot"""
-        if self.live_image is None:
-            return
-
-        self.ui.profile.clear()
-        # try:
-        #     self.ui.profile.scene().removeItem(self.legend)
-        # except Exception as e:
-        #     pass
-
-        self.legend = self.ui.profile.addLegend()
-
-        region = self.ui.profile_line.getArraySlice(self.live_image,
-                                                    self.ui.image_view.imageItem)
-
-        x0 = region[0][0].start + 3
-        x1 = region[0][0].stop - 3
-        y0 = region[0][1].start + 3
-        y1 = region[0][1].stop - 3
-
-        p1 = [x0, y0]
-        p2 = [x1, y1]
-
-        intermediate_points = self._intermediates_points(p1, p2)
-        xaxis = np.arange(len(intermediate_points))
-
-        # profiles selected
-        # if only one row selected !
-        if self.ui.selection_groupBox.isVisible():
-
-            if self.ui.selection_all.isChecked():
-                min_row = int(self.ui.opacity_selection_slider.minimum()/100)
-                max_row = int(self.ui.opacity_selection_slider.maximum()/100)
-
-                for _index in np.arange(min_row, max_row+1):
-                    if _index == self.reference_image_index:
-                        continue
-
-                    _data = np.transpose(self.data_dict['data'][_index])
-                    _filename = os.path.basename(self.data_dict['file_name'][_index])
-                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                    self.ui.profile.plot(xaxis, _profile,
-                                         name=_filename,
-                                         pen=self.list_rgb_profile_color[_index])
-
-            else:  # selection slider
-                slider_index = self.ui.opacity_selection_slider.sliderPosition() / 100
-                from_index = int(slider_index)
-                _data = np.transpose(self.data_dict['data'][from_index])
-                _filename = os.path.basename(self.data_dict['file_name'][from_index])
-                _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                self.ui.profile.plot(xaxis,
-                                     _profile,
-                                     name=_filename,
-                                     pen=self.list_rgb_profile_color[from_index])
-
-                if from_index == slider_index:
-                    pass
-
-                else:
-                    to_index = int(slider_index + 1)
-                    _data = np.transpose(self.data_dict['data'][to_index])
-                    _filename = os.path.basename(self.data_dict['file_name'][to_index])
-                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                    self.ui.profile.plot(xaxis,
-                                         _profile,
-                                         name=_filename,
-                                         pen=self.list_rgb_profile_color[to_index])
-
-        else:
-
-            table_selection = self.ui.tableWidget.selectedRanges()
-            if not (table_selection is None):
-
-                table_selection = table_selection[0]
-                row_selected = table_selection.topRow()
-
-                if not row_selected == self.reference_image_index:
-                    _data = np.transpose(self.data_dict['data'][row_selected])
-                    _filename = os.path.basename(self.data_dict['file_name'][row_selected])
-                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
-                    self.ui.profile.plot(xaxis,
-                                         _profile,
-                                         name=_filename,
-                                         pen=self.list_rgb_profile_color[row_selected])
-
-
-        # selected_image = self.live_image
-        # profile_selected = [selected_image[_point[0],
-        #                                    _point[1]] for _point in intermediate_points]
-        #
-        # self.ui.profile.plot(xaxis, profile_selected, name='Selected Image')
-
-
-        # Always display profile reference
-        reference_image = np.transpose(self.reference_image)
-        profile_reference = [reference_image[_point[0],
-                                             _point[1]] for _point in intermediate_points]
-
-        reference_file_name = os.path.basename(self.data_dict['file_name'][self.reference_image_index])
-        self.ui.profile.plot(xaxis, profile_reference,
-                             pen=self.color_reference_profile,
-                             name='Ref.: {}'.format(reference_file_name))
+    #     if all_row:
+    #         list_row = np.arange(0, self.nbr_files)
+    #     else:
+    #         list_row = list_row
+    #
+    #     for _row in list_row:
+    #
+    #         try:
+    #             xoffset = int(float(self.ui.tableWidget.item(_row, 1).text()))
+    #             yoffset = int(float(self.ui.tableWidget.item(_row, 2).text()))
+    #             rotate_angle = float(self.ui.tableWidget.item(_row, 3).text())
+    #         except AttributeError:
+    #             return
+    #
+    #         _data = data_raw[_row].copy()
+    #         _data = transform.rotate(_data, rotate_angle)
+    #         _data = shift(_data, (yoffset, xoffset), )
+    #
+    #         self.data_dict['data'][_row] = _data
 
     def populate_table(self):
         """populate the table using the table_registration dictionary"""
@@ -379,44 +206,6 @@ class RegistrationUi(QMainWindow):
         o_display = Display(parent=self)
         o_display.image()
 
-    def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
-        """calculate the matrix that defines the vertical and horizontal lines
-        that allow pyqtgraph to display the grid"""
-
-        pos_adj_dict = {}
-
-        # pos - each matrix defines one side of the line
-        pos = []
-        adj = []
-
-        # vertical lines
-        x = 0
-        index = 0
-        while (x <= width):
-            one_edge = [x, 0]
-            other_edge = [x, height]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index+1])
-            x += grid_size
-            index += 2
-
-        # vertical lines
-        y = 0
-        while (y <= height):
-            one_edge = [0, y]
-            other_edge = [width, y]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index+1])
-            y += grid_size
-            index += 2
-
-        pos_adj_dict['pos'] = np.array(pos)
-        pos_adj_dict['adj'] = np.array(adj)
-
-        return pos_adj_dict
-
     def select_row_in_table(self, row=0):
         nbr_col = self.ui.tableWidget.columnCount()
         nbr_row = self.ui.tableWidget.rowCount()
@@ -431,70 +220,23 @@ class RegistrationUi(QMainWindow):
 
         self.ui.tableWidget.showRow(row)
 
-    def check_status_next_prev_image_button(self):
-        """this will enable or not the prev or next button next to the slider file image"""
-        current_slider_value = self.ui.file_slider.value()
-        min_slider_value = self.ui.file_slider.minimum()
-        max_slider_value = self.ui.file_slider.maximum()
-
-        _prev = True
-        _next = True
-
-        if current_slider_value == min_slider_value:
-            _prev = False
-        elif current_slider_value == max_slider_value:
-            _next = False
-
-        self.ui.previous_image_button.setEnabled(_prev)
-        self.ui.next_image_button.setEnabled(_next)
-
     def change_slider(self, offset=+1):
         self.ui.file_slider.blockSignals(True)
         current_slider_value = self.ui.file_slider.value()
         new_row_selected = current_slider_value + offset
         self.select_row_in_table(row=new_row_selected)
         self.ui.file_slider.setValue(new_row_selected)
-        self.check_status_next_prev_image_button()
-        self.display_image()
-        self.profile_line_moved()
+
+        o_check = Check(parent=self)
+        o_check.status_next_prev_image_button()
+
+        o_display = Display(parent=self)
+        o_display.image()
+
+        o_event = EventHandler(parent=self)
+        o_event.profile_line_moved()
+
         self.ui.file_slider.blockSignals(False)
-
-    def check_selection_slider_status(self):
-        """
-        if there is more than one row selected, we need to display the left slider but also
-        we need to disable the next, prev buttons and file index slider
-        """
-        selection = self.ui.tableWidget.selectedRanges()
-        if selection:
-
-            list_file_index_widgets = [self.ui.previous_image_button,
-                                       self.ui.file_slider,
-                                       self.ui.next_image_button]
-
-            top_row = selection[0].topRow()
-            bottom_row = selection[0].bottomRow()
-            if np.abs(bottom_row - top_row) >= 1: # show selection images widgets
-                self.ui.selection_groupBox.setVisible(True)
-                self.ui.top_row_label.setText("Row {}".format(top_row+1))
-                self.ui.bottom_row_label.setText("Row {}".format(bottom_row+1))
-                self.ui.opacity_selection_slider.setMinimum(top_row*100)
-                self.ui.opacity_selection_slider.setMaximum(bottom_row*100)
-                self.ui.opacity_selection_slider.setSliderPosition(top_row*100)
-                _file_index_status = False
-            else:
-                self.ui.selection_groupBox.setVisible(False)
-                _file_index_status = True
-
-            for _widget in list_file_index_widgets:
-                _widget.setVisible(_file_index_status)
-
-    # Utilities
-
-    def check_registration_tool_widgets(self):
-        """if the registration tool is active, and the reference image is the only row selected,
-        disable the widgets"""
-        if self.registration_tool_ui:
-            self.registration_tool_ui.update_status_widgets()
 
     def set_widget_status(self, list_ui=[], enabled=True):
         for _ui in list_ui:
@@ -502,9 +244,11 @@ class RegistrationUi(QMainWindow):
 
     def all_table_cell_modified(self):
         nbr_row = self.ui.tableWidget.rowCount()
+        o_event = EventHandler(parent=self)
+
         for _row in np.arange(nbr_row):
-            self.modified_images(list_row=[_row])
-            self.profile_line_moved()
+            o_event.modified_images(list_row=[_row])
+            o_event.profile_line_moved()
 
     # Event handler
 
@@ -518,13 +262,23 @@ class RegistrationUi(QMainWindow):
         else:
             self.ui.file_slider.setValue(row)
 
-        self.modified_images(list_row=[row])
-        self.display_image()
-        self.check_selection_slider_status()
-        self.profile_line_moved()
-        self.check_selection_slider_status()
-        self.check_status_next_prev_image_button()
-        self.check_registration_tool_widgets()
+        o_event = EventHandler(parent=self)
+
+        o_event.modified_images(list_row=[row])
+
+        o_display = Display(parent=self)
+        o_display.image()
+
+        # self.check_selection_slider_status()
+
+        o_event.profile_line_moved()
+
+        # self.check_selection_slider_status()
+
+        o_check = Check(parent=self)
+        o_check.status_next_prev_image_button()
+        o_check.registration_tool_widgets()
+        o_check.selection_slider_status()
 
         o_marker = MarkerHandler(parent=self)
         o_marker.display_markers(all=True)
@@ -534,16 +288,25 @@ class RegistrationUi(QMainWindow):
     def table_cell_modified(self, row=-1, column=-1):
         o_get = Get(parent=self)
         list_row_selected = o_get.list_row_selected()
-        self.modified_images(list_row=list_row_selected)
-        self.display_image()
-        self.profile_line_moved()
+        o_event = EventHandler(parent=self)
+        o_event.modified_images(list_row=list_row_selected)
+
+        o_display = Display(parent=self)
+        o_display.image()
+
+        o_event.profile_line_moved()
 
     def slider_file_changed(self, index_selected):
         self.ui.tableWidget.blockSignals(True)
         self.select_row_in_table(row=index_selected)
         self.display_image()
-        self.profile_line_moved()
-        self.check_status_next_prev_image_button()
+
+        o_event = EventHandler(parent=self)
+        o_event.profile_line_moved()
+
+        o_check = Check(parent=self)
+        o_check.status_next_prev_image_button()
+
         self.ui.tableWidget.blockSignals(False)
 
     def help_button_clicked(self):
@@ -553,20 +316,8 @@ class RegistrationUi(QMainWindow):
         self.close()
 
     def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
-        if _export_folder:
-
-            # add custom folder name
-            working_dir_basename = os.path.basename(self.working_dir)
-            # append "registered" and "time_stamp"
-            full_output_folder_name = os.path.join(_export_folder, working_dir_basename + "_registered")
-            full_output_folder_name = make_or_increment_folder_name(full_output_folder_name)
-            o_export = ExportRegistration(parent=self, export_folder=full_output_folder_name)
-            o_export.run()
-            QApplication.processEvents()
+        o_export = Export(parent=self)
+        o_export.run()
 
     def closeEvent(self, event=None):
         if self.registration_tool_ui:
@@ -591,23 +342,30 @@ class RegistrationUi(QMainWindow):
         for _widget in list_widgets:
             _widget.setEnabled(not _is_checked)
         self.display_image()
-        self.profile_line_moved()
+        o_event = EventHandler(parent=self)
+        o_event.profile_line_moved()
+
+    def profile_line_moved(self):
+        o_event = EventHandler(parent=self)
+        o_event.profile_line_moved()
 
     def selection_slider_changed(self):
         # self.update_selection_images()
         self.display_image()
-        self.profile_line_moved()
+        o_event = EventHandler(parent=self)
+        o_event.profile_line_moved()
 
     def selection_slider_moved(self):
         # self.update_selection_images()
         self.display_image()
-        self.profile_line_moved()
+        o_event = EventHandler(parent=self)
+        o_event.profile_line_moved()
 
     def manual_registration_button_clicked(self):
         """launch the manual registration tool"""
         o_registration_tool = ManualLauncher(parent=self)
         self.set_widget_status(list_ui=[self.ui.auto_registration_button],
-                           enabled=False)
+                               enabled=False)
 
     def auto_registration_button_clicked(self):
         o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)

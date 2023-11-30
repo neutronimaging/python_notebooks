@@ -1,5 +1,7 @@
 import numpy as np
+import pyqtgraph as pg
 
+from __code.registration.calculate import Calculate
 from __code.registration.get import Get
 
 
@@ -124,9 +126,9 @@ class Display:
         grid_size = self.parent.ui.grid_size_slider.value()
         [height, width] = np.shape(live_image)
 
-        pos_adj_dict = self.parent.calculate_matrix_grid(grid_size=grid_size,
-                                                  height=height,
-                                                  width=width)
+        pos_adj_dict = Calculate.calculate_matrix_grid(grid_size=grid_size,
+                                                       height=height,
+                                                       width=width)
         pos = pos_adj_dict['pos']
         adj = pos_adj_dict['adj']
 

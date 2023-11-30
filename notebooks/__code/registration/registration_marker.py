@@ -8,6 +8,7 @@ from __code import load_ui
 from __code._utilities.table_handler import TableHandler
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.marker_handler import MarkerHandler
+from __code.registration.event_handler import EventHandler
 
 TABLE_NBR_COLUMNS = 4
 
@@ -540,7 +541,9 @@ class RegistrationMarkers(QDialog):
         step += 1
         self.parent.eventProgress.setValue(step)
         QApplication.processEvents()
-        self.parent.modified_images(all_row=True)
+
+        o_event = EventHandler(parent=self.parent)
+        o_event.modified_images(all_row=True)
 
         step += 1
         self.parent.eventProgress.setValue(step)

@@ -2,9 +2,34 @@ import numpy as np
 import copy
 from skimage import transform
 from scipy.ndimage.interpolation import shift
-from qtpy.QtWidgets import QApplication
+import os
+from qtpy.QtWidgets import QFileDialog, QApplication
 
 from NeuNorm.normalization import Normalization
+
+from __code._utilities.file import make_or_increment_folder_name
+
+
+class Export:
+
+    def __init__(self, parent=None):
+        self.parent = parent
+
+    def run(self):
+        _export_folder = QFileDialog.getExistingDirectory(self,
+                                                          directory=self.working_dir,
+                                                          caption="Select Output Folder",
+                                                          options=QFileDialog.ShowDirsOnly)
+        if _export_folder:
+
+            # add custom folder name
+            working_dir_basename = os.path.basename(self.working_dir)
+            # append "registered" and "time_stamp"
+            full_output_folder_name = os.path.join(_export_folder, working_dir_basename + "_registered")
+            full_output_folder_name = make_or_increment_folder_name(full_output_folder_name)
+            o_export = ExportRegistration(parent=self, export_folder=full_output_folder_name)
+            o_export.run()
+            QApplication.processEvents()
 
 
 class ExportRegistration:
