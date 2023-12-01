@@ -77,7 +77,7 @@ class EventHandler:
         self.parent.ui.tableWidget.blockSignals(False)
 
     def update_table_according_to_filter(self):
-        filter_flag = self.parent.ui.filter_radioButton.isChecked()
+        filter_flag = self.parent.ui.filter_checkBox.isChecked()
     
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
     

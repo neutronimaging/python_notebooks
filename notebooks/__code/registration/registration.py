@@ -2,8 +2,6 @@ from IPython.core.display import HTML
 from IPython.core.display import display
 import numpy as np
 import os
-from skimage import transform
-from scipy.ndimage.interpolation import shift
 import copy
 from qtpy.QtWidgets import QMainWindow,QTableWidgetSelectionRange, QTableWidgetItem
 from qtpy import QtGui, QtCore
@@ -13,7 +11,6 @@ from __code import load_ui
 
 from __code._utilities.table_handler import TableHandler
 from __code.registration.event_handler import EventHandler
-from __code.registration.marker_handler import MarkerHandler
 from __code.registration.get import Get
 from __code.registration.display import Display
 from __code.registration.initialization import Initialization
@@ -24,6 +21,7 @@ from __code.registration.registration_auto_confirmation import RegistrationAutoC
 from __code.registration.manual import ManualLauncher
 from __code.registration.registration_profile import RegistrationProfileLauncher
 from __code.registration.check import Check
+from __code.registration.table_handler import TableHandler
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -119,7 +117,12 @@ class RegistrationUi(QMainWindow):
         self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
 
     def filter_checkbox_clicked(self):
-        self.ui.filter_groupBox.setEnabled(self.ui.filter_checkBox.isChecked())
+        list_ui = [self.ui.filter_column_name_comboBox,
+                   self.ui.filter_logic_comboBox,
+                   self.ui.filter_value]
+        for _ui in list_ui:
+            _ui.setEnabled(self.ui.filter_checkBox.isChecked())
+
         o_event = EventHandler(parent=self)
         o_event.update_table_according_to_filter()
 
@@ -181,48 +184,6 @@ class RegistrationUi(QMainWindow):
         o_display = Display(parent=self)
         o_display.image()
 
-    def select_row_in_table(self, row=0, user_selected_row=True):
-
-        if not user_selected_row:
-            self.ui.tableWidget.blockSignals(True)
-
-        nbr_col = self.ui.tableWidget.columnCount()
-        nbr_row = self.ui.tableWidget.rowCount()
-
-        # clear previous selection
-        full_range = QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
-        self.ui.tableWidget.setRangeSelected(full_range, False)
-
-        # select file of interest
-        selection_range = QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
-        self.ui.tableWidget.setRangeSelected(selection_range, True)
-
-        self.ui.tableWidget.showRow(row)
-
-        if not user_selected_row:
-            self.ui.tableWidget.blockSignals(False)
-
-    def change_slider(self, offset=+1):
-        self.ui.file_slider.blockSignals(True)
-
-        current_slider_value = self.ui.file_slider.value()
-
-        new_row_selected = current_slider_value + offset
-
-        self.select_row_in_table(row=new_row_selected, user_selected_row=False)
-        self.ui.file_slider.setValue(new_row_selected)
-
-        o_check = Check(parent=self)
-        o_check.status_next_prev_image_button()
-
-        o_display = Display(parent=self)
-        o_display.image()
-
-        o_event = EventHandler(parent=self)
-        o_event.profile_line_moved()
-
-        self.ui.file_slider.blockSignals(False)
-
     def set_widget_status(self, list_ui=[], enabled=True):
         for _ui in list_ui:
             _ui.setEnabled(enabled)
@@ -239,49 +200,23 @@ class RegistrationUi(QMainWindow):
         self.display_image()
 
     def table_row_clicked(self, row=-1):
-        self.ui.file_slider.blockSignals(True)
-        if row == -1:
-            row = self.ui.tableWidget.currentRow()
-        else:
-            self.ui.file_slider.setValue(row)
-
-        o_event = EventHandler(parent=self)
-
-        o_event.modified_images(list_row=[row])
-
-        o_display = Display(parent=self)
-        o_display.image()
-
-        # self.check_selection_slider_status()
-
-        o_event.profile_line_moved()
-
-        # self.check_selection_slider_status()
-
-        o_check = Check(parent=self)
-        o_check.status_next_prev_image_button()
-        o_check.registration_tool_widgets()
-        o_check.selection_slider_status()
-
-        o_marker = MarkerHandler(parent=self)
-        o_marker.display_markers(all=True)
-
-        self.ui.file_slider.blockSignals(False)
+        o_table = TableHandler(parent=self)
+        o_table.table_row_clicked(row=row)
 
     def table_cell_modified(self, row=-1, column=-1):
-        o_get = Get(parent=self)
-        list_row_selected = o_get.list_row_selected()
-        o_event = EventHandler(parent=self)
-        o_event.modified_images(list_row=list_row_selected)
+        o_table = TableHandler(parent=self)
+        o_table.table_cell_modified()
 
-        o_display = Display(parent=self)
-        o_display.image()
-
-        o_event.profile_line_moved()
+    def select_row_in_table(self, row=0, user_selected_row=True):
+        o_table = TableHandler(parent=self)
+        o_table.select_row_in_table(row=row, user_selected_row=user_selected_row)
 
     def slider_file_changed(self, index_selected):
         self.ui.tableWidget.blockSignals(True)
-        self.select_row_in_table(row=index_selected)
+
+        o_table = TableHandler(parent=self)
+        o_table.select_row_in_table(row=index_selected)
+
         self.display_image()
 
         o_event = EventHandler(parent=self)
@@ -311,10 +246,12 @@ class RegistrationUi(QMainWindow):
             self.registration_profile_ui.close()
 
     def previous_image_button_clicked(self):
-        self.change_slider(offset=-1)
+        o_table = TableHandler(parent=self)
+        o_table.change_slider(offset=-1)
 
     def next_image_button_clicked(self):
-        self.change_slider(offset=+1)
+        o_table = TableHandler(parent=self)
+        o_table.change_slider(offset=+1)
 
     def selection_all_clicked(self):
         _is_checked = self.ui.selection_all.isChecked()
