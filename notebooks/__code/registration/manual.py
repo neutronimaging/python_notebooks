@@ -2,9 +2,9 @@ from qtpy.QtWidgets import QMainWindow
 from qtpy.QtGui import QIcon
 from qtpy import QtCore
 import os
-import numpy as np
 
 from __code import load_ui
+from __code.registration.get import Get
 
 
 class ManualLauncher:
@@ -99,7 +99,8 @@ class Manual(QMainWindow):
             _widget.setIconSize(QtCore.QSize(width, height))
 
     def update_status_widgets(self):
-        list_row_selected = self.parent.get_list_row_selected()
+        o_get = Get(parent=self.parent)
+        list_row_selected = o_get.list_row_selected()
         _enabled = True
 
         if list_row_selected is None:
@@ -128,7 +129,8 @@ class Manual(QMainWindow):
         # retrieve row selected and changed values
         self.parent.ui.tableWidget.blockSignals(True)
 
-        list_row_selected = self.parent.get_list_row_selected()
+        o_get = Get(parent=self.parent)
+        list_row_selected = o_get.list_row_selected()
         for _row in list_row_selected:
 
             # we never modified the reference image

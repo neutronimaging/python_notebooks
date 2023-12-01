@@ -124,7 +124,7 @@ class Display:
             return
 
         grid_size = self.parent.ui.grid_size_slider.value()
-        [height, width] = np.shape(live_image)
+        [width, height] = np.shape(live_image)
 
         pos_adj_dict = Calculate.calculate_matrix_grid(grid_size=grid_size,
                                                        height=height,
