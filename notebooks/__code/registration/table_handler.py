@@ -1,5 +1,7 @@
 from qtpy.QtWidgets import QTableWidgetSelectionRange
 
+from __code._utilities.table_handler import TableHandler as UtilitiesTableHandler
+
 from __code.registration.event_handler import EventHandler
 from __code.registration.display import Display
 from __code.registration.check import Check
@@ -7,7 +9,7 @@ from __code.registration.marker_handler import MarkerHandler
 from __code.registration.get import Get
 
 
-class TableHandler:
+class TableHandler(UtilitiesTableHandler):
     
     def __init__(self, parent=None):
         self.parent = parent
@@ -82,6 +84,13 @@ class TableHandler:
         o_event = EventHandler(parent=self.parent)
         o_event.profile_line_moved()
 
+        self.parent.ui.file_slider.blockSignals(False)
+
+    def jump_to_slider_position(self, position=0):
+        self.parent.ui.file_slider.blockSignals(True)
+        self.parent.ui.file_slider.setValue(position)
+        o_check = Check(parent=self.parent)
+        o_check.status_next_prev_image_button()
         self.parent.ui.file_slider.blockSignals(False)
 
     def table_cell_modified(self, row=-1, column=-1):

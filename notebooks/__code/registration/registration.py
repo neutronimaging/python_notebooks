@@ -201,6 +201,11 @@ class RegistrationUi(QMainWindow):
 
     def table_row_clicked(self, row=-1):
         o_table = TableHandler(parent=self)
+
+        row_selected = self.ui.tableWidget.selectedRanges()[0].topRow()
+        o_table.jump_to_slider_position(position=row_selected)
+
+        o_table = TableHandler(parent=self)
         o_table.table_row_clicked(row=row)
 
     def table_cell_modified(self, row=-1, column=-1):
