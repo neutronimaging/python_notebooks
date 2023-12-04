@@ -121,7 +121,9 @@ class Manual(QMainWindow):
             _widget.setEnabled(_enabled)
 
     def closeEvent(self, c):
-        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button],
+        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button,
+                                        self.parent.ui.marker_registration_button,
+                                        self.parent.ui.profiler_registration_button],
                                       enabled=True)
         self.parent.registration_tool_ui = None
 
@@ -141,7 +143,8 @@ class Manual(QMainWindow):
 
                 # left and right - > we works with xoffset, column 1
                 if motion in ['left', 'right']:
-                    _old_value = int(self.parent.ui.tableWidget.item(_row, 1).text())
+
+                    _old_value = float(self.parent.ui.tableWidget.item(_row, 1).text())
 
                     if motion == 'left':
                         xoffset = -1
@@ -153,7 +156,7 @@ class Manual(QMainWindow):
 
                 else:  # up and down -> yoffset, column 2
 
-                    _old_value = int(self.parent.ui.tableWidget.item(_row, 2).text())
+                    _old_value = float(self.parent.ui.tableWidget.item(_row, 2).text())
 
                     if motion == 'up':
                         yoffset = -1
