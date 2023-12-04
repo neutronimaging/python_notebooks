@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.15.2
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -41,10 +41,19 @@ custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Images to Process
+# -
+
+working_dir = "/Volumes/JeanHardDrive/HFIR/CG1D/IPTS-30750/"
+working_dir = "/Users/j35/HFIR/CG1D/IPTS-30750/"
+o_selection = FileSelection(working_dir=working_dir)
+import glob
+import os
+list_files = glob.glob(os.path.join(working_dir, "testing_data_set/*.tiff"))
+o_selection.load_files(list_files)
 
 # + run_control={"frozen": false, "read_only": false}
-o_selection = FileSelection(working_dir=system.System.get_working_dir())
-o_selection.select_data()
+# o_selection = FileSelection(working_dir=system.System.get_working_dir())
+# o_selection.select_data()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Launch Registration UI 

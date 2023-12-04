@@ -12,8 +12,8 @@
 #     name: python3
 # ---
 
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/roi/roi-statistics-vs-stack/)
-
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/ibeatles-strain-mapping-hdf5-loader/)
+#
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -23,33 +23,33 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-from __code.roi_statistics_vs_stack.main import ImageWindow, FileHandler
-
+from __code.ibeatles_strain_mapping_hdf5_loader.main import Main
 from __code import system
-system.System.select_working_dir(notebook='roi_statistics_vs_stack')
+system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # UI setup
-
-# + run_control={"frozen": false, "read_only": false}
-# %gui qt
-
-# + [markdown] cell_style="split" run_control={"frozen": false, "read_only": false}
-# # Select stack folder
-
-# + run_control={"frozen": false, "read_only": false}
-o_display = FileHandler(working_dir=system.System.get_working_dir())
-o_display.select_folder()
+# %matplotlib notebook
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Launch UI
+# # Select HDF5 file created in the strain step of iBeatles
+#
+# <img src='__code/ibeatles_strain_mapping_hdf5_loader/static/ibeatles_export_as_hdf5_menu.png' />
 
 # + run_control={"frozen": false, "read_only": false}
-_image = ImageWindow(list_of_images=o_display.list_of_images)
-_image.show()
-_image.initialize_ui()
+o_strain_display = Main(working_dir = system.System.get_working_dir())
+o_strain_display.select_hdf5_file()
 # -
+
+# # Display all data 
+
+# + run_control={"frozen": false, "read_only": false}
+o_strain_display.process_data()
+o_strain_display.display()   
+# -
+
+# # Display strain mapping and sample
+
+o_strain_display.display_with_interpolation()
 
 

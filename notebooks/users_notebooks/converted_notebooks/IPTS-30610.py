@@ -42,13 +42,13 @@ if module_path not in sys.path:
 from __code import system
 system.System.select_working_dir()
 
-from ipts_27939_code.ipts_27939 import IPTS_27939
+from ipts_30610_code.ipts_30610 import IPTS_30610
 
 # -
 
 # # Select Images 
 
-o_ipts = IPTS_27939(working_dir=system.System.get_working_dir())
+o_ipts = IPTS_30610(working_dir=system.System.get_working_dir())
 o_ipts.select_images()
 
 # # Visualize Raw Data
@@ -61,11 +61,9 @@ o_ipts.visualize_raw_images()
 #
 # Use the **vertical guide** to help you find the perfect vertical to your sample.
 #
-# <img src='ipts_27939_code/static/example_of_bad_and_good_alignments.png' />
+# <img src='ipts_30610_code/static/example_of_bad_and_good_alignments.png' />
 #
-# Feel free to use the **green** and **blue** horizontal profiles helper to make sure the sample is perfectly vertical. To do so, place one of the two profile helper near the top of the sampel and the other one, near the bottom and make sure the edge is perfectly aligned top to bottom.
-#
-# <img src='ipts_27939_code/static/example_rotation_guides.png' />
+# Feel free to use the **green** and **blue** horizontal profiles helper to make sure the sample is perfectly vertical. To do so, for example, place one of the two profile helper near the top of the sampel and the other one, near the bottom and make sure the edge is perfectly aligned top to bottom.
 
 o_ipts.rotate_images()
 
