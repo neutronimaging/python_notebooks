@@ -68,7 +68,7 @@ class TableHandler(UtilitiesTableHandler):
     def change_slider(self, offset=+1):
         self.parent.ui.file_slider.blockSignals(True)
 
-        current_slider_value = self.ui.file_slider.value()
+        current_slider_value = self.parent.ui.file_slider.value()
 
         new_row_selected = current_slider_value + offset
 
