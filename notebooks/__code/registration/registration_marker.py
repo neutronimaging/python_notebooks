@@ -100,10 +100,14 @@ class RegistrationMarkers(QDialog):
         for _key_tab_name in self.parent.markers_table:
 
             _table = QTableWidget(self.nbr_files, TABLE_NBR_COLUMNS)
+            _table.blockSignals(True)
             _table.setHorizontalHeaderLabels(["File Name", "X", "Y", "Status"])
             _table.setAlternatingRowColors(True)
             _table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
             _table.customContextMenuRequested.connect(self.table_right_click)
+
+            o_main_table = TableHandler(table_ui=self.parent.ui.tableWidget)
+            selected_row = o_main_table.get_row_selected()
 
             for _col, _size in enumerate(self.parent.markers_table_column_width):
                 _table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
@@ -123,10 +127,17 @@ class RegistrationMarkers(QDialog):
 
             _table.itemChanged.connect(self.table_cell_modified)
             self.parent.markers_table[_key_tab_name]['ui'] = _table
+            self.ui.tabWidget.blockSignals(True)
             _ = self.ui.tabWidget.addTab(_table, _key_tab_name)
+            self.ui.tabWidget.blockSignals(False)
 
             o_marker = MarkerHandler(parent=self.parent)
             o_marker.display_markers(all=False)
+
+            # select same row as the main table row selected
+            o_table = TableHandler(table_ui=_table)
+            o_table.select_row(selected_row)
+            _table.blockSignals(False)
 
     def get_current_active_tab(self):
         tab_index = self.ui.tabWidget.currentIndex()
@@ -575,6 +586,8 @@ class RegistrationMarkers(QDialog):
         o_event = MarkerHandler(parent=self.parent)
         o_event.close_all_markers()
 
-        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button],
-                           enabled=True)
+        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button,
+                                               self.parent.ui.manual_registration_button,
+                                               self.parent.ui.profiler_registration_button],
+                                      enabled=True)
         self.parent.registration_markers_ui = None

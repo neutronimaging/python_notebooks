@@ -289,7 +289,9 @@ class RegistrationUi(QMainWindow):
     def manual_registration_button_clicked(self):
         """launch the manual registration tool"""
         o_registration_tool = ManualLauncher(parent=self)
-        self.set_widget_status(list_ui=[self.ui.auto_registration_button],
+        self.set_widget_status(list_ui=[self.ui.auto_registration_button,
+                                        self.ui.marker_registration_button,
+                                        self.ui.profiler_registration_button],
                                enabled=False)
 
     def auto_registration_button_clicked(self):
@@ -297,7 +299,9 @@ class RegistrationUi(QMainWindow):
 
     def markers_registration_button_clicked(self):
         o_markers_registration = RegistrationMarkersLauncher(parent=self)
-        self.set_widget_status(list_ui=[self.ui.auto_registration_button],
+        self.set_widget_status(list_ui=[self.ui.auto_registration_button,
+                                        self.ui.manual_registration_button,
+                                        self.ui.profiler_registration_button],
                                enabled=False)
 
     def profiler_registration_button_clicked(self):

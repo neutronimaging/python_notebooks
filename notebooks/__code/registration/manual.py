@@ -121,7 +121,9 @@ class Manual(QMainWindow):
             _widget.setEnabled(_enabled)
 
     def closeEvent(self, c):
-        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button],
+        self.parent.set_widget_status(list_ui=[self.parent.ui.auto_registration_button,
+                                               self.parent.ui.marker_registration_button,
+                                               self.parent.ui.profiler_registration_button],
                                       enabled=True)
         self.parent.registration_tool_ui = None
 
