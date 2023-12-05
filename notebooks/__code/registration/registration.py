@@ -3,7 +3,7 @@ from IPython.core.display import display
 import numpy as np
 import os
 import copy
-from qtpy.QtWidgets import QMainWindow,QTableWidgetSelectionRange, QTableWidgetItem
+from qtpy.QtWidgets import QMainWindow, QTableWidgetItem
 from qtpy import QtGui, QtCore
 import webbrowser
 
@@ -11,7 +11,7 @@ from __code import load_ui
 
 from __code._utilities.table_handler import TableHandler
 from __code.registration.event_handler import EventHandler
-from __code.registration.get import Get
+from __code.registration.marker_handler import MarkerHandler
 from __code.registration.display import Display
 from __code.registration.initialization import Initialization
 from __code.registration.registration_marker import RegistrationMarkersLauncher
@@ -324,3 +324,7 @@ class RegistrationUi(QMainWindow):
     def grid_size_slider_pressed(self):
         o_display = Display(parent=self)
         o_display.live_image()
+
+    def marker_has_been_moved(self):
+        o_marker = MarkerHandler(parent=self)
+        o_marker.marker_has_been_moved()
