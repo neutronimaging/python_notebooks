@@ -20,15 +20,30 @@ class MarkerHandler:
         else:
             for _index, _marker_name in enumerate(self.parent.markers_table.keys()):
                 self.display_markers_of_tab(marker_name=_marker_name)
-                
+
+    def close_all_markers(self):
+        for marker in self.parent.markers_table.keys():
+            self.close_markers_of_tab(marker_name=marker)
+
+    def close_markers_of_tab(self, marker_name=''):
+        """remove box and label (if they are there) of each marker"""
+        _data = self.parent.markers_table[marker_name]['data']
+        for _file in _data:
+            _marker_ui = _data[_file]['marker_ui']
+            if _marker_ui:
+                self.parent.ui.image_view.removeItem(_marker_ui)
+
+            _label_ui = _data[_file]['label_ui']
+            if _label_ui:
+                self.parent.ui.image_view.removeItem(_label_ui)
+
     def display_markers_of_tab(self, marker_name=''):
-        self.parent.close_markers_of_tab(marker_name=marker_name)
+        self.close_markers_of_tab(marker_name=marker_name)
         # get short name of file selected
-        o_get = Get(parent=self)
+        o_get = Get(parent=self.parent)
         list_short_file_selected = o_get.list_short_file_selected()
         nbr_file_selected = len(list_short_file_selected)
         if nbr_file_selected > 1:
-            o_get = Get(parent=self)
             list_row_selected = o_get.list_row_selected()
         _color_marker = self.parent.markers_table[marker_name]['color']['name']
 
@@ -58,7 +73,7 @@ class MarkerHandler:
 
     def marker_has_been_moved(self):
 
-        o_get = Get(parent=self)
+        o_get = Get(parent=self.parent)
         list_short_file_selected = o_get.list_short_file_selected()
         nbr_file_selected = len(list_short_file_selected)
         if nbr_file_selected > 1:
