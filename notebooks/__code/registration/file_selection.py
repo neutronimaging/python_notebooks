@@ -15,6 +15,7 @@ class FileSelection:
         webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/file-selector-tool/")
 
     def load_files(self, files):
+        files.sort()
         o_norm = Normalization()
         o_norm.load(file=files, notebook=True)
         self.data_dict = o_norm.data

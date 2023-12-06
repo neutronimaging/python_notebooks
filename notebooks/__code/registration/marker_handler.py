@@ -20,15 +20,30 @@ class MarkerHandler:
         else:
             for _index, _marker_name in enumerate(self.parent.markers_table.keys()):
                 self.display_markers_of_tab(marker_name=_marker_name)
-                
+
+    def close_all_markers(self):
+        for marker in self.parent.markers_table.keys():
+            self.close_markers_of_tab(marker_name=marker)
+
+    def close_markers_of_tab(self, marker_name=''):
+        """remove box and label (if they are there) of each marker"""
+        _data = self.parent.markers_table[marker_name]['data']
+        for _file in _data:
+            _marker_ui = _data[_file]['marker_ui']
+            if _marker_ui:
+                self.parent.ui.image_view.removeItem(_marker_ui)
+
+            _label_ui = _data[_file]['label_ui']
+            if _label_ui:
+                self.parent.ui.image_view.removeItem(_label_ui)
+
     def display_markers_of_tab(self, marker_name=''):
-        self.parent.close_markers_of_tab(marker_name=marker_name)
+        self.close_markers_of_tab(marker_name=marker_name)
         # get short name of file selected
-        o_get = Get(parent=self)
+        o_get = Get(parent=self.parent)
         list_short_file_selected = o_get.list_short_file_selected()
         nbr_file_selected = len(list_short_file_selected)
         if nbr_file_selected > 1:
-            o_get = Get(parent=self)
             list_row_selected = o_get.list_row_selected()
         _color_marker = self.parent.markers_table[marker_name]['color']['name']
 
@@ -44,21 +59,20 @@ class MarkerHandler:
             _marker_ui = pg.RectROI([x,y], [width, height], pen=pen)
             self.parent.ui.image_view.addItem(_marker_ui)
             _marker_ui.removeHandle(0)
-            _marker_ui.sigRegionChanged.connect(self.marker_has_been_moved)
+            _marker_ui.sigRegionChanged.connect(self.parent.marker_has_been_moved)
 
             if nbr_file_selected > 1: # more than 1 file selected, we need to add the index of the file
                 text_ui = self.parent.add_marker_label(file_index=list_row_selected[_index],
-                                                marker_index=marker_name,
-                                                x=x,
-                                                y=y,
-                                                color=_color_marker)
+                                                        marker_index=marker_name,
+                                                        x=x,
+                                                        y=y,
+                                                        color=_color_marker)
                 self.parent.markers_table[marker_name]['data'][_file]['label_ui'] = text_ui
 
             _marker_data['marker_ui'] = _marker_ui
 
     def marker_has_been_moved(self):
-
-        o_get = Get(parent=self)
+        o_get = Get(parent=self.parent)
         list_short_file_selected = o_get.list_short_file_selected()
         nbr_file_selected = len(list_short_file_selected)
         if nbr_file_selected > 1:

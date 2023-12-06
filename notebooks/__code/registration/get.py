@@ -8,10 +8,10 @@ class Get:
         self.parent = parent
 
     def list_short_file_selected(self):
-        self.get_list_short_file_selected()
+        return self.get_list_short_file_selected()
 
     def get_list_short_file_selected(self):
-        list_row_selected = self.get_list_row_selected()
+        list_row_selected = self.list_row_selected()
         full_list_files = np.array(self.parent.data_dict['file_name'])
         list_file_selected = full_list_files[list_row_selected]
         list_short_file_selected = [os.path.basename(_file) for _file in

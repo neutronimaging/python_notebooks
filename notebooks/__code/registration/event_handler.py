@@ -120,21 +120,21 @@ class EventHandler:
             # all rows are visible
             o_table.set_all_row_hidden(False)
 
-    def close_all_markers(self):
-        for marker in self.parent.markers_table.keys():
-            self.close_markers_of_tab(marker_name=marker)
-
-    def close_markers_of_tab(self, marker_name=''):
-        """remove box and label (if they are there) of each marker"""
-        _data = self.parent.markers_table[marker_name]['data']
-        for _file in _data:
-            _marker_ui = _data[_file]['marker_ui']
-            if _marker_ui:
-                self.parent.ui.image_view.removeItem(_marker_ui)
-
-            _label_ui = _data[_file]['label_ui']
-            if _label_ui:
-                self.parent.ui.image_view.removeItem(_label_ui)
+    # def close_all_markers(self):
+    #     for marker in self.parent.markers_table.keys():
+    #         self.close_markers_of_tab(marker_name=marker)
+    #
+    # def close_markers_of_tab(self, marker_name=''):
+    #     """remove box and label (if they are there) of each marker"""
+    #     _data = self.parent.markers_table[marker_name]['data']
+    #     for _file in _data:
+    #         _marker_ui = _data[_file]['marker_ui']
+    #         if _marker_ui:
+    #             self.parent.ui.image_view.removeItem(_marker_ui)
+    #
+    #         _label_ui = _data[_file]['label_ui']
+    #         if _label_ui:
+    #             self.parent.ui.image_view.removeItem(_label_ui)
 
     def profile_line_moved(self):
         """update profile plot"""

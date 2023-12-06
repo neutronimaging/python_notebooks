@@ -13,7 +13,7 @@ class ManualLauncher:
     def __init__(self, parent=None):
         self.parent = parent
 
-        if self.parent.registration_tool_ui == None:
+        if self.parent.registration_tool_ui == None:v
             tool_ui = Manual(parent=parent)
             tool_ui.show()
             self.parent.registration_tool_ui = tool_ui
