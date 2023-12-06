@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.15.2
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -19,7 +19,7 @@
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Your IPTS 
 
-# + run_control={"frozen": false, "read_only": false} tags=[]
+# + run_control={"frozen": false, "read_only": false}
 from __code.bin.bin_images import BinHandler
 from __code import system
 system.System.select_working_dir(notebook='bin_images')
@@ -29,7 +29,7 @@ custom_style.style()
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Images to Rebin
 
-# + run_control={"frozen": false, "read_only": false} tags=[]
+# + run_control={"frozen": false, "read_only": false}
 o_bin = BinHandler(working_dir = system.System.get_working_dir())
 o_bin.select_images()
 
