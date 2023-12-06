@@ -733,7 +733,7 @@ class RegistrationProfileUi(QMainWindow):
                 force_recalculation = True
             else:
                 peak = self.peak[label]
-                if peak == []:
+                if peak is None:
                     force_recalculation = True
                 elif peak[index_selected] == 0:
                     force_recalculation = True
