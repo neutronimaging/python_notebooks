@@ -6,14 +6,14 @@ jobs:
     run-unit-tests:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
-      name: ubuntu-22.04  python 3.8
+      name: ubuntu-22.04  python 3.9
       steps:
         - uses: actions/checkout@v2
         # - uses: jurplel/install-qt-action@v2
         - uses: conda-incubator/setup-miniconda@v2
           with:
             auto-update-conda: true
-            python-version: 3.8
+            python-version: 3.9
             channels: conda-forge
             auto-activate-base: true
         - name: Map the Branch Name to a Conda Environment
