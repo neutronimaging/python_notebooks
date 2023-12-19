@@ -1,6 +1,7 @@
 name: neutron-imaging
 channels:
   - conda-forge
+  - oncat
 dependencies:
   # Base
   - python
@@ -34,6 +35,8 @@ dependencies:
   - qtpy>=1.9.0
   - pyqt>=5.15,<6
   - pyqtgraph
+  # ORNL
+  - pyoncat
   # neutronimaging + pip_only_deps
   - pip
   - pip:
@@ -43,4 +46,3 @@ dependencies:
     - NeuNorm==1.5.3
     - sectorizedradialprofile
     - ImagingReso==1.7.5
-    - https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl
