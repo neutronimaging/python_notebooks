@@ -395,6 +395,7 @@ class FileSelection(object):
     def __init__(self, working_dir='./', filter=''):
         self.working_dir = working_dir
         self.filter = filter
+        self.progress_bar_output = ipyw.Output()  # reserve space for progress bar
 
     def select_file_help(self, value):
         import webbrowser
@@ -403,20 +404,39 @@ class FileSelection(object):
     def load_files(self, files):
         o_norm = Normalization()
         files.sort()
-        o_norm.load(file=files, notebook=True)
+        # @note:
+        # Alternative way of handling progressbar, probably better used in Normalization, without having to manage
+        # the progress bar yourself
+        #
+        # from tqdm.auto import tqdm
+        # for _file in tqdm(files, desc="Loading:"):
+        #     o_norm.load_file(
+        #         file=_file,
+        #         data_type=data_type,
+        #         auto_gamma_filter=auto_gamma_filter,
+        #         manual_gamma_filter=manual_gamma_filter,
+        #         manual_gamma_threshold=manual_gamma_threshold,
+        #     )
+        #
+        with self.progress_bar_output:
+            self.progress_bar_output.clear_output()
+            o_norm.load(file=files, notebook=True)
         self.data_dict = o_norm.data
 
     def load_files_without_checking_shape(self, files):
         o_norm = Normalization()
         files.sort()
-        o_norm.load(file=files, notebook=True, check_shape=False)
+        with self.progress_bar_output:
+            self.progress_bar_output.clear_output()
+            o_norm.load(file=files, notebook=True, check_shape=False)
         self.data_dict = o_norm.data
 
     def select_data(self, check_shape=True):
         help_ui = widgets.Button(description="HELP",
                                  button_style='info')
         help_ui.on_click(self.select_file_help)
-        display(help_ui)
+        status_bar = ipyw.VBox([help_ui, self.progress_bar_output])
+        display(status_bar)
 
         if check_shape:
 
