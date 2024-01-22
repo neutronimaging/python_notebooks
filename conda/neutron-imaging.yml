@@ -45,6 +45,6 @@ dependencies:
     - changepy==0.3.1
     - ipywe==0.1.3a1
     - neutronbraggedge==2.0.6
-    - NeuNorm==1.6.2
+    - NeuNorm==1.6.3
     - sectorizedradialprofile
     - ImagingReso==1.7.5
