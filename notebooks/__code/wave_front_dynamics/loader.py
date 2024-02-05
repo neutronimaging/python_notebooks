@@ -8,12 +8,28 @@ from __code._utilities.file import retrieve_metadata_value_from_ascii_file
 def loading_linear_profile_file(file_name):
 
     # retrieve the axis labels
+    list_of_original_image_files = []
+    this_line_contains_the_original_image_file_name = False
     with open(file_name, 'r') as f:
         for line in f.readlines():
             if line.startswith("##"):
                 axis_legend = line[1:].split(',')
+
+            if line.strip() == "#":
+                this_line_contains_the_original_image_file_name = False
+
+            if this_line_contains_the_original_image_file_name:
+                list_of_original_image_files.append(line)
+
+            if line.startswith("#List of files"):
+                this_line_contains_the_original_image_file_name = True
+
     axis_legend = [_line.strip() for _line in axis_legend]
     axis_legend = [_line.replace("#", "").strip() for _line in axis_legend]
+
+
+    print(f"{list_of_original_image_files =}")
+
 
     pd_object = pd.read_csv(file_name, comment='#', names=axis_legend)
 
