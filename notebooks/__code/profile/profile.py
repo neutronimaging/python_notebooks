@@ -5,7 +5,6 @@ import numpy as np
 import os
 import copy
 import collections
-import pyqtgraph as pg
 
 from qtpy.QtWidgets import QFileDialog, QMainWindow, QTableWidgetSelectionRange, QTableWidgetItem, \
     QSpacerItem, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QWidget
@@ -13,10 +12,13 @@ from qtpy import QtCore
 from qtpy.QtGui import QGuiApplication
 
 from __code import load_ui
+from __code import interact_me_style, normal_style
 from __code._utilities.color import Color
-from __code.file_handler import make_ascii_file
+from __code._utilities.table_handler import TableHandler
 from __code.profile.initialization import Initializer
 from __code.profile.display import DisplayImages
+from __code.profile.export import ExportProfiles
+from __code.profile.guide_and_profile_rois_handler import GuideAndProfileRoisHandler
 
 
 class ProfileUi(QMainWindow):
@@ -90,9 +92,28 @@ class ProfileUi(QMainWindow):
         # display first images
         self.slider_file_changed(-1)
 
+    def check_widgets(self):
+        if self._we_can_enable_export_profiles():
+            self.ui.export_button.setStyleSheet(interact_me_style)
+            enable_button = True
+        else:
+            self.ui.export_button.setStyleSheet(normal_style)
+            enable_button = False
+        self.ui.export_button.setEnabled(enable_button)
+
+    def _we_can_enable_export_profiles(self):
+
+        # if no profile, we can't enable export
+        o_table = TableHandler(table_ui=self.ui.tableWidget)
+        nbr_row = o_table.row_count()
+        if nbr_row == 0:
+            return False
+
+        return True
+
     # main methods
     def remove_all_guides(self):
-        # remove all teh guids
+        # remove all the guides
         for _roi in self.list_guide_pyqt_roi:
             self.ui.image_view.removeItem(_roi)
 
@@ -527,6 +548,7 @@ class ProfileUi(QMainWindow):
         self.remove_all_guides()
         self.display_guides()
         self.display_profiles()
+        self.check_widgets()
 
     def profile_width_changed(self, new_value):
         self.update_profile_rois()
@@ -584,11 +606,13 @@ class ProfileUi(QMainWindow):
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.previous_active_row = selected_row
         self.display_profiles()
+        self.check_widgets()
 
     def remove_row_button_clicked(self):
         selected_row = self.get_selected_row()
         self.remove_row(row=selected_row)
         self.display_profiles()
+        self.check_widgets()
 
     def profile_along_axis_changed(self):
         self.update_profile_rois()
@@ -619,165 +643,3 @@ class ProfileUi(QMainWindow):
 
     def closeEvent(self, event=None):
         pass
-
-
-class ExportProfiles(object):
-
-    def __init__(self, parent=None, export_folder=''):
-        self.parent = parent
-        self.export_folder = export_folder
-
-    def _create_output_file_name(self, profile_index=0):
-        base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index + 1))
-        return output_file_name
-
-    def _create_metadata(self, profile_index=0):
-        metadata = ["# Counts vs pixel position"]
-        metadata.append("#average counts of width of profile is used!")
-        profile_dimension = self.parent.get_profile_dimensions(row=profile_index)
-        is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
-        x_left = profile_dimension.x_left
-        x_right = profile_dimension.x_right
-        y_top = profile_dimension.y_top
-        y_bottom = profile_dimension.y_bottom
-        metadata.append("#Profile dimension:")
-        metadata.append("# * [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(x_left, y_top, x_right, y_bottom))
-        if is_x_profile_direction:
-            metadata.append("# * integrated over y_axis")
-            table_axis = ['#x_axis']
-        else:
-            metadata.append("# * integrated over x_axis")
-            table_axis = ['#y_axis']
-        nbr_files = len(self.parent.data_dict['file_name'])
-        metadata.append("#List of files ({} files)".format(nbr_files))
-        for _index, _file in enumerate(self.parent.data_dict['file_name']):
-            metadata.append("# * {} -> col{}".format(_file, _index + 1))
-            table_axis.append("# col.{}".format(_index + 1))
-        metadata.append("#")
-        metadata.append("#" + ",".join(table_axis))
-        return metadata
-
-    def _create_data(self, profile_index=0):
-        all_profiles = []
-        x_axis = []
-        for _data in self.parent.data_dict['data']:
-            [x_axis, profile] = self.parent.get_profile(image=np.transpose(_data),
-                                                        profile_roi_row=profile_index)
-            all_profiles.append(list(profile))
-
-        data = []
-        for _index, _row in enumerate(np.transpose(all_profiles)):
-            str_row = [str(_value) for _value in _row]
-            data.append("{}, ".format(x_axis[_index]) + ", ".join(str_row))
-
-        return data
-
-    def run(self):
-        _nbr_profiles = self.parent.ui.tableWidget.rowCount()
-        for _profile_index in np.arange(_nbr_profiles):
-            _output_file_name = self._create_output_file_name(profile_index=_profile_index)
-            metadata = self._create_metadata(profile_index=_profile_index)
-            data = self._create_data(profile_index=_profile_index)
-            make_ascii_file(metadata=metadata,
-                            data=data,
-                            output_file_name=_output_file_name,
-                            dim='1d')
-
-            display(HTML("Exported Profile file {}".format(_output_file_name)))
-
-
-class GuideAndProfileRoisHandler:
-    __profile = None
-
-    def __init__(self, parent=None, row=-1):
-        self.parent = parent
-        self.row = row
-        if self.row == -1:
-            self.row = 0
-
-    def add(self):
-        self._define_guide()
-        self._define_profile()
-        self.parent.list_profile_pyqt_roi.insert(self.row, self.__profile)
-
-    def update(self):
-        self._define_profile()
-        self.parent.ui.image_view.removeItem(self.parent.list_profile_pyqt_roi[self.row])
-        self.parent.list_profile_pyqt_roi[self.row] = self.__profile
-
-    def _define_guide(self):
-        """define the guide"""
-        guide_roi = pg.RectROI([self.parent.default_guide_roi['x0'], self.parent.default_guide_roi['y0']],
-                               [self.parent.default_guide_roi['width'], self.parent.default_guide_roi['height']],
-                               pen=self.parent.default_guide_roi['color_activated'])
-        guide_roi.addScaleHandle([1, 1], [0, 0])
-        guide_roi.addScaleHandle([0, 0], [1, 1])
-        guide_roi.sigRegionChanged.connect(self.parent.guide_changed)
-        self.parent.ui.image_view.addItem(guide_roi)
-        self.parent.list_guide_pyqt_roi.insert(self.row, guide_roi)
-
-    def _define_profile(self):
-        # profile
-        # [x0, y0, width, height] = self.parent.get_item_row(row=self.row)
-        _profile_width = self.parent.get_profile_width(row=self.row)
-        is_x_profile_direction = self.parent.ui.profile_direction_x_axis.isChecked()
-        # delta_profile = (_profile_width - 1) / 2.
-
-        profile_dimension = self.parent.get_profile_dimensions(row=self.row)
-        x_left = profile_dimension.x_left
-        x_right = profile_dimension.x_right
-        y_top = profile_dimension.y_top
-        y_bottom = profile_dimension.y_bottom
-
-        if is_x_profile_direction:
-
-            pos = []
-            pos.append([x_left, y_top])
-            pos.append([x_right, y_top])
-            adj = []
-            adj.append([0, 1])
-
-            if y_top != y_bottom:  # height == 1
-                pos.append([x_left, y_bottom])
-                pos.append([x_right, y_bottom])
-                adj.append([2, 3])
-
-            adj = np.array(adj)
-            pos = np.array(pos)
-
-        else:  # y-profile direction
-
-            pos = []
-            pos.append([x_left, y_top])
-            pos.append([x_left, y_bottom])
-            adj = []
-            adj.append([0, 1])
-
-            if y_top != y_bottom:  # height == 1
-                pos.append([x_right, y_top])
-                pos.append([x_right, y_bottom])
-                adj.append([2, 3])
-
-            adj = np.array(adj)
-            pos = np.array(pos)
-
-        line_color = self.parent.profile_color
-        _list_line_color = list(line_color)
-        line_color = tuple(_list_line_color)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
-
-        profile = pg.GraphItem()
-        self.parent.ui.image_view.addItem(profile)
-        profile.setData(pos=pos,
-                        adj=adj,
-                        pen=lines,
-                        symbol=None,
-                        pxMode=False)
-
-        self.__profile = profile
-
-
