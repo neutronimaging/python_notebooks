@@ -6,24 +6,17 @@ import os
 import copy
 import collections
 import pyqtgraph as pg
-from skimage import transform
 
 from qtpy.QtWidgets import QFileDialog, QMainWindow, QTableWidgetSelectionRange, QTableWidgetItem, \
-    QVBoxLayout, QSpacerItem, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QWidget
+    QSpacerItem, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QWidget
 from qtpy import QtCore
 from qtpy.QtGui import QGuiApplication
 
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
 from __code import load_ui
 from __code._utilities.color import Color
-from __code.file_handler import retrieve_time_stamp, make_ascii_file
-from __code.decorators import wait_cursor
 from __code.file_handler import make_ascii_file
+from __code.profile.initialization import Initializer
+from __code.profile.display import DisplayImages
 
 
 class ProfileUi(QMainWindow):
@@ -92,11 +85,7 @@ class ProfileUi(QMainWindow):
 
         # initialization
         o_initialization = Initializer(parent=self)
-        o_initialization.timestamp_dict()
-        o_initialization.table()
-        o_initialization.parameters()
-        o_initialization.widgets()
-        o_initialization.pyqtgraph()
+        o_initialization.all()
 
         # display first images
         self.slider_file_changed(-1)
@@ -792,243 +781,3 @@ class GuideAndProfileRoisHandler:
         self.__profile = profile
 
 
-class Initializer(object):
-
-    def __init__(self, parent=None):
-        self.parent = parent
-
-    def timestamp_dict(self):
-        list_files = self.parent.data_dict['file_name']
-        self.parent.timestamp_dict = retrieve_time_stamp(list_files)
-
-    def table(self):
-        # init the summary table
-        list_files_full_name = self.parent.data_dict['file_name']
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
-
-        list_time_stamp = self.parent.timestamp_dict['list_time_stamp']
-        list_time_stamp_user_format = self.parent.timestamp_dict['list_time_stamp_user_format']
-        time_0 = list_time_stamp[0]
-        for _row, _file in enumerate(list_files_short_name):
-            self.parent.ui.summary_table.insertRow(_row)
-            self.set_item_summary_table(row=_row, col=0, value=_file)
-            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
-            _offset = list_time_stamp[_row] - time_0
-            self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
-
-            self.parent.ui.all_plots_file_name_table.insertRow(_row)
-            self.set_item_all_plot_file_name_table(row=_row, value=os.path.basename(_file))
-
-    def parameters(self):
-        # init the position of the measurement ROI
-        [height, width] = np.shape(self.parent.data_dict['data'][0])
-        self.parent.default_guide_roi['width'] = int(width / 10)
-        self.parent.default_guide_roi['height'] = int(height / 5)
-        self.parent.default_guide_roi['x0'] = int(width / 2)
-        self.parent.default_guide_roi['y0'] = int(height / 2)
-        self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
-
-    def widgets(self):
-        _file_path = os.path.dirname(__file__)
-        left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                               '../static/profile/button_rotation_left_fast.png'))
-        self.parent.ui.left_rotation_button_fast.setStyleSheet("background-image: "
-                                                               "url('" + left_rotation_fast_file + "'); " + \
-                                                               "background-repeat: no-repeat")
-
-        right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                                '../static/profile/button_rotation_right_fast.png'))
-        self.parent.ui.right_rotation_button_fast.setStyleSheet("background-image: "
-                                                                "url('" + right_rotation_fast_file + "'); " + \
-                                                                "background-repeat: no-repeat")
-
-        left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                               '../static/profile/button_rotation_left_slow.png'))
-        self.parent.ui.left_rotation_button_slow.setStyleSheet("background-image: "
-                                                               "url('" + left_rotation_slow_file + "'); " + \
-                                                               "background-repeat: no-repeat")
-
-        right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                                '../static/profile/button_rotation_right_slow.png'))
-        self.parent.ui.right_rotation_button_slow.setStyleSheet("background-image: "
-                                                                "url('" + right_rotation_slow_file + "'); " + \
-                                                                "background-repeat: no-repeat")
-
-        self.parent.ui.splitter_2.setSizes([250, 50])
-        self.parent.ui.splitter.setSizes([500, 50])
-        self.parent.ui.all_plots_hori_splitter.setSizes([250, 100])
-        self.parent.ui.all_plots_verti_splitter.setSizes([300, 100])
-
-        # file slider
-        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
-
-        # update size of table columns
-        nbr_columns = self.parent.ui.tableWidget.columnCount()
-        for _col in range(nbr_columns):
-            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
-
-        # update size of summary table
-        nbr_columns = self.parent.ui.summary_table.columnCount()
-        for _col in range(nbr_columns):
-            self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
-
-        self.parent.display_ui = [self.parent.ui.display_size_label,
-                                  self.parent.ui.grid_size_slider,
-                                  self.parent.ui.display_transparency_label,
-                                  self.parent.ui.transparency_slider]
-
-    def pyqtgraph(self):
-        # image
-        self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
-        self.parent.ui.image_view.ui.menuBtn.hide()
-        self.parent.ui.image_view.ui.roiBtn.hide()
-        vertical_layout = QVBoxLayout()
-        vertical_layout.addWidget(self.parent.ui.image_view)
-        self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
-
-        # profile
-        self.parent.ui.profile_view = pg.PlotWidget()
-        self.parent.ui.profile_view.plot()
-        self.parent.legend = self.parent.ui.profile_view.addLegend()
-        vertical_layout2 = QVBoxLayout()
-        vertical_layout2.addWidget(self.parent.ui.profile_view)
-        self.parent.ui.profile_widget.setLayout(vertical_layout2)
-
-        # all plots
-        self.parent.ui.all_plots_view = pg.PlotWidget()
-        self.parent.ui.all_plots_view.plot()
-        self.parent.all_plots_legend = self.parent.ui.all_plots_view.addLegend()
-        vertical_layout2 = QVBoxLayout()
-        vertical_layout2.addWidget(self.parent.ui.all_plots_view)
-        self.parent.ui.all_plots_widget.setLayout(vertical_layout2)
-
-    def set_item_all_plot_file_name_table(self, row=0, value=''):
-        item = QTableWidgetItem(str(value))
-        self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
-        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
-    def set_item_summary_table(self, row=0, col=0, value=''):
-        item = QTableWidgetItem(str(value))
-        self.parent.ui.summary_table.setItem(row, col, item)
-        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
-
-class DisplayImages(object):
-
-    def __init__(self, parent=None, recalculate_image=False):
-        self.parent = parent
-        self.recalculate_image = recalculate_image
-
-        self.display_images()
-        self.display_grid()
-
-    def get_image_selected(self, recalculate_image=False):
-        slider_index = self.parent.ui.file_slider.value()
-        if recalculate_image:
-            angle = self.parent.rotation_angle
-            # rotate all images
-            self.parent.data_dict['data'] = [transform.rotate(_image, angle) for _image in
-                                             self.parent.data_dict_raw['data']]
-
-        _image = self.parent.data_dict['data'][slider_index]
-        return _image
-
-    def get_image_filename(self):
-        slider_index = self.parent.ui.file_slider.value()
-        return self.parent.list_filenames[slider_index]
-
-    def display_images(self):
-        _image = self.get_image_selected(recalculate_image=self.recalculate_image)
-        _view = self.parent.ui.image_view.getView()
-        _view_box = _view.getViewBox()
-        _state = _view_box.getState()
-
-        _file_name = self.get_image_filename()
-        self.parent.ui.filename.setText(_file_name)
-
-        first_update = False
-        if self.parent.histogram_level == []:
-            first_update = True
-        _histo_widget = self.parent.ui.image_view.getHistogramWidget()
-        self.parent.histogram_level = _histo_widget.getLevels()
-
-        _image = np.transpose(_image)
-        self.parent.ui.image_view.setImage(_image)
-        self.parent.live_image = _image
-        _view_box.setState(_state)
-
-        if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
-
-    def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
-        """calculate the matrix that defines the vertical and horizontal lines
-        that allow pyqtgraph to display the grid"""
-
-        pos_adj_dict = {}
-
-        # pos - each matrix defines one side of the line
-        pos = []
-        adj = []
-
-        # vertical lines
-        x = 0
-        index = 0
-        while (x <= width):
-            one_edge = [x, 0]
-            other_edge = [x, height]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            x += grid_size
-            index += 2
-
-        # vertical lines
-        y = 0
-        while (y <= height):
-            one_edge = [0, y]
-            other_edge = [width, y]
-            pos.append(one_edge)
-            pos.append(other_edge)
-            adj.append([index, index + 1])
-            y += grid_size
-            index += 2
-
-        pos_adj_dict['pos'] = np.array(pos)
-        pos_adj_dict['adj'] = np.array(adj)
-
-        return pos_adj_dict
-
-    def display_grid(self):
-        # remove previous grid if any
-        if self.parent.grid_view['item']:
-            self.parent.ui.image_view.removeItem(self.parent.grid_view['item'])
-
-        # if we want a grid
-        if self.parent.ui.grid_display_checkBox.isChecked():
-            grid_size = self.parent.ui.grid_size_slider.value()
-            [height, width] = np.shape(self.parent.live_image)
-
-            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
-                                                      height=height,
-                                                      width=width)
-            pos = pos_adj_dict['pos']
-            adj = pos_adj_dict['adj']
-
-            line_color = self.parent.grid_view['color']
-            _transparency_value = 255 - (float(str(self.parent.ui.transparency_slider.value())) / 100) * 255
-            _list_line_color = list(line_color)
-            _list_line_color[3] = _transparency_value
-            line_color = tuple(_list_line_color)
-            lines = np.array([line_color for n in np.arange(len(pos))],
-                             dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                    ('blue', np.ubyte), ('alpha', np.ubyte),
-                                    ('width', float)])
-
-            grid = pg.GraphItem()
-            self.parent.ui.image_view.addItem(grid)
-            grid.setData(pos=pos,
-                         adj=adj,
-                         pen=lines,
-                         symbol=None,
-                         pxMode=False)
-            self.parent.grid_view['item'] = grid
