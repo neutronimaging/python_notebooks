@@ -22,11 +22,13 @@ class WaveFrontDynamics:
     list_of_original_image_files = None
     list_of_data = None
 
+    list_timestamp = None
+
     def __init__(self, working_dir="~/"):
         self.working_dir = working_dir
 
     def select_data(self):
-        self.list_data_widget = fileselector.FileSelectorPanel(instruction='select list of ascii profile data ...',
+        self.list_data_widget = fileselector.FileSelectorPanel(instruction='select linear profile ASCII or Radial Profile list of ascii files ...',
                                                                start_dir=self.working_dir,
                                                                next=self.load_data,
                                                                filters={"ASCII": "*.txt"},
@@ -35,11 +37,19 @@ class WaveFrontDynamics:
         self.list_data_widget.show()
 
     def load_data(self, list_of_ascii_files=None):
+
+        print(f"top of load_data")
+        print(f"{list_of_ascii_files =}")
+
         if list_of_ascii_files is None:
             return
 
         list_of_ascii_files.sort()
         self.list_of_ascii_files = list_of_ascii_files
+
+        print(f"{list_of_ascii_files =}")
+        return
+
         list_of_data = []
         list_of_original_image_files = []
         list_of_timestamp = []
@@ -106,6 +116,10 @@ class WaveFrontDynamicsUI(QMainWindow):
         self.list_timestamp = wave_front_dynamics.list_timestamp
         self.list_of_original_image_files = wave_front_dynamics.list_of_original_image_files
         self.list_of_original_image_files_to_use = copy.deepcopy(wave_front_dynamics.list_of_original_image_files)
+        if self.list_of_data is None:
+            display(HTML('<span style="font-size: 20px; color:red">No ASCII file loaded!</span>'))
+            return
+
         self.nbr_files = len(self.list_of_data)
 
         super(QMainWindow, self).__init__(parent)
