@@ -138,7 +138,7 @@ class BraggEdgeSelectionTab:
 
         _pen = QtGui.QPen()
         _pen.setColor(self.parent.roi_settings['color'])
-        _pen.setWidth(self.parent.roi_settings['width'])
+        _pen.setWidthF(self.parent.roi_settings['width'])
         self.parent.roi_id = pg.ROI([x0, y0],
                                     [new_value, new_value],
                                     pen=_pen,
@@ -223,7 +223,7 @@ class BraggEdgeSelectionTab:
         _pen = QtGui.QPen()
         _pen.setDashPattern(self.parent.shrinking_roi_settings['dashes_pattern'])
         _pen.setColor(self.parent.shrinking_roi_settings['color'])
-        _pen.setWidth(self.parent.shrinking_roi_settings['width'])
+        _pen.setWidthF(self.parent.shrinking_roi_settings['width'])
 
         self.parent.shrinking_roi_id = pg.ROI([x0, y0],
                                               [width, height],

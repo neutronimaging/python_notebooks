@@ -284,7 +284,7 @@ class EventHandler(Parent):
 
             _pen = QtGui.QPen()
             _pen.setColor(QtGui.QColor(0, 0, 255))
-            _pen.setWidth(0.4)
+            _pen.setWidthF(0.1)
 
             self.parent.max_radius_item = pg.CircleROI([x0 - max_radius, y0 - max_radius],
                                             [2*max_radius, 2*max_radius],

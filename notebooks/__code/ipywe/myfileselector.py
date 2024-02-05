@@ -392,9 +392,22 @@ def del_ftime(file_label):
 
 class FileSelection(object):
 
-    def __init__(self, working_dir='./', filter=''):
+    next = None
+
+    def __init__(self,
+                 working_dir='./',
+                 filter='',
+                 default_filter=None,
+                 next=None,
+                 instructions=None,
+                 multiple=True):
         self.working_dir = working_dir
+        self.instuctions = instructions
         self.filter = filter
+        self.default_filter = default_filter
+        self.next = next
+        self.multiple = multiple
+
         self.progress_bar_output = ipyw.Output()  # reserve space for progress bar
 
     def select_file_help(self, value):
@@ -438,33 +451,39 @@ class FileSelection(object):
         status_bar = ipyw.VBox([help_ui, self.progress_bar_output])
         display(status_bar)
 
+        instructions = self.instuctions if self.instuctions else "Select Images ..."
+
         if check_shape:
 
+            next = self.next if self.next else self.load_files
             if self.filter:
-                self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                self.files_ui = fileselector.FileSelectorPanel(instruction=instructions,
                                                                start_dir=self.working_dir,
-                                                               next=self.load_files,
+                                                               next=next,
                                                                filters=self.filter,
-                                                               multiple=True)
+                                                               default_filter=self.default_filter,
+                                                               multiple=self.multiple)
             else:
-                 self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                 self.files_ui = fileselector.FileSelectorPanel(instruction=instructions,
                                                                 start_dir=self.working_dir,
-                                                                next=self.load_files,
-                                                                multiple=True)
+                                                                next=next,
+                                                                multiple=self.multiple)
 
         else:
 
+            next = self.next if self.next else self.load_files_without_checking_shape
             if self.filter:
-                self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                self.files_ui = fileselector.FileSelectorPanel(instruction=instructions,
                                                                start_dir=self.working_dir,
-                                                               next=self.load_files_without_checking_shape,
+                                                               next=next,
                                                                filters=self.filter,
-                                                               multiple=True)
+                                                               default_filter=self.default_filter,
+                                                               multiple=self.multiple)
             else:
-                self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
+                self.files_ui = fileselector.FileSelectorPanel(instruction=instructions,
                                                                start_dir=self.working_dir,
-                                                               next=self.load_files_without_checking_shape,
-                                                               multiple=True)
+                                                               next=next,
+                                                               multiple=self.multiple)
 
         self.files_ui.show()
 

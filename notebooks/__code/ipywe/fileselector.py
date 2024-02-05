@@ -213,7 +213,6 @@ class FileSelectorPanel:
         if self.filter_widget: elements.append(self.filter_widget)
         self.search = ipyw.HBox(elements, layout=ipyw.Layout(justify_content='flex-end'))
 
-
     def handle_search_changed(self, sender):
         self.searching_string = sender.value.strip()
         sender.value = ""

@@ -1,5 +1,4 @@
 from IPython.core.display import HTML
-import pandas as pd
 import numpy as np
 from IPython.core.display import display
 import os
@@ -8,12 +7,12 @@ import copy
 
 from __code import load_ui
 from __code.ipywe import fileselector
-from __code._utilities.file import retrieve_metadata_value_from_ascii_file
 from __code.wave_front_dynamics.algorithms import ListAlgorithm
 from __code.wave_front_dynamics.initialization import Initialization
 from __code.wave_front_dynamics.event_handler import EventHandler
 from __code.wave_front_dynamics.display import Display
 from __code.wave_front_dynamics.export import Export
+from __code.wave_front_dynamics.loader import loading_radial_profile_file, loading_linear_profile_file
 
 
 class WaveFrontDynamics:
@@ -27,54 +26,44 @@ class WaveFrontDynamics:
     def __init__(self, working_dir="~/"):
         self.working_dir = working_dir
 
+    # def load_data(self, list_of_ascii_files):
+    #
+    #     print(f"in load_data, {list_of_ascii_files =}")
+    #     if list_of_ascii_files is None:
+    #         return
+    #
+    #     self.loading_radial_profile_file(list_of_ascii_files)
+
+    def load_data(self):
+        list_of_ascii_files = self.list_data_widget.selected
+        try:
+            result_dict = loading_radial_profile_file(list_of_ascii_files)
+
+            self.list_of_ascii_files = result_dict['list_of_ascii_files']
+            self.list_timestamp = result_dict['list_timestamp']
+            self.list_of_data = result_dict['list_of_data']
+            self.list_of_original_image_files = result_dict['list_of_original_image_files']
+
+            display(HTML("Loading using radial method .... Done!"))
+            return
+
+        except:
+            display(HTML("Loading using radial method .... Failed!"))
+
+        loading_linear_profile_file(list_of_ascii_files)
+
+    def save_list_of_files(self, list_of_files):
+        self.list_of_ascii_files = list_of_files
+
     def select_data(self):
-        self.list_data_widget = fileselector.FileSelectorPanel(instruction='select linear profile ASCII or Radial Profile list of ascii files ...',
+        instructions = 'Select linear profile ASCII or Radial Profile list of ascii files ...'
+        self.list_data_widget = fileselector.FileSelectorPanel(instruction=instructions,
                                                                start_dir=self.working_dir,
-                                                               next=self.load_data,
+                                                               # next=self.load_data,
                                                                filters={"ASCII": "*.txt"},
                                                                default_filter="ASCII",
                                                                multiple=True)
         self.list_data_widget.show()
-
-    def load_data(self, list_of_ascii_files=None):
-
-        print(f"top of load_data")
-        print(f"{list_of_ascii_files =}")
-
-        if list_of_ascii_files is None:
-            return
-
-        list_of_ascii_files.sort()
-        self.list_of_ascii_files = list_of_ascii_files
-
-        print(f"{list_of_ascii_files =}")
-        return
-
-        list_of_data = []
-        list_of_original_image_files = []
-        list_of_timestamp = []
-        for _file in list_of_ascii_files:
-            _data = pd.read_csv(_file,
-                                skiprows=6,
-                                delimiter=",",
-                                names=['pixel', 'mean counts'],
-                                dtype=float,
-                                index_col=0)
-            list_of_data.append(_data)
-            _original_image_file = retrieve_metadata_value_from_ascii_file(filename=_file,
-                                                                           metadata_name="# source image")
-            list_of_original_image_files.append(_original_image_file)
-            _time_stamp = retrieve_metadata_value_from_ascii_file(filename=_file,
-                                                                  metadata_name="# timestamp")
-            list_of_timestamp.append(_time_stamp)
-
-        self.list_timestamp = list_of_timestamp
-        self.list_of_data = list_of_data
-        self.list_of_original_image_files = list_of_original_image_files
-
-        nbr_files = str(len(list_of_ascii_files))
-        display(HTML('<span style="font-size: 20px; color:blue">Notebooks successfully loaded the ' + nbr_files +
-                     ' ASCII profile files!</span>'))
 
 
 class WaveFrontDynamicsUI(QMainWindow):

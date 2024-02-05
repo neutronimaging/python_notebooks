@@ -256,7 +256,7 @@ class Initialization:
         self.parent.previous_roi_selection['height'] = width
         _pen = QtGui.QPen()
         _pen.setColor(self.parent.roi_settings['color'])
-        _pen.setWidth(self.parent.roi_settings['width'])
+        _pen.setWidthF(self.parent.roi_settings['width'])
         self.parent.roi_id = pg.ROI([x0, y0],
                                     [width, width],
                                     pen=_pen,
