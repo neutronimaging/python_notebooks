@@ -5,16 +5,22 @@ import pandas as pd
 from __code._utilities.file import retrieve_metadata_value_from_ascii_file
 
 
-def loading_linear_profile_file(list_of_ascii_files):
-    display(HTML("Loading using linear method ... "))
+def loading_linear_profile_file(file_name):
+
+    # retrieve the axis labels
+    with open(file_name, 'r') as f:
+        for line in f.readlines():
+            if line.startswith("##"):
+                axis_legend = line[1:].split(',')
+    axis_legend = [_line.strip() for _line in axis_legend]
+    axis_legend = [_line.replace("#", "").strip() for _line in axis_legend]
+
+    pd_object = pd.read_csv(file_name, comment='#', names=axis_legend)
 
 
 
 
 
-
-
-    pass
 
 
 def loading_radial_profile_file(list_of_ascii_files):
