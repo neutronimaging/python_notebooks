@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.15.2
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -22,8 +22,6 @@
 # # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-# from __code.ui_builder import UiBuilder
-# o_builder = UiBuilder(ui_name = 'ui_profile.ui')
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
 from __code.profile.profile import ProfileUi

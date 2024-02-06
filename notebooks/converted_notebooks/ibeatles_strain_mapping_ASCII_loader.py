@@ -12,7 +12,8 @@
 #     name: python3
 # ---
 
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/panoramic-stitching/panoramic-stitching-for-tof/)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/ibeatles/ibeatles-strain-mapping-ascii_loader/)
+#
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -22,23 +23,27 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-from __code.panoramic_stitching_for_tof.panoramic_stitching_for_tof import PanoramicStitching
+from __code.ibeatles_strain_mapping_ascii_loader.main import Main
 from __code import system
-system.System.select_working_dir(notebook='panoramic_stitching_for_tof')
+system.System.select_working_dir()
 from __code.__all import custom_style
 custom_style.style()
-# -
 
-# %gui qt
+# %matplotlib notebook
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Input Folder(s)
-#
-# Select all the folders containing the images to stitch. Ideally, those folders have been created by the notebook [group_images_by_cycle_for_panoramic_stitching](group_images_by_cycle_for_panoramic_stitching.ipynb)
+# # Select ASCII file created in iBeatles (strain step)
 
 # + run_control={"frozen": false, "read_only": false}
-o_stitch = PanoramicStitching(working_dir=system.System.get_working_dir())
-o_stitch.select_input_folders()
+o_strain_display = Main(working_dir = system.System.get_working_dir())
+o_strain_display.select_ascii_file()
+# -
+
+# # Display data 
+
+# + run_control={"frozen": false, "read_only": false}
+o_strain_display.process_data()
+o_strain_display.display()   
 # -
 
 

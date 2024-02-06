@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.15.2
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -75,6 +75,9 @@
 
 # # I
 
+# * iBeatles
+#     * [ibeatles strain mapping ASCII loader](ibeatles_strain_mapping_ASCII_loader.ipynb)
+#     * [ibeatles strain mapping HDF5 loader](ibeatles_strain_mapping_HDF5_loader.ipynb)
 # * [images and metadata extrapolation matcher](images_and_metadata_extrapolation_matcher.ipynb)
 # * [integrated roi counts vs file name and time stamp](integrated_roi_counts_vs_file_name_and_time_stamp.ipynb)
 
@@ -111,7 +114,7 @@
 # * Profile
 #     * [bragg edge profile](bragg_edge_profile.ipynb)
 #     * [circular profile of a ring](circular_profile_of_a_ring.ipynb)
-#     * [profile](profile.ipynb)
+#     * [linear profile](profile.ipynb)
 #     * [radial profile](radial_profile.ipynb)
 #     * [water intake profile_calculator](water_intake_profile_calculator.ipynb)
 

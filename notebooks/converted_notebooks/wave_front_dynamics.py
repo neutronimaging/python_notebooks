@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.15.2
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -22,8 +22,8 @@
 # # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-import warnings
-warnings.filterwarnings('ignore')
+# import warnings
+# warnings.filterwarnings('ignore')
 
 from __code.wave_front_dynamics.wave_front_dynamics import WaveFrontDynamics, WaveFrontDynamicsUI
 from __code import system
@@ -39,10 +39,17 @@ custom_style.style()
 #
 # list of notebooks that create such files
 # * [radial_profile](radial_profile.ipynb)
+# * [linear profile](profile.ipynb)
 # -
+
+# ## Select file(s)
 
 o_wave = WaveFrontDynamics(working_dir=system.System.get_working_dir())
 o_wave.select_data()
+
+# ## Loading profile file(s)
+
+o_wave.load_data()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Launch User Interface
