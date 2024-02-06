@@ -27,6 +27,7 @@ class Display(Parent):
         max_data_range_for_plot = np.floor(max_data_range/bin_size)
 
         data = copy.deepcopy(self.parent.list_of_data[file_index])
+
         new_data = Algorithms.bin_data(data=data, bin_size=bin_size, bin_type=bin_type)
 
         self.parent.ui.prepare_data_plot.axes.plot(new_data)

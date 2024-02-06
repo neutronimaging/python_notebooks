@@ -267,6 +267,7 @@ class Algorithms:
     @staticmethod
     def bin_data(data=None, bin_size=1, bin_type='median'):
         numpy_data = np.array(data).flatten()
+
         if bin_size == 1:
             return numpy_data
 

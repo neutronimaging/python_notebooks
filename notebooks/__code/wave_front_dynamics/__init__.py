@@ -1,7 +1,7 @@
 from __code.wave_front_dynamics.algorithms import ListAlgorithm
 
 MAX_BIN_SIZE = 100
-INIT_BIN_SIZE = 50
+INIT_BIN_SIZE = 1
 
 algorithms_colors = {ListAlgorithm.sliding_average: 'red',
                      ListAlgorithm.change_point: 'green',
