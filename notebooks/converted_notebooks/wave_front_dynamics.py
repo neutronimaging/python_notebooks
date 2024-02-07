@@ -22,8 +22,8 @@
 # # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-# import warnings
-# warnings.filterwarnings('ignore')
+import warnings
+warnings.filterwarnings('ignore')
 
 from __code.wave_front_dynamics.wave_front_dynamics import WaveFrontDynamics, WaveFrontDynamicsUI
 from __code import system
