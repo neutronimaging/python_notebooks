@@ -13,6 +13,7 @@ def loading_linear_profile_file(file_name):
 
     # retrieve the axis labels
     list_of_original_image_files = []
+    nbr_files = 0
     this_line_contains_the_original_image_file_name = False
     with open(file_name, 'r') as f:
         for line in f.readlines():
@@ -26,6 +27,9 @@ def loading_linear_profile_file(file_name):
                 list_of_original_image_files.append(line)
 
             if line.startswith("#List of files"):
+                matching_pattern = '\#\w*\s{1}\w*\s{1}\w*\s{1}\((\d*)'
+                m = re.match(matching_pattern, line)
+                nbr_files = int(m.group(1))
                 this_line_contains_the_original_image_file_name = True
 
     axis_legend = [_line.strip() for _line in axis_legend]
@@ -58,7 +62,10 @@ def loading_linear_profile_file(file_name):
 
     result_dict['list_of_data'] = list_of_data
 
-    list_timestamp = np.arange(len(list_of_pixel))
+#    list_timestamp = np.arange(len(list_of_pixel))
+    list_timestamp = np.arange(nbr_files)
+    print(f"{list_of_pixel =}")
+    print(f"{nbr_files =}")
 
     return {'list_of_data': list_of_data,
             'list_of_original_image_files': clean_list_of_original_image_file_name,
