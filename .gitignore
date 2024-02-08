@@ -1,3 +1,7 @@
+# direnv
+.envrc
+
+# Python
 __pycache__/*
 *.pyc
 *~
