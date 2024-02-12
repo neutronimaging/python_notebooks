@@ -1,13 +1,14 @@
 name: neutron-imaging-dev
 channels:
   - conda-forge
+  - neutronimaging
   - oncat
 dependencies:
   # Base
   - python
   - requests
   - requests-oauthlib
-  # Core (?)
+  # Compute
   - astropy
   - scipy
   - pandas
@@ -16,6 +17,7 @@ dependencies:
   - lmfit
   - inflect
   - werkzeug
+  - NeuNorm
   # Plotting
   - matplotlib
   - plotly
@@ -40,11 +42,9 @@ dependencies:
   # ORNL
   - pyoncat
   # neutronimaging + pip_only_deps
-  - pip
   - pip:
     - changepy==0.3.1
     - ipywe==0.1.3a1
     - neutronbraggedge==2.0.6
-    - NeuNorm==1.6.3
     - sectorizedradialprofile
     - ImagingReso==1.7.5

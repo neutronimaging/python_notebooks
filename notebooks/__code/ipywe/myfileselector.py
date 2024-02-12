@@ -417,20 +417,6 @@ class FileSelection(object):
     def load_files(self, files):
         o_norm = Normalization()
         files.sort()
-        # @note:
-        # Alternative way of handling progressbar, probably better used in Normalization, without having to manage
-        # the progress bar yourself
-        #
-        # from tqdm.auto import tqdm
-        # for _file in tqdm(files, desc="Loading:"):
-        #     o_norm.load_file(
-        #         file=_file,
-        #         data_type=data_type,
-        #         auto_gamma_filter=auto_gamma_filter,
-        #         manual_gamma_filter=manual_gamma_filter,
-        #         manual_gamma_threshold=manual_gamma_threshold,
-        #     )
-        #
         with self.progress_bar_output:
             self.progress_bar_output.clear_output()
             o_norm.load(file=files, notebook=True)
