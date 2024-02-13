@@ -420,6 +420,7 @@ class FileSelection(object):
         with self.progress_bar_output:
             self.progress_bar_output.clear_output()
             o_norm.load(file=files, notebook=True)
+        self.progress_bar_output.clear_output()
         self.data_dict = o_norm.data
 
     def load_files_without_checking_shape(self, files):
