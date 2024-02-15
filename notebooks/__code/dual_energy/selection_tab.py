@@ -58,7 +58,7 @@ class SelectionTab:
 
         _pen = QtGui.QPen()
         _pen.setColor(self.parent.bin_line_settings['color'])
-        _pen.setWidth(self.parent.bin_line_settings['width'])
+        _pen.setWidthF(self.parent.bin_line_settings['width'])
 
         if self.parent.list_bin_ui:
             for _bin_ui in self.parent.list_bin_ui:
@@ -219,7 +219,7 @@ class SelectionTab:
 
         _pen = QtGui.QPen()
         _pen.setColor(self.parent.roi_settings['color'])
-        _pen.setWidth(self.parent.roi_settings['width'])
+        _pen.setWidthF(self.parent.roi_settings['width'])
         self.parent.roi_id = pg.ROI([x0, y0],
                                     [new_value, new_value],
                                     pen=_pen,
@@ -304,7 +304,7 @@ class SelectionTab:
         _pen = QtGui.QPen()
         _pen.setDashPattern(self.parent.shrinking_roi_settings['dashes_pattern'])
         _pen.setColor(self.parent.shrinking_roi_settings['color'])
-        _pen.setWidth(self.parent.shrinking_roi_settings['width'])
+        _pen.setWidthF(self.parent.shrinking_roi_settings['width'])
 
         self.parent.shrinking_roi_id = pg.ROI([x0, y0],
                                               [width, height],

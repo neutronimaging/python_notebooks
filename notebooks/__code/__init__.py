@@ -8,3 +8,8 @@ __all__ = ['load_ui']
 
 def load_ui(ui_filename, baseinstance):
     return loadUi(ui_filename, baseinstance=baseinstance)
+
+
+interact_me_style = "background-color: lime"
+error_style = "background-color: red"
+normal_style = ""

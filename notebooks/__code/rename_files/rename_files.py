@@ -15,10 +15,9 @@ class FormatFileNameIndex:
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
 
-    def select_input_folder(self):
+    def select_input_files(self):
         self.input_files_ui = fileselector.FileSelectorPanel(instruction='Select List of Files',
                                                               start_dir=self.working_dir,
-                                                              next=self.next,
                                                               multiple=True)
         self.input_files_ui.show()
 
@@ -51,7 +50,9 @@ class FormatFileNameIndex:
     #     self.o_schema = NamingSchemaDefinition(o_format=self)
     #     self.o_schema.show()
 
-    def next(self, list_of_files):
+    def define_new_naming_schema(self):
+
+        list_of_files = self.input_files_ui.selected
 
         if list_of_files:
             self.list_files = list_of_files

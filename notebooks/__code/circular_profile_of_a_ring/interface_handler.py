@@ -136,7 +136,7 @@ class Interface(QMainWindow):
 
         _pen = QtGui.QPen()
         _pen.setColor(QtGui.QColor(255, 0, 0))
-        _pen.setWidth(0.01)
+        _pen.setWidthF(0.01)
 
         self.angle_line = pg.InfiniteLine([x0, y0],
                                           pen=_pen,
@@ -217,7 +217,7 @@ class Interface(QMainWindow):
 
         _pen = QtGui.QPen()
         _pen.setColor(QtGui.QColor(255, 255, 255))
-        _pen.setWidth(0.01)
+        _pen.setWidthF(0.01)
         self.ring_pen = _pen
 
         self.block_signals(list_ui=list_ui,

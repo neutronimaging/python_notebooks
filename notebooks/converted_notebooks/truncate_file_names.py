@@ -5,50 +5,54 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.15.2
+#       jupytext_version: 1.16.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.pages.ornl.gov/tutorial/notebooks/frederick_ipts/)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/truncate_file_names/)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select IPTS
+# # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.frederick_ipts import FrederickIpts
-
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_file_metadata_display.ui')
-from __code.file_metadata_display import Interface
-
+from __code.truncate_file_names.truncate_file_names import TruncateFileNames
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='truncate_file_names')
 from __code.__all import custom_style
 custom_style.style()
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # Select list of files to rename
+
+# + run_control={"frozen": false, "read_only": false}
+o_format = TruncateFileNames(working_dir=system.System.get_working_dir())
+o_format.select_input_files()
 # -
 
-# %gui qt
+# # Define part of file to truncate
+
+o_format.define_truncate_part()
+
+# # Checking new names
+
+o_format.o_schema.check_new_names()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Files 
+# # Select output folder
 
 # + run_control={"frozen": false, "read_only": false}
-o_fred = FrederickIpts(working_dir = system.System.get_working_dir())
-o_fred.select_files()
+o_format.o_schema.select_export_folder()
+# -
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Display images 
+# # Rename the files 
 
-# + run_control={"frozen": false, "read_only": false}
-o_gui = Interface(exp_dict=o_fred.exp_dict)
-o_gui.show()
+o_format.o_schema.rename_and_export_files()
 
-# + run_control={"frozen": false, "read_only": false}
 

@@ -3,6 +3,7 @@
 import os, glob
 import time
 import ipywidgets as ipyw
+from qtpy.QtGui import QFont
 from IPython.display import display, HTML
 
 # This try-except should not be necessary anymore.
@@ -27,7 +28,7 @@ class FileSelectorPanel:
     toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px", border='1px solid gray')
     toolbar_box_layout = ipyw.Layout(border='1px solid lightgrey', padding='3px', margin='5px 50px 5px 5px',
                                      width='100%')
-    label_layout = ipyw.Layout(width="250px")
+    label_layout = ipyw.Layout(width="100%")
     layout = ipyw.Layout()
 
     filter_widget = None
@@ -92,7 +93,8 @@ class FileSelectorPanel:
         self.stay_alive = stay_alive
 
     def createPanel(self, curdir):
-        self.header = ipyw.Label(self.instruction, layout=self.label_layout)
+        # self.header = ipyw.Label(self.instruction, layout=self.label_layout)
+        self.header = ipyw.HTML(value=f"<b><font color='green'>{self.instruction}</b>")
         self.footer = ipyw.HTML("")
         self.body = self.createBody(curdir)
         self.panel = ipyw.VBox(children=[self.header, self.body, self.footer])
@@ -210,7 +212,6 @@ class FileSelectorPanel:
 
         if self.filter_widget: elements.append(self.filter_widget)
         self.search = ipyw.HBox(elements, layout=ipyw.Layout(justify_content='flex-end'))
-
 
     def handle_search_changed(self, sender):
         self.searching_string = sender.value.strip()

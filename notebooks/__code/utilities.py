@@ -124,7 +124,7 @@ def get_ipts():
     current_folder = os.getcwd()
     parent_folder = os.path.basename(current_folder)
 
-    result = re.search('IPTS_(\d+)', parent_folder)
+    result = re.search(r'IPTS_(\d+)', parent_folder)
     if result:
         ipts = result.group(1)
     else:
@@ -222,7 +222,7 @@ def rename_files(dict_old_new_names={}, new_output_folder=''):
         w1.value = _index + 1
 
 
-def copy_files(dict_old_new_names={}, new_output_folder='', overwrite=True):
+def copy_files(dict_old_new_names={}, input_folder_name=None, new_output_folder='', overwrite=True):
 
     make_dir(dir=new_output_folder, overwrite=overwrite)
 
@@ -234,6 +234,8 @@ def copy_files(dict_old_new_names={}, new_output_folder='', overwrite=True):
     # create new images
     for _index, _old_name in enumerate(dict_old_new_names.keys()):
         _new_name = os.path.join(new_output_folder, dict_old_new_names[_old_name])
+        if input_folder_name:
+            _old_name = os.path.join(input_folder_name, _old_name)
         copyfile(_old_name, _new_name)
         w1.value = _index + 1
 

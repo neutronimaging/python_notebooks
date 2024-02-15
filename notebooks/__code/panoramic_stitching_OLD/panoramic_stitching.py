@@ -205,7 +205,7 @@ class Interface(QMainWindow):
         color = QtGui.QColor(62, 13, 244)
         _pen = QtGui.QPen()
         _pen.setColor(color)
-        _pen.setWidth(0.02)
+        _pen.setWidthF(0.02)
         _roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True)
         if data_type == 'reference':
             _roi_id.addScaleHandle([1, 1], [0, 0])

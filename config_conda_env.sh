@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This is a special package for ORNL
-PYONCAT_LOCATION="https://oncat.ornl.gov/packages/pyoncat-1.4.1-py3-none-any.whl"
-
 # update base conda
 conda update -y -n base -c defaults conda
 
@@ -32,6 +29,8 @@ conda install -y -c conda-forge \
 
 conda install -c conda-forge nbstripout
 
+conda install -c oncat pyoncat
+
 # install additional from pip
 pip install \
     chardet \
@@ -44,7 +43,6 @@ pip install \
     ipywidgets \
     changepy \
     tqdm \
-    $PYONCAT_LOCATION
     werkzeug=2.0.1
 
 

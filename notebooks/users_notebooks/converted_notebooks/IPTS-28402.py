@@ -5,7 +5,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
+<<<<<<< HEAD
 #       jupytext_version: 1.15.2
+=======
+#       jupytext_version: 1.16.1
+>>>>>>> 199_truncate_file_name
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
