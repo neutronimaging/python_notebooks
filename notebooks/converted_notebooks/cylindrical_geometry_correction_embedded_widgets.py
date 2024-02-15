@@ -12,48 +12,54 @@
 #     name: python3
 # ---
 
-# <img src='../__docs/__all/notebook_rules.png' />
-
-# **Workflow of this notebook**
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/cylindrical-geometry-correction-with-embedded-widgets/)
 #
+# <img src='__docs/__all/notebook_rules.png' />
+
+# # Workflow of the notebook 
+
 # * **User**: select the images to work with.
 # * *Notebook*: load images
+# * *OPTIONAL*: **User** load config file
 # * **User**: rotate the images to make sure the sample to work with is perfectly vertical
 # * **User**: select region to work with by cropping the raw data
 # * *OPTIONAL*: **User** export the cropped images
 # * **User**: select part of the image that does not contain the sample
-# * **User**: select part of the image that does containt the sample
+# * **User**: select part of the image that does contain the sample
 # * *Notebook*: remove background from sample part
 # * *Notebook*: display profiles
 # * *Notebook*: apply geometry correction to all profiles
-# * **User**: select where to output the images corrected, profiles ascii files and metadata file.
+# * **User**: select where to output the images corrected, profiles ascii files, metadata file, and config file.
 
-# # Python Import 
+# # Select your IPTS
 
 # +
-import os
-import sys
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
 # %matplotlib notebook
 
+import warnings
+warnings.filterwarnings('ignore')
+
+from __code.cylindrical_geometry_correction_embedded_widgets.main import CylindricalGeometryCorrectionEmbeddedWidgets
+
 from __code import system
-system.System.select_working_dir()
+system.System.select_working_dir(notebook='cylindrical_geometry_correction_embedded_widgets')
 
-from ipts_27939_code.ipts_27939 import IPTS_27939
-
+from __code.__all import custom_style
+custom_style.style()
 # -
 
 # # Select Images 
 
-o_ipts = IPTS_27939(working_dir=system.System.get_working_dir())
+o_ipts = CylindricalGeometryCorrectionEmbeddedWidgets(working_dir=system.System.get_working_dir())
 o_ipts.select_images()
 
-# # Visualize Raw Data
+# # Use config file (optional)
+#
+# Run this cell when you have a config file you saved in a previous session and wants to reload it here. This will allow you to automatically re-use the same region of interests. 
 
-# The data are rotated 90 degrees to work with the cylindrical geometry algorithm
+o_ipts.select_config()
+
+# # Visualize Raw Data
 
 o_ipts.visualize_raw_images()
 
@@ -61,11 +67,11 @@ o_ipts.visualize_raw_images()
 #
 # Use the **vertical guide** to help you find the perfect vertical to your sample.
 #
-# <img src='ipts_27939_code/static/example_of_bad_and_good_alignments.png' />
+# <img src='__code/cylindrical_geometry_correction_embedded_widgets/static/example_of_bad_and_good_alignments.png' />
 #
 # Feel free to use the **green** and **blue** horizontal profiles helper to make sure the sample is perfectly vertical. To do so, place one of the two profile helper near the top of the sampel and the other one, near the bottom and make sure the edge is perfectly aligned top to bottom.
 #
-# <img src='ipts_27939_code/static/example_rotation_guides.png' />
+# <img src='__code/cylindrical_geometry_correction_embedded_widgets/static/example_rotation_guides.png' />
 
 o_ipts.rotate_images()
 
@@ -86,14 +92,10 @@ o_ipts.rotate_images()
 #
 # For example:
 #
-# <img src='ipts_27939_code/static/example_crop_region.png' />
+# <img src='__code/cylindrical_geometry_correction_embedded_widgets/static/example_crop_region.png' />
 
 o_ipts.apply_rotation()
 o_ipts.select_crop_region()
-
-# ## Visualize result of cropping 
-
-o_ipts.visualize_crop()
 
 # ## Export cropped images (optional)
 
@@ -105,7 +107,7 @@ o_ipts.export_cropped_images()
 #
 # __for example:__
 #
-# <img src='ipts_27939_code/static/example_background_selection.png' />
+# <img src='__code/cylindrical_geometry_correction_embedded_widgets/static/example_background_selection.png' />
 
 o_ipts.background_range_selection()
 
@@ -115,7 +117,7 @@ o_ipts.background_range_selection()
 #
 # __For example:__
 #
-# <img src='ipts_27939_code/static/example_of_sample_selection.png' />
+# <img src='__code/cylindrical_geometry_correction_embedded_widgets/static/example_of_sample_selection.png' />
 #
 
 o_ipts.sample_region_selection()
@@ -137,6 +139,7 @@ o_ipts.correct_cylinder_geometry()
 # This will export:
 #  - the corrected cropped images
 #  - the full horizontal profiles of each image
+#  - all the configuration used in this notebook (config file)
 
 o_ipts.export_profiles()
 
