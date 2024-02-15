@@ -10,7 +10,7 @@ from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
 from __code._utilities.file import get_list_of_files, get_list_file_extensions, get_file_extension
 
 
-class FormatFileNameIndex:
+class TruncateFileNames:
 
     def __init__(self, working_dir=''):
         self.working_dir = working_dir
