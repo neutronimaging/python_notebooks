@@ -596,4 +596,3 @@ class FileSelectorPanelWithJumpFolders:
                                                                      stay_alive=stay_alive)
 
         self.output_folder_ui.show()
-

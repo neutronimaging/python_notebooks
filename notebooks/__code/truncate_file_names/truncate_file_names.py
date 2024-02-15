@@ -1,13 +1,11 @@
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 import os
-import numpy as np
+
 from __code import utilities
 from __code.ipywe import fileselector
 
-from __code.file_handler import ListMostDominantExtension
 from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
-from __code._utilities.file import get_list_of_files, get_list_file_extensions, get_file_extension
 
 
 class TruncateFileNames:
@@ -50,6 +48,8 @@ class NamingSchemaDefinition:
             self.random_input_list = [os.path.basename(_file) for _file in _random_input_list]
 
         self.basename = os.path.basename(self.list_of_files[0])
+        self.working_dir = os.path.dirname(os.path.dirname(self.list_of_files[0]))
+        self.input_folder = os.path.dirname(self.list_of_files[0])
 
     def random_input_checkbox_value_changed(self, value):
         self.change_int_range_slider()
@@ -136,234 +136,45 @@ class NamingSchemaDefinition:
         display(select_widget)
 
     def create_dict_old_new_filenames(self):
-
         [start_index, end_index] = self.int_range_slider.value
 
         list_base_file_names = [os.path.basename(file) for file in self.list_of_files]
 
-        new_list = {}
+        new_dict = {}
         for _file in list_base_file_names:
             new_file_name = _file[start_index: end_index]
-            new_list[_file] = new_file_name
+            new_dict[_file] = new_file_name
 
-        return new_list
+        return new_dict
+
+    def select_export_folder(self):
+
+        self.output_folder_ui = FileSelectorPanelWithJumpFolders(instruction='Select Output Folder',
+                                                                 start_dir=self.working_dir,
+                                                                 ipts_folder=self.working_dir,
+                                                                 multiple=False,
+                                                                 # next=self.rename_and_export_files,
+                                                                 newdir_toolbar_button=True,
+                                                                 type='directory')
 
 
+    def rename_and_export_files(self, output_folder=None):
 
-    #
-    #
-    # def current_naming_schema(self):
-    #     pre_index_separator = self.box2.children[1].value
-    #     schema = "<untouched_part>" + pre_index_separator + '<digit>' + self.str_ext
-    #     return schema
-    #
-    # def new_naming_schema(self):
-    #     if not self.use_previous_prefix_widget.value:
-    #         prefix = self.new_prefix_text_widget.value
-    #     else:
-    #         prefix = self.basename_selected_by_user.value
-    #
-    #     post_index_separator = self.box5.children[1].value
-    #     nbr_digits = self.box7.children[1].value
-    #
-    #     schema = prefix + post_index_separator + nbr_digits * '#' + self.str_ext
-    #     return schema
-    #
-    # def pre_index_text_changed(self, sender):
-    #     self.box4.children[1].value = self.current_naming_schema()
-    #     self.demo_output_file_name()
-    #
-    # def post_text_changed(self, sender):
-    #     self.box6.children[1].value = self.new_naming_schema()
-    #     self.demo_output_file_name()
-    #
-    # def changed_use_previous_prefix_name(self, value):
-    #     self.user_new_prefix_widget.value = not value['new']
-    #     self.new_prefix_text_widget.disabled = value['new']
-    #     self.post_text_changed(None)
-    #
-    # def changed_use_new_prefix_name(self, value=[]):
-    #     if value == []:
-    #         _value = self.user_new_prefix_widget.value
-    #     else:
-    #         _value = value['new']
-    #     self.use_previous_prefix_widget.value = not _value
-    #     self.new_prefix_text_widget.disabled = not _value
-    #     self.post_text_changed(None)
-    #
-    #
-    #
-    #
-    # def random_input_checkbox_value_changed(self, value):
-    #     self.change_int_range_slider()
-    #
-    #
-    #
-    # def demo_output_file_name(self):
-    #     input_file = self.get_basename_of_current_dropdown_selected_file(is_with_ext=True)
-    #     self.output_ui_2.children[1].value = input_file
-    #
-    #     old_index_separator = self.get_old_index_separator()
-    #     new_prefix_name = self.get_new_prefix_name()
-    #     new_index_separator = self.get_new_index_separator()
-    #     new_number_of_digits = self.get_new_number_of_digits()
-    #     offset = self.box8.children[1].value
-    #     [start_index, end_index] = self.int_range_slider.value
-    #
-    #     try:
-    #         display(HTML("""
-	# 					  <style>
-	# 					  .result_label {
-	# 						 font-style: bold;
-	# 						 color: black;
-	# 						 font-size: 14px;
-	# 					  }
-	# 					  </style>
-	# 					  """))
-    #
-    #         new_name = self.generate_new_file_name(input_file,
-    #                                                start_index,
-    #                                                end_index,
-    #                                                old_index_separator,
-    #                                                new_prefix_name,
-    #                                                new_index_separator,
-    #                                                new_number_of_digits,
-    #                                                offset)
-    #
-    #         self.ready_to_output = True
-    #
-    #     except ValueError:
-    #
-    #         display(HTML("""
-	# 					  <style>
-	# 					  .result_label {
-	# 						 font-style: bold;
-	# 						 color: red;
-	# 						 font-size: 18px;
-	# 					  }
-	# 					  </style>
-	# 					  """))
-    #
-    #         new_name = 'ERROR while generating new file name!'
-    #
-    #         self.ready_to_output = False
-    #
-    #     self.output_ui_3.children[1].value = new_name
-    #
-    # def get_old_index_separator(self):
-    #     return self.box2.children[1].value
-    #
-    # def get_new_prefix_name(self):
-    #     if self.use_previous_prefix_widget.value == True:
-    #         new_prefix_name = self.basename_selected_by_user.value
-    #     else:
-    #         new_prefix_name = self.new_prefix_text_widget.value
-    #     return new_prefix_name
-    #
-    # def get_new_index_separator(self):
-    #     return self.box5.children[1].value
-    #
-    # def get_new_number_of_digits(self):
-    #     return self.box7.children[1].value
-    #
-    # def generate_new_file_name(self, old_file_name,
-    #                            start_index,
-    #                            end_index,
-    #                            old_index_separator,
-    #                            new_prefix_name,
-    #                            new_index_separator,
-    #                            new_number_of_digits,
-    #                            offset):
-    #
-    #     [_pre_extension, _ext] = os.path.splitext(old_file_name)
-    #     _name_separated = _pre_extension.split(old_index_separator)
-    #
-    #     if self.user_new_prefix_widget.value == True:
-    #         prefix = new_prefix_name
-    #     else:
-    #         prefix = old_file_name[start_index: end_index + 1]
-    #
-    #     try:
-    #         _index = int(_name_separated[-1]) + offset
-    #         new_name = prefix + new_index_separator + \
-    #                    '{:0{}}'.format(_index, new_number_of_digits) + \
-    #                    _ext
-    #     except ValueError:
-    #         _index = _name_separated[-1]
-    #         new_name = prefix + new_index_separator + \
-    #             _index + _ext
-    #
-    #     return new_name
-    #
-    # def get_dict_old_new_filenames(self):
-    #     list_of_input_files = self.list_files
-    #
-    #     renaming_result = []
-    #
-    #     old_index_separator = self.get_old_index_separator()
-    #     new_prefix_name = self.get_new_prefix_name()
-    #
-    #     [start_index, end_index] = self.int_range_slider.value
-    #
-    #     new_index_separator = self.get_new_index_separator()
-    #     new_number_of_digits = self.get_new_number_of_digits()
-    #     offset = self.box8.children[1].value
-    #
-    #     list_of_input_basename_files = [os.path.basename(_file) for _file in list_of_input_files]
-    #
-    #     new_list = {}
-    #     for _file_index, _file in enumerate(list_of_input_basename_files):
-    #         new_name = self.generate_new_file_name(_file,
-    #                                                start_index,
-    #                                                end_index,
-    #                                                old_index_separator,
-    #                                                new_prefix_name,
-    #                                                new_index_separator,
-    #                                                new_number_of_digits,
-    #                                                offset)
-    #         new_list[list_of_input_files[_file_index]] = new_name
-    #         renaming_result.append("{} \t --> \t {}".format(_file, new_name))
-    #
-    #     self.renaming_result = renaming_result
-    #     return new_list
-    #
-    # def check_new_names(self):
-    #     dict_old_new_names = self.get_dict_old_new_filenames()
-    #     old_names_new_names = [f"{os.path.basename(_key)} -> {_value}" for _key,_value in dict_old_new_names.items()]
-    #     select_widget = widgets.Select(options=old_names_new_names,
-    #                                    layout=widgets.Layout(width="100%",
-    #                                                          height="400px"))
-    #     display(select_widget)
-    #
-    # def select_export_folder(self):
-    #
-    #     if self.ready_to_output:
-    #         self.output_folder_ui = FileSelectorPanelWithJumpFolders(instruction='Select Output Folder',
-    #                                                                  start_dir=self.working_dir,
-    #                                                                  ipts_folder=self.working_dir,
-    #                                                                  multiple=False,
-    #                                                                  next=self.export,
-    #                                                                  newdir_toolbar_button=True,
-    #                                                                  type='directory')
-    #     else:
-    #         display(HTML('<span style="font-size: 20px; color:red">You need to fix the namig convention first!</span>'))
-    #
-    # def export(self, selected):
-    #     input_folder = os.path.abspath(self.input_folder)
-    #     input_folder_renamed = os.path.basename(input_folder) + '_renamed'
-    #     self.output_folder_ui.shortcut_buttons.close()
-    #
-    #     dict_old_new_names = self.get_dict_old_new_filenames()
-    #     new_output_folder = os.path.join(os.path.abspath(selected), input_folder_renamed)
-    #
-    #     utilities.copy_files(dict_old_new_names=dict_old_new_names,
-    #                          new_output_folder=new_output_folder,
-    #                          overwrite=False)
-    #
-    #     self.new_list_files = dict_old_new_names
-    #     self.display_renaming_result(new_output_folder)
-    #
-    # def display_renaming_result(self, selected):
-    #
-    #     display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
-    #                  selected + '</span>'))
+        output_folder = self.output_folder_ui.output_folder_ui.selected
+        input_folder = os.path.abspath(self.input_folder)
+        input_folder_renamed = os.path.basename(input_folder) + '_renamed'
+        self.output_folder_ui.shortcut_buttons.close()
+        new_output_folder = os.path.join(os.path.abspath(output_folder), input_folder_renamed)
+        dict_old_new_names = self.create_dict_old_new_filenames()
+
+        utilities.copy_files(dict_old_new_names=dict_old_new_names,
+                             input_folder_name=input_folder,
+                             new_output_folder=new_output_folder,
+                             overwrite=False)
+
+        self.new_list_files = dict_old_new_names
+        self.display_renaming_result(new_output_folder)
+
+    def display_renaming_result(self, selected):
+        display(HTML('<span style="font-size: 15px; color:blue">Following files have been created in folder: ' +
+                     selected + '</span>'))
