@@ -52,23 +52,21 @@ class NamingSchemaDefinition:
         self.basename = os.path.basename(self.list_of_files[0])
 
     def random_input_checkbox_value_changed(self, value):
-        print("random input checkbox value changed")
         self.change_int_range_slider()
 
     def change_int_range_slider(self, value=[]):
-        print(f"{value =}")
+        if not value:
+            [start_index, end_index] = self.int_range_slider.value
+        else:
+            [start_index, end_index] = value['new']
+        basename = self.get_basename_of_current_dropdown_selected_file(is_with_ext=True)
+        new_basename = basename[start_index: end_index]
+        self.output_label.value = new_basename
 
-        # if value == []:
-        #     [start_index, end_index] = self.int_range_slider.value
-        # else:
-        #     [start_index, end_index] = value['new']
-        # basename = self.get_basename_of_current_dropdown_selected_file()
-        # new_basename = basename[start_index: end_index + 1]
-        # self.basename_selected_by_user.value = new_basename
-        #
-        # # update in the second ui
-        # if self.use_previous_prefix_widget.value:
-        #     self.changed_use_new_prefix_name()
+        prefix_part_to_remove = basename[0:start_index]
+        suffix_part_to_remove = basename[end_index:]
+        part_to_remove = f"{prefix_part_to_remove}<part to keep>{suffix_part_to_remove}"
+        self.remove_label.value = part_to_remove
 
     def show(self):
 
@@ -81,7 +79,7 @@ class NamingSchemaDefinition:
         self.random_input_checkbox = self.box1.children[1]
         self.random_input_checkbox.observe(self.random_input_checkbox_value_changed, 'value')
 
-        self.box2 = widgets.HBox([widgets.IntRangeSlider(value=[0, 2],
+        self.box2 = widgets.HBox([widgets.IntRangeSlider(value=[0, len(self.basename)],
                                                          min=0,
                                                          max=len(self.basename),
                                                          step=1)])
@@ -92,8 +90,15 @@ class NamingSchemaDefinition:
                                                 layout=widgets.Layout(width='20%')),
                                   widgets.Label(value="",
                                                 layout=widgets.Layout(width='80%'))])
+        self.output_label = self.box3.children[1]
 
-        vbox = widgets.VBox([self.box1, self.box2, self.box3])
+        self.box4 = widgets.HBox([widgets.Label("String to remove",
+                                                layout=widgets.Layout(width='30%')),
+                                  widgets.Label(value="",
+                                                layout=widgets.Layout(width='70%'))])
+        self.remove_label = self.box4.children[1]
+
+        vbox = widgets.VBox([self.box1, self.box2, self.box3, self.box4])
         display(vbox)
 
         self.change_int_range_slider()
