@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.15.2
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -29,17 +29,20 @@ from __code.__all import custom_style
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select input folder and define new naming schema
-# -
-
-#
+# # Select files to rename
 
 # + run_control={"frozen": false, "read_only": false}
 o_format = FormatFileNameIndex(working_dir=system.System.get_working_dir())
-o_format.select_input_folder()
+o_format.select_input_files()
 # -
 
+# # Define new naming schema 
+
+o_format.define_new_naming_schema()
+
+# + [markdown] jp-MarkdownHeadingCollapsed=true
 # # Checking new names
+# -
 
 o_format.o_schema.check_new_names()
 

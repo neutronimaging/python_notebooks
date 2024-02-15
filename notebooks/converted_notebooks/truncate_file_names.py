@@ -13,46 +13,46 @@
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/profile/radial-profile/)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/truncate_file_names/)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS
+# # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-import warnings
-warnings.filterwarnings('ignore')
-
+from __code.truncate_file_names.truncate_file_names import TruncateFileNames
 from __code import system
-from __code.ipywe.myfileselector import FileSelection
-from __code.radial_profile.radial_profile import RadialProfile, SelectRadialParameters
-
-system.System.select_working_dir(notebook='radial_profile')
+system.System.select_working_dir(notebook='truncate_file_names')
 from __code.__all import custom_style
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Python Import
+# # Select list of files to rename
 
 # + run_control={"frozen": false, "read_only": false}
-# %gui qt
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Images to Process
-
-# + run_control={"frozen": false, "read_only": false}
-o_selection = FileSelection(working_dir=system.System.get_working_dir())
-o_selection.select_data(check_shape=False)
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Launch User Interface
-
-# + run_control={"frozen": false, "read_only": false}
-o_select = SelectRadialParameters(working_dir=system.System.get_working_dir(), 
-                                  data_dict=o_selection.data_dict['sample'])
-o_select.show()
+o_format = TruncateFileNames(working_dir=system.System.get_working_dir())
+o_format.select_input_files()
 # -
+
+# # Define part of file to truncate
+
+o_format.define_truncate_part()
+
+# # Checking new names
+
+o_format.o_schema.check_new_names()
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # Select output folder
+
+# + run_control={"frozen": false, "read_only": false}
+o_format.o_schema.select_export_folder()
+# -
+
+# # Rename the files 
+
+o_format.o_schema.rename_and_export_files()
 
 
