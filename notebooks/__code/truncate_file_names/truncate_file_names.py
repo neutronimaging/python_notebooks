@@ -134,13 +134,20 @@ class NamingSchemaDefinition:
         display(select_widget)
 
     def create_dict_old_new_filenames(self):
-        [start_index, end_index] = self.int_range_slider.value
+        start_text = self.left_part_to_remove_text.value
+        end_text = self.right_part_to_remove_text.value
 
         list_base_file_names = [os.path.basename(file) for file in self.list_of_files]
 
         new_dict = {}
         for _file in list_base_file_names:
-            new_file_name = _file[start_index: end_index]
+
+            if _file[:len(start_text)] == start_text[:]:
+                new_file_name = _file[len(start_text):]
+
+            if _file[-len(end_text):] == end_text[:]:
+                new_file_name = _file[:-len(end_text)]
+
             new_dict[_file] = new_file_name
 
         return new_dict
