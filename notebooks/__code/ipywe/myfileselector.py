@@ -419,7 +419,7 @@ class FileSelection(object):
         files.sort()
         with self.progress_bar_output:
             self.progress_bar_output.clear_output()
-            o_norm.load(file=files, notebook=True)
+            o_norm.load(file=files, notebook=False)
         self.progress_bar_output.clear_output()
         self.data_dict = o_norm.data
 

@@ -202,6 +202,8 @@ def get_n_random_element(input_list=[], n=1):
     '''
     will return a list of n element taken from the input array called input_list
     '''
+    if len(input_list) <= n:
+        return input_list
     n_random = np.random.randint(0, len(input_list)-1, n)
     new_list = [input_list[_index] for _index in n_random]
     return new_list

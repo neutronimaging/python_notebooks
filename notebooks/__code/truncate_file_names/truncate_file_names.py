@@ -52,7 +52,7 @@ class NamingSchemaDefinition:
         self.input_folder = os.path.dirname(self.list_of_files[0])
 
     def random_input_checkbox_value_changed(self, value):
-        self.change_int_range_slider()
+        self.update_new_file_name()
 
     def get_basename_of_current_dropdown_selected_file(self, is_with_ext=False):
         full_file_name = self.random_input_checkbox.value
@@ -61,21 +61,6 @@ class NamingSchemaDefinition:
         else:
             [basename, _] = os.path.splitext(full_file_name)
             return basename
-
-    def change_int_range_slider(self, value=[]):
-        if not value:
-            [start_index, end_index] = self.int_range_slider.value
-        else:
-            [start_index, end_index] = value['new']
-        basename = self.get_basename_of_current_dropdown_selected_file(is_with_ext=True)
-        new_basename = basename[start_index: end_index]
-        self.output_label.value = new_basename
-
-        prefix_part_to_remove = basename[0:start_index]
-        suffix_part_to_remove = basename[end_index:]
-
-        self.left_part_to_remove_label.value = prefix_part_to_remove
-        self.right_part_to_remove_label.value = suffix_part_to_remove
 
     def show(self):
 
@@ -88,44 +73,57 @@ class NamingSchemaDefinition:
         self.random_input_checkbox = self.box1.children[1]
         self.random_input_checkbox.observe(self.random_input_checkbox_value_changed, 'value')
 
-        self.box2 = widgets.HBox([widgets.IntRangeSlider(value=[0, len(self.basename)],
-                                                         min=0,
-                                                         max=len(self.basename),
-                                                         step=1)])
-        self.int_range_slider = self.box2.children[0]
-        self.int_range_slider.observe(self.change_int_range_slider, names='value')
+        self.box2 = widgets.HBox([widgets.Label("String to remove:",
+                                                layout=widgets.Layout(width='30%'))])
 
-        self.box3 = widgets.HBox([widgets.Label("New file name:",
+        self.box6 = widgets.HBox([widgets.Label(value="    On the left:",
+                                                layout=widgets.Layout(width='40%')),
+                                  widgets.Text(value="",
+                                                layout=widgets.Layout(width='60%'))])
+        self.box7 = widgets.HBox([widgets.Label(value="    On the right:",
+                                                layout=widgets.Layout(width='40%')),
+                                  widgets.Text(value="",
+                                                layout=widgets.Layout(width='60%'))])
+        self.box8 = widgets.VBox([self.box6, self.box7], layout=widgets.Layout(width="50%"))
+        self.left_part_to_remove_text = self.box6.children[1]
+        self.right_part_to_remove_text = self.box7.children[1]
+        self.left_part_to_remove_text.observe(self.left_part_text_changed, 'value')
+        self.right_part_to_remove_text.observe(self.right_part_text_changed, 'value')
+
+        self.box9= widgets.HBox([widgets.Label("New file name:",
                                                 layout=widgets.Layout(width='20%')),
                                   widgets.Label(value="",
                                                 layout=widgets.Layout(width='80%'))])
-        self.output_label = self.box3.children[1]
-
-        self.box4 = widgets.HBox([widgets.Label("String to remove:",
-                                                layout=widgets.Layout(width='30%'))])
-
-        self.box5 = widgets.VBox([widgets.Label("",
-                                                layout=widgets.Layout(width='45%'))])
-        self.box6 = widgets.HBox([widgets.Label(value="On the left:",
-                                                layout=widgets.Layout(width='40%')),
-                                  widgets.Label(value="",
-                                                layout=widgets.Layout(width='60%'))])
-        self.box7 = widgets.HBox([widgets.Label(value="On the right:",
-                                                layout=widgets.Layout(width='40%')),
-                                  widgets.Label(value="",
-                                                layout=widgets.Layout(width='60%'))])
-        self.box8 = widgets.VBox([self.box6, self.box7], layout=widgets.Layout(width="50%"))
-        self.box9 = widgets.HBox([self.box5, self.box8], layout=widgets.Layout(width="50%"))
-        self.left_part_to_remove_label = self.box6.children[1]
-        self.right_part_to_remove_label = self.box7.children[1]
+        self.output_label = self.box9.children[1]
 
         separate_line = widgets.HTML(value="<hr>",
                                      layout=widgets.Layout(width="100%"))
 
-        vbox = widgets.VBox([self.box1, self.box2, self.box3, separate_line, self.box4, self.box9])
+        vbox = widgets.VBox([self.box1, separate_line, self.box2, self.box8, separate_line, self.box9])
         display(vbox)
 
-        self.change_int_range_slider()
+        self.update_new_file_name()
+
+    def left_part_text_changed(self, text):
+        self.update_new_file_name()
+
+    def right_part_text_changed(self, text):
+        self.update_new_file_name()
+
+    def update_new_file_name(self):
+        basename = self.get_basename_of_current_dropdown_selected_file(is_with_ext=True)
+        new_file_name = ""
+
+        start_text = self.left_part_to_remove_text.value
+        end_text = self.right_part_to_remove_text.value
+
+        if basename[:len(start_text)] == start_text[:]:
+            new_file_name = basename[len(start_text):]
+
+        if basename[-len(end_text):] == end_text[:]:
+            new_file_name = basename[:-len(end_text)]
+
+        self.output_label.value = new_file_name
 
     def check_new_names(self):
         dict_old_new_names = self.create_dict_old_new_filenames()
