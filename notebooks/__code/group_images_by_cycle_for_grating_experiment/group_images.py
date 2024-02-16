@@ -192,7 +192,7 @@ class GroupImages:
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
         _, group_number = group_string.split(" # ")
-        return np.int(group_number)
+        return int(group_number)
 
     def select_output_folder(self):
         self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(

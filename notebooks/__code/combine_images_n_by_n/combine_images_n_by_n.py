@@ -180,7 +180,7 @@ class CombineImagesNByN(object):
 
     def update_how_many_files(self, bin_value_object=None):
         if bin_value_object:
-            bin_value = np.int(bin_value_object['new'])
+            bin_value = int(bin_value_object['new'])
             nbr_images = self._get_number_of_files_will_be_created(bin_value=bin_value)
         else:
             nbr_images = self._get_number_of_files_will_be_created()
@@ -231,7 +231,7 @@ class CombineImagesNByN(object):
             ex:   102020_cool_05_sample_0001.tiff
                   102020_heat_05_sample_0002.tiff
         """
-        bin_value = np.int(self.bin_size_ui.value)
+        bin_value = int(self.bin_size_ui.value)
         self.bin_value = bin_value
         list_files = self.list_files_sorted
         nbr_files = len(list_files)

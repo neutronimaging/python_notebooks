@@ -157,7 +157,7 @@ class GroupImages:
     def group_index_changed(self, value):
         new_group_selected = value['new']
         _, new_group_index = new_group_selected.split(" # ")
-        short_list_files = self.get_list_of_files_basename_only(np.int(new_group_index))
+        short_list_files = self.get_list_of_files_basename_only(int(new_group_index))
         self.list_of_files_ui.options = short_list_files
 
     def list_of_files_changed(self, value):
@@ -255,7 +255,7 @@ class GroupImages:
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
         _, group_number = group_string.split(" # ")
-        return np.int(group_number)
+        return int(group_number)
 
     def sorting_algorithm_variable1_changed(self, value):
         new_value = value['new']

@@ -412,7 +412,7 @@ class EventHandler:
 
         [nbr_row, nbr_column] = np.shape(table)
 
-        number_of_outliers_to_reject = np.int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
+        number_of_outliers_to_reject = int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
         # list_mean_value = []
         # for _column_index in np.arange(nbr_column):
         #     _col_value = table[:, _column_index]
