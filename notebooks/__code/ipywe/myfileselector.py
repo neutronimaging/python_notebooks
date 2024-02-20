@@ -497,6 +497,9 @@ class FileSelectorPanelWithJumpFolders:
 
         def display_file_selector_from_shared(ev):
             start_dir = os.path.join(ipts_folder, 'shared')
+            if not os.path.exists(start_dir):
+                start_dir = os.path.expanduser("~")
+
             self.output_folder_ui.remove()
             self.display_file_selector(instruction=instruction,
                                        start_dir=start_dir,
@@ -511,6 +514,8 @@ class FileSelectorPanelWithJumpFolders:
 
         def display_file_selector_from_home(ev):
             start_dir = os.path.expanduser("~")
+
+            
             self.output_folder_ui.remove()
             self.display_file_selector(instruction=instruction,
                                        start_dir=start_dir,

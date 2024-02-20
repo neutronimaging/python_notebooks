@@ -8,7 +8,7 @@ from IPython.core.display import display, HTML
 
 from NeuNorm.normalization import Normalization
 
-from __code.ipywe import fileselector
+from __code.ipywe import fileselector, myfileselector
 from __code.metadata_handler import MetadataHandler
 from __code import file_handler
 
@@ -178,43 +178,50 @@ class CreateListFileName(object):
 
     def select_export_folder(self, ipts_folder='./'):
 
-        def display_file_selector_from_shared(ev):
-            start_dir = os.path.join(ipts_folder, 'shared')
-            self.output_folder_ui.remove()
-            self.display_file_selector(start_dir=start_dir)
+        start_dir = os.path.join(ipts_folder, 'shared')
+        myfileselector.FileSelectorPanelWithJumpFolders(instruction="Select output folder",
+                                                        start_dir=start_dir,
+                                                        multiple=False,
+                                                        next=self.export,
+                                                        type='directory')
 
-        def display_file_selector_from_home(ev):
-            import getpass
-            _user = getpass.getuser()
-            start_dir = os.path.join('/SNS/users', _user)
-            self.output_folder_ui.remove()
-            self.display_file_selector(start_dir=start_dir)
+        # def display_file_selector_from_shared(ev):
+        #     start_dir = os.path.join(ipts_folder, 'shared')
+        #     self.output_folder_ui.remove()
+        #     self.display_file_selector(start_dir=start_dir)
+        #
+        # def display_file_selector_from_home(ev):
+        #     import getpass
+        #     _user = getpass.getuser()
+        #     start_dir = os.path.join('/SNS/users', _user)
+        #     self.output_folder_ui.remove()
+        #     self.display_file_selector(start_dir=start_dir)
+        #
+        # ipts = os.path.basename(self.working_dir)
+        #
+        # button_layout = widgets.Layout(width='30%',
+        #                                border='1px solid gray')
+        #
+        # hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
+        #                                     button_style='success',
+        #                                     layout=button_layout),
+        #                      widgets.Button(description="Jump to My Home Folder",
+        #                                     button_style='success',
+        #                                     layout=button_layout)])
+        # go_to_shared_button_ui = hbox.children[0]
+        # go_to_home_button_ui = hbox.children[1]
+        #
+        # go_to_shared_button_ui.on_click(display_file_selector_from_shared)
+        # go_to_home_button_ui.on_click(display_file_selector_from_home)
+        #
+        # display(hbox)
+        #
+        # self.display_file_selector()
 
-        ipts = os.path.basename(self.working_dir)
-
-        button_layout = widgets.Layout(width='30%',
-                                       border='1px solid gray')
-
-        hbox = widgets.HBox([widgets.Button(description="Jump to {} Shared Folder".format(ipts),
-                                            button_style='success',
-                                            layout=button_layout),
-                             widgets.Button(description="Jump to My Home Folder",
-                                            button_style='success',
-                                            layout=button_layout)])
-        go_to_shared_button_ui = hbox.children[0]
-        go_to_home_button_ui = hbox.children[1]
-
-        go_to_shared_button_ui.on_click(display_file_selector_from_shared)
-        go_to_home_button_ui.on_click(display_file_selector_from_home)
-
-        display(hbox)
-
-        self.display_file_selector()
-
-    def display_file_selector(self, start_dir=''):
-        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
-                                                               start_dir=start_dir,
-                                                               multiple=False,
-                                                               next=self.export,
-                                                               type='directory')
-        self.output_folder_ui.show()
+    # def display_file_selector(self, start_dir=''):
+    #     self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder',
+    #                                                            start_dir=start_dir,
+    #                                                            multiple=False,
+    #                                                            next=self.export,
+    #                                                            type='directory')
+    #     self.output_folder_ui.show()
