@@ -176,12 +176,14 @@ class CreateListFileName(object):
 
         display(HTML('<span>File Created: ' + os.path.basename(output_file) + '</span>'))
 
-    def select_export_folder(self, ipts_folder='./'):
+    def select_export_folder(self):
 
+        ipts_folder = self.working_dir
         start_dir = os.path.join(ipts_folder, 'shared')
         myfileselector.FileSelectorPanelWithJumpFolders(instruction="Select output folder",
                                                         start_dir=start_dir,
                                                         multiple=False,
+                                                        ipts_folder=ipts_folder,
                                                         next=self.export,
                                                         type='directory')
 
