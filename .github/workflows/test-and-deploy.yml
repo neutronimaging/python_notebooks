@@ -6,15 +6,16 @@ jobs:
     run-unit-tests:
       runs-on: ubuntu-22.04
       timeout-minutes: 60
-      name: ubuntu-22.04  python 3.9
+      name: ubuntu-22.04
       steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
         - uses: conda-incubator/setup-miniconda@v2
           with:
             auto-update-conda: true
-            python-version: 3.9
-            channels: conda-forge
-            auto-activate-base: true
+            mamba-version: "*"
+            environment-file: conda/neutron-imaging-dev.yml
+            cache-environment-key: ${{ runner.os }}-env-${{ hashFiles('**/neutron-imaging-dev.yml') }}
+            cache-downloads-key: ${{ runner.os }}-downloads-${{ hashFiles('**/neutron-imaging-dev.yml') }}
         - name: Map the Branch Name to a Conda Environment
           uses: neutrons/branch-mapper@modifiedMain
           id: envname
@@ -25,18 +26,11 @@ jobs:
           timeout-minutes: 60
           shell: bash -l {0}
           run: |
-            python -m pip install --upgrade pip
-            # NOTE: the selected action is using packages from main, which is
-            #       in compatible with those from conda-forge, a force update here
-            #       help to bypass this issue.
-            conda update -n base --all -y
-            conda env update -n base --file=conda/${{ steps.envname.outputs.name }}.yml
-            conda install --yes --name base pytest
+            echo "installing additional dependencies if needed"
         - name: Run tests
           shell: bash -l {0}
           run: |
             cd notebooks
-            conda activate base
             python -m pytest tests/
 
     trigger-deploy-conda-environment:
@@ -45,11 +39,11 @@ jobs:
       name: test-trigger-deploy-conda-environment
       if: ${{ github.ref_protected }}
       steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
 
         - name: Get changed files
           id: changed-files
-          uses: tj-actions/changed-files@v29.0.7
+          uses: tj-actions/changed-files@v41.0.0
 
         # Find which conda environment file we should use for the deployment
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
