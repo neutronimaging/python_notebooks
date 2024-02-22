@@ -27,18 +27,10 @@ jobs:
           shell: bash -l {0}
           run: |
             echo "installing additional dependencies if needed"
-            # python -m pip install --upgrade pip
-            # # NOTE: the selected action is using packages from main, which is
-            # #       in compatible with those from conda-forge, a force update here
-            # #       help to bypass this issue.
-            # conda update -n base --all -y
-            # conda env update -n base --file=conda/${{ steps.envname.outputs.name }}.yml
-            # conda install --yes --name base pytest
         - name: Run tests
           shell: bash -l {0}
           run: |
             cd notebooks
-            # conda activate test
             python -m pytest tests/
 
     trigger-deploy-conda-environment:
