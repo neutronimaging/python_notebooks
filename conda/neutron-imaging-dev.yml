@@ -41,6 +41,8 @@ dependencies:
   - tqdm
   # ORNL
   - pyoncat
+  # test
+  - pytest
   # neutronimaging + pip_only_deps
   - pip:
     - changepy==0.3.1
