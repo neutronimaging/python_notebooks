@@ -49,7 +49,7 @@ jobs:
 
         - name: Get changed files
           id: changed-files
-          uses: tj-actions/changed-files@v29.0.7
+          uses: tj-actions/changed-files@v41.0.0
 
         # Find which conda environment file we should use for the deployment
         # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
