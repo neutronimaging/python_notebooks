@@ -129,7 +129,7 @@ class Interface(QMainWindow):
 
     def help_clicked(self):
         import webbrowser
-        webbrowser.open('https://neutronimaging.pages.ornl.gov/tutorial/notebooks/gamma_filtering_tool/')
+        webbrowser.open('https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/outliers-filtering-tool/')
 
     def display_image(self, image):
         self.ui.image_view.setImage(image)
