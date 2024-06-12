@@ -2,7 +2,6 @@ from IPython.core.display import HTML
 from IPython.display import display
 import os
 from qtpy.QtWidgets import QMainWindow
-
 from __code import load_ui
 
 from __code.file_folder_browser import FileFolderBrowser

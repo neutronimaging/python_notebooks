@@ -1,7 +1,6 @@
 import pyqtgraph as pg
-from qtpy import QtGui
 from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QVBoxLayout, QTableWidgetItem, QLabel, QSpacerItem, QWidget, QHBoxLayout, QSizePolicy
+from qtpy.QtWidgets import QVBoxLayout, QTableWidgetItem, QLabel, QSpacerItem, QWidget, QHBoxLayout, QSizePolicy, QProgressBar
 import os
 
 
@@ -126,7 +125,7 @@ class Initialization:
         spacerItem = QSpacerItem(2520, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
         hori_layout.addItem(spacerItem)
 
-        self.parent.eventProgress = QtGui.QProgressBar(self.parent.ui.statusbar)
+        self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
         self.parent.eventProgress.setMinimumSize(540, 14)
         self.parent.eventProgress.setMaximumSize(540, 100)
         self.parent.eventProgress.setVisible(False)
