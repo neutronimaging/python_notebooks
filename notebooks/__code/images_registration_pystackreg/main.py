@@ -36,6 +36,8 @@ class ImagesRegistrationPystackreg:
 
     working_dir = None
 
+    selector = None
+
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
 
@@ -57,6 +59,7 @@ class ImagesRegistrationPystackreg:
                                     ext=ext)
 
         display(HTML("Data have been loaded!"))
+        print("Data have been load!")
 
     def display_unregistered(self):
 
@@ -64,7 +67,6 @@ class ImagesRegistrationPystackreg:
             fig, ax = plt.subplots(ncols=3, nrows=1,
                                    num="Unregistered images",
                                    figsize=(15, 5))
-
             ax[0].imshow(self.stack[0], vmin=0, vmax=1)
             ax[0].set_title("First image")
 
@@ -127,21 +129,28 @@ class ImagesRegistrationPystackreg:
         y0 = int(y_corners[0])
         y1 = int(y_corners[2])
 
+        if (x0 == 0) and (y0 == 0) and (x1 == 0) and (y1 == 1):
+            first_image = self.stack[0]
+            height, width = np.shape(first_image)
+            x1 = width - 1
+            y1 = height - 1
+
         return x0, x1, y0, y1
 
     def perform_cropping(self):
 
         x0, x1, y0, y1 = self._get_crop_region()
 
-        self.stack_cropped = []
+        _stack_cropped = []
         for _image in self.stack:
             _image = np.array(_image)
             _image_cropped = _image[y0:y1, x0:x1]
-            self.stack_cropped.append(_image_cropped)
+            _stack_cropped.append(_image_cropped)
+        self.stack_cropped = np.array(_stack_cropped)
 
         fig, ax = plt.subplots(ncols=1, nrows=1,
                                num="Cropped images",
-                               figsize=(15, 5))
+                               figsize=(5, 5))
 
         image = ax.imshow(self.stack_cropped[0], vmin=0, vmax=1)
         ax.set_title("First image")
@@ -161,3 +170,56 @@ class ImagesRegistrationPystackreg:
         row = widgets.HBox([col1, col2])
         display(row)
 
+    def _get_registration_type(self, registration_name):
+        return getattr(AlgoList, registration_name)
+
+    def run(self):
+        registration_name = self.algo_options.value
+        image_reference = self.reference_options.value
+        registration_type = self._get_registration_type(registration_name)
+
+        o_sr = StackReg(registration_type)
+        self.registered_stack = o_sr.register_transform_stack(self.stack_cropped,
+                                                              reference=image_reference,
+                                                              verbose=True)
+
+        self.display_registered()
+
+    def display_registered(self):
+
+        self.fig2 = None
+        self.registered_stack = self.stack  #REMOVE_ME
+
+        def preview_registered(image_index, vmin=0.8, vmax=1.2):
+            if self.fig2:
+                self.fig2.clear()
+
+            self.fig2, ax2 = plt.subplots(ncols=3, nrows=1,
+                                     num="Registered images",
+                                     figsize=(15, 5))
+
+            ax2[0].imshow(self.registered_stack[0], vmin=0, vmax=1)
+            ax2[0].set_title("First image")
+
+            ax2[1].imshow(self.registered_stack[image_index], vmin=0, vmax=1)
+            ax2[1].set_title(f"Image #{image_index}")
+
+            image = ax2[2].imshow(np.divide(self.registered_stack[image_index],
+                                            self.registered_stack[0]),
+                                 vmin=vmin, vmax=vmax)
+            ax2[2].set_title(f"Image[{image_index}] / First image")
+            cb = plt.colorbar(image, ax=ax2[2])
+            # display(fig)
+
+        v2 = interactive(preview_registered,
+                        image_index=widgets.IntSlider(min=0,
+                                                      max=len(self.list_of_files) - 1,
+                                                      value=1),
+                        vmin=widgets.FloatSlider(min=0,
+                                                 max=2,
+                                                 value=0.8),
+                        vmax=widgets.FloatSlider(min=0,
+                                                 max=2,
+                                                 value=1.2),
+                        )
+        display(v2)
