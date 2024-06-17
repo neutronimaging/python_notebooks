@@ -36,18 +36,19 @@ class ImagesRegistrationPystackreg:
 
     working_dir = None
 
-    selector = None
+    selector_unregistered = None
+    selector_registered = None
 
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
 
     def select_folder(self):
-        self.folder_list_widget = fileselector.FileSelectorPanel(instruction='select folder of images to register',
-                                                                 start_dir=self.working_dir,
-                                                                 type='directory',
-                                                                 next=self.load_images,
-                                                                 multiple=False)
-        self.folder_list_widget.show()
+        self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder of images to register',
+                                                            start_dir=self.working_dir,
+                                                            type='directory',
+                                                            next=self.load_images,
+                                                            multiple=False)
+        self.folder_widget.show()
 
     def load_images(self, folder_name=None):
         self.folder_name = folder_name
@@ -108,21 +109,21 @@ class ImagesRegistrationPystackreg:
         ax.imshow(img)
 
         ax.set_title(f"Click and drag to select a rectangular ROI.")
-        self.selector = RectangleSelector(
-            ax,
-            _select_callback,
-            useblit=True,
-            button=[1, 3],  # disable middle button
-            minspanx=5, minspany=5,
-            spancoords='pixels',
-            interactive=True)
+        self.selector_unregistered = RectangleSelector(
+                                    ax,
+                                    _select_callback,
+                                    useblit=True,
+                                    button=[1, 3],  # disable middle button
+                                    minspanx=5, minspany=5,
+                                    spancoords='pixels',
+                                    interactive=True)
 
         ax.set_title("Click and drag to select region to crop")
 
-    def _get_crop_region(self):
+    def _get_crop_region(self, selector):
 
-        x_corners = self.selector.corners[0]
-        y_corners = self.selector.corners[1]
+        x_corners = selector.corners[0]
+        y_corners = selector.corners[1]
 
         x0 = int(x_corners[0])
         x1 = int(x_corners[2])
@@ -139,7 +140,7 @@ class ImagesRegistrationPystackreg:
 
     def perform_cropping(self):
 
-        x0, x1, y0, y1 = self._get_crop_region()
+        x0, x1, y0, y1 = self._get_crop_region(self.selector_unregistered)
 
         _stack_cropped = []
         for _image in self.stack:
@@ -188,7 +189,6 @@ class ImagesRegistrationPystackreg:
     def display_registered(self):
 
         self.fig2 = None
-        self.registered_stack = self.stack  #REMOVE_ME
 
         def preview_registered(image_index, vmin=0.8, vmax=1.2):
             if self.fig2:
@@ -223,3 +223,59 @@ class ImagesRegistrationPystackreg:
                                                  value=1.2),
                         )
         display(v2)
+
+    def crop_registered_images(self):
+
+        def _select_callback(eclick, erelease):
+            """
+            Callback for line selection.
+
+            *eclick* and *erelease* are the press and release events.
+            """
+            x1, y1 = eclick.xdata, eclick.ydata
+            x2, y2 = erelease.xdata, erelease.ydata
+
+        fig3 = plt.figure(layout='crop registered')
+        ax = fig3.subplots(1)
+
+        img = self.registered_stack[0]
+        ax.imshow(img)
+
+        ax.set_title(f"Click and drag to select a rectangular ROI.")
+        self.selector_registered = RectangleSelector(
+                                    ax,
+                                    _select_callback,
+                                    useblit=True,
+                                    button=[1, 3],  # disable middle button
+                                    minspanx=5, minspany=5,
+                                    spancoords='pixels',
+                                    interactive=True)
+
+        ax.set_title("Click and drag to select region to crop")
+
+    def perform_cropping(self):
+
+        x0, x1, y0, y1 = self._get_crop_region(self.selector_registered)
+
+        _final_stack_cropped = []
+        for _image in self.stack:
+            _image = np.array(_image)
+            _image_cropped = _image[y0:y1, x0:x1]
+            _final_stack_cropped.append(_image_cropped)
+        self.final_stack_cropped = np.array(_final_stack_cropped)
+
+        fig, ax = plt.subplots(ncols=1, nrows=1,
+                               num="Cropped images to export",
+                               figsize=(5, 5))
+
+        image = ax.imshow(self.stack_cropped[0], vmin=0, vmax=1)
+        ax.set_title("First image")
+        cb = plt.colorbar(image, ax=ax)
+
+    def export(self):
+        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
+                                                                 start_dir=self.working_dir,
+                                                                 type='directory',
+                                                                 next=self.export_images,
+                                                                 multiple=False)
+        self.output_folder_widget.show()
