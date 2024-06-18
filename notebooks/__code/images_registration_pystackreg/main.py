@@ -112,7 +112,8 @@ class ImagesRegistrationPystackreg:
             x1, y1 = eclick.xdata, eclick.ydata
             x2, y2 = erelease.xdata, erelease.ydata
 
-        fig = plt.figure(layout='constrained')
+        # fig = plt.figure(layout='constrained')
+        fig = plt.figure()
         ax = fig.subplots(1)
 
         img = self.stack[0]
@@ -249,7 +250,8 @@ class ImagesRegistrationPystackreg:
             x1, y1 = eclick.xdata, eclick.ydata
             x2, y2 = erelease.xdata, erelease.ydata
 
-        fig3 = plt.figure(layout='constrained')
+        # fig3 = plt.figure(layout='constrained')  # for matplotlib 3.8.3
+        fig3 = plt.figure()
         ax = fig3.subplots(1)
 
         img = self.registered_stack[0]
@@ -282,7 +284,8 @@ class ImagesRegistrationPystackreg:
             _final_stack_cropped.append(_image_cropped)
         self.final_stack_cropped = np.array(_final_stack_cropped)
 
-        fig4 = plt.figure(layout='constrained')
+        # fig4 = plt.figure(layout='constrained')
+        fig4 = plt.figure()
         ax4 = fig4.subplots(1)
 
         image = ax4.imshow(self.final_stack_cropped[0], vmin=0, vmax=1)
