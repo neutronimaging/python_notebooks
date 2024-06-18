@@ -16,7 +16,7 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# + [markdown] jp-MarkdownHeadingCollapsed=true run_control={"frozen": false, "read_only": false}
+# + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}

@@ -79,6 +79,7 @@
 #     * [ibeatles strain mapping ASCII loader](ibeatles_strain_mapping_ASCII_loader.ipynb)
 #     * [ibeatles strain mapping HDF5 loader](ibeatles_strain_mapping_HDF5_loader.ipynb)
 # * [images and metadata extrapolation matcher](images_and_metadata_extrapolation_matcher.ipynb)
+# * [images registration using pystackgreg](images_registration.ipynb)
 # * [integrated roi counts vs file name and time stamp](integrated_roi_counts_vs_file_name_and_time_stamp.ipynb)
 
 # # L
@@ -121,7 +122,8 @@
 # # R
 
 # * [radial profile](radial_profile.ipynb)
-# * [registration](registration.ipynb)
+# * [registration using various techniques](registration.ipynb)
+# * [registration using pystackreg library](images_registration.ipynb)
 # * [rename files](rename_files.ipynb)
 # * [resonance imaging experiment vs theory](resonance_imaging_experiment_vs_theory.ipynb) (under development)
 # * [roi statistics for a stack of images](roi_statistics_vs_stack.ipynb)
