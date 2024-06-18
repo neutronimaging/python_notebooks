@@ -10,6 +10,7 @@ import matplotlib.patches as patches
 from pystackreg import StackReg
 from tqdm import tqdm
 from PIL import Image
+import copy
 
 from __code.ipywe import fileselector
 from __code._utilities.file import retrieve_list_of_most_dominant_extension_from_folder
@@ -70,7 +71,7 @@ class ImagesRegistrationPystackreg:
                                     ext=ext)
 
         display(HTML("Data have been loaded!"))
-        print("Data have been load!")
+        print("Data have been loaded!")
 
     def display_unregistered(self):
 
@@ -133,6 +134,8 @@ class ImagesRegistrationPystackreg:
 
     def _get_crop_region(self, selector):
 
+        data_have_been_cropped = True
+
         x_corners = selector.corners[0]
         y_corners = selector.corners[1]
 
@@ -142,27 +145,32 @@ class ImagesRegistrationPystackreg:
         y1 = int(y_corners[2])
 
         if (x0 == 0) and (y0 == 0) and (x1 == 0) and (y1 == 1):
+            data_have_been_cropped = False
+
             first_image = self.stack[0]
             height, width = np.shape(first_image)
             x1 = width - 1
             y1 = height - 1
 
-        return x0, x1, y0, y1
+        return x0, x1, y0, y1, data_have_been_cropped
 
     def perform_cropping(self):
 
-        x0, x1, y0, y1 = self._get_crop_region(self.selector_unregistered)
+        x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(self.selector_unregistered)
         self.crop['before registration'] = {'x0': x0,
                                             'x1': x1,
                                             'y0': y0,
                                             'y1': y1}
 
-        _stack_cropped = []
-        for _image in self.stack:
-            _image = np.array(_image)
-            _image_cropped = _image[y0:y1, x0:x1]
-            _stack_cropped.append(_image_cropped)
-        self.stack_cropped = np.array(_stack_cropped)
+        if data_have_been_cropped:
+            _stack_cropped = []
+            for _image in self.stack:
+                _image = np.array(_image)
+                _image_cropped = _image[y0:y1, x0:x1]
+                _stack_cropped.append(_image_cropped)
+            self.stack_cropped = np.array(_stack_cropped)
+        else:
+            self.stack_cropped = copy.deepcopy(self.stack)
 
         fig, ax = plt.subplots(ncols=1, nrows=1,
                                num="Cropped images",
@@ -271,18 +279,21 @@ class ImagesRegistrationPystackreg:
 
     def perform_cropping_for_export(self):
 
-        x0, x1, y0, y1 = self._get_crop_region(self.selector_registered)
+        x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(self.selector_registered)
         self.crop['after registration'] = {'x0': x0,
-                                            'x1': x1,
-                                            'y0': y0,
-                                            'y1': y1}
+                                           'x1': x1,
+                                           'y0': y0,
+                                           'y1': y1}
 
-        _final_stack_cropped = []
-        for _image in self.stack:
-            _image = np.array(_image)
-            _image_cropped = _image[y0:y1, x0:x1]
-            _final_stack_cropped.append(_image_cropped)
-        self.final_stack_cropped = np.array(_final_stack_cropped)
+        if data_have_been_cropped:
+            _final_stack_cropped = []
+            for _image in self.registered_stack:
+                _image = np.array(_image)
+                _image_cropped = _image[y0:y1, x0:x1]
+                _final_stack_cropped.append(_image_cropped)
+            self.final_stack_cropped = np.array(_final_stack_cropped)
+        else:
+            self.final_stack_cropped = copy.deepcopy(self.registered_stack)
 
         # fig4 = plt.figure(layout='constrained')
         fig4 = plt.figure()
@@ -298,10 +309,10 @@ class ImagesRegistrationPystackreg:
         display(self.output_label)
 
         self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
-                                                                 start_dir=self.working_dir,
-                                                                 type='directory',
-                                                                 next=self.export_images,
-                                                                 multiple=False)
+                                                                   start_dir=self.working_dir,
+                                                                   type='directory',
+                                                                   next=self.export_images,
+                                                                   multiple=False)
         self.output_folder_widget.show()
 
     def export_images(self, output_folder):
