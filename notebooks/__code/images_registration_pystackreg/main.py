@@ -1,3 +1,5 @@
+import os.path
+
 import matplotlib.pyplot as plt
 from ipywidgets import interactive
 import ipywidgets as widgets
@@ -6,10 +8,15 @@ from matplotlib.widgets import RectangleSelector
 import numpy as np
 import matplotlib.patches as patches
 from pystackreg import StackReg
+from tqdm import tqdm
+from PIL import Image
 
 from __code.ipywe import fileselector
 from __code._utilities.file import retrieve_list_of_most_dominant_extension_from_folder
+from __code._utilities.file import make_or_reset_folder
 from __code._utilities.images import read_img_stack
+from __code._utilities.time import get_current_time_in_special_file_name_format
+from __code._utilities.json import save_json
 
 
 class AlgoList:
@@ -38,6 +45,9 @@ class ImagesRegistrationPystackreg:
 
     selector_unregistered = None
     selector_registered = None
+
+    crop = {'before registration': None,
+            'after registration': None}
 
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
@@ -141,6 +151,10 @@ class ImagesRegistrationPystackreg:
     def perform_cropping(self):
 
         x0, x1, y0, y1 = self._get_crop_region(self.selector_unregistered)
+        self.crop['before registration'] = {'x0': x0,
+                                            'x1': x1,
+                                            'y0': y0,
+                                            'y1': y1}
 
         _stack_cropped = []
         for _image in self.stack:
@@ -235,7 +249,7 @@ class ImagesRegistrationPystackreg:
             x1, y1 = eclick.xdata, eclick.ydata
             x2, y2 = erelease.xdata, erelease.ydata
 
-        fig3 = plt.figure(layout='crop registered')
+        fig3 = plt.figure(layout='constrained')
         ax = fig3.subplots(1)
 
         img = self.registered_stack[0]
@@ -253,9 +267,13 @@ class ImagesRegistrationPystackreg:
 
         ax.set_title("Click and drag to select region to crop")
 
-    def perform_cropping(self):
+    def perform_cropping_for_export(self):
 
         x0, x1, y0, y1 = self._get_crop_region(self.selector_registered)
+        self.crop['after registration'] = {'x0': x0,
+                                            'x1': x1,
+                                            'y0': y0,
+                                            'y1': y1}
 
         _final_stack_cropped = []
         for _image in self.stack:
@@ -264,18 +282,52 @@ class ImagesRegistrationPystackreg:
             _final_stack_cropped.append(_image_cropped)
         self.final_stack_cropped = np.array(_final_stack_cropped)
 
-        fig, ax = plt.subplots(ncols=1, nrows=1,
-                               num="Cropped images to export",
-                               figsize=(5, 5))
+        fig4 = plt.figure(layout='constrained')
+        ax4 = fig4.subplots(1)
 
-        image = ax.imshow(self.stack_cropped[0], vmin=0, vmax=1)
-        ax.set_title("First image")
-        cb = plt.colorbar(image, ax=ax)
+        image = ax4.imshow(self.final_stack_cropped[0], vmin=0, vmax=1)
+        ax4.set_title("First image")
+        plt.colorbar(image, ax=ax4)
 
     def export(self):
+        display(HTML("<span><b>Exporting the registered data:</b></span>"))
+        self.output_label = widgets.Label(f" IN PROGRESS")
+        display(self.output_label)
+
         self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
                                                                  start_dir=self.working_dir,
                                                                  type='directory',
                                                                  next=self.export_images,
                                                                  multiple=False)
         self.output_folder_widget.show()
+
+    def export_images(self, output_folder):
+
+        output_folder = os.path.abspath(output_folder)
+        registered_crop_stack = self.final_stack_cropped
+        list_file_names = self.list_of_files
+
+        # create output folder
+        source_folder = os.path.basename(os.path.dirname(list_file_names[0]))
+        time_stamp = get_current_time_in_special_file_name_format()
+        full_output_folder_name = os.path.join(output_folder, f"{source_folder}_{time_stamp}")
+        make_or_reset_folder(full_output_folder_name)
+
+        for i, file_name in tqdm(enumerate(list_file_names)):
+            short_file_name = os.path.basename(file_name)
+            full_output_file_name = os.path.join(full_output_folder_name, short_file_name)
+            _image = Image.fromarray(registered_crop_stack[i])
+            _image.save(full_output_file_name)
+
+        # create json with parameters used
+        metadata = {'input folder': source_folder,
+                    'number of files': len(list_file_names),
+                    'crop': self.crop,
+                    'registration': {'type': self.algo_options.value,
+                                     'image of reference': self.reference_options.value}
+                    }
+        json_file_name = os.path.join(full_output_folder_name, 'config.json')
+        save_json(json_file_name, metadata)
+
+        self.output_label.value = f"DONE! (Registered files have been created in {full_output_folder_name})"
+        display(HTML(f"Registered files have been created in {full_output_folder_name}"))
