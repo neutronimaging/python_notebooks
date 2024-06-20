@@ -13,31 +13,43 @@
 # ---
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/timepix3-event-hdf5-he3-detector/)
+# [![Notebook Tutorial](__code/__all/notebook_tutorial.png)](https://neutronimaging.ornl.gov/tutorial/notebooks/timepix3_from_event_to_hito_hdf5)
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Your IPTS 
 
-# + run_control={"frozen": false, "read_only": false}
+# +
 from __code import system
-from __code.timepix3_event_hdf5_he3_detector.timepix3_event_hdf5_he3_detector import Timepix3EventHdf5
+from __code.venus_monitor_hdf5.main import VenusMonitorHdf5
 
 import h5py
+import numpy as np
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP')
+system.System.select_working_dir(facility='SNS', instrument='VENUS')
 from __code.__all import custom_style
 custom_style.style()
 
 import matplotlib.pyplot as plt
 # %matplotlib notebook
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Event HDF5 - He3 tube detectors
 # -
 
-o_event = Timepix3EventHdf5(working_dir=system.System.get_working_dir())
-o_event.select_nexus()
+# %matplotlib inline
+
+# # Define settings
+
+o_event = VenusMonitorHdf5(working_dir=system.System.get_working_dir())
+o_event.define_settings()
+
+o_event.record_settings()
+
+# + [markdown] run_control={"frozen": false, "read_only": false}
+# # Select Event NeXus
+# -
+
+o_event.select_event_nexus()
+
+
 
 
