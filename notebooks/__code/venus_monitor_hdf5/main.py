@@ -47,9 +47,12 @@ class VenusMonitorHdf5:
     def load_data(self, nexus_file_name):
 
         with h5py.File(nexus_file_name, 'r') as nxs:
+            self.nexus_file_name = nexus_file_name
             self.index = np.array(nxs['entry']['monitor1']['event_index'])
             self.time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
             self.time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
+
+        self.display_all_at_once()
 
     def define_settings(self):
 
@@ -137,7 +140,8 @@ class VenusMonitorHdf5:
         self.calculate_data_energy()
 
         plt.rcParams['figure.constrained_layout.use'] = True
-        fig, ax = plt.subplots(nrows=3, ncols=1, num='Monitor',
+        nexus_file_name = os.path.basename(self.nexus_file_name)
+        fig, ax = plt.subplots(nrows=3, ncols=1, num=f"{nexus_file_name}",
                                figsize=(10, 15),
                                )
 

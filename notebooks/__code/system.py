@@ -44,16 +44,21 @@ class System:
 
             full_list_instruments = cls.get_full_list_instrument()
             full_list_instruments.sort()
+            if instrument in full_list_instruments:
+                default_instrument = instrument
+            else:
+                default_instrument = full_list_instruments[0]
+
             start_path = cls.get_start_path(debugger_folder=debugger_folder,
                                             system_folder=system_folder,
-                                            instrument=full_list_instruments[0])
+                                            instrument=default_instrument)
 
             cls.start_path = start_path
 
             select_instrument_ui = widgets.HBox([widgets.Label("Select Instrument",
                                                       layout=widgets.Layout(width='20%')),
                                         widgets.Select(options=full_list_instruments,
-                                                       value=full_list_instruments[0],
+                                                       value=default_instrument,
                                                        layout=widgets.Layout(width='20%'))])
             cls.instrument_ui = select_instrument_ui.children[1]
             cls.instrument_ui.observe(cls.check_instrument_input, names='value')
@@ -128,7 +133,7 @@ class System:
             start_path = config.debugger_instrument_folder[computer_name][instrument]
             cls.start_path = start_path
 
-        list_folders = sorted(glob.glob(os.path.join(start_path, '*')))
+        list_folders = sorted(glob.glob(os.path.join(start_path, '*')), reverse=True)
         short_list_folders = [os.path.basename(_folder) for _folder in list_folders if os.path.isdir(_folder)]
         # short_list_folders = sorted(short_list_folders)
 
