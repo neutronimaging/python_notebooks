@@ -18,6 +18,8 @@ from __code.file_folder_browser import FileFolderBrowser
 
 LOG_FILE_NAME = ".venus_monitor_hdf5.log"
 
+ENERGY_CONVERSION_FACTOR = 81.787
+
 
 class VenusMonitorHdf5:
 
@@ -41,33 +43,98 @@ class VenusMonitorHdf5:
 
     def load_data(self, nexus_file_name):
 
-        print(f"{nexus_file_name}")
-
         with h5py.File(nexus_file_name, 'r') as nxs:
             self.index = np.array(nxs['entry']['monitor1']['event_index'])
             self.time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
             self.time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
 
-    def display_data_tof(self, nbr_bins=10):
+    def define_settings(self):
 
+        # bins
+        bins_label = widgets.Label("Nbr bins")
+        self.bins_ui = widgets.IntSlider(min=1,
+                                    max=10000,
+                                    value=100)
+        bins_layout = widgets.HBox([bins_label,
+                                    self.bins_ui])
+
+        # distance
+        distance_lock = widgets.Checkbox(False,
+                                         layout=widgets.Layout(width="150px"))
+        distance_label = widgets.Label("Distance source_monitor",
+                                       layout=widgets.Layout(width="200px"),
+                                       disabled=True)
+        self.distance_source_detector_ui = widgets.FloatText(value=23.726,
+                                                        layout=widgets.Layout(width="100px"),
+                                                        disabled=True)
+        distance_units_label = widgets.Label("m")
+
+        distance_layout = widgets.HBox([distance_lock,
+                                        distance_label,
+                                        self.distance_source_detector_ui,
+                                        distance_units_label])
+
+        def lock_changed(changes):
+            new_value = changes['new']
+            self.distance_source_detector_ui.disabled = not new_value
+
+        distance_lock.observe(lock_changed, names='value')
+
+
+        # monitor offset
+        monitor_label = widgets.Label("Monitor offset",
+                                      layout=widgets.Layout(width='100px'))
+        self.monitor_offset_ui = widgets.FloatText(value=0,
+                                              layout=widgets.Layout(width="100px"))
+        monitor_units = widgets.Label(u"\u00B5s")
+        monitor_layout = widgets.HBox([monitor_label,
+                                       self.monitor_offset_ui,
+                                       monitor_units])
+
+        # full layout
+        full_layout = widgets.VBox([bins_layout,
+                                    distance_layout,
+                                    monitor_layout])
+
+        display(full_layout)
+
+    def record_settings(self):
+        self.nbr_bins = self.bins_ui.value
+        self.distance_source_detector_m = self.distance_source_detector_ui.value
+        self.detector_offset_micros = self.monitor_offset_ui.value
+
+    def display_data_tof(self):
+
+        nbr_bins = self.nbr_bins
         self.histo_tof, self.bins_tof = np.histogram(self.time_offset, bins=np.arange(0, 16666, nbr_bins))
 
         fig, ax = plt.subplots(num='histogram2')
         plt.plot(self.bins_tof[:-1], self.histo_tof)
-        ax.set_xlabel("TOF (micros)")
+        ax.set_xlabel(u"TOF (\u00B5s)")
         ax.set_ylabel("Counts")
 
-    def display_data_lambda(self, distance_source_detector_m=23.726, detector_offset_micros=0):
+    def display_data_lambda(self):
 
-        distance_source_detector_cm = distance_source_detector_m / 100
         tof_axis = self.bins_tof[:-1]
+        detector_offset_micros = self.detector_offset_micros
+        distance_source_detector_cm = self.distance_source_detector_m * 100.
 
-        lambda_axis = VenusMonitorHdf5.from_micros_to_lambda(tof_axis_micros=tof_axis,
-                                                             detector_offset_micros=detector_offset_micros)
+        self.lambda_axis_angstroms = VenusMonitorHdf5.from_micros_to_lambda(tof_axis_micros=tof_axis,
+                                                                            distance_source_detector_cm=distance_source_detector_cm,
+                                                            detector_offset_micros=detector_offset_micros)
 
         fig, ax = plt.subplots(num='histogram3')
-        plt.plot(lambda_axis, self.histo_tof)
-        ax.set_xlabel("Lambgda (Angstroms)")
+        plt.plot(self.lambda_axis_angstroms, self.histo_tof)
+        ax.set_xlabel(u"Lambda (\u212B)")
+        ax.set_ylabel("Total counts")
+
+    def display_data_energy(self):
+        lambda_axis_angstroms = self.lambda_axis_angstroms
+        self.energy_axis_ev = 1000 * (ENERGY_CONVERSION_FACTOR / (lambda_axis_angstroms**2))
+
+        fig, ax = plt.subplots(num='counts vs energy')
+        plt.plot(self.energy_axis_ev, self.histo_tof, '*')
+        ax.set_xlabel("Energy (eV)")
         ax.set_ylabel("Total counts")
 
     @staticmethod
