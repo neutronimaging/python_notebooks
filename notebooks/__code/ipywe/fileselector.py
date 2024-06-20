@@ -173,23 +173,28 @@ class FileSelectorPanel:
             entries_files = [_f for _f in entries_files if (self.searching_string in _f)]
         #
         entries_paths = [os.path.join(curdir, e) for e in entries_files]
+        entries_paths.sort(key=os.path.getctime, reverse=True)
+        entries_files = [os.path.basename(_value) for _value in entries_paths]
         entries_ftime = create_file_times(entries_paths)
+
         return create_nametime_labels(entries_files, entries_ftime)
 
     def createSelectWidget(self):
         entries = self.getEntries()
-        entries.sort()
+        #entries.sort()
         self._entries = entries = [' .', ' ..', ] + entries
         if self.multiple:
             value = []
             self.select = ipyw.SelectMultiple(
-                    value=value, options=entries,
+                    value=value,
+                    options=entries,
                     description="Select",
                     layout=self.select_multiple_layout)
         else:
             value = entries[0]
             self.select = ipyw.Select(
-                    value=value, options=entries,
+                    value=value,
+                    options=entries,
                     description="Select",
                     layout=self.select_layout)
         """When ipywidgets 7.0 is released, the old way that the select or select multiple 
