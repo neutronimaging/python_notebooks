@@ -15,6 +15,18 @@ from __code.metadata_handler import MetadataHandler
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
+def convert_time_s_in_time_hr_mn_s(time_s):
+    time_s_only = int(np.mod(time_s, 60))
+
+    time_hr_mn = np.floor(time_s / 60)
+    time_mn = int(np.mod(time_hr_mn, 60))
+    time_hr = int(np.floor(time_hr_mn / 60))
+
+    print(f"{time_hr}")
+
+    return f"{time_hr:02d}hr:{time_mn:02d}mn:{time_s_only:02d}s"
+
+
 def format_time_stamp(file_name=None, time_stamp=None):
     """Format the time stamp to easily retrieve the day, time, hour,
     and keep only short file name"""
