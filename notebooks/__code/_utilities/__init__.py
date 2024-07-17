@@ -1,3 +1,3 @@
-ANGSTROMS = u"\u03BB"
-LAMBDA = u"\u212B"
+LAMBDA = u"\u03BB"
+ANGSTROMS = u"\u212B"
 MICRO = u"\u00B5"

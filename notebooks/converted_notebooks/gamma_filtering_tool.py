@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.11.2
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -28,7 +28,7 @@ warnings.filterwarnings('ignore')
 from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name = 'ui_gamma_filtering_tool.ui')
 
-from __code.gamma_filtering.gamma_filtering_tool import Interface, InterfaceHandler
+from __code.gamma_filtering_tool import Interface, InterfaceHandler
 
 from __code import system
 system.System.select_working_dir()

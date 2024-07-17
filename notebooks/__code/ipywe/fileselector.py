@@ -46,6 +46,8 @@ class FileSelectorPanel:
             filters=dict(),
             default_filter=None,
             stay_alive=False,
+            sort_by_time=False,
+            sort_in_reverse=False,
     ):
         """
         Create FileSelectorPanel instance
@@ -69,6 +71,11 @@ class FileSelectorPanel:
             the value will be the search engine, such as "*.txt" or "*.ipynb"
         stay_alive: bool (False by default)
             if True, the fileselector won't disappear after selection of a file/directory
+        sort_by_time: bool (False by default)
+            the files listed will be sorted according to their creating date
+        sort_in_reverse: bool (False by default)
+            the files are sorted in their decreasing order
+
         """
         if type not in ['file', 'directory']:
             raise ValueError("type must be either file or directory")
@@ -88,6 +95,10 @@ class FileSelectorPanel:
         self.cur_filter = None
         self.multiple = multiple
         self.newdir_toolbar_button = newdir_toolbar_button
+
+        self.sort_by_time = sort_by_time
+        self.sort_in_reverse = sort_in_reverse
+
         self.createPanel(os.path.abspath(start_dir))
         self.next = next
         self.stay_alive = stay_alive
@@ -173,23 +184,32 @@ class FileSelectorPanel:
             entries_files = [_f for _f in entries_files if (self.searching_string in _f)]
         #
         entries_paths = [os.path.join(curdir, e) for e in entries_files]
+        if self.sort_by_time:
+            entries_paths.sort(key=os.path.getctime, reverse=self.sort_in_reverse)
+
+        entries_files = [os.path.basename(_value) for _value in entries_paths]
         entries_ftime = create_file_times(entries_paths)
+
         return create_nametime_labels(entries_files, entries_ftime)
 
     def createSelectWidget(self):
         entries = self.getEntries()
-        entries.sort()
+        if not self.sort_by_time:
+            entries.sort()
+
         self._entries = entries = [' .', ' ..', ] + entries
         if self.multiple:
             value = []
             self.select = ipyw.SelectMultiple(
-                    value=value, options=entries,
+                    value=value,
+                    options=entries,
                     description="Select",
                     layout=self.select_multiple_layout)
         else:
             value = entries[0]
             self.select = ipyw.Select(
-                    value=value, options=entries,
+                    value=value,
+                    options=entries,
                     description="Select",
                     layout=self.select_layout)
         """When ipywidgets 7.0 is released, the old way that the select or select multiple 

@@ -43,7 +43,8 @@ pip install \
     ipywidgets \
     changepy \
     tqdm \
-    werkzeug=2.0.1
+    werkzeug=2.0.1 \
+    pystackreg
 
 
 # build Jupyter lab

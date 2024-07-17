@@ -2,7 +2,6 @@ from IPython.core.display import HTML
 from IPython.display import display
 import os
 from qtpy.QtWidgets import QMainWindow
-
 from __code import load_ui
 
 from __code.file_folder_browser import FileFolderBrowser
@@ -130,7 +129,7 @@ class Interface(QMainWindow):
 
     def help_clicked(self):
         import webbrowser
-        webbrowser.open('https://neutronimaging.pages.ornl.gov/tutorial/notebooks/gamma_filtering_tool/')
+        webbrowser.open('https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/outliers-filtering-tool/')
 
     def display_image(self, image):
         self.ui.image_view.setImage(image)
