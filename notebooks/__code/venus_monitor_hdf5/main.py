@@ -54,7 +54,7 @@ class VenusMonitorHdf5:
             self.time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
             self.time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
 
-        self.display_all_at_once()
+        self.display_all_at_once(nexus_file_name)
 
     def define_settings(self):
 
@@ -135,11 +135,14 @@ class VenusMonitorHdf5:
     def from_micros_to_lambda(tof_axis_micros, detector_offset_micros=0, distance_source_detector_cm=2372.6):
         return 0.3954 * (tof_axis_micros + detector_offset_micros) / distance_source_detector_cm
 
-    def display_all_at_once(self):
+    def display_all_at_once(self, nexus_file_name):
 
         self.calculate_data_tof()
         self.calculate_data_lambda()
         self.calculate_data_energy()
+
+        display(HTML("<br"))
+        display(HTML("<b>Displaying file</b>: " + f"{os.path.basename(nexus_file_name)}"))
 
         plt.rcParams['figure.constrained_layout.use'] = True
         nexus_file_name = os.path.basename(self.nexus_file_name)

@@ -14,17 +14,15 @@ from changepy.costs import normal_var
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+from qtpy.QtWidgets import (QFileDialog, QMainWindow, QLabel, QHBoxLayout, QSpacerItem, QProgressBar, 
+                            QPushButton, QVBoxLayout, QSlider, QSizePolicy, QWidget, QTableWidgetItem,
+                            QApplication)
+from qtpy import QtGui
+from qtpy import QtCore
 
 from NeuNorm.normalization import Normalization
 
+from __code import load_ui
 from __code.file_handler import make_ascii_file
 from __code.ipywe import fileselector
 from __code.file_handler import retrieve_time_stamp
@@ -32,7 +30,7 @@ from __code.file_format_reader import DscReader
 from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
 
 
-class MeanRangeCalculation(object):
+class MeanRangeCalculation:
     '''
     Mean value of all the counts between left_pixel and right pixel
     '''
@@ -52,7 +50,7 @@ class MeanRangeCalculation(object):
         self.delta_square = np.square(self.left_mean - self.right_mean)
 
 
-class WaterIntakeHandler(object):
+class WaterIntakeHandler:
     """This class calculates the water intake position of a set of profiles"""
 
     dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
@@ -261,8 +259,12 @@ class WaterIntakeProfileSelector(QMainWindow):
             (maybe hidden behind this browser!)</span>'))
 
         QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                    os.path.join('ui',
+                                                 'ui_water_intake_profile.ui'))
+
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Water Intake Calculator")
 
         self.dict_data_raw = dict_data.copy()
@@ -284,21 +286,21 @@ class WaterIntakeProfileSelector(QMainWindow):
         _height_labels = 30
 
         # x0, y0, width and height of selection
-        roi_label = QtGui.QLabel("ROI selected:  ")
-        _x0_label = QtGui.QLabel("X0:")
-        self.x0_value = QtGui.QLabel("0")
+        roi_label = QLabel("ROI selected:  ")
+        _x0_label = QLabel("X0:")
+        self.x0_value = QLabel("0")
         self.x0_value.setFixedSize(_width_labels, _height_labels)
-        _y0_label = QtGui.QLabel("Y0:")
-        self.y0_value = QtGui.QLabel("0")
+        _y0_label = QLabel("Y0:")
+        self.y0_value = QLabel("0")
         self.y0_value.setFixedSize(_width_labels, _height_labels)
-        _width_label = QtGui.QLabel("Width:")
-        self.width_value = QtGui.QLabel("20")
+        _width_label = QLabel("Width:")
+        self.width_value = QLabel("20")
         self.width_value.setFixedSize(_width_labels, _height_labels)
-        _height_label = QtGui.QLabel("Height:")
-        self.height_value = QtGui.QLabel("20")
+        _height_label = QLabel("Height:")
+        self.height_value = QLabel("20")
         self.height_value.setFixedSize(_width_labels, _height_labels)
 
-        hori_layout = QtGui.QHBoxLayout()
+        hori_layout = QHBoxLayout()
         hori_layout.addWidget(roi_label)
         hori_layout.addWidget(_x0_label)
         hori_layout.addWidget(self.x0_value)
@@ -310,11 +312,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         hori_layout.addWidget(self.height_value)
 
         # spacer
-        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        spacerItem = QSpacerItem(22520, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
         hori_layout.addItem(spacerItem)
 
         # progress bar
-        self.eventProgress = QtGui.QProgressBar(self.ui.statusbar)
+        self.eventProgress = QProgressBar(self.ui.statusbar)
         self.eventProgress.setMinimumSize(300, 20)
         self.eventProgress.setMaximumSize(300, 20)
         self.eventProgress.setVisible(False)
@@ -322,7 +324,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.setStyleSheet("QStatusBar{padding-left:8px;color:red;font-weight:bold;}")
 
         # add status bar in main ui
-        bottom_widget = QtGui.QWidget()
+        bottom_widget = QWidget()
         bottom_widget.setLayout(hori_layout)
         self.ui.statusbar.addPermanentWidget(bottom_widget)
 
@@ -372,43 +374,43 @@ class WaterIntakeProfileSelector(QMainWindow):
         # water intake
         self.water_intake = pg.PlotWidget(title='Water Intake')
         self.water_intake.plot()
-        self.ui.water_intake_refresh_button = QtGui.QPushButton("Refresh Water Intake Plot")
+        self.ui.water_intake_refresh_button = QPushButton("Refresh Water Intake Plot")
         self.ui.water_intake_refresh_button.clicked.connect(self.refresh_water_intake_plot_clicked)
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.water_intake)
         vertical_layout.addWidget(self.ui.water_intake_refresh_button)
-        wi_widget = QtGui.QWidget()
+        wi_widget = QWidget()
         wi_widget.setLayout(vertical_layout)
         d3.addWidget(wi_widget)
 
         # set up layout
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(area)
 
         # add progress bar
-        label = QtGui.QLabel("File Index:")
+        label = QLabel("File Index:")
         label.setMinimumSize(QtCore.QSize(60, 30))
         label.setMaximumSize(QtCore.QSize(60, 30))
-        hori_layout = QtGui.QHBoxLayout()
-        self.ui.file_index_slider = QtGui.QSlider()
+        hori_layout = QHBoxLayout()
+        self.ui.file_index_slider = QSlider()
         self.ui.file_index_slider.setMinimumSize(QtCore.QSize(400, 40))
         self.ui.file_index_slider.setMaximumSize(QtCore.QSize(40, 40))
         self.ui.file_index_slider.setOrientation(QtCore.Qt.Horizontal)
-        self.ui.file_index_slider.setTickPosition(QtGui.QSlider.TicksBelow)
+        self.ui.file_index_slider.setTickPosition(QSlider.TicksBelow)
         self.ui.file_index_slider.setTickInterval(1)
 
         self.ui.file_index_slider.valueChanged['int'].connect(self.slider_changed)
-        self.ui.file_index_value = QtGui.QLabel()
+        self.ui.file_index_value = QLabel()
         self.ui.file_index_value.setMinimumSize(QtCore.QSize(40, 30))
         self.ui.file_index_value.setMaximumSize(QtCore.QSize(40, 30))
 
-        spacerItem3 = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem3 = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         hori_layout.addWidget(label)
         hori_layout.addWidget(self.ui.file_index_slider)
         hori_layout.addWidget(self.ui.file_index_value)
         hori_layout.addItem(spacerItem3)
-        bottom_widget = QtGui.QWidget()
+        bottom_widget = QWidget()
         bottom_widget.setLayout(hori_layout)
         vertical_layout.addWidget(bottom_widget)
 
@@ -492,15 +494,15 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.tableWidget.insertRow(row)
 
         #col0
-        _item = QtGui.QTableWidgetItem(str(str(col0)))
+        _item = QTableWidgetItem(str(str(col0)))
         self.ui.tableWidget.setItem(row, 0, _item)
 
         #col1
-        _item = QtGui.QTableWidgetItem(str(str(col1)))
+        _item = QTableWidgetItem(str(str(col1)))
         self.ui.tableWidget.setItem(row, 1, _item)
 
         # col2
-        _item = QtGui.QTableWidgetItem(str(str(col2)))
+        _item = QTableWidgetItem(str(str(col2)))
         self.ui.tableWidget.setItem(row, 2, _item)
 
     def update_labels(self):
@@ -554,7 +556,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def update_water_intake_plot(self):
         # hourglass cursor
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        # QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
         algorithm_selected = self.get_algorithm_selected()
 
@@ -641,7 +643,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.water_intake.setLabel('left', y_label)
         self.water_intake.setLabel('bottom', 'Delta Time')
 
-        QApplication.restoreOverrideCursor()
+        # QApplication.restoreOverrideCursor()
 
     def update_profile_plot_water_intake_peak(self):
         # display value of current water intake peak in profile plot
