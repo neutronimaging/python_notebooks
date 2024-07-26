@@ -23,6 +23,8 @@ ENERGY_CONVERSION_FACTOR = 81.787
 
 class VenusChopTCeroMonitorCounts:
 
+    list_nexus_with_missing_key = []
+
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
 
@@ -59,8 +61,13 @@ class VenusChopTCeroMonitorCounts:
         for _nexus in list_nexus_file_name:
 
             with h5py.File(_nexus, 'r') as nxs:
-                _average_phase_delay = nxs['entry']['DASlogs']['BL10:CHOP:TCERO:PhaseDelaySP']['average_value'][()][0]
-                _monitor_counts = nxs['entry']['monitor1']['total_counts'][()][0]
+                try:
+                    _average_phase_delay = nxs['entry']['DASlogs']['BL10:CHOP:TCERO:PhaseDelaySP']['average_value'][()][0]
+                    _monitor_counts = nxs['entry']['monitor1']['total_counts'][()][0]
+                except KeyError:
+                    self.list_nexus_with_missing_key.append(_nexus)
+                    _average_phase_delay = np.nan
+                    _monitor_counts = np.NaN
 
                 phase_delay_array.append(_average_phase_delay)
                 monitor_counts_array.append(_monitor_counts)
@@ -72,7 +79,7 @@ class VenusChopTCeroMonitorCounts:
    
     def display(self):
 
-        minimum_counts = np.min(self.monitor_counts_array)
+        minimum_counts = np.nanmin(self.monitor_counts_array)
         index_of_minimum = int(np.where(self.monitor_counts_array == minimum_counts)[0][0])
 
         value_of_phase_delay_at_that_minimum = self.phase_delay_array[index_of_minimum]
@@ -104,3 +111,6 @@ class VenusChopTCeroMonitorCounts:
             start_time = nxs['entry']['start_time'][()]
 
         print(f"Start acquisition time: {start_time[0].decode('utf-8')}")
+        print(f"")
+        _list_nexus_with_missing_key = [os.path.basename(_file) for _file in self.list_nexus_with_missing_key]
+        print(f"List of nexus that had missing key: {_list_nexus_with_missing_key}")
