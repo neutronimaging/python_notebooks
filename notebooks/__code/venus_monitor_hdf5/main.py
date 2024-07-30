@@ -35,6 +35,8 @@ class VenusMonitorHdf5:
 
     def select_event_nexus(self):
 
+        self.record_settings()
+
         start_dir = os.path.join(self.working_dir, 'nexus')
 
         self.nexus_ui = fileselector.FileSelectorPanel(instruction='Select NeXus file ...',
@@ -59,7 +61,7 @@ class VenusMonitorHdf5:
     def define_settings(self):
 
         # bins
-        bins_label = widgets.Label("Nbr bins")
+        bins_label = widgets.Label(u"Bins size (\u00B5s)")
         self.bins_ui = widgets.IntSlider(min=1,
                                     max=10000,
                                     value=100)
@@ -93,7 +95,7 @@ class VenusMonitorHdf5:
         monitor_label = widgets.Label("Monitor offset",
                                       layout=widgets.Layout(width='100px'))
         self.monitor_offset_ui = widgets.FloatText(value=0,
-                                              layout=widgets.Layout(width="100px"))
+                                                   layout=widgets.Layout(width="100px"))
         monitor_units = widgets.Label(u"\u00B5s")
         monitor_layout = widgets.HBox([monitor_label,
                                        self.monitor_offset_ui,
@@ -107,33 +109,33 @@ class VenusMonitorHdf5:
         display(full_layout)
 
     def record_settings(self):
-        self.nbr_bins = self.bins_ui.value
+        self.bins_size = self.bins_ui.value
         self.distance_source_detector_m = self.distance_source_detector_ui.value
         self.detector_offset_micros = self.monitor_offset_ui.value
 
     def calculate_data_tof(self):
-
-        nbr_bins = self.nbr_bins
-        self.histo_tof, self.bins_tof = np.histogram(self.time_offset, bins=np.arange(0, 16666, nbr_bins))
-
+        bins_size = self.bins_size
+        self.histo_tof, bins_tof = np.histogram(self.time_offset, bins=np.arange(0, 2*16666, bins_size))
+        detector_offset_micros = self.detector_offset_micros
+        self.bins_tof = np.empty_like(bins_tof)
+        for _index, _bin in enumerate(bins_tof):
+            self.bins_tof[_index] = _bin - detector_offset_micros
 
     def calculate_data_lambda(self):
-
         tof_axis = self.bins_tof[:-1]
         detector_offset_micros = self.detector_offset_micros
         distance_source_detector_cm = self.distance_source_detector_m * 100.
 
         self.lambda_axis_angstroms = VenusMonitorHdf5.from_micros_to_lambda(tof_axis_micros=tof_axis,
-                                                                            distance_source_detector_cm=distance_source_detector_cm,
-                                                            detector_offset_micros=detector_offset_micros)
+                                                                            distance_source_detector_cm=distance_source_detector_cm)
 
     def calculate_data_energy(self):
         lambda_axis_angstroms = self.lambda_axis_angstroms
         self.energy_axis_ev = 1000 * (ENERGY_CONVERSION_FACTOR / (lambda_axis_angstroms*lambda_axis_angstroms))
 
     @staticmethod
-    def from_micros_to_lambda(tof_axis_micros, detector_offset_micros=0, distance_source_detector_cm=2372.6):
-        return 0.3954 * (tof_axis_micros + detector_offset_micros) / distance_source_detector_cm
+    def from_micros_to_lambda(tof_axis_micros, distance_source_detector_cm=2372.6):
+        return 0.3954 * (tof_axis_micros) / distance_source_detector_cm
 
     def display_all_at_once(self, nexus_file_name):
 
