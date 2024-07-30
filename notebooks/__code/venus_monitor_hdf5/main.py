@@ -15,6 +15,7 @@ from __code._utilities.file import get_full_home_file_name
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 from __code.file_folder_browser import FileFolderBrowser
+from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
 
 LOG_FILE_NAME = ".venus_monitor_hdf5.log"
 
@@ -50,11 +51,17 @@ class VenusMonitorHdf5:
 
     def load_data(self, nexus_file_name):
 
-        with h5py.File(nexus_file_name, 'r') as nxs:
-            self.nexus_file_name = nexus_file_name
-            self.index = np.array(nxs['entry']['monitor1']['event_index'])
-            self.time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
-            self.time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
+        try:
+
+            with h5py.File(nexus_file_name, 'r') as nxs:
+                self.nexus_file_name = nexus_file_name
+                self.index = np.array(nxs['entry']['monitor1']['event_index'])
+                self.time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
+                self.time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
+
+        except KeyError:
+            display(HTML("<font color='red'>Error loading the monitor data!<br>Entry is missing!</font>"))
+            self.index = None
 
         self.display_all_at_once(nexus_file_name)
 
@@ -139,6 +146,9 @@ class VenusMonitorHdf5:
 
     def display_all_at_once(self, nexus_file_name):
 
+        if self.index is None:
+            return
+
         self.calculate_data_tof()
         self.calculate_data_lambda()
         self.calculate_data_energy()
@@ -148,8 +158,8 @@ class VenusMonitorHdf5:
 
         plt.rcParams['figure.constrained_layout.use'] = True
         nexus_file_name = os.path.basename(self.nexus_file_name)
-        fig, ax = plt.subplots(nrows=3, ncols=1, num=f"{nexus_file_name}",
-                               figsize=(10, 15),
+        fig, ax = plt.subplots(nrows=1, ncols=2, num=f"{nexus_file_name}",
+                               figsize=(10, 5),
                                )
 
         ax[0].plot(self.bins_tof[:-1], self.histo_tof)
@@ -162,7 +172,18 @@ class VenusMonitorHdf5:
         ax[1].set_ylabel("Total counts")
         ax[1].set_title(u"Counts vs lambda (\u212B)")
 
-        ax[2].plot(self.energy_axis_ev, self.histo_tof, '*g')
-        ax[2].set_xlabel("Energy (eV)")
-        ax[2].set_ylabel("Total counts")
-        ax[2].set_title("Counts vs Energy (eV)")
+        # ax[2].plot(self.energy_axis_ev, self.histo_tof, '*g')
+        # ax[2].set_xlabel("Energy (eV)")
+        # ax[2].set_ylabel("Total counts")
+        # ax[2].set_title("Counts vs Energy (eV)")
+
+    def export_data(self):
+
+        start_dir = os.path.join(self.working_dir, 'shared')
+        my_folder_selector = FileSelectorPanelWithJumpFolders(start_dir=start_dir,
+                                                              type='directory',
+                                                              next=self.export,
+                                                              )
+        
+    def export(self, output_folder=None):
+        print(f"{output_folder =}")
