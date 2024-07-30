@@ -12,6 +12,7 @@ from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 
 from __code._utilities.file import get_full_home_file_name
+from __code._utilities.file import make_ascii_file
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 from __code.file_folder_browser import FileFolderBrowser
@@ -59,6 +60,8 @@ class VenusMonitorHdf5:
                 self.time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
                 self.time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
 
+            self.nexus_file_name = nexus_file_name
+
         except KeyError:
             display(HTML("<font color='red'>Error loading the monitor data!<br>Entry is missing!</font>"))
             self.index = None
@@ -102,11 +105,14 @@ class VenusMonitorHdf5:
         monitor_label = widgets.Label("Monitor offset",
                                       layout=widgets.Layout(width='100px'))
         self.monitor_offset_ui = widgets.FloatText(value=0,
-                                                   layout=widgets.Layout(width="100px"))
+                                                   layout=widgets.Layout(width="100px"),
+                                                   disabled=True,
+                                                   )
         monitor_units = widgets.Label(u"\u00B5s")
         monitor_layout = widgets.HBox([monitor_label,
                                        self.monitor_offset_ui,
-                                       monitor_units])
+                                       monitor_units],
+                                       )
 
         # full layout
         full_layout = widgets.VBox([bins_layout,
@@ -183,7 +189,32 @@ class VenusMonitorHdf5:
         my_folder_selector = FileSelectorPanelWithJumpFolders(start_dir=start_dir,
                                                               type='directory',
                                                               next=self.export,
+                                                              ipts_folder=self.working_dir,
                                                               )
         
     def export(self, output_folder=None):
-        print(f"{output_folder =}")
+
+        base_nexus_file_name = os.path.basename(self.nexus_file_name)
+        split_nexus_file_name = base_nexus_file_name.split(".")
+        output_file_name = f"{split_nexus_file_name[0]}_monitor_data.txt"
+        full_output_file_name = os.path.join(output_folder, output_file_name)
+
+        tof_axis = self.bins_tof
+        lambda_axis = self.lambda_axis_angstroms
+        y_axis = self.histo_tof
+
+        metadata_array = [f"# tof (\u00B5s), \u03BB (\u212B), Counts",
+                          f"# nexus: {base_nexus_file_name}",
+                          f"# IPTS: {self.working_dir}"]
+        output_array = []
+        for _t, _l, _y in zip(tof_axis, lambda_axis, y_axis):
+            output_array.append([_t, _l, _y])
+
+        make_ascii_file(data=output_array,
+                        metadata=metadata_array,
+                        dim='2d',
+                        sep=',',
+                        output_file_name=full_output_file_name,
+        )
+
+        display(HTML(f"Data have been exported in {full_output_file_name}"))
