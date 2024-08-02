@@ -22,10 +22,6 @@
 # # Select your IPTS 
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_water_intake_profile.ui')
-from __code.roi_selection_ui import Interface
-
 from __code import system
 from __code.water_intake_profile_calculator import WaterIntakeProfileCalculator, WaterIntakeProfileSelector
 

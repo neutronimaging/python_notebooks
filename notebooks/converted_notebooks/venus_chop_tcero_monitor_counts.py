@@ -22,7 +22,7 @@
 
 # +
 from __code import system
-from __code.venus_monitor_hdf5.main import VenusMonitorHdf5
+from __code.venus_chop_tcero_monitor_counts.main import VenusChopTCeroMonitorCounts
 
 import h5py
 import numpy as np
@@ -35,21 +35,11 @@ import matplotlib.pyplot as plt
 # %matplotlib notebook
 # -
 
-# %matplotlib inline
+# %matplotlib notebook
 
 # # Define settings
 
-o_event = VenusMonitorHdf5(working_dir=system.System.get_working_dir())
-o_event.define_settings()
-
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Event NeXus
-# -
-
-o_event.select_event_nexus()
-
-# # Export  
-
-o_event.export_data()
+o_event = VenusChopTCeroMonitorCounts(working_dir=system.System.get_working_dir())
+o_event.select_list_nexus()
 
 

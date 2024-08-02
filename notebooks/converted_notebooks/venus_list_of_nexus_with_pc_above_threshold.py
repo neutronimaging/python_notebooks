@@ -22,7 +22,7 @@
 
 # +
 from __code import system
-from __code.venus_monitor_hdf5.main import VenusMonitorHdf5
+from __code.venus_list_of_nexus_with_pc_above_threshold.main import VenusNexusListPCAboveThreshold
 
 import h5py
 import numpy as np
@@ -35,21 +35,17 @@ import matplotlib.pyplot as plt
 # %matplotlib notebook
 # -
 
-# %matplotlib inline
+# %matplotlib notebook
 
 # # Define settings
 
-o_event = VenusMonitorHdf5(working_dir=system.System.get_working_dir())
-o_event.define_settings()
+o_event = VenusNexusListPCAboveThreshold(working_dir=system.System.get_working_dir())
+o_event.proton_charge_threshold()
 
-# + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Event NeXus
-# -
+o_event.select_list_nexus()
 
-o_event.select_event_nexus()
+# # Export this list of NeXus with proton charge above threshold
 
-# # Export  
-
-o_event.export_data()
+o_event.export_good_nexus()
 
 

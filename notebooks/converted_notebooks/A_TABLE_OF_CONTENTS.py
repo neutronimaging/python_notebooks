@@ -134,6 +134,14 @@
 # * [scale overlapping images](scale_overlapping_images.ipynb)
 # * [shifting time offset](shifting_time_offset.ipynb)
 
+# # V
+
+# * [Display time delay of chopper and monitor counts for list of NeXus selected](venus_chop_tcero_monitor_counts.ipynb)
+# * [Display monitor counts for a given NeXus file](venus_monitor_hdf5.ipynb)
+# * [list of NeXus with proton charge above a user defined threshold](venus_list_of_nexus_with_pc_above_threshold.ipynb)
+#
+#
+
 # # W
 
 # * [water intake profile_calculator](water_intake_profile_calculator.ipynb)
