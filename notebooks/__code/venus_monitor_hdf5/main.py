@@ -45,28 +45,34 @@ class VenusMonitorHdf5:
                                                        start_dir=start_dir,
                                                        next=self.load_data,
                                                        filters={'NeXus': ".h5"},
-                                                       multiple=False,
+                                                       multiple=True,
                                                        sort_by_time=True,
                                                        sort_in_reverse=True)
         self.nexus_ui.show()
 
-    def load_data(self, nexus_file_name):
+    def load_data(self, list_nexus_file_name):
 
-        try:
+        list_data = {}
 
-            with h5py.File(nexus_file_name, 'r') as nxs:
-                self.nexus_file_name = nexus_file_name
-                self.index = np.array(nxs['entry']['monitor1']['event_index'])
-                self.time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
-                self.time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
+        for _nexus in list_nexus_file_name:
 
-            self.nexus_file_name = nexus_file_name
+            try:
 
-        except KeyError:
-            display(HTML("<font color='red'>Error loading the monitor data!<br>Entry is missing!</font>"))
-            self.index = None
+                with h5py.File(_nexus, 'r') as nxs:
+                    _index = np.array(nxs['entry']['monitor1']['event_index'])
+                    _time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
+                    _time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
 
-        self.display_all_at_once(nexus_file_name)
+                list_data[_nexus] = {'event_index': _index,
+                                     'event_time_offset': _time_offset,
+                                     'event_time_zero': _time_zero}
+
+            except KeyError:
+                display(HTML("<font color='red'>Error loading the monitor data!<br>Entry is missing!</font>"))
+                list_data[_nexus] = None
+
+        self.list_data = list_data
+        self.display_all_at_once()
 
     def define_settings(self):
 
@@ -126,21 +132,23 @@ class VenusMonitorHdf5:
         self.distance_source_detector_m = self.distance_source_detector_ui.value
         self.detector_offset_micros = self.monitor_offset_ui.value
 
-    def calculate_data_tof(self):
+    def calculate_data_tof(self, time_offset=None):
         bins_size = self.bins_size
-        self.histo_tof, bins_tof = np.histogram(self.time_offset, bins=np.arange(0, 2*16666, bins_size))
+        histo_tof, bins_tof = np.histogram(time_offset, bins=np.arange(0, 2*16666, bins_size))
         detector_offset_micros = self.detector_offset_micros
-        self.bins_tof = np.empty_like(bins_tof)
+        _bins_tof = np.empty_like(bins_tof)
         for _index, _bin in enumerate(bins_tof):
-            self.bins_tof[_index] = _bin - detector_offset_micros
+            _bins_tof[_index] = _bin - detector_offset_micros
+        return _bins_tof, histo_tof
 
-    def calculate_data_lambda(self):
-        tof_axis = self.bins_tof[:-1]
-        detector_offset_micros = self.detector_offset_micros
+    def calculate_data_lambda(self, bins_tof=None):
+        tof_axis = bins_tof[:-1]
+        # detector_offset_micros = self.detector_offset_micros
         distance_source_detector_cm = self.distance_source_detector_m * 100.
 
-        self.lambda_axis_angstroms = VenusMonitorHdf5.from_micros_to_lambda(tof_axis_micros=tof_axis,
-                                                                            distance_source_detector_cm=distance_source_detector_cm)
+        lambda_axis_angstroms = VenusMonitorHdf5.from_micros_to_lambda(tof_axis_micros=tof_axis,
+                                                                        distance_source_detector_cm=distance_source_detector_cm)
+        return lambda_axis_angstroms
 
     def calculate_data_energy(self):
         lambda_axis_angstroms = self.lambda_axis_angstroms
@@ -150,33 +158,43 @@ class VenusMonitorHdf5:
     def from_micros_to_lambda(tof_axis_micros, distance_source_detector_cm=2372.6):
         return 0.3954 * (tof_axis_micros) / distance_source_detector_cm
 
-    def display_all_at_once(self, nexus_file_name):
+    def display_all_at_once(self):
 
-        if self.index is None:
-            return
-
-        self.calculate_data_tof()
-        self.calculate_data_lambda()
-        self.calculate_data_energy()
-
-        display(HTML("<br"))
-        display(HTML("<b>Displaying file</b>: " + f"{os.path.basename(nexus_file_name)}"))
-
+        list_data = self.list_data
+        
         plt.rcParams['figure.constrained_layout.use'] = True
-        nexus_file_name = os.path.basename(self.nexus_file_name)
-        fig, ax = plt.subplots(nrows=1, ncols=2, num=f"{nexus_file_name}",
+        fig, ax = plt.subplots(nrows=1, ncols=2, num=f"Nexus Monitors",
                                figsize=(10, 5),
                                )
 
-        ax[0].plot(self.bins_tof[:-1], self.histo_tof)
         ax[0].set_xlabel(u"TOF (\u00B5s)")
         ax[0].set_ylabel("Counts")
         ax[0].set_title(u"Counts vs TOF(\u00B5s)")
 
-        ax[1].plot(self.lambda_axis_angstroms, self.histo_tof, 'r')
         ax[1].set_xlabel(u"Lambda (\u212B)")
         ax[1].set_ylabel("Total counts")
         ax[1].set_title(u"Counts vs lambda (\u212B)")
+
+        for _key in list_data.keys():
+
+            if list_data[_key] is None:
+                continue
+
+            time_offset = list_data[_key]['event_time_offset']
+            bins_tof, histo_tof = self.calculate_data_tof(time_offset=time_offset)
+            lambda_axis_angstroms = self.calculate_data_lambda(bins_tof=bins_tof)
+
+            # self.calculate_data_energy()
+
+            nexus = os.path.basename(_key)
+            ax[0].plot(bins_tof[:-1], histo_tof, label=nexus)
+            ax[1].plot(lambda_axis_angstroms, histo_tof, 'r', label=nexus)
+
+        ax[0].legend()
+        ax[1].legend()
+
+        # display(HTML("<br"))
+        # display(HTML("<b>Displaying file</b>: " + f"{os.path.basename(nexus_file_name)}"))
 
         # ax[2].plot(self.energy_axis_ev, self.histo_tof, '*g')
         # ax[2].set_xlabel("Energy (eV)")
