@@ -62,10 +62,12 @@ class VenusMonitorHdf5:
                     _index = np.array(nxs['entry']['monitor1']['event_index'])
                     _time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
                     _time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
+                    _total_counts = nxs['entry']['monitor1']['total_counts'][()]
 
                 list_data[_nexus] = {'event_index': _index,
                                      'event_time_offset': _time_offset,
-                                     'event_time_zero': _time_zero}
+                                     'event_time_zero': _time_zero,
+                                     'total_counts': _total_counts}
 
             except KeyError:
                 display(HTML("<font color='red'>Error loading the monitor data!<br>Entry is missing!</font>"))
@@ -200,6 +202,10 @@ class VenusMonitorHdf5:
         # ax[2].set_xlabel("Energy (eV)")
         # ax[2].set_ylabel("Total counts")
         # ax[2].set_title("Counts vs Energy (eV)")
+
+        display(HTML("<h2>Total counts:</h2>"))
+        for _key in list_data.keys():
+            print(f"{os.path.basename(_key)}: {self.list_data[_key]['total_counts'][0]}")
 
     def export_data(self):
 
