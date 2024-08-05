@@ -10,6 +10,7 @@ from NeuNorm.normalization import Normalization
 
 from __code import file_handler
 from __code.ipywe import fileselector
+from __code._utilities.system import delete_object
 
 FILE_PREFIX = "image"
 
@@ -184,7 +185,8 @@ class CombineImagesNByN(object):
             metadata = o_load.data['sample']['metadata']
 
             combined_data = CombineImagesNByN.merging_algorithm(algorithm, _data)
-            del o_load
+            o_load = None
+            delete_object(o_load)
 
             output_file_name = CombineImagesNByN.__create_merged_file_name(index=_key)
             o_save = Normalization()
@@ -192,7 +194,8 @@ class CombineImagesNByN(object):
             o_save.data['sample']['metadata'] = metadata
             o_save.data['sample']['file_name'] = [output_file_name]
             o_save.export(folder=output_folder_name, data_type='sample')
-            del o_save
+            o_save = None
+            delete_object(o_save)
 
             global_slider.value += 1
 

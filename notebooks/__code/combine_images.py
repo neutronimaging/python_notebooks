@@ -109,6 +109,7 @@ class CombineImages(object):
         o_load = Normalization()
         o_load.load(file=list_files, notebook=True)
         _data = o_load.data['sample']['data']
+        _metadata = o_load.data['sample']['metadata']
 
         merging_ui = widgets.HBox([widgets.Label("Merging Progress",
                                                  layout=widgets.Layout(width='20%')),
@@ -123,7 +124,7 @@ class CombineImages(object):
         _new_name = self.default_filename_ui.value + self.ext_ui.value
         output_file_name = os.path.join(output_folder, _new_name)
 
-        file_handler.save_data(data=combined_data, filename=output_file_name)
+        file_handler.save_data(data=combined_data, filename=output_file_name, metadata=_metadata[0])
 
         w1.value = 2
 

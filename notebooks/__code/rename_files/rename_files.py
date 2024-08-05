@@ -103,7 +103,9 @@ class NamingSchemaDefinition(object):
         post_index_separator = self.box5.children[1].value
         nbr_digits = self.box7.children[1].value
 
-        schema = prefix + post_index_separator + nbr_digits * '#' + self.str_ext
+        ext = self.box9.children[1].value
+
+        schema = prefix + post_index_separator + nbr_digits * '#' + ext
         return schema
 
     def pre_index_text_changed(self, sender):
@@ -225,6 +227,12 @@ class NamingSchemaDefinition(object):
                                                 layout=widgets.Layout(width='15%')),
                                   widgets.IntText(value=0,
                                                   layout=widgets.Layout(width=box_text_width))])
+        
+        current_ext = self.str_ext
+        self.box9 = widgets.HBox([widgets.Label("Extension",
+                                                layout=widgets.Layout(width='15%')),
+                                  widgets.Text(value=current_ext,
+                                                  layout=widgets.Layout(width=box_text_width))])
 
         self.box6 = widgets.HBox([widgets.Label("New Name Schema: ",
                                                 layout=widgets.Layout(width='20%')),
@@ -235,8 +243,9 @@ class NamingSchemaDefinition(object):
         self.box5.children[1].on_trait_change(self.post_text_changed, 'value')
         self.box7.children[1].on_trait_change(self.post_text_changed, 'value')
         self.box8.children[1].on_trait_change(self.post_text_changed, 'value')
+        self.box9.children[1].on_trait_change(self.post_text_changed, 'value')
 
-        after = widgets.VBox([self.box1, self.box1b, self.box5, self.box7, self.box8, self.box6])
+        after = widgets.VBox([self.box1, self.box1b, self.box5, self.box7, self.box8, self.box9, self.box6])
 
         accordion = widgets.Accordion(children=[before, after])
         accordion.set_title(0, 'Current Schema Name')
@@ -264,7 +273,7 @@ class NamingSchemaDefinition(object):
         self.changed_use_new_prefix_name()
 
     def demo_output_file_name(self):
-        input_file = self.get_basename_of_current_dropdown_selected_file(is_with_ext=True)
+        input_file = self.get_basename_of_current_dropdown_selected_file(is_with_ext=False)
         self.output_ui_2.children[1].value = input_file
 
         old_index_separator = self.get_old_index_separator()
@@ -272,6 +281,7 @@ class NamingSchemaDefinition(object):
         new_index_separator = self.get_new_index_separator()
         new_number_of_digits = self.get_new_number_of_digits()
         offset = self.box8.children[1].value
+        ext = self.box9.children[1].value
         [start_index, end_index] = self.int_range_slider.value
 
         try:
@@ -292,7 +302,8 @@ class NamingSchemaDefinition(object):
                                                    new_prefix_name,
                                                    new_index_separator,
                                                    new_number_of_digits,
-                                                   offset)
+                                                   offset,
+                                                   ext)
 
             self.ready_to_output = True
 
@@ -337,9 +348,10 @@ class NamingSchemaDefinition(object):
                                new_prefix_name,
                                new_index_separator,
                                new_number_of_digits,
-                               offset):
+                               offset,
+                               ext):
 
-        [_pre_extension, _ext] = os.path.splitext(old_file_name)
+        [_pre_extension, _] = os.path.splitext(old_file_name)
         _name_separated = _pre_extension.split(old_index_separator)
 
         if self.user_new_prefix_widget.value == True:
@@ -351,11 +363,11 @@ class NamingSchemaDefinition(object):
             _index = int(_name_separated[-1]) + offset
             new_name = prefix + new_index_separator + \
                        '{:0{}}'.format(_index, new_number_of_digits) + \
-                       _ext
+                       ext
         except ValueError:
             _index = _name_separated[-1]
             new_name = prefix + new_index_separator + \
-                _index + _ext
+                _index + ext
 
         return new_name
 
@@ -372,6 +384,7 @@ class NamingSchemaDefinition(object):
         new_index_separator = self.get_new_index_separator()
         new_number_of_digits = self.get_new_number_of_digits()
         offset = self.box8.children[1].value
+        ext = self.box9.children[1].value
 
         list_of_input_basename_files = [os.path.basename(_file) for _file in list_of_input_files]
 
@@ -384,7 +397,8 @@ class NamingSchemaDefinition(object):
                                                    new_prefix_name,
                                                    new_index_separator,
                                                    new_number_of_digits,
-                                                   offset)
+                                                   offset,
+                                                   ext)
             new_list[list_of_input_files[_file_index]] = new_name
             renaming_result.append("{} \t --> \t {}".format(_file, new_name))
 
