@@ -11,7 +11,7 @@ from NeuNorm.normalization import Normalization
 
 from __code.file_folder_browser import FileFolderBrowser
 from __code import file_handler
-from __code.ipywe import fileselector
+from __code.ipywe import fileselector, myfileselector
 from __code._utilities.string import get_beginning_common_part_of_string_from_list
 from __code._utilities.file import make_or_increment_folder_name
 
@@ -189,14 +189,23 @@ class CombineImagesNByN(object):
         self.bin_size_label.value = message
 
     def select_output_folder(self):
-        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
-                                                                               'combined image ...',
-                                                                   start_dir=self.working_dir,
-                                                                   newdir_toolbar_button=True,
-                                                                   next=self.merging,
-                                                                   type='directory')
-
-        self.output_folder_widget.show()
+        # self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
+        #                                                                        'combined image ...',
+        #                                                            start_dir=self.working_dir,
+        #                                                            newdir_toolbar_button=True,
+        #                                                            next=self.merging,
+        #                                                            type='directory')
+        
+        self.output_folder_widget = myfileselector.FileSelectorPanelWithJumpFolders(
+            instruction='select folder with images to combine',
+            start_dir=self.working_dir,
+            type='directory',
+            next=self.merging,
+            multiple=False,
+            newdir_toolbar_button=True,
+            ipts_folder=self.working_dir,
+            show_jump_to_home=True,
+            show_jump_to_share=True)
 
     def __get_formated_merging_algo_name(self):
         _algo = self.combine_method.value
