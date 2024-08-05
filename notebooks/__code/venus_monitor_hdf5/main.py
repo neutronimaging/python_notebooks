@@ -182,7 +182,10 @@ class VenusMonitorHdf5:
 
             time_offset = list_data[_key]['event_time_offset']
             bins_tof, histo_tof = self.calculate_data_tof(time_offset=time_offset)
+            self.list_data[_key]['bins_tof'] = bins_tof
+            self.list_data[_key]['histo_tof'] = histo_tof
             lambda_axis_angstroms = self.calculate_data_lambda(bins_tof=bins_tof)
+            self.list_data[_key]['lambda_axis_angstroms'] = lambda_axis_angstroms
 
             # self.calculate_data_energy()
 
@@ -192,9 +195,6 @@ class VenusMonitorHdf5:
 
         ax[0].legend()
         ax[1].legend()
-
-        # display(HTML("<br"))
-        # display(HTML("<b>Displaying file</b>: " + f"{os.path.basename(nexus_file_name)}"))
 
         # ax[2].plot(self.energy_axis_ev, self.histo_tof, '*g')
         # ax[2].set_xlabel("Energy (eV)")
@@ -208,31 +208,34 @@ class VenusMonitorHdf5:
                                                               type='directory',
                                                               next=self.export,
                                                               ipts_folder=self.working_dir,
+                                                              newdir_toolbar_button=True,
                                                               )
         
     def export(self, output_folder=None):
 
-        base_nexus_file_name = os.path.basename(self.nexus_file_name)
-        split_nexus_file_name = base_nexus_file_name.split(".")
-        output_file_name = f"{split_nexus_file_name[0]}_monitor_data.txt"
-        full_output_file_name = os.path.join(output_folder, output_file_name)
+        for _nexus in self.list_data.keys():
 
-        tof_axis = self.bins_tof
-        lambda_axis = self.lambda_axis_angstroms
-        y_axis = self.histo_tof
+            base_nexus_file_name = os.path.basename(_nexus)
+            split_nexus_file_name = base_nexus_file_name.split(".")
+            output_file_name = f"{split_nexus_file_name[0]}_monitor_data.txt"
+            full_output_file_name = os.path.join(output_folder, output_file_name)
 
-        metadata_array = [f"# tof (\u00B5s), \u03BB (\u212B), Counts",
-                          f"# nexus: {base_nexus_file_name}",
-                          f"# IPTS: {self.working_dir}"]
-        output_array = []
-        for _t, _l, _y in zip(tof_axis, lambda_axis, y_axis):
-            output_array.append([_t, _l, _y])
+            tof_axis = self.list_data[_nexus]['bins_tof']
+            lambda_axis = self.list_data[_nexus]['lambda_axis_angstroms']
+            y_axis = self.list_data[_nexus]['histo_tof']
 
-        make_ascii_file(data=output_array,
-                        metadata=metadata_array,
-                        dim='2d',
-                        sep=',',
-                        output_file_name=full_output_file_name,
-        )
+            metadata_array = [f"# tof (\u00B5s), \u03BB (\u212B), Counts",
+                            f"# nexus: {base_nexus_file_name}",
+                            f"# IPTS: {self.working_dir}"]
+            output_array = []
+            for _t, _l, _y in zip(tof_axis, lambda_axis, y_axis):
+                output_array.append([_t, _l, _y])
 
-        display(HTML(f"Data have been exported in {full_output_file_name}"))
+            make_ascii_file(data=output_array,
+                            metadata=metadata_array,
+                            dim='2d',
+                            sep=',',
+                            output_file_name=full_output_file_name,
+            )
+
+            display(HTML(f"Data have been exported in {full_output_file_name}"))
