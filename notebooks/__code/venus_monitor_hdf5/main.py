@@ -134,9 +134,9 @@ class VenusMonitorHdf5:
         self.distance_source_detector_m = self.distance_source_detector_ui.value
         self.detector_offset_micros = self.monitor_offset_ui.value
 
-    def calculate_data_tof(self, time_offset=None):
+    def calculate_data_tof(self, time_offset=None, max_bin=2*16666):
         bins_size = self.bins_size
-        histo_tof, bins_tof = np.histogram(time_offset, bins=np.arange(0, 2*16666, bins_size))
+        histo_tof, bins_tof = np.histogram(time_offset, bins=np.arange(0, max_bin, bins_size))
         detector_offset_micros = self.detector_offset_micros
         _bins_tof = np.empty_like(bins_tof)
         for _index, _bin in enumerate(bins_tof):
@@ -165,47 +165,117 @@ class VenusMonitorHdf5:
         list_data = self.list_data
         
         plt.rcParams['figure.constrained_layout.use'] = True
-        fig, ax = plt.subplots(nrows=1, ncols=2, num=f"Nexus Monitors",
-                               figsize=(10, 5),
+        # fig, ax = plt.subplots(nrows=1, ncols=2, num=f"Nexus Monitors",
+        #                        figsize=(10, 5),
+        #                        )
+
+        # ax[0].set_xlabel(u"TOF (\u00B5s)")
+        # ax[0].set_ylabel("Counts")
+        # ax[0].set_title(u"Counts vs TOF(\u00B5s)")
+
+        # ax[1].set_xlabel(u"Lambda (\u212B)")
+        # ax[1].set_ylabel("Total counts")
+        # ax[1].set_title(u"Counts vs lambda (\u212B)")
+
+        def plot_data(max_bin):
+            fig, ax = plt.subplots(nrows=2, ncols=1, num=f"Nexus Monitors",
+                               figsize=(10, 10),
                                )
 
-        ax[0].set_xlabel(u"TOF (\u00B5s)")
-        ax[0].set_ylabel("Counts")
-        ax[0].set_title(u"Counts vs TOF(\u00B5s)")
+            ax[0].set_xlabel(u"TOF (\u00B5s)")
+            ax[0].set_ylabel("Counts")
+            ax[0].set_title(u"Counts vs TOF(\u00B5s)")
 
-        ax[1].set_xlabel(u"Lambda (\u212B)")
-        ax[1].set_ylabel("Total counts")
-        ax[1].set_title(u"Counts vs lambda (\u212B)")
+            ax[1].set_xlabel(u"Lambda (\u212B)")
+            ax[1].set_ylabel("Total counts")
+            ax[1].set_title(u"Counts vs lambda (\u212B)")
 
-        for _key in list_data.keys():
 
-            if list_data[_key] is None:
-                continue
+            for _key in list_data.keys():
 
-            time_offset = list_data[_key]['event_time_offset']
-            bins_tof, histo_tof = self.calculate_data_tof(time_offset=time_offset)
-            self.list_data[_key]['bins_tof'] = bins_tof
-            self.list_data[_key]['histo_tof'] = histo_tof
-            lambda_axis_angstroms = self.calculate_data_lambda(bins_tof=bins_tof)
-            self.list_data[_key]['lambda_axis_angstroms'] = lambda_axis_angstroms
+                if list_data[_key] is None:
+                    continue
 
-            # self.calculate_data_energy()
+                time_offset = list_data[_key]['event_time_offset']
+                bins_tof, histo_tof = self.calculate_data_tof(time_offset=time_offset,
+                                                              max_bin=max_bin)
+                self.list_data[_key]['bins_tof'] = bins_tof
+                self.list_data[_key]['histo_tof'] = histo_tof
+                lambda_axis_angstroms = self.calculate_data_lambda(bins_tof=bins_tof)
+                self.list_data[_key]['lambda_axis_angstroms'] = lambda_axis_angstroms
 
-            nexus = os.path.basename(_key)
-            ax[0].plot(bins_tof[:-1], histo_tof, label=nexus)
-            ax[1].plot(lambda_axis_angstroms, histo_tof, 'r', label=nexus)
+                # self.calculate_data_energy()
 
-        ax[0].legend()
-        ax[1].legend()
+                nexus = os.path.basename(_key)
+                #ax[0].plot(bins_tof[:-1], histo_tof, label=nexus)
+                ax[0].semilogy(bins_tof[:-1], histo_tof, label=nexus)
+                ax[1].plot(lambda_axis_angstroms, histo_tof, 'r', label=nexus)
 
-        # ax[2].plot(self.energy_axis_ev, self.histo_tof, '*g')
-        # ax[2].set_xlabel("Energy (eV)")
-        # ax[2].set_ylabel("Total counts")
-        # ax[2].set_title("Counts vs Energy (eV)")
+            ax[0].legend()
+            ax[1].legend()
+            plt.show()
 
-        display(HTML("<h2>Total counts:</h2>"))
-        for _key in list_data.keys():
-            print(f"{os.path.basename(_key)}: {self.list_data[_key]['total_counts'][0]}")
+            # ax[2].plot(self.energy_axis_ev, self.histo_tof, '*g')
+            # ax[2].set_xlabel("Energy (eV)")
+            # ax[2].set_ylabel("Total counts")
+            # ax[2].set_title("Counts vs Energy (eV)")
+
+            display(HTML("<h2>Total counts:</h2>"))
+            for _key in list_data.keys():
+                print(f"{os.path.basename(_key)}: {self.list_data[_key]['total_counts'][0]}")
+
+        display_all = interactive(plot_data,
+                                  max_bin=widgets.IntSlider(min=16666,
+                                                            max=5*16666,
+                                                            value=3*16666))
+        display(display_all)
+
+# def display_all_at_once(self):
+
+#         list_data = self.list_data
+        
+#         plt.rcParams['figure.constrained_layout.use'] = True
+#         fig, ax = plt.subplots(nrows=1, ncols=2, num=f"Nexus Monitors",
+#                                figsize=(10, 5),
+#                                )
+
+#         ax[0].set_xlabel(u"TOF (\u00B5s)")
+#         ax[0].set_ylabel("Counts")
+#         ax[0].set_title(u"Counts vs TOF(\u00B5s)")
+
+#         ax[1].set_xlabel(u"Lambda (\u212B)")
+#         ax[1].set_ylabel("Total counts")
+#         ax[1].set_title(u"Counts vs lambda (\u212B)")
+
+#         for _key in list_data.keys():
+
+#             if list_data[_key] is None:
+#                 continue
+
+#             time_offset = list_data[_key]['event_time_offset']
+#             bins_tof, histo_tof = self.calculate_data_tof(time_offset=time_offset)
+#             self.list_data[_key]['bins_tof'] = bins_tof
+#             self.list_data[_key]['histo_tof'] = histo_tof
+#             lambda_axis_angstroms = self.calculate_data_lambda(bins_tof=bins_tof)
+#             self.list_data[_key]['lambda_axis_angstroms'] = lambda_axis_angstroms
+
+#             # self.calculate_data_energy()
+
+#             nexus = os.path.basename(_key)
+#             ax[0].plot(bins_tof[:-1], histo_tof, label=nexus)
+#             ax[1].plot(lambda_axis_angstroms, histo_tof, 'r', label=nexus)
+
+#         ax[0].legend()
+#         ax[1].legend()
+
+#         # ax[2].plot(self.energy_axis_ev, self.histo_tof, '*g')
+#         # ax[2].set_xlabel("Energy (eV)")
+#         # ax[2].set_ylabel("Total counts")
+#         # ax[2].set_title("Counts vs Energy (eV)")
+
+#         display(HTML("<h2>Total counts:</h2>"))
+#         for _key in list_data.keys():
+#             print(f"{os.path.basename(_key)}: {self.list_data[_key]['total_counts'][0]}")
 
     def export_data(self):
 
