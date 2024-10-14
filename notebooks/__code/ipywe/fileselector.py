@@ -48,6 +48,7 @@ class FileSelectorPanel:
             stay_alive=False,
             sort_by_time=False,
             sort_in_reverse=False,
+            sort_by_alphabetical=True,
     ):
         """
         Create FileSelectorPanel instance
@@ -73,6 +74,8 @@ class FileSelectorPanel:
             if True, the fileselector won't disappear after selection of a file/directory
         sort_by_time: bool (False by default)
             the files listed will be sorted according to their creating date
+        sort_by_alphabetical: bool (True by default)
+            the files listed will be sorted according to their name
         sort_in_reverse: bool (False by default)
             the files are sorted in their decreasing order
 
@@ -98,6 +101,7 @@ class FileSelectorPanel:
 
         self.sort_by_time = sort_by_time
         self.sort_in_reverse = sort_in_reverse
+        self.sort_by_alphabetical = sort_by_alphabetical
 
         self.createPanel(os.path.abspath(start_dir))
         self.next = next
@@ -183,6 +187,10 @@ class FileSelectorPanel:
             entries_files = sorted(os.listdir(curdir))
             entries_files = [_f for _f in entries_files if (self.searching_string in _f)]
         #
+
+        # if self.sort_by_alphabetical:
+        #     entries_files.sort(reverse=self.sort_in_reverse)
+        
         entries_paths = [os.path.join(curdir, e) for e in entries_files]
         if self.sort_by_time:
             entries_paths.sort(key=os.path.getctime, reverse=self.sort_in_reverse)
@@ -195,7 +203,7 @@ class FileSelectorPanel:
     def createSelectWidget(self):
         entries = self.getEntries()
         if not self.sort_by_time:
-            entries.sort()
+            entries.sort(reverse=self.sort_in_reverse)
 
         self._entries = entries = [' .', ' ..', ] + entries
         if self.multiple:

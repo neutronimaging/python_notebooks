@@ -46,8 +46,8 @@ class VenusMonitorHdf5:
                                                        next=self.load_data,
                                                        filters={'NeXus': ".h5"},
                                                        multiple=True,
-                                                       sort_by_time=True,
-                                                       sort_in_reverse=True)
+                                                       sort_in_reverse=True,
+                                                       sort_by_alphabetical=True)
         self.nexus_ui.show()
 
     def load_data(self, list_nexus_file_name):
