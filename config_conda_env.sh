@@ -25,7 +25,7 @@ conda install -y      \
 # install dependencies from conda-forge
 conda install -y -c conda-forge \
     ipywe \
-    lmfit 
+    lmfit
 
 conda install -c conda-forge nbstripout
 
