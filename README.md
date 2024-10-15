@@ -1,4 +1,4 @@
-# Python Notebooks [![Build Status](https://www.travis-ci.com/neutronimaging/python_notebooks.svg?branch=master)](https://www.travis-ci.com/neutronimaging/python_notebooks) [![DOI](https://zenodo.org/badge/99945953.svg)](https://zenodo.org/badge/latestdoi/99945953)
+# Python Notebooks [![DOI](https://zenodo.org/badge/99945953.svg)](https://zenodo.org/badge/latestdoi/99945953)
 
 
 
