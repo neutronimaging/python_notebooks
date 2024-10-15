@@ -1,4 +1,4 @@
-# Python Notebooks [![Build Status](https://www.travis-ci.com/neutronimaging/python_notebooks.svg?branch=master)](https://www.travis-ci.com/neutronimaging/python_notebooks) [![DOI](https://zenodo.org/badge/99945953.svg)](https://zenodo.org/badge/latestdoi/99945953)
+# Python Notebooks [![DOI](https://zenodo.org/badge/99945953.svg)](https://zenodo.org/badge/latestdoi/99945953)
 
 
 
@@ -12,6 +12,13 @@ Full tutorial of most of the notebooks can be found at [here](https://neutronima
 To learn how to access or install the notebooks, and how to run them, refer to the complete tutorial found on our imaging web site https://neutronimaging.pages.ornl.gov
 
 ![Screen Shot 2021-06-11 at 8 03 33 AM](https://user-images.githubusercontent.com/1138324/121683900-000cc080-ca8c-11eb-815f-5ff52731dba7.png)
+
+## Instrument References
+For more information about the facility and instruments, navigate to the following links:
+- [ORNL Neutron Imaging Website](https://neutronimaging.ornl.gov/)
+- [Multimodal Advanced Radiography Station (MARS)](https://neutrons.ornl.gov/mars)
+- [Versatile Neutron Imaging Instrument (VENUS)](https://neutrons.ornl.gov/venus)
+
 
 ## How to contribute back
 
@@ -51,8 +58,8 @@ $ cd notebooks
 $ export PYTHONPATH=$PWD:$PYTHONPATH
 $ pytest
 ```
-## Deployment repos
+## Deployment
 
-- Repo in charge of deploying the notebooks: [jupyter-notebooks-deploy](https://code.ornl.gov/sns-hfir-scse/deployments/jupyter-notebooks-deploy)
-- Repo in charge of updating the conda environments in target machines (such as the analysis
-  cluster and the jupyter-notebooks nodes): [imaging-conda-deploy](https://code.ornl.gov/sns-hfir-scse/deployments/imaging-conda-deploy)
+An updated deployment strategy is underway.
+
+Currently, notebooks are distributed directly by the Computational Instrument Scientist.

@@ -17,15 +17,11 @@ repos:
   hooks:
     - id: ruff
       args: [--fix, --exit-non-zero-on-fix]
-      exclude: |
-        "tests/cis_tests/.*"
-        "notebooks/"
+      exclude: "tests/cis_tests/.*"
     - id: ruff-format
-      exclude: |
-        "tests/cis_tests/.*"
-        "notebooks/"
+      exclude: "tests/cis_tests/.*"
 - repo: https://github.com/codespell-project/codespell
   rev: v2.3.0
   hooks:
     - id: codespell
-      exclude: "notebooks/"
+exclude: "notebooks/"
