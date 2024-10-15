@@ -1,0 +1,31 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0
+  hooks:
+    - id: check-added-large-files
+      args: [--maxkb=8192]
+    - id: check-merge-conflict
+    - id: check-yaml
+      args: [--allow-multiple-documents]
+      exclude: "conda.recipe/meta.yaml"
+    - id: end-of-file-fixer
+      exclude: "tests/cis_tests/.*"
+    - id: trailing-whitespace
+      exclude: "tests/cis_tests/.*"
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.6.3
+  hooks:
+    - id: ruff
+      args: [--fix, --exit-non-zero-on-fix]
+      exclude: |
+        "tests/cis_tests/.*"
+        "notebooks/"
+    - id: ruff-format
+      exclude: |
+        "tests/cis_tests/.*"
+        "notebooks/"
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.3.0
+  hooks:
+    - id: codespell
+      exclude: "notebooks/"

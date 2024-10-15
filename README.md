@@ -4,7 +4,7 @@
 
 
 
-This reporsitory provides various notebooks for users of the neutron imaging beamlines at ORNL. 
+This repository provides various notebooks for users of the neutron imaging beamlines at ORNL.
 Full tutorial of most of the notebooks can be found at [here](https://neutronimaging.pages.ornl.gov/tutorial/).
 
 ## Instructions
@@ -15,7 +15,7 @@ To learn how to access or install the notebooks, and how to run them, refer to t
 
 ## How to contribute back
 
-You can contribute back to this repo by 
+You can contribute back to this repo by
 * fork it to your own account
 * make the necessary adjustments
 * make a pull request on Github.
@@ -24,7 +24,7 @@ The maintainer of this repo will review your changes and provided feedback if ne
 A more detailed instructions can be found in this [post by DataSchool](https://www.dataschool.io/how-to-contribute-on-github/).
 
 
-<!-- ## for developpers ##
+<!-- ## for developers ##
 
 Before pushing any changes you made, clean up the notebook by running the command
 ```
@@ -32,7 +32,7 @@ Before pushing any changes you made, clean up the notebook by running the comman
 ```
 
 and before pushing to repository
-```  
+```
 $ python before_and_after_github_script.py -a
 ```
 

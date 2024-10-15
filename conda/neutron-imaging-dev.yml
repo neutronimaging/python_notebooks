@@ -8,6 +8,7 @@ dependencies:
   - python
   - requests
   - requests-oauthlib
+  - pre-commit
   # Compute
   - astropy
   - scipy
