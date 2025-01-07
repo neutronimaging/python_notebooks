@@ -14,9 +14,10 @@ class Export:
 
     def __init__(self, parent=None):
         self.parent = parent
+        self.working_dir = self.parent.working_dir
 
     def run(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
+        _export_folder = QFileDialog.getExistingDirectory(self.parent,
                                                           directory=self.working_dir,
                                                           caption="Select Output Folder",
                                                           options=QFileDialog.ShowDirsOnly)
@@ -27,7 +28,7 @@ class Export:
             # append "registered" and "time_stamp"
             full_output_folder_name = os.path.join(_export_folder, working_dir_basename + "_registered")
             full_output_folder_name = make_or_increment_folder_name(full_output_folder_name)
-            o_export = ExportRegistration(parent=self, export_folder=full_output_folder_name)
+            o_export = ExportRegistration(parent=self.parent, export_folder=full_output_folder_name)
             o_export.run()
             QApplication.processEvents()
 
