@@ -46,6 +46,7 @@ class VenusMonitorHdf5:
                                                        next=self.load_data,
                                                        filters={'NeXus': ".h5"},
                                                        multiple=True,
+                                                       stay_alive=False,
                                                        sort_in_reverse=True,
                                                        sort_by_alphabetical=True)
         self.nexus_ui.show()
@@ -209,7 +210,7 @@ class VenusMonitorHdf5:
                 nexus = os.path.basename(_key)
                 #ax[0].plot(bins_tof[:-1], histo_tof, label=nexus)
                 ax[0].semilogy(bins_tof[:-1], histo_tof, label=nexus)
-                ax[1].plot(lambda_axis_angstroms, histo_tof, 'r', label=nexus)
+                ax[1].plot(lambda_axis_angstroms, histo_tof, label=nexus)
 
             ax[0].legend()
             ax[1].legend()
