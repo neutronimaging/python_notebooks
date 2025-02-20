@@ -73,12 +73,15 @@ class VenusDisplayMetadataFromHdf5:
      
         list_nexus = []
         list_mean_data = {_key: [] for _key in list_pvs.keys()}
-        dict_data = {_nexus: {} for _nexus in list_nexus_file_name}
+      
+        dict_data = {os.path.basename(_nexus).split(".")[0]: {} for _nexus in list_nexus_file_name}
 
         for _nexus in list_nexus_file_name:
-            
-            dict_data[_nexus] = {}
-            list_nexus.append(os.path.basename(_nexus))
+                      
+            _base_nexus = os.path.basename(_nexus)
+            _split_base_nexus = _base_nexus.split(".")
+            _short_name_nexus = _split_base_nexus[0]
+            list_nexus.append(os.path.basename(_short_name_nexus))
             
             for _pv_key in list_pvs.keys():
                 _pv_path = list_pvs[_pv_key]['path']
@@ -87,33 +90,43 @@ class VenusDisplayMetadataFromHdf5:
                     _value = VenusDisplayMetadataFromHdf5.value_of_pv_path(_nexus, _pv_path)
                     _mean_value = VenusDisplayMetadataFromHdf5.mean_value_of_pv_path(_nexus, _pv_path)
                     list_mean_data[_pv_key].append(_mean_value)
-                    dict_data[_nexus][_pv_key] = _value
+                    dict_data[_short_name_nexus][_pv_key] = _value
                     logging.info(f"{_pv_label}: {_mean_value}")
                 except KeyError:
-                    logging.error(f"Error loading {_pv_label} from {_nexus}")
+                    logging.error(f"Error loading {_pv_label} from {_short_name_nexus}")
                     _value = None
                     list_mean_data[_pv_key].append(None)        
-                    dict_data[_nexus][_pv_key] = None  
+                    dict_data[_short_name_nexus][_pv_key] = None  
 
         self.dict_data = dict_data
         self.list_mean_data = list_mean_data
+        self.list_nexus = list_nexus
         self.display_metadata()
 
     def display_metadata(self):
 
         fig, axs = plt.subplots(nrows=len(list_pvs.keys()), ncols=2, num="Venus Metadata",
-                                figsize=(8, 4*len(list_pvs.keys())),
+                                figsize=(12, 4*len(list_pvs.keys())),
                                 )
         
         for _index, _pv_key in enumerate(self.list_mean_data.keys()):
             
-            axs[_index, 0].plot(self.list_mean_data[_pv_key], 'o-', label=_pv_key)
-            axs[_index, 0].set_title(f"{list_pvs[_pv_key]['label']}")
+            axs[_index, 0].plot(self.list_mean_data[_pv_key], 'o-')
+            axs[_index, 0].set_title(f"Mean {list_pvs[_pv_key]['label']}")
             axs[_index, 0].set_ylabel(list_pvs[_pv_key]['label'])
             axs[_index, 0].set_xlabel("Nexus file index")
+            axs[_index, 0].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=45)
             axs[_index, 0].legend()
        
-            axs[_index, 1].plot(self.)
+            for _nexus in self.dict_data.keys():
+                _data = self.dict_data[_nexus][_pv_key]
+                if _data is not None:
+                    axs[_index, 1].plot(_data, '.-', label=os.path.basename(_nexus))
+                    axs[_index, 1].set_xlabel("value index")
+                    axs[_index, 1].set_ylabel(list_pvs[_pv_key]['label'])
+                    axs[_index, 1].set_title(f"full {list_pvs[_pv_key]['label']} ")
+                    axs[_index, 1].legend()
+            # axs[_index, 1].set_title(f"{list_pvs[_pv_key]['label']} vs. time")
 
         plt.tight_layout()
         plt.show()
