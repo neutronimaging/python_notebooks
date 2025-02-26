@@ -1,0 +1,43 @@
+name: python313_jupyter_notebooks
+channels:
+  - conda-forge
+  - neutronimaging
+dependencies:
+  - python>=3.10
+  - nodejs=15.14.0
+  - requests
+  - requests-oauthlib
+  - numpy
+  - scipy
+  - pandas
+  - scikit-image
+  - matplotlib
+  - plotly
+  - jupyter
+  - jupyterlab
+  - qtpy
+  - pyqtgraph
+  - inflect
+  - astropy
+  - ipywe
+  - lmfit
+  - nbstripout
+  # - pyoncat
+  - pip:
+    - chardet
+    - h5py
+    - algotom
+    - neutronbraggedge
+    - NeuNorm
+    - sectorizedradialprofile
+    - ImagingReso
+    - ipywidgets
+    - changepy
+    - tqdm
+    - werkzeug==2.0.1
+    - pystackreg
+
+# # build Jupyter lab
+# jupyter labextension install @jupyter-widgets/jupyterlab-manager
+# jupyter nbextension enable --py widgetsnbextension
+# jupyter lab build
