@@ -13,6 +13,7 @@ from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 
 from __code._utilities.file import get_full_home_file_name
 from __code._utilities.file import make_ascii_file
+from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code._utilities import LAMBDA, MICRO, ANGSTROMS
 from __code.ipywe import fileselector
 from __code.file_folder_browser import FileFolderBrowser
@@ -62,7 +63,7 @@ class VenusMonitorHdf5:
                 with h5py.File(_nexus, 'r') as nxs:
                     _index = np.array(nxs['entry']['monitor1']['event_index'])
                     _time_offset = np.array(nxs['entry']['monitor1']['event_time_offset'])
-                    _time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])
+                    _time_zero = np.array(nxs['entry']['monitor1']['event_time_zero'])*10  # to convert to 100ns units
                     _total_counts = nxs['entry']['monitor1']['total_counts'][()]
 
                 list_data[_nexus] = {'event_index': _index,
@@ -81,6 +82,7 @@ class VenusMonitorHdf5:
 
         # bins
         bins_label = widgets.Label(u"Bins size (\u00B5s)")
+        bins_label = widgets.Label(u"Bins size (100ns)")
         self.bins_ui = widgets.IntSlider(min=1,
                                     max=10000,
                                     value=100)
@@ -292,12 +294,14 @@ class VenusMonitorHdf5:
 
         for _nexus in self.list_data.keys():
 
+            output_folder = os.path.abspath(output_folder)
             base_nexus_file_name = os.path.basename(_nexus)
             split_nexus_file_name = base_nexus_file_name.split(".")
-            output_file_name = f"{split_nexus_file_name[0]}_monitor_data.txt"
+            time_stamp = get_current_time_in_special_file_name_format()
+            output_file_name = f"{split_nexus_file_name[0]}_monitor_data_{time_stamp}.txt"
             full_output_file_name = os.path.join(output_folder, output_file_name)
 
-            tof_axis = self.list_data[_nexus]['bins_tof']
+            tof_axis = self.list_data[_nexus]['bins_tof']/10
             lambda_axis = self.list_data[_nexus]['lambda_axis_angstroms']
             y_axis = self.list_data[_nexus]['histo_tof']
 
