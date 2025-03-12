@@ -17,7 +17,7 @@ from __code._utilities.color import Color
 from __code._utilities.table_handler import TableHandler
 from __code.profile.initialization import Initializer
 from __code.profile.display import DisplayImages
-from __code.profile.export import ExportProfiles
+from __code.profile.export import ExportProfiles, ExportAverageROI
 from __code.profile.guide_and_profile_rois_handler import GuideAndProfileRoisHandler
 
 
@@ -57,7 +57,7 @@ class ProfileUi(QMainWindow):
 
     # default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
     #                               'width': 200, 'height': 200}
-    default_profile_width_values = np.arange(1, 50, 2)
+    default_profile_width_values = np.arange(1, 300, 2)
 
     # remove-me
     test_roi = None
@@ -364,6 +364,14 @@ class ProfileUi(QMainWindow):
             self.ui.tableWidget.setItem(row, col, item)
             # self.ui.tableWidget.blockSignals(False)
 
+    def get_full_roi_dimension(self, row=-1):   
+        """return the dimension of the full region surrounding the ROI (red rectangle)"""
+        [x0, y0, width, height] = self.get_item_row(row=row)
+        
+        roi = collections.namedtuple('roi', ['x0', 'y0', 'width', 'height'])
+        result = roi(x0, y0, width, height)
+        return result
+
     def get_profile_dimensions(self, row=-1):
         is_x_profile_direction = self.ui.profile_direction_x_axis.isChecked()
         [x0, y0, width, height] = self.get_item_row(row=row)
@@ -627,6 +635,11 @@ class ProfileUi(QMainWindow):
             o_export = ExportProfiles(parent=self,
                                       export_folder=_export_folder)
             o_export.run()
+ 
+            o_average = ExportAverageROI(parent=self,
+                                         export_folder=_export_folder)
+            o_average.run()
+
             QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
