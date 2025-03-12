@@ -680,7 +680,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Export Profiles ...</string>
+         <string>Export Profiles and Average Counts of ROIs ...</string>
         </property>
        </widget>
       </item>
