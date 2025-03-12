@@ -4,6 +4,7 @@ from IPython.core.display import HTML
 from IPython.core.display import display
 
 from __code.file_handler import make_ascii_file
+from __code._utilities.time import get_current_time_in_special_file_name_format
 
 
 class ExportProfiles(object):
@@ -14,7 +15,9 @@ class ExportProfiles(object):
 
     def _create_output_file_name(self, profile_index=0):
         base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index + 1))
+        output_file_name = os.path.join(self.export_folder, "{}_profile_{}_{}.txt".format(base_name, 
+                                                                                          profile_index + 1, 
+                                                                                          get_current_time_in_special_file_name_format()))
         return output_file_name
 
     def _create_metadata(self, profile_index=0):
@@ -124,7 +127,9 @@ class ExportAverageROI:
 
     def _create_output_file_name(self, roi_index=0):
         base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, "{}_mean_counts_{}.txt".format(base_name, roi_index + 1))
+        output_file_name = os.path.join(self.export_folder, "{}_mean_counts_{}_{}.txt".format(base_name, 
+                                                                                              roi_index + 1, 
+                                                                                              get_current_time_in_special_file_name_format()))
         return output_file_name
 
     def run(self):
@@ -141,6 +146,7 @@ class ExportAverageROI:
 
             _data_output = []
             for _index, _data in enumerate(self.parent.data_dict['data']):
+                
                 _data_roi = _data[_y0:_y0+_height, _x0:_x0+_width]
                 _mean = np.mean(_data_roi)
                 _basename = os.path.basename(self.parent.data_dict['file_name'][_index])
@@ -154,4 +160,6 @@ class ExportAverageROI:
                             data=_data_output,
                             output_file_name=output_file_name,
                             dim='1d')
+
+            display(HTML(f"Exported mean of ROI #{_roi_index} file {output_file_name}"))
 
