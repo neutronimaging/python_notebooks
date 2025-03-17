@@ -95,7 +95,7 @@ class VenusDisplayMetadataFromHdf5:
             axs[_index, 0].set_title(f"Mean {list_pvs[_pv_key]['label']}")
             axs[_index, 0].set_ylabel(list_pvs[_pv_key]['label'])
             axs[_index, 0].set_xlabel("Nexus file index")
-            axs[_index, 0].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=45)
+            axs[_index, 0].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=90)
             axs[_index, 0].legend()
        
             for _nexus in self.dict_data.keys():
@@ -123,7 +123,7 @@ class VenusDisplayMetadataFromHdf5:
             axs[_index, 0].set_title(f"Mean {list_pvs[_pv_key]['label']}")
             axs[_index, 0].set_ylabel(list_pvs[_pv_key]['label'])
             axs[_index, 0].set_xlabel("Nexus file index")
-            axs[_index, 0].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=45)
+            axs[_index, 0].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=90)
             axs[_index, 0].legend()
     
             axs[_index, 1].plot(self.list_mean_data_second_set[_pv_key], 'o-', color='red', label=self.legend_second_set_ui.value)
@@ -132,7 +132,7 @@ class VenusDisplayMetadataFromHdf5:
             axs[_index, 1].set_xlabel("Nexus file index")
             axs[_index, 1].set_xticks(range(len(self.list_mean_data_second_set[_pv_key])), 
                                       labels=self.list_nexus_second_set,
-                                        rotation=45)
+                                        rotation=90)
             axs[_index, 1].legend()
            
         plt.tight_layout()
@@ -150,7 +150,7 @@ class VenusDisplayMetadataFromHdf5:
                 axs[_index].set_title(f"Mean {list_pvs[_pv_key]['label']}")
                 axs[_index].set_ylabel(list_pvs[_pv_key]['label'])
                 axs[_index].set_xlabel("Nexus file index")
-                axs[_index].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=45)
+                axs[_index].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=90)
                 axs[_index].legend()
               
             plt.tight_layout()
