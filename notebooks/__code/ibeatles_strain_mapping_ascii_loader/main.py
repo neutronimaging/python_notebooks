@@ -44,7 +44,7 @@ class Main:
                                                                                                   'has been loaded !</span>'))
 
     def import_ascii(self):
-        self.file_object = pd.read_csv(self.ascii_filename, sep=', ')
+        self.file_object = pd.read_csv(self.ascii_filename, sep=', ', skiprows=7)
 
     def preview_ascii(self):
         print(self.file_object)
