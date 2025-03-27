@@ -5,18 +5,14 @@ import os
 import numbers
 import ipywe.fileselector
 
-try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
-except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout
+from qtpy import QtGui
 
 #from neutronbraggedge.experiment_handler import *
 from NeuNorm.normalization import Normalization
+from neutronbraggedge.experiment_handler import *
 
+from __code import load_ui
 from __code.ui_display_counts_of_region_vs_stack import Ui_MainWindow as UiMainWindow
 
 
@@ -49,8 +45,11 @@ class ImageWindow(QMainWindow):
         self.load_data()
 
         QMainWindow.__init__(self, parent=parent)
-        self.ui = UiMainWindow()
-        self.ui.setupUi(self)
+
+        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                    os.path.join('ui',
+                                                 'ui_display_counts_of_region_vs_stack.ui'))
+        self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Select ROI to display profile over all images.")
 
         #self.stack = np.array(stack)
@@ -129,7 +128,7 @@ class ImageWindow(QMainWindow):
         self.counts_vs_index.plot()
         d2.addWidget(self.counts_vs_index)
 
-        vertical_layout = QtGui.QVBoxLayout()
+        vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(area)
 
         self.ui.widget.setLayout(vertical_layout)
