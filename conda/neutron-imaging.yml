@@ -44,7 +44,6 @@ dependencies:
   # neutronimaging + pip_only_deps
   - pip:
     - git+https://github.com/JeanBilheux/changepy@master#egg=changepy
-    - ipywe==0.1.3a1
     - neutronbraggedge==2.0.6
     - sectorizedradialprofile
     - ImagingReso==1.7.5

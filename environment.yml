@@ -19,7 +19,6 @@ dependencies:
   - pyqtgraph
   - inflect
   - astropy
-  - ipywe
   - lmfit
   - nbstripout
   # - pyoncat
