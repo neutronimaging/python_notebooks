@@ -1,4 +1,4 @@
-debugging = True
+debugging = False
 debugger_username = 'j35'
 debugger_folder = ['/Volumes/JeanHardDrive/', '/Users/j35/', '/Volumes/Buffalo/IPTS/', '/Users/j35/IPTS/']
 project_folder = 'IPTS_16259'
