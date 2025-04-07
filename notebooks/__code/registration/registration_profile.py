@@ -90,8 +90,8 @@ class RegistrationProfileUi(QMainWindow):
               'vertical': [],
              }
 
-    roi = {'vertical': {'x0': 1000,
-                        'y0': 1000,
+    roi = {'vertical': {'x0': 50,
+                        'y0': 50,
                         'width': 50,
                         'length': 500,
                         'max_width': 50,
@@ -103,8 +103,8 @@ class RegistrationProfileUi(QMainWindow):
                         'yaxis': [],
                         'profiles': {},
                         },
-           'horizontal': {'x0': 500,
-                          'y0': 500,
+           'horizontal': {'x0': 100,
+                          'y0': 100,
                           'length': 500,
                           'width': 50,
                           'max_length': 500,
@@ -156,7 +156,7 @@ class RegistrationProfileUi(QMainWindow):
 
         self._display_selected_row()
         self._check_widgets()
-
+ 
         self.update_hori_verti_profile_plot_of_selected_file()
 
     ## Initialization
@@ -544,10 +544,10 @@ class RegistrationProfileUi(QMainWindow):
 
     def update_single_profile(self, file_selected=-1, is_horizontal=True):
         if is_horizontal:
-            profile_2d_ui = roi_ui = self.ui.hori_profile
+            profile_2d_ui = self.ui.hori_profile
             label = 'horizontal'
         else:
-            profile_2d_ui = roi_ui = self.ui.verti_profile
+            profile_2d_ui = self.ui.verti_profile
             label = 'vertical'
 
         # clear previous profile
@@ -556,14 +556,24 @@ class RegistrationProfileUi(QMainWindow):
         # always display the reference image
         [xaxis, ref_profile] = self.get_profile(image_index=self.reference_image_index,
                                                 is_horizontal=is_horizontal)
-        profile_2d_ui.plot(xaxis, ref_profile, pen=self.roi[label]['color-peak'])
+
+        try:
+            profile_2d_ui.plot(xaxis, ref_profile, pen=self.roi[label]['color-peak'])
+        except Exception as e:
+            pass
 
         if file_selected != self.reference_image_index:
+
             [xaxis, selected_profile] = self.get_profile(image_index=file_selected,
                                                          is_horizontal=is_horizontal)
-            profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
+            
+            try:
+                profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
+            except Exception as e:
+                pass
 
     def get_profile(self, image_index=0, is_horizontal=True):
+
         if is_horizontal:
             dict_roi = self.roi['horizontal']
             real_width_term = 'length'
@@ -582,13 +592,14 @@ class RegistrationProfileUi(QMainWindow):
         y1 = height + y0
 
         image = self.data_dict['data'][image_index]
-        image = np.transpose(image)
-        image_cropped = image[x0:x1, y0:y1]
+        #image = np.transpose(image)
+        image_cropped = image[y0:y1, x0:x1]
+
         if is_horizontal:
-            integrate_axis = 1
+            integrate_axis = 0
             xaxis = np.arange(x0, x1)
         else:
-            integrate_axis = 0
+            integrate_axis = 1
             xaxis = np.arange(y0, y1)
 
         profile = np.mean(image_cropped, axis=integrate_axis)
@@ -747,8 +758,11 @@ class RegistrationProfileUi(QMainWindow):
         self.display_current_peak(is_horizontal=is_horizontal)
 
     def recalculate_current_peak(self, file_index=-1, is_horizontal=True):
-        self.calculate_peak(file_index=file_index,
-                             is_horizontal=is_horizontal)
+        try:
+            self.calculate_peak(file_index=file_index,
+                                 is_horizontal=is_horizontal)
+        except ValueError:
+            return
 
     def display_current_peak(self, is_horizontal=True):
         index_selected = self._get_selected_row()
