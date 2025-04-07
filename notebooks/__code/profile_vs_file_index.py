@@ -1,4 +1,3 @@
-import ipywe.fileselector
 from NeuNorm.normalization import Normalization
 
 from IPython.core.display import HTML
@@ -16,6 +15,7 @@ import datetime
 import shutil
 
 from __code.file_handler import make_ascii_file
+from __code import ipywe
 
 
 class ProfileVsFileIndex(object):

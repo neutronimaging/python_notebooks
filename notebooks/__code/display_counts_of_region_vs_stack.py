@@ -3,7 +3,6 @@ from pyqtgraph.dockarea import *
 import numpy as np
 import os
 import numbers
-import ipywe.fileselector
 
 from qtpy.QtWidgets import QFileDialog, QMainWindow, QVBoxLayout
 from qtpy import QtGui
@@ -14,7 +13,7 @@ from neutronbraggedge.experiment_handler import *
 
 from __code import load_ui
 from __code.ui_display_counts_of_region_vs_stack import Ui_MainWindow as UiMainWindow
-
+from __code import ipywe
 
 class DisplayCountsVsStack(object):
 

@@ -3,7 +3,7 @@ import matplotlib.gridspec as gridspec
 from ipywidgets.widgets import interact
 import numpy as np
 import os
-import ipywe.fileselector
+
 from ipywidgets import widgets
 from IPython.core.display import display, HTML
 
@@ -11,7 +11,7 @@ from NeuNorm.normalization import Normalization
 
 from __code.metadata_handler import MetadataHandler
 from __code import file_handler
-
+from __code import ipywe
 
 class DisplayExportScreenshots(object):
 

@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 try:
-    import ipywe.fileselector
     from ipywidgets import widgets
 except:
     pass

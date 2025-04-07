@@ -1,5 +1,4 @@
 try:
-    import ipywe.fileselector
     from ipywidgets import widgets
 except:
     pass

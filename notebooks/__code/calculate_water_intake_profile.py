@@ -1,5 +1,3 @@
-import ipywe.fileselector
-
 from IPython.core.display import HTML
 from IPython.core.display import display
 from ipywidgets import widgets
@@ -12,7 +10,7 @@ import re
 import pandas as pd
 
 from __code.file_handler import make_ascii_file_from_string
-
+from __code import ipywe
 
 class CalculateWaterIntakeProfile(object):
 

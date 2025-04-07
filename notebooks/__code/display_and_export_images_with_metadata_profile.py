@@ -6,6 +6,7 @@ from ipywidgets import widgets
 import numpy as np
 import os
 from __code.ipywe.fileselector import FileSelectorPanel
+from __code.ipywe import fileselector
 from IPython.core.display import display, HTML
 
 from NeuNorm.normalization import Normalization
@@ -104,7 +105,7 @@ class DisplayExportScreenshots(object):
                                                         continuous_update=False))
 
     def select_export_folder(self):
-        self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(instruction='Select output Folder ...',
+        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select output Folder ...',
                                                                      start_dir=self.working_dir,
                                                                      type='directory')
         self.output_folder_ui.show()

@@ -1,10 +1,9 @@
-import ipywe.fileselector
 import numpy as np
 import matplotlib.pyplot as plt
 
 from NeuNorm.normalization import Normalization
 from __code import file_handler
-
+from __code import ipywe
 
 class DisplayIntegratedStackOfImages(object):
 
