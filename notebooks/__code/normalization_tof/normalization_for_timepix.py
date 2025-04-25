@@ -26,6 +26,12 @@ logging.basicConfig(filename=log_file_name,
 logging.info(f"*** Starting a new script {file_name} ***")
 
 
+class DataType:
+    sample = "sample"
+    ob = "ob"
+    unknown = "unknown"
+
+
 class MasterDictKeys:
     frame_number = "frame_number"
     proton_charge = "proton_charge"
@@ -48,7 +54,8 @@ def _worker(fl):
     return (imread(fl).astype(LOAD_DTYPE)).swapaxes(0,1)
 
 
-def load_data_using_multithreading(list_tif, combine_tof=False):
+def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = False) -> np.ndarray:
+    """load data using multithreading"""
     with mp.Pool(processes=40) as pool:
         data = pool.map(_worker, list_tif)
 
@@ -58,18 +65,20 @@ def load_data_using_multithreading(list_tif, combine_tof=False):
         return np.array(data)
 
 
-def retrieve_list_of_tif(folder):
+def retrieve_list_of_tif(folder: str) -> list:
+    """retrieve list of tif files in the folder"""
     list_tif = glob.glob(os.path.join(folder, "*.tif*"))
     list_tif.sort()
     return list_tif
 
 
-def normalization_with_list_of_runs(sample_run_numbers=None, 
-                                    ob_run_numbers=None, 
-                                    output_folder="./", 
-                                    nexus_path=None,
-                                    verbose=False,
-                                    output_tif=True):
+def normalization_with_list_of_runs(sample_run_numbers: list = None, 
+                                    ob_run_numbers: list = None, 
+                                    output_folder: str ="./", 
+                                    nexus_path: str = None,
+                                    verbose: bool = False,
+                                    output_tif: bool = True) -> None | np.ndarray:
+    """normalize the sample data with ob data using proton charge and shutter counts"""
     # list sample and ob run numbers
     logging.info(f"{sample_run_numbers = }")
     if verbose:
@@ -83,10 +92,10 @@ def normalization_with_list_of_runs(sample_run_numbers=None,
     logging.info(f"{nexus_path = }")
 
     sample_master_dict, sample_status_metadata = create_master_dict(list_run_numbers=sample_run_numbers, 
-                                                             data_type='sample',   
+                                                             data_type=DataType.sample,   
                                                              nexus_root_path=nexus_path)
     ob_master_dict, ob_status_metadata = create_master_dict(list_run_numbers=ob_run_numbers, 
-                                                         data_type='ob', 
+                                                         data_type=DataType.ob, 
                                                          nexus_root_path=nexus_path)                                                         
     
     # load ob images
@@ -323,7 +332,7 @@ def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbos
 #         display(HTML(f"Exporting normalized data is done!"))
 
 
-def make_tiff(data=[], filename='', metadata=None):
+def make_tiff(data: list, filename: str = "", metadata: dict = None) -> None:
     new_image = Image.fromarray(np.array(data))
     if metadata:
         new_image.save(filename, tiffinfo=metadata)
@@ -331,13 +340,13 @@ def make_tiff(data=[], filename='', metadata=None):
         new_image.save(filename)
 
 
-def isolate_run_number(run_number_full_path):
+def isolate_run_number(run_number_full_path: str) -> int:
     run_number = os.path.basename(run_number_full_path)
     run_number = run_number.split("_")[1]
     return int(run_number)
 
 
-def init_master_dict(list_run_numbers):
+def init_master_dict(list_run_numbers: list[str]) -> dict:
     master_dict = {}
 
     for run_number_full_path in list_run_numbers:
@@ -352,7 +361,8 @@ def init_master_dict(list_run_numbers):
 
     return master_dict
 
-def retrieve_root_nexus_full_path(sample_folder):
+def retrieve_root_nexus_full_path(sample_folder: str) -> str:
+    """retrieve the root nexus path from the sample folder"""
     clean_path = os.path.abspath(sample_folder)
     if clean_path[0] == "/":
         clean_path = clean_path[1:]
@@ -365,21 +375,8 @@ def retrieve_root_nexus_full_path(sample_folder):
     return f"/{facility}/{instrument}/{ipts}/nexus/"
 
 
-# def update_dict_with_frame_number(master_dict):
-#     status_all_frame_number_found = True
-#     for _run_number in master_dict.keys():
-#         _nexus_path = master_dict[_run_number][MasterDictKeys.nexus_path]
-#         try:
-#             with h5py.File(_nexus_path, 'r') as hdf5_data:
-#                 frame_number = hdf5_data['entry']['DASlogs']['BL10:Det:PIXELMAN:ACQ:NUM']['value'][:][-1]
-#         except KeyError:
-#             frame_number = None
-#             status_all_frame_number_found = False
-#         master_dict[_run_number][MasterDictKeys.frame_number] = frame_number
-#     return master_dict, status_all_frame_number_found
-
-
-def update_dict_with_shutter_counts(master_dict):
+def update_dict_with_shutter_counts(master_dict: dict) -> tuple[dict, bool]:
+    """update the master dict with shutter counts from shutter count file"""
     status_all_shutter_counts_found = True
     for run_number in master_dict.keys():
         data_path = master_dict[run_number][MasterDictKeys.data_path]
@@ -403,7 +400,8 @@ def update_dict_with_shutter_counts(master_dict):
     return master_dict, status_all_shutter_counts_found
 
 
-def update_dict_with_spectra_files(master_dict):
+def update_dict_with_spectra_files(master_dict: dict) -> tuple[dict, bool]:
+    """update the master dict with spectra values from spectra file"""
     status_all_spectra_found = True
     for _run_number in master_dict.keys():
         data_path = master_dict[_run_number][MasterDictKeys.data_path]
@@ -421,7 +419,8 @@ def update_dict_with_spectra_files(master_dict):
     return master_dict, status_all_spectra_found
 
 
-def update_dict_with_proton_charge(master_dict):
+def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
+    """update the master dict with proton charge from nexus file"""
     status_all_proton_charge_found = True
     for _run_number in master_dict.keys():
         _nexus_path = master_dict[_run_number][MasterDictKeys.nexus_path]
@@ -435,34 +434,39 @@ def update_dict_with_proton_charge(master_dict):
     return master_dict, status_all_proton_charge_found
    
 
-def update_dict_with_list_of_images(master_dict):
+def update_dict_with_list_of_images(master_dict: dict) -> dict:
+    """update the master dict with list of images"""
     for _run_number in master_dict.keys():
         list_tif = retrieve_list_of_tif(master_dict[_run_number][MasterDictKeys.data_path])
         master_dict[_run_number][MasterDictKeys.list_tif] = list_tif
     return master_dict
 
 
-def get_list_run_number(data_folder):
+def get_list_run_number(data_folder: str) -> list:
+    """get list of run numbers from the data folder"""
     list_runs = glob.glob(os.path.join(data_folder, "Run_*"))
     list_run_number = [int(os.path.basename(run).split("_")[1]) for run in list_runs]
     return list_run_number
 
 
-def update_dict_with_nexus_full_path(nexus_root_path, master_dict):
+def update_dict_with_nexus_full_path(nexus_root_path: str, master_dict: dict) -> dict:
     """create dict of nexus path for each run number"""
     for run_number in master_dict.keys():
         master_dict[run_number][MasterDictKeys.nexus_path] = os.path.join(nexus_root_path, f"VENUS_{run_number}.nxs.h5")
     return master_dict
 
 
-def update_dict_with_data_full_path(data_root_path, master_dict):
+def update_dict_with_data_full_path(data_root_path: str, master_dict: dict) -> dict:
     """create dict of data path for each run number"""
     for run_number in master_dict.keys():
         master_dict[run_number][MasterDictKeys.data_path] = os.path.join(data_root_path, f"Run_{run_number}")
     return master_dict
 
 
-def create_master_dict(list_run_numbers=None, data_type="sample", data_root_path=None, nexus_root_path=None):
+def create_master_dict(list_run_numbers: list = None, 
+                       data_type: DataType = DataType.sample, 
+                       data_root_path: str = None, 
+                       nexus_root_path: str = None) -> tuple[dict, StatusMetadata]:
     logging.info(f"Create {data_type} master dict of runs: {list_run_numbers = }")
 
     status_metadata = StatusMetadata()
@@ -532,7 +536,9 @@ def produce_list_shutter_for_each_image(list_time_spectra:list = None, list_shut
     return list_shutter_values_for_each_image
 
 
-def combine_ob_images(ob_master_dict,  use_proton_charge=False, use_shutter_counts=False):
+def combine_ob_images(ob_master_dict: dict,  use_proton_charge: bool = False, use_shutter_counts: bool = False) -> np.ndarray:
+    """combine all ob images and correct by proton charge and shutter counts"""
+
     logging.info(f"Combining all open beam images and correcting by proton charge and shutter counts ...")
     full_ob_data_corrected = []
 
