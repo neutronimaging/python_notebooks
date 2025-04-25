@@ -202,6 +202,8 @@ def normalization_with_list_of_runs(sample_run_numbers=None,
             if verbose:
                 display(HTML(f"\t -> Exporting run {_run_number} is done!"))
 
+            print(f"Exported tif images are in: {run_number_output_folder}!")
+
         logging.info(f"export folder: {run_number_output_folder}")
         logging.info(f"Exporting normalized data is done!")
         if verbose:
@@ -630,10 +632,10 @@ if __name__ == '__main__':
         exit()
 
     normalization_with_list_of_runs(sample_run_numbers=[sample_run_number],
-                                     ob_run_numbers=[ob_run_number], 
-                                     output_folder=output_folder, 
-                                     nexus_path=retrieve_root_nexus_full_path(sample_run_number),
-                                     verbose=False)
+                                    ob_run_numbers=[ob_run_number], 
+                                    output_folder=output_folder, 
+                                    nexus_path=retrieve_root_nexus_full_path(sample_run_number),
+                                    verbose=False)
 
     # normalization(sample_folder=sample_folder, ob_folder=ob_folder, output_folder=output_folder)
 
