@@ -139,26 +139,9 @@ def normalization_with_list_of_runs(sample_run_numbers=None,
             _sample_data = _sample_data / proton_charge
 
         if normalized_by_shutter_counts:
-            # shutter_counts = sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts]
-            
-            # delta_shutter_counts = shutter_counts[1] - shutter_counts[0]
-            # list_index_jump = np.where(np.diff(shutter_counts) > delta_shutter_counts)[0]
-
-            list_shutter_counts = sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts]
-
-            list_time_spectra = ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra]
-            delat_time_spectra = list_time_spectra[1] - list_time_spectra[0]
-            # list_index_jump = np.where(np.diff(list_time_spectra) > delat_time_spectra)[0]
-            list_index_jump = np.where(np.diff(list_time_spectra) > 0.0001)[0]
-
-            list_shutter_values_for_each_image = np.zeros_like(sample_master_dict[_sample_run_number][MasterDictKeys.list_tif], dtype=np.float32)
-            list_shutter_values_for_each_image[0: list_index_jump[0]].fill(list_shutter_counts[0])
-            for _index in range(1, len(list_index_jump)):
-                _start = list_index_jump[_index - 1]
-                _end = list_index_jump[_index]
-                list_shutter_values_for_each_image[_start: _end].fill(list_shutter_counts[_index])
-
-            list_shutter_values_for_each_image[list_index_jump[-1]:] = list_shutter_counts[-1]
+            list_shutter_values_for_each_image = produce_list_shutter_for_each_image(list_time_spectra=ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra],
+                                                                                      list_shutter_counts=sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts],
+                                                                                      )
             
             sample_data = []
             for _sample, _shutter_value in zip(_sample_data, list_shutter_values_for_each_image):
@@ -525,6 +508,30 @@ def create_master_dict(list_run_numbers=None, data_type="sample", data_root_path
     return master_dict, status_metadata
 
 
+def produce_list_shutter_for_each_image(list_time_spectra:list = None, list_shutter_counts:list = None) -> list:
+    """produce list of shutter counts for each image"""
+
+    delat_time_spectra = list_time_spectra[1] - list_time_spectra[0]
+    list_index_jump = np.where(np.diff(list_time_spectra) > delat_time_spectra)[0]
+    list_index_jump = np.where(np.diff(list_time_spectra) > 0.0001)[0]
+
+    logging.info(f"\t{list_index_jump = }")
+
+    # delta_shutter_counts = shutter_counts[1] - shutter_counts[0]
+    # list_index_jump = np.where(np.diff(shutter_counts) > delta_shutter_counts)[0]
+
+    list_shutter_values_for_each_image = np.zeros(len(list_time_spectra), dtype=np.float32)
+    list_shutter_values_for_each_image[0: list_index_jump[0]].fill(list_shutter_counts[0])
+    for _index in range(1, len(list_index_jump)):
+        _start = list_index_jump[_index - 1]
+        _end = list_index_jump[_index]
+        list_shutter_values_for_each_image[_start: _end].fill(list_shutter_counts[_index])
+
+    list_shutter_values_for_each_image[list_index_jump[-1]:] = list_shutter_counts[-1]
+
+    return list_shutter_values_for_each_image
+
+
 def combine_ob_images(ob_master_dict,  use_proton_charge=False, use_shutter_counts=False):
     logging.info(f"Combining all open beam images and correcting by proton charge and shutter counts ...")
     full_ob_data_corrected = []
@@ -543,27 +550,10 @@ def combine_ob_images(ob_master_dict,  use_proton_charge=False, use_shutter_coun
         if use_shutter_counts:
             logging.info(f"\t -> Normalized by shutter counts")
 
-            list_time_spectra = ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra]
-            delat_time_spectra = list_time_spectra[1] - list_time_spectra[0]
-            list_index_jump = np.where(np.diff(list_time_spectra) > delat_time_spectra)[0]
-            list_index_jump = np.where(np.diff(list_time_spectra) > 0.0001)[0]
-
-            logging.info(f"\t{list_index_jump = }")
-
-            # delta_shutter_counts = shutter_counts[1] - shutter_counts[0]
-            # list_index_jump = np.where(np.diff(shutter_counts) > delta_shutter_counts)[0]
-
-            list_shutter_counts = ob_master_dict[_ob_run_number][MasterDictKeys.shutter_counts]
-
-            list_shutter_values_for_each_image = np.zeros_like(ob_master_dict[_ob_run_number][MasterDictKeys.list_tif], dtype=np.float32)
-            list_shutter_values_for_each_image[0: list_index_jump[0]].fill(list_shutter_counts[0])
-            for _index in range(1, len(list_index_jump)):
-                _start = list_index_jump[_index - 1]
-                _end = list_index_jump[_index]
-                list_shutter_values_for_each_image[_start: _end].fill(list_shutter_counts[_index])
-
-            list_shutter_values_for_each_image[list_index_jump[-1]:] = list_shutter_counts[-1]
-            
+            list_shutter_values_for_each_image = produce_list_shutter_for_each_image(list_time_spectra=ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra],
+                                                                                      list_shutter_counts=ob_master_dict[_ob_run_number][MasterDictKeys.shutter_counts],
+                                                                                      )
+           
             logging.info(f"{list_shutter_values_for_each_image.shape = }")
             temp_ob_data = np.empty_like(ob_data, dtype=np.float32)
             for _index in range(len(list_shutter_values_for_each_image)):
