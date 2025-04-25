@@ -68,7 +68,8 @@ def normalization_with_list_of_runs(sample_run_numbers=None,
                                     ob_run_numbers=None, 
                                     output_folder="./", 
                                     nexus_path=None,
-                                    verbose=False):
+                                    verbose=False,
+                                    output_tif=True):
     # list sample and ob run numbers
     logging.info(f"{sample_run_numbers = }")
     if verbose:
@@ -175,31 +176,39 @@ def normalization_with_list_of_runs(sample_run_numbers=None,
     if verbose:
         display(HTML(f"Normalization is done!"))
 
-    # make up new output folder name
-    sample_folder = os.path.dirname(sample_run_numbers[0])
-    logging.info(f"{sample_folder = }")
-    logging.info(f"{sample_run_numbers[0] =}")
-    full_output_folder = os.path.join(output_folder, os.path.basename(sample_folder) + "_normalized")
-
-    for _run_number in normalized_data.keys():
-        logging.info(f"\t -> Exporting run {_run_number} ...")
+    if output_tif:
+        logging.info(f"Exporting normalized data to {output_folder} ...")
         if verbose:
-            display(HTML(f"\t -> Exporting run {_run_number} ..."))
-        run_number_output_folder = os.path.join(full_output_folder, f"Run_{_run_number}_normalized")
-        os.makedirs(run_number_output_folder, exist_ok=True)
-        
-        _list_data = normalized_data[_run_number]
-        for _index, _data in enumerate(_list_data):
-            _output_file = os.path.join(run_number_output_folder, f"image{_index:04d}.tif")
-            make_tiff(data=_data, filename=_output_file)
-        logging.info(f"\t -> Exporting run {_run_number} is done!")
-        if verbose:
-            display(HTML(f"\t -> Exporting run {_run_number} is done!"))
+            display(HTML(f"Exporting normalized data to {output_folder} ..."))
 
-    logging.info(f"export folder: {run_number_output_folder}")
-    logging.info(f"Exporting normalized data is done!")
-    if verbose:
-        display(HTML(f"Exporting normalized data is done!"))
+        # make up new output folder name
+        sample_folder = os.path.dirname(sample_run_numbers[0])
+        logging.info(f"{sample_folder = }")
+        logging.info(f"{sample_run_numbers[0] =}")
+        full_output_folder = os.path.join(output_folder, os.path.basename(sample_folder) + "_normalized")
+
+        for _run_number in normalized_data.keys():
+            logging.info(f"\t -> Exporting run {_run_number} ...")
+            if verbose:
+                display(HTML(f"\t -> Exporting run {_run_number} ..."))
+            run_number_output_folder = os.path.join(full_output_folder, f"Run_{_run_number}_normalized")
+            os.makedirs(run_number_output_folder, exist_ok=True)
+            
+            _list_data = normalized_data[_run_number]
+            for _index, _data in enumerate(_list_data):
+                _output_file = os.path.join(run_number_output_folder, f"image{_index:04d}.tif")
+                make_tiff(data=_data, filename=_output_file)
+            logging.info(f"\t -> Exporting run {_run_number} is done!")
+            if verbose:
+                display(HTML(f"\t -> Exporting run {_run_number} is done!"))
+
+        logging.info(f"export folder: {run_number_output_folder}")
+        logging.info(f"Exporting normalized data is done!")
+        if verbose:
+            display(HTML(f"Exporting normalized data is done!"))
+
+    else:
+        return normalized_data
 
 
 def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbose=False):
@@ -624,12 +633,12 @@ if __name__ == '__main__':
                                      ob_run_numbers=[ob_run_number], 
                                      output_folder=output_folder, 
                                      nexus_path=retrieve_root_nexus_full_path(sample_run_number),
-                                     verbose=True)
+                                     verbose=False)
 
     # normalization(sample_folder=sample_folder, ob_folder=ob_folder, output_folder=output_folder)
 
     print(f"Normalization is done! Check the log file {log_file_name} for more details!")
-    print(f"Exported data to {output_folder}!")
+    print(f"Exported data to {output_folder}")
 
     # sample = /SNS/VENUS/IPTS-34808/shared/autoreduce/mcp/November17_Sample6_UA_H_Batteries_1_5_Angs_min_30Hz_5C
     # ob = /SNS/VENUS/IPTS-34808/shared/autoreduce/mcp/November17_OB_for_UA_H_Batteries_1_5_Angs_min_30Hz_5C
