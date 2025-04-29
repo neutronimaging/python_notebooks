@@ -525,13 +525,13 @@ def produce_list_shutter_for_each_image(list_time_spectra:list = None, list_shut
     # list_index_jump = np.where(np.diff(shutter_counts) > delta_shutter_counts)[0]
 
     list_shutter_values_for_each_image = np.zeros(len(list_time_spectra), dtype=np.float32)
-    list_shutter_values_for_each_image[0: list_index_jump[0]].fill(list_shutter_counts[0])
+    list_shutter_values_for_each_image[0: list_index_jump[0]+1].fill(list_shutter_counts[0])
     for _index in range(1, len(list_index_jump)):
         _start = list_index_jump[_index - 1]
         _end = list_index_jump[_index]
-        list_shutter_values_for_each_image[_start: _end].fill(list_shutter_counts[_index])
+        list_shutter_values_for_each_image[_start+1: _end+1].fill(list_shutter_counts[_index])
 
-    list_shutter_values_for_each_image[list_index_jump[-1]:] = list_shutter_counts[-1]
+    list_shutter_values_for_each_image[list_index_jump[-1]+1:] = list_shutter_counts[-1]
 
     return list_shutter_values_for_each_image
 
