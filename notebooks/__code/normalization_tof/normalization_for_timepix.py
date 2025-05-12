@@ -11,6 +11,7 @@ from PIL import Image
 from IPython.display import display
 from IPython.core.display import HTML
 import pandas as pd
+import matplotlib.pyplot as plt
 
 LOG_PATH = "/SNS/VENUS/shared/log/"
 LOAD_DTYPE = np.uint16
@@ -80,8 +81,9 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                                     verbose: bool = False,
                                     proton_charge_flag=True,
                                     shutter_counts_flag=True,
-                                    remove_ob_zeros_flag=True,
-                                    output_tif: bool = True) -> None | np.ndarray:
+                                    replace_ob_zeros_by_nan_flag=False, 
+                                    output_tif: bool = True,
+                                    preview: bool = False) -> None | np.ndarray:
     """normalize the sample data with ob data using proton charge and shutter counts"""
     # list sample and ob run numbers
     logging.info(f"{sample_run_numbers = }")
@@ -115,20 +117,21 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             display(HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
 
     if proton_charge_flag:
-        normalized_by_proton_charge = False
-    else:
         normalized_by_proton_charge = (sample_status_metadata.all_proton_charge_found and ob_status_metadata.all_proton_charge_found)
+    else:
+        normalized_by_proton_charge = False
     
     if shutter_counts_flag:
-        normalized_by_shutter_counts = False
-    else:
         normalized_by_shutter_counts = (sample_status_metadata.all_shutter_counts_found and ob_status_metadata.all_shutter_counts_found)
+    else:
+        normalized_by_shutter_counts = False
 
     # combine all ob images
     ob_data_combined = combine_ob_images(ob_master_dict, 
                                          use_proton_charge=normalized_by_proton_charge, 
                                          use_shutter_counts=normalized_by_shutter_counts,
-                                         remove_ob_zeros_flag=remove_ob_zeros_flag)
+                                         replace_ob_zeros_by_nan=replace_ob_zeros_by_nan_flag,
+                                             )
     logging.info(f"{ob_data_combined.shape = }")
     if verbose:
         display(HTML(f"{ob_data_combined.shape = }"))
@@ -155,6 +158,19 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
 
         _sample_data = np.array(sample_master_dict[_sample_run_number][MasterDictKeys.data], dtype=np.float32)
 
+        # get statistics of sample data
+        data_shape = _sample_data.shape
+        nbr_pixels = data_shape[1] * data_shape[2]
+        logging.info(f" **** Statistics of sample data *****")
+        number_of_zeros = np.sum(_sample_data == 0)
+        logging.info(f"\t ob data shape: {data_shape}")
+        logging.info(f"\t Number of zeros in ob data: {number_of_zeros}")
+        logging.info(f"\t Percentage of zeros in ob data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%")
+        logging.info(f"\t Mean of ob data: {np.mean(_sample_data)}")
+        logging.info(f"\t maximum of ob data: {np.max(_sample_data)}")
+        logging.info(f"\t minimum of ob data: {np.min(_sample_data)}")
+        logging.info(f"**********************************")        
+
         if normalized_by_proton_charge:
             proton_charge = sample_master_dict[_sample_run_number][MasterDictKeys.proton_charge]
             _sample_data = _sample_data / proton_charge
@@ -170,11 +186,53 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             _sample_data = np.array(sample_data)
 
         logging.info(f"{_sample_data.shape = }")
+        logging.info(f"{_sample_data.dtype = }")
         logging.info(f"{ob_data_combined.shape = }")
+        logging.info(f"{ob_data_combined.dtype = }")
 
-        _sample_data /= ob_data_combined
+        # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
+        # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data))
+        # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
+        _normalized_data = np.zeros_like(_sample_data, dtype=np.float32)
+        index = 0
+        for _sample, _ob in zip(_sample_data, ob_data_combined):
+            _normalized_data[index] = np.divide(_sample, _ob)
+            index += 1
 
-        normalized_data[_sample_run_number] = _sample_data
+        normalized_data[_sample_run_number] = _normalized_data
+
+        # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
+        logging.info(f"{normalized_data[_sample_run_number].shape = }")
+        logging.info(f"{normalized_data[_sample_run_number].dtype = }")    
+
+        if preview:
+
+            # display preview of normalized data
+            fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+            sample_data_integrated = np.mean(_sample_data, axis=0)
+            ob_data_integrated = np.mean(ob_data_combined, axis=0)
+            normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
+            im0 = axs[0].imshow(sample_data_integrated, cmap='gray')
+            plt.colorbar(im0, ax=axs[0])
+            axs[0].set_title(f"Sample data {_sample_run_number}")
+            
+            im1 = axs[1].imshow(ob_data_integrated, cmap='gray')
+            plt.colorbar(im1, ax=axs[1])
+            axs[1].set_title(f"OB combinded data ")
+
+            # im2 = axs[2].imshow(normalized_data_integrated, cmap='gray', vmin=0, vmax=1)
+            # plt.colorbar(im2, ax=axs[2])
+            # axs[2].set_title(f"Normalized data {_sample_run_number}")
+
+            print(f"{np.shape(normalized_data[_sample_run_number]) = }")
+            profile_step1 = np.nansum(normalized_data[_sample_run_number], axis=1)
+            profile = np.nansum(profile_step1, axis=1)
+            print(f"{np.shape(profile) = }")
+            print(f"{profile = }")
+            axs[2].plot(profile)
+
+            plt.tight_layout()
+            plt.show()
 
     logging.info(f"Normalization is done!")
     if verbose:
@@ -219,129 +277,6 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
 
 def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbose=False):
     pass
-
-    # list sample and ob run numbers
-#     list_sample_run_numbers = get_list_run_number(sample_folder)
-#     logging.info(f"{list_sample_run_numbers = }")
-#     if verbose:
-#         display(HTML(f"List of sample run numbers: {list_sample_run_numbers}"))
-
-#     list_ob_run_numbers = get_list_run_number(ob_folder)
-#     logging.info(f"{list_ob_run_numbers = }")
-#     if verbose:
-#         display(HTML(f"List of ob run numbers: {list_ob_run_numbers}"))
-
-#     sample_master_dict, sample_status_metadata = create_master_dict(list_run_numbers=list_sample_run_numbers, 
-#                                                              data_type='sample', 
-#                                                              data_root_path=sample_folder)
-#     ob_master_dict, ob_status_metadata = create_master_dict(list_run_numbers=list_ob_run_numbers, 
-#                                                          data_type='ob', 
-#                                                          data_root_path=ob_folder)
-                                                             
-#     # load ob images
-#     for _ob_run_number in ob_master_dict.keys():
-#         logging.info(f"loading ob# {_ob_run_number} ... ")
-#         if verbose:
-#             display(HTML(f"Loading ob# {_ob_run_number} ..."))
-#         ob_master_dict[_ob_run_number][MasterDictKeys.data] = load_data_using_multithreading(ob_master_dict[_ob_run_number][MasterDictKeys.list_tif], combine_tof=False)
-#         logging.info(f"ob# {_ob_run_number} loaded!")
-#         logging.info(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
-#         if verbose:
-#             display(HTML(f"ob# {_ob_run_number} loaded!"))
-#             display(HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
-
-#     normalized_by_proton_charge = (sample_status_metadata.all_proton_charge_found and ob_status_metadata.all_proton_charge_found)
-#     normalized_by_shutter_counts = (sample_status_metadata.all_shutter_counts_found and ob_status_metadata.all_shutter_counts_found)
-
-#     # combine all ob images
-#     ob_data_combined = combine_ob_images(ob_master_dict, 
-#                                          use_proton_charge=normalized_by_proton_charge, 
-#                                          use_shutter_counts=normalized_by_shutter_counts)
-#     logging.info(f"{ob_data_combined.shape = }")
-#     if verbose:
-#         display(HTML(f"{ob_data_combined.shape = }"))
-
-#     # load sample images
-#     for _sample_run_number in sample_master_dict.keys():
-#         logging.info(f"loading sample# {_sample_run_number} ... ")
-#         if verbose:
-#             display(HTML(f"Loading sample# {_sample_run_number} ..."))
-#         sample_master_dict[_sample_run_number][MasterDictKeys.data] = load_data_using_multithreading(sample_master_dict[_sample_run_number][MasterDictKeys.list_tif], combine_tof=False)
-#         logging.info(f"sample# {_sample_run_number} loaded!")
-#         logging.info(f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }")
-#         if verbose:
-#             display(HTML(f"sample# {_sample_run_number} loaded!"))
-#             display(HTML(f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }"))
-
-#     normalized_data = {}
-
-#     # normalize the sample data
-#     for _sample_run_number in list_sample_run_numbers:
-#         logging.info(f"normalization of run {_sample_run_number}")
-#         if verbose:
-#             display(HTML(f"Normalization of run {_sample_run_number}"))
-
-#         _sample_data = np.array(sample_master_dict[_sample_run_number][MasterDictKeys.data], dtype=np.float32)
-
-#         if normalized_by_proton_charge:
-#             proton_charge = sample_master_dict[_sample_run_number][MasterDictKeys.proton_charge]
-#             _sample_data = _sample_data / proton_charge
-
-#         if normalized_by_shutter_counts:
-#             shutter_counts = sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts]
-            
-#             delta_shutter_counts = shutter_counts[1] - shutter_counts[0]
-#             list_index_jump = np.where(np.diff(shutter_counts) > delta_shutter_counts)[0]
-
-#             list_shutter_counts = sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts]
-
-#             list_shutter_values_for_each_image = np.zeros_like(sample_master_dict[_sample_run_number][MasterDictKeys.list_tif], dtype=np.float32)
-#             list_shutter_values_for_each_image[0: list_index_jump[0]].fill(list_shutter_counts[0])
-#             for _index in range(1, len(list_index_jump)):
-#                 _start = list_index_jump[_index - 1]
-#                 _end = list_index_jump[_index]
-#                 list_shutter_values_for_each_image[_start: _end].fill(list_shutter_counts[_index])
-
-#             list_shutter_values_for_each_image[list_index_jump[-1]:] = list_shutter_counts[-1]
-
-#             logging.info(f"{list_shutter_values_for_each_image.shape = }")
-#             logging.info(f"{_sample_data.shape = }")
-#             logging.info(f"{set(list_shutter_values_for_each_image) = }")
-#             _sample_data = _sample_data / list_shutter_values_for_each_image
-
-#         _sample_data /= ob_data_combined
-
-#         normalized_data[_sample_run_number] = _sample_data
-
-#     logging.info(f"Normalization is done!")
-#     if verbose:
-#         display(HTML(f"Normalization is done!"))
-
-#     logging.info(f"Exporting normalized data to {output_folder} ...")
-#     if verbose:
-#         display(HTML(f"Exporting normalized data to {output_folder} ..."))
-
-#     # make up new output folder name
-#     full_output_folder = os.path.join(output_folder, os.path.basename(sample_folder) + "_normalized")
-
-#     for _run_number in normalized_data.keys():
-#         logging.info(f"\t -> Exporting run {_run_number} ...")
-#         if verbose:
-#             display(HTML(f"\t -> Exporting run {_run_number} ..."))
-#         run_number_output_folder = os.path.join(full_output_folder, f"Run_{_run_number}_normalized")
-#         os.makedirs(run_number_output_folder, exist_ok=True)
-        
-#         _list_data = normalized_data[_run_number]
-#         for _index, _data in enumerate(_list_data):
-#             _output_file = os.path.join(run_number_output_folder, f"image{_index:04d}.tif")
-#             make_tiff(data=_data, filename=_output_file)
-#         logging.info(f"\t -> Exporting run {_run_number} is done!")
-#         if verbose:
-#             display(HTML(f"\t -> Exporting run {_run_number} is done!"))
-
-#     logging.info(f"Exporting normalized data is done!")
-#     if verbose:
-#         display(HTML(f"Exporting normalized data is done!"))
 
 
 def make_tiff(data: list, filename: str = "", metadata: dict = None) -> None:
@@ -551,16 +486,33 @@ def produce_list_shutter_for_each_image(list_time_spectra:list = None, list_shut
 def combine_ob_images(ob_master_dict: dict,  
                       use_proton_charge: bool = False, 
                       use_shutter_counts: bool = False,
-                      remove_ob_zeros: bool = True) -> np.ndarray:
+                      replace_ob_zeros_by_nan: bool = False,
+                      ) -> np.ndarray:
+
     """combine all ob images and correct by proton charge and shutter counts"""
 
-    logging.info(f"Combining all open beam images and correcting by proton charge and shutter counts ...")
+    logging.info(f"Combining all open beam images")
+    logging.info(f"\tcorrecting by proton charge: {use_proton_charge}")
+    logging.info(f"\tshutter counts: {use_shutter_counts}")
+    logging.info(f"\treplace ob zeros by nan: {replace_ob_zeros_by_nan}")
     full_ob_data_corrected = []
 
     for _ob_run_number in ob_master_dict.keys():
         logging.info(f"Combining ob# {_ob_run_number} ...")
         ob_data = np.array(ob_master_dict[_ob_run_number][MasterDictKeys.data], dtype=np.float32)
-        logging.info(f"{ob_data.shape = }")
+
+        # get statistics of ob data
+        data_shape = ob_data.shape
+        nbr_pixels = data_shape[1] * data_shape[2]
+        logging.info(f" **** Statistics of ob data *****")
+        number_of_zeros = np.sum(ob_data == 0)
+        logging.info(f"\t ob data shape: {data_shape}")
+        logging.info(f"\t Number of zeros in ob data: {number_of_zeros}")
+        logging.info(f"\t Percentage of zeros in ob data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%")
+        logging.info(f"\t Mean of ob data: {np.mean(ob_data)}")
+        logging.info(f"\t maximum of ob data: {np.max(ob_data)}")
+        logging.info(f"\t minimum of ob data: {np.min(ob_data)}")
+        logging.info(f"**********************************")
 
         if use_proton_charge:
             logging.info(f"\t -> Normalized by proton charge")
@@ -582,6 +534,27 @@ def combine_ob_images(ob_master_dict: dict,
             logging.info(f"{temp_ob_data.shape = }")
             ob_data = temp_ob_data.copy()
 
+        ob_data_combined = np.array(ob_data).mean(axis=0)
+        logging.info(f"{ob_data_combined.shape = }")
+
+        # remove zeros
+        if replace_ob_zeros_by_nan:
+            ob_data[ob_data == 0] = np.NaN
+
+        if True:
+            # replace zeros in OB by median of surrounding pixels
+            where_ob_zeros = np.where(ob_data == 0)
+            logging.info(f"{len(where_ob_zeros) = }")
+            if len(where_ob_zeros[0]) > 0:
+                logging.info(f"Replacing zeros in OB data by median of surrounding pixels ...")
+                # if verbose:
+                #     display(HTML(f"Replacing zeros in OB data by median of surrounding pixels ..."))
+                for _index in range(len(where_ob_zeros[0])):
+                    _t = where_ob_zeros[0][_index]
+                    _y = where_ob_zeros[1][_index]
+                    _x = where_ob_zeros[2][_index]
+                    ob_data[_t, _y, _x] = np.nanmedian(ob_data[_t, _y-1:_y+2, _x-1:_x+2]) 
+
         full_ob_data_corrected.append(ob_data)
         logging.info(f"{np.shape(full_ob_data_corrected) = }")
 
@@ -589,7 +562,7 @@ def combine_ob_images(ob_master_dict: dict,
     logging.info(f"{ob_data_combined.shape = }")
 
     # remove zeros
-    if remove_ob_zeros:
+    if replace_ob_zeros_by_nan:
         ob_data_combined[ob_data_combined == 0] = np.NaN
 
     return ob_data_combined

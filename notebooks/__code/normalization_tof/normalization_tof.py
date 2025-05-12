@@ -2,6 +2,7 @@ import os
 from IPython.display import display
 import ipywidgets as widgets
 from IPython.core.display import HTML
+import matplotlib.pyplot as plt
 
 from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.normalization_tof.normalization_for_timepix import normalization, normalization_with_list_of_runs
@@ -51,12 +52,17 @@ class NormalizationTof:
                                               value=True)
         self.shutter_counts_flag = widgets.Checkbox(description='Shutter counts',
                                                value=True)
-        self.remove_ob_zeros_flag = widgets.Checkbox(description='Remove OB zeros',
-                                                  value=True)
-        vertical_layout = widgets.VBox([self.proton_charge_flag, self.shutter_counts_flag, self.remove_ob_zeros_flag])
+        self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description='Replace OB zeros by NaN',
+                                                  value=False)
+        # self.replace_ob_zeros_by_median_flag = widgets.Checkbox(description='Replace OB zeros by median of neighboring pixels',
+        #                                                         layout=widgets.Layout(width='100%'))
+        vertical_layout = widgets.VBox([self.proton_charge_flag, 
+                                        self.shutter_counts_flag, 
+                                        self.replace_ob_zeros_by_nan_flag, 
+                                        ])
         display(vertical_layout)
 
-    def run_normalization_with_list_of_runs(self):
+    def run_normalization_with_list_of_runs(self, preview=False):
         sample_run_numbers = self.sample_run_numbers
         ob_run_numbers = self.ob_run_numbers
         output_folder = self.output_folder
@@ -66,8 +72,9 @@ class NormalizationTof:
                                         nexus_path=self.nexus_folder,
                                         proton_charge_flag=self.proton_charge_flag.value,
                                         shutter_counts_flag=self.shutter_counts_flag.value,
-                                        remove_ob_zeros_flag=self.remove_ob_zeros_flag.value,
-                                        verbose=True)
+                                        replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
+                                        verbose=True,
+                                        preview=preview)
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
 
