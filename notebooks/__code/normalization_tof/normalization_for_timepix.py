@@ -18,7 +18,8 @@ LOAD_DTYPE = np.uint16
 PROTON_CHARGE_TOLERANCE = 0.1
 
 file_name, ext = os.path.splitext(os.path.basename(__file__))
-log_file_name = os.path.join(LOG_PATH, f"{file_name}.log")
+user_name = os.getlogin() # add user name to the log file name
+log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
 logging.basicConfig(filename=log_file_name,
                     filemode='w',
                     format='[%(levelname)s] - %(asctime)s - %(message)s',
@@ -77,6 +78,9 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                                     output_folder: str ="./", 
                                     nexus_path: str = None,
                                     verbose: bool = False,
+                                    proton_charge_flag=True,
+                                    shutter_counts_flag=True,
+                                    remove_ob_zeros_flag=True,
                                     output_tif: bool = True) -> None | np.ndarray:
     """normalize the sample data with ob data using proton charge and shutter counts"""
     # list sample and ob run numbers
@@ -110,13 +114,21 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             display(HTML(f"ob# {_ob_run_number} loaded!"))
             display(HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
 
-    normalized_by_proton_charge = (sample_status_metadata.all_proton_charge_found and ob_status_metadata.all_proton_charge_found)
-    normalized_by_shutter_counts = (sample_status_metadata.all_shutter_counts_found and ob_status_metadata.all_shutter_counts_found)
+    if proton_charge_flag:
+        normalized_by_proton_charge = False
+    else:
+        normalized_by_proton_charge = (sample_status_metadata.all_proton_charge_found and ob_status_metadata.all_proton_charge_found)
+    
+    if shutter_counts_flag:
+        normalized_by_shutter_counts = False
+    else:
+        normalized_by_shutter_counts = (sample_status_metadata.all_shutter_counts_found and ob_status_metadata.all_shutter_counts_found)
 
     # combine all ob images
     ob_data_combined = combine_ob_images(ob_master_dict, 
                                          use_proton_charge=normalized_by_proton_charge, 
-                                         use_shutter_counts=normalized_by_shutter_counts)
+                                         use_shutter_counts=normalized_by_shutter_counts,
+                                         remove_ob_zeros_flag=remove_ob_zeros_flag)
     logging.info(f"{ob_data_combined.shape = }")
     if verbose:
         display(HTML(f"{ob_data_combined.shape = }"))
@@ -536,7 +548,10 @@ def produce_list_shutter_for_each_image(list_time_spectra:list = None, list_shut
     return list_shutter_values_for_each_image
 
 
-def combine_ob_images(ob_master_dict: dict,  use_proton_charge: bool = False, use_shutter_counts: bool = False) -> np.ndarray:
+def combine_ob_images(ob_master_dict: dict,  
+                      use_proton_charge: bool = False, 
+                      use_shutter_counts: bool = False,
+                      remove_ob_zeros: bool = True) -> np.ndarray:
     """combine all ob images and correct by proton charge and shutter counts"""
 
     logging.info(f"Combining all open beam images and correcting by proton charge and shutter counts ...")
@@ -574,7 +589,8 @@ def combine_ob_images(ob_master_dict: dict,  use_proton_charge: bool = False, us
     logging.info(f"{ob_data_combined.shape = }")
 
     # remove zeros
-    ob_data_combined[ob_data_combined == 0] = np.NaN
+    if remove_ob_zeros:
+        ob_data_combined[ob_data_combined == 0] = np.NaN
 
     return ob_data_combined
 

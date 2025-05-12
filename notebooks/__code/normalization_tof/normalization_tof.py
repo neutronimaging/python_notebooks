@@ -44,6 +44,18 @@ class NormalizationTof:
                            start_dir=self.working_dir,
                            next_function=self.output_folder_selected)
 
+    def settings(self):
+        label = widgets.Label(value="What to take into account for normalization?")
+        display(label)
+        self.proton_charge_flag = widgets.Checkbox(description='Proton charge',
+                                              value=True)
+        self.shutter_counts_flag = widgets.Checkbox(description='Shutter counts',
+                                               value=True)
+        self.remove_ob_zeros_flag = widgets.Checkbox(description='Remove OB zeros',
+                                                  value=True)
+        vertical_layout = widgets.VBox([self.proton_charge_flag, self.shutter_counts_flag, self.remove_ob_zeros_flag])
+        display(vertical_layout)
+
     def run_normalization_with_list_of_runs(self):
         sample_run_numbers = self.sample_run_numbers
         ob_run_numbers = self.ob_run_numbers
@@ -52,6 +64,9 @@ class NormalizationTof:
                                         ob_run_numbers=ob_run_numbers,
                                         output_folder=output_folder,
                                         nexus_path=self.nexus_folder,
+                                        proton_charge_flag=self.proton_charge_flag.value,
+                                        shutter_counts_flag=self.shutter_counts_flag.value,
+                                        remove_ob_zeros_flag=self.remove_ob_zeros_flag.value,
                                         verbose=True)
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
