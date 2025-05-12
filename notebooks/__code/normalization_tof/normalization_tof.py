@@ -4,7 +4,6 @@ import ipywidgets as widgets
 from IPython.core.display import HTML
 
 from __code.ipywe.myfileselector import MyFileSelectorPanel
-import __code.ipywe.myfileselector as myfileselector
 from __code.normalization_tof.normalization_for_timepix import normalization, normalization_with_list_of_runs
 
 
@@ -27,6 +26,7 @@ class NormalizationTof:
     def select_sample_run_numbers(self):
         self.select_folder(instruction="Select sample run number folder",
                            next_function=self.sample_run_numbers_selected,
+
                            multiple=True,)
 
     def select_ob_folder(self):
@@ -99,5 +99,6 @@ class NormalizationTof:
                                                         start_dir=start_dir,
                                                         type='directory',
                                                         multiple=multiple,
+                                                        sort_increasing=False,
                                                         next=next_function)
         self.list_input_folders_ui.show()

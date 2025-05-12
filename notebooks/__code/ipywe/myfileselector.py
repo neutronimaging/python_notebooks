@@ -34,10 +34,15 @@ class MyFileSelectorPanel:
     def __init__(
             self,
             instruction,
-            start_dir=".", type='file', next=None,
-            multiple=False, newdir_toolbar_button=False,
+            start_dir=".", 
+            type='file', 
+            next=None,
+            multiple=False, 
+            newdir_toolbar_button=False,
             custom_layout=None,
-            filters=dict(), default_filter=None,
+            filters=dict(), 
+            default_filter=None,
+            sort_increasing=True,
             stay_alive=False,
     ):
         """
@@ -70,6 +75,7 @@ class MyFileSelectorPanel:
                 assert name in dir(self), "Invalid layout item: %s" % name
                 setattr(self, name, v)
                 continue
+        self.sort_increasing = sort_increasing
         self.instruction = instruction
         self.type = type
         self.filters = filters
@@ -77,9 +83,9 @@ class MyFileSelectorPanel:
         self.cur_filter = None
         self.multiple = multiple
         self.newdir_toolbar_button = newdir_toolbar_button
-        self.createPanel(os.path.abspath(start_dir))
         self.next = next
         self.stay_alive = stay_alive
+        self.createPanel(os.path.abspath(start_dir))
 
     def createPanel(self, curdir):
         self.header = ipyw.Label(self.instruction, layout=self.label_layout)
@@ -116,6 +122,9 @@ class MyFileSelectorPanel:
             entries_files = sorted(self.getFilteredEntries())
         else:
             entries_files = sorted(os.listdir(curdir))
+
+        if self.sort_increasing is False:
+            entries_files = sorted(entries_files, reverse=True)
 
         entries_paths = [os.path.join(curdir, e) for e in entries_files]
         entries_ftime = create_file_times(entries_paths)
