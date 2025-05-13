@@ -83,7 +83,8 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                                     shutter_counts_flag=True,
                                     replace_ob_zeros_by_nan_flag=False, 
                                     output_tif: bool = True,
-                                    preview: bool = False) -> None | np.ndarray:
+                                    preview: bool = False,
+                                    export_mode: dict = None) -> None | np.ndarray:
     """normalize the sample data with ob data using proton charge and shutter counts"""
     # list sample and ob run numbers
     logging.info(f"{sample_run_numbers = }")
@@ -96,6 +97,20 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
 
     logging.info(f"{output_folder = }")
     logging.info(f"{nexus_path = }")
+
+    export_corrected_stack_of_sample_data = export_mode.get("sample_stack", False)
+    export_corrected_stack_of_ob_data = export_mode.get("ob_stack", False)
+    export_corrected_stack_of_normalized_data = export_mode.get("normalized_stack", False)
+    export_corrected_integrated_sample_data = export_mode.get("sample_integrated", False)
+    export_corrected_integrated_ob_data = export_mode.get("ob_integrated", False)
+    export_corrected_integrated_normalized_data = export_mode.get("normalized_integrated", False)
+
+    logging.info(f"{export_corrected_stack_of_sample_data = }")
+    logging.info(f"{export_corrected_stack_of_ob_data = }")
+    logging.info(f"{export_corrected_stack_of_normalized_data = }")
+    logging.info(f"{export_corrected_integrated_sample_data = }")
+    logging.info(f"{export_corrected_integrated_ob_data = }")
+    logging.info(f"{export_corrected_integrated_normalized_data = }")
 
     sample_master_dict, sample_status_metadata = create_master_dict(list_run_numbers=sample_run_numbers, 
                                                              data_type=DataType.sample,   
@@ -135,6 +150,14 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
     logging.info(f"{ob_data_combined.shape = }")
     if verbose:
         display(HTML(f"{ob_data_combined.shape = }"))
+
+    # export ob data if requested
+    if export_corrected_stack_of_ob_data or export_corrected_integrated_ob_data:       
+        export_ob_images(ob_run_numbers, 
+                         output_folder, 
+                         export_corrected_stack_of_ob_data, 
+                         export_corrected_integrated_ob_data, 
+                         ob_data_combined)
 
       # load sample images
     for _sample_run_number in sample_master_dict.keys():
@@ -190,6 +213,14 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
         logging.info(f"{ob_data_combined.shape = }")
         logging.info(f"{ob_data_combined.dtype = }")
 
+        # export sample data after correction if requested
+        if export_corrected_stack_of_sample_data or export_corrected_integrated_sample_data:
+            export_sample_images(output_folder, 
+                                 export_corrected_stack_of_sample_data, 
+                                 export_corrected_integrated_sample_data, 
+                                 _sample_run_number, 
+                                 _sample_data)
+
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data))
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
@@ -208,71 +239,130 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
         if preview:
 
             # display preview of normalized data
-            fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-            sample_data_integrated = np.mean(_sample_data, axis=0)
-            ob_data_integrated = np.mean(ob_data_combined, axis=0)
+            fig, axs1 = plt.subplots(1, 2, figsize=(10, 5))
+            sample_data_integrated = np.nanmean(_sample_data, axis=0)
+            im0 = axs1[0].imshow(sample_data_integrated, cmap='gray')
+            plt.colorbar(im0, ax=axs1[0])
+            axs1[0].set_title(f"Sample data {_sample_run_number}")
+
+            sample_integrated1 = np.nansum(_sample_data, axis=1)
+            sample_integrated = np.nansum(sample_integrated1, axis=1)
+            axs1[1].plot(sample_integrated)
+
+            fig, axs2 = plt.subplots(1, 2, figsize=(10, 5))
+            ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
+            im1 = axs2[0].imshow(ob_data_integrated, cmap='gray')
+            plt.colorbar(im1, ax=axs2[0])
+            axs2[0].set_title(f"OB combinded data ")
+
+            ob_integrated1 = np.nansum(ob_data_combined, axis=1)
+            ob_integrated = np.nansum(ob_integrated1, axis=1)
+            axs2[1].plot(ob_integrated)
+
+            fig, axs3 = plt.subplots(1, 2, figsize=(15, 5))
             normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
-            im0 = axs[0].imshow(sample_data_integrated, cmap='gray')
-            plt.colorbar(im0, ax=axs[0])
-            axs[0].set_title(f"Sample data {_sample_run_number}")
-            
-            im1 = axs[1].imshow(ob_data_integrated, cmap='gray')
-            plt.colorbar(im1, ax=axs[1])
-            axs[1].set_title(f"OB combinded data ")
+            im2 = axs3[0].imshow(normalized_data_integrated, cmap='gray')
+            plt.colorbar(im2, ax=axs3[0])
+            axs3[0].set_title(f"Normalized data {_sample_run_number}")
 
-            # im2 = axs[2].imshow(normalized_data_integrated, cmap='gray', vmin=0, vmax=1)
-            # plt.colorbar(im2, ax=axs[2])
-            # axs[2].set_title(f"Normalized data {_sample_run_number}")
-
-            print(f"{np.shape(normalized_data[_sample_run_number]) = }")
-            profile_step1 = np.nansum(normalized_data[_sample_run_number], axis=1)
-            profile = np.nansum(profile_step1, axis=1)
-            print(f"{np.shape(profile) = }")
-            print(f"{profile = }")
-            axs[2].plot(profile)
+            profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
+            profile = np.nanmean(profile_step1, axis=1)
+            axs3[1].plot(profile)
 
             plt.tight_layout()
             plt.show()
 
-    logging.info(f"Normalization is done!")
+        if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
+            # make up new output folder name
+            full_output_folder = os.path.join(output_folder, f"normalized_{_sample_run_number}")
+            os.makedirs(full_output_folder, exist_ok=True)
+
+            if export_corrected_integrated_normalized_data:
+                # making up the integrated sample data
+                sample_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
+                full_file_name = os.path.join(full_output_folder, "integrated.tif")
+                logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} ...")
+                make_tiff(data=sample_data_integrated, filename=full_file_name)
+                logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} is done!")
+
+            if export_corrected_stack_of_normalized_data:
+                output_stack_folder = os.path.join(full_output_folder, "stack")
+                logging.info(f"\tmaking folder {output_stack_folder}")
+                os.makedirs(output_stack_folder, exist_ok=True)
+
+                for _index, _data in enumerate(normalized_data[_sample_run_number]):
+                    _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
+                    make_tiff(data=_data, filename=_output_file)
+                logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
+                print(f"Exported normalized tif images are in: {output_stack_folder}!")
+
+    logging.info(f"Normalization and export is done!")
     if verbose:
-        display(HTML(f"Normalization is done!"))
+        display(HTML(f"Normalization and export is done!"))
 
-    if output_tif:
-        logging.info(f"Exporting normalized data to {output_folder} ...")
-        if verbose:
-            display(HTML(f"Exporting normalized data to {output_folder} ..."))
+def export_sample_images(output_folder, 
+                         export_corrected_stack_of_sample_data, 
+                         export_corrected_integrated_sample_data, 
+                         _sample_run_number, 
+                         _sample_data):
+    logging.info(f"> Exporting sample corrected images to {output_folder} ...")
 
-        # make up new output folder name
-        sample_folder = os.path.dirname(sample_run_numbers[0])
-        logging.info(f"{sample_folder = }")
-        logging.info(f"{sample_run_numbers[0] =}")
-        full_output_folder = os.path.join(output_folder, os.path.basename(sample_folder) + "_normalized")
+    sample_output_folder = os.path.join(output_folder, f"sample_{_sample_run_number}")
+    os.makedirs(sample_output_folder, exist_ok=True)
 
-        for _run_number in normalized_data.keys():
-            logging.info(f"\t -> Exporting run {_run_number} ...")
-            if verbose:
-                display(HTML(f"\t -> Exporting run {_run_number} ..."))
-            run_number_output_folder = os.path.join(full_output_folder, f"Run_{_run_number}_normalized")
-            os.makedirs(run_number_output_folder, exist_ok=True)
-            
-            _list_data = normalized_data[_run_number]
-            for _index, _data in enumerate(_list_data):
-                _output_file = os.path.join(run_number_output_folder, f"image{_index:04d}.tif")
-                make_tiff(data=_data, filename=_output_file)
-            logging.info(f"\t -> Exporting run {_run_number} is done!")
-            if verbose:
-                display(HTML(f"\t -> Exporting run {_run_number} is done!"))
+    if export_corrected_stack_of_sample_data:
+        output_stack_folder = os.path.join(sample_output_folder, "stack")
+        logging.info(f"\tmaking folder {output_stack_folder}")
+        os.makedirs(output_stack_folder, exist_ok=True)
 
-            print(f"Exported tif images are in: {run_number_output_folder}!")
+        for _index, _data in enumerate(_sample_data):
+            _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
+            make_tiff(data=_data, filename=_output_file)
+        logging.info(f"\t -> Exporting sample data to {output_stack_folder} is done!")
 
-        logging.info(f"export folder: {run_number_output_folder}")
-        logging.info(f"Exporting normalized data is done!")
-        if verbose:
-            display(HTML(f"Exporting normalized data is done!"))
+    if export_corrected_integrated_sample_data:
+                # making up the integrated sample data
+        sample_data_integrated = np.nanmean(_sample_data, axis=0)
+        full_file_name = os.path.join(sample_output_folder, "integrated.tif")
+        logging.info(f"\t -> Exporting integrated sample data to {full_file_name} ...")
+        make_tiff(data=sample_data_integrated, filename=full_file_name)
+        logging.info(f"\t -> Exporting integrated sample data to {full_file_name} is done!")
 
+def export_ob_images(ob_run_numbers, 
+                     output_folder, 
+                     export_corrected_stack_of_ob_data, 
+                     export_corrected_integrated_ob_data, 
+                     ob_data_combined):
+    """export ob images to the output folder"""
+    logging.info(f"> Exporting combined ob images to {output_folder} ...")
+    list_ob_runs_number_only = [isolate_run_number(_ob_run_number) for _ob_run_number in ob_run_numbers]
+    if len(list_ob_runs_number_only) == 1:
+        ob_output_folder = os.path.join(output_folder, f"ob_{list_ob_runs_number_only[0]}")
     else:
-        return normalized_data
+        str_list_ob_runs = "_".join(list_ob_runs_number_only)
+        ob_output_folder = os.path.join(output_folder, f"ob_{str_list_ob_runs}")
+
+    output_stack_folder = ""
+    if export_corrected_stack_of_ob_data:
+        output_stack_folder = os.path.join(ob_output_folder, "stack")
+        logging.info(f"\tmaking folder {output_stack_folder}")
+        os.makedirs(output_stack_folder, exist_ok=True)
+
+    if export_corrected_integrated_ob_data:
+            # making up the integrated ob data
+        ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
+        full_file_name = os.path.join(ob_output_folder, "integrated.tif")
+        logging.info(f"\t -> Exporting integrated ob data to {full_file_name} ...")
+        make_tiff(data=ob_data_integrated, filename=full_file_name)
+        logging.info(f"\t -> Exporting integrated ob data to {full_file_name} is done!")
+
+    if export_corrected_stack_of_ob_data:
+        logging.info(f"\t -> Exporting ob data to {output_stack_folder} ...")
+        _list_data = ob_data_combined
+        for _index, _data in enumerate(_list_data):
+            _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
+            make_tiff(data=_data, filename=_output_file)
+        logging.info(f"\t -> Exporting ob data to {output_stack_folder} is done!")
 
 
 def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbose=False):

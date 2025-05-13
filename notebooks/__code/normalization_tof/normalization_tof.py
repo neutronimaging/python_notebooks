@@ -27,7 +27,6 @@ class NormalizationTof:
     def select_sample_run_numbers(self):
         self.select_folder(instruction="Select sample run number folder",
                            next_function=self.sample_run_numbers_selected,
-
                            multiple=True,)
 
     def select_ob_folder(self):
@@ -62,10 +61,50 @@ class NormalizationTof:
                                         ])
         display(vertical_layout)
 
+    def what_to_export(self):
+        display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))
+        self.export_corrected_stack_of_sample_data = widgets.Checkbox(description='Export corrected stack of sample data',
+                                                                        layout=widgets.Layout(width='100%'),
+                                                                    value=False)
+        self.export_corrected_stack_of_ob_data = widgets.Checkbox(description='Export corrected stack of ob data',
+                                                                        layout=widgets.Layout(width='100%'),
+                                             value=False)
+        self.export_corrected_stack_of_normalized_data = widgets.Checkbox(description='Export corrected stack of normalized data',
+                                                                        layout=widgets.Layout(width='100%'),
+                                             value=True,
+                                             disabled=True)
+        vertical_layout = widgets.VBox([self.export_corrected_stack_of_sample_data,
+                                        self.export_corrected_stack_of_ob_data,
+                                        self.export_corrected_stack_of_normalized_data,
+                                        ])
+        display(vertical_layout)
+        display(HTML("<span style='font-size: 16px; color:red'>Integrated images</span>"))
+        self.export_corrected_integrated_sample_data = widgets.Checkbox(description='Export corrected integrated sample data',
+                                                                        layout=widgets.Layout(width='100%'),
+                                              value=False)
+        self.export_corrected_integrated_ob_data = widgets.Checkbox(description='Export corrected integrated ob data',
+                                                                 layout=widgets.Layout(width='100%'),
+                                               value=False)
+        self.export_corrected_integrated_normalized_data = widgets.Checkbox(description='Export corrected integrated normalized data',
+                                                                        layout=widgets.Layout(width='100%'),
+                                               value=False)
+        vertical_layout = widgets.VBox([self.export_corrected_integrated_sample_data,
+                                        self.export_corrected_integrated_ob_data,
+                                        self.export_corrected_integrated_normalized_data,
+                                        ])
+        
+        display(vertical_layout)
+
     def run_normalization_with_list_of_runs(self, preview=False):
         sample_run_numbers = self.sample_run_numbers
         ob_run_numbers = self.ob_run_numbers
         output_folder = self.output_folder
+        export_mode = {'sample_stack': self.export_corrected_stack_of_sample_data.value,
+                       'ob_stack': self.export_corrected_stack_of_ob_data.value,
+                       'normalized_stack': self.export_corrected_stack_of_normalized_data.value,
+                       'sample_integrated': self.export_corrected_integrated_sample_data.value,
+                       'ob_integrated': self.export_corrected_integrated_ob_data.value,
+                       'normalized_integrated': self.export_corrected_integrated_normalized_data.value,}
         normalization_with_list_of_runs(sample_run_numbers=sample_run_numbers,
                                         ob_run_numbers=ob_run_numbers,
                                         output_folder=output_folder,
@@ -74,7 +113,8 @@ class NormalizationTof:
                                         shutter_counts_flag=self.shutter_counts_flag.value,
                                         replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
                                         verbose=True,
-                                        preview=preview)
+                                        preview=preview,
+                                        export_mode=export_mode)
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
 
