@@ -82,10 +82,12 @@ class NormalizationTof:
 
         label = widgets.Label(value="Distance source detector (m)", 
                               layout=widgets.Layout(width='200px'))
-        self.distance_source_detector = widgets.FloatText(value=25)
+        self.distance_source_detector = widgets.FloatText(value=25,
+                                                          disabled=True,
+                                                          layout=widgets.Layout(width='50px'))
         hori_layout = widgets.HBox([label, self.distance_source_detector])
         display(hori_layout)        
-
+        
     def what_to_export(self):
         display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))
         self.export_corrected_stack_of_sample_data = widgets.Checkbox(description='Export corrected stack of sample data',
@@ -139,6 +141,7 @@ class NormalizationTof:
                                         replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
                                         verbose=True,
                                         preview=preview,
+                                        distance_source_detector_m=self.distance_source_detector.value,
                                         export_mode=export_mode)
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
