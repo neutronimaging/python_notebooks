@@ -95,7 +95,7 @@ class VenusMonitorHdf5:
         distance_label = widgets.Label("Distance source_monitor",
                                        layout=widgets.Layout(width="200px"),
                                        disabled=True)
-        self.distance_source_detector_ui = widgets.FloatText(value=23.726,
+        self.distance_source_detector_ui = widgets.FloatText(value=25,
                                                         layout=widgets.Layout(width="100px"),
                                                         disabled=True)
         distance_units_label = widgets.Label("m")

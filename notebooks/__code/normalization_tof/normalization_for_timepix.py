@@ -274,7 +274,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
 
         if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
             # make up new output folder name
-            full_output_folder = os.path.join(output_folder, f"normalized_{_sample_run_number}")
+            full_output_folder = os.path.join(output_folder, f"normalized_{_sample_run_number}")                 # issue for WEI here !
             os.makedirs(full_output_folder, exist_ok=True)
 
             if export_corrected_integrated_normalized_data:
