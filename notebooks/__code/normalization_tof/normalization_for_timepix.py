@@ -728,7 +728,7 @@ def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
             proton_charge = None
             status_all_proton_charge_found = False
         master_dict[_run_number][MasterDictKeys.proton_charge] = proton_charge        
-    return master_dict, status_all_proton_charge_found
+    return status_all_proton_charge_found
    
 
 def update_dict_with_list_of_images(master_dict: dict) -> dict:
@@ -736,7 +736,6 @@ def update_dict_with_list_of_images(master_dict: dict) -> dict:
     for _run_number in master_dict.keys():
         list_tif = retrieve_list_of_tif(master_dict[_run_number][MasterDictKeys.data_path])
         master_dict[_run_number][MasterDictKeys.list_tif] = list_tif
-    return master_dict
 
 
 def get_list_run_number(data_folder: str) -> list:
@@ -750,7 +749,6 @@ def update_dict_with_nexus_full_path(nexus_root_path: str, master_dict: dict) ->
     """create dict of nexus path for each run number"""
     for run_number in master_dict.keys():
         master_dict[run_number][MasterDictKeys.nexus_path] = os.path.join(nexus_root_path, f"VENUS_{run_number}.nxs.h5")
-    return master_dict
 
 
 def update_with_nexus_metadata(master_dict: dict) -> dict:
@@ -758,14 +756,12 @@ def update_with_nexus_metadata(master_dict: dict) -> dict:
         nexus_path = master_dict[run_number][MasterDictKeys.nexus_path]
         detector_offset_us = get_detector_offset_from_nexus(nexus_path)
         master_dict[run_number][MasterDictKeys.detector_delay_us] = detector_offset_us
-    return master_dict
 
 
 def update_dict_with_data_full_path(data_root_path: str, master_dict: dict) -> dict:
     """create dict of data path for each run number"""
     for run_number in master_dict.keys():
         master_dict[run_number][MasterDictKeys.data_path] = os.path.join(data_root_path, f"Run_{run_number}")
-    return master_dict
 
 
 def create_master_dict(list_run_numbers: list = None, 
@@ -787,13 +783,13 @@ def create_master_dict(list_run_numbers: list = None,
     master_dict = init_master_dict(list_run_numbers)
 
     logging.info(f"updating with data full path!")
-    master_dict = update_dict_with_data_full_path(data_root_path, master_dict)
+    update_dict_with_data_full_path(data_root_path, master_dict)
 
     logging.info(f"updating with nexus full path!")
-    master_dict = update_dict_with_nexus_full_path(nexus_root_path, master_dict)
+    update_dict_with_nexus_full_path(nexus_root_path, master_dict)
 
     logging.info(f"updating with nexus metadata")
-    master_dict = update_with_nexus_metadata(master_dict)
+    update_with_nexus_metadata(master_dict)
 
     logging.info(f"updating with shutter counts!")
     master_dict, all_shutter_counts_found = update_dict_with_shutter_counts(master_dict)
@@ -809,13 +805,13 @@ def create_master_dict(list_run_numbers: list = None,
         logging.info(f"{master_dict = }")
 
     logging.info(f"updating with proton charge!")
-    master_dict, all_proton_charge_found = update_dict_with_proton_charge(master_dict)
+    all_proton_charge_found = update_dict_with_proton_charge(master_dict)
     if not all_proton_charge_found:
         status_metadata.all_proton_charge_found = False
     logging.info(f"{master_dict = }")
 
     logging.info(f"updating with list of images!")
-    master_dict = update_dict_with_list_of_images(master_dict)
+    update_dict_with_list_of_images(master_dict)
 
     return master_dict, status_metadata
 
