@@ -20,6 +20,8 @@ class NormalizationTof:
 
     def __init__(self, working_dir=None, debug=False):
         self.working_dir = working_dir
+        if debug:
+            self.working_dir = DEBUG_DATA.working_dir
         self.nexus_folder = os.path.join(self.working_dir, 'nexus')
         self.debug = debug
 
@@ -29,7 +31,7 @@ class NormalizationTof:
 
     def select_sample_run_numbers(self):
         if self.debug:
-            list_sample_runs = [os.path.join(DEBUG_DATA.working_dir, _sample) 
+            list_sample_runs = [os.path.join(DEBUG_DATA.autoreduce_dir, _sample) 
                                 for _sample in DEBUG_DATA.sample_runs_selected]
             self.sample_run_numbers_selected(list_sample_runs)
         else:
@@ -38,19 +40,19 @@ class NormalizationTof:
                             multiple=True,)
 
     def select_ob_folder(self):
-        if self.debug:
-            list_ob_runs = [os.path.join(DEBUG_DATA.working_dir, _ob) 
-                            for _ob in DEBUG_DATA.ob_runs_selected]
-            self.ob_folder_selected(list_ob_runs)
-        else:    
             self.select_folder(instruction="Select ob top folder",
                             next_function=self.ob_folder_selected)
 
     def select_ob_run_numbers(self):
-        self.select_folder(instruction="Select ob run number folders",
-                           next_function=self.ob_run_numbers_selected,
-                           start_dir=self.ob_folder,
-                           multiple=True)
+        if self.debug:
+            list_ob_runs = [os.path.join(DEBUG_DATA.autoreduce_dir, _ob) 
+                            for _ob in DEBUG_DATA.ob_runs_selected]
+            self.ob_run_numbers_selected(list_ob_runs)
+        else:    
+            self.select_folder(instruction="Select ob run number folders",
+                               next_function=self.ob_run_numbers_selected,
+                               start_dir=self.ob_folder,
+                               multiple=True)
 
     def select_output_folder(self):
         if self.debug:
@@ -69,13 +71,20 @@ class NormalizationTof:
                                                value=True)
         self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description='Replace OB zeros by NaN',
                                                   value=True)
-        # self.replace_ob_zeros_by_median_flag = widgets.Checkbox(description='Replace OB zeros by median of neighboring pixels',
-        #                                                         layout=widgets.Layout(width='100%'))
+
         vertical_layout = widgets.VBox([self.proton_charge_flag, 
                                         self.shutter_counts_flag, 
                                         self.replace_ob_zeros_by_nan_flag, 
                                         ])
         display(vertical_layout)
+
+        display(HTML("<hr>"))
+
+        label = widgets.Label(value="Distance source detector (m)", 
+                              layout=widgets.Layout(width='200px'))
+        self.distance_source_detector = widgets.FloatText(value=25)
+        hori_layout = widgets.HBox([label, self.distance_source_detector])
+        display(hori_layout)        
 
     def what_to_export(self):
         display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))

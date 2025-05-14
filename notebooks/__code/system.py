@@ -24,6 +24,7 @@ class System:
     def select_working_dir(cls, debugger_folder='', system_folder='',
                            facility='HFIR',
                            instrument='CG1D',
+                           ipts=None,
                            notebook="N/A"):
 
         try:
@@ -96,6 +97,11 @@ class System:
             cls.manual_ipts_entry_ui.observe(cls.check_ipts_input, names='value')
 
             cls.result_label.value = ""
+
+            if ipts is not None:
+                cls.working_dir_ui.value = ipts
+                _, ipts_number = cls.ipts_number.split('-')
+                cls.ipts_number.value = ipts_number
 
         except:
             cls.working_dir = os.path.expanduser("~")
