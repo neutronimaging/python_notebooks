@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
 from __code.normalization_tof.normalization_for_timepix import normalization, normalization_with_list_of_runs
+from __code.normalization_tof.config import DEBUG_DATA
 
 
 class NormalizationTof:
@@ -17,22 +18,33 @@ class NormalizationTof:
     ob_run_numbers = None
     output_folder = None
 
-    def __init__(self, working_dir=None):
+    def __init__(self, working_dir=None, debug=False):
         self.working_dir = working_dir
         self.nexus_folder = os.path.join(self.working_dir, 'nexus')
+        self.debug = debug
 
     def select_sample_folder(self):
         self.select_folder(instruction="Select sample top folder",
                            next_function=self.sample_folder_selected)
 
     def select_sample_run_numbers(self):
-        self.select_folder(instruction="Select sample run number folder",
-                           next_function=self.sample_run_numbers_selected,
-                           multiple=True,)
+        if self.debug:
+            list_sample_runs = [os.path.join(DEBUG_DATA.working_dir, _sample) 
+                                for _sample in DEBUG_DATA.sample_runs_selected]
+            self.sample_run_numbers_selected(list_sample_runs)
+        else:
+            self.select_folder(instruction="Select sample run number folder",
+                            next_function=self.sample_run_numbers_selected,
+                            multiple=True,)
 
     def select_ob_folder(self):
-        self.select_folder(instruction="Select ob top folder",
-                           next_function=self.ob_folder_selected)
+        if self.debug:
+            list_ob_runs = [os.path.join(DEBUG_DATA.working_dir, _ob) 
+                            for _ob in DEBUG_DATA.ob_runs_selected]
+            self.ob_folder_selected(list_ob_runs)
+        else:    
+            self.select_folder(instruction="Select ob top folder",
+                            next_function=self.ob_folder_selected)
 
     def select_ob_run_numbers(self):
         self.select_folder(instruction="Select ob run number folders",
@@ -41,9 +53,12 @@ class NormalizationTof:
                            multiple=True)
 
     def select_output_folder(self):
-        self.select_folder(instruction="Select output folder",
-                           start_dir=self.working_dir,
-                           next_function=self.output_folder_selected)
+        if self.debug:
+            self.output_folder_selected(DEBUG_DATA.output_folder)
+        else:
+            self.select_folder(instruction="Select output folder",
+                            start_dir=self.working_dir,
+                            next_function=self.output_folder_selected)
 
     def settings(self):
         label = widgets.Label(value="What to take into account for normalization?")

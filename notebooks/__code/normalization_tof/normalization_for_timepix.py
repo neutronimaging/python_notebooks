@@ -44,6 +44,7 @@ class MasterDictKeys:
     data_path = "data_path"
     shutter_counts = "shutter_counts"
     list_spectra = "list_spectra"
+    spectra_file_name = "spectra_file_name"
     
 
 class StatusMetadata:
@@ -157,7 +158,8 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                          output_folder, 
                          export_corrected_stack_of_ob_data, 
                          export_corrected_integrated_ob_data, 
-                         ob_data_combined)
+                         ob_data_combined,
+                         spectra_file_name=ob_master_dict[ob_run_numbers[0]][MasterDictKeys.spectra_file_name])
 
       # load sample images
     for _sample_run_number in sample_master_dict.keys():
@@ -219,7 +221,8 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                                  export_corrected_stack_of_sample_data, 
                                  export_corrected_integrated_sample_data, 
                                  _sample_run_number, 
-                                 _sample_data)
+                                 _sample_data,
+                                 spectra_file_name=sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name])
 
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data))
@@ -300,11 +303,13 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
     if verbose:
         display(HTML(f"Normalization and export is done!"))
 
+
 def export_sample_images(output_folder, 
                          export_corrected_stack_of_sample_data, 
                          export_corrected_integrated_sample_data, 
                          _sample_run_number, 
-                         _sample_data):
+                         _sample_data,
+                         spectra_file_name=None):
     logging.info(f"> Exporting sample corrected images to {output_folder} ...")
 
     sample_output_folder = os.path.join(output_folder, f"sample_{_sample_run_number}")
@@ -319,6 +324,8 @@ def export_sample_images(output_folder,
             _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
             make_tiff(data=_data, filename=_output_file)
         logging.info(f"\t -> Exporting sample data to {output_stack_folder} is done!")
+        os.path.copy(spectra_file_name, os.path.join(output_stack_folder))
+        logging.info(f"\t -> Exporting spectra file {spectra_file_name} to {output_stack_folder} is done!")
 
     if export_corrected_integrated_sample_data:
                 # making up the integrated sample data
@@ -328,11 +335,13 @@ def export_sample_images(output_folder,
         make_tiff(data=sample_data_integrated, filename=full_file_name)
         logging.info(f"\t -> Exporting integrated sample data to {full_file_name} is done!")
 
+
 def export_ob_images(ob_run_numbers, 
                      output_folder, 
                      export_corrected_stack_of_ob_data, 
                      export_corrected_integrated_ob_data, 
-                     ob_data_combined):
+                     ob_data_combined,
+                     spectra_file_name):
     """export ob images to the output folder"""
     logging.info(f"> Exporting combined ob images to {output_folder} ...")
     list_ob_runs_number_only = [isolate_run_number(_ob_run_number) for _ob_run_number in ob_run_numbers]
@@ -364,6 +373,9 @@ def export_ob_images(ob_run_numbers,
             _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
             make_tiff(data=_data, filename=_output_file)
         logging.info(f"\t -> Exporting ob data to {output_stack_folder} is done!")
+        # copy spectra file to the output folder
+        os.path.copy(spectra_file_name, os.path.join(output_stack_folder))
+        logging.info(f"\t -> Exported spectra file {spectra_file_name} to {output_stack_folder}!")
 
 
 def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbose=False):
@@ -395,9 +407,12 @@ def init_master_dict(list_run_numbers: list[str]) -> dict:
                                    MasterDictKeys.proton_charge: None,
                                    MasterDictKeys.matching_ob: [] ,
                                    MasterDictKeys.list_tif: [], 
+                                   MasterDictKeys.list_spectra: None,
+                                   MasterDictKeys.spectra_file_name: None,
                                    MasterDictKeys.data: None}
 
     return master_dict
+
 
 def retrieve_root_nexus_full_path(sample_folder: str) -> str:
     """retrieve the root nexus path from the sample folder"""
@@ -451,6 +466,7 @@ def update_dict_with_spectra_files(master_dict: dict) -> tuple[dict, bool]:
             continue
         else:
             spectra_file = _list_files[0]
+            master_dict[_run_number][MasterDictKeys.spectra_file_name] = spectra_file
             pd_spectra = pd.read_csv(spectra_file, sep=",", header=0)
             shutter_time = pd_spectra["shutter_time"].values
             master_dict[_run_number][MasterDictKeys.list_spectra] = shutter_time
