@@ -4,7 +4,8 @@ import ipywidgets as widgets
 from IPython.core.display import HTML
 import matplotlib.pyplot as plt
 
-from __code.ipywe.myfileselector import MyFileSelectorPanel
+# from __code.ipywe.myfileselector import MyFileSelectorPanel
+from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
 from __code.normalization_tof.normalization_for_timepix import normalization, normalization_with_list_of_runs
 
 
@@ -52,7 +53,7 @@ class NormalizationTof:
         self.shutter_counts_flag = widgets.Checkbox(description='Shutter counts',
                                                value=True)
         self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description='Replace OB zeros by NaN',
-                                                  value=False)
+                                                  value=True)
         # self.replace_ob_zeros_by_median_flag = widgets.Checkbox(description='Replace OB zeros by median of neighboring pixels',
         #                                                         layout=widgets.Layout(width='100%'))
         vertical_layout = widgets.VBox([self.proton_charge_flag, 
@@ -161,6 +162,7 @@ class NormalizationTof:
                                                         start_dir=start_dir,
                                                         type='directory',
                                                         multiple=multiple,
-                                                        sort_increasing=False,
+                                                        sort_in_reverse=True,
+                                                        # sort_increasing=False,
                                                         next=next_function)
         self.list_input_folders_ui.show()

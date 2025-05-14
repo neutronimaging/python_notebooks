@@ -558,11 +558,13 @@ def produce_list_shutter_for_each_image(list_time_spectra:list = None, list_shut
     list_index_jump = np.where(np.diff(list_time_spectra) > 0.0001)[0]
 
     logging.info(f"\t{list_index_jump = }")
-
-    # delta_shutter_counts = shutter_counts[1] - shutter_counts[0]
-    # list_index_jump = np.where(np.diff(shutter_counts) > delta_shutter_counts)[0]
+    logging.info(f"\t{list_shutter_counts = }")
 
     list_shutter_values_for_each_image = np.zeros(len(list_time_spectra), dtype=np.float32)
+    if len(list_shutter_counts) == 1:  # resonance mode
+        list_shutter_values_for_each_image.fill(list_shutter_counts[0])
+        return list_shutter_values_for_each_image
+
     list_shutter_values_for_each_image[0: list_index_jump[0]+1].fill(list_shutter_counts[0])
     for _index in range(1, len(list_index_jump)):
         _start = list_index_jump[_index - 1]
@@ -632,19 +634,19 @@ def combine_ob_images(ob_master_dict: dict,
         if replace_ob_zeros_by_nan:
             ob_data[ob_data == 0] = np.NaN
 
-        if True:
-            # replace zeros in OB by median of surrounding pixels
-            where_ob_zeros = np.where(ob_data == 0)
-            logging.info(f"{len(where_ob_zeros) = }")
-            if len(where_ob_zeros[0]) > 0:
-                logging.info(f"Replacing zeros in OB data by median of surrounding pixels ...")
-                # if verbose:
-                #     display(HTML(f"Replacing zeros in OB data by median of surrounding pixels ..."))
-                for _index in range(len(where_ob_zeros[0])):
-                    _t = where_ob_zeros[0][_index]
-                    _y = where_ob_zeros[1][_index]
-                    _x = where_ob_zeros[2][_index]
-                    ob_data[_t, _y, _x] = np.nanmedian(ob_data[_t, _y-1:_y+2, _x-1:_x+2]) 
+        # if True:
+        #     # replace zeros in OB by median of surrounding pixels
+        #     where_ob_zeros = np.where(ob_data == 0)
+        #     logging.info(f"{len(where_ob_zeros) = }")
+        #     if len(where_ob_zeros[0]) > 0:
+        #         logging.info(f"Replacing zeros in OB data by median of surrounding pixels ...")
+        #         # if verbose:
+        #         #     display(HTML(f"Replacing zeros in OB data by median of surrounding pixels ..."))
+        #         for _index in range(len(where_ob_zeros[0])):
+        #             _t = where_ob_zeros[0][_index]
+        #             _y = where_ob_zeros[1][_index]
+        #             _x = where_ob_zeros[2][_index]
+        #             ob_data[_t, _y, _x] = np.nanmedian(ob_data[_t, _y-1:_y+2, _x-1:_x+2]) 
 
         full_ob_data_corrected.append(ob_data)
         logging.info(f"{np.shape(full_ob_data_corrected) = }")
