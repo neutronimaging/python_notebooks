@@ -341,6 +341,7 @@ def export_ob_images(ob_run_numbers,
     else:
         str_list_ob_runs = "_".join(list_ob_runs_number_only)
         ob_output_folder = os.path.join(output_folder, f"ob_{str_list_ob_runs}")
+    os.makedirs(ob_output_folder, exist_ok=True)
 
     output_stack_folder = ""
     if export_corrected_stack_of_ob_data:
