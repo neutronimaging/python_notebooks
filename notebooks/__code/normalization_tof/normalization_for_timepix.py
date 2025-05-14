@@ -8,6 +8,7 @@ from skimage.io import imread
 import numpy as np
 import multiprocessing as mp 
 from PIL import Image
+import shutil
 from IPython.display import display
 from IPython.core.display import HTML
 import pandas as pd
@@ -264,9 +265,6 @@ def convert_array_from_time_to_energy(time_array: np.ndarray,
     energy_array = np.array(energy_array_ev)
 
     return energy_array
-
-
-
 
 
 def normalization_with_list_of_runs(sample_run_numbers: list = None, 
@@ -529,6 +527,9 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                     make_tiff(data=_data, filename=_output_file)
                 logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
                 print(f"Exported normalized tif images are in: {output_stack_folder}!")
+                logging.info(f"Exported time spectra file  to {full_output_folder}!")
+                spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
+                shutil.copy(spectra_file, full_output_folder)
 
     logging.info(f"Normalization and export is done!")
     if verbose:
