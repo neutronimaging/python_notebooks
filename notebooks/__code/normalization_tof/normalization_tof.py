@@ -3,11 +3,23 @@ from IPython.display import display
 import ipywidgets as widgets
 from IPython.core.display import HTML
 import matplotlib.pyplot as plt
+import logging as notebook_logging
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
 from __code.normalization_tof.normalization_for_timepix import normalization, normalization_with_list_of_runs
 from __code.normalization_tof.config import DEBUG_DATA
+
+# LOG_PATH = "/SNS/VENUS/shared/log/"
+# file_name, ext = os.path.splitext(os.path.basename(__file__))
+# user_name = os.getlogin() # add user name to the log file name
+# log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+# notebook_logging.basicConfig(filename=log_file_name,
+#                     filemode='w',
+#                     format='[%(levelname)s] - %(asctime)s - %(message)s',
+#                     level=notebook_logging.INFO)
+# notebook_logging.info(f"*** Starting a new script {file_name} ***")
+
 
 
 class NormalizationTof:
@@ -17,6 +29,17 @@ class NormalizationTof:
     ob_folder = None
     ob_run_numbers = None
     output_folder = None
+
+    LOG_PATH = "/SNS/VENUS/shared/log/"
+    file_name, ext = os.path.splitext(os.path.basename(__file__))
+    user_name = os.getlogin() # add user name to the log file name
+    log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+    print(f"Log file name: {log_file_name}")
+    notebook_logging.basicConfig(filename=log_file_name,
+                        filemode='w',
+                        format='[%(levelname)s] - %(asctime)s - %(message)s',
+                        level=notebook_logging.INFO)
+    notebook_logging.info(f"*** Starting a new script {file_name} ***")
 
     def __init__(self, working_dir=None, debug=False):
         if debug:
@@ -172,6 +195,78 @@ class NormalizationTof:
         
         display(vertical_layout)
 
+    def run_normalization(self):
+        sample_folder = self.sample_folder
+        ob_folder = self.ob_folder
+        output_folder = self.output_folder
+        normalization(sample_folder=sample_folder,
+                       ob_folder=ob_folder,
+                       output_folder=output_folder,
+                       verbose=True)
+        display(HTML("<span style='color:blue'>Normalization completed</span>"))
+        display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
+
+
+    # helper functions
+
+    def sample_folder_selected(self, folder_selected):
+        self.sample_folder = folder_selected
+        display(HTML(f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"))
+
+    def sample_run_numbers_selected(self, runs_selected):
+        self.sample_run_numbers = runs_selected
+        display(HTML(f"Sample run numbers selected:"))
+        notebook_logging.info(f"Sample run numbers selected: {runs_selected}")
+        for _run in runs_selected:
+            if os.path.exists(_run):
+                display(HTML(f"<span style='color:green'>{_run}</span>"))
+                notebook_logging.info(f"\tSample run number {_run} - FOUND")
+            else:
+                display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
+                notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
+
+    def ob_folder_selected(self, folder_selected):
+        self.ob_folder = folder_selected
+        display(HTML(f"Open beam folder selected: <span style='color:blue'>{folder_selected}</span>"))
+
+    def ob_run_numbers_selected(self, folder_selected):
+        self.ob_run_numbers = folder_selected
+        display(HTML(f"OB folder selected:"))
+        notebook_logging.info(f"OB folder selected: {folder_selected}")
+        for _run in folder_selected:
+            if os.path.exists(_run):
+                display(HTML(f"<span style='color:green'>{_run}</span>"))
+                notebook_logging.info(f"\tOB run number {_run} - FOUND")
+            else:
+                display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
+                notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
+
+    def output_folder_selected(self, folder_selected):
+        self.output_folder = folder_selected
+        display(HTML(f"Output folder selected:"))
+        if os.path.exists(folder_selected):
+            display(HTML(f"<span style='color:green'>{folder_selected} - FOUND!</span>"))
+            notebook_logging.info(f"Output folder selected: {folder_selected} - FOUND")
+        else:
+            display(HTML(f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"))
+            notebook_logging.info(f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!")
+
+    def select_folder(self, instruction="Select a folder", next_function=None, start_dir=None, multiple=False):
+
+        # go straight to autoreduce/mcp folder
+        if start_dir is None:
+            start_dir = os.path.join(self.working_dir, 'shared', 'autoreduce', 'mcp', 'images')
+        
+        self.list_input_folders_ui = MyFileSelectorPanel(instruction=instruction,
+                                                        start_dir=start_dir,
+                                                        type='directory',
+                                                        multiple=multiple,
+                                                        sort_in_reverse=True,
+                                                        # sort_increasing=False,
+                                                        next=next_function)
+        self.list_input_folders_ui.show()
+
+    # calling main code
     def run_normalization_with_list_of_runs(self, preview=False):
         sample_run_numbers = self.sample_run_numbers
         ob_run_numbers = self.ob_run_numbers
@@ -195,51 +290,3 @@ class NormalizationTof:
                                         export_mode=export_mode)
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
-
-    def run_normalization(self):
-        sample_folder = self.sample_folder
-        ob_folder = self.ob_folder
-        output_folder = self.output_folder
-        normalization(sample_folder=sample_folder,
-                       ob_folder=ob_folder,
-                       output_folder=output_folder,
-                       verbose=True)
-        display(HTML("<span style='color:blue'>Normalization completed</span>"))
-        display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
-
-    # helper functions
-
-    def sample_folder_selected(self, folder_selected):
-        self.sample_folder = folder_selected
-        display(HTML(f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"))
-
-    def sample_run_numbers_selected(self, runs_selected):
-        self.sample_run_numbers = runs_selected
-        display(HTML(f"Sample run numbers selected: <span style='color:blue'>{', '.join(runs_selected)}</span>"))
-
-    def ob_folder_selected(self, folder_selected):
-        self.ob_folder = folder_selected
-        display(HTML(f"OB folder selected: <span style='color:blue'>{folder_selected}</span>"))
-
-    def ob_run_numbers_selected(self, folder_selected):
-        self.ob_run_numbers = folder_selected
-        display(HTML(f"OB run numbers selected: <span style='color:blue'>{', '.join(folder_selected)}</span>"))
-
-    def output_folder_selected(self, folder_selected):
-        self.output_folder = folder_selected
-        display(HTML(f"Output folder selected: <span style='color:blue'>{folder_selected}</span>"))
-
-    def select_folder(self, instruction="Select a folder", next_function=None, start_dir=None, multiple=False):
-
-        # go straight to autoreduce/mcp folder
-        if start_dir is None:
-            start_dir = os.path.join(self.working_dir, 'shared', 'autoreduce', 'mcp', 'images')
-        
-        self.list_input_folders_ui = MyFileSelectorPanel(instruction=instruction,
-                                                        start_dir=start_dir,
-                                                        type='directory',
-                                                        multiple=multiple,
-                                                        sort_in_reverse=True,
-                                                        # sort_increasing=False,
-                                                        next=next_function)
-        self.list_input_folders_ui.show()
