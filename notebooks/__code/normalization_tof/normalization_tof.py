@@ -42,6 +42,9 @@ class NormalizationTof:
     notebook_logging.info(f"*** Starting a new script {file_name} ***")
 
     def __init__(self, working_dir=None, debug=False):
+
+        print(f"Working dir: {working_dir}")
+
         if debug:
             self.working_dir = DEBUG_DATA.working_dir
             self.output_dir = DEBUG_DATA.output_folder
@@ -54,7 +57,14 @@ class NormalizationTof:
         _, _facility, _beamline, ipts = self.working_dir.split('/')
         self.ipts = ipts
         self.autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
-
+        if os.path.exists(self.autoreduce_dir):
+            display(HTML(f"Autoreduce folder found: <span style='color:green'>{self.autoreduce_dir}</span>"))
+            notebook_logging.info(f"Autoreduce folder found: {self.autoreduce_dir}")
+        else:
+            display(HTML(f"<span style='color:red'>Autoreduce folder {self.autoreduce_dir} DOES NOT EXIST!</span>"))
+            notebook_logging.info(f"Autoreduce folder {self.autoreduce_dir} DOES NOT EXIST!")
+            display(HTML(f"<span style='color:red'>Make sure you selected the right INSTRUMENT and IPTS!</span>"))
+            
     def manually_set_runs(self):
         if self.debug:
             sample_runs = DEBUG_DATA.sample_runs_selected
@@ -107,8 +117,8 @@ class NormalizationTof:
             self.sample_run_numbers_selected(list_sample_runs_full_path)
         else:
             self.select_folder(instruction="Select sample run number folder",
-                            next_function=self.sample_run_numbers_selected,
-                            multiple=True,)
+                               next_function=self.sample_run_numbers_selected,
+                               multiple=True,)
 
     def select_ob_folder(self):
             self.select_folder(instruction="Select ob top folder",
@@ -255,8 +265,8 @@ class NormalizationTof:
 
         # go straight to autoreduce/mcp folder
         if start_dir is None:
-            start_dir = os.path.join(self.working_dir, 'shared', 'autoreduce', 'mcp', 'images')
-        
+            start_dir = self.autoreduce_dir
+
         self.list_input_folders_ui = MyFileSelectorPanel(instruction=instruction,
                                                         start_dir=start_dir,
                                                         type='directory',

@@ -100,7 +100,7 @@ class System:
 
             if ipts is not None:
                 cls.working_dir_ui.value = ipts
-                _, ipts_number = cls.ipts_number.split('-')
+                _, ipts_number = ipts.split('-')
                 cls.ipts_number.value = ipts_number
 
         except:
