@@ -19,21 +19,69 @@ class NormalizationTof:
     output_folder = None
 
     def __init__(self, working_dir=None, debug=False):
-        self.working_dir = working_dir
         if debug:
             self.working_dir = DEBUG_DATA.working_dir
+            self.output_dir = DEBUG_DATA.output_folder
+        else:
+            self.working_dir = working_dir
+            self.output_dir = os.path.join(self.working_dir, 'shared')
+        
         self.nexus_folder = os.path.join(self.working_dir, 'nexus')
         self.debug = debug
+        _, _facility, _beamline, ipts = self.working_dir.split('/')
+        self.ipts = ipts
+        self.autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
+
+    def manually_set_runs(self):
+        if self.debug:
+            sample_runs = DEBUG_DATA.sample_runs_selected
+            sample_run_numbers_list = []
+            for _run in sample_runs:
+                _, number = _run.split('_')
+                sample_run_numbers_list.append(number)
+            str_sample_run_numbers = ', '.join(sample_run_numbers_list)
+
+            ob_runs = DEBUG_DATA.ob_runs_selected
+            ob_run_numbers_list = []
+            for _run in ob_runs:
+                _, number = _run.split('_')
+                ob_run_numbers_list.append(number)
+            str_ob_run_numbers = ', '.join(ob_run_numbers_list)
+        
+            output_folder = DEBUG_DATA.output_folder
+
+        else:
+            str_sample_run_numbers = ""
+            str_ob_run_numbers = ""
+            output_folder = os.path.join(self.working_dir, 'shared')
+
+        sample_label = widgets.Label(value="List of sample run numbers (ex: 8702, 8704)")
+        self.sample_run_numbers = widgets.Textarea(value=str_sample_run_numbers,
+                                                    placeholder="",
+                                                    layout=widgets.Layout(width='400px'))
+        ob_label = widgets.Label(value="List of ob run numbers (ex: 8703)")
+        self.ob_run_numbers = widgets.Textarea(value=str_ob_run_numbers,
+                                                placeholder="",
+                                                layout=widgets.Layout(width='400px'))
+        output_label = widgets.Label(value="Output folder")
+        self.output_folder = widgets.Text(value=output_folder,
+                                          placeholder="",
+                                          layout=widgets.Layout(width='400px'))
+        vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers,
+                                        ob_label, self.ob_run_numbers,
+                                        output_label, self.output_folder,])
+        display(vertical_layout)
 
     def select_sample_folder(self):
         self.select_folder(instruction="Select sample top folder",
                            next_function=self.sample_folder_selected)
 
     def select_sample_run_numbers(self):
-        if self.debug:
-            list_sample_runs = [os.path.join(DEBUG_DATA.autoreduce_dir, _sample) 
-                                for _sample in DEBUG_DATA.sample_runs_selected]
-            self.sample_run_numbers_selected(list_sample_runs)
+        if self.sample_run_numbers.value.strip() != "":
+            sample_run_numbers = self.sample_run_numbers.value.split(',')
+            list_sample_run_numbers = [f"Run_{_run.strip()}" for _run in sample_run_numbers]
+            list_sample_runs_full_path = [os.path.join(self.autoreduce_dir, _sample) for _sample in list_sample_run_numbers]
+            self.sample_run_numbers_selected(list_sample_runs_full_path)
         else:
             self.select_folder(instruction="Select sample run number folder",
                             next_function=self.sample_run_numbers_selected,
@@ -44,10 +92,11 @@ class NormalizationTof:
                             next_function=self.ob_folder_selected)
 
     def select_ob_run_numbers(self):
-        if self.debug:
-            list_ob_runs = [os.path.join(DEBUG_DATA.autoreduce_dir, _ob) 
-                            for _ob in DEBUG_DATA.ob_runs_selected]
-            self.ob_run_numbers_selected(list_ob_runs)
+        if self.ob_run_numbers.value.strip() != "":
+            ob_run_numbers = self.ob_run_numbers.value.split(',')
+            list_ob_run_numbers = [f"Run_{_run.strip()}" for _run in ob_run_numbers]
+            list_ob_runs_full_path = [os.path.join(self.autoreduce_dir, _ob) for _ob in list_ob_run_numbers]
+            self.ob_run_numbers_selected(list_ob_runs_full_path)
         else:    
             self.select_folder(instruction="Select ob run number folders",
                                next_function=self.ob_run_numbers_selected,
@@ -55,8 +104,9 @@ class NormalizationTof:
                                multiple=True)
 
     def select_output_folder(self):
-        if self.debug:
-            self.output_folder_selected(DEBUG_DATA.output_folder)
+        if self.output_folder.value.strip() != "":
+            self.output_folder = self.output_folder.value
+            self.output_folder_selected(self.output_folder)
         else:
             self.select_folder(instruction="Select output folder",
                             start_dir=self.working_dir,

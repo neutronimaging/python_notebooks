@@ -31,6 +31,11 @@ logging.basicConfig(filename=log_file_name,
 logging.info(f"*** Starting a new script {file_name} ***")
 
 
+class PLOT_SIZE:
+    width =  8
+    height = 5
+
+
 class DataType:
     sample = "sample"
     ob = "ob"
@@ -453,7 +458,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
         if preview:
 
             # display preview of normalized data
-            fig, axs1 = plt.subplots(1, 2, figsize=(10, 5))
+            fig, axs1 = plt.subplots(1, 2, figsize=(2*PLOT_SIZE.width, PLOT_SIZE.height))
             sample_data_integrated = np.nanmean(_sample_data, axis=0)
             im0 = axs1[0].imshow(sample_data_integrated, cmap='gray')
             plt.colorbar(im0, ax=axs1[0])
@@ -466,7 +471,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             axs1[1].set_ylabel("mean of full image")
             plt.tight_layout
 
-            fig, axs2 = plt.subplots(1, 2, figsize=(10, 5))
+            fig, axs2 = plt.subplots(1, 2, figsize=(2*PLOT_SIZE.width, PLOT_SIZE.height))
             ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
             im1 = axs2[0].imshow(ob_data_integrated, cmap='gray')
             plt.colorbar(im1, ax=axs2[0])
@@ -479,7 +484,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             axs2[1].set_ylabel("mean of full image")
             plt.tight_layout()
 
-            fig, axs3 = plt.subplots(1, 2, figsize=(10, 5))
+            fig, axs3 = plt.subplots(1, 2, figsize=(2*PLOT_SIZE.width, PLOT_SIZE.height))
             normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
             im2 = axs3[0].imshow(normalized_data_integrated, cmap='gray')
             plt.colorbar(im2, ax=axs3[0])
@@ -492,7 +497,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             axs3[1].set_ylabel("mean of full image")          
             plt.tight_layout()
 
-            fig, axs4 = plt.subplots(1, 2, figsize=(10, 5))
+            fig, axs4 = plt.subplots(1, 2, figsize=(2*PLOT_SIZE.width, PLOT_SIZE.height))
             axs4[0].plot(lambda_array, profile)
             axs4[0].set_xlabel("Lambda (A)")
             axs4[0].set_ylabel("mean of full image")
