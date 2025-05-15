@@ -56,20 +56,20 @@ class NormalizationTof:
             output_folder = os.path.join(self.working_dir, 'shared')
 
         sample_label = widgets.Label(value="List of sample run numbers (ex: 8702, 8704)")
-        self.sample_run_numbers = widgets.Textarea(value=str_sample_run_numbers,
+        self.sample_run_numbers_widget = widgets.Textarea(value=str_sample_run_numbers,
                                                     placeholder="",
                                                     layout=widgets.Layout(width='400px'))
         ob_label = widgets.Label(value="List of ob run numbers (ex: 8703)")
-        self.ob_run_numbers = widgets.Textarea(value=str_ob_run_numbers,
+        self.ob_run_numbers_widget = widgets.Textarea(value=str_ob_run_numbers,
                                                 placeholder="",
                                                 layout=widgets.Layout(width='400px'))
         output_label = widgets.Label(value="Output folder")
-        self.output_folder = widgets.Text(value=output_folder,
+        self.output_folder_widget = widgets.Text(value=output_folder,
                                           placeholder="",
                                           layout=widgets.Layout(width='400px'))
-        vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers,
-                                        ob_label, self.ob_run_numbers,
-                                        output_label, self.output_folder,])
+        vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers_widget,
+                                        ob_label, self.ob_run_numbers_widget,
+                                        output_label, self.output_folder_widget,])
         display(vertical_layout)
 
     def select_sample_folder(self):
@@ -77,8 +77,8 @@ class NormalizationTof:
                            next_function=self.sample_folder_selected)
 
     def select_sample_run_numbers(self):
-        if self.sample_run_numbers.value.strip() != "":
-            sample_run_numbers = self.sample_run_numbers.value.split(',')
+        if self.sample_run_numbers_widget.value.strip() != "":
+            sample_run_numbers = self.sample_run_numbers_widget.value.split(',')
             list_sample_run_numbers = [f"Run_{_run.strip()}" for _run in sample_run_numbers]
             list_sample_runs_full_path = [os.path.join(self.autoreduce_dir, _sample) for _sample in list_sample_run_numbers]
             self.sample_run_numbers_selected(list_sample_runs_full_path)
@@ -92,8 +92,8 @@ class NormalizationTof:
                             next_function=self.ob_folder_selected)
 
     def select_ob_run_numbers(self):
-        if self.ob_run_numbers.value.strip() != "":
-            ob_run_numbers = self.ob_run_numbers.value.split(',')
+        if self.ob_run_numbers_widget.value.strip() != "":
+            ob_run_numbers = self.ob_run_numbers_widget.value.split(',')
             list_ob_run_numbers = [f"Run_{_run.strip()}" for _run in ob_run_numbers]
             list_ob_runs_full_path = [os.path.join(self.autoreduce_dir, _ob) for _ob in list_ob_run_numbers]
             self.ob_run_numbers_selected(list_ob_runs_full_path)
@@ -104,8 +104,8 @@ class NormalizationTof:
                                multiple=True)
 
     def select_output_folder(self):
-        if self.output_folder.value.strip() != "":
-            self.output_folder = self.output_folder.value
+        if self.output_folder_widget.value.strip() != "":
+            self.output_folder = self.output_folder_widget.value
             self.output_folder_selected(self.output_folder)
         else:
             self.select_folder(instruction="Select output folder",
