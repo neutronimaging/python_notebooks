@@ -358,7 +358,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                          export_corrected_stack_of_ob_data, 
                          export_corrected_integrated_ob_data, 
                          ob_data_combined,
-                         spectra_file_name=ob_master_dict[ob_run_numbers[0]][MasterDictKeys.spectra_file_name])
+                         spectra_file_name=ob_master_dict[_ob_run_number][MasterDictKeys.spectra_file_name])
 
       # load sample images
     for _sample_run_number in sample_master_dict.keys():
@@ -511,7 +511,10 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
 
         if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
             # make up new output folder name
-            full_output_folder = os.path.join(output_folder, f"normalized_{_sample_run_number}")                 # issue for WEI here !
+
+            list_ob_runs = list(ob_master_dict.keys())
+            str_ob_runs = "_".join([str(_ob_run_number) for _ob_run_number in list_ob_runs])
+            full_output_folder = os.path.join(output_folder, f"normalized_sample_{_sample_run_number}_obs_{str_ob_runs}")                 # issue for WEI here !
             os.makedirs(full_output_folder, exist_ok=True)
 
             if export_corrected_integrated_normalized_data:
@@ -571,7 +574,7 @@ def export_sample_images(output_folder,
             _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
             make_tiff(data=_data, filename=_output_file)
         logging.info(f"\t -> Exporting sample data to {output_stack_folder} is done!")
-        os.path.copy(spectra_file_name, os.path.join(output_stack_folder))
+        shutil.copy(spectra_file_name, os.path.join(output_stack_folder))
         logging.info(f"\t -> Exporting spectra file {spectra_file_name} to {output_stack_folder} is done!")
 
     if export_corrected_integrated_sample_data:
@@ -621,7 +624,7 @@ def export_ob_images(ob_run_numbers,
             make_tiff(data=_data, filename=_output_file)
         logging.info(f"\t -> Exporting ob data to {output_stack_folder} is done!")
         # copy spectra file to the output folder
-        os.path.copy(spectra_file_name, os.path.join(output_stack_folder))
+        shutil.copy(spectra_file_name, os.path.join(output_stack_folder))
         logging.info(f"\t -> Exported spectra file {spectra_file_name} to {output_stack_folder}!")
 
 
