@@ -205,20 +205,31 @@ def convert_array_from_time_to_energy(time_array: np.ndarray,
         detector_offset_unit (DistanceUnitOptions): Unit of the offset.
         energy_unit (EnergyUnitOptions): Unit of the output energy.
 
-    This is using the formula: E = h/(m_n * distance_source_detector_m) * (time_array_s + detector_offset_s)
-
+    #This is using the formula: E = h/(m_n * distance_source_detector_m) * (time_array_s + detector_offset_s)
+    this is using the formula: E_ev = 1/2 m_n v^2
+    with t_tof = L/v (L distance source to detector in m, v velocity of the neutron in m/s)
+    so E_ev = 1/2 m_n (L/t_tof)^2
+    
     Returns:
         np.ndarray: Array of energy values.
     """
-    lambda_in_angstroms = convert_array_from_time_to_lambda(time_array, 
-                                                            time_unit, 
-                                                            distance_source_detector,
-                                                            distance_source_detector_unit, 
-                                                            detector_offset, 
-                                                            detector_offset_unit, 
-                                                            DistanceUnitOptions.angstrom)
+    
+    time_units_factor = convert_time_units(time_unit, TimeUnitOptions.s)
+    time_array_s = time_array * time_units_factor
+    
+    detector_units_factor = convert_time_units(detector_offset_unit, TimeUnitOptions.s)
+    detector_offset = detector_units_factor * detector_offset
 
-    energy_array_ev = [convert_from_wavelength_to_energy_ev(l, DistanceUnitOptions.angstrom) for l in lambda_in_angstroms]
-    energy_array = np.array(energy_array_ev)
+    distance_source_detector_factor = convert_distance_units(distance_source_detector_unit, DistanceUnitOptions.m)
+    distance_source_detector_m = distance_source_detector * distance_source_detector_factor
+    
+    # Calculate the energy in eV using the formula E_ev = 1/2 m_n (L/t_tof)^2 / electron_volt
+
+    full_time_array_s = time_array_s + detector_offset
+    energy_array_ev = 0.5 * m_n * (distance_source_detector_m / full_time_array_s) ** 2 / electron_volt
+
+    energy_array_factor = convert_to_energy(EnergyUnitOptions.eV, energy_unit)
+    energy_array = energy_array_ev * energy_array_factor
+    energy_array = np.array(energy_array)
 
     return energy_array

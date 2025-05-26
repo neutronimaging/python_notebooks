@@ -69,8 +69,6 @@ class NormalizationTof:
 
         display(HTML("<span style='font-size: 16px; color:red'>You have the option here to enter the runs manually or just use the widgets (following cells) to define them!</span>"))
 
-
-
         if self.debug:
             sample_runs = DEBUG_DATA.sample_runs_selected
             sample_run_numbers_list = []
