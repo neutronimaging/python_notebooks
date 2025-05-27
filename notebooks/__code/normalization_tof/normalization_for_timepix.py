@@ -320,6 +320,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             axs4[1].plot(energy_array, profile)
             axs4[1].set_xlabel("Energy (eV)")
             axs4[1].set_ylabel("mean of full image")
+            axs4[1].set_xscale('log')
             plt.tight_layout()
 
             plt.show()
