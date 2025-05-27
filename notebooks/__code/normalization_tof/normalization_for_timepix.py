@@ -409,7 +409,8 @@ def export_ob_images(ob_run_numbers,
                      spectra_file_name):
     """export ob images to the output folder"""
     logging.info(f"> Exporting combined ob images to {output_folder} ...")
-    list_ob_runs_number_only = [isolate_run_number(_ob_run_number) for _ob_run_number in ob_run_numbers]
+    logging.info(f"\t{ob_run_numbers = }")
+    list_ob_runs_number_only = [str(isolate_run_number_from_full_path(_ob_run_number)) for _ob_run_number in ob_run_numbers]
     if len(list_ob_runs_number_only) == 1:
         ob_output_folder = os.path.join(output_folder, f"ob_{list_ob_runs_number_only[0]}")
     else:
@@ -453,6 +454,12 @@ def make_tiff(data: list, filename: str = "", metadata: dict = None) -> None:
         new_image.save(filename, tiffinfo=metadata)
     else:
         new_image.save(filename)
+
+
+def isolate_run_number_from_full_path(run_number_full_path: str) -> str:
+    """isolate the run number from the full path"""
+    run_number = os.path.basename(run_number_full_path)
+    return isolate_run_number(run_number)
 
 
 def isolate_run_number(run_number_full_path: str) -> int:

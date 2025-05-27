@@ -95,7 +95,7 @@ class NormalizationTof:
         self.sample_run_numbers_widget = widgets.Textarea(value=str_sample_run_numbers,
                                                     placeholder="",
                                                     layout=widgets.Layout(width='400px'))
-        ob_label = widgets.Label(value="List of ob run numbers (ex: 8703)")
+        ob_label = widgets.Label(value="List of ob run numbers (ex: 8703, 8705)")
         self.ob_run_numbers_widget = widgets.Textarea(value=str_ob_run_numbers,
                                                 placeholder="",
                                                 layout=widgets.Layout(width='400px'))
