@@ -51,8 +51,7 @@ if success:
     print("All required packages installed")
 else:
     print(
-        "Please install these missing packages "
-        "to be able to run the Imaging Notebooks."
+        "Please install these missing packages to be able to run the Imaging Notebooks."
     )
     missing = [k for k, v in import_result.items() if not v]
     print("\t" + "\n\t".join(missing))
