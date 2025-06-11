@@ -9,6 +9,7 @@ import logging as notebook_logging
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
 from __code.normalization_tof.normalization_for_timepix import normalization, normalization_with_list_of_runs
 from __code.normalization_tof.config import DEBUG_DATA
+from __code.normalization_tof import autoreduce_dir, distance_source_detector_m
 
 # LOG_PATH = "/SNS/VENUS/shared/log/"
 # file_name, ext = os.path.splitext(os.path.basename(__file__))
@@ -55,8 +56,11 @@ class NormalizationTof:
         self.nexus_folder = os.path.join(self.working_dir, 'nexus')
         self.debug = debug
         _, _facility, _beamline, ipts = self.working_dir.split('/')
+
+
         self.ipts = ipts
-        self.autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
+        self.instrument = _beamline.upper()
+        self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
         if os.path.exists(self.autoreduce_dir):
             display(HTML(f"Autoreduce folder found: <span style='color:green'>{self.autoreduce_dir}</span>"))
             notebook_logging.info(f"Autoreduce folder found: {self.autoreduce_dir}")
@@ -66,9 +70,7 @@ class NormalizationTof:
             display(HTML(f"<span style='color:red'>Make sure you selected the right INSTRUMENT and IPTS!</span>"))
             
     def manually_set_runs(self):
-
-        display(HTML("<span style='font-size: 16px; color:red'>You have the option here to enter the runs manually or just use the widgets (following cells) to define them!</span>"))
-
+       
         if self.debug:
             sample_runs = DEBUG_DATA.sample_runs_selected
             sample_run_numbers_list = []
@@ -106,7 +108,13 @@ class NormalizationTof:
         vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers_widget,
                                         ob_label, self.ob_run_numbers_widget,
                                         output_label, self.output_folder_widget,])
-        display(vertical_layout)
+        
+        if self.instrument != "SNAP":
+            display(HTML("<span style='font-size: 16px; color:red'>You have the option here to enter the runs manually or just use the widgets (following cells) to define them!</span>"))
+            display(vertical_layout)
+
+        else:
+            display(HTML("<span style='font-size: 16px; color:red'>Manual entry of runs is not available for SNAP instrument!</span>"))
 
     def select_sample_folder(self):
         self.select_folder(instruction="Select sample top folder",
@@ -168,11 +176,20 @@ class NormalizationTof:
 
         label = widgets.Label(value="Distance source detector (m)", 
                               layout=widgets.Layout(width='200px'))
-        self.distance_source_detector = widgets.FloatText(value=25,
-                                                          disabled=True,
+        self.distance_source_detector = widgets.FloatText(value=distance_source_detector_m[self.instrument],
+                                                          disabled=False,
                                                           layout=widgets.Layout(width='50px'))
         hori_layout = widgets.HBox([label, self.distance_source_detector])
         display(hori_layout)        
+
+        if self.instrument == "SNAP":
+            label = widgets.Label(value="Detector offset (us)",
+                                layout=widgets.Layout(width='200px'))
+            self.detector_offset_us = widgets.FloatText(value=0.0,
+                                                        disabled=False,
+                                                        layout=widgets.Layout(width='50px'))
+            hori_layout = widgets.HBox([label, self.detector_offset_us])
+            display(hori_layout)
         
     def what_to_export(self):
         display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))
@@ -290,6 +307,11 @@ class NormalizationTof:
                        'sample_integrated': self.export_corrected_integrated_sample_data.value,
                        'ob_integrated': self.export_corrected_integrated_ob_data.value,
                        'normalized_integrated': self.export_corrected_integrated_normalized_data.value,}
+        
+        detecor_delay_us = None
+        if self.instrument == "SNAP":
+            detecor_delay_us = self.detector_offset_us.value
+     
         normalization_with_list_of_runs(sample_run_numbers=sample_run_numbers,
                                         ob_run_numbers=ob_run_numbers,
                                         output_folder=output_folder,
@@ -298,6 +320,8 @@ class NormalizationTof:
                                         shutter_counts_flag=self.shutter_counts_flag.value,
                                         replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
                                         verbose=True,
+                                        instrument=self.instrument,
+                                        detector_delay_us=detecor_delay_us,
                                         preview=preview,
                                         distance_source_detector_m=self.distance_source_detector.value,
                                         export_mode=export_mode)

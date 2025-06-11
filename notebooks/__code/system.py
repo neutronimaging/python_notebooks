@@ -15,6 +15,8 @@ list_instrument_per_facility = {'HFIR': ['CG1D'],
                                 'SNS': ['SNAP', 'VENUS']}
 
 
+
+
 class System:
 
     working_dir = ''
@@ -25,6 +27,7 @@ class System:
                            facility='HFIR',
                            instrument='CG1D',
                            ipts=None,
+                           instrument_to_exclude=None,
                            notebook="N/A"):
 
         try:
@@ -43,7 +46,7 @@ class System:
                        </style>
                        """))
 
-            full_list_instruments = cls.get_full_list_instrument()
+            full_list_instruments = cls.get_full_list_instrument(instrument_to_exclude=instrument_to_exclude)
             full_list_instruments.sort()
             if instrument in full_list_instruments:
                 default_instrument = instrument
@@ -120,12 +123,14 @@ class System:
             append_to_file(data=data, output_file_name=LOGGER_FILE)
 
     @classmethod
-    def get_full_list_instrument(cls):
+    def get_full_list_instrument(cls, instrument_to_exclude=None):
 
         list_instrument = []
         for _key in list_instrument_per_facility.keys():
             _facility_list_instrument = list_instrument_per_facility[_key]
             for _instr in _facility_list_instrument:
+                if _instr in instrument_to_exclude:
+                    continue
                 list_instrument.append(_instr)
         return list_instrument
 

@@ -96,10 +96,28 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                                     shutter_counts_flag=True,
                                     replace_ob_zeros_by_nan_flag=False, 
                                     output_tif: bool = True,
+                                    instrument: str = "VENUS",
+                                    detector_delay_us: float = None,
                                     preview: bool = False,
                                     distance_source_detector_m: float = 25,
                                     export_mode: dict = None) -> None | np.ndarray:
-    """normalize the sample data with ob data using proton charge and shutter counts"""
+    """normalize the sample data with ob data using proton charge and shutter counts
+    
+    parameters:
+    sample_run_numbers: list of full path of sample run numbers (ex: ['/SNS/VENUS/IPTS-36035/shared/autoreduce/mcp/images/Run_8747'])
+    ob_run_numbers: list of full path of ob run numbers (ex: ['/SNS/VENUS/IPTS-36035/shared/autoreduce/mcp/images/Run_8748'])
+    output_folder: path to the output folder
+    nexus_path: path to the nexus folder
+    verbose: whether to display verbose output
+    proton_charge_flag: whether to use proton charge for normalization
+    shutter_counts_flag: whether to use shutter counts for normalization
+    replace_ob_zeros_by_nan_flag: whether to replace ob zeros by NaN
+    output_tif: whether to output TIF files
+    preview: whether to preview the results
+    distance_source_detector_m: distance from source to detector in meters
+    export_mode: dictionary specifying export options
+
+    """
 
     # list sample and ob run numbers
     logging.info(f"{sample_run_numbers = }")
@@ -128,12 +146,22 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
     logging.info(f"{export_corrected_integrated_normalized_data = }")
 
     sample_master_dict, sample_status_metadata = create_master_dict(list_run_numbers=sample_run_numbers, 
-                                                             data_type=DataType.sample,   
+                                                             data_type=DataType.sample,
+                                                             instrument=instrument,   
                                                              nexus_root_path=nexus_path)
     ob_master_dict, ob_status_metadata = create_master_dict(list_run_numbers=ob_run_numbers, 
                                                          data_type=DataType.ob, 
+                                                         instrument=instrument,
                                                          nexus_root_path=nexus_path)                                                         
     
+    # only for SNAP
+    if instrument == "SNAP":
+        for _run in sample_master_dict.keys():
+            sample_master_dict[_run][MasterDictKeys.detector_delay_us] = detector_delay_us  
+
+        for _run in ob_master_dict.keys():
+            ob_master_dict[_run][MasterDictKeys.detector_delay_us] = detector_delay_us
+
     # load ob images
     for _ob_run_number in ob_master_dict.keys():
         logging.info(f"loading ob# {_ob_run_number} ... ")
@@ -255,6 +283,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
 
         detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
         time_spectra = sample_master_dict[_sample_run_number][MasterDictKeys.list_spectra]
+
         lambda_array = convert_array_from_time_to_lambda(time_array=time_spectra,
                                                           time_unit=TimeUnitOptions.s,
                                                           distance_source_detector=distance_source_detector_m,
@@ -313,11 +342,11 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             plt.tight_layout()
 
             fig, axs4 = plt.subplots(1, 2, figsize=(2*PLOT_SIZE.width, PLOT_SIZE.height))
-            axs4[0].plot(lambda_array, profile)
+            axs4[0].plot(lambda_array, profile, '*')
             axs4[0].set_xlabel("Lambda (A)")
             axs4[0].set_ylabel("mean of full image")
 
-            axs4[1].plot(energy_array, profile)
+            axs4[1].plot(energy_array, profile, '*')
             axs4[1].set_xlabel("Energy (eV)")
             axs4[1].set_ylabel("mean of full image")
             axs4[1].set_xscale('log')
@@ -576,10 +605,10 @@ def get_list_run_number(data_folder: str) -> list:
     return list_run_number
 
 
-def update_dict_with_nexus_full_path(nexus_root_path: str, master_dict: dict) -> dict:
+def update_dict_with_nexus_full_path(nexus_root_path: str, instrument: str, master_dict: dict) -> dict:
     """create dict of nexus path for each run number"""
     for run_number in master_dict.keys():
-        master_dict[run_number][MasterDictKeys.nexus_path] = os.path.join(nexus_root_path, f"VENUS_{run_number}.nxs.h5")
+        master_dict[run_number][MasterDictKeys.nexus_path] = os.path.join(nexus_root_path, f"{instrument}_{run_number}.nxs.h5")
 
 
 def update_with_nexus_metadata(master_dict: dict) -> dict:
@@ -598,6 +627,7 @@ def update_dict_with_data_full_path(data_root_path: str, master_dict: dict) -> d
 def create_master_dict(list_run_numbers: list = None, 
                        data_type: DataType = DataType.sample, 
                        data_root_path: str = None, 
+                       instrument: str = "VENUS",
                        nexus_root_path: str = None) -> tuple[dict, StatusMetadata]:
     logging.info(f"Create {data_type} master dict of runs: {list_run_numbers = }")
 
@@ -617,7 +647,7 @@ def create_master_dict(list_run_numbers: list = None,
     update_dict_with_data_full_path(data_root_path, master_dict)
 
     logging.info(f"updating with nexus full path!")
-    update_dict_with_nexus_full_path(nexus_root_path, master_dict)
+    update_dict_with_nexus_full_path(nexus_root_path, instrument, master_dict)
 
     logging.info(f"updating with nexus metadata")
     update_with_nexus_metadata(master_dict)
