@@ -129,8 +129,9 @@ class System:
         for _key in list_instrument_per_facility.keys():
             _facility_list_instrument = list_instrument_per_facility[_key]
             for _instr in _facility_list_instrument:
-                if _instr in instrument_to_exclude:
-                    continue
+                if instrument_to_exclude is not None:
+                    if _instr in instrument_to_exclude:
+                        continue
                 list_instrument.append(_instr)
         return list_instrument
 
