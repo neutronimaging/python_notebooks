@@ -46,6 +46,7 @@ class CombineImages(object):
         self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
                                                                                'combined image ...',
                                                                    start_dir=self.working_dir,
+                                                                   newdir_toolbar_button=True,
                                                                    type='directory')
 
         self.output_folder_widget.show()
@@ -70,11 +71,24 @@ class CombineImages(object):
         merging_algo = self.__get_formated_merging_algo_name()
         [default_new_name, ext] = self.__create_merged_file_name(list_files_names=short_list_files)
 
-        top_label = widgets.Label("You have the option to change the default output file name")
+        display(widgets.HTML(value="<hr>"))
+        
+        top_label = widgets.Label("Define the new output file name",
+                                 layout=widgets.Layout(width='100%'))
 
-        box = widgets.HBox([widgets.Label("Default File Name",
+        folder_name = os.path.dirname(list_files[0])
+
+        box1 = widgets.HBox([widgets.Label("Original folder name",
+                                            layout=widgets.Layout(width='20%')),
+                             widgets.Label(f"{folder_name}",
+                                            layout=widgets.Layout(width='80%')),
+                                ])
+        display(box1)
+
+        box = widgets.HBox([widgets.Label("File Name",
                                           layout=widgets.Layout(width='20%')),
-                            widgets.Text(default_new_name,
+                            widgets.Text("",
+                                         placeholder="Your file name here",
                                          layout=widgets.Layout(width='60%')),
                             widgets.Label("_{}{}".format(merging_algo, ext),
                                           layout=widgets.Layout(width='20%')),
