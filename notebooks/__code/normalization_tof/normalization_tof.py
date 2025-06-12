@@ -148,13 +148,19 @@ class NormalizationTof:
                                multiple=True)
 
     def select_output_folder(self):
-        if self.output_folder_widget.value.strip() != "":
-            self.output_folder = self.output_folder_widget.value
-            self.output_folder_selected(self.output_folder)
-        else:
+        if self.instrument == "SNAP":
             self.select_folder(instruction="Select output folder",
                             start_dir=self.working_dir,
                             next_function=self.output_folder_selected)
+
+        else:
+            if self.output_folder_widget.value.strip() != "":
+                self.output_folder = self.output_folder_widget.value
+                self.output_folder_selected(self.output_folder)
+            else:
+                self.select_folder(instruction="Select output folder",
+                                  start_dir=self.working_dir,
+                                  next_function=self.output_folder_selected)
 
     def settings(self):
         label = widgets.Label(value="What to take into account for normalization?")
