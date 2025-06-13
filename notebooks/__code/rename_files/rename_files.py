@@ -63,7 +63,7 @@ class FormatFileNameIndex:
             self.o_schema.show()
 
 
-class NamingSchemaDefinition(object):
+class NamingSchemaDefinition:
     ext = ''
     list_files = []
     working_dir = ''
@@ -100,12 +100,16 @@ class NamingSchemaDefinition(object):
         else:
             prefix = self.basename_selected_by_user.value
 
-        post_index_separator = self.box5.children[1].value
         nbr_digits = self.box7.children[1].value
+        if self.suffix_box2.children[1].value:
+            suffix = self.suffix_box2.children[2].value
+        else:
+            suffix = nbr_digits * '#'
 
         ext = self.box9.children[1].value
 
-        schema = prefix + post_index_separator + nbr_digits * '#' + ext
+        post_index_separator = self.box5.children[1].value
+        schema = prefix + post_index_separator + suffix + ext
         return schema
 
     def pre_index_text_changed(self, sender):
@@ -128,6 +132,20 @@ class NamingSchemaDefinition(object):
             _value = value['new']
         self.use_previous_prefix_widget.value = not _value
         self.new_prefix_text_widget.disabled = not _value
+        self.post_text_changed(None)
+
+    def changed_use_digit_suffix_name(self, value=[]):
+        self.user_new_suffix_widget.value = not value['new']
+        self.new_suffix_text_widget.disabled = value['new']
+        self.post_text_changed(None)
+
+    def changed_use_new_suffix_name(self, value=[]):
+        if value == []:
+            _value = self.user_new_suffix_widget.value
+        else:
+            _value = value['new']
+        self.use_digit_suffix_widget.value = not _value
+        self.new_suffix_text_widget.disabled = not _value
         self.post_text_changed(None)
 
     def get_basename_of_current_dropdown_selected_file(self, is_with_ext=False):
@@ -193,7 +211,7 @@ class NamingSchemaDefinition(object):
         # new naming schema
         box_text_width = '10%'
         self.box1 = widgets.HBox([widgets.Label("New prefix File Name",
-                                                layout=widgets.Layout(width='10%')),
+                                                layout=widgets.Layout(width='20%')),
                                   widgets.Checkbox(value=True,
                                                    description='Use previous prefix name',
                                                    layout=widgets.Layout(width='30%'))])
@@ -201,7 +219,7 @@ class NamingSchemaDefinition(object):
         self.box1.children[1].observe(self.changed_use_previous_prefix_name, names='value')
 
         self.box1b = widgets.HBox([widgets.Label("",
-                                                 layout=widgets.Layout(width='10%')),
+                                                 layout=widgets.Layout(width='20%')),
                                    widgets.Checkbox(value=False,
                                                     description='Use new prefix',
                                                     layout=widgets.Layout(width='20%')),
@@ -212,6 +230,30 @@ class NamingSchemaDefinition(object):
         self.new_prefix_text_widget = self.box1b.children[2]
         self.user_new_prefix_widget = self.box1b.children[1]
         self.user_new_prefix_widget.observe(self.changed_use_new_prefix_name, names='value')
+
+
+
+
+        self.suffix_box1 = widgets.HBox([widgets.Label("New suffix File Name",
+                                                layout=widgets.Layout(width='20%')),
+                                  widgets.Checkbox(value=True,
+                                                   description='Use digit suffix',
+                                                   layout=widgets.Layout(width='30%'))])
+        self.use_digit_suffix_widget = self.suffix_box1.children[1]
+        self.suffix_box1.children[1].observe(self.changed_use_digit_suffix_name, names='value')
+
+        self.suffix_box2 = widgets.HBox([widgets.Label("",
+                                                 layout=widgets.Layout(width='20%')),
+                                   widgets.Checkbox(value=False,
+                                                    description='Use new suffix',
+                                                    layout=widgets.Layout(width='20%')),
+                                   widgets.Text(value='',
+                                                disabled=True,
+                                                layout=widgets.Layout(width='25%'))])
+        self.suffix_box2.children[2].observe(self.changed_use_new_suffix_name, names='value')
+        self.user_new_suffix_widget = self.suffix_box2.children[1]
+        self.new_suffix_text_widget = self.suffix_box2.children[2]
+        self.user_new_suffix_widget.observe(self.changed_use_new_suffix_name, names='value')
 
         self.box5 = widgets.HBox([widgets.Label("New Index Separator",
                                                 layout=widgets.Layout(width='15%')),
@@ -245,7 +287,8 @@ class NamingSchemaDefinition(object):
         self.box8.children[1].on_trait_change(self.post_text_changed, 'value')
         self.box9.children[1].on_trait_change(self.post_text_changed, 'value')
 
-        after = widgets.VBox([self.box1, self.box1b, self.box5, self.box7, self.box8, self.box9, self.box6])
+        after = widgets.VBox([self.box1, self.box1b, self.suffix_box1, self.suffix_box2, 
+                              self.box5, self.box7, self.box8, self.box9, self.box6])
 
         accordion = widgets.Accordion(children=[before, after])
         accordion.set_title(0, 'Current Schema Name')
@@ -276,6 +319,12 @@ class NamingSchemaDefinition(object):
         input_file = self.get_basename_of_current_dropdown_selected_file(is_with_ext=False)
         self.output_ui_2.children[1].value = input_file
 
+
+        new_name = self.box6.children[1].value
+        self.output_ui_3.children[1].value = new_name
+
+        return
+
         old_index_separator = self.get_old_index_separator()
         new_prefix_name = self.get_new_prefix_name()
         new_index_separator = self.get_new_index_separator()
@@ -283,6 +332,11 @@ class NamingSchemaDefinition(object):
         offset = self.box8.children[1].value
         ext = self.box9.children[1].value
         [start_index, end_index] = self.int_range_slider.value
+
+        print(f"{old_index_separator=}, {new_prefix_name=}")
+        print(f"{new_index_separator=}, {new_number_of_digits=}, {offset=}, {ext=}")
+        print(f"{start_index=}, {end_index=}")
+
 
         try:
             display(HTML("""
@@ -342,6 +396,7 @@ class NamingSchemaDefinition(object):
         return self.box7.children[1].value
 
     def generate_new_file_name(self, old_file_name,
+                               file_index,
                                start_index,
                                end_index,
                                old_index_separator,
@@ -349,25 +404,39 @@ class NamingSchemaDefinition(object):
                                new_index_separator,
                                new_number_of_digits,
                                offset,
+                               suffix_flag, 
+                               suffix,
                                ext):
 
+        file_index += offset
+
         [_pre_extension, _] = os.path.splitext(old_file_name)
-        _name_separated = _pre_extension.split(old_index_separator)
+        # _name_separated = _pre_extension.split(old_index_separator)
+        # print(f"Name separated: {_name_separated}")
 
         if self.user_new_prefix_widget.value == True:
             prefix = new_prefix_name
         else:
             prefix = old_file_name[start_index: end_index + 1]
 
-        try:
-            _index = int(_name_separated[-1]) + offset
+        # try:
+            # print(f"Trying to parse index from {_name_separated[-1]}")
+            # _index = int(_name_separated[-1]) + offset
+            # print(f"Parsed index: {_index}")
+        if suffix_flag:
             new_name = prefix + new_index_separator + \
-                       '{:0{}}'.format(_index, new_number_of_digits) + \
-                       ext
-        except ValueError:
-            _index = _name_separated[-1]
+                        '{:0{}}'.format(file_index, new_number_of_digits) + \
+                    new_index_separator + suffix + ext
+        else:
             new_name = prefix + new_index_separator + \
-                _index + ext
+                        '{:0{}}'.format(file_index, new_number_of_digits) + ext
+        
+        # except ValueError:
+        #     # print(f"Could not parse index from {_name_separated[-1]}")
+        #     # _index = _name_separated[-1]
+        #     new_name = prefix + new_index_separator + \
+        #         _index + ext
+        #     print(f"New name without index: {new_name}")
 
         return new_name
 
@@ -386,11 +455,19 @@ class NamingSchemaDefinition(object):
         offset = self.box8.children[1].value
         ext = self.box9.children[1].value
 
+        suffix_flag = self.suffix_box2.children[1].value
+        if suffix_flag:
+            suffix = self.suffix_box2.children[2].value
+        else:
+            suffix = ""
+
         list_of_input_basename_files = [os.path.basename(_file) for _file in list_of_input_files]
 
         new_list = {}
         for _file_index, _file in enumerate(list_of_input_basename_files):
+
             new_name = self.generate_new_file_name(_file,
+                                                   _file_index,
                                                    start_index,
                                                    end_index,
                                                    old_index_separator,
@@ -398,7 +475,10 @@ class NamingSchemaDefinition(object):
                                                    new_index_separator,
                                                    new_number_of_digits,
                                                    offset,
+                                                   suffix_flag, 
+                                                   suffix,
                                                    ext)
+            
             new_list[list_of_input_files[_file_index]] = new_name
             renaming_result.append("{} \t --> \t {}".format(_file, new_name))
 

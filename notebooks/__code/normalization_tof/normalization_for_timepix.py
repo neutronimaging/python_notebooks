@@ -77,7 +77,7 @@ def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = Fa
     if combine_tof:
         return np.array(data).sum(axis=0)
     else:
-        return np.array(data)
+        return np.array(data, dtype=np.float32)
 
 
 def retrieve_list_of_tif(folder: str) -> list:
@@ -223,7 +223,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
         if verbose:
             display(HTML(f"Normalization of run {_sample_run_number}"))
 
-        _sample_data = np.array(sample_master_dict[_sample_run_number][MasterDictKeys.data], dtype=np.float32)
+        _sample_data = sample_master_dict[_sample_run_number][MasterDictKeys.data]
 
         # get statistics of sample data
         data_shape = _sample_data.shape
@@ -269,11 +269,13 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data))
         # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
-        _normalized_data = np.zeros_like(_sample_data, dtype=np.float32)
-        index = 0
-        for _sample, _ob in zip(_sample_data, ob_data_combined):
-            _normalized_data[index] = np.divide(_sample, _ob)
-            index += 1
+        # _normalized_data = np.zeros_like(_sample_data, dtype=np.float32)
+        # index = 0
+        _normalized_data = np.divide(_sample_data, ob_data_combined)
+
+        # for _sample, _ob in zip(_sample_data, ob_data_combined):
+        #     _normalized_data[index] = np.divide(_sample, _ob)
+        #     index += 1
 
         normalized_data[_sample_run_number] = _normalized_data
 
@@ -479,7 +481,7 @@ def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbos
 
 
 def make_tiff(data: list, filename: str = "", metadata: dict = None) -> None:
-    new_image = Image.fromarray(np.array(data))
+    new_image = Image.fromarray(np.array(data), mode='F')
     if metadata:
         new_image.save(filename, tiffinfo=metadata)
     else:
@@ -754,8 +756,8 @@ def combine_ob_images(ob_master_dict: dict,
             logging.info(f"{temp_ob_data.shape = }")
             ob_data = temp_ob_data.copy()
 
-        ob_data_combined = np.array(ob_data).mean(axis=0)
-        logging.info(f"{ob_data_combined.shape = }")
+        # ob_data_combined = np.array(ob_data).mean(axis=0)
+        # logging.info(f"{ob_data_combined.shape = }")
 
         # remove zeros
         if replace_ob_zeros_by_nan:
@@ -778,8 +780,10 @@ def combine_ob_images(ob_master_dict: dict,
         full_ob_data_corrected.append(ob_data)
         logging.info(f"{np.shape(full_ob_data_corrected) = }")
 
+    logging.info(f"Combining all ob images is done!")
+    logging.info(f"\tbefore: {len(full_ob_data_corrected) = }")
     ob_data_combined = np.array(full_ob_data_corrected).mean(axis=0)
-    logging.info(f"{ob_data_combined.shape = }")
+    logging.info(f"\tafter: {ob_data_combined.shape = }")
 
     # remove zeros
     if replace_ob_zeros_by_nan:
