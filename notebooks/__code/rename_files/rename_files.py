@@ -323,6 +323,8 @@ class NamingSchemaDefinition:
         new_name = self.box6.children[1].value
         self.output_ui_3.children[1].value = new_name
 
+        self.ready_to_output = True
+
         return
 
         old_index_separator = self.get_old_index_separator()
@@ -424,8 +426,7 @@ class NamingSchemaDefinition:
             # _index = int(_name_separated[-1]) + offset
             # print(f"Parsed index: {_index}")
         if suffix_flag:
-            new_name = prefix + new_index_separator + \
-                        '{:0{}}'.format(file_index, new_number_of_digits) + \
+            new_name = prefix + \
                     new_index_separator + suffix + ext
         else:
             new_name = prefix + new_index_separator + \
