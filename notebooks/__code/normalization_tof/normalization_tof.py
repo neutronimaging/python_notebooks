@@ -4,10 +4,19 @@ import ipywidgets as widgets
 from IPython.core.display import HTML
 import matplotlib.pyplot as plt
 import logging as notebook_logging
+import numpy as np
+import logging
+
+from ipywidgets import interactive
+import ipywidgets as widgets
+from IPython.core.display import display, HTML
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
-from __code.normalization_tof.normalization_for_timepix import normalization, normalization_with_list_of_runs
+from __code.normalization_tof.normalization_for_timepix import (normalization, 
+                                                                normalization_with_list_of_runs, 
+                                                                load_data_using_multithreading,
+                                                                retrieve_list_of_tif)
 from __code.normalization_tof.config import DEBUG_DATA
 from __code.normalization_tof import autoreduce_dir, distance_source_detector_m
 
@@ -30,6 +39,9 @@ class NormalizationTof:
     ob_folder = None
     ob_run_numbers = None
     output_folder = None
+
+    dict_ob_runs = None 
+    dict_ob_data = None
 
     LOG_PATH = "/SNS/VENUS/shared/log/"
     file_name, ext = os.path.splitext(os.path.basename(__file__))
@@ -108,13 +120,14 @@ class NormalizationTof:
         vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers_widget,
                                         ob_label, self.ob_run_numbers_widget,
                                         output_label, self.output_folder_widget,])
+        display(vertical_layout)
         
-        if self.instrument != "SNAP":
-            display(HTML("<span style='font-size: 16px; color:red'>You have the option here to enter the runs manually or just use the widgets (following cells) to define them!</span>"))
-            display(vertical_layout)
+        # if self.instrument != "SNAP":
+        #     display(HTML("<span style='font-size: 16px; color:red'>You have the option here to enter the runs manually or just use the widgets (following cells) to define them!</span>"))
+        #     display(vertical_layout)
 
-        else:
-            display(HTML("<span style='font-size: 16px; color:red'>Manual entry of runs is not available for SNAP instrument!</span>"))
+        # else:
+        #     display(HTML("<span style='font-size: 16px; color:red'>Manual entry of runs is not available for SNAP instrument!</span>"))
 
     def select_sample_folder(self):
         self.select_folder(instruction="Select sample top folder",
@@ -147,6 +160,83 @@ class NormalizationTof:
                                start_dir=self.ob_folder,
                                multiple=True)
 
+    def _load_and_get_integrated_ob(self, ob_run):
+        """
+        Load the integrated open beam data from the given OB run path.
+        This function is a placeholder and should be implemented to load the actual data.
+        """
+        logging.info(f"Loading integrated OB data for {ob_run}")
+        # Here you would load the integrated OB data, for example using a specific library
+        # For now, we will just return a dummy value
+        if self.dict_ob_data.get(ob_run, None) is None:
+            logging.info("No data found for this OB run, loading it now...")
+            # load the data from the OB run
+            logging.info(f"\tFull path to OB run: {ob_run}")
+            full_path = self.dict_ob_runs.get(ob_run)
+            list_tiff = retrieve_list_of_tif(full_path)
+            logging.info(f"\tNumber of TIFF files found: {len(list_tiff)}")
+            if len(list_tiff) == 0:
+                display(HTML(f"<span style='color:red'>No TIFF files found in {full_path}!</span>"))
+                notebook_logging.error(f"No TIFF files found in {full_path}!")
+                return None
+            data = load_data_using_multithreading(list_tiff, combine_tof=True)
+            self.dict_ob_data[ob_run] = data
+      
+        return self.dict_ob_data[ob_run]
+
+    def preview_ob_runs(self):
+        if self.ob_run_numbers is None or len(self.ob_run_numbers) == 0:
+            display(HTML("<span style='color:red'>No OB runs selected!</span>"))
+            return
+
+        logging.info(f"Previewing OB runs: {self.ob_run_numbers}")
+        
+        nbr_ob_runs = len(self.ob_run_numbers)
+        list_ob_short_runs = [os.path.basename(_run) for _run in self.ob_run_numbers]
+        self.dict_ob_runs = {_short_name: _full_name for _short_name, _full_name in zip(list_ob_short_runs, self.ob_run_numbers)}
+        self.dict_ob_data = {_short_name: None for _short_name in list_ob_short_runs}
+
+        if nbr_ob_runs == 1:
+        
+            logging.info(f"Only one OB run")
+            full_path = self.dict_ob_runs.get(list_ob_short_runs[0])
+            logging.info(f"\tFull path to OB run: {full_path}")
+            integrated_ob = self._load_and_get_integrated_ob(list_ob_short_runs[0])
+            if integrated_ob is None:
+                display(HTML(f"<span style='color:red'>Failed to load integrated OB data for {list_ob_short_runs[0]}!</span>"))
+                return
+            fig, ax = plt.subplots(figsize=(10, 6))
+            im = ax.imshow(integrated_ob, cmap='viridis', aspect='auto')
+            ax.set_title(f"Integrated OB run: {list_ob_short_runs[0]}")
+            fig.colorbar(im, ax=ax, orientation='vertical', label='Intensity')
+            plt.show()
+        
+        else:
+
+            logging.info(f"Multiple OB runs to display: {nbr_ob_runs}")
+            def display_ob_run(ob_run):
+                """
+                Display the integrated OB run data.
+                """
+                full_path = self.dict_ob_runs.get(ob_run)
+                integrated_ob = self._load_and_get_integrated_ob(ob_run)
+                if integrated_ob is None:
+                    display(HTML(f"<span style='color:red'>Failed to load integrated OB data for {ob_run}!</span>"))
+                    return
+                fig, ax = plt.subplots(figsize=(10, 6))
+                im = ax.imshow(integrated_ob, cmap='viridis', aspect='auto')
+                ax.set_title(f"Integrated OB run: {ob_run}")
+                fig.colorbar(im, ax=ax, orientation='vertical', label='Intensity')
+                plt.show()
+
+            _display = interactive(display_ob_run,
+                                   ob_run=widgets.Dropdown(
+                                       options=list_ob_short_runs,
+                                       description='OB run:',
+                                       disabled=False,)
+            )
+            display(_display)
+      
     def select_output_folder(self):
         if self.instrument == "SNAP":
             self.select_folder(instruction="Select output folder",
