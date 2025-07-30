@@ -362,6 +362,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
             list_ob_runs = list(ob_master_dict.keys())
             str_ob_runs = "_".join([str(_ob_run_number) for _ob_run_number in list_ob_runs])
             full_output_folder = os.path.join(output_folder, f"normalized_sample_{_sample_run_number}_obs_{str_ob_runs}")                 # issue for WEI here !
+            full_output_folder = os.path.abspath(full_output_folder)
             os.makedirs(full_output_folder, exist_ok=True)
 
             if export_corrected_integrated_normalized_data:
@@ -432,6 +433,7 @@ def export_sample_images(output_folder,
         make_tiff(data=sample_data_integrated, filename=full_file_name)
         logging.info(f"\t -> Exporting integrated sample data to {full_file_name} is done!")
 
+    display(HTML(f"Created folder {output_stack_folder} for sample outputs!"))
 
 def export_ob_images(ob_run_numbers, 
                      output_folder, 
@@ -474,6 +476,8 @@ def export_ob_images(ob_run_numbers,
         # copy spectra file to the output folder
         shutil.copy(spectra_file_name, os.path.join(output_stack_folder))
         logging.info(f"\t -> Exported spectra file {spectra_file_name} to {output_stack_folder}!")
+
+    display(HTML(f"Created folder {output_stack_folder} for OB outputs!"))
 
 
 def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbose=False):
