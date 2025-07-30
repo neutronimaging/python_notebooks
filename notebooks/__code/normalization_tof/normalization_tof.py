@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import logging as notebook_logging
 import numpy as np
 import logging
+import glob
 
 from ipywidgets import interactive
 import ipywidgets as widgets
@@ -103,7 +104,8 @@ class NormalizationTof:
         else:
             str_sample_run_numbers = ""
             str_ob_run_numbers = ""
-            output_folder = os.path.join(self.working_dir, 'shared')
+            # output_folder = os.path.join(self.working_dir, 'shared')
+            output_folder = ""
 
         sample_label = widgets.Label(value="List of sample run numbers (ex: 8702, 8704)")
         self.sample_run_numbers_widget = widgets.Textarea(value=str_sample_run_numbers,
@@ -335,6 +337,13 @@ class NormalizationTof:
 
     # helper functions
 
+    def check_folder_is_valid(self, full_path):
+        list_tiff = glob.glob(os.path.join(full_path, "*.tif*"))
+        if list_tiff:
+            return True, {'nbr_tiff': len(list_tiff)}
+        else:
+            return False, {'nbr_tiff': 0}
+
     def sample_folder_selected(self, folder_selected):
         self.sample_folder = folder_selected
         display(HTML(f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"))
@@ -345,8 +354,15 @@ class NormalizationTof:
         notebook_logging.info(f"Sample run numbers selected: {runs_selected}")
         for _run in runs_selected:
             if os.path.exists(_run):
-                display(HTML(f"<span style='color:green'>{_run}</span>"))
                 notebook_logging.info(f"\tSample run number {_run} - FOUND")
+                # check here that the folder is not empty (contains tiff)
+                is_valid_run, report_dict = self.check_folder_is_valid(_run)
+                if is_valid_run:
+                    nbr_tiff = report_dict['nbr_tiff']
+                    display(HTML(f"<span style='color:green'>{_run}</span>"))
+                    notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                else:
+                    display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
             else:
                 display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
                 notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
@@ -361,8 +377,14 @@ class NormalizationTof:
         notebook_logging.info(f"OB folder selected: {folder_selected}")
         for _run in folder_selected:
             if os.path.exists(_run):
-                display(HTML(f"<span style='color:green'>{_run}</span>"))
                 notebook_logging.info(f"\tOB run number {_run} - FOUND")
+                is_valid_run, report_dict = self.check_folder_is_valid(_run)
+                if is_valid_run:
+                    nbr_tiff = report_dict['nbr_tiff']
+                    display(HTML(f"<span style='color:green'>{_run}</span>"))
+                    notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                else:
+                    display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
             else:
                 display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
                 notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
