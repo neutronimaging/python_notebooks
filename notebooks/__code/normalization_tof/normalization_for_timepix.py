@@ -230,12 +230,12 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
         nbr_pixels = data_shape[1] * data_shape[2]
         logging.info(f" **** Statistics of sample data *****")
         number_of_zeros = np.sum(_sample_data == 0)
-        logging.info(f"\t ob data shape: {data_shape}")
-        logging.info(f"\t Number of zeros in ob data: {number_of_zeros}")
-        logging.info(f"\t Percentage of zeros in ob data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%")
-        logging.info(f"\t Mean of ob data: {np.mean(_sample_data)}")
-        logging.info(f"\t maximum of ob data: {np.max(_sample_data)}")
-        logging.info(f"\t minimum of ob data: {np.min(_sample_data)}")
+        logging.info(f"\t sample data shape: {data_shape}")
+        logging.info(f"\t Number of zeros in sample data: {number_of_zeros}")
+        logging.info(f"\t Percentage of zeros in sample data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%")
+        logging.info(f"\t Mean of sample data: {np.mean(_sample_data)}")
+        logging.info(f"\t maximum of sample data: {np.max(_sample_data)}")
+        logging.info(f"\t minimum of sample data: {np.min(_sample_data)}")
         logging.info(f"**********************************")        
 
         if normalized_by_proton_charge:
