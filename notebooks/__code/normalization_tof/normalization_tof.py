@@ -425,8 +425,10 @@ class NormalizationTof:
                        'normalized_stack': self.export_corrected_stack_of_normalized_data.value,
                        'sample_integrated': self.export_corrected_integrated_sample_data.value,
                        'ob_integrated': self.export_corrected_integrated_ob_data.value,
-                       'normalized_integrated': self.export_corrected_integrated_normalized_data.value,}
-        
+                       'normalized_integrated': self.export_corrected_integrated_normalized_data.value,
+                       'x_axis': True,  # always export x axis
+                       }
+
         detecor_delay_us = None
         if self.instrument == "SNAP":
             detecor_delay_us = self.detector_offset_us.value

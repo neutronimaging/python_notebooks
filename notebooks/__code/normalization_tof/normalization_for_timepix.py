@@ -87,6 +87,22 @@ def retrieve_list_of_tif(folder: str) -> list:
     return list_tif
 
 
+def create_x_axis_file(lambda_array: np.ndarray = None, 
+                       energy_array: np.ndarray = None, 
+                       output_folder: str = "./") -> str:
+    """create x axis file with lambda, energy and tof arrays"""
+    x_axis_data = {
+        "file_index": np.arange(len(lambda_array)),
+        "lambda (Angstroms)": lambda_array,
+        "energy (eV)": energy_array,
+    }
+    x_axis_file_name = os.path.join(output_folder, "x_axis.txt")
+    pd_dataframe = pd.DataFrame(x_axis_data)
+    pd_dataframe.to_csv(x_axis_file_name, index=False, sep=",")
+
+    logging.info(f"X axis file created: {x_axis_file_name}")
+
+
 def normalization_with_list_of_runs(sample_run_numbers: list = None, 
                                     ob_run_numbers: list = None, 
                                     output_folder: str ="./", 
@@ -137,6 +153,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
     export_corrected_integrated_sample_data = export_mode.get("sample_integrated", False)
     export_corrected_integrated_ob_data = export_mode.get("ob_integrated", False)
     export_corrected_integrated_normalized_data = export_mode.get("normalized_integrated", False)
+    export_x_axis = export_mode.get("x_axis", True)
 
     logging.info(f"{export_corrected_stack_of_sample_data = }")
     logging.info(f"{export_corrected_stack_of_ob_data = }")
@@ -144,6 +161,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
     logging.info(f"{export_corrected_integrated_sample_data = }")
     logging.info(f"{export_corrected_integrated_ob_data = }")
     logging.info(f"{export_corrected_integrated_normalized_data = }")
+    logging.info(f"{export_x_axis = }")
 
     sample_master_dict, sample_status_metadata = create_master_dict(list_run_numbers=sample_run_numbers, 
                                                              data_type=DataType.sample,
@@ -386,6 +404,12 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                 logging.info(f"Exported time spectra file  to {full_output_folder}!")
                 spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
                 shutil.copy(spectra_file, full_output_folder)
+
+                # create x-axis file
+                create_x_axis_file(lambda_array=lambda_array,
+                                   energy_array=energy_array,
+                                   output_folder=output_stack_folder,
+                                   )
 
     logging.info(f"Normalization and export is done!")
     if verbose:
