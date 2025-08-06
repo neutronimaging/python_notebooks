@@ -19,7 +19,7 @@ from __code.normalization_tof.normalization_for_timepix import (normalization,
                                                                 load_data_using_multithreading,
                                                                 retrieve_list_of_tif)
 from __code.normalization_tof.config import DEBUG_DATA
-from __code.normalization_tof import autoreduce_dir, distance_source_detector_m
+from __code.normalization_tof import autoreduce_dir, shared_dir, distance_source_detector_m
 
 # LOG_PATH = "/SNS/VENUS/shared/log/"
 # file_name, ext = os.path.splitext(os.path.basename(__file__))
@@ -30,7 +30,6 @@ from __code.normalization_tof import autoreduce_dir, distance_source_detector_m
 #                     format='[%(levelname)s] - %(asctime)s - %(message)s',
 #                     level=notebook_logging.INFO)
 # notebook_logging.info(f"*** Starting a new script {file_name} ***")
-
 
 
 class NormalizationTof:
@@ -74,6 +73,7 @@ class NormalizationTof:
         self.ipts = ipts
         self.instrument = _beamline.upper()
         self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
+        self.shared_dir = shared_dir[_beamline][0] + str(ipts) + shared_dir[_beamline][1]
         if os.path.exists(self.autoreduce_dir):
             display(HTML(f"Autoreduce folder found: <span style='color:green'>{self.autoreduce_dir}</span>"))
             notebook_logging.info(f"Autoreduce folder found: {self.autoreduce_dir}")
@@ -115,7 +115,7 @@ class NormalizationTof:
         self.ob_run_numbers_widget = widgets.Textarea(value=str_ob_run_numbers,
                                                 placeholder="",
                                                 layout=widgets.Layout(width='400px'))
-        output_label = widgets.Label(value="Output folder")
+        output_label = widgets.Label(value=f"Full output folder path")
         self.output_folder_widget = widgets.Text(value=output_folder,
                                           placeholder="",
                                           layout=widgets.Layout(width='400px'))
@@ -251,7 +251,7 @@ class NormalizationTof:
                 self.output_folder_selected(self.output_folder)
             else:
                 self.select_folder(instruction="Select output folder",
-                                  start_dir=self.working_dir,
+                                  start_dir=self.shared_dir,
                                   next_function=self.output_folder_selected)
 
     def settings(self):
@@ -403,11 +403,12 @@ class NormalizationTof:
 
         # go straight to autoreduce/mcp folder
         if start_dir is None:
-            start_dir = self.autoreduce_dir
+            start_dir = self.reduce_dir
 
         self.list_input_folders_ui = MyFileSelectorPanel(instruction=instruction,
                                                         start_dir=start_dir,
                                                         type='directory',
+                                                        newdir_toolbar_button=True,
                                                         multiple=multiple,
                                                         sort_in_reverse=True,
                                                         # sort_increasing=False,
