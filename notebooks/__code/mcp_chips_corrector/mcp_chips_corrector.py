@@ -28,7 +28,7 @@ class McpChipsCorrector:
         select_data.show()
 
     def load_data(self, folder_selected):
-        full_list_files = glob.glob(os.path.join(folder_selected, '*.fits'))
+        full_list_files = glob.glob(os.path.join(folder_selected, '*.tif*'))
         full_list_files.sort()
 
         working_list_files = [file for file in full_list_files if not "_SummedImg.fits" in file]
