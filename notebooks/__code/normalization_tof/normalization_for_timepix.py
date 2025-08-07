@@ -103,6 +103,10 @@ def create_x_axis_file(lambda_array: np.ndarray = None,
     logging.info(f"X axis file created: {x_axis_file_name}")
 
 
+def correct_chips_alignment(data: np.ndarray) -> np.ndarray:
+    return data  # Placeholder for chips alignment correction logic
+
+
 def normalization_with_list_of_runs(sample_run_numbers: list = None, 
                                     ob_run_numbers: list = None, 
                                     output_folder: str ="./", 
@@ -116,6 +120,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                                     detector_delay_us: float = None,
                                     preview: bool = False,
                                     distance_source_detector_m: float = 25,
+                                    correct_chips_alignment_flag: bool = True,
                                     export_mode: dict = None) -> None | np.ndarray:
     """normalize the sample data with ob data using proton charge and shutter counts
     
@@ -212,6 +217,15 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
     if verbose:
         display(HTML(f"{ob_data_combined.shape = }"))
 
+    if correct_chips_alignment_flag:
+        logging.info("Correcting chips alignment ...")
+        if verbose:
+            display(HTML("Correcting chips alignment ..."))
+            ob_data_combined = correct_chips_alignment(ob_data_combined)
+            logging.info(f"Chips alignment corrected!")
+            if verbose:
+                display(HTML(f"Chips alignment corrected!"))
+
     # export ob data if requested
     if export_corrected_stack_of_ob_data or export_corrected_integrated_ob_data:       
         export_ob_images(ob_run_numbers, 
@@ -221,7 +235,7 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                          ob_data_combined,
                          spectra_file_name=ob_master_dict[_ob_run_number][MasterDictKeys.spectra_file_name])
 
-      # load sample images
+    # load sample images
     for _sample_run_number in sample_master_dict.keys():
         logging.info(f"loading sample# {_sample_run_number} ... ")
         if verbose:
@@ -232,6 +246,16 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
         if verbose:
             display(HTML(f"sample# {_sample_run_number} loaded!"))
             display(HTML(f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }"))
+
+    if correct_chips_alignment_flag:
+        logging.info("Correcting chips alignment ...")
+        if verbose:
+            display(HTML("Correcting chips alignment ..."))
+        for _sample_run_number in sample_master_dict.keys():
+            sample_master_dict[_sample_run_number][MasterDictKeys.data] = correct_chips_alignment(sample_master_dict[_sample_run_number][MasterDictKeys.data])
+        logging.info(f"Chips alignment corrected!")
+        if verbose:
+            display(HTML(f"Chips alignment corrected!"))
 
     normalized_data = {}
 

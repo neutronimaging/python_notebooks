@@ -263,10 +263,13 @@ class NormalizationTof:
                                                value=True)
         self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description='Replace OB zeros by NaN',
                                                   value=True)
+        self.correct_chips_alignment_flag = widgets.Checkbox(description='Correct chips alignment',
+                                                  value=True)
 
         vertical_layout = widgets.VBox([self.proton_charge_flag, 
                                         self.shutter_counts_flag, 
                                         self.replace_ob_zeros_by_nan_flag, 
+                                        self.correct_chips_alignment_flag
                                         ])
         display(vertical_layout)
 
@@ -442,6 +445,7 @@ class NormalizationTof:
                                         proton_charge_flag=self.proton_charge_flag.value,
                                         shutter_counts_flag=self.shutter_counts_flag.value,
                                         replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
+                                        correct_chips_alignment_flag=self.correct_chips_alignment_flag.value,
                                         verbose=True,
                                         instrument=self.instrument,
                                         detector_delay_us=detecor_delay_us,
