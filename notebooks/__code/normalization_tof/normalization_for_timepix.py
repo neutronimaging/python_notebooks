@@ -401,9 +401,9 @@ def normalization_with_list_of_runs(sample_run_numbers: list = None,
                     make_tiff(data=_data, filename=_output_file)
                 logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
                 print(f"Exported normalized tif images are in: {output_stack_folder}!")
-                logging.info(f"Exported time spectra file  to {full_output_folder}!")
                 spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
-                shutil.copy(spectra_file, full_output_folder)
+                logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+                shutil.copy(spectra_file, output_stack_folder)
 
                 # create x-axis file
                 create_x_axis_file(lambda_array=lambda_array,

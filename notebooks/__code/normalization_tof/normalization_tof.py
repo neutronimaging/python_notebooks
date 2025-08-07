@@ -301,9 +301,11 @@ class NormalizationTof:
                                                                         layout=widgets.Layout(width='100%'),
                                              value=True,
                                              disabled=True)
+        label = widgets.Label(value="Note: Any of the stacks exported will also contain the original spectra file")
         vertical_layout = widgets.VBox([self.export_corrected_stack_of_sample_data,
                                         self.export_corrected_stack_of_ob_data,
                                         self.export_corrected_stack_of_normalized_data,
+                                        label
                                         ])
         display(vertical_layout)
         display(HTML("<span style='font-size: 16px; color:red'>Integrated images</span>"))
