@@ -408,7 +408,7 @@ class NormalizationTof:
 
         # go straight to autoreduce/mcp folder
         if start_dir is None:
-            start_dir = self.reduce_dir
+            start_dir = self.autoreduce_dir
 
         self.list_input_folders_ui = MyFileSelectorPanel(instruction=instruction,
                                                         start_dir=start_dir,
