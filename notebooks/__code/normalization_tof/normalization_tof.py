@@ -19,8 +19,8 @@ from __code._utilities.nexus import extract_file_path_from_nexus
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
-from __code.normalization_tof.normalization_for_timepix import (normalization, 
-                                                                normalization_with_list_of_runs, 
+from __code.normalization_tof.normalization_for_timepix1_timepix3 import (normalization, 
+                                                                normalization_with_list_of_full_path, 
                                                                 load_data_using_multithreading,
                                                                 retrieve_list_of_tif)
 from __code.normalization_tof.config import DEBUG_DATA
@@ -686,24 +686,33 @@ class NormalizationTof:
                        'x_axis': True,  # always export x axis
                        }
 
-        detecor_delay_us = None
+        detector_delay_us = None
         if self.instrument == "SNAP":
-            detecor_delay_us = self.detector_offset_us.value
+            detector_delay_us = self.detector_offset_us.value
      
-        normalization_with_list_of_runs(sample_run_numbers=sample_run_numbers,
-                                        ob_run_numbers=ob_run_numbers,
-                                        output_folder=output_folder,
-                                        nexus_path=self.nexus_folder,
-                                        proton_charge_flag=self.proton_charge_flag.value,
-                                        shutter_counts_flag=self.shutter_counts_flag.value,
-                                        replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
-                                        correct_chips_alignment_flag=self.correct_chips_alignment_flag.value,
-                                        verbose=True,
-                                        instrument=self.instrument,
-                                        detector_delay_us=detecor_delay_us,
-                                        preview=preview,
-                                        distance_source_detector_m=self.distance_source_detector.value,
-                                        export_mode=export_mode)
+        sample_dict = {}
+        for _full_path in self.dict_sample.keys():
+            sample_dict[os.path.basename(_full_path)] = {'full_path': _full_path,
+                                                         'nexus': self.dict_sample[_full_path]['nexus']}
+        
+        ob_dict = {}
+        for _full_path in self.dict_ob.keys():
+            ob_dict[os.path.basename(_full_path)] = {'full_path': _full_path,
+                                                     'nexus': self.dict_ob[_full_path]['nexus']}
+   
+        normalization_with_list_of_full_path(sample_dict=sample_dict,
+                                            ob_dict=ob_dict,
+                                            output_folder=output_folder,
+                                            proton_charge_flag=self.proton_charge_flag.value,
+                                            shutter_counts_flag=self.shutter_counts_flag.value,
+                                            replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
+                                            correct_chips_alignment_flag=self.correct_chips_alignment_flag.value,
+                                            verbose=True,
+                                            instrument=self.instrument,
+                                            detector_delay_us=detector_delay_us,
+                                            preview=preview,
+                                            distance_source_detector_m=self.distance_source_detector.value,
+                                            export_mode=export_mode)
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
 
