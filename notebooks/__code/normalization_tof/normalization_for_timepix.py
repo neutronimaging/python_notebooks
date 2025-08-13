@@ -27,11 +27,11 @@ PROTON_CHARGE_TOLERANCE = 0.1
 file_name, ext = os.path.splitext(os.path.basename(__file__))
 user_name = os.getlogin() # add user name to the log file name
 log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-logging.basicConfig(filename=log_file_name,
-                    filemode='w',
-                    format='[%(levelname)s] - %(asctime)s - %(message)s',
-                    level=logging.INFO)
-logging.info(f"*** Starting a new script {file_name} ***")
+# logging.basicConfig(filename=log_file_name,
+#                     filemode='w',
+#                     format='[%(levelname)s] - %(asctime)s - %(message)s',
+#                     level=logging.INFO)
+# logging.info(f"*** Starting a new script {file_name} ***")
 
 
 class PLOT_SIZE:

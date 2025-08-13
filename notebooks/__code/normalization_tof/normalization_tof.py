@@ -7,10 +7,15 @@ import logging as notebook_logging
 import numpy as np
 import logging
 import glob
+from pathlib import Path
+import warnings
 
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
+
+from __code._utilities.list import extract_list_of_runs_from_string
+from __code._utilities.nexus import extract_file_path_from_nexus
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
@@ -19,17 +24,19 @@ from __code.normalization_tof.normalization_for_timepix import (normalization,
                                                                 load_data_using_multithreading,
                                                                 retrieve_list_of_tif)
 from __code.normalization_tof.config import DEBUG_DATA
-from __code.normalization_tof import autoreduce_dir, shared_dir, distance_source_detector_m
+from __code.normalization_tof import autoreduce_dir, distance_source_detector_m
+from __code.normalization_tof import DetectorType, raw_dir, autoreduce_dir
 
-# LOG_PATH = "/SNS/VENUS/shared/log/"
-# file_name, ext = os.path.splitext(os.path.basename(__file__))
-# user_name = os.getlogin() # add user name to the log file name
-# log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-# notebook_logging.basicConfig(filename=log_file_name,
-#                     filemode='w',
-#                     format='[%(levelname)s] - %(asctime)s - %(message)s',
-#                     level=notebook_logging.INFO)
-# notebook_logging.info(f"*** Starting a new script {file_name} ***")
+
+LOG_PATH = "/SNS/VENUS/shared/log/"
+file_name, ext = os.path.splitext(os.path.basename(__file__))
+user_name = os.getlogin() # add user name to the log file name
+log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+notebook_logging.basicConfig(filename=log_file_name,
+                    filemode='w',
+                    format='[%(levelname)s] - %(asctime)s - %(message)s',
+                    level=notebook_logging.INFO)
+notebook_logging.info(f"*** Starting a new script {file_name} ***")
 
 
 class NormalizationTof:
@@ -56,8 +63,6 @@ class NormalizationTof:
 
     def __init__(self, working_dir=None, debug=False):
 
-        print(f"Working dir: {working_dir}")
-
         if debug:
             self.working_dir = DEBUG_DATA.working_dir
             self.output_dir = DEBUG_DATA.output_folder
@@ -69,60 +74,79 @@ class NormalizationTof:
         self.debug = debug
         _, _facility, _beamline, ipts = self.working_dir.split('/')
 
-
         self.ipts = ipts
         self.instrument = _beamline.upper()
-        self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
-        self.shared_dir = shared_dir[_beamline][0] + str(ipts) + shared_dir[_beamline][1]
-        if os.path.exists(self.autoreduce_dir):
-            display(HTML(f"Autoreduce folder found: <span style='color:green'>{self.autoreduce_dir}</span>"))
-            notebook_logging.info(f"Autoreduce folder found: {self.autoreduce_dir}")
-        else:
-            display(HTML(f"<span style='color:red'>Autoreduce folder {self.autoreduce_dir} DOES NOT EXIST!</span>"))
-            notebook_logging.info(f"Autoreduce folder {self.autoreduce_dir} DOES NOT EXIST!")
-            display(HTML(f"<span style='color:red'>Make sure you selected the right INSTRUMENT and IPTS!</span>"))
-            
-    def manually_set_runs(self):
        
-        if self.debug:
-            sample_runs = DEBUG_DATA.sample_runs_selected
-            sample_run_numbers_list = []
-            for _run in sample_runs:
-                _, number = _run.split('_')
-                sample_run_numbers_list.append(number)
-            str_sample_run_numbers = ', '.join(sample_run_numbers_list)
+        # self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
+        # self.shared_dir = str(Path(shared_dir[self.instrument][0]) / str(ipts) / shared_dir[self.instrument][1])
+        self.shared_dir = Path("/") / _facility / self.instrument / str(ipts) / "shared"
 
-            ob_runs = DEBUG_DATA.ob_runs_selected
-            ob_run_numbers_list = []
-            for _run in ob_runs:
-                _, number = _run.split('_')
-                ob_run_numbers_list.append(number)
-            str_ob_run_numbers = ', '.join(ob_run_numbers_list)
+        logging.info(f"Instrument: {self.instrument}")
+        logging.info(f"Working dir: {self.working_dir}")
+        logging.info(f"IPTS: {self.ipts}")
+        logging.info(f"facility: {_facility}")
+        logging.info(f"nexus folder: {self.nexus_folder}")
+        logging.info(f"Shared dir: {self.shared_dir}")
+
+        display(HTML(f"<span style='color:blue; font-size:16px'>Select detector type</span>"))
+        self.detector_type_widget = widgets.Dropdown(
+            options=[DetectorType.tpx1_legacy, DetectorType.tpx1, DetectorType.tpx3],
+            value=DetectorType.tpx1,
+            layout=widgets.Layout(width='400px'),
+            disabled=False,
+        )
+        display(self.detector_type_widget)
+
+    def setup_default_paths(self):
+        logging.info("Setting up default paths...")
+        self.detector_type = self.detector_type_widget.value
+        self.raw_dir = Path(raw_dir[self.instrument][self.detector_type][0]) / str(self.ipts) / Path(raw_dir[self.instrument][self.detector_type][1])
+        self.autoreduce_dir = Path(autoreduce_dir[self.instrument][self.detector_type][0]) / str(self.ipts) / Path(autoreduce_dir[self.instrument][self.detector_type][1])
+        logging.info(f"\tAutoreduce dir: {self.autoreduce_dir}")
+        logging.info(f"\tDetector type: {self.detector_type}")
+        logging.info(f"\tRaw dir: {self.raw_dir}")
+
+    # def manually_set_runs(self):
+       
+    #     if self.debug:
+    #         sample_runs = DEBUG_DATA.sample_runs_selected
+    #         sample_run_numbers_list = []
+    #         for _run in sample_runs:
+    #             _, number = _run.split('_')
+    #             sample_run_numbers_list.append(number)
+    #         str_sample_run_numbers = ', '.join(sample_run_numbers_list)
+
+    #         ob_runs = DEBUG_DATA.ob_runs_selected
+    #         ob_run_numbers_list = []
+    #         for _run in ob_runs:
+    #             _, number = _run.split('_')
+    #             ob_run_numbers_list.append(number)
+    #         str_ob_run_numbers = ', '.join(ob_run_numbers_list)
         
-            output_folder = DEBUG_DATA.output_folder
+    #         output_folder = DEBUG_DATA.output_folder
 
-        else:
-            str_sample_run_numbers = ""
-            str_ob_run_numbers = ""
-            # output_folder = os.path.join(self.working_dir, 'shared')
-            output_folder = ""
+    #     else:
+    #         str_sample_run_numbers = ""
+    #         str_ob_run_numbers = ""
+    #         # output_folder = os.path.join(self.working_dir, 'shared')
+    #         output_folder = ""
 
-        sample_label = widgets.Label(value="List of sample run numbers (ex: 8702, 8704)")
-        self.sample_run_numbers_widget = widgets.Textarea(value=str_sample_run_numbers,
-                                                    placeholder="",
-                                                    layout=widgets.Layout(width='400px'))
-        ob_label = widgets.Label(value="List of ob run numbers (ex: 8703, 8705)")
-        self.ob_run_numbers_widget = widgets.Textarea(value=str_ob_run_numbers,
-                                                placeholder="",
-                                                layout=widgets.Layout(width='400px'))
-        output_label = widgets.Label(value=f"Full output folder path")
-        self.output_folder_widget = widgets.Text(value=output_folder,
-                                          placeholder="",
-                                          layout=widgets.Layout(width='400px'))
-        vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers_widget,
-                                        ob_label, self.ob_run_numbers_widget,
-                                        output_label, self.output_folder_widget,])
-        display(vertical_layout)
+    #     sample_label = widgets.Label(value="List of sample run numbers (ex: 8702, 8704)")
+    #     self.sample_run_numbers_widget = widgets.Textarea(value=str_sample_run_numbers,
+    #                                                 placeholder="",
+    #                                                 layout=widgets.Layout(width='400px'))
+    #     ob_label = widgets.Label(value="List of ob run numbers (ex: 8703, 8705)")
+    #     self.ob_run_numbers_widget = widgets.Textarea(value=str_ob_run_numbers,
+    #                                             placeholder="",
+    #                                             layout=widgets.Layout(width='400px'))
+    #     output_label = widgets.Label(value=f"Full output folder path")
+    #     self.output_folder_widget = widgets.Text(value=output_folder,
+    #                                       placeholder="",
+    #                                       layout=widgets.Layout(width='400px'))
+    #     vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers_widget,
+    #                                     ob_label, self.ob_run_numbers_widget,
+    #                                     output_label, self.output_folder_widget,])
+    #     display(vertical_layout)
         
         # if self.instrument != "SNAP":
         #     display(HTML("<span style='font-size: 16px; color:red'>You have the option here to enter the runs manually or just use the widgets (following cells) to define them!</span>"))
@@ -136,31 +160,213 @@ class NormalizationTof:
                            next_function=self.sample_folder_selected)
 
     def select_sample_run_numbers(self):
-        if self.sample_run_numbers_widget.value.strip() != "":
-            sample_run_numbers = self.sample_run_numbers_widget.value.split(',')
-            list_sample_run_numbers = [f"Run_{_run.strip()}" for _run in sample_run_numbers]
-            list_sample_runs_full_path = [os.path.join(self.autoreduce_dir, _sample) for _sample in list_sample_run_numbers]
-            self.sample_run_numbers_selected(list_sample_runs_full_path)
+        # if self.sample_run_numbers_widget.value.strip() != "":
+        #     sample_run_numbers = self.sample_run_numbers_widget.value.split(',')
+        #     list_sample_run_numbers = [f"Run_{_run.strip()}" for _run in sample_run_numbers]
+        #     list_sample_runs_full_path = [os.path.join(self.autoreduce_dir, _sample) for _sample in list_sample_run_numbers]
+        #     self.sample_run_numbers_selected(list_sample_runs_full_path)
+        # else:
+        
+        self.setup_default_paths()
+
+        if self.debug:
+            sample_runs = DEBUG_DATA.sample_runs_selected
+            sample_run_numbers_list = []
+            for _run in sample_runs:
+                _, number = _run.split('_')
+                sample_run_numbers_list.append(number)
+            str_sample_run_numbers = ', '.join(sample_run_numbers_list)
         else:
-            self.select_folder(instruction="Select sample run number folder",
-                               next_function=self.sample_run_numbers_selected,
-                               multiple=True,)
+            str_sample_run_numbers = ""
+
+        sample_label = widgets.HTML(value=f"<b><font color='green'>List of sample run numbers (ex: 8702, 8704-8706)</font></b>")
+
+        self.sample_run_numbers_widget = widgets.Textarea(value=str_sample_run_numbers,
+                                                    placeholder="",
+                                                    layout=widgets.Layout(width='400px'))
+        vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers_widget,
+                                        ])
+        display(vertical_layout)
+
+        display(HTML("<span style='font-size: 16px; color:red'>OR</span>"))
+
+        self.select_folder(instruction="Browse sample runs to normalize",
+                            next_function=self.sample_run_numbers_selected,
+                            multiple=True,)
+
+    def sample_run_numbers_selected(self, runs_selected):
+        self.sample_run_numbers_selected = runs_selected
+
+    def retrieve_file_path_from_nexus(self, run_number):
+        """
+        Retrieve the full path to the NeXus file for the given run number.
+        This function should be implemented to read the NeXus file and extract the path.
+        """
+        logging.info(f"Retrieving file path from NeXus for run number: {run_number}")
+        # Placeholder implementation, replace with actual logic to read NeXus file
+        nexus_file_path = Path(self.nexus_folder) / f"{self.instrument.upper()}_{run_number}.nxs.h5"
+        logging.info(f"\tNeXus file path: {nexus_file_path}")
+        if nexus_file_path.exists():
+            return extract_file_path_from_nexus(nexus_file_path)
+        else:
+            return None
+
+    def extract_full_path(self, run_number=None):
+        """
+        Extract the full path to the run number based on the detector type.
+        """
+        logging.info(f"Extracting full path for run number: {run_number} with detector type: {self.detector_type}")
+
+        if run_number is None:
+            raise ValueError("Run number must be provided")
+        
+        if self.detector_type == DetectorType.tpx1_legacy:
+            return Path(self.autoreduce_dir) / f"Run_{run_number}" 
+
+        elif self.detector_type in [DetectorType.tpx1, DetectorType.tpx3]:
+            # retrieve the path from the NeXus file
+            file_path = self.retrieve_file_path_from_nexus(run_number)
+            if self.detector_type == DetectorType.tpx1:
+                file_path = Path(self.autoreduce_dir) / file_path
+            elif self.detector_type == DetectorType.tpx3:
+                file_path = Path(self.raw_dir) / file_path
+            if file_path is None:
+                raise ValueError(f"No NeXus file found for run number {run_number}")
+            return str(file_path)
+
+        else:
+            raise ValueError(f"Unknown detector type: {self.detector_type}")
+
+    def check_sample(self):
+        """
+        Check if the sample folder and runs are valid.
+        """
+
+        logging.info("Checking sample inputs...")
+        display(HTML(f"Sample run numbers selected:"))
+
+        if self.sample_run_numbers_widget.value.strip() != "":
+
+            list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
+            logging.info(f"\t{list_of_runs = }")
+
+            list_of_sample_full_path = []
+            for _run in list_of_runs:
+                _full_path = self.extract_full_path(run_number=_run)
+                list_of_sample_full_path.append(_full_path)
+
+            for _file_full_path in list_of_sample_full_path:
+                if os.path.exists(_file_full_path):
+                    logging.info(f"\tSample run number {_file_full_path} - FOUND")
+                    display(HTML(f"<span style='color:green'>{_file_full_path} - OK!</span>"))
+                else:
+                    logging.info(f"\tSample run number {_file_full_path} - NOT FOUND")
+                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+
+        else:
+            notebook_logging.info(f"Sample run numbers selected: {self.sample_run_numbers_selected}")
+            for _run in self.sample_run_numbers_selected:
+                if os.path.exists(_run):
+                    notebook_logging.info(f"\tSample run number {_run} - FOUND")
+                    # check here that the folder is not empty (contains tiff)
+                    is_valid_run, report_dict = self.check_folder_is_valid(_run)
+                    if is_valid_run:
+                        nbr_tiff = report_dict['nbr_tiff']
+                        display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
+                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                    else:
+                        display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
+                else:
+                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
+
 
     def select_ob_folder(self):
-            self.select_folder(instruction="Select ob top folder",
+            self.select_folder(instruction="Browse ob top folder",
                             next_function=self.ob_folder_selected)
 
     def select_ob_run_numbers(self):
+        # if self.ob_run_numbers_widget.value.strip() != "":
+        #     ob_run_numbers = self.ob_run_numbers_widget.value.split(',')
+        #     list_ob_run_numbers = [f"Run_{_run.strip()}" for _run in ob_run_numbers]
+        #     list_ob_runs_full_path = [os.path.join(self.autoreduce_dir, _ob) for _ob in list_ob_run_numbers]
+        #     self.ob_run_numbers_selected(list_ob_runs_full_path)
+        # else:    
+        
+        if self.debug:
+        
+            ob_runs = DEBUG_DATA.ob_runs_selected
+            ob_run_numbers_list = []
+            for _run in ob_runs:
+                _, number = _run.split('_')
+                ob_run_numbers_list.append(number)
+            str_ob_run_numbers = ', '.join(ob_run_numbers_list)
+        
+            output_folder = DEBUG_DATA.output_folder
+
+        else:
+            str_ob_run_numbers = ""
+
+        ob_label = widgets.HTML(value=f"<b><font color='green'>List of ob run numbers (ex: 8705, 8707)</font></b>")
+
+        self.ob_run_numbers_widget = widgets.Textarea(value=str_ob_run_numbers,
+                                                    placeholder="",
+                                                    layout=widgets.Layout(width='400px'))
+        vertical_layout = widgets.VBox([ob_label, self.ob_run_numbers_widget,
+                                        ])
+        display(vertical_layout)
+
+        display(HTML("<span style='font-size: 16px; color:red'>OR</span>"))
+
+        self.select_folder(instruction="Browse ob run number folders",
+                            next_function=self.ob_run_numbers_selected,
+                            start_dir=self.ob_folder,
+                            multiple=True)
+
+    def check_ob(self):
+        """
+        Check if the ob folder and runs are valid.
+        """
+        logging.info("Checking ob inputs...")
+        display(HTML(f"OB run numbers selected:"))
+
         if self.ob_run_numbers_widget.value.strip() != "":
-            ob_run_numbers = self.ob_run_numbers_widget.value.split(',')
-            list_ob_run_numbers = [f"Run_{_run.strip()}" for _run in ob_run_numbers]
-            list_ob_runs_full_path = [os.path.join(self.autoreduce_dir, _ob) for _ob in list_ob_run_numbers]
-            self.ob_run_numbers_selected(list_ob_runs_full_path)
-        else:    
-            self.select_folder(instruction="Select ob run number folders",
-                               next_function=self.ob_run_numbers_selected,
-                               start_dir=self.ob_folder,
-                               multiple=True)
+
+            list_of_runs = extract_list_of_runs_from_string(self.ob_run_numbers_widget.value)
+            logging.info(f"\t{list_of_runs = }")
+
+            list_of_ob_full_path = []
+            for _run in list_of_runs:
+                _full_path = self.extract_full_path(run_number=_run)
+                list_of_ob_full_path.append(_full_path)
+
+            for _file_full_path in list_of_ob_full_path:
+                if os.path.exists(_file_full_path):
+                    logging.info(f"\tOB run number {_file_full_path} - FOUND")
+                    display(HTML(f"<span style='color:green'>{_file_full_path} - OK!</span>"))
+                else:
+                    logging.info(f"\tOB run number {_file_full_path} - NOT FOUND")
+                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+
+        else:
+            notebook_logging.info(f"OB run numbers selected: {self.ob_run_numbers_selected}")
+            for _run in self.ob_run_numbers_selected:
+                if os.path.exists(_run):
+                    notebook_logging.info(f"\tOB run number {_run} - FOUND")
+                    # check here that the folder is not empty (contains tiff)
+                    is_valid_run, report_dict = self.check_folder_is_valid(_run)
+                    if is_valid_run:
+                        nbr_tiff = report_dict['nbr_tiff']
+                        display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
+                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                    else:
+                        display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
+                else:
+                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
+
+
+
 
     def _load_and_get_integrated_ob(self, ob_run):
         """
@@ -353,24 +559,24 @@ class NormalizationTof:
         self.sample_folder = folder_selected
         display(HTML(f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"))
 
-    def sample_run_numbers_selected(self, runs_selected):
-        self.sample_run_numbers = runs_selected
-        display(HTML(f"Sample run numbers selected:"))
-        notebook_logging.info(f"Sample run numbers selected: {runs_selected}")
-        for _run in runs_selected:
-            if os.path.exists(_run):
-                notebook_logging.info(f"\tSample run number {_run} - FOUND")
-                # check here that the folder is not empty (contains tiff)
-                is_valid_run, report_dict = self.check_folder_is_valid(_run)
-                if is_valid_run:
-                    nbr_tiff = report_dict['nbr_tiff']
-                    display(HTML(f"<span style='color:green'>{_run}</span>"))
-                    notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-                else:
-                    display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
-            else:
-                display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
-                notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
+    # def sample_run_numbers_selected(self, runs_selected):
+    #     self.sample_run_numbers = runs_selected
+    #     display(HTML(f"Sample run numbers selected:"))
+    #     notebook_logging.info(f"Sample run numbers selected: {runs_selected}")
+    #     for _run in runs_selected:
+    #         if os.path.exists(_run):
+    #             notebook_logging.info(f"\tSample run number {_run} - FOUND")
+    #             # check here that the folder is not empty (contains tiff)
+    #             is_valid_run, report_dict = self.check_folder_is_valid(_run)
+    #             if is_valid_run:
+    #                 nbr_tiff = report_dict['nbr_tiff']
+    #                 display(HTML(f"<span style='color:green'>{_run}</span>"))
+    #                 notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+    #             else:
+    #                 display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
+    #         else:
+    #             display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
+    #             notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
 
     def ob_folder_selected(self, folder_selected):
         self.ob_folder = folder_selected
@@ -454,3 +660,4 @@ class NormalizationTof:
                                         export_mode=export_mode)
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML(f"Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
+

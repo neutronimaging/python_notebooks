@@ -67,3 +67,45 @@ def is_this_list_already_in_those_lists_within_tolerance(list1, list2, tolerance
             return True
 
     return False
+
+
+def extract_list_of_runs_from_string(string):
+    """
+    extracting a list of runs from a string
+    e.g. "1234, 1255-1258" -> [1234, 1255, 1256, 1257, 1258]
+
+    :param string: str
+    """
+    if not isinstance(string, str):
+        raise TypeError("The parameter passed should be a string")
+
+    list_of_runs = []
+    list_of_items = string.split(',')
+    for item in list_of_items:
+        item = item.strip()
+        if '-' in item:
+            limits = item.split('-')
+            if len(limits) != 2:
+                raise ValueError(f"Wrong format for the range of runs: {item}")
+            try:
+                start = int(limits[0])
+                end = int(limits[1])
+            except Exception:
+                raise ValueError(f"Wrong format for the range of runs: {item}")
+
+            if start >= end:
+                raise ValueError(f"Wrong format for the range of runs: {item}")
+
+            list_of_runs += list(range(start, end + 1))
+        else:
+            try:
+                run = int(item)
+            except Exception:
+                raise ValueError(f"Wrong format for the run number: {item}")
+            list_of_runs.append(run)
+
+    # removing duplicates and sorting the list
+    list_of_runs = list(set(list_of_runs))
+    list_of_runs.sort()
+
+    return list_of_runs
