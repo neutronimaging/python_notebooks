@@ -47,6 +47,13 @@ class NormalizationTof:
     ob_run_numbers = None
     output_folder = None
 
+    # {'full_path_data': {'data': None, 'nexus': None}}
+    dict_sample = {}
+    dict_ob = {}
+
+    # {'short_name': 'full_path_data'}
+    dict_short_name_full_path = {'sample': {}, 'ob': {}}
+
     dict_ob_runs = None 
     dict_ob_data = None
 
@@ -258,7 +265,16 @@ class NormalizationTof:
             for _file_full_path in list_of_sample_full_path:
                 if os.path.exists(_file_full_path):
                     logging.info(f"\tSample run number {_file_full_path} - FOUND")
-                    display(HTML(f"<span style='color:green'>{_file_full_path} - OK!</span>"))
+                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    if is_valid_run:
+                        nbr_tiff = report_dict['nbr_tiff']
+                        logging.info(f"\tSample run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
+                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        self.dict_sample[_file_full_path] = {}
+                        self.dict_short_name_full_path['sample'][os.path.basename(_file_full_path)] = _file_full_path
+                    else:
+                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
+
                 else:
                     logging.info(f"\tSample run number {_file_full_path} - NOT FOUND")
                     display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
@@ -274,12 +290,13 @@ class NormalizationTof:
                         nbr_tiff = report_dict['nbr_tiff']
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                        self.dict_sample[_run] = {}
+                        self.dict_short_name_full_path['sample'][os.path.basename(_run)] = _run
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
                     display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
                     notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
-
 
     def select_ob_folder(self):
             self.select_folder(instruction="Browse ob top folder",
@@ -343,7 +360,15 @@ class NormalizationTof:
             for _file_full_path in list_of_ob_full_path:
                 if os.path.exists(_file_full_path):
                     logging.info(f"\tOB run number {_file_full_path} - FOUND")
-                    display(HTML(f"<span style='color:green'>{_file_full_path} - OK!</span>"))
+                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    if is_valid_run:
+                        nbr_tiff = report_dict['nbr_tiff']
+                        logging.info(f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
+                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        self.dict_ob[_file_full_path] = {}
+                        self.dict_short_name_full_path['ob'][os.path.basename(_file_full_path)] = _file_full_path
+                    else:
+                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
                     logging.info(f"\tOB run number {_file_full_path} - NOT FOUND")
                     display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
@@ -359,28 +384,26 @@ class NormalizationTof:
                         nbr_tiff = report_dict['nbr_tiff']
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                        self.dict_short_name_full_path['ob'][os.path.basename(_run)] = _run
+                        self.dict_ob[_run] = {}
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
                     display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
                     notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
 
-
-
-
-    def _load_and_get_integrated_ob(self, ob_run):
+    def _load_and_get_integrated_ob(self, full_path):
         """
         Load the integrated open beam data from the given OB run path.
         This function is a placeholder and should be implemented to load the actual data.
         """
-        logging.info(f"Loading integrated OB data for {ob_run}")
+        logging.info(f"Loading integrated OB data for {full_path}")
         # Here you would load the integrated OB data, for example using a specific library
         # For now, we will just return a dummy value
-        if self.dict_ob_data.get(ob_run, None) is None:
+        if self.dict_ob[full_path].get('data') is None:
             logging.info("No data found for this OB run, loading it now...")
             # load the data from the OB run
-            logging.info(f"\tFull path to OB run: {ob_run}")
-            full_path = self.dict_ob_runs.get(ob_run)
+            logging.info(f"\tFull path to OB run: {os.path.basename(full_path)}")
             list_tiff = retrieve_list_of_tif(full_path)
             logging.info(f"\tNumber of TIFF files found: {len(list_tiff)}")
             if len(list_tiff) == 0:
@@ -388,28 +411,30 @@ class NormalizationTof:
                 notebook_logging.error(f"No TIFF files found in {full_path}!")
                 return None
             data = load_data_using_multithreading(list_tiff, combine_tof=True)
-            self.dict_ob_data[ob_run] = data
-      
-        return self.dict_ob_data[ob_run]
+            self.dict_ob[full_path]['data'] = data
+
+        return self.dict_ob[full_path]['data']
 
     def preview_ob_runs(self):
-        if self.ob_run_numbers is None or len(self.ob_run_numbers) == 0:
+
+        if self.dict_ob is None:
             display(HTML("<span style='color:red'>No OB runs selected!</span>"))
             return
 
-        logging.info(f"Previewing OB runs: {self.ob_run_numbers}")
+        logging.info(f"Previewing OB runs")
         
-        nbr_ob_runs = len(self.ob_run_numbers)
-        list_ob_short_runs = [os.path.basename(_run) for _run in self.ob_run_numbers]
-        self.dict_ob_runs = {_short_name: _full_name for _short_name, _full_name in zip(list_ob_short_runs, self.ob_run_numbers)}
-        self.dict_ob_data = {_short_name: None for _short_name in list_ob_short_runs}
+        # list_ob_short_runs = [os.path.basename(_run) for _run in self.ob_run_numbers]
+        # self.dict_ob_runs = {_short_name: _full_name for _short_name, _full_name in zip(list_ob_short_runs, self.ob_run_numbers)}
+        # self.dict_ob_data = {_short_name: None for _short_name in list_ob_short_runs}
 
-        if nbr_ob_runs == 1:
-        
+        list_ob_key = list(self.dict_ob.keys())
+        list_ob_short_runs = [os.path.basename(_run) for _run in list_ob_key]
+        if len(list_ob_key) == 1:
+                    
             logging.info(f"Only one OB run")
-            full_path = self.dict_ob_runs.get(list_ob_short_runs[0])
+            full_path = list_ob_key[0]
             logging.info(f"\tFull path to OB run: {full_path}")
-            integrated_ob = self._load_and_get_integrated_ob(list_ob_short_runs[0])
+            integrated_ob = self._load_and_get_integrated_ob(full_path)
             if integrated_ob is None:
                 display(HTML(f"<span style='color:red'>Failed to load integrated OB data for {list_ob_short_runs[0]}!</span>"))
                 return
@@ -421,46 +446,66 @@ class NormalizationTof:
         
         else:
 
-            logging.info(f"Multiple OB runs to display: {nbr_ob_runs}")
-            def display_ob_run(ob_run):
+            logging.info(f"Multiple OB runs to display: {len(list_ob_key)}")
+            def display_ob_run(short_name):
                 """
                 Display the integrated OB run data.
                 """
-                full_path = self.dict_ob_runs.get(ob_run)
-                integrated_ob = self._load_and_get_integrated_ob(ob_run)
+                full_path = self.dict_short_name_full_path['ob'][short_name]
+                integrated_ob = self._load_and_get_integrated_ob(full_path)
                 if integrated_ob is None:
-                    display(HTML(f"<span style='color:red'>Failed to load integrated OB data for {ob_run}!</span>"))
+                    display(HTML(f"<span style='color:red'>Failed to load integrated OB data for {os.path.basename(full_path)}!</span>"))
                     return
                 fig, ax = plt.subplots(figsize=(10, 6))
                 im = ax.imshow(integrated_ob, cmap='viridis', aspect='auto')
-                ax.set_title(f"Integrated OB run: {ob_run}")
+                ax.set_title(f"Integrated OB run: {os.path.basename(full_path)}")
                 fig.colorbar(im, ax=ax, orientation='vertical', label='Intensity')
                 plt.show()
 
+            list_ob_key = list(self.dict_short_name_full_path['ob'].keys())
             _display = interactive(display_ob_run,
-                                   ob_run=widgets.Dropdown(
-                                       options=list_ob_short_runs,
-                                       description='OB run:',
-                                       disabled=False,)
+                                   short_name=widgets.Dropdown(
+                                                        options=list_ob_key,
+                                                        description='OB run:',
+                                                        layout=widgets.Layout(width='100%'),
+                                                        disabled=False,)
             )
             display(_display)
       
     def select_output_folder(self):
-        if self.instrument == "SNAP":
-            self.select_folder(instruction="Select output folder",
+        self.select_folder(instruction="Select output folder",
                             start_dir=self.working_dir,
                             next_function=self.output_folder_selected)
 
-        else:
-            if self.output_folder_widget.value.strip() != "":
-                self.output_folder = self.output_folder_widget.value
-                self.output_folder_selected(self.output_folder)
-            else:
-                self.select_folder(instruction="Select output folder",
-                                  start_dir=self.shared_dir,
-                                  next_function=self.output_folder_selected)
+    def retrieve_nexus_file_path(self):
+        logging.info("Retrieving NeXus file paths for sample and OB runs...")
+
+        logging.info(f"\tworking with sample runs:")
+        for full_path in self.dict_sample.keys():
+            if self.detector_type == DetectorType.tpx1_legacy:
+                run_number = os.path.basename(full_path).split('_')[1]
+            elif self.detector_type in [DetectorType.tpx1, DetectorType.tpx3]:
+                file_name_split = os.path.basename(full_path).split('_')
+                run_number = file_name_split[2]
+            self.dict_sample[full_path]['nexus'] = os.path.join(self.nexus_folder, f"{self.instrument.upper()}_{run_number}.nxs.h5")
+            logging.info(f"\t\tNeXus file path for sample run {os.path.basename(full_path)}: {self.dict_sample[full_path]['nexus']}")
+
+        logging.info(f"\tworking with ob runs:")
+        for full_path in self.dict_ob.keys():
+            if self.detector_type == DetectorType.tpx1_legacy:
+                run_number = os.path.basename(full_path).split('_')[1]
+            elif self.detector_type in [DetectorType.tpx1, DetectorType.tpx3]:
+                file_name_split = os.path.basename(full_path).split('_')
+                run_number = file_name_split[2]
+            self.dict_ob[full_path]['nexus'] = os.path.join(self.nexus_folder, f"{self.instrument.upper()}_{run_number}.nxs.h5")
+            logging.info(f"\t\tNeXus file path for OB run {os.path.basename(full_path)}: {self.dict_ob[full_path]['nexus']}")
+
+        logging.info("NeXus file paths retrieved successfully.")
 
     def settings(self):
+
+        self.retrieve_nexus_file_path()
+
         label = widgets.Label(value="What to take into account for normalization?")
         display(label)
         self.proton_charge_flag = widgets.Checkbox(description='Proton charge',
@@ -470,7 +515,8 @@ class NormalizationTof:
         self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description='Replace OB zeros by NaN',
                                                   value=True)
         self.correct_chips_alignment_flag = widgets.Checkbox(description='Correct chips alignment',
-                                                  value=True)
+                                                             disabled=True,
+                                                  value=False)
 
         vertical_layout = widgets.VBox([self.proton_charge_flag, 
                                         self.shutter_counts_flag, 
