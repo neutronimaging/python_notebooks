@@ -17,7 +17,7 @@ class DetectorType:
 
 raw_dir = {'VENUS': {DetectorType.tpx1_legacy: ["/SNS/VENUS/", "images/mcp/images/"],
                      DetectorType.tpx1: ["/SNS/VENUS/", "images/tpx1/"],
-                     DetectorType.tpx3: ["/SNS/VENUS/", "images/tpx3/"],
+                     DetectorType.tpx3: ["/SNS/VENUS/", ""],
                      },
             'SNAP': {DetectorType.tpx1_legacy: ["/SNS/SNAP/", "images/mcp/"],
             },

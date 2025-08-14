@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+from pathlib import Path
 import h5py
 import glob
 import numpy as np
@@ -324,20 +325,30 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
         detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
         time_spectra = sample_master_dict[_sample_run_number][MasterDictKeys.list_spectra]
 
-        lambda_array = convert_array_from_time_to_lambda(time_array=time_spectra,
-                                                          time_unit=TimeUnitOptions.s,
-                                                          distance_source_detector=distance_source_detector_m,
-                                                          distance_source_detector_unit=DistanceUnitOptions.m,
-                                                          detector_offset=detector_delay_us,
-                                                          detector_offset_unit=TimeUnitOptions.us,
-                                                          lambda_unit=DistanceUnitOptions.angstrom)
-        energy_array = convert_array_from_time_to_energy(time_array=time_spectra,
-                                                         time_unit=TimeUnitOptions.s,
-                                                         distance_source_detector=distance_source_detector_m,
-                                                         distance_source_detector_unit=DistanceUnitOptions.m,
-                                                         detector_offset=detector_delay_us,
-                                                         detector_offset_unit=TimeUnitOptions.us,
-                                                         energy_unit=EnergyUnitOptions.eV)
+        if time_spectra is None:
+            lambda_array = None
+            energy_array = None
+        else:
+
+            logging.info(f"time spectra shape: {time_spectra.shape}")
+
+            lambda_array = convert_array_from_time_to_lambda(time_array=time_spectra,
+                                                            time_unit=TimeUnitOptions.s,
+                                                            distance_source_detector=distance_source_detector_m,
+                                                            distance_source_detector_unit=DistanceUnitOptions.m,
+                                                            detector_offset=detector_delay_us,
+                                                            detector_offset_unit=TimeUnitOptions.us,
+                                                            lambda_unit=DistanceUnitOptions.angstrom)
+            logging.info(f"Lambda array shape: {lambda_array.shape}")
+
+            energy_array = convert_array_from_time_to_energy(time_array=time_spectra,
+                                                            time_unit=TimeUnitOptions.s,
+                                                            distance_source_detector=distance_source_detector_m,
+                                                            distance_source_detector_unit=DistanceUnitOptions.m,
+                                                            detector_offset=detector_delay_us,
+                                                            detector_offset_unit=TimeUnitOptions.us,
+                                                            energy_unit=EnergyUnitOptions.eV)
+            logging.info(f"Energy array shape: {energy_array.shape}")
 
         if preview:
 
@@ -381,16 +392,19 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
             axs3[1].set_ylabel("mean of full image")          
             plt.tight_layout()
 
-            fig, axs4 = plt.subplots(1, 2, figsize=(2*PLOT_SIZE.width, PLOT_SIZE.height))
-            axs4[0].plot(lambda_array, profile, '*')
-            axs4[0].set_xlabel("Lambda (A)")
-            axs4[0].set_ylabel("mean of full image")
+            if lambda_array is not None:
+                fig, axs4 = plt.subplots(1, 2, figsize=(2*PLOT_SIZE.width, PLOT_SIZE.height))
+                logging.info(f"{np.shape(profile) = }")
 
-            axs4[1].plot(energy_array, profile, '*')
-            axs4[1].set_xlabel("Energy (eV)")
-            axs4[1].set_ylabel("mean of full image")
-            axs4[1].set_xscale('log')
-            plt.tight_layout()
+                axs4[0].plot(lambda_array, profile, '*')
+                axs4[0].set_xlabel("Lambda (A)")
+                axs4[0].set_ylabel("mean of full image")
+            
+                axs4[1].plot(energy_array, profile, '*')
+                axs4[1].set_xlabel("Energy (eV)")
+                axs4[1].set_ylabel("mean of full image")
+                axs4[1].set_xscale('log')
+                plt.tight_layout()
 
             plt.show()
 
@@ -422,14 +436,16 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
                 logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
                 print(f"Exported normalized tif images are in: {output_stack_folder}!")
                 spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
-                logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
-                shutil.copy(spectra_file, output_stack_folder)
 
-                # create x-axis file
-                create_x_axis_file(lambda_array=lambda_array,
-                                   energy_array=energy_array,
-                                   output_folder=output_stack_folder,
-                                   )
+                if spectra_file and Path(spectra_file).exists():
+                    logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+                    shutil.copy(spectra_file, output_stack_folder)
+
+                    # create x-axis file
+                    create_x_axis_file(lambda_array=lambda_array,
+                                    energy_array=energy_array,
+                                    output_folder=output_stack_folder,
+                                    )
 
     logging.info(f"Normalization and export is done!")
     if verbose:

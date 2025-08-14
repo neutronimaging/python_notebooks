@@ -107,7 +107,7 @@ class NormalizationTof:
     def setup_default_paths(self):
         logging.info("Setting up default paths...")
         self.detector_type = self.detector_type_widget.value
-        self.raw_dir = Path(raw_dir[self.instrument][self.detector_type][0]) / str(self.ipts) / Path(raw_dir[self.instrument][self.detector_type][1])
+        self.raw_dir = Path(raw_dir[self.instrument][self.detector_type][0]) / str(self.ipts) 
         self.autoreduce_dir = Path(autoreduce_dir[self.instrument][self.detector_type][0]) / str(self.ipts) / Path(autoreduce_dir[self.instrument][self.detector_type][1])
         logging.info(f"\tAutoreduce dir: {self.autoreduce_dir}")
         logging.info(f"\tDetector type: {self.detector_type}")
@@ -374,8 +374,8 @@ class NormalizationTof:
                     display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
 
         else:
-            notebook_logging.info(f"OB run numbers selected: {self.ob_run_numbers_selected}")
-            for _run in self.ob_run_numbers_selected:
+            notebook_logging.info(f"OB run numbers selected: {self.ob_run_numbers}")
+            for _run in self.ob_run_numbers:
                 if os.path.exists(_run):
                     notebook_logging.info(f"\tOB run number {_run} - FOUND")
                     # check here that the folder is not empty (contains tiff)
@@ -506,12 +506,15 @@ class NormalizationTof:
 
         self.retrieve_nexus_file_path()
 
+        tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
+
         label = widgets.Label(value="What to take into account for normalization?")
         display(label)
         self.proton_charge_flag = widgets.Checkbox(description='Proton charge',
                                               value=True)
         self.shutter_counts_flag = widgets.Checkbox(description='Shutter counts',
-                                               value=True)
+                                               value=not tpx3_disabled_flag,
+                                               disabled=tpx3_disabled_flag)
         self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description='Replace OB zeros by NaN',
                                                   value=True)
         self.correct_chips_alignment_flag = widgets.Checkbox(description='Correct chips alignment',
@@ -630,21 +633,21 @@ class NormalizationTof:
 
     def ob_run_numbers_selected(self, folder_selected):
         self.ob_run_numbers = folder_selected
-        display(HTML(f"OB folder selected:"))
-        notebook_logging.info(f"OB folder selected: {folder_selected}")
-        for _run in folder_selected:
-            if os.path.exists(_run):
-                notebook_logging.info(f"\tOB run number {_run} - FOUND")
-                is_valid_run, report_dict = self.check_folder_is_valid(_run)
-                if is_valid_run:
-                    nbr_tiff = report_dict['nbr_tiff']
-                    display(HTML(f"<span style='color:green'>{_run}</span>"))
-                    notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-                else:
-                    display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
-            else:
-                display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
-                notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
+        # display(HTML(f"OB folder selected:"))
+        # notebook_logging.info(f"OB folder selected: {folder_selected}")
+        # for _run in folder_selected:
+        #     if os.path.exists(_run):
+        #         notebook_logging.info(f"\tOB run number {_run} - FOUND")
+        #         is_valid_run, report_dict = self.check_folder_is_valid(_run)
+        #         if is_valid_run:
+        #             nbr_tiff = report_dict['nbr_tiff']
+        #             display(HTML(f"<span style='color:green'>{_run}</span>"))
+        #             notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+        #         else:
+        #             display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
+        #     else:
+        #         display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
+        #         notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
 
     def output_folder_selected(self, folder_selected):
         self.output_folder = folder_selected
