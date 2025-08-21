@@ -2,7 +2,7 @@ import os
 import collections
 import numpy as np
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import logging
 from qtpy import QtGui
 

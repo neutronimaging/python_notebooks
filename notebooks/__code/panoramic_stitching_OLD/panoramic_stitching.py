@@ -1,4 +1,4 @@
-from IPython.core.display import HTML
+from IPython.display import HTML
 from IPython.display import display
 import pyqtgraph as pg
 import numpy as np

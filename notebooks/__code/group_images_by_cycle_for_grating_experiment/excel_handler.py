@@ -1,8 +1,8 @@
 import pandas as pd
 from qtpy.QtWidgets import QMainWindow, QFileDialog, QMenu
 from qtpy import QtGui
-from IPython.core.display import display
-from IPython.core.display import HTML
+from IPython.display import display
+from IPython.display import HTML
 import os
 import numpy as np
 import re

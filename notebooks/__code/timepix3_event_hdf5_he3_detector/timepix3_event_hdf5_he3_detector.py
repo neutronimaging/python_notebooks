@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ipywidgets import interactive
 import ipywidgets as widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 from neutronbraggedge.experiment_handler import *
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary

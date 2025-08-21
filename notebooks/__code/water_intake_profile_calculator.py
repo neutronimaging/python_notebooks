@@ -1,5 +1,5 @@
-from IPython.core.display import HTML
-from IPython.core.display import display
+from IPython.display import HTML
+from IPython.display import display
 from ipywidgets import widgets
 
 import numpy as np

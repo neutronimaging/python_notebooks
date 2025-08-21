@@ -10,7 +10,7 @@ import multiprocessing as mp
 from PIL import Image
 import shutil
 from IPython.display import display
-from IPython.core.display import HTML
+from IPython.display import HTML
 import pandas as pd
 import matplotlib.pyplot as plt
 # from enum import Enum

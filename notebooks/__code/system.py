@@ -4,8 +4,8 @@ import glob
 import os
 import platform
 from ipywidgets import widgets
-from IPython.core.display import display
-from IPython.core.display import HTML
+from IPython.display import display
+from IPython.display import HTML
 
 from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code import LOGGER_FILE

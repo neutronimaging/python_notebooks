@@ -1,6 +1,6 @@
-from IPython.core.display import HTML
+from IPython.display import HTML
 import numpy as np
-from IPython.core.display import display
+from IPython.display import display
 import os
 from qtpy.QtWidgets import QMainWindow
 import copy

@@ -15,7 +15,7 @@ import plotly.graph_objects as go
 
 from ipywidgets import interactive
 import ipywidgets as widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 import matplotlib.pyplot as plt
 

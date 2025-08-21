@@ -3,7 +3,7 @@ import datetime
 import os
 from collections import OrderedDict
 from ipywidgets import widgets
-from IPython.core.display import display
+from IPython.display import display
 
 class MetadataHandler(object):
 

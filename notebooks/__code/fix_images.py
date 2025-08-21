@@ -6,8 +6,8 @@ from ipywidgets import widgets
 
 import matplotlib.pyplot as plt
 
-from IPython.core.display import display
-from IPython.core.display import HTML
+from IPython.display import display
+from IPython.display import HTML
 
 from NeuNorm.normalization import Normalization
 from __code.file_folder_browser import FileFolderBrowser

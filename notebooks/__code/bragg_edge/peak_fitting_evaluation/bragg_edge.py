@@ -1,7 +1,7 @@
 import random
 import os
 import glob
-from IPython.core.display import HTML
+from IPython.display import HTML
 from IPython.display import display
 import numpy as np
 from collections import OrderedDict

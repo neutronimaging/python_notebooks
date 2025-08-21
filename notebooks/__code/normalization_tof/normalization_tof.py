@@ -1,7 +1,7 @@
 import os
 from IPython.display import display
 import ipywidgets as widgets
-from IPython.core.display import HTML
+from IPython.display import HTML
 import matplotlib.pyplot as plt
 import logging as notebook_logging
 import numpy as np
@@ -12,7 +12,7 @@ import warnings
 
 from ipywidgets import interactive
 import ipywidgets as widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
@@ -518,8 +518,8 @@ class NormalizationTof:
         self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description='Replace OB zeros by NaN',
                                                   value=True)
         self.correct_chips_alignment_flag = widgets.Checkbox(description='Correct chips alignment',
-                                                             disabled=True,
-                                                  value=False)
+                                                             disabled=False,
+                                                  value=True)
 
         vertical_layout = widgets.VBox([self.proton_charge_flag, 
                                         self.shutter_counts_flag, 

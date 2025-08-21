@@ -1,7 +1,7 @@
 import numpy as np
 import os
-from IPython.core.display import HTML
-from IPython.core.display import display
+from IPython.display import HTML
+from IPython.display import display
 
 from __code.file_handler import make_ascii_file
 from __code._utilities.time import get_current_time_in_special_file_name_format

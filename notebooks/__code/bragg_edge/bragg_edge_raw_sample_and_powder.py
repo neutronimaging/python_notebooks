@@ -2,7 +2,7 @@ import random
 import os
 import glob
 from pathlib import Path
-from IPython.core.display import HTML
+from IPython.display import HTML
 from IPython.display import display
 import numpy as np
 from plotly.offline import iplot

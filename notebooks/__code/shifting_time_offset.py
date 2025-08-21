@@ -1,4 +1,4 @@
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 from ipywidgets import widgets, interact
 from collections import OrderedDict
 from pathlib import Path

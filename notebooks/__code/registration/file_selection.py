@@ -1,6 +1,6 @@
 import webbrowser
 from ipywidgets import widgets
-from IPython.core.display import display
+from IPython.display import display
 from __code.ipywe import fileselector
 
 from NeuNorm.normalization import Normalization

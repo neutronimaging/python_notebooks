@@ -1,4 +1,4 @@
-from IPython.core.display import HTML
+from IPython.display import HTML
 from IPython.display import display
 from qtpy.QtWidgets import QMainWindow, QFileDialog, QApplication
 from qtpy import QtCore, QtGui

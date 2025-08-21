@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from IPython.core.display import HTML
-from IPython.core.display import display, clear_output
+from IPython.display import HTML
+from IPython.display import display, clear_output
 
 from __code.ipywe import fileselector
 from __code.file_handler import read_ascii

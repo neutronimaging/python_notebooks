@@ -1,7 +1,7 @@
 import glob
 import os
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import numpy as np
 import logging
 from shutil import copy2

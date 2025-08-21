@@ -1,5 +1,5 @@
 import numpy as np
-from IPython.core.display import HTML
+from IPython.display import HTML
 
 
 def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_spacer='_'):

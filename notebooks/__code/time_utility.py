@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 import datetime
 from collections import OrderedDict
 from ipywidgets import widgets
-from IPython.core.display import display
+from IPython.display import display
 
 from __code import file_handler
 from __code.metadata_handler import MetadataHandler

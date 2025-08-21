@@ -2,7 +2,7 @@ import shutil
 import os
 import glob
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 from __code.ipywe import fileselector
 

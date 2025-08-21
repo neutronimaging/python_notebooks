@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from ipywidgets import interactive
 import ipywidgets as widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import json
 
 from __code.advanced_roi_selection_ui.advanced_roi_selection_ui import Interface

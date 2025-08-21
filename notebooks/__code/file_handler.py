@@ -13,7 +13,7 @@ import datetime
 import logging
 
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 from __code.metadata_handler import MetadataHandler
 

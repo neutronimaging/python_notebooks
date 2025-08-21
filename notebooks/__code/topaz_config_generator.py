@@ -4,7 +4,7 @@ import os
 import re
 import shutil
 from collections import defaultdict
-from IPython.core.display import HTML
+from IPython.display import HTML
 from IPython.display import display
 import pandas as pd
 import subprocess

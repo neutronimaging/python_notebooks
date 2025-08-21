@@ -1,7 +1,7 @@
 import os
 from scipy.stats.mstats import gmean
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import numpy as np
 
 from NeuNorm.normalization import Normalization

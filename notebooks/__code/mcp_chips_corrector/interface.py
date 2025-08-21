@@ -1,5 +1,5 @@
 from qtpy.QtWidgets import QMainWindow
-from IPython.core.display import HTML
+from IPython.display import HTML
 import os
 from IPython.display import display
 import logging

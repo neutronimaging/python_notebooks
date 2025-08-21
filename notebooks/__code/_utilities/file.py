@@ -13,7 +13,7 @@ import re
 import datetime
 
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code.metadata_handler import MetadataHandler

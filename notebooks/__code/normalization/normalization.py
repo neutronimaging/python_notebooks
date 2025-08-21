@@ -2,10 +2,10 @@ import os
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
-from IPython.core.display import HTML
+from IPython.display import HTML
 
 from ipywidgets import widgets, Layout
-from IPython.core.display import display
+from IPython.display import display
 
 from NeuNorm.normalization import Normalization
 from NeuNorm.roi import ROI

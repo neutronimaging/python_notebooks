@@ -7,7 +7,7 @@ import numpy as np
 import os
 from __code.ipywe.fileselector import FileSelectorPanel
 from __code.ipywe import fileselector
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 from NeuNorm.normalization import Normalization
 from __code import file_handler

@@ -1,5 +1,5 @@
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import os
 from PIL import Image
 import collections

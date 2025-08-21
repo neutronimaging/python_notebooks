@@ -25,7 +25,7 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import ipywe.fileselector
-from IPython.core.display import HTML
+from IPython.display import HTML
 from __code.time_utility import RetrieveTimeStamp
 import os
 

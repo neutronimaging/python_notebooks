@@ -1,4 +1,4 @@
-from IPython.core.display import display
+from IPython.display import display
 from qtpy.QtWidgets import QMainWindow
 import os
 import copy

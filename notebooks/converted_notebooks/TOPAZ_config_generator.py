@@ -23,7 +23,7 @@
 
 # + run_control={"frozen": false, "marked": true, "read_only": false}
 from __code import system
-from IPython.core.display import HTML
+from IPython.display import HTML
 
 from __code.topaz_config_generator import TopazConfigGenerator, ConfigLoader
 system.System.select_working_dir(system_folder='/SNS/TOPAZ/')

@@ -2,7 +2,7 @@ import os
 from __code.ipywe import fileselector
 from ipywidgets import interactive
 import ipywidgets as widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.image import _resample

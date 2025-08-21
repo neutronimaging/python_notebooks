@@ -1,7 +1,7 @@
 import glob
 import os
 from IPython.display import display
-from IPython.core.display import HTML
+from IPython.display import HTML
 
 from __code import file_handler
 from __code.file_folder_browser import FileFolderBrowser

@@ -3,7 +3,7 @@ import pyoncat
 import re
 
 from ipywidgets import widgets
-from IPython.core.display import display
+from IPython.display import display
 
 CLIENT_ID = '35b12436-99cc-4ee1-9faf-b2608ea3e6e6'
 

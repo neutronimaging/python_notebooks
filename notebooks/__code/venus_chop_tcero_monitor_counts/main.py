@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ipywidgets import interactive
 import ipywidgets as widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import algotom.io.loadersaver as losa
 
 from neutronbraggedge.experiment_handler import *

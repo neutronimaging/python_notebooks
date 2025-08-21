@@ -1,5 +1,5 @@
 import os
-from IPython.core.display import display
+from IPython.display import display
 import numpy as np
 import json
 from collections import OrderedDict

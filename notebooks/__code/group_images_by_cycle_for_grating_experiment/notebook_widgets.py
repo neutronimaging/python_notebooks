@@ -1,5 +1,5 @@
 from ipywidgets import widgets
-from IPython.core.display import display
+from IPython.display import display
 import numpy as np
 
 from __code._utilities.metadata_handler import MetadataHandler

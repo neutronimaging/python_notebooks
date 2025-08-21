@@ -3,7 +3,7 @@ import numpy as np
 import os
 import re
 
-from IPython.core.display import display
+from IPython.display import display
 from ipywidgets import widgets
 
 try:

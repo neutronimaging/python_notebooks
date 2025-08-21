@@ -2,7 +2,7 @@ import ipywidgets as ipyw
 import glob
 import os
 import time
-from IPython.core.display import HTML
+from IPython.display import HTML
 from IPython.display import display
 from __code.ipywe import fileselector
 

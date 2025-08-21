@@ -3,8 +3,8 @@ import copy
 import h5py
 from pathlib import Path
 from ipywidgets import widgets
-from IPython.core.display import display, clear_output
-from IPython.core.display import HTML
+from IPython.display import display, clear_output
+from IPython.display import HTML
 from collections import OrderedDict
 import numpy as np
 

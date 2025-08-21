@@ -1,4 +1,4 @@
-from IPython.core.display import HTML
+from IPython.display import HTML
 
 def style():
     css_file = '__code/__all/custom_nb_styling.css'

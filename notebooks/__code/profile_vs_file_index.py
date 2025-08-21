@@ -1,7 +1,7 @@
 from NeuNorm.normalization import Normalization
 
-from IPython.core.display import HTML
-from IPython.core.display import display
+from IPython.display import HTML
+from IPython.display import display
 
 from ipywidgets.widgets import interact
 from ipywidgets import widgets

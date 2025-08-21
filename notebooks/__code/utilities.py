@@ -9,7 +9,7 @@ from shutil import copyfile
 
 #from ipywidgets.widgets import interact
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 
 def calculate_file_temperature(left_T=-1, right_T=-1, left_time=-1, right_time=-1, file_time = -1):

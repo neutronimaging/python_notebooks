@@ -1,6 +1,6 @@
 import numpy as np
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 from collections import OrderedDict
 from pathlib import Path
 import os

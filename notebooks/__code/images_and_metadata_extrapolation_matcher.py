@@ -8,7 +8,7 @@ try:
 except:
     pass
 from IPython.display import display
-from IPython.core.display import HTML
+from IPython.display import HTML
 
 from plotly.offline import plot, init_notebook_mode, iplot
 init_notebook_mode()

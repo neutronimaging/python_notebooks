@@ -4,7 +4,7 @@ from qtpy import QtCore
 import copy
 
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 import pyqtgraph as pg
 import scipy.ndimage

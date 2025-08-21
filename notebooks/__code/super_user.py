@@ -1,5 +1,5 @@
 from ipywidgets import widgets
-from IPython.core.display import display
+from IPython.display import display
 import os
 
 from .config import password_to_unlock_config as PASSWORD

@@ -11,7 +11,7 @@ import multiprocessing as mp
 from PIL import Image
 import shutil
 from IPython.display import display
-from IPython.core.display import HTML
+from IPython.display import HTML
 import pandas as pd
 import matplotlib.pyplot as plt
 # from enum import Enum
@@ -225,7 +225,7 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
 
     # export ob data if requested
     if export_corrected_stack_of_ob_data or export_corrected_integrated_ob_data:       
-        export_ob_images(ob_run_numbers, 
+        export_ob_images(ob_master_dict.keys(), 
                          output_folder, 
                          export_corrected_stack_of_ob_data, 
                          export_corrected_integrated_ob_data, 

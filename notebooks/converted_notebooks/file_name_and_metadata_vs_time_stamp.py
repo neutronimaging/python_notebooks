@@ -63,13 +63,13 @@ custom_style.style()
 from __code import utilities
 #from __code import utilities, gui_widgets, file_handler
 # import ipywe.fileselector
-# from IPython.core.display import display, HTML
+# from IPython.display import display, HTML
 # import pandas as pd
 # import numpy as np
 # from pprint import pprint
 
 # from ipywidgets import widgets
-# from IPython.core.display import display, HTML            
+# from IPython.display import display, HTML            
   
 import matplotlib.pyplot as plt
 # %matplotlib notebook

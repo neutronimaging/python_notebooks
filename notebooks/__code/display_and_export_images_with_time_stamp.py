@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 
 from NeuNorm.normalization import Normalization
 

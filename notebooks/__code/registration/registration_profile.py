@@ -1,5 +1,5 @@
-from IPython.core.display import HTML
-from IPython.core.display import display
+from IPython.display import HTML
+from IPython.display import display
 import pyqtgraph as pg
 from pyqtgraph.dockarea import *
 import os

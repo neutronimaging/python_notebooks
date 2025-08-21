@@ -3,8 +3,8 @@ import pyqtgraph.exporters
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import QApplication
-from IPython.core.display import HTML
-from IPython.core.display import display
+from IPython.display import HTML
+from IPython.display import display
 
 
 class ExportImages:

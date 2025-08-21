@@ -4,7 +4,7 @@ import datetime
 import inflect
 from ipywidgets import widgets
 from IPython.display import display
-from IPython.core.display import HTML
+from IPython.display import HTML
 import numpy as np
 import os
 import pandas as pd

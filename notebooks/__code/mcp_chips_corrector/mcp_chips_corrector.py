@@ -1,7 +1,7 @@
 import glob
 import os
 import numpy as np
-from IPython.core.display import HTML
+from IPython.display import HTML
 from IPython.display import display
 
 from NeuNorm.normalization import Normalization

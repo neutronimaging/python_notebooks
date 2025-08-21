@@ -1,10 +1,11 @@
-name: python313_jupyter_notebooks
+name: python311_jupyter_notebooks
 channels:
   - conda-forge
   - neutronimaging
 dependencies:
-  - python>=3.10
-  - nodejs=15.14.0
+  - python=3.11
+  # - nodejs=15.14.0
+  - nodejs
   - requests
   - requests-oauthlib
   - numpy
@@ -35,6 +36,7 @@ dependencies:
     - tqdm
     - werkzeug==2.0.1
     - pystackreg
+    - timepix-geometry-correction
 
 # # build Jupyter lab
 # jupyter labextension install @jupyter-widgets/jupyterlab-manager

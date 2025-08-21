@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pprint import pprint
 from ipywidgets import widgets
-from IPython.core.display import display, HTML
+from IPython.display import display, HTML
 import matplotlib.pyplot as plt
 import os
 import sys
