@@ -213,7 +213,7 @@ clean = 'rm -rf .pytest_cache .ruff_cache **/__pycache__ notebooks/**/.ipynb_che
 [tool.pytest.ini_options]
 # Adjusted for notebook testing
 addopts = "-v"
-pythonpath = ["."]
+pythonpath = [".", "notebooks"]
 testpaths = ["notebooks/tests"]
 python_files = ["test*.py"]
 norecursedirs = [
