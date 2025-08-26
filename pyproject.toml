@@ -72,13 +72,11 @@ nbstripout = "*"
 ipython = "*"
 
 [tool.pixi.feature.jupyter.tasks]
-lab = "jupyter lab"
+lab = "jupyter lab --NotebookApp.nbserver_extensions=\"{'jupyterlab':True}\""
 notebook = "jupyter notebook"
-build_extensions = """
-jupyter labextension install @jupyter-widgets/jupyterlab-manager &&
-jupyter nbextension enable --py widgetsnbextension &&
-jupyter lab build
-"""
+lab-build = "jupyter lab build --dev-build=False --minimize=True"
+lab-clean = "jupyter lab clean --all"
+lab-rebuild = { depends-on = ["lab-clean", "lab-build"] }
 
 # ============================================
 # Feature: Excel Support
