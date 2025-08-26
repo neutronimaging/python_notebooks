@@ -69,13 +69,14 @@ ipympl = "*"
 ipywidgets = "*"
 jupytext = "*"
 nbstripout = "*"
+ipython = "*"
 
 [tool.pixi.feature.jupyter.tasks]
 lab = "jupyter lab"
 notebook = "jupyter notebook"
 build_extensions = """
-jupyter labextension install @jupyter-widgets/jupyterlab-manager && 
-jupyter nbextension enable --py widgetsnbextension && 
+jupyter labextension install @jupyter-widgets/jupyterlab-manager &&
+jupyter nbextension enable --py widgetsnbextension &&
 jupyter lab build
 """
 
@@ -117,64 +118,8 @@ pytest = "*"
 pytest-cov = "*"
 
 [tool.pixi.feature.test.tasks]
-test = "cd notebooks && export PYTHONPATH=$PWD:$PYTHONPATH && pytest tests/ -v"
-test_imports = """python -c '
-packages = [
-    "astropy",
-    "scipy",
-    "pandas",
-    "skimage",
-    "h5py",
-    "lmfit",
-    "matplotlib",
-    "plotly",
-    "dash",
-    "jupyterlab",
-    "ipympl",
-    "ipywidgets",
-    "jupytext",
-    "nbstripout",
-    "xlrd",
-    "openpyxl",
-    "xlsxwriter",
-    "PyQt5",
-    "pyqtgraph",
-    "tqdm",
-    "pyoncat",
-    "pytest",
-    "neunorm",
-    "neutronbraggedge",
-    "ImagingReso",
-    "changepy",
-    "sectorizedradialprofile",
-    "ipywe"
-]
-
-import sys
-failed = []
-for pkg in packages:
-    try:
-        if pkg == "skimage":
-            __import__("skimage")
-        elif pkg == "PyQt5":
-            __import__("PyQt5")
-        elif pkg == "neunorm":
-            __import__("NeuNorm")
-        elif pkg == "ImagingReso":
-            __import__("ImagingReso")
-        else:
-            __import__(pkg)
-        print(f"✓ {pkg}")
-    except ImportError as e:
-        print(f"✗ {pkg}: {e}")
-        failed.append(pkg)
-
-if failed:
-    print(f"\\nFailed to import: {failed}")
-    sys.exit(1)
-else:
-    print("\\nAll packages imported successfully!")
-'"""
+test = "pytest notebooks/tests/ -v"
+test_imports = "pytest notebooks/tests/test_imports.py -v"
 
 # ============================================
 # Feature: Development
@@ -209,16 +154,44 @@ imagingreso = "*"
 # ============================================
 [tool.pixi.environments]
 # Default environment includes all features
-default = { features = ["scientific", "support", "viz", "jupyter", "excel", "gui", "utils", "test"], solve-group = "default" }
+default = { features = [
+  "scientific",
+  "support",
+  "viz",
+  "jupyter",
+  "excel",
+  "gui",
+  "utils",
+  "test",
+], solve-group = "default" }
 
 # Development environment includes everything plus dev tools
-dev = { features = ["scientific", "support", "viz", "jupyter", "excel", "gui", "utils", "test", "dev"], solve-group = "default" }
+dev = { features = [
+  "scientific",
+  "support",
+  "viz",
+  "jupyter",
+  "excel",
+  "gui",
+  "utils",
+  "test",
+  "dev",
+], solve-group = "default" }
 
 # Minimal environment for CI/CD or lightweight usage
-minimal = { features = ["scientific", "utils", "test"], solve-group = "minimal" }
+minimal = { features = [
+  "scientific",
+  "utils",
+  "test",
+], solve-group = "minimal" }
 
 # Jupyter-only environment
-jupyter = { features = ["scientific", "viz", "jupyter", "utils"], solve-group = "jupyter" }
+jupyter = { features = [
+  "scientific",
+  "viz",
+  "jupyter",
+  "utils",
+], solve-group = "jupyter" }
 
 # ============================================
 # Global Tasks (available in all environments)
@@ -239,24 +212,24 @@ clean = 'rm -rf .pytest_cache .ruff_cache **/__pycache__ notebooks/**/.ipynb_che
 
 [tool.pytest.ini_options]
 # Adjusted for notebook testing
-addopts = "-v --cov=notebooks --cov-report=term-missing --cov-report=html"
-pythonpath = [".", "notebooks", "notebooks/__code"]
+addopts = "-v"
+pythonpath = ["."]
 testpaths = ["notebooks/tests"]
 python_files = ["test*.py"]
 norecursedirs = [
-    ".git",
-    "tmp*",
-    "_tmp*",
-    "__pycache__",
-    "*dataset*",
-    "*data_set*",
-    ".ipynb_checkpoints",
+  ".git",
+  "tmp*",
+  "_tmp*",
+  "__pycache__",
+  "*dataset*",
+  "*data_set*",
+  ".ipynb_checkpoints",
 ]
 # Add markers for different test categories
 markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "integration: marks tests as integration tests",
+  "unit: marks tests as unit tests",
 ]
 
 ############
@@ -268,34 +241,34 @@ target-version = "py311"
 line-length = 120
 # Exclude notebooks from direct linting (we'll handle them separately if needed)
 exclude = [
-    "*.ipynb",
-    ".ipynb_checkpoints",
-    "__pycache__",
-    ".git",
-    ".ruff_cache",
-    ".pytest_cache",
+  "*.ipynb",
+  ".ipynb_checkpoints",
+  "__pycache__",
+  ".git",
+  ".ruff_cache",
+  ".pytest_cache",
 ]
 
 [tool.ruff.lint]
 # Selected rules appropriate for scientific notebooks
 select = [
-    "E",     # pycodestyle errors
-    "F",     # pyflakes
-    "I",     # isort
-    "N",     # pep8-naming
-    "W",     # pycodestyle warnings
-    "UP",    # pyupgrade
-    "B",     # flake8-bugbear
-    "C4",    # flake8-comprehensions
-    "NPY",   # NumPy-specific rules
-    "PD",    # pandas-vet
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "I",   # isort
+  "N",   # pep8-naming
+  "W",   # pycodestyle warnings
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "NPY", # NumPy-specific rules
+  "PD",  # pandas-vet
 ]
 ignore = [
-    "E501",  # line too long (handled by formatter)
-    "N802",  # function names should be lowercase (scientific computing often uses math notation)
-    "N803",  # argument names should be lowercase
-    "N806",  # variable in function should be lowercase
-    "PD901", # avoid using 'df' as variable name (common in notebooks)
+  "E501",  # line too long (handled by formatter)
+  "N802",  # function names should be lowercase (scientific computing often uses math notation)
+  "N803",  # argument names should be lowercase
+  "N806",  # variable in function should be lowercase
+  "PD901", # avoid using 'df' as variable name (common in notebooks)
 ]
 
 [tool.ruff.lint.isort]
