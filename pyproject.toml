@@ -1,21 +1,40 @@
-[workspace]
-authors = ["Chen Zhang <zhangc@ornl.gov>"]
-channels = ["conda-forge", "neutronimaging", "oncat"]
-name = "python_notebooks_development"
-platforms = ["linux-64", "osx-arm64"]
+########################
+### Project Metadata ###
+########################
+# Note: This is a notebook collection project, not a Python package
+[project]
+name = "python-notebooks-development"
+description = "Python notebooks for neutron imaging beamlines at ORNL"
 version = "0.1.0"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+readme = "README.md"
+
+[project.urls]
+homepage = "https://github.com/ornlneutronimaging/python_notebooks"
+repository = "https://github.com/ornlneutronimaging/python_notebooks"
+documentation = "https://neutronimaging.pages.ornl.gov/tutorial/"
+issues = "https://github.com/ornlneutronimaging/python_notebooks/issues"
+
+###################
+### Pixi config ###
+###################
+
+[tool.pixi.workspace]
+channels = ["conda-forge", "neutronimaging", "oncat"]
+platforms = ["linux-64", "osx-arm64"]
 
 # Base dependencies (always included)
-[dependencies]
-python = "*"
+[tool.pixi.dependencies]
+python = "3.11.*"
 requests = "*"
 requests-oauthlib = "*"
 
 # ============================================
 # Feature: Scientific Computing
 # ============================================
-[feature.scientific]
-[feature.scientific.dependencies]
+[tool.pixi.feature.scientific]
+[tool.pixi.feature.scientific.dependencies]
 astropy = "*"
 scipy = "*"
 pandas = "*"
@@ -27,15 +46,15 @@ pillow = "*"
 # ============================================
 # Feature: Supporting Libraries
 # ============================================
-[feature.support]
-[feature.support.dependencies]
+[tool.pixi.feature.support]
+[tool.pixi.feature.support.dependencies]
 poco = "*"
 
 # ============================================
 # Feature: Visualization
 # ============================================
-[feature.viz]
-[feature.viz.dependencies]
+[tool.pixi.feature.viz]
+[tool.pixi.feature.viz.dependencies]
 matplotlib = "*"
 plotly = "*"
 dash = "*"
@@ -43,15 +62,15 @@ dash = "*"
 # ============================================
 # Feature: Jupyter and Notebooks
 # ============================================
-[feature.jupyter]
-[feature.jupyter.dependencies]
+[tool.pixi.feature.jupyter]
+[tool.pixi.feature.jupyter.dependencies]
 jupyterlab = "*"
 ipympl = "*"
 ipywidgets = "*"
 jupytext = "*"
 nbstripout = "*"
 
-[feature.jupyter.tasks]
+[tool.pixi.feature.jupyter.tasks]
 lab = "jupyter lab"
 notebook = "jupyter notebook"
 build_extensions = """
@@ -63,8 +82,8 @@ jupyter lab build
 # ============================================
 # Feature: Excel Support
 # ============================================
-[feature.excel]
-[feature.excel.dependencies]
+[tool.pixi.feature.excel]
+[tool.pixi.feature.excel.dependencies]
 xlrd = "*"
 openpyxl = "*"
 xlsxwriter = "*"
@@ -72,8 +91,8 @@ xlsxwriter = "*"
 # ============================================
 # Feature: Qt and GUI
 # ============================================
-[feature.gui]
-[feature.gui.dependencies]
+[tool.pixi.feature.gui]
+[tool.pixi.feature.gui.dependencies]
 qt = "*"
 qtpy = "*"
 pyqt = "*"
@@ -82,8 +101,8 @@ pyqtgraph = "*"
 # ============================================
 # Feature: Utilities
 # ============================================
-[feature.utils]
-[feature.utils.dependencies]
+[tool.pixi.feature.utils]
+[tool.pixi.feature.utils.dependencies]
 inflect = "*"
 werkzeug = "*"
 tqdm = "*"
@@ -92,12 +111,13 @@ pyoncat = "*"
 # ============================================
 # Feature: Testing
 # ============================================
-[feature.test]
-[feature.test.dependencies]
+[tool.pixi.feature.test]
+[tool.pixi.feature.test.dependencies]
 pytest = "*"
+pytest-cov = "*"
 
-[feature.test.tasks]
-test = "cd notebooks && export PYTHONPATH=$PWD:$PYTHONPATH && pytest"
+[tool.pixi.feature.test.tasks]
+test = "cd notebooks && export PYTHONPATH=$PWD:$PYTHONPATH && pytest tests/ -v"
 test_imports = """python -c '
 packages = [
     "astropy",
@@ -159,21 +179,24 @@ else:
 # ============================================
 # Feature: Development
 # ============================================
-[feature.dev]
-[feature.dev.dependencies]
+[tool.pixi.feature.dev]
+[tool.pixi.feature.dev.dependencies]
 pre-commit = "*"
 ruff = "*"
+pip-audit = "*"
 
-[feature.dev.tasks]
+[tool.pixi.feature.dev.tasks]
 lint = "ruff check notebooks/"
 format = "ruff format notebooks/"
-clean = "python notebooks/_before_and_after_github_script.py -b"
-restore = "python notebooks/_before_and_after_github_script.py -a"
+clean_notebooks = "python notebooks/_before_and_after_github_script.py -b"
+restore_notebooks = "python notebooks/_before_and_after_github_script.py -a"
+# Non-blocking audit - just warns about vulnerabilities
+audit = "pip-audit --local || echo 'Warning: Some vulnerabilities found. Consider updating dependencies.'"
 
 # ============================================
 # PyPI Dependencies (all environments)
 # ============================================
-[pypi-dependencies]
+[tool.pixi.pypi-dependencies]
 neunorm = "*"
 changepy = { git = "https://github.com/JeanBilheux/changepy" }
 ipywe = "*"
@@ -184,7 +207,7 @@ imagingreso = "*"
 # ============================================
 # Environments
 # ============================================
-[environments]
+[tool.pixi.environments]
 # Default environment includes all features
 default = { features = ["scientific", "support", "viz", "jupyter", "excel", "gui", "utils", "test"], solve-group = "default" }
 
@@ -200,9 +223,85 @@ jupyter = { features = ["scientific", "viz", "jupyter", "utils"], solve-group = 
 # ============================================
 # Global Tasks (available in all environments)
 # ============================================
-[tasks]
+[tool.pixi.tasks]
 # Installation check
 check = "python util/installation_check.py"
 
 # Combined test task
 test_all = { depends-on = ["test_imports", "test"] }
+
+# Clean all caches and build artifacts
+clean = 'rm -rf .pytest_cache .ruff_cache **/__pycache__ notebooks/**/.ipynb_checkpoints'
+
+##############
+### Pytest ###
+##############
+
+[tool.pytest.ini_options]
+# Adjusted for notebook testing
+addopts = "-v --cov=notebooks --cov-report=term-missing --cov-report=html"
+pythonpath = [".", "notebooks", "notebooks/__code"]
+testpaths = ["notebooks/tests"]
+python_files = ["test*.py"]
+norecursedirs = [
+    ".git",
+    "tmp*",
+    "_tmp*",
+    "__pycache__",
+    "*dataset*",
+    "*data_set*",
+    ".ipynb_checkpoints",
+]
+# Add markers for different test categories
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+############
+### Ruff ###
+############
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+# Exclude notebooks from direct linting (we'll handle them separately if needed)
+exclude = [
+    "*.ipynb",
+    ".ipynb_checkpoints",
+    "__pycache__",
+    ".git",
+    ".ruff_cache",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+# Selected rules appropriate for scientific notebooks
+select = [
+    "E",     # pycodestyle errors
+    "F",     # pyflakes
+    "I",     # isort
+    "N",     # pep8-naming
+    "W",     # pycodestyle warnings
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "NPY",   # NumPy-specific rules
+    "PD",    # pandas-vet
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "N802",  # function names should be lowercase (scientific computing often uses math notation)
+    "N803",  # argument names should be lowercase
+    "N806",  # variable in function should be lowercase
+    "PD901", # avoid using 'df' as variable name (common in notebooks)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["__code"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
