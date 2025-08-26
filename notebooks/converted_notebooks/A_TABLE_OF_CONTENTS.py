@@ -18,7 +18,7 @@
 
 # # B
 
-# * [bin images](bin_images.ipynb) 
+# * [bin images](bin_images.ipynb)
 # * Bragg Edge
 #     * [bragg edge normalization](bragg_edge_normalization.ipynb)
 #     * [bragg edge normalized sample and powder](bragg_edge_normalized_sample_and_powder.ipynb)
@@ -56,7 +56,7 @@
 #     * [extract evenly spaced files](extract_evenly_spaced_files.ipynb)
 #     * [extract NeXus daslogs](extract_nexus_daslogs.ipynb)
 
-# # F 
+# # F
 
 # * Fix
 #     * [fix images](fix_images.ipynb)
@@ -147,11 +147,8 @@
 # * [water intake profile_calculator](water_intake_profile_calculator.ipynb)
 # * [wave front dynamics](wave_front_dynamics.ipynb)
 
-# # Super User 
+# # Super User
 
 from __code.super_user import SuperUser
+
 a = SuperUser()
-
-
-
-

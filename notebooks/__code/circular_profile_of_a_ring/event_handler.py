@@ -3,7 +3,6 @@ from qtpy.QtWidgets import QMenu
 
 
 class EventHandler:
-
     def __init__(self, parent=None):
         self.parent = parent
 

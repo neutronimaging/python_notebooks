@@ -52,25 +52,23 @@ __version__ = "0.1.1"
   - support splits and joins
   - verticle sliders
   - ticks
-  
+
 """
 
 # ---------------------------------------------------------------------------------------------
 # IMPORTS
 # ---------------------------------------------------------------------------------------------
-import os
 import sys
 
 from qtpy import QtCore, QtGui
-from qtpy.QtWidgets import QGridLayout, QSplitter, QGroupBox, QApplication, QWidget, QHBoxLayout
-
+from qtpy.QtWidgets import QApplication, QGridLayout, QGroupBox, QHBoxLayout, QSplitter, QWidget
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-__all__ = ['QRangeSlider']
+__all__ = ["QRangeSlider"]
 
 DEFAULT_CSS = """
 QRangeSlider * {
@@ -101,15 +99,17 @@ QRangeSlider > QSplitter::handle:pressed {
 
 """
 
+
 def scale(val, src, dst):
     """
     Scale the given value from the scale of src to the scale of dst.
     """
-    return int(((val - src[0]) / float(src[1]-src[0])) * (dst[1]-dst[0]) + dst[0])
+    return int(((val - src[0]) / float(src[1] - src[0])) * (dst[1] - dst[0]) + dst[0])
 
-class Ui_Form(object):
+
+class Ui_Form:
     """default range slider form"""
-    
+
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("QRangeSlider"))
         Form.resize(300, 30)
@@ -146,18 +146,17 @@ class Ui_Form(object):
 
 
 class Element(QGroupBox):
-    
     def __init__(self, parent, main):
         super(Element, self).__init__(parent)
         self.main = main
-        
+
     def setStyleSheet(self, style):
         """redirect style to parent groupbox"""
         self.parent().setStyleSheet(style)
 
     def textColor(self):
         """text paint color"""
-        return getattr(self, '__textColor', QtGui.QColor(125, 125, 125))
+        return getattr(self, "__textColor", QtGui.QColor(125, 125, 125))
 
     def setTextColor(self, color):
         """set the text paint color"""
@@ -165,7 +164,7 @@ class Element(QGroupBox):
             color = QtGui.QColor(color[0], color[1], color[2])
         elif type(color) == int:
             color = QtGui.QColor(color, color, color)
-        setattr(self, '__textColor', color)
+        setattr(self, "__textColor", color)
 
     def paintEvent(self, event):
         """overrides paint event to handle text"""
@@ -178,52 +177,52 @@ class Element(QGroupBox):
 
 class Head(Element):
     """area before the handle"""
-    
+
     def __init__(self, parent, main):
         super(Head, self).__init__(parent, main)
 
     def drawText(self, event, qp):
         qp.setPen(self.textColor())
-        qp.setFont(QtGui.QFont('Arial', 10))
+        qp.setFont(QtGui.QFont("Arial", 10))
         qp.drawText(event.rect(), QtCore.Qt.AlignLeft, str(self.main.min()))
 
 
 class Tail(Element):
     """area after the handle"""
-    
+
     def __init__(self, parent, main):
         super(Tail, self).__init__(parent, main)
-        
+
     def drawText(self, event, qp):
         qp.setPen(self.textColor())
-        qp.setFont(QtGui.QFont('Arial', 10))
+        qp.setFont(QtGui.QFont("Arial", 10))
         qp.drawText(event.rect(), QtCore.Qt.AlignRight, str(self.main.max()))
 
 
 class Handle(Element):
     """handle area"""
-    
+
     def __init__(self, parent, main):
         super(Handle, self).__init__(parent, main)
-        
+
     def drawText(self, event, qp):
         qp.setPen(self.textColor())
-        qp.setFont(QtGui.QFont('Arial', 10))
+        qp.setFont(QtGui.QFont("Arial", 10))
         qp.drawText(event.rect(), QtCore.Qt.AlignLeft, str(self.main.start()))
         qp.drawText(event.rect(), QtCore.Qt.AlignRight, str(self.main.end()))
 
     def mouseMoveEvent(self, event):
         event.accept()
         mx = event.globalX()
-        _mx = getattr(self, '__mx', None)
-        
-        if not _mx:  
-            setattr(self, '__mx', mx)
+        _mx = getattr(self, "__mx", None)
+
+        if not _mx:
+            setattr(self, "__mx", mx)
             dx = 0
         else:
             dx = mx - _mx
 
-        setattr(self, '__mx', mx)
+        setattr(self, "__mx", mx)
 
         if dx == 0:
             event.ignore()
@@ -232,7 +231,7 @@ class Handle(Element):
             dx = 1
         elif dx < 0:
             dx = -1
-        
+
         s = self.main.start() + dx
         e = self.main.end() + dx
         if s >= self.main.min() and e <= self.main.max():
@@ -300,8 +299,9 @@ class QRangeSlider(QWidget, Ui_Form):
         QRangeSlider > QSplitter::handle:pressed {
             background: #ca5;
         }
-        
+
     """
+
     endValueChanged = QtCore.Signal(int)
     maxValueChanged = QtCore.Signal(int)
     minValueChanged = QtCore.Signal(int)
@@ -319,16 +319,16 @@ class QRangeSlider(QWidget, Ui_Form):
 
     def __init__(self, parent=None):
         """Create a new QRangeSlider instance.
-        
-            :param parent: QWidget parent
-            :return: New QRangeSlider instance.
-        
+
+        :param parent: QWidget parent
+        :return: New QRangeSlider instance.
+
         """
         super(QRangeSlider, self).__init__(parent)
         self.setupUi(self)
         self.setMouseTracking(False)
 
-        #self._splitter.setChildrenCollapsible(False)
+        # self._splitter.setChildrenCollapsible(False)
         self._splitter.splitterMoved.connect(self._handleMoveSplitter)
 
         # head layout
@@ -365,37 +365,37 @@ class QRangeSlider(QWidget, Ui_Form):
 
     def min(self):
         """:return: minimum value"""
-        return getattr(self, '__min', None)
+        return getattr(self, "__min", None)
 
     def max(self):
         """:return: maximum value"""
-        return getattr(self, '__max', None)
-    
+        return getattr(self, "__max", None)
+
     def setMin(self, value):
         """sets minimum value"""
         assert type(value) is int
-        setattr(self, '__min', value)
+        setattr(self, "__min", value)
         self.minValueChanged.emit(value)
 
     def setMax(self, value):
         """sets maximum value"""
         assert type(value) is int
-        setattr(self, '__max', value)
+        setattr(self, "__max", value)
         self.maxValueChanged.emit(value)
-    
+
     def start(self):
         """:return: range slider start value"""
-        return getattr(self, '__start', None)
+        return getattr(self, "__start", None)
 
     def end(self):
         """:return: range slider end value"""
-        return getattr(self, '__end', None)
+        return getattr(self, "__end", None)
 
     def _setStart(self, value):
         """stores the start value only"""
-        setattr(self, '__start', value)
+        setattr(self, "__start", value)
         self.startValueChanged.emit(value)
-    
+
     def setStart(self, value):
         """sets the range slider start value"""
         assert type(value) is int
@@ -407,9 +407,9 @@ class QRangeSlider(QWidget, Ui_Form):
 
     def _setEnd(self, value):
         """stores the end value only"""
-        setattr(self, '__end', value)
+        setattr(self, "__end", value)
         self.endValueChanged.emit(value)
-    
+
     def setEnd(self, value):
         """set the range slider end value"""
         assert type(value) is int
@@ -421,12 +421,12 @@ class QRangeSlider(QWidget, Ui_Form):
 
     def drawValues(self):
         """:return: True if slider values will be drawn"""
-        return getattr(self, '__drawValues', None)
-    
+        return getattr(self, "__drawValues", None)
+
     def setDrawValues(self, draw):
         """sets draw values boolean to draw slider values"""
         assert type(draw) is bool
-        setattr(self, '__drawValues', draw)
+        setattr(self, "__drawValues", draw)
 
     def getRange(self):
         """:return: the start and end values as a tuple"""
@@ -436,16 +436,16 @@ class QRangeSlider(QWidget, Ui_Form):
         """set the start and end values"""
         self.setStart(start)
         self.setEnd(end)
-        
+
     def keyPressEvent(self, event):
         """overrides key press event to move range left and right"""
         key = event.key()
         if key == QtCore.Qt.Key_Left:
-            s = self.start()-1
-            e = self.end()-1
+            s = self.start() - 1
+            e = self.end() - 1
         elif key == QtCore.Qt.Key_Right:
-            s = self.start()+1
-            e = self.end()+1
+            s = self.start() + 1
+            e = self.end() + 1
         else:
             event.ignore()
             return
@@ -473,32 +473,32 @@ class QRangeSlider(QWidget, Ui_Form):
     def _handleMoveSplitter(self, xpos, index):
         """private method for handling moving splitter handles"""
         hw = self._splitter.handleWidth()
-        
+
         def _lockWidth(widget):
             width = widget.size().width()
             widget.setMinimumWidth(width)
             widget.setMaximumWidth(width)
-            
+
         def _unlockWidth(widget):
             widget.setMinimumWidth(0)
             widget.setMaximumWidth(16777215)
-        
+
         v = self._posToValue(xpos)
-        
+
         if index == self._SPLIT_START:
             _lockWidth(self._tail)
             if v >= self.end():
                 return
-            
+
             offset = -20
             w = xpos + offset
             self._setStart(v)
-            
+
         elif index == self._SPLIT_END:
             _lockWidth(self._head)
             if v <= self.start():
                 return
-            
+
             offset = -40
             w = self.width() - xpos + offset
             self._setEnd(v)
@@ -508,15 +508,15 @@ class QRangeSlider(QWidget, Ui_Form):
         _unlockWidth(self._handle)
 
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # MAIN
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     rs = QRangeSlider()
     rs.show()
     rs.setRange(15, 35)
-    rs.setBackgroundStyle('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);')
-    rs.handle.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);')
+    rs.setBackgroundStyle("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);")
+    rs.handle.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);")
     app.exec_()

@@ -16,16 +16,16 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # +
+# %matplotlib notebook
+from __code import system
 from __code.display_integrated_stack_of_images import DisplayIntegratedStackOfImages
 
-# %matplotlib notebook
-
-from __code import system
-system.System.select_working_dir(notebook='display_integrated_stack_of_images')
+system.System.select_working_dir(notebook="display_integrated_stack_of_images")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -40,5 +40,3 @@ o_integrated.select_input_folder()
 # -
 
 o_integrated.display_integrated_stack()
-
-

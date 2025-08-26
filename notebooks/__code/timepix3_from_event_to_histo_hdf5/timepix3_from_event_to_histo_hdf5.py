@@ -1,20 +1,18 @@
-import os
 import logging
-import h5py
-import numpy as np
-import matplotlib.pyplot as plt
-from ipywidgets import interactive
-import ipywidgets as widgets
-from IPython.display import display, HTML
-import algotom.io.loadersaver as losa
+import os
 
+import algotom.io.loadersaver as losa
+import h5py
+import ipywidgets as widgets
+import matplotlib.pyplot as plt
+import numpy as np
+from IPython.display import HTML, display
+from ipywidgets import interactive
 from neutronbraggedge.experiment_handler import *
-from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 
 from __code._utilities.file import get_full_home_file_name
-from __code._utilities import LAMBDA, MICRO, ANGSTROMS
-from __code.ipywe import fileselector
 from __code.file_folder_browser import FileFolderBrowser
+from __code.ipywe import fileselector
 
 LOG_FILE_NAME = ".timepix3_from_event_to_histo_hdf5.log"
 
@@ -27,7 +25,7 @@ class Timepix3FromEventToHistoHdf5:
     event_data = None
 
     # mode is 'h3' or 'mcp'
-    mode = 'h3'
+    mode = "h3"
 
     # array of tof bins
     bins_tof = None
@@ -36,18 +34,22 @@ class Timepix3FromEventToHistoHdf5:
         self.working_dir = working_dir
 
         self.log_file_name = get_full_home_file_name(LOG_FILE_NAME)
-        logging.basicConfig(filename=self.log_file_name,
-                            filemode='w',
-                            format='[%(levelname)s] - %(asctime)s - %(message)s',
-                            level=logging.INFO)
+        logging.basicConfig(
+            filename=self.log_file_name,
+            filemode="w",
+            format="[%(levelname)s] - %(asctime)s - %(message)s",
+            level=logging.INFO,
+        )
         logging.info("*** Starting a new session ***")
 
     def select_event_nexus(self):
-        self.nexus_ui = fileselector.FileSelectorPanel(instruction='Select NeXus file ...',
-                                                       start_dir=self.working_dir,
-                                                       next=self.display_tree_structure,
-                                                       filters={'NeXus': ".h5"},
-                                                       multiple=False)
+        self.nexus_ui = fileselector.FileSelectorPanel(
+            instruction="Select NeXus file ...",
+            start_dir=self.working_dir,
+            next=self.display_tree_structure,
+            filters={"NeXus": ".h5"},
+            multiple=False,
+        )
         self.nexus_ui.show()
 
     def display_tree_structure(self, nexus_file_name=None):
@@ -65,62 +67,58 @@ class Timepix3FromEventToHistoHdf5:
         min_tof = np.min(self.tof_array)
         max_tof = np.max(self.tof_array)
 
-        self.metadata = {'nbr_events': nbr_events,
-                         'x': {'min': min_x,
-                               'max': max_x,
-                               },
-                         'y': {'min': min_y,
-                               'max': max_y,
-                               },
-                         'tof': {'min': min_tof,
-                                 'max': max_tof,
-                                 },
-                         }
+        self.metadata = {
+            "nbr_events": nbr_events,
+            "x": {
+                "min": min_x,
+                "max": max_x,
+            },
+            "y": {
+                "min": min_y,
+                "max": max_y,
+            },
+            "tof": {
+                "min": min_tof,
+                "max": max_tof,
+            },
+        }
 
     def format_metadata(self):
         metadata = [f"Number of events: {self.metadata['nbr_events']}"]
-        metadata.append(f"x array:")
+        metadata.append("x array:")
         metadata.append(f"  min: {self.metadata['x']['min']}")
         metadata.append(f"  max: {self.metadata['x']['max']}")
-        metadata.append(f"y array:")
+        metadata.append("y array:")
         metadata.append(f"  min: {self.metadata['y']['min']}")
         metadata.append(f"  max: {self.metadata['y']['max']}")
-        metadata.append(f"tof array:")
+        metadata.append("tof array:")
         metadata.append(f"  min: {self.metadata['tof']['min']}")
         metadata.append(f"  max: {self.metadata['tof']['max']}")
         return "\n".join(metadata)
 
     def display_infos(self):
-
         self.collect_metadata()
         metadata = self.format_metadata()
 
-        vbox = widgets.VBox([widgets.Label("Metadata"),
-                             widgets.Textarea(value=metadata,
-                                              disabled=True,
-                                              layout=widgets.Layout(height='200px'))])
+        vbox = widgets.VBox(
+            [
+                widgets.Label("Metadata"),
+                widgets.Textarea(value=metadata, disabled=True, layout=widgets.Layout(height="200px")),
+            ]
+        )
         display(vbox)
 
     def define_detector(self):
-        self.width_ui = widgets.IntText(value=1024,
-                                        description="Width")
-        self.height_ui = widgets.IntText(value=1024,
-                                         description="Height")
-        vbox = widgets.VBox([widgets.Label("MCP detector size:"),
-                             self.height_ui,
-                             self.width_ui])
+        self.width_ui = widgets.IntText(value=1024, description="Width")
+        self.height_ui = widgets.IntText(value=1024, description="Height")
+        vbox = widgets.VBox([widgets.Label("MCP detector size:"), self.height_ui, self.width_ui])
         display(vbox)
 
     def select_binning_parameter(self):
-
-        self.nbr_bin_ui = widgets.IntText(value=1000,
-                                  description="Nbr of bins:")
+        self.nbr_bin_ui = widgets.IntText(value=1000, description="Nbr of bins:")
         display(self.nbr_bin_ui)
 
-        self.range_to_use = widgets.IntSlider(value=50,
-                                              max=100,
-                                              min=1,
-                                              description="% to use")
+        self.range_to_use = widgets.IntSlider(value=50, max=100, min=1, description="% to use")
         display(self.range_to_use)
 
     def bins(self):
@@ -141,13 +139,13 @@ class Timepix3FromEventToHistoHdf5:
         logging.info(f"\tMCP height: {mcp_height}")
         logging.info(f"\tMCP width: {mcp_width}")
 
-        logging.info(f"Narrowing down the arrays to the range specified!")
+        logging.info("Narrowing down the arrays to the range specified!")
         tof_array = self.tof_array[0:max_index_to_use]
         x_array = self.x_array[0:max_index_to_use]
         y_array = self.y_array[0:max_index_to_use]
 
         # indexes with NaN
-        logging.info(f"Removing NaNs!")
+        logging.info("Removing NaNs!")
         index_nan = np.where(np.isnan(tof_array))
         # remove those x, y and tof_nx
         self.tof_array_cleaned = np.delete(tof_array, index_nan)
@@ -155,9 +153,9 @@ class Timepix3FromEventToHistoHdf5:
         self.y_array_cleaned = np.delete(y_array, index_nan)
 
         # binning
-        logging.info(f"Binning of tof array ... started")
+        logging.info("Binning of tof array ... started")
         histo_tof, bins_tof = np.histogram(self.tof_array_cleaned, bin_value)
-        logging.info(f"Binning of tof array ...  Done!")
+        logging.info("Binning of tof array ...  Done!")
 
         stack_images = np.zeros((bin_value, mcp_height, mcp_width))
         np.shape(stack_images)
@@ -180,10 +178,8 @@ class Timepix3FromEventToHistoHdf5:
         self.nbr_bins = bin_value
 
     def display_integrated_stack(self):
-
         self.integrated_stack = self.stack_images.sum(axis=0)
-        fig, ax = plt.subplots(figsize=(7, 7),
-                               nrows=1, ncols=1)
+        fig, ax = plt.subplots(figsize=(7, 7), nrows=1, ncols=1)
         image = ax.imshow(self.integrated_stack)
         self.cb = plt.colorbar(image, ax=ax)
         plt.show()
@@ -197,27 +193,21 @@ class Timepix3FromEventToHistoHdf5:
             self.cb = plt.colorbar(image, ax=ax)
             plt.show()
 
-        v = interactive(plot_integrated,
-                        vmin=widgets.IntSlider(min=0,
-                                                 max=max_counts,
-                                                 value=0),
-                        vmax=widgets.IntSlider(min=0,
-                                               max=max_counts,
-                                               value=max_counts),
-                        )
+        v = interactive(
+            plot_integrated,
+            vmin=widgets.IntSlider(min=0, max=max_counts, value=0),
+            vmax=widgets.IntSlider(min=0, max=max_counts, value=max_counts),
+        )
         display(v)
 
     def display_slices(self):
-
-        fig1, ax1 = plt.subplots(figsize=(7, 7),
-                                 nrows=1, ncols=1)
+        fig1, ax1 = plt.subplots(figsize=(7, 7), nrows=1, ncols=1)
         first_image = self.stack_images[0]
         image_id = ax1.imshow(first_image)
         self.cb1 = plt.colorbar(image_id, ax=ax1)
         plt.show()
 
         def plot_slices(index):
-
             self.cb1.remove()
             plt.title(f"Slice #{index}")
             image_id = ax1.imshow(self.stack_images[index])
@@ -227,26 +217,25 @@ class Timepix3FromEventToHistoHdf5:
 
         print(np.shape(self.stack_images))
 
-        v = interactive(plot_slices,
-                        index=widgets.IntSlider(min=0,
-                                                max=len(self.stack_images)-1,
-                                                value=0),
-                        )
+        v = interactive(
+            plot_slices,
+            index=widgets.IntSlider(min=0, max=len(self.stack_images) - 1, value=0),
+        )
         display(v)
 
     def define_output_filename(self):
         input_nexus_filename = os.path.basename(self.input_nexus_file_name)
-        export_id = widgets.HBox([widgets.Label("Output file name:",
-                                                layout=widgets.Layout(width="150px")),
-                                  widgets.Text(value=input_nexus_filename,
-                                               layout=widgets.Layout(width="300px")),
-                                  ])
+        export_id = widgets.HBox(
+            [
+                widgets.Label("Output file name:", layout=widgets.Layout(width="150px")),
+                widgets.Text(value=input_nexus_filename, layout=widgets.Layout(width="300px")),
+            ]
+        )
         display(export_id)
         self.output_file_name_id = export_id.children[1]
 
     def select_output_location(self):
-        o_output_folder = FileFolderBrowser(working_dir=self.working_dir,
-                                            next_function=self.export_h5)
+        o_output_folder = FileFolderBrowser(working_dir=self.working_dir, next_function=self.export_h5)
         o_output_folder.select_output_folder(instruction="Select output folder ...")
 
     def export_h5(self, output_folder):
@@ -256,19 +245,25 @@ class Timepix3FromEventToHistoHdf5:
 
         full_output_filename = os.path.join(output_folder, output_filename)
         if os.path.exists(full_output_filename):
-            display(HTML('<span style="font-size: 15px; color:red">File already exists! Select a different file name!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:red">File already exists! Select a different file name!</span>'
+                )
+            )
             return
 
-        display(HTML(f"Writing HDF5 file .... in progress"))
+        display(HTML("Writing HDF5 file .... in progress"))
 
-        with h5py.File(full_output_filename, mode='w') as f:
-            f.create_group('entry/histo')
-            f.create_dataset('entry/histo/stack', data=self.stack_images)
-            f.create_dataset('entry/histo/number_of_bins', data=self.nbr_bins)
-            f.create_dataset('entry/histo/tof_ns', data=self.bins_tof)
-            f.create_group('entry/infos')
-            f.create_dataset('entry/infos/input_nexus_filename', data=self.input_nexus_file_name)
+        with h5py.File(full_output_filename, mode="w") as f:
+            f.create_group("entry/histo")
+            f.create_dataset("entry/histo/stack", data=self.stack_images)
+            f.create_dataset("entry/histo/number_of_bins", data=self.nbr_bins)
+            f.create_dataset("entry/histo/tof_ns", data=self.bins_tof)
+            f.create_group("entry/infos")
+            f.create_dataset("entry/infos/input_nexus_filename", data=self.input_nexus_file_name)
 
-        display(HTML(f"Writing HDF5 file .... Done!"))
-        display(HTML('<span style="font-size: 15px; color:blue">hdf5 file created:' + full_output_filename + '!</span>'))
+        display(HTML("Writing HDF5 file .... Done!"))
+        display(
+            HTML('<span style="font-size: 15px; color:blue">hdf5 file created:' + full_output_filename + "!</span>")
+        )
         logging.info(f"hdf5 file created: {full_output_filename}")

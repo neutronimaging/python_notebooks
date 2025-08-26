@@ -2,7 +2,7 @@ import numpy as np
 from IPython.display import HTML
 
 
-def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_spacer='_'):
+def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_spacer="_"):
     """This method returns the continuous part of a string, from the beginning, that can be found
     in all string provided. The match will stop before the last filename_spacer
 
@@ -28,13 +28,23 @@ def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_sp
     return filename_spacer.join(common_part)
 
 
-def format_html_message(pre_message='', spacer=':', message='', is_error=False):
+def format_html_message(pre_message="", spacer=":", message="", is_error=False):
     if is_error:
-        pre_message_color = 'red'
-        message_color = 'red'
+        pre_message_color = "red"
+        message_color = "red"
     else:
-        pre_message_color = 'blue'
-        message_color = 'green'
-    return HTML('<span style="font-size: 15px; color:' + pre_message_color + '">' + pre_message + spacer +
-                '</span>' +
-                 '<span style="font-size: 15px; color:' + message_color + '">' + message + '</span>')
+        pre_message_color = "blue"
+        message_color = "green"
+    return HTML(
+        '<span style="font-size: 15px; color:'
+        + pre_message_color
+        + '">'
+        + pre_message
+        + spacer
+        + "</span>"
+        + '<span style="font-size: 15px; color:'
+        + message_color
+        + '">'
+        + message
+        + "</span>"
+    )

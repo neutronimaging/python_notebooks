@@ -1,9 +1,9 @@
 from collections import OrderedDict
+
 import pandas as pd
 
 
 class SortImagesWithinEachCycle:
-
     dict_groups_filename_sorted = None
 
     def __init__(self, dict_groups_filename=None, dict_filename_metadata=None):
@@ -40,7 +40,7 @@ class SortImagesWithinEachCycle:
     def sort_files(self, list_files=None, dict_how_to_sort=None):
         list_metadata = self.dict_filename_metadata[list_files[0]].keys()
         frames = []
-        name_of_columns = ['filename']
+        name_of_columns = ["filename"]
         data = []
         for _index, _file in enumerate(list_files):
             _entry = [_file]
@@ -54,9 +54,12 @@ class SortImagesWithinEachCycle:
         frames.append(df)
         result = pd.concat(frames)
 
-        new_result_sorted = result.sort_values(by=[dict_how_to_sort['1st_variable']['name'],
-                                                   dict_how_to_sort['2nd_variable']['name']],
-                                               ascending=[dict_how_to_sort['1st_variable']['is_ascending'],
-                                                          dict_how_to_sort['2nd_variable']['is_ascending']])
+        new_result_sorted = result.sort_values(
+            by=[dict_how_to_sort["1st_variable"]["name"], dict_how_to_sort["2nd_variable"]["name"]],
+            ascending=[
+                dict_how_to_sort["1st_variable"]["is_ascending"],
+                dict_how_to_sort["2nd_variable"]["is_ascending"],
+            ],
+        )
 
-        return list(new_result_sorted['filename'])
+        return list(new_result_sorted["filename"])

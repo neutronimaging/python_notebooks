@@ -23,13 +23,15 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.outliers_filtering.main import Interface, InterfaceHandler
+warnings.filterwarnings("ignore")
 
 from __code import system
-system.System.select_working_dir(notebook='outliers_filtering_tool')
+from __code.outliers_filtering.main import Interface, InterfaceHandler
+
+system.System.select_working_dir(notebook="outliers_filtering_tool")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
@@ -46,8 +48,6 @@ o_template.select_all_images()
 # # Load and Display Images
 
 # + run_control={"frozen": false, "read_only": false}
-o_interface = Interface(list_of_files = o_template.get_list_of_files())
+o_interface = Interface(list_of_files=o_template.get_list_of_files())
 o_interface.show()
 # -
-
-

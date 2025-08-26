@@ -19,22 +19,25 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select your IPTS 
+# # Select your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_scale_overlapping_images.ui')
+
+o_builder = UiBuilder(ui_name="ui_scale_overlapping_images.ui")
 
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
-#from __code.profile import ProfileUi
 
-system.System.select_working_dir(notebook='scale_overlapping_images')
+# from __code.profile import ProfileUi
+
+system.System.select_working_dir(notebook="scale_overlapping_images")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Python Import 
+# # Python Import
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
@@ -47,15 +50,13 @@ o_selection = FileSelection(working_dir=system.System.get_working_dir())
 o_selection.select_data()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Launch UI 
+# # Launch UI
 
 # + run_control={"frozen": false, "read_only": false}
-o_profile = ProfileUi(working_dir=system.System.get_working_dir(), 
-                                         data_dict=o_selection.data_dict['sample'])
+o_profile = ProfileUi(working_dir=system.System.get_working_dir(), data_dict=o_selection.data_dict["sample"])
 o_profile.show()
 
 # + run_control={"frozen": false, "read_only": false}
 
 
 # + run_control={"frozen": false, "read_only": false}
-

@@ -1,7 +1,8 @@
-from IPython.display import display, HTML
-from ipywidgets import widgets
-from collections import OrderedDict
 import os
+from collections import OrderedDict
+
+from IPython.display import HTML, display
+from ipywidgets import widgets
 
 from __code import oncat
 from __code.file_handler import make_ascii_file
@@ -9,10 +10,9 @@ from __code.time_utility import TimestampFormatter
 
 
 class ListMetadata:
-
-    instrument = 'CG1D'
-    facility = 'HFIR'
-    first_file = ''
+    instrument = "CG1D"
+    facility = "HFIR"
+    first_file = ""
     list_of_files = []
     list_metadata = []
 
@@ -41,12 +41,15 @@ class ListMetadata:
         self.list_metadata_with_examples = self.retrieve_list_metadata_with_examples()
 
         display(HTML('<span style="font-size: 20px; color:blue">CTRL + Click to select multiple rows!</span>'))
-        box1 = widgets.HBox([widgets.Label("Select Metadata To Retrieve",
-                                          layout=widgets.Layout(width='20%')),
-                            widgets.SelectMultiple(options=self.list_metadata_with_examples,
-                                                   layout=widgets.Layout(width='80%',
-                                                                         height='100%'))],
-                           layout=widgets.Layout(height='500px'))
+        box1 = widgets.HBox(
+            [
+                widgets.Label("Select Metadata To Retrieve", layout=widgets.Layout(width="20%")),
+                widgets.SelectMultiple(
+                    options=self.list_metadata_with_examples, layout=widgets.Layout(width="80%", height="100%")
+                ),
+            ],
+            layout=widgets.Layout(height="500px"),
+        )
         self.select_box = box1.children[1]
         display(box1)
 
@@ -60,23 +63,21 @@ class ListMetadata:
     def format_list_metadata_with_examples(list_metadata, raw_data):
         list_metadata_with_examples = []
         for _key in list_metadata:
-            _key_with_value = "{:>40} \t --> \texample: {}".format(_key,
-                                                                   raw_data[_key])
+            _key_with_value = f"{_key:>40} \t --> \texample: {raw_data[_key]}"
             list_metadata_with_examples.append(_key_with_value)
         return list_metadata_with_examples
 
     def retrieve_list_metadata(self):
-        _data = oncat.GetEverything(instrument=self.instrument,
-                                    facility=self.facility,
-                                    run=self.first_file,
-                                    oncat=self.oncat_session)
+        _data = oncat.GetEverything(
+            instrument=self.instrument, facility=self.facility, run=self.first_file, oncat=self.oncat_session
+        )
 
         self.raw_oncat_data = _data.datafiles
         sorted_dict_metadata = self.create_sorted_dict_metadata(_data)
         return sorted_dict_metadata.keys()
 
     def create_sorted_dict_metadata(self, _data):
-        _data = _data.datafiles['metadata']
+        _data = _data.datafiles["metadata"]
         dict_metadata = _data.to_dict()
         keys_sorted = sorted(dict_metadata.keys())
         sorted_dict_metadata = OrderedDict()
@@ -90,34 +91,36 @@ class ListMetadata:
         projection = self.create_projection()
         output_ascii_file_name = ListMetadata.create_output_ascii_name(list_files, output_folder)
 
-        o_metadata_selected = oncat.GetProjection(instrument=self.instrument,
-                                                  facility=self.facility,
-                                                  list_files=list_files,
-                                                  oncat=self.oncat_session,
-                                                  projection=projection,
-                                                  with_progressbar=True)
+        o_metadata_selected = oncat.GetProjection(
+            instrument=self.instrument,
+            facility=self.facility,
+            list_files=list_files,
+            oncat=self.oncat_session,
+            projection=projection,
+            with_progressbar=True,
+        )
         metadata_selected = o_metadata_selected.datafiles
 
         name_metadata = self.create_metadata_name_row()
         value_metadata = self.create_metadata_value_rows(list_files, metadata_selected)
-        make_ascii_file(metadata=name_metadata,
-                        data=value_metadata,
-                        output_file_name=output_ascii_file_name,
-                        dim='1d')
+        make_ascii_file(metadata=name_metadata, data=value_metadata, output_file_name=output_ascii_file_name, dim="1d")
         print("Done!")
-        display(HTML('<span style="font-size: 20px; color:Green">File ' + output_ascii_file_name +
-                     ' has been created with success!</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:Green">File '
+                + output_ascii_file_name
+                + " has been created with success!</span>"
+            )
+        )
 
     def create_metadata_value_rows(self, list_files, metadata_selected):
         value_metadata = []
         for _file in list_files:
-            time_stamp = self.unify_timestamp_format(metadata_selected[_file]['ingested'])
+            time_stamp = self.unify_timestamp_format(metadata_selected[_file]["ingested"])
             _metadata = []
             for _metadata_name in self.get_list_metadata_selected():
-                _metadata.append(str(metadata_selected[_file]['metadata'][_metadata_name]))
-            row_string = "{}, {}, {}".format(_file,
-                                             time_stamp,
-                                             ", ".join(_metadata))
+                _metadata.append(str(metadata_selected[_file]["metadata"][_metadata_name]))
+            row_string = "{}, {}, {}".format(_file, time_stamp, ", ".join(_metadata))
             value_metadata.append(row_string)
         return value_metadata
 
@@ -132,7 +135,7 @@ class ListMetadata:
 
     @staticmethod
     def create_output_ascii_name(list_files, output_folder):
-        output_ascii_file_name = os.path.basename(os.path.dirname(list_files[0]) + '_metadata_report_from_oncat.txt')
+        output_ascii_file_name = os.path.basename(os.path.dirname(list_files[0]) + "_metadata_report_from_oncat.txt")
         output_folder = os.path.abspath(output_folder)
         return os.path.join(output_folder, output_ascii_file_name)
 
@@ -140,7 +143,7 @@ class ListMetadata:
         list_metadata_selected = self.get_list_metadata_selected()
         projection = []
         for _metadata_selected in list_metadata_selected:
-            projection.append('metadata.{}'.format(_metadata_selected.strip()))
+            projection.append(f"metadata.{_metadata_selected.strip()}")
         return projection
 
     def get_list_metadata_selected(self):
@@ -149,6 +152,3 @@ class ListMetadata:
             metadata_name = metadata_selected.split("\t -->")
             list_metadata_selected.append(metadata_name[0].strip())
         return list_metadata_selected
-
-
-

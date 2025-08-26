@@ -18,12 +18,14 @@
 
 # # Select your IPTS
 
-from __code.select_files_and_folders import SelectAsciiFile, SelectFolder
-from __code.images_and_metadata_extrapolation_matcher import ImagesAndMetadataExtrapolationMatcher
 # %matplotlib notebook
 from __code import system
-system.System.select_working_dir(notebook='images_and_metadata_extrapolation_matcher')
+from __code.images_and_metadata_extrapolation_matcher import ImagesAndMetadataExtrapolationMatcher
+from __code.select_files_and_folders import SelectAsciiFile, SelectFolder
+
+system.System.select_working_dir(notebook="images_and_metadata_extrapolation_matcher")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -34,7 +36,7 @@ custom_style.style()
 
 o_select_ascii1 = SelectAsciiFile(system=system)
 
-# # Select Metadata vs Time Stamp text File 
+# # Select Metadata vs Time Stamp text File
 
 # File creatd by either
 #
@@ -48,15 +50,14 @@ o_select_ascii2 = SelectAsciiFile(system=system)
 
 # # Select Data to Merge
 
-o_matcher = ImagesAndMetadataExtrapolationMatcher(ascii_file_1=o_select_ascii1.ascii_file,
-                                                  ascii_file_2=o_select_ascii2.ascii_file)
+o_matcher = ImagesAndMetadataExtrapolationMatcher(
+    ascii_file_1=o_select_ascii1.ascii_file, ascii_file_2=o_select_ascii2.ascii_file
+)
 
 # # Extrapolate and Display Results
 
 o_matcher.extrapolate_selected_metadata()
 
-# # Select Output Folder 
+# # Select Output Folder
 
 o_folder = SelectFolder(system=system, next_function=o_matcher.export_ascii)
-
-

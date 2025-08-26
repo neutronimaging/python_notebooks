@@ -1,53 +1,58 @@
-from IPython.display import HTML
-from IPython.display import display
-import os
 import copy
-from qtpy.QtWidgets import QMainWindow, QFileDialog
-from qtpy import QtGui
+import os
 from collections import OrderedDict
 
-from __code import load_ui
-from .initialization import Initializer
-from .event_handler import MetadataTableHandler
-from __code.metadata_overlapping_images.export_images import ExportImages
-from .display import DisplayImages, DisplayScalePyqtUi, DisplayMetadataPyqtUi
-from .export_table import ExportTable
+from IPython.display import HTML, display
+from qtpy import QtGui
+from qtpy.QtWidgets import QFileDialog, QMainWindow
 
+from __code import load_ui
 from __code.metadata_overlapping_images import HELP_PAGE
+from __code.metadata_overlapping_images.export_images import ExportImages
+
+from .display import DisplayImages, DisplayMetadataPyqtUi, DisplayScalePyqtUi
+from .event_handler import MetadataTableHandler
+from .export_table import ExportTable
+from .initialization import Initializer
 
 
 class MetadataOverlappingImagesUi(QMainWindow):
-
     x_axis_column_index = 0
     y_axis_column_index = 2
-    xy_axis_menu_logo = {'enable': u"\u2713  ",     # \u25CF (dark circle)
-                         'disable': "     "}
+    xy_axis_menu_logo = {
+        "enable": "\u2713  ",  # \u25CF (dark circle)
+        "disable": "     ",
+    }
 
-    metadata_operation = {0: {"first_part_of_string_to_remove": "",
-                              "last_part_of_string_to_remove": "",
-                              "math_1": "+",
-                              "value_1": "",
-                              "math_2": "+",
-                              "value_2": "",
-                              "index_of_metadata": -1,
-                              },
-                          2: {"first_part_of_string_to_remove": "",
-                              "last_part_of_string_to_remove": "",
-                              "math_1": "+",
-                              "value_1": "",
-                              "math_2": "+",
-                              "value_2": "",
-                              "index_of_metadata": -1,
-                              },
-                          3: {"first_part_of_string_to_remove": "",
-                              "last_part_of_string_to_remove": "",
-                              "math_1": "+",
-                              "value_1": "",
-                              "math_2": "+",
-                              "value_2": "",
-                              "index_of_metadata": -1,
-                              },
-                          }
+    metadata_operation = {
+        0: {
+            "first_part_of_string_to_remove": "",
+            "last_part_of_string_to_remove": "",
+            "math_1": "+",
+            "value_1": "",
+            "math_2": "+",
+            "value_2": "",
+            "index_of_metadata": -1,
+        },
+        2: {
+            "first_part_of_string_to_remove": "",
+            "last_part_of_string_to_remove": "",
+            "math_1": "+",
+            "value_1": "",
+            "math_2": "+",
+            "value_2": "",
+            "index_of_metadata": -1,
+        },
+        3: {
+            "first_part_of_string_to_remove": "",
+            "last_part_of_string_to_remove": "",
+            "math_1": "+",
+            "value_1": "",
+            "math_2": "+",
+            "value_2": "",
+            "index_of_metadata": -1,
+        },
+    }
 
     data_dict = {}
     data_dict_raw = {}
@@ -61,8 +66,8 @@ class MetadataOverlappingImagesUi(QMainWindow):
     scale_pyqt_ui = None
     scale_legend_pyqt_ui = None
 
-    metadata1_pyqt_ui = None # metadata 1 text
-    metadata2_pyqt_ui = None # metadata 2 text
+    metadata1_pyqt_ui = None  # metadata 1 text
+    metadata2_pyqt_ui = None  # metadata 2 text
 
     graph_pyqt_ui = None
 
@@ -78,49 +83,53 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_table_widget_checkbox = list()
 
     list_metadata = []
-    dict_list_metadata = OrderedDict() #  {0: '10', 1: 'hfir', ...}
-    list_scale_units = ["mm", u"\u00B5m", "nm"]
-    list_scale_units = {'string': ["mm", u"\u00B5m", "nm"],
-                        'html': ["mm", "<span>&#181;m</span>", "nm"]}
+    dict_list_metadata = OrderedDict()  #  {0: '10', 1: 'hfir', ...}
+    list_scale_units = ["mm", "\u00b5m", "nm"]
+    list_scale_units = {"string": ["mm", "\u00b5m", "nm"], "html": ["mm", "<span>&#181;m</span>", "nm"]}
 
-    rgba_color = {'white': (255, 255, 255, 255, None),
-                  'red': (255, 0, 0, 255, None),
-                  'green': (0, 255, 0, 255, None),
-                  'blue': (0, 0, 255, 255, None),
-                  'black': (0, 0, 0, 255, None)}
+    rgba_color = {
+        "white": (255, 255, 255, 255, None),
+        "red": (255, 0, 0, 255, None),
+        "green": (0, 255, 0, 255, None),
+        "blue": (0, 0, 255, 255, None),
+        "black": (0, 0, 0, 255, None),
+    }
 
-    rgb_color = {'white': (255, 255, 255),
-                 'red': (255, 0, 0),
-                 'green': (0, 255, 0),
-                 'blue': (0, 0, 255),
-                 'black': (0, 0, 0)}
+    rgb_color = {
+        "white": (255, 255, 255),
+        "red": (255, 0, 0),
+        "green": (0, 255, 0),
+        "blue": (0, 0, 255),
+        "black": (0, 0, 0),
+    }
 
-    html_color = {'white': "#FFF",
-                  'red': "#F00",
-                  'green': "#0F0",
-                  'blue': "#00F",
-                  'black': "#000"}
+    html_color = {"white": "#FFF", "red": "#F00", "green": "#0F0", "blue": "#00F", "black": "#000"}
 
     # ui of pop up window that allows to define metadata column value (format it)
     metadata_string_format_ui = None
 
-    def __init__(self, parent=None, working_dir='', data_dict=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+    def __init__(self, parent=None, working_dir="", data_dict=None):
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         super(MetadataOverlappingImagesUi, self).__init__(parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui', 'ui_metadata_overlapping_images.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_metadata_overlapping_images.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Metadata Overlapping Images")
 
         self.working_dir = working_dir
         self.data_dict = data_dict  # Normalization data dictionary  {'file_name': [],
-                                                                     #'data': [[...],[...]]],
-                                                                     #'metadata': [],
-                                                                     #'shape': {}}
+        #'data': [[...],[...]]],
+        #'metadata': [],
+        #'shape': {}}
 
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
@@ -151,11 +160,12 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.update_metadata_pyqt_ui()
 
     def next_image_button_clicked(self):
-        self.change_slider(offset = +1)
+        self.change_slider(offset=+1)
         self.update_metadata_pyqt_ui()
 
     def help_button_clicked(self):
         import webbrowser
+
         webbrowser.open(HELP_PAGE)
 
     def closeEvent(self, event=None):
@@ -287,26 +297,27 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.update_metadata_pyqt_ui()
 
     def export_table_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=os.path.dirname(self.working_dir),
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self,
+            directory=os.path.dirname(self.working_dir),
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
+        )
         QtGui.QGuiApplication.processEvents()
         if _export_folder:
-            o_export = ExportTable(parent=self,
-                                   export_folder=_export_folder)
+            o_export = ExportTable(parent=self, export_folder=_export_folder)
             o_export.run()
 
-
     def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=os.path.dirname(self.working_dir),
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self,
+            directory=os.path.dirname(self.working_dir),
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
+        )
         QtGui.QGuiApplication.processEvents()
         if _export_folder:
-            o_export = ExportImages(parent=self,
-                                    export_folder=_export_folder)
+            o_export = ExportImages(parent=self, export_folder=_export_folder)
             o_export.run()
 
     # def import_table_pressed(self):

@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_file_metadata_display.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(922, 687)
@@ -107,7 +106,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
         self.close_button.clicked.connect(MainWindow.close_clicked)
-        self.group_slider.sliderMoved['int'].connect(MainWindow.refresh_pyqtgraph)
+        self.group_slider.sliderMoved["int"].connect(MainWindow.refresh_pyqtgraph)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -127,4 +126,3 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "P"))
         self.export_button.setText(_translate("MainWindow", "Export Selection ..."))
         self.close_button.setText(_translate("MainWindow", "Close"))
-

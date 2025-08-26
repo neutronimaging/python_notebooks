@@ -1,11 +1,9 @@
 from collections import OrderedDict
 
 from __code.metadata_handler import MetadataHandler
-from __code._utilities.list import is_this_list_already_in_those_lists_within_tolerance
 
 
 class GroupImagesByCycle:
-
     def __init__(self, list_of_files=None, list_of_metadata_key=None, tolerance_value=0.1):
         """
 
@@ -26,8 +24,9 @@ class GroupImagesByCycle:
 
     def create_master_dictionary(self):
         list_key_value = self.list_of_metadata_key_value_number
-        master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(list_files=self.list_of_files,
-                                                                           list_key=list_key_value)
+        master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(
+            list_files=self.list_of_files, list_key=list_key_value
+        )
 
         clean_master_dictionary = OrderedDict()
         list_metadata_key = []

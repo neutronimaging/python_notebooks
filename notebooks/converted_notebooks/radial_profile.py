@@ -23,14 +23,16 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
-from __code.radial_profile.radial_profile import RadialProfile, SelectRadialParameters
+from __code.radial_profile.radial_profile import SelectRadialParameters
 
-system.System.select_working_dir(notebook='radial_profile')
+system.System.select_working_dir(notebook="radial_profile")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -50,9 +52,8 @@ o_selection.select_data(check_shape=False)
 # # Launch User Interface
 
 # + run_control={"frozen": false, "read_only": false}
-o_select = SelectRadialParameters(working_dir=system.System.get_working_dir(), 
-                                  data_dict=o_selection.data_dict['sample'])
+o_select = SelectRadialParameters(
+    working_dir=system.System.get_working_dir(), data_dict=o_selection.data_dict["sample"]
+)
 o_select.show()
 # -
-
-

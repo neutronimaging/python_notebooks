@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_display_counts_of_region_vs_stack.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.3
@@ -7,10 +5,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(824, 556)

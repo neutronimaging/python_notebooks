@@ -1,11 +1,11 @@
-import numpy as np
-import os
 import collections
+import os
+
+import numpy as np
 from PIL import Image
 
 
 class Get:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -102,16 +102,16 @@ class Get:
 
         index_of_y_axis = self.parent.y_axis_column_index
         metadata_value = str(self.parent.ui.tableWidget.item(slider_index, index_of_y_axis).text())
-        if metadata_name.strip() == '':
-            return "{} {}".format(metadata_value, metadata_units)
+        if metadata_name.strip() == "":
+            return f"{metadata_value} {metadata_units}"
         else:
-            return "{}: {} {}".format(metadata_name, metadata_value, metadata_units)
+            return f"{metadata_name}: {metadata_value} {metadata_units}"
 
     def scale_legend(self):
         real_scale_value = str(self.parent.ui.scale_real_size.text())
         units_index_selected = self.parent.ui.scale_units_combobox.currentIndex()
-        html_units = self.parent.list_scale_units['html'][units_index_selected]
-        return "{} {}".format(real_scale_value, html_units)
+        html_units = self.parent.list_scale_units["html"][units_index_selected]
+        return f"{real_scale_value} {html_units}"
 
     def raw_metadata_column(self):
         data = []
@@ -121,23 +121,23 @@ class Get:
             data.append(_row_str)
         return data
 
-    def color(self, color_type='html', source='metadata'):
-        if source == 'metadata':
+    def color(self, color_type="html", source="metadata"):
+        if source == "metadata":
             color_selected = self.parent.ui.metadata_color_combobox.currentText().lower()
-        elif source == 'graph':
+        elif source == "graph":
             color_selected = self.parent.ui.graph_color_combobox.currentText().lower()
         else:
             color_selected = self.parent.ui.scale_color_combobox.currentText().lower()
 
-        if color_type == 'html':
+        if color_type == "html":
             return self.parent.html_color[color_selected]
-        elif color_type == 'rgba':
+        elif color_type == "rgba":
             return self.parent.rgba_color[color_selected]
         else:
             return self.parent.rgb_color[color_selected]
 
     def list_metadata(self):
-        first_file = self.parent.data_dict['file_name'][0]
+        first_file = self.parent.data_dict["file_name"][0]
         dict_list_metadata = collections.OrderedDict()
         [_, ext] = os.path.splitext(os.path.basename(first_file))
         if ext in [".tif", ".tiff"]:
@@ -147,7 +147,7 @@ class Get:
             list_key = []
             for tag, value in info.items():
                 dict_list_metadata[tag] = value
-                list_metadata.append("{} -> {}".format(tag, value))
+                list_metadata.append(f"{tag} -> {value}")
                 list_key.append(tag)
             self.parent.list_metadata = list_key
             self.parent.dict_list_metadata = dict_list_metadata

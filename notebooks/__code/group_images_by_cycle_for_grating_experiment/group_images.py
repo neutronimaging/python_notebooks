@@ -1,32 +1,34 @@
-import os
-from IPython.display import display
-import numpy as np
 import json
+import os
 from collections import OrderedDict
 
-from __code.ipywe import myfileselector
+import numpy as np
+from IPython.display import display
+
 from __code import file_handler
 from __code._utilities.string import format_html_message
-from __code.group_images_by_cycle_for_grating_experiment.group_images_by_cycle import GroupImagesByCycle
-from __code.group_images_by_cycle_for_grating_experiment.get import Get
-from .utilities import make_dictionary_of_groups_new_names
-from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import NotebookWidgets
-from __code.group_images_by_cycle_for_grating_experiment.combine_and_move_files import CombineAndMoveFiles
 from __code.file_folder_browser import FileFolderBrowser
+from __code.group_images_by_cycle_for_grating_experiment.combine_and_move_files import CombineAndMoveFiles
+from __code.group_images_by_cycle_for_grating_experiment.get import Get
+from __code.group_images_by_cycle_for_grating_experiment.group_images_by_cycle import GroupImagesByCycle
+from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import NotebookWidgets
+from __code.ipywe import myfileselector
+
+from .utilities import make_dictionary_of_groups_new_names
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
-CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config.json')
+CONFIG_FILE = os.path.join(THIS_FILE_PATH, "config.json")
 NEW_FILE_NAME_PREFIX = "image_"
 
 DEBUG = False
 
 
 class GroupImages:
-    working_dir = ''
-    ipts_dir = ''
+    working_dir = ""
+    ipts_dir = ""
     output_folder = working_dir
-    data_path = ''
+    data_path = ""
     metadata_key_to_select = None
     metadata_name_to_select = None
 
@@ -48,16 +50,18 @@ class GroupImages:
     #  }
     first_last_run_of_each_group_dictionary = None
 
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir=""):
         self.working_dir = working_dir
         self.ipts_dir = working_dir
-        self.folder_selected = ''
+        self.folder_selected = ""
         self.list_images = []
-        self.file_extension = 'N/A'
+        self.file_extension = "N/A"
         self.dict_of_metadata = {}  # key is 'tag->value' and value is 'tag'
         self.list_images_to_combine = None
-        self.extension_to_regular_expression_dict = {'tiff': r"^\w*_(?P<run>run\d+)_\w*.tiff$",
-                                                     'tif' : r"^\w*_(?P<run>run\d+)_\w*.tif$"}
+        self.extension_to_regular_expression_dict = {
+            "tiff": r"^\w*_(?P<run>run\d+)_\w*.tiff$",
+            "tif": r"^\w*_(?P<run>run\d+)_\w*.tif$",
+        }
         self.load_config()
 
     def load_config(self):
@@ -66,11 +70,10 @@ class GroupImages:
         self.config = config
 
     def select_data_to_sort(self):
-        o_file_broswer = FileFolderBrowser(working_dir=self.working_dir,
-                                           next_function=self.info_files_selected)
-        self.files_list_widget = o_file_broswer.select_images_with_search(instruction="Select Images to Sort ...",
-                                                                          multiple_flag=True,
-                                                                          filters={"TIFF": "*.tif*"})
+        o_file_broswer = FileFolderBrowser(working_dir=self.working_dir, next_function=self.info_files_selected)
+        self.files_list_widget = o_file_broswer.select_images_with_search(
+            instruction="Select Images to Sort ...", multiple_flag=True, filters={"TIFF": "*.tif*"}
+        )
 
     def info_files_selected(self, selected):
         if not selected:
@@ -82,10 +85,10 @@ class GroupImages:
         self.record_file_extension(filename=self.list_images[0])
 
         selected = os.path.abspath(self.folder_selected)
-        display(format_html_message('Input folder ', selected))
-        display(format_html_message('Nbr files ', str(len(self.list_images))))
-        if not ('tif' in self.file_extension):
-            display(format_html_message('This notebook only works with TIFF images!', is_error=True))
+        display(format_html_message("Input folder ", selected))
+        display(format_html_message("Nbr files ", str(len(self.list_images))))
+        if "tif" not in self.file_extension:
+            display(format_html_message("This notebook only works with TIFF images!", is_error=True))
             return
 
     def define_type_of_data(self):
@@ -96,7 +99,7 @@ class GroupImages:
         o_widgets = NotebookWidgets(parent=self)
         o_widgets.select_metadata_to_use_for_sorting()
 
-    def record_file_extension(self, filename=''):
+    def record_file_extension(self, filename=""):
         self.file_extension = file_handler.get_file_extension(filename)
 
     def save_key_metadata(self):
@@ -104,8 +107,8 @@ class GroupImages:
         if (key_name_inner is None) or (key_name_outer is None):
             return
 
-        key_inner, name_inner = key_name_inner.split(' -> ')
-        key_outer, name_outer = key_name_outer.split(' -> ')
+        key_inner, name_inner = key_name_inner.split(" -> ")
+        key_outer, name_outer = key_name_outer.split(" -> ")
 
         self.metadata_name_to_select = [name_outer, name_inner]
         self.metadata_key_to_select = [int(key_outer), int(key_inner)]
@@ -115,23 +118,26 @@ class GroupImages:
         metadata_outer = self.metadata_outer_selected_label.value
 
         try:
-            key_name_inner, _ = metadata_inner.split(':')
-            key_name_outer, _ = metadata_outer.split(':')
+            key_name_inner, _ = metadata_inner.split(":")
+            key_name_outer, _ = metadata_outer.split(":")
         except ValueError:
             return None, None
 
         return key_name_inner, key_name_outer
 
     def group_images(self):
-        o_group = GroupImagesByCycle(list_of_files=self.list_images,
-                                     list_of_metadata_key=self.metadata_key_to_select,
-                                     tolerance_value=METADATA_ERROR)
+        o_group = GroupImagesByCycle(
+            list_of_files=self.list_images,
+            list_of_metadata_key=self.metadata_key_to_select,
+            tolerance_value=METADATA_ERROR,
+        )
         o_group.run()
 
         self.master_outer_inner_dictionary = o_group.master_outer_inner_dictionary
         self.dictionary_of_groups_sorted = self.format_into_dictionary_of_groups(self.master_outer_inner_dictionary)
-        dict_new_names = make_dictionary_of_groups_new_names(self.dictionary_of_groups_sorted,
-                                                             self.dict_group_outer_value)
+        dict_new_names = make_dictionary_of_groups_new_names(
+            self.dictionary_of_groups_sorted, self.dict_group_outer_value
+        )
         self.dictionary_of_groups_new_names = dict_new_names
         self.dictionary_file_vs_metadata = o_group.master_dictionary
 
@@ -185,8 +191,10 @@ class GroupImages:
         first_last_run_of_each_group_dictionary = {}
         for _group_index in np.arange(nbr_groups):
             _list_for_this_group = o_get.list_of_new_files_basename_only(_group_index)
-            first_last_run_of_each_group_dictionary[_group_index] = {'first': _list_for_this_group[0],
-                                                                     'last' : _list_for_this_group[-1]}
+            first_last_run_of_each_group_dictionary[_group_index] = {
+                "first": _list_for_this_group[0],
+                "last": _list_for_this_group[-1],
+            }
         self.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
 
     def _get_group_number_selected(self):
@@ -196,12 +204,13 @@ class GroupImages:
 
     def select_output_folder(self):
         self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(
-                instruction='select output folder',
-                start_dir=os.path.dirname(self.data_path),
-                ipts_folder=self.ipts_dir,
-                next=self.copy_combine_and_rename_files,
-                type='directory',
-                newdir_toolbar_button=True)
+            instruction="select output folder",
+            start_dir=os.path.dirname(self.data_path),
+            ipts_folder=self.ipts_dir,
+            next=self.copy_combine_and_rename_files,
+            type="directory",
+            newdir_toolbar_button=True,
+        )
 
     def make_dictionary_of_groups_old_names(self):
         """
@@ -220,9 +229,7 @@ class GroupImages:
         return dictionary_of_groups_old_names
 
     def copy_combine_and_rename_files(self, output_folder):
-        o_combine_and_move_files = CombineAndMoveFiles(parent=self,
-                                                       output_folder=output_folder,
-                                                       debug=DEBUG)
+        o_combine_and_move_files = CombineAndMoveFiles(parent=self, output_folder=output_folder, debug=DEBUG)
         o_combine_and_move_files.run()
 
     def generate_angel_configuration_file(self):

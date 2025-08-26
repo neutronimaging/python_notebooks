@@ -1,5 +1,4 @@
 class StatisticsColumnIndex:
-
     file_name = 0
     time_offset = 1
     min = 2

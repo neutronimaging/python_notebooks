@@ -1,30 +1,28 @@
+import logging
+
+import numpy as np
+from qtpy import QtGui
 from qtpy.QtGui import QGuiApplication
 from qtpy.QtWidgets import QMenu
-from qtpy import QtGui
-import numpy as np
-import logging
 
 from __code._utilities.list_widget import ListWidget
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
-from __code.extract_evenly_spaced_files.manual_mode_interface_handler import Interface as ManualModeInterface
 from __code.extract_evenly_spaced_files.load import load_file
+from __code.extract_evenly_spaced_files.manual_mode_interface_handler import Interface as ManualModeInterface
 from __code.extract_evenly_spaced_files.statistics import Statistics
 
 
 class EventHandler:
-
     def __init__(self, parent=None):
         self.parent = parent
 
     def load_files(self):
         logging.info("loading files ...")
-        show_status_message(parent=self.parent,
-                            message="Loading ...",
-                            status=StatusMessageStatus.working)
+        show_status_message(parent=self.parent, message="Loading ...", status=StatusMessageStatus.working)
         list_files = self.parent.list_of_files_that_will_be_extracted
         nbr_files = len(list_files)
 
-        self.parent.eventProgress.setMaximum(nbr_files-1)
+        self.parent.eventProgress.setMaximum(nbr_files - 1)
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
 
@@ -34,17 +32,14 @@ class EventHandler:
             _data = load_file(file=_file)
             list_data.append(_data)
 
-            self.parent.eventProgress.setValue(_index+1)
+            self.parent.eventProgress.setValue(_index + 1)
             QGuiApplication.processEvents()
 
         self.parent.list_data = list_data
         self.parent.eventProgress.setVisible(False)
 
         logging.info(f"file loaded! np.shape(list_data): {np.shape(self.parent.list_data)}")
-        show_status_message(parent=self.parent,
-                            message="Done loading!",
-                            status=StatusMessageStatus.ready,
-                            duration_s=5)
+        show_status_message(parent=self.parent, message="Done loading!", status=StatusMessageStatus.ready, duration_s=5)
         QGuiApplication.processEvents()
 
     def select_first_file(self):
@@ -70,8 +65,7 @@ class EventHandler:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0],
-                                    self.parent.histogram_level[1])
+            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
 
     def list_files_right_click(self):
         menu = QMenu(self.parent)
@@ -98,7 +92,7 @@ class EventHandler:
         self.parent.ui.list_of_files_listWidget.clear()
         self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
 
-        o_list.select_element(row=index_file_selected-1)
+        o_list.select_element(row=index_file_selected - 1)
         self.update_manual_interface()
 
         o_statistics = Statistics(parent=self.parent)

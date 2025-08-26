@@ -1,16 +1,16 @@
 import logging
-from qtpy.QtGui import QGuiApplication
+
 import numpy as np
 import pyqtgraph as pg
 from qtpy import QtGui
+from qtpy.QtGui import QGuiApplication
 
 from __code._utilities.list_widget import ListWidget
-from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code._utilities.math import mean_square_error
+from __code._utilities.status_message import StatusMessageStatus, show_status_message
 
 
 class Statistics:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -23,10 +23,8 @@ class Statistics:
         self.parent.ui.setEnabled(True)
 
     def update_statistics(self):
-        logging.info(f"Updating statistics ...")
-        show_status_message(parent=self.parent,
-                            message="Updating statistics ...",
-                            status=StatusMessageStatus.working)
+        logging.info("Updating statistics ...")
+        show_status_message(parent=self.parent, message="Updating statistics ...", status=StatusMessageStatus.working)
         QGuiApplication.processEvents()
 
         list_data = self.parent.list_data
@@ -35,7 +33,7 @@ class Statistics:
         list_image_2 = list_data[0:-1]
 
         list_err = []
-        for image1, image2 in zip(list_image_1, list_image_2):
+        for image1, image2 in zip(list_image_1, list_image_2, strict=False):
             err = mean_square_error(image1, image2)
             list_err.append(err)
 
@@ -45,11 +43,10 @@ class Statistics:
 
         self.plot_statistics()
 
-        logging.info(f"Statistics plot done!")
-        show_status_message(parent=self.parent,
-                            message="Updated statistics!",
-                            status=StatusMessageStatus.ready,
-                            duration_s=5)
+        logging.info("Statistics plot done!")
+        show_status_message(
+            parent=self.parent, message="Updated statistics!", status=StatusMessageStatus.ready, duration_s=5
+        )
         QGuiApplication.processEvents()
 
     def plot_statistics(self):
@@ -57,26 +54,24 @@ class Statistics:
         if list_err is None:
             return
 
-        self.parent.ui.statistics_plot.plot(list_err, symbol='o', pen='w')
+        self.parent.ui.statistics_plot.plot(list_err, symbol="o", pen="w")
 
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         index_file_selected = o_list.get_current_row()
-        self.parent.ui.statistics_plot.plot([index_file_selected],
-                                            [list_err[index_file_selected]],
-                                            pen=(200, 200, 200),
-                                            symbolBrush=(255, 0, 0),
-                                            symbolPen='w')
+        self.parent.ui.statistics_plot.plot(
+            [index_file_selected],
+            [list_err[index_file_selected]],
+            pen=(200, 200, 200),
+            symbolBrush=(255, 0, 0),
+            symbolPen="w",
+        )
 
     def init_plot_statistics_threshold(self):
         max_value = self.parent.max_statistics_error_value
 
-        self.parent.threshold_line = pg.InfiniteLine(pos=max_value,
-                                                     angle=0,
-                                                     label="Max threshold",
-                                                     movable=True)
+        self.parent.threshold_line = pg.InfiniteLine(pos=max_value, angle=0, label="Max threshold", movable=True)
         self.parent.ui.statistics_plot.addItem(self.parent.threshold_line)
-        self.parent.threshold_line.sigPositionChanged.connect(
-                self.parent.statistics_max_threshold_moved)
+        self.parent.threshold_line.sigPositionChanged.connect(self.parent.statistics_max_threshold_moved)
 
     def statistics_max_threshold_moved(self):
         self.parent.max_statistics_error_value = self.parent.threshold_line.value()

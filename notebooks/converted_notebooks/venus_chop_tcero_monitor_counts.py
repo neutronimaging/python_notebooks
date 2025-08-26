@@ -18,20 +18,18 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # +
+
 from __code import system
 from __code.venus_chop_tcero_monitor_counts.main import VenusChopTCeroMonitorCounts
 
-import h5py
-import numpy as np
-
-system.System.select_working_dir(facility='SNS', instrument='VENUS')
+system.System.select_working_dir(facility="SNS", instrument="VENUS")
 from __code.__all import custom_style
+
 custom_style.style()
 
-import matplotlib.pyplot as plt
 # %matplotlib notebook
 # -
 
@@ -41,5 +39,3 @@ import matplotlib.pyplot as plt
 
 o_event = VenusChopTCeroMonitorCounts(working_dir=system.System.get_working_dir())
 o_event.select_list_nexus()
-
-

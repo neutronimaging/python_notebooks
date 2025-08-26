@@ -4,7 +4,6 @@ MAX_PIXEL_RANGE = 20
 
 
 class CalculateProfilesDifference:
-
     # {'horizontal': {'profiles': {'0': {'xaxis': None, 'profile': None},
     #                              '1': {'xaxis': None, 'profile': None},
     #                              ..., },
@@ -32,29 +31,27 @@ class CalculateProfilesDifference:
         self.roi = self.parent.roi
 
     def run(self):
-
         # horizontal
-        reference_profile = self.roi['horizontal']['profiles']['0']['profile']
+        reference_profile = self.roi["horizontal"]["profiles"]["0"]["profile"]
 
-        self.parent.offset['horizontal'] = []
-        for _key in self.roi['horizontal']['profiles'].keys():
-
-            _profile = self.roi['horizontal']['profiles'][_key]['profile']
-            offset_found = CalculateProfilesDifference.calculate_pixel_offset(profile_reference=reference_profile,
-                                                                              working_profile=_profile,
-                                                                              max_pixel_range=MAX_PIXEL_RANGE)
-            self.parent.offset['horizontal'].append(-offset_found)
+        self.parent.offset["horizontal"] = []
+        for _key in self.roi["horizontal"]["profiles"].keys():
+            _profile = self.roi["horizontal"]["profiles"][_key]["profile"]
+            offset_found = CalculateProfilesDifference.calculate_pixel_offset(
+                profile_reference=reference_profile, working_profile=_profile, max_pixel_range=MAX_PIXEL_RANGE
+            )
+            self.parent.offset["horizontal"].append(-offset_found)
 
         # vertical
-        reference_profile = self.roi['vertical']['profiles']['0']['profile']
+        reference_profile = self.roi["vertical"]["profiles"]["0"]["profile"]
 
-        self.parent.offset['vertical'] = []
-        for _key in self.roi['vertical']['profiles'].keys():
-            _profile = self.roi['vertical']['profiles'][_key]['profile']
-            offset_found = CalculateProfilesDifference.calculate_pixel_offset(profile_reference=reference_profile,
-                                                                              working_profile=_profile,
-                                                                              max_pixel_range=MAX_PIXEL_RANGE)
-            self.parent.offset['vertical'].append(-offset_found)
+        self.parent.offset["vertical"] = []
+        for _key in self.roi["vertical"]["profiles"].keys():
+            _profile = self.roi["vertical"]["profiles"][_key]["profile"]
+            offset_found = CalculateProfilesDifference.calculate_pixel_offset(
+                profile_reference=reference_profile, working_profile=_profile, max_pixel_range=MAX_PIXEL_RANGE
+            )
+            self.parent.offset["vertical"].append(-offset_found)
 
     @staticmethod
     def sum_abs_diff(profile_a, profile_b):

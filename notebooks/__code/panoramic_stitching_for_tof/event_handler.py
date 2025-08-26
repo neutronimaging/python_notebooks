@@ -1,12 +1,11 @@
 import copy
+
 import numpy as np
 
 from __code._utilities.table_handler import TableHandler
-from __code.panoramic_stitching_for_tof.get import Get
 
 
 class TOFEventHandler:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -62,10 +61,10 @@ class TOFEventHandler:
             offset_value = int(o_table.get_item_str_from_cell(row=row, column=column))
 
         if column == 1:
-            offset_dictionary[folder_name]['xoffset'] = offset_value
+            offset_dictionary[folder_name]["xoffset"] = offset_value
         elif column == 2:
-            offset_dictionary[folder_name]['yoffset'] = offset_value
+            offset_dictionary[folder_name]["yoffset"] = offset_value
         elif column == 3:
             is_visible = True if state == 2 else False
-            offset_dictionary[folder_name]['visible'] = is_visible
+            offset_dictionary[folder_name]["visible"] = is_visible
         self.parent.offset_dictionary = offset_dictionary

@@ -17,20 +17,22 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.normalization.normalization_with_simplify_selection import NormalizationWithSimplifySelection
 from __code import system
-system.System.select_working_dir(notebook='normalization_with_simplify_selection')
+from __code.normalization.normalization_with_simplify_selection import NormalizationWithSimplifySelection
+
+system.System.select_working_dir(notebook="normalization_with_simplify_selection")
 from __code.__all import custom_style
+
 custom_style.style()
 # -
 
 # %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select List of Images to Normalize 
+# # Select List of Images to Normalize
 # -
 
 # Program will create a full table of the normalization workflow according to the **acquisition time** and **instrument configurations**.
@@ -40,12 +42,10 @@ custom_style.style()
 o_which = NormalizationWithSimplifySelection(working_dir=system.System.get_working_dir())
 o_which.select_sample_folder()
 
-# # Normalization workflow summary 
+# # Normalization workflow summary
 
 o_which.checking_normalization_workflow()
 
-# # Select Output Folder 
+# # Select Output Folder
 
 o_which.select_output_folder()
-
-

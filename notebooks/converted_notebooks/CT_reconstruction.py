@@ -13,21 +13,19 @@
 # ---
 
 # +
-import os, shutil, numpy as np, glob, time, pickle as pkl, imars3d
-from imars3d.jnbui import ct_wizard, imageslider
-from imars3d.ImageFile import ImageFile
+import glob
+import os
 
 # Be patient, this may take a little while too
 # # %matplotlib notebook
 # %matplotlib inline
-from matplotlib import pyplot as plt
 # -
 
 # # Input Settings
 
-data_folder = '/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/2021_07_21_1in/'
-ob_folder = '/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ob/2021_07_21_1in/'
-df_folder = '/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/df/2021_07_19/'
+data_folder = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/2021_07_21_1in/"
+ob_folder = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ob/2021_07_21_1in/"
+df_folder = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/df/2021_07_19/"
 
 ct_sig = "treated_1inch"
 ct_scan_root = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/"
@@ -51,15 +49,17 @@ ct_scans_subdir = glob.glob(os.path.dirname(data_folder) + "/*")
 
 from imars3d.CT import CT
 
-ct = CT(data_dir,
-       CT_subdir=ct_dir,
-       CT_identifier=ct_sig,
-       workdir=workdir,
-       outdir=outdir,
-       ob_files=ob_files,
-       df_files=df_files)
+ct = CT(
+    data_dir,
+    CT_subdir=ct_dir,
+    CT_identifier=ct_sig,
+    workdir=workdir,
+    outdir=outdir,
+    ob_files=ob_files,
+    df_files=df_files,
+)
 
-# # preprocess 
+# # preprocess
 
 # %%time
 ppd = ct.preprocess()
@@ -71,5 +71,3 @@ ymax = 2047
 
 # %%time
 ct.recon(crop_window=(xmin, ymin, xmax, ymax))
-
-

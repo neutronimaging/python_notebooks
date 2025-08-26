@@ -20,12 +20,13 @@
 # # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.fix_images_with_negative_pixels import FixImages
 # %matplotlib notebook
-
 from __code import system
-system.System.select_working_dir(notebook='fix_images_with_negative_pixels')
+from __code.fix_images_with_negative_pixels import FixImages
+
+system.System.select_working_dir(notebook="fix_images_with_negative_pixels")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -33,20 +34,20 @@ custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # 1. Load images
-# 2. Display 
+# 2. Display
 # 3. Change all negative value pixels to NaN
 # 4. Give statistics of pixels changed in ROI selected
 # 5. produce colorbar
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Images 
+# # Select Images
 
 # + run_control={"frozen": false, "read_only": false}
 _o_fix = FixImages(working_dir=system.System.get_working_dir())
 _o_fix.select_images()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Turn off all negative values 
+# # Turn off all negative values
 
 # + run_control={"frozen": false, "read_only": false}
 _o_fix.load()
@@ -54,7 +55,7 @@ _o_fix.remove_negative_values()
 _o_fix.display_images()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Display Images for Publication 
+# # Display Images for Publication
 
 # + run_control={"frozen": false, "read_only": false}
 # %matplotlib notebook
@@ -72,4 +73,3 @@ _o_fix.select_output_folder()
 _o_fix.export()
 
 # + run_control={"frozen": false, "read_only": false}
-

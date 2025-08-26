@@ -17,7 +17,7 @@
 # **Workflow of this notebook**
 #
 # * **User**: select the images to work with.
-# * *Notebook*: load and automatically rotate the data 90 degrees to match the algorithm orientation 
+# * *Notebook*: load and automatically rotate the data 90 degrees to match the algorithm orientation
 # * **User**: select region to work with by cropping the raw data
 # * **User**: select horizontal range of profile to combine
 # * *Notebook*: use that range and combine the data using a mean
@@ -31,25 +31,27 @@
 # * *Notebook*: apply geometry correction to inner cylinder
 # * **User**: select where to output the ascii files that will contains the profiles.
 
-# # Python Import 
+# # Python Import
 
 # +
 import os
 import sys
-module_path = os.path.abspath(os.path.join('..'))
+
+module_path = os.path.abspath(os.path.join(".."))
 if module_path not in sys.path:
     sys.path.append(module_path)
 
 # %matplotlib notebook
 
 from __code import system
+
 system.System.select_working_dir()
 
 from ipts_28402_code.ipts_28402 import IPTS_28402
 
 # -
 
-# # Select Images 
+# # Select Images
 
 o_ipts = IPTS_28402(working_dir=system.System.get_working_dir())
 o_ipts.select_images()
@@ -60,7 +62,7 @@ o_ipts.select_images()
 
 o_ipts.visualize_raw_images()
 
-# # crop sample to region of interest 
+# # crop sample to region of interest
 
 # By playing with the **left**, **right**, **top** and **bottom** sliders, select a region surrounding the data you
 # want to correct.
@@ -72,7 +74,7 @@ o_ipts.visualize_raw_images()
 
 o_ipts.select_crop_region()
 
-# ## Visualize result of cropping 
+# ## Visualize result of cropping
 
 o_ipts.visualize_crop()
 
@@ -82,11 +84,11 @@ o_ipts.visualize_crop()
 
 o_ipts.selection_of_profiles_limit()
 
-# # Profiles to work with 
+# # Profiles to work with
 
 o_ipts.display_of_profiles()
 
-# # Let's define the position of the cylinders edges 
+# # Let's define the position of the cylinders edges
 
 o_ipts.cylinders_positions()
 
@@ -96,7 +98,7 @@ o_ipts.cylinders_positions()
 
 o_ipts.cleaning_edges()
 
-# # Switching to attenuation mode  
+# # Switching to attenuation mode
 
 o_ipts.switching_to_attenuation_mode()
 
@@ -108,7 +110,7 @@ o_ipts.outer_cylinder_geometry_correction()
 
 o_ipts.full_profile_with_only_outer_cylinder_corrected()
 
-# # Working on inner cylinder 
+# # Working on inner cylinder
 
 # We find the center, radius and truncate outside cylinder, keeping only the data from the inner cylinder
 #
@@ -124,7 +126,3 @@ o_ipts.correct_inner_cylinder_geometry()
 # Select the folder where you want to create the text files, comma separated file, of the inner cylinder profiles corrected. Each image will have its own text file.
 
 o_ipts.export_profiles()
-
-
-
-

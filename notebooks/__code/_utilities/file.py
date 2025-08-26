@@ -1,19 +1,19 @@
+import datetime
+import glob
 import os
+import pickle
+import re
+import shutil
+from collections import Counter, OrderedDict, namedtuple
 from os.path import expanduser
 from pathlib import Path
+
+import numpy as np
 import pandas as pd
 from astropy.io import fits
-import numpy as np
-import pickle
-import shutil
-from PIL import Image
-import glob
-from collections import Counter, namedtuple, OrderedDict
-import re
-import datetime
-
+from IPython.display import display
 from ipywidgets import widgets
-from IPython.display import display, HTML
+from PIL import Image
 
 from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code.metadata_handler import MetadataHandler
@@ -25,7 +25,7 @@ def get_full_home_file_name(base_file_name):
     return full_log_file_name
 
 
-def force_file_extension(filename, ext='.txt'):
+def force_file_extension(filename, ext=".txt"):
     """this method check the name of the file and makes sure the extension is the one we are requesting"""
     [base, extension] = os.path.splitext(filename)
 
@@ -50,12 +50,12 @@ def test_image(file_name, threshold=5000):
     return True
 
 
-def load_data(filenames='', folder='', showing_progress=False):
-    '''
+def load_data(filenames="", folder="", showing_progress=False):
+    """
     load the various file_name format
-    '''
+    """
     if folder:
-        list_files = glob.glob(folder + '/*.*')
+        list_files = glob.glob(folder + "/*.*")
         stack = []
 
         if showing_progress:
@@ -68,26 +68,25 @@ def load_data(filenames='', folder='', showing_progress=False):
             stack.append(_data)
 
             if showing_progress:
-                w.value = _index+1
+                w.value = _index + 1
 
         return stack
 
     elif isinstance(filenames, str):
         data_type = get_data_type(filenames)
-        if data_type == '.fits':
+        if data_type == ".fits":
             hdulist = fits.open(filenames, ignore_missing_end=True)
             hdu = hdulist[0]
             _image = np.asarray(hdu.data)
             hdulist.close()
             return _image
-        elif (data_type == '.tiff') or (data_type == '.tif'):
+        elif (data_type == ".tiff") or (data_type == ".tif"):
             _image = Image.open(filenames)
             return np.array(_image)
         else:
             return []
 
-    else: # list of filenames
-
+    else:  # list of filenames
         list_files = filenames
 
         stack = []
@@ -102,22 +101,22 @@ def load_data(filenames='', folder='', showing_progress=False):
             stack.append(_data)
 
             if showing_progress:
-                w.value = _index+1
+                w.value = _index + 1
 
         return stack
 
 
-def save_data(data=[], filename='', metadata=None):
+def save_data(data=[], filename="", metadata=None):
     data_type = get_data_type(filename)
-    if data_type == '.fits':
+    if data_type == ".fits":
         make_fits(data=data, filename=filename)
-    elif (data_type == '.tiff') or (data_type == '.tif'):
+    elif (data_type == ".tiff") or (data_type == ".tif"):
         make_tiff(data=data, filename=filename, metadata=metadata)
 
 
 def get_file_extension(filename):
-    '''retrieve the file extension of the filename and make sure
-    we only keep the extension value and not the "dot" before it'''
+    """retrieve the file extension of the filename and make sure
+    we only keep the extension value and not the "dot" before it"""
     full_extension = get_data_type(filename)
     return full_extension[1:]
 
@@ -131,7 +130,7 @@ def get_list_file_extensions(list_filename):
 
 
 def get_data_type(file_name):
-    '''
+    """
     using the file name extension, will return the type of the data
 
     Arguments:
@@ -139,22 +138,22 @@ def get_data_type(file_name):
 
     Returns:
         file extension    ex:.tif, .fits
-    '''
+    """
     filename, file_extension = os.path.splitext(file_name)
     return file_extension.strip()
 
 
-def save_file(folder='', base_file_name='', suffix='', dictionary={}):
-    if folder == '':
+def save_file(folder="", base_file_name="", suffix="", dictionary={}):
+    if folder == "":
         return
 
-    output_file = folder + base_file_name + '_time_dictionary.dat'
+    output_file = folder + base_file_name + "_time_dictionary.dat"
     pickle.dump(dictionary, open(output_file, "wb"))
 
     return output_file
 
 
-def make_tiff(data=[], filename='', metadata=None):
+def make_tiff(data=[], filename="", metadata=None):
     new_image = Image.fromarray(data)
     if metadata:
         new_image.save(filename, tiffinfo=metadata)
@@ -162,7 +161,7 @@ def make_tiff(data=[], filename='', metadata=None):
         new_image.save(filename)
 
 
-def make_fits(data=[], filename=''):
+def make_fits(data=[], filename=""):
     fits.writeto(filename, data, clobber=True)
 
 
@@ -173,7 +172,7 @@ def make_folder(folder_name):
 
 def make_or_reset_folder(folder_name):
     if os.path.exists(folder_name):
-         shutil.rmtree(folder_name)
+        shutil.rmtree(folder_name)
     os.makedirs(folder_name)
 
 
@@ -200,7 +199,7 @@ def copy_files_to_folder(list_files=[], output_folder=""):
         shutil.copy(_file, output_folder)
 
 
-def copy_and_rename_files_to_folder(list_files=[], new_list_files_names=[], output_folder=''):
+def copy_and_rename_files_to_folder(list_files=[], new_list_files_names=[], output_folder=""):
     for _index_file, _original_file in enumerate(list_files):
         _new_file = os.path.join(output_folder, new_list_files_names[_index_file])
         shutil.copy(_original_file, _new_file)
@@ -210,10 +209,10 @@ def remove_SummedImg_from_list(list_files):
     base_name_and_extension = os.path.basename(list_files[0])
     dir_name = os.path.dirname(list_files[0])
     [base_name, _] = os.path.splitext(base_name_and_extension)
-    base_base_name_array = base_name.split('_')
-    name = '_'.join(base_base_name_array[0:-1])
+    base_base_name_array = base_name.split("_")
+    name = "_".join(base_base_name_array[0:-1])
     index = base_base_name_array[-1]
-    file_to_remove = os.path.join(dir_name, name + '_SummedImg.fits')
+    file_to_remove = os.path.join(dir_name, name + "_SummedImg.fits")
     list_files_cleaned = []
     for _file in list_files:
         if _file == file_to_remove:
@@ -222,18 +221,18 @@ def remove_SummedImg_from_list(list_files):
     return list_files_cleaned
 
 
-def make_ascii_file(metadata=[], data=[], output_file_name='', dim='2d', sep=','):
-    f = open(output_file_name, 'w')
+def make_ascii_file(metadata=[], data=[], output_file_name="", dim="2d", sep=","):
+    f = open(output_file_name, "w")
     for _meta in metadata:
         _line = _meta + "\n"
         f.write(_line)
 
     for _data in data:
-        if dim == '2d':
+        if dim == "2d":
             _str_data = [str(_value) for _value in _data]
             _line = sep.join(_str_data) + "\n"
         else:
-            _line = str(_data) + '\n'
+            _line = str(_data) + "\n"
         f.write(_line)
 
     f.close()
@@ -245,25 +244,25 @@ def append_to_file(data=[], output_file_name=""):
             f.write(_line + "\n")
 
 
-def make_ascii_file_from_2dim_array(metadata=None, col1=None, col2=None, output_file_name=None, sep=', '):
-    with open(output_file_name, 'w') as f:
+def make_ascii_file_from_2dim_array(metadata=None, col1=None, col2=None, output_file_name=None, sep=", "):
+    with open(output_file_name, "w") as f:
         for _meta in metadata:
             _line = _meta + "\n"
             f.write(_line)
 
-        for _x, _y in zip(col1, col2):
-            _line = "{}".format(_x) + sep + "{}".format(_y) + "\n"
+        for _x, _y in zip(col1, col2, strict=False):
+            _line = f"{_x}" + sep + f"{_y}" + "\n"
             f.write(_line)
 
 
-def make_ascii_file_from_string(text="", filename=''):
-    with open(filename, 'w') as f:
+def make_ascii_file_from_string(text="", filename=""):
+    with open(filename, "w") as f:
         f.write(text)
 
 
-def read_ascii(filename=''):
-    '''return contain of an ascii file'''
-    f = open(filename, 'r')
+def read_ascii(filename=""):
+    """return contain of an ascii file"""
+    f = open(filename)
     text = f.read()
     f.close()
     return text
@@ -274,14 +273,14 @@ def retrieve_metadata_value_from_ascii_file(filename=None, metadata_name=None):
         return ""
     if metadata_name is None:
         return ""
-    with open(filename, 'r') as fp:
+    with open(filename) as fp:
         while True:
             line = fp.readline()
 
             if not line:
                 break
 
-            if metadata_name in line:#
+            if metadata_name in line:  #
                 divided_parts = line.split(":")
                 if len(divided_parts) > 1:
                     value = ":".join(divided_parts[1:])
@@ -292,13 +291,13 @@ def retrieve_metadata_value_from_ascii_file(filename=None, metadata_name=None):
     return ""
 
 
-def retrieve_metadata_from_dsc_file(filename=''):
+def retrieve_metadata_from_dsc_file(filename=""):
     text = read_ascii(filename=filename)
-    splitted_text = text.split('\n')
+    splitted_text = text.split("\n")
     metadata = {}
-    metadata['acquisition_time'] = splitted_text[9]
-    metadata['user_format'] = splitted_text[-3]
-    metadata['os_format'] = splitted_text[-7]
+    metadata["acquisition_time"] = splitted_text[9]
+    metadata["user_format"] = splitted_text[-3]
+    metadata["os_format"] = splitted_text[-7]
 
     return metadata
 
@@ -311,19 +310,19 @@ def retrieve_metadata_from_dsc_list_files(list_files=[]):
     metadata = {}
     for _index, _file in enumerate(list_files):
         metadata[os.path.basename(_file)] = retrieve_metadata_from_dsc_file(filename=_file)
-        w.value = _index+1
+        w.value = _index + 1
 
     return metadata
 
 
-def retrieve_list_of_most_dominant_extension_from_folder(folder='', files=[]):
-    '''
+def retrieve_list_of_most_dominant_extension_from_folder(folder="", files=[]):
+    """
     This will return the list of files from the most dominant file extension found in the folder
     as well as the most dominant extension used
-    '''
+    """
 
     if folder:
-        list_of_input_files = glob.glob(os.path.join(folder, '*'))
+        list_of_input_files = glob.glob(os.path.join(folder, "*"))
     else:
         list_of_input_files = files
 
@@ -337,14 +336,14 @@ def retrieve_list_of_most_dominant_extension_from_folder(folder='', files=[]):
         [_base, _ext] = os.path.splitext(_file)
         counter_extension[_ext] += 1
 
-    dominand_extension = ''
+    dominand_extension = ""
     dominand_number = 0
     for _key in counter_extension.keys():
         if counter_extension[_key] > dominand_number:
             dominand_extension = _key
             dominand_number = counter_extension[_key]
 
-    list_of_input_files = glob.glob(os.path.join(folder, '*' + dominand_extension))
+    list_of_input_files = glob.glob(os.path.join(folder, "*" + dominand_extension))
     list_of_input_files.sort()
 
     list_of_input_files = [os.path.abspath(_file) for _file in list_of_input_files]
@@ -352,8 +351,8 @@ def retrieve_list_of_most_dominant_extension_from_folder(folder='', files=[]):
     return [list_of_input_files, dominand_extension]
 
 
-def remove_file_from_list(list_files=[], regular_expression=''):
-    '''
+def remove_file_from_list(list_files=[], regular_expression=""):
+    """
     This method will look through the list of files provided and will try
     to find, using regular expresision, the name of the file that does match
     the 're' argument passed. If found, the list is returned without that file
@@ -367,8 +366,8 @@ def remove_file_from_list(list_files=[], regular_expression=''):
     Returns:
     ========
     list
-    '''
-    if regular_expression == '':
+    """
+    if regular_expression == "":
         return list_files
 
     p = re.compile(regular_expression)
@@ -399,7 +398,7 @@ def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
     # epoch" so that Python can understand it.  I got the offset by
     # calculating the number of seconds between the two epochs at
     # https://www.epochconverter.com/
-    #EPOCH_OFFSET = 631152000
+    # EPOCH_OFFSET = 631152000
     EPOCH_OFFSET = 0
     unix_epoch_timestamp = EPOCH_OFFSET + epics_timestamp
     return unix_epoch_timestamp
@@ -407,24 +406,23 @@ def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
 
 def retrieve_time_stamp(list_images, label=""):
     [_, ext] = os.path.splitext(list_images[0])
-    if ext.lower() in ['.tiff', '.tif']:
-        ext = 'tif'
-    elif ext.lower() == '.fits':
-        ext = 'fits'
+    if ext.lower() in [".tiff", ".tif"]:
+        ext = "tif"
+    elif ext.lower() == ".fits":
+        ext = "fits"
 
-    elif ext.lower() == '.jpg':
-        ext = 'jpg'
+    elif ext.lower() == ".jpg":
+        ext = "jpg"
     else:
         raise ValueError
 
-    message = "Retrieving time stamp of {}".format(label) if label else "Retrieving time stamp"
-    box = widgets.HBox([widgets.Label(message,
-                                      layout=widgets.Layout(width='20%')),
-                        widgets.IntProgress(min=0,
-                                            max=len(list_images),
-                                            value=0,
-                                            layout=widgets.Layout(width='50%'))
-                        ])
+    message = f"Retrieving time stamp of {label}" if label else "Retrieving time stamp"
+    box = widgets.HBox(
+        [
+            widgets.Label(message, layout=widgets.Layout(width="20%")),
+            widgets.IntProgress(min=0, max=len(list_images), value=0, layout=widgets.Layout(width="50%")),
+        ]
+    )
     progress_bar = box.children[1]
     display(box)
 
@@ -441,18 +439,20 @@ def retrieve_time_stamp(list_images, label=""):
 
     box.close()
 
-    return {'list_images': list_images,
-            'list_time_stamp': list_time_stamp,
-            'list_time_stamp_user_format': list_time_stamp_user_format}
+    return {
+        "list_images": list_images,
+        "list_time_stamp": list_time_stamp,
+        "list_time_stamp_user_format": list_time_stamp_user_format,
+    }
 
 
-def get_list_of_files(folder="", extension='tiff'):
-    list_files = glob.glob(os.path.join(folder, "*.{}".format(extension)))
+def get_list_of_files(folder="", extension="tiff"):
+    list_files = glob.glob(os.path.join(folder, f"*.{extension}"))
     list_files.sort()
     return list_files
 
 
-def get_list_of_all_files_in_subfolders(folder="", extensions=['tiff', 'tif']):
+def get_list_of_all_files_in_subfolders(folder="", extensions=["tiff", "tif"]):
     absolute_path_folder = os.path.abspath(folder)
     list_files = []
     for path, _, files in os.walk(absolute_path_folder):
@@ -466,83 +466,86 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
     if not Path(full_file_name).exists():
         raise FileNotFoundError(str(full_file_name))
 
-    metadata = {'detector_offset': '',
-                'distance_detector_sample': '',
-                }
+    metadata = {
+        "detector_offset": "",
+        "distance_detector_sample": "",
+    }
     march_history_table = OrderedDict()
     march_history_init = {}
     metadata_column = OrderedDict()
     line_number = 1
-    col_label = ['index', 'tof', 'lambda']
-    with open(full_file_name, 'r') as f:
+    col_label = ["index", "tof", "lambda"]
+    with open(full_file_name) as f:
         for line in f:
             if "#" == line.strip():
                 line_number += 1
                 continue
             if "#base folder: " in line:
-                metadata['base_folder'] = line.split("#base folder: ")[1].strip()
+                metadata["base_folder"] = line.split("#base folder: ")[1].strip()
                 line_number += 1
                 continue
             if "#fitting peak range in file index:" in line:
                 regular = r"^#fitting peak range in file index: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['bragg_edge_range'] = [int(m.group('left_index')),
-                                                    int(m.group('right_index'))]
+                    metadata["bragg_edge_range"] = [int(m.group("left_index")), int(m.group("right_index"))]
                 else:
-                    metadata['bragg_edge_range'] = [None, None]
+                    metadata["bragg_edge_range"] = [None, None]
                 line_number += 1
                 continue
             if "#distance detector-sample: " in line:
-                metadata['distance_detector_sample'] = line.split("#distance detector-sample: ")[1].strip()
+                metadata["distance_detector_sample"] = line.split("#distance detector-sample: ")[1].strip()
                 line_number += 1
                 continue
             if "#detector offset: " in line:
-                metadata['detector_offset'] = line.split("#detector offset: ")[1].strip()
+                metadata["detector_offset"] = line.split("#detector offset: ")[1].strip()
                 line_number += 1
                 continue
             if "#kropff fitting procedure started: " in line:
-                result = True if line.split("#kropff fitting procedure started: ")[1].strip() == 'True' else False
-                metadata['kropff fitting procedure started'] = result
+                result = True if line.split("#kropff fitting procedure started: ")[1].strip() == "True" else False
+                metadata["kropff fitting procedure started"] = result
                 line_number += 1
                 continue
             if "#march-dollase bragg peak selection range: " in line:
                 regular = r"^#march-dollase bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['march-dollase bragg peak selection range'] = [int(m.group('left_index')),
-                                                                            int(m.group('right_index'))]
+                    metadata["march-dollase bragg peak selection range"] = [
+                        int(m.group("left_index")),
+                        int(m.group("right_index")),
+                    ]
                 line_number += 1
                 continue
             if "#march-dollase fitting procedure started: " in line:
-                result = True if line.split("#march-dollase fitting procedure started: ")[1].strip() == 'True' else \
-                    False
-                metadata['march-dollase fitting procedure started'] = result
+                result = (
+                    True if line.split("#march-dollase fitting procedure started: ")[1].strip() == "True" else False
+                )
+                metadata["march-dollase fitting procedure started"] = result
                 line_number += 1
                 continue
             if "#Bragg peak selection range:" in line:
                 regular = r"^#Bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['bragg_peak_selection_range'] = [int(m.group('left_index')),
-                                                              int(m.group('right_index'))]
+                    metadata["bragg_peak_selection_range"] = [int(m.group("left_index")), int(m.group("right_index"))]
                 line_number += 1
                 continue
             if "#kropff " in line:
-                regular = r"^#kropff (?P<type>\w+) selection range: \[(?P<left_index>\d+), " \
-                          r"(?P<right_index>\d+)\]$"
+                regular = r"^#kropff (?P<type>\w+) selection range: \[(?P<left_index>\d+), " r"(?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata['kropff_{}'.format(m.group('type'))] = [int(m.group('left_index')),
-                                                                     int(m.group('right_index'))]
+                    metadata["kropff_{}".format(m.group("type"))] = [
+                        int(m.group("left_index")),
+                        int(m.group("right_index")),
+                    ]
                 line_number += 1
                 continue
             if "#fitting algorithm selected: " in line:
-                metadata['fitting_algorithm_selected'] = line.split('#fitting algorithm selected: ')[1].strip()
+                metadata["fitting_algorithm_selected"] = line.split("#fitting algorithm selected: ")[1].strip()
                 line_number += 1
                 continue
             if "#march-dollase history table row " in line:
-                _row_and_list_flag = line.split('#march-dollase history table row ')[1].strip()
+                _row_and_list_flag = line.split("#march-dollase history table row ")[1].strip()
                 [_row, list_flag] = _row_and_list_flag.split(":")
                 march_history_table[_row] = list_flag
                 line_number += 1
@@ -554,102 +557,103 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 line_number += 1
                 continue
             if "#column " in line:
-                regular = r"^#column (?P<column_index>\d+) -> " \
-                          r"x0:(?P<x0>\d+), " \
-                          r"y0:(?P<y0>\d+), " \
-                          r"width:(?P<width>\d+), " \
-                          r"height:(?P<height>\d+), " \
-                          r"kropff: " \
-                          r"a0:(?P<a0>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"b0:(?P<b0>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a0_error:(?P<a0_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"b0_error:(?P<b0_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"ahkl:(?P<ahkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"bhkl:(?P<bhkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"ahkl_error:(?P<ahkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"bhkl_error:(?P<bhkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"ldahkl:(?P<ldahkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"tau:(?P<tau>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"sigma:(?P<sigma>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"ldahkl_error:(?P<ldahkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"tau_error:(?P<tau_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"sigma_error:(?P<sigma_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"march_dollase: " \
-                          r"d_spacing:(?P<d_spacing>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"sigma:(?P<sigma1>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"alpha:(?P<alpha>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a1:(?P<a1>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a2:(?P<a2>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a5:(?P<a5>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a6:(?P<a6>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"d_spacing_error:(?P<d_spacing_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"sigma_error:(?P<sigma1_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"alpha_error:(?P<alpha_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a1_error:(?P<a1_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a2_error:(?P<a2_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a5_error:(?P<a5_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), " \
-                          r"a6_error:(?P<a6_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+)$"
+                regular = (
+                    r"^#column (?P<column_index>\d+) -> "
+                    r"x0:(?P<x0>\d+), "
+                    r"y0:(?P<y0>\d+), "
+                    r"width:(?P<width>\d+), "
+                    r"height:(?P<height>\d+), "
+                    r"kropff: "
+                    r"a0:(?P<a0>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"b0:(?P<b0>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a0_error:(?P<a0_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"b0_error:(?P<b0_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"ahkl:(?P<ahkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"bhkl:(?P<bhkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"ahkl_error:(?P<ahkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"bhkl_error:(?P<bhkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"ldahkl:(?P<ldahkl>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"tau:(?P<tau>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"sigma:(?P<sigma>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"ldahkl_error:(?P<ldahkl_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"tau_error:(?P<tau_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"sigma_error:(?P<sigma_error>\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"march_dollase: "
+                    r"d_spacing:(?P<d_spacing>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"sigma:(?P<sigma1>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"alpha:(?P<alpha>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a1:(?P<a1>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a2:(?P<a2>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a5:(?P<a5>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a6:(?P<a6>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"d_spacing_error:(?P<d_spacing_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"sigma_error:(?P<sigma1_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"alpha_error:(?P<alpha_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a1_error:(?P<a1_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a2_error:(?P<a2_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a5_error:(?P<a5_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+), "
+                    r"a6_error:(?P<a6_error>-{0,1}\d+.+\d+|None|-{0,1}\d+.+\d+e-{0,1}\d+)$"
+                )
 
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata_column[m.group('column_index').strip()] = {'x0': m.group('x0'),
-                                                                        'y0': m.group('y0'),
-                                                                        'width': m.group('width'),
-                                                                        'height': m.group('height'),
-                                                                        'kropff': {'a0': m.group('a0'),
-                                                                                   'b0': m.group('b0'),
-                                                                                   'a0_error': m.group('a0_error'),
-                                                                                   'b0_error': m.group('b0_error'),
-                                                                                   'ahkl': m.group('ahkl'),
-                                                                                   'bhkl': m.group('bhkl'),
-                                                                                   'ahkl_error': m.group('ahkl_error'),
-                                                                                   'bhkl_error': m.group('bhkl_error'),
-                                                                                   'ldahkl': m.group('ldahkl'),
-                                                                                   'tau': m.group('tau'),
-                                                                                   'sigma': m.group('sigma'),
-                                                                                   'ldahkl_error': m.group(
-                                                                                           'ldahkl_error'),
-                                                                                   'tau_error': m.group('tau_error'),
-                                                                                   'sigma_error': m.group(
-                                                                                           'sigma_error'),
-                                                                                   },
-                                                                        'march_dollase': {
-                                                                            'd_spacing': m.group('d_spacing'),
-                                                                            'sigma': m.group('sigma1'),
-                                                                            'alpha': m.group('alpha'),
-                                                                            'a1': m.group('a1'),
-                                                                            'a2': m.group('a2'),
-                                                                            'a5': m.group('a5'),
-                                                                            'a6': m.group('a6'),
-                                                                            'd_spacing_error': m.group(
-                                                                                    'd_spacing_error'),
-                                                                            'sigma_error': m.group('sigma1_error'),
-                                                                            'alpha_error': m.group('alpha_error'),
-                                                                            'a1_error': m.group('a1_error'),
-                                                                            'a2_error': m.group('a2_error'),
-                                                                            'a5_error': m.group('a5_error'),
-                                                                            'a6_error': m.group('a6_error'),
-                                                                             }
-                                                                        }
+                    metadata_column[m.group("column_index").strip()] = {
+                        "x0": m.group("x0"),
+                        "y0": m.group("y0"),
+                        "width": m.group("width"),
+                        "height": m.group("height"),
+                        "kropff": {
+                            "a0": m.group("a0"),
+                            "b0": m.group("b0"),
+                            "a0_error": m.group("a0_error"),
+                            "b0_error": m.group("b0_error"),
+                            "ahkl": m.group("ahkl"),
+                            "bhkl": m.group("bhkl"),
+                            "ahkl_error": m.group("ahkl_error"),
+                            "bhkl_error": m.group("bhkl_error"),
+                            "ldahkl": m.group("ldahkl"),
+                            "tau": m.group("tau"),
+                            "sigma": m.group("sigma"),
+                            "ldahkl_error": m.group("ldahkl_error"),
+                            "tau_error": m.group("tau_error"),
+                            "sigma_error": m.group("sigma_error"),
+                        },
+                        "march_dollase": {
+                            "d_spacing": m.group("d_spacing"),
+                            "sigma": m.group("sigma1"),
+                            "alpha": m.group("alpha"),
+                            "a1": m.group("a1"),
+                            "a2": m.group("a2"),
+                            "a5": m.group("a5"),
+                            "a6": m.group("a6"),
+                            "d_spacing_error": m.group("d_spacing_error"),
+                            "sigma_error": m.group("sigma1_error"),
+                            "alpha_error": m.group("alpha_error"),
+                            "a1_error": m.group("a1_error"),
+                            "a2_error": m.group("a2_error"),
+                            "a5_error": m.group("a5_error"),
+                            "a6_error": m.group("a6_error"),
+                        },
+                    }
                     col_label.append(m.group("column_index"))
                 line_number += 1
                 continue
-        metadata['columns'] = metadata_column
-        metadata['march-dollase history table'] = march_history_table
-        metadata['march-dollase history init'] = march_history_init
+        metadata["columns"] = metadata_column
+        metadata["march-dollase history table"] = march_history_table
+        metadata["march-dollase history init"] = march_history_init
 
     pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
-    return {'data': pd_data, 'metadata': metadata}
+    return {"data": pd_data, "metadata": metadata}
 
 
-class ListMostDominantExtension(object):
-    Result = namedtuple('Result', ('list_files', 'ext', 'uniqueness'))
+class ListMostDominantExtension:
+    Result = namedtuple("Result", ("list_files", "ext", "uniqueness"))
 
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir=""):
         self.working_dir = working_dir
 
     def get_list_of_files(self):
-        list_of_input_files = glob.glob(os.path.join(self.working_dir, '*'))
+        list_of_input_files = glob.glob(os.path.join(self.working_dir, "*"))
         list_of_input_files.sort()
         self.list_of_base_name = [os.path.basename(_file) for _file in list_of_input_files]
 
@@ -661,7 +665,7 @@ class ListMostDominantExtension(object):
         self.counter_extension = counter_extension
 
     def get_dominant_extension(self):
-        dominant_extension = ''
+        dominant_extension = ""
         dominant_number = 0
         list_of_number_of_ext = []
         for _key in self.counter_extension.keys():
@@ -691,23 +695,24 @@ class ListMostDominantExtension(object):
 
     def retrieve_parameters(self):
         if self.uniqueness:
-            list_of_input_files = glob.glob(os.path.join(self.working_dir, '*' + self.dominant_extension))
+            list_of_input_files = glob.glob(os.path.join(self.working_dir, "*" + self.dominant_extension))
             list_of_input_files.sort()
 
-            self.result = self.Result(list_files=list_of_input_files,
-                                      ext=self.dominant_extension,
-                                      uniqueness=True)
+            self.result = self.Result(list_files=list_of_input_files, ext=self.dominant_extension, uniqueness=True)
 
         else:
+            list_of_maj_ext = [
+                _ext for _ext in self.counter_extension.keys() if self.counter_extension[_ext] == self.dominant_number
+            ]
 
-            list_of_maj_ext = [_ext for _ext in self.counter_extension.keys() if
-                               self.counter_extension[_ext] == self.dominant_number]
-
-            box = widgets.HBox([widgets.Label("Select Extension to work with",
-                                              layout=widgets.Layout(width='20%')),
-                                widgets.Dropdown(options=list_of_maj_ext,
-                                                 layout=widgets.Layout(width='20%'),
-                                                 value=list_of_maj_ext[0])])
+            box = widgets.HBox(
+                [
+                    widgets.Label("Select Extension to work with", layout=widgets.Layout(width="20%")),
+                    widgets.Dropdown(
+                        options=list_of_maj_ext, layout=widgets.Layout(width="20%"), value=list_of_maj_ext[0]
+                    ),
+                ]
+            )
             display(box)
             self.dropdown_ui = box.children[1]
 
@@ -717,9 +722,7 @@ class ListMostDominantExtension(object):
 
         else:
             _ext_selected = self.dropdown_ui.value
-            list_of_input_files = glob.glob(os.path.join(self.working_dir, '*' + _ext_selected))
+            list_of_input_files = glob.glob(os.path.join(self.working_dir, "*" + _ext_selected))
             list_of_input_files.sort()
 
-            return self.Result(list_files=list_of_input_files,
-                               ext=self.dominant_extension,
-                               uniqueness=True)
+            return self.Result(list_files=list_of_input_files, ext=self.dominant_extension, uniqueness=True)

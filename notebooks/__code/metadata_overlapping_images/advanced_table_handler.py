@@ -1,32 +1,32 @@
-from qtpy.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QLineEdit, QLabel
 import os
+
 import numpy as np
 from PIL import Image
+from qtpy.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QWidget
 
 from __code import load_ui
 from __code._utilities.table_handler import TableHandler
 
 
 class AdvancedTableHandler(QMainWindow):
-
     list_formula_tableWidget_labels = []
     list_metatata_index_selected = []
     list_lineedit_ui_in_formula_tableWidget = []
-    formula_table_cell_size = {'row': 50,
-                               'column': 200}
+    formula_table_cell_size = {"row": 50, "column": 200}
 
     def __init__(self, parent=None):
         self.parent = parent
 
         super(AdvancedTableHandler, self).__init__(parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui', 'ui_metadata_overlapping_images_advanced_table.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_metadata_overlapping_images_advanced_table.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
         # initialization
-        o_init = Initialization(parent=self,
-                                top_parent=self.parent)
+        o_init = Initialization(parent=self, top_parent=self.parent)
         o_init.all()
 
     def add_metadata(self):
@@ -36,7 +36,7 @@ class AdvancedTableHandler(QMainWindow):
         if ":" in metadata_value:
             name, value_str = metadata_value.split(":")
             try:
-                value = np.float(value_str)
+                value = float(value_str)
             except ValueError:
                 self.ui.statusbar.showMessage("This metadata can not be used - not a float value!", 10000)
                 self.ui.statusbar.setStyleSheet("color: red")
@@ -58,7 +58,7 @@ class AdvancedTableHandler(QMainWindow):
 
     def update_tableWidget(self):
         list_metadata_index_selected = self.list_metatata_index_selected
-        list_files = self.parent.data_dict['file_name']
+        list_files = self.parent.data_dict["file_name"]
         list_lineedit_ui_in_formula_tableWidget = self.list_lineedit_ui_in_formula_tableWidget
 
         o_table = TableHandler(table_ui=self.ui.tableWidget)
@@ -77,15 +77,15 @@ class AdvancedTableHandler(QMainWindow):
                 if ":" in str(value):
                     name, value_str = value.split(":")
                     try:
-                        value = np.float(value_str)
+                        value = float(value_str)
                     except ValueError:
                         self.ui.statusbar.showMessage("This metadata can not be used - not a float value!", 10000)
                         self.ui.statusbar.setStyleSheet("color: red")
                         return
-                value = np.float(value)
+                value = float(value)
 
                 try:
-                    coefficient = np.float(list_lineedit_ui_in_formula_tableWidget[_column].text())
+                    coefficient = float(list_lineedit_ui_in_formula_tableWidget[_column].text())
                 except ValueError:
                     self.ui.statusbar.showMessage(f"Coefficient in column {_column} is wrong!", 10000)
                     self.ui.statusbar.setStyleSheet("color: red")
@@ -93,7 +93,7 @@ class AdvancedTableHandler(QMainWindow):
                 global_value += coefficient * value
 
             if there_is_at_least_one_column:
-                o_table.insert_item(row=_row, column=1,value=global_value, editable=False)
+                o_table.insert_item(row=_row, column=1, value=global_value, editable=False)
 
         self.ui.statusbar.showMessage("Table refreshed with new formula!", 10000)
         self.ui.statusbar.setStyleSheet("color: green")
@@ -108,7 +108,7 @@ class AdvancedTableHandler(QMainWindow):
         hbox = QHBoxLayout()
 
         if nbr_column > 0:
-            label = QLabel(f"+")
+            label = QLabel("+")
             hbox.addWidget(label)
 
         coeff_field = QLineEdit("1")
@@ -122,7 +122,7 @@ class AdvancedTableHandler(QMainWindow):
         widget.setLayout(hbox)
         o_table.insert_widget(row=0, column=nbr_column, widget=widget)
 
-        column_width = np.ones((nbr_column + 1)) * self.formula_table_cell_size['column']
+        column_width = np.ones(nbr_column + 1) * self.formula_table_cell_size["column"]
         o_table.set_column_width(column_width=column_width)
 
         self.list_formula_tableWidget_labels.append(name)
@@ -135,9 +135,9 @@ class AdvancedTableHandler(QMainWindow):
         if column_selected == -1:
             return
 
-        del(self.list_formula_tableWidget_labels[column_selected])
-        del(self.list_metatata_index_selected[column_selected])
-        del(self.list_lineedit_ui_in_formula_tableWidget[column_selected])
+        del self.list_formula_tableWidget_labels[column_selected]
+        del self.list_metatata_index_selected[column_selected]
+        del self.list_lineedit_ui_in_formula_tableWidget[column_selected]
         o_table.remove_column(column=column_selected)
         self.update_tableWidget()
         if o_table.column_count() == 0:
@@ -158,7 +158,6 @@ class AdvancedTableHandler(QMainWindow):
 
 
 class Initialization:
-
     def __init__(self, parent=None, top_parent=None):
         self.parent = parent
         self.top_parent = top_parent
@@ -174,12 +173,12 @@ class Initialization:
 
     def file_name_value_table(self):
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
-        list_files_full_name = self.top_parent.data_dict['file_name']
+        list_files_full_name = self.top_parent.data_dict["file_name"]
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
         o_table.insert_empty_column(0)
         o_table.insert_empty_column(1)
-        o_table.set_column_names(column_names=['File Name', 'Value'])
+        o_table.set_column_names(column_names=["File Name", "Value"])
 
         for _row, _file in enumerate(list_files_short_name):
             o_table.insert_empty_row(_row)
@@ -189,4 +188,4 @@ class Initialization:
 
     def formula_table(self):
         o_table = TableHandler(table_ui=self.parent.ui.formula_tableWidget)
-        o_table.set_row_height(row_height=[self.parent.formula_table_cell_size['row']])
+        o_table.set_row_height(row_height=[self.parent.formula_table_cell_size["row"]])

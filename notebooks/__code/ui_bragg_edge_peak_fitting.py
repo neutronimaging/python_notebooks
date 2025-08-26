@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/ui/ui_bragg_edge_peak_fitting.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1346, 854)
@@ -42,7 +41,7 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.tab)
         self.label.setMinimumSize(QtCore.QSize(200, 0))
         self.label.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.lineEdit = QtWidgets.QLineEdit(self.tab)
@@ -58,7 +57,7 @@ class Ui_MainWindow(object):
         self.label_4 = QtWidgets.QLabel(self.tab)
         self.label_4.setMinimumSize(QtCore.QSize(200, 0))
         self.label_4.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.label_4.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 1, 0, 1, 1)
         self.lineEdit_2 = QtWidgets.QLineEdit(self.tab)
@@ -174,4 +173,3 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Fitting"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel"))
         self.apply_button.setText(_translate("MainWindow", "Use this peak"))
-

@@ -1,14 +1,15 @@
-#Allows Python 3-style division in Python 2.7
-from __future__ import division
+# Allows Python 3-style division in Python 2.7
 
-import ipywidgets as ipyw
-from . import base
-from traitlets import Unicode, Integer, Float, Tuple, observe
-import numpy as np
 import sys
 
+import ipywidgets as ipyw
+import numpy as np
+from traitlets import Float, Integer, Tuple, Unicode, observe
 
-@ipyw.register('ipywe.ImageSlider')
+from . import base
+
+
+@ipyw.register("ipywe.ImageSlider")
 class ImageSlider(base.DOMWidget):
     """The backend python class for the custom ImageSlider widget.
 
@@ -41,9 +42,8 @@ class ImageSlider(base.DOMWidget):
     _offsetY = Integer().tag(sync=True)
     _pix_val = Float().tag(sync=True)
 
-
     # These variables were added to support zoom functionality
-    _ROI = Tuple((0,0,0,0), sync=True) # Xtop, Ytop, Xbottom, Ybottom
+    _ROI = Tuple((0, 0, 0, 0), sync=True)  # Xtop, Ytop, Xbottom, Ybottom
     _extrarows = Integer(0).tag(sync=True)
     _extracols = Integer(0).tag(sync=True)
     _nrows_currimg = Integer().tag(sync=True)
@@ -89,10 +89,10 @@ class ImageSlider(base.DOMWidget):
         self._N_images = len(self.image_series)
         self.current_img = self.image_series[self._img_index]
         # image data array. need it to obtain the value at mouse p
-        self.arr = self.current_img.data.copy().astype("float") 
-        # image data in the <img> tag. this may contains buffers at zoom, or may be altered due to 
+        self.arr = self.current_img.data.copy().astype("float")
+        # image data in the <img> tag. this may contains buffers at zoom, or may be altered due to
         # intensity range limit
-        self.curr_img_data = self.arr.copy() 
+        self.curr_img_data = self.arr.copy()
         self._nrows, self._ncols = self.arr.shape
         self._nrows_currimg, self._ncols_currimg = self.arr.shape
         self._ycoord_max_roi, self._xcoord_max_roi = self.arr.shape
@@ -124,7 +124,7 @@ class ImageSlider(base.DOMWidget):
         self._series_max = self._img_max = float(np.max(data))
         return
 
-    #This function is called when the values of _offsetX and/or _offsetY change
+    # This function is called when the values of _offsetX and/or _offsetY change
     @observe("_offsetX", "_offsetY")
     def get_val(self, change):
         """Tries to calculate the value of the image at the mouse position
@@ -134,16 +134,16 @@ class ImageSlider(base.DOMWidget):
             and stores the result in the member variable _err."""
 
         try:
-            col = int(self._offsetX/self.width * self._ncols_currimg)
-            row = int(self._offsetY/self.height * self._nrows_currimg)
+            col = int(self._offsetX / self.width * self._ncols_currimg)
+            row = int(self._offsetY / self.height * self._nrows_currimg)
             if self._extrarows != 0:
                 row = row - self.ybuff
             if self._extracols != 0:
                 col = col - self.xbuff
             if col >= self.arr.shape[1]:
-                col = self.arr.shape[1]-1
+                col = self.arr.shape[1] - 1
             if row >= self.arr.shape[0]:
-                row = self.arr.shape[0]-1
+                row = self.arr.shape[0] - 1
             self._pix_val = float(self.arr[row, col])
             self._err = ""
         except Exception:
@@ -163,13 +163,14 @@ class ImageSlider(base.DOMWidget):
         # apply intensity range
         self.curr_img_data[self.curr_img_data < self._img_min] = self._img_min
         self.curr_img_data[self.curr_img_data > self._img_max] = self._img_max
-        img = ((self.curr_img_data-self._img_min)/(self._img_max-self._img_min)*(2**8-1)).astype('uint8')
+        img = ((self.curr_img_data - self._img_min) / (self._img_max - self._img_min) * (2**8 - 1)).astype("uint8")
         size = np.max(img.shape)
         view_size = np.max((self.width, self.height))
         # resample if necessary
-        resample_ratio = view_size/size
-        if resample_ratio != 1.:
+        resample_ratio = view_size / size
+        if resample_ratio != 1.0:
             import scipy.misc
+
             img = scipy.misc.imresize(img, resample_ratio)
         """Allows the correct string IO module to be used
                based on the version of Python.
@@ -177,11 +178,16 @@ class ImageSlider(base.DOMWidget):
                can be replaced by just the contents of the else statement."""
         if sys.version_info < (3, 0):
             from cStringIO import StringIO
+
             f = StringIO()
         else:
             from io import BytesIO
+
             f = BytesIO()
-        import PIL.Image, base64
+        import base64
+
+        import PIL.Image
+
         PIL.Image.fromarray(img).save(f, self._format)
         imgb64v = base64.b64encode(f.getvalue())
         return imgb64v
@@ -198,9 +204,9 @@ class ImageSlider(base.DOMWidget):
         ex_mess = str(ex_name)
         for arg in ex_args:
             ex_mess = ex_mess + str(arg)
-        return(ex_mess)
+        return ex_mess
 
-    #This function is called when _img_index
+    # This function is called when _img_index
     @observe("_img_index")
     def update_image_index(self, change):
         """
@@ -239,22 +245,22 @@ class ImageSlider(base.DOMWidget):
         self._b64value = self.getimg_bytes()
         return
 
-    #This function is called when _ROI changes.
+    # This function is called when _ROI changes.
     @observe("_ROI")
     def zoom_image(self, change):
         """Sets all values necessary for zooming into a Region of Interest
         and then calls the update_image_div_data function."""
         Xtop, Ytop, Xbottom, Ybottom = self._ROI
-        if Xtop < 0: # invalid ROI means reset
+        if Xtop < 0:  # invalid ROI means reset
             self._zoom = False
             return self.reset_image()
         self._zoom = True
-        self.left = int(Xtop/self.width * self._ncols_currimg)
-        self.right = int(Xbottom/self.width*self._ncols_currimg)
-        self.top = int(Ytop/self.height*self._nrows_currimg)
-        self.bottom = int(Ybottom/self.height*self._nrows_currimg)
-        self._xcoord_absolute += (self.left - self.xbuff)
-        self._ycoord_absolute += (self.top - self.ybuff)
+        self.left = int(Xtop / self.width * self._ncols_currimg)
+        self.right = int(Xbottom / self.width * self._ncols_currimg)
+        self.top = int(Ytop / self.height * self._nrows_currimg)
+        self.bottom = int(Ybottom / self.height * self._nrows_currimg)
+        self._xcoord_absolute += self.left - self.xbuff
+        self._ycoord_absolute += self.top - self.ybuff
         self.update_image_div_data(change)
         return
 
@@ -290,10 +296,14 @@ class ImageSlider(base.DOMWidget):
 
         select_width = self.right - self.left
         select_height = self.bottom - self.top
-        if select_width == 0: select_width = 1
-        if select_height == 0: select_height = 1
-        self.arr = self.arr[self._ycoord_absolute:(self._ycoord_absolute + select_height),
-                            self._xcoord_absolute:(self._xcoord_absolute + select_width)]
+        if select_width == 0:
+            select_width = 1
+        if select_height == 0:
+            select_height = 1
+        self.arr = self.arr[
+            self._ycoord_absolute : (self._ycoord_absolute + select_height),
+            self._xcoord_absolute : (self._xcoord_absolute + select_width),
+        ]
         self._nrows, self._ncols = self.arr.shape
         self.curr_img_data = self.arr.copy()
         # calculate paddings
@@ -335,4 +345,3 @@ class ImageSlider(base.DOMWidget):
         self._ycoord_max_roi = self._ycoord_absolute + self._nrows_currimg - self._extrarows
         self._b64value = self.getimg_bytes()
         return
-

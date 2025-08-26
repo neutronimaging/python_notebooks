@@ -1,15 +1,13 @@
 import argparse
-import os
 import glob
+import os
 
-from __code.file_handler import read_ascii, make_ascii_file_from_string
+from __code.file_handler import make_ascii_file_from_string, read_ascii
 
 # this will clean up all the ipynb files by running the nbstripout program
 # in the specified folder
 
-parser = argparse.ArgumentParser(
-    description="Preparing notebooks for deploymenet to analysis machine"
-)
+parser = argparse.ArgumentParser(description="Preparing notebooks for deploymenet to analysis machine")
 parser.add_argument("-i", "--input", help="Input folder to clean.", type=str)
 
 
@@ -23,8 +21,8 @@ def run():
 
     print("Cleaning ...")
     for _notebook in list_notebooks:
-        os.system("nbstripout {}".format(_notebook))
-        print(" > {}".format(_notebook))
+        os.system(f"nbstripout {_notebook}")
+        print(f" > {_notebook}")
 
     list_notebooks_after = glob.glob(os.path.abspath(_file_path) + "/*.ipynb")
     list_notebooks_after.sort()
@@ -35,7 +33,7 @@ def run():
         print(" Cleaning Result: WARNNG!")
         for _file in list_notebooks:
             if _file not in list_notebooks_after:
-                print(" Missing File: {}".format(_file))
+                print(f" Missing File: {_file}")
 
     # turn debugging flag OFF
     print("Turning Off Debugging Mode!")

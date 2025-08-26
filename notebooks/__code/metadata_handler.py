@@ -1,16 +1,16 @@
-from PIL import Image
 import datetime
 import os
 from collections import OrderedDict
-from ipywidgets import widgets
+
 from IPython.display import display
+from ipywidgets import widgets
+from PIL import Image
 
-class MetadataHandler(object):
 
+class MetadataHandler:
     @staticmethod
-    def get_time_stamp(file_name='', ext='tif'):
-
-        if ext == 'tif':
+    def get_time_stamp(file_name="", ext="tif"):
+        if ext == "tif":
             try:
                 o_image = Image.open(file_name)
                 o_dict = dict(o_image.tag_v2)
@@ -25,15 +25,14 @@ class MetadataHandler(object):
 
             except:
                 time_stamp = os.path.getmtime(file_name)
-        elif ext == 'fits':
+        elif ext == "fits":
             time_stamp = os.path.getmtime(file_name)
-        elif ext == 'jpg':
-            #time_stamp = os.path.getctime(file_name)
+        elif ext == "jpg":
+            # time_stamp = os.path.getctime(file_name)
             time_stamp = os.path.getmtime(file_name)
-
 
         else:
-            raise NotImplemented
+            raise NotImplementedError
 
         return time_stamp
 
@@ -64,7 +63,7 @@ class MetadataHandler(object):
         return unix_epoch_timestamp
 
     @staticmethod
-    def get_metata(filename='', list_metadata=[]):
+    def get_metata(filename="", list_metadata=[]):
         if filename == "":
             return {}
 
@@ -78,7 +77,7 @@ class MetadataHandler(object):
         return result
 
     @staticmethod
-    def get_metadata(filename='', list_metadata=[], using_enum_object=False):
+    def get_metadata(filename="", list_metadata=[], using_enum_object=False):
         if filename == "":
             return {}
 
@@ -103,15 +102,15 @@ class MetadataHandler(object):
 
         _dict = OrderedDict()
         for _file in list_files:
-            _meta = MetadataHandler.get_metadata(filename=_file,
-                                                 list_metadata=list_metadata,
-                                                 using_enum_object=using_enum_object)
+            _meta = MetadataHandler.get_metadata(
+                filename=_file, list_metadata=list_metadata, using_enum_object=using_enum_object
+            )
             _dict[_file] = _meta
 
         return _dict
 
     @staticmethod
-    def get_value_of_metadata_key(filename='', list_key=None):
+    def get_value_of_metadata_key(filename="", list_key=None):
         if filename == "":
             return {}
 
@@ -135,15 +134,12 @@ class MetadataHandler(object):
             return {}
 
         if is_from_notebook:
-            progress_bar = widgets.IntProgress(min=0,
-                                               max=len(list_files)-1,
-                                               value=0)
+            progress_bar = widgets.IntProgress(min=0, max=len(list_files) - 1, value=0)
             display(progress_bar)
 
         _dict = OrderedDict()
         for _index, _file in enumerate(list_files):
-            _meta = MetadataHandler.get_value_of_metadata_key(filename=_file,
-                                                              list_key=list_key)
+            _meta = MetadataHandler.get_value_of_metadata_key(filename=_file, list_key=list_key)
             _dict[_file] = _meta
             if is_from_notebook:
                 progress_bar.value = _index

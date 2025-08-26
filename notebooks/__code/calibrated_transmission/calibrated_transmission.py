@@ -1,25 +1,28 @@
-from IPython.display import HTML
-from IPython.display import display
+import copy
+import os
+import warnings
 
 import numpy as np
-import os
-import copy
 import pyqtgraph as pg
-
-from qtpy.QtWidgets import QFileDialog, QMainWindow,QVBoxLayout, QTableWidgetItem, QTableWidgetSelectionRange
-from qtpy.QtWidgets import QApplication
+from IPython.display import HTML, display
 from qtpy import QtCore
+from qtpy.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QMainWindow,
+    QTableWidgetItem,
+    QTableWidgetSelectionRange,
+    QVBoxLayout,
+)
 
 from __code import load_ui
 from __code._utilities.color import Color
-from __code.file_handler import retrieve_time_stamp, make_ascii_file
+from __code.file_handler import make_ascii_file, retrieve_time_stamp
 
-import warnings
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
 class CalibratedTransmissionUi(QMainWindow):
-
     data_dict = {}
     timestamp_dict = {}
 
@@ -27,52 +30,58 @@ class CalibratedTransmissionUi(QMainWindow):
     col_width = 65
     table_column_width = [col_width, col_width, col_width, col_width, 100]
     summary_table_width = [300, 150, 100]
-    default_measurement_roi = {'x0': 0, 'y0': 0,
-                               'width': np.NaN, 'height': np.NaN}
+    default_measurement_roi = {"x0": 0, "y0": 0, "width": np.nan, "height": np.nan}
 
     # where the mean counts and calibrated value will be displayed
-    calibration = {}      # '1' : {'mean_counts' : _mean, 'value': _value}
+    calibration = {}  # '1' : {'mean_counts' : _mean, 'value': _value}
 
-    measurement_dict = {}   # '1': [ measurement data calibrated ]
+    measurement_dict = {}  # '1': [ measurement data calibrated ]
 
     calibration_widgets = {}
     calibration_widgets_label = {}
-    calibrated_roi = {'1': {'x0': 0,
-                            'y0': 0,
-                            'width': 200,
-                            'height': 200,
-                            'value': 1,  # np.NaN
-                            },
-                      '2': {'x0': np.NaN,
-                            'y0': np.NaN,
-                            'width': 200,
-                            'height': 200,
-                            'value': 10, # np.NaN
-                            },
-                      }
+    calibrated_roi = {
+        "1": {
+            "x0": 0,
+            "y0": 0,
+            "width": 200,
+            "height": 200,
+            "value": 1,  # np.NaN
+        },
+        "2": {
+            "x0": np.nan,
+            "y0": np.nan,
+            "width": 200,
+            "height": 200,
+            "value": 10,  # np.NaN
+        },
+    }
 
-    roi_ui_measurement = list() # keep record of all the pyqtgraph.ROI ui
+    roi_ui_measurement = list()  # keep record of all the pyqtgraph.ROI ui
     roi_ui_calibrated = []
 
     live_image = []
 
-    def __init__(self, parent=None, working_dir='', data_dict=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+    def __init__(self, parent=None, working_dir="", data_dict=None):
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         super(QMainWindow, self).__init__(parent=parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_calibrated_transmission.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_calibrated_transmission.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Calibrated Transmission")
 
         self.working_dir = working_dir
         self.data_dict = data_dict  # Normalization data dictionary  {'file_name': [],
-                                                                     #'data': [[...],[...]]],
-                                                                     #'metadata': [],
-                                                                     #'shape': {}}
+        #'data': [[...],[...]]],
+        #'metadata': [],
+        #'shape': {}}
 
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
@@ -88,11 +97,11 @@ class CalibratedTransmissionUi(QMainWindow):
         # display first image
         self.slider_file_changed(-1)
 
-        self.ui.tableWidget.cellChanged['int', 'int'].connect(self.cell_changed)
+        self.ui.tableWidget.cellChanged["int", "int"].connect(self.cell_changed)
 
     # initialization
     def init_timestamp_dict(self):
-        list_files = self.data_dict['file_name']
+        list_files = self.data_dict["file_name"]
         self.timestamp_dict = retrieve_time_stamp(list_files)
 
     def init_statusbar(self):
@@ -101,18 +110,18 @@ class CalibratedTransmissionUi(QMainWindow):
         # self.ui.statusbar.addPermanentWidget(self.ui.info_label)
 
     def init_table(self):
-        list_files_full_name = self.data_dict['file_name']
+        list_files_full_name = self.data_dict["file_name"]
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
-        list_time_stamp = self.timestamp_dict['list_time_stamp']
-        list_time_stamp_user_format = self.timestamp_dict['list_time_stamp_user_format']
+        list_time_stamp = self.timestamp_dict["list_time_stamp"]
+        list_time_stamp_user_format = self.timestamp_dict["list_time_stamp_user_format"]
         time_0 = list_time_stamp[0]
         for _row, _file in enumerate(list_files_short_name):
             self.ui.summary_table.insertRow(_row)
             self.set_item_summary_table(row=_row, col=0, value=_file)
             self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
             _offset = list_time_stamp[_row] - time_0
-            self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
+            self.set_item_summary_table(row=_row, col=2, value=f"{_offset:0.2f}")
 
     # def init_parameters(self):
     #     nbr_files = len(self.data_dict['file_name'])
@@ -140,10 +149,9 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.measurement_widget.setLayout(vertical_layout2)
 
         def define_roi(roi_dict, callback_function):
-            cal = pg.RectROI([roi_dict['x0'], roi_dict['y0']],
-                             roi_dict['height'],
-                             roi_dict['width'],
-                             pen=roi_dict['color'])
+            cal = pg.RectROI(
+                [roi_dict["x0"], roi_dict["y0"]], roi_dict["height"], roi_dict["width"], pen=roi_dict["color"]
+            )
             cal.addScaleHandle([1, 1], [0, 0])
             cal.addScaleHandle([0, 0], [1, 1])
             cal.sigRegionChanged.connect(callback_function)
@@ -152,9 +160,9 @@ class CalibratedTransmissionUi(QMainWindow):
 
         # calibration
         calibration_roi = self.calibrated_roi
-        roi1 = define_roi(calibration_roi['1'], self.calibration1_roi_moved)
+        roi1 = define_roi(calibration_roi["1"], self.calibration1_roi_moved)
         self.roi_ui_calibrated.append(roi1)
-        roi2 = define_roi(calibration_roi['2'], self.calibration2_roi_moved)
+        roi2 = define_roi(calibration_roi["2"], self.calibration2_roi_moved)
         self.roi_ui_calibrated.append(roi2)
 
     def init_widgets(self):
@@ -162,7 +170,7 @@ class CalibratedTransmissionUi(QMainWindow):
         self.ui.splitter.setSizes([250, 130])
 
         # file slider
-        self.ui.file_slider.setMaximum(len(self.data_dict['data'])-1)
+        self.ui.file_slider.setMaximum(len(self.data_dict["data"]) - 1)
 
         # update size of table columns
         nbr_columns = self.ui.tableWidget.columnCount()
@@ -174,45 +182,51 @@ class CalibratedTransmissionUi(QMainWindow):
         for _col in range(nbr_columns):
             self.ui.summary_table.setColumnWidth(_col, self.summary_table_width[_col])
 
-        self.calibration_widgets = {'1': {'x0': self.ui.calibration1_x0,
-                                          'y0': self.ui.calibration1_y0,
-                                          'width': self.ui.calibration1_width,
-                                          'height': self.ui.calibration1_height,
-                                          'value': self.ui.calibration1_value,
-                                          },
-                                    '2': {'x0': self.ui.calibration2_x0,
-                                          'y0': self.ui.calibration2_y0,
-                                          'width': self.ui.calibration2_width,
-                                          'height': self.ui.calibration2_height,
-                                          'value': self.ui.calibration2_value,
-                                          },
-                                    }
+        self.calibration_widgets = {
+            "1": {
+                "x0": self.ui.calibration1_x0,
+                "y0": self.ui.calibration1_y0,
+                "width": self.ui.calibration1_width,
+                "height": self.ui.calibration1_height,
+                "value": self.ui.calibration1_value,
+            },
+            "2": {
+                "x0": self.ui.calibration2_x0,
+                "y0": self.ui.calibration2_y0,
+                "width": self.ui.calibration2_width,
+                "height": self.ui.calibration2_height,
+                "value": self.ui.calibration2_value,
+            },
+        }
 
-        self.calibration_widgets_label = {'1': {'x0_label': self.ui.calibration1_x0_label,
-                                                'y0_label': self.ui.calibration1_y0_label,
-                                                'width_label': self.ui.calibration1_width_label,
-                                                'height_label': self.ui.calibration1_height_label,
-                                                'value_label': self.ui.calibration1_value_label,
-                                                'group': self.ui.calibration1_groupbox,
-                                                },
-                                         '2': {'x0_label': self.ui.calibration2_x0_label,
-                                               'y0_label': self.ui.calibration2_y0_label,
-                                               'width_label': self.ui.calibration2_width_label,
-                                               'height_label': self.ui.calibration2_height_label,
-                                               'value_label': self.ui.calibration2_value_label,
-                                               'group': self.ui.calibration2_groupbox,
-                                              },
-                                          }
+        self.calibration_widgets_label = {
+            "1": {
+                "x0_label": self.ui.calibration1_x0_label,
+                "y0_label": self.ui.calibration1_y0_label,
+                "width_label": self.ui.calibration1_width_label,
+                "height_label": self.ui.calibration1_height_label,
+                "value_label": self.ui.calibration1_value_label,
+                "group": self.ui.calibration1_groupbox,
+            },
+            "2": {
+                "x0_label": self.ui.calibration2_x0_label,
+                "y0_label": self.ui.calibration2_y0_label,
+                "width_label": self.ui.calibration2_width_label,
+                "height_label": self.ui.calibration2_height_label,
+                "value_label": self.ui.calibration2_value_label,
+                "group": self.ui.calibration2_groupbox,
+            },
+        }
 
         # will keep record of the x0, y0, width, height, value and color of the calibration rois
-        self.calibration_roi = {'1': {},
-                                '2': {},
-                                }
+        self.calibration_roi = {
+            "1": {},
+            "2": {},
+        }
 
         # init calibrated roi
         self.populate_calibration_widgets(calibration_index=1)
         self.populate_calibration_widgets(calibration_index=2)
-
 
     def populate_calibration_widgets(self, calibration_index=1):
         calibration_ui = self.calibration_widgets[str(calibration_index)]
@@ -223,17 +237,17 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def init_parameters(self):
         # init the position of the measurement ROI
-        [height, width] = np.shape(self.data_dict['data'][0])
-        self.default_measurement_roi['width'] = int(width/10)
-        self.default_measurement_roi['height'] = int(height/10)
-        self.default_measurement_roi['x0'] = int(width/2)
-        self.default_measurement_roi['y0'] = int(height/2)
+        [height, width] = np.shape(self.data_dict["data"][0])
+        self.default_measurement_roi["width"] = int(width / 10)
+        self.default_measurement_roi["height"] = int(height / 10)
+        self.default_measurement_roi["x0"] = int(width / 2)
+        self.default_measurement_roi["y0"] = int(height / 2)
 
-        self.calibrated_roi['2']['x0'] = width - self.calibrated_roi['2']['width']
-        self.calibrated_roi['2']['y0'] = height - self.calibrated_roi['2']['height']
+        self.calibrated_roi["2"]["x0"] = width - self.calibrated_roi["2"]["width"]
+        self.calibrated_roi["2"]["y0"] = height - self.calibrated_roi["2"]["height"]
 
-        self.calibrated_roi['1']['color'] = 'b' # blue
-        self.calibrated_roi['2']['color'] = 'r' # red
+        self.calibrated_roi["1"]["color"] = "b"  # blue
+        self.calibrated_roi["2"]["color"] = "r"  # red
 
     # main methods
     def display_image(self):
@@ -289,54 +303,54 @@ class CalibratedTransmissionUi(QMainWindow):
                 self.ui.image_view.addItem(self.roi_ui_calibrated[1])
 
     def record_calibration(self, index=1):
-        x0 = int(str(self.calibration_widgets[str(index)]['x0'].text()))
-        y0 = int(str(self.calibration_widgets[str(index)]['y0'].text()))
-        width = int(str(self.calibration_widgets[str(index)]['width'].text()))
-        height = int(str(self.calibration_widgets[str(index)]['height'].text()))
-        if np.isnan(float(str(self.calibration_widgets[str(index)]['value'].text()))):
+        x0 = int(str(self.calibration_widgets[str(index)]["x0"].text()))
+        y0 = int(str(self.calibration_widgets[str(index)]["y0"].text()))
+        width = int(str(self.calibration_widgets[str(index)]["width"].text()))
+        height = int(str(self.calibration_widgets[str(index)]["height"].text()))
+        if np.isnan(float(str(self.calibration_widgets[str(index)]["value"].text()))):
             return
 
-        value = float(str(self.calibration_widgets[str(index)]['value'].text()))
+        value = float(str(self.calibration_widgets[str(index)]["value"].text()))
 
         if index == 1:
             file_index = int(str(self.ui.calibration1_index.text()))
         else:
             file_index = int(str(self.ui.calibration2_index.text()))
 
-        _file_data = self.data_dict['data'][file_index]
-        _region_data = _file_data[y0:y0+height, x0:x0+width]
+        _file_data = self.data_dict["data"][file_index]
+        _region_data = _file_data[y0 : y0 + height, x0 : x0 + width]
         _mean = np.nanmean(_region_data)
 
         self.calibration[str(index)] = {}
-        self.calibration[str(index)]['mean_counts'] = _mean
-        self.calibration[str(index)]['value'] = value
+        self.calibration[str(index)]["mean_counts"] = _mean
+        self.calibration[str(index)]["value"] = value
 
     def calculate_measurement_profiles(self):
         """calculate for each measurement roi the mean counts using the calibrated regions. The
         value will be displayed in the summary table"""
 
-        def ratio_calibration(cali_1=True, cali_2=True, input_value=np.NaN):
+        def ratio_calibration(cali_1=True, cali_2=True, input_value=np.nan):
             if cali_1 and cali_2:
-                cal1_mean = self.calibration['1']['mean_counts']
-                cal1_value = self.calibration['1']['value']
-                cal2_mean = self.calibration['2']['mean_counts']
-                cal2_value = self.calibration['2']['value']
-                return ((cal2_value - cal1_value)/(cal2_mean - cal1_mean)*(input_value - cal1_mean) + cal1_value)
+                cal1_mean = self.calibration["1"]["mean_counts"]
+                cal1_value = self.calibration["1"]["value"]
+                cal2_mean = self.calibration["2"]["mean_counts"]
+                cal2_value = self.calibration["2"]["value"]
+                return (cal2_value - cal1_value) / (cal2_mean - cal1_mean) * (input_value - cal1_mean) + cal1_value
 
             elif cali_1:
-                index = '1'
+                index = "1"
 
             elif cali_2:
-                index = '2'
+                index = "2"
 
             else:
                 return input_value
 
-            cali_mean = self.calibration[index]['mean_counts']
-            cali_value = self.calibration[index]['value']
-            return (input_value/cali_mean) * cali_value
+            cali_mean = self.calibration[index]["mean_counts"]
+            cali_value = self.calibration[index]["value"]
+            return (input_value / cali_mean) * cali_value
 
-        self.calibration = {} # reset
+        self.calibration = {}  # reset
         cali_1 = self.ui.use_calibration1_checkbox.isChecked()
         cali_2 = self.ui.use_calibration2_checkbox.isChecked()
         if cali_1:
@@ -349,18 +363,16 @@ class CalibratedTransmissionUi(QMainWindow):
         for _measurement_row in np.arange(nbr_row):
             (x0, y0, width, height) = self.get_item_row(row=_measurement_row)
             _measurement_data = []
-            for _data_index, _data in enumerate(self.data_dict['data']):
-                data_counts = np.nanmean(_data[y0:y0+height, x0:x0+width])
+            for _data_index, _data in enumerate(self.data_dict["data"]):
+                data_counts = np.nanmean(_data[y0 : y0 + height, x0 : x0 + width])
 
-                real_data_counts = ratio_calibration(cali_1 = cali_1,
-                                                     cali_2 = cali_2,
-                                                     input_value = data_counts)
+                real_data_counts = ratio_calibration(cali_1=cali_1, cali_2=cali_2, input_value=data_counts)
 
-                item = QTableWidgetItem("{:.2f}".format(real_data_counts))
+                item = QTableWidgetItem(f"{real_data_counts:.2f}")
                 _measurement_data.append(real_data_counts)
-                self.ui.summary_table.setItem(_data_index, _measurement_row+3, item)
+                self.ui.summary_table.setItem(_data_index, _measurement_row + 3, item)
 
-            measurement_dict[str(_measurement_row+1)] = _measurement_data
+            measurement_dict[str(_measurement_row + 1)] = _measurement_data
 
         self.measurement_dict = measurement_dict
 
@@ -388,11 +400,9 @@ class CalibratedTransmissionUi(QMainWindow):
 
         for _index, _key in enumerate(self.measurement_dict.keys()):
             _data = self.measurement_dict[_key]
-            self.ui.measurement_view.plot(_data,
-                                          name="Region {}".format(1+_index),
-                                          pen=_color_list[_index])
-            self.ui.measurement_view.setLabel('bottom', 'File Index')
-            self.ui.measurement_view.setLabel('left', 'Mean Counts Calibrated')
+            self.ui.measurement_view.plot(_data, name=f"Region {1+_index}", pen=_color_list[_index])
+            self.ui.measurement_view.setLabel("bottom", "File Index")
+            self.ui.measurement_view.setLabel("left", "Mean Counts Calibrated")
 
     def remove_row(self, row=-1):
         if row == -1:
@@ -416,17 +426,17 @@ class CalibratedTransmissionUi(QMainWindow):
         default_values = self.default_measurement_roi
 
         self.ui.tableWidget.insertRow(row)
-        self.set_item_main_table(row=row, col=0, value=default_values['x0'])
-        self.set_item_main_table(row=row, col=1, value=default_values['y0'])
-        self.set_item_main_table(row=row, col=2, value=default_values['width'])
-        self.set_item_main_table(row=row, col=3, value=default_values['height'])
+        self.set_item_main_table(row=row, col=0, value=default_values["x0"])
+        self.set_item_main_table(row=row, col=1, value=default_values["y0"])
+        self.set_item_main_table(row=row, col=2, value=default_values["width"])
+        self.set_item_main_table(row=row, col=3, value=default_values["height"])
 
         # select new entry
         nbr_row = self.ui.tableWidget.rowCount()
         nbr_col = self.ui.tableWidget.columnCount()
-        full_range = QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
-        new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+        new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.ui.tableWidget.blockSignals(False)
 
@@ -459,7 +469,7 @@ class CalibratedTransmissionUi(QMainWindow):
         _index = 1
         for _col in np.arange(3, nbr_col):
             item = self.ui.summary_table.horizontalHeaderItem(_col)
-            item.setText("Region {}".format(_index))
+            item.setText(f"Region {_index}")
             _index += 1
 
     def update_mean_counts(self, row=-1, all=False):
@@ -473,9 +483,9 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def insert_measurement_roi_ui(self, row=-1):
         default_roi = self.default_measurement_roi
-        new_roi = pg.RectROI([default_roi['x0'], default_roi['y0']],
-                             [default_roi['height'], default_roi['width']],
-                             pen='g')
+        new_roi = pg.RectROI(
+            [default_roi["x0"], default_roi["y0"]], [default_roi["height"], default_roi["width"]], pen="g"
+        )
         new_roi.addScaleHandle([1, 1], [0, 0])
         new_roi.addScaleHandle([0, 0], [1, 1])
         self.ui.image_view.addItem(new_roi)
@@ -529,52 +539,50 @@ class CalibratedTransmissionUi(QMainWindow):
         self.slider_file_changed(-1)
 
     def update_calibration_widgets(self, index=1):
-        roi_ui = self.roi_ui_calibrated[index-1]
-        region = roi_ui.getArraySlice(self.live_image,
-                                      self.ui.image_view.imageItem)
+        roi_ui = self.roi_ui_calibrated[index - 1]
+        region = roi_ui.getArraySlice(self.live_image, self.ui.image_view.imageItem)
 
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
         y1 = region[0][1].stop
 
-        width = np.abs(x1 - x0)-1
-        height = np.abs(y1 - y0)-1
+        width = np.abs(x1 - x0) - 1
+        height = np.abs(y1 - y0) - 1
 
         roi_widgets = self.calibration_widgets[str(index)]
-        roi_widgets['x0'].setText(str(x0))
-        roi_widgets['y0'].setText(str(y0))
-        roi_widgets['width'].setText(str(width))
-        roi_widgets['height'].setText(str(height))
+        roi_widgets["x0"].setText(str(x0))
+        roi_widgets["y0"].setText(str(y0))
+        roi_widgets["width"].setText(str(width))
+        roi_widgets["height"].setText(str(height))
 
-        self.calibration_roi[str(index)]['x0'] = x0
-        self.calibration_roi[str(index)]['y0'] = y0
-        self.calibration_roi[str(index)]['width'] = width
-        self.calibration_roi[str(index)]['height'] = height
+        self.calibration_roi[str(index)]["x0"] = x0
+        self.calibration_roi[str(index)]["y0"] = y0
+        self.calibration_roi[str(index)]["width"] = width
+        self.calibration_roi[str(index)]["height"] = height
 
     def calibration_widgets_changed(self, index=1):
-        roi_ui = self.roi_ui_calibrated[index-1]
+        roi_ui = self.roi_ui_calibrated[index - 1]
         widgets_ui = self.calibration_widgets[str(index)]
-        x0 = int(widgets_ui['x0'].text())
-        y0 = int(widgets_ui['y0'].text())
-        width = int(widgets_ui['width'].text())
-        height = int(widgets_ui['height'].text())
+        x0 = int(widgets_ui["x0"].text())
+        y0 = int(widgets_ui["y0"].text())
+        width = int(widgets_ui["width"].text())
+        height = int(widgets_ui["height"].text())
 
         roi_ui.setPos((x0, y0))
         roi_ui.setSize((width, height))
 
         calibration_roi = self.calibration_roi[str(index)]
-        calibration_roi['x0'] = x0
-        calibration_roi['y0'] = y0
-        calibration_roi['height'] = height
-        calibration_roi['width'] = width
+        calibration_roi["x0"] = x0
+        calibration_roi["y0"] = y0
+        calibration_roi["height"] = height
+        calibration_roi["width"] = width
 
     def update_all_measurement_rois_from_view(self):
         # reached when the ROIs are moved in the ui
 
         def get_roi_parameters(roi_ui):
-            region = roi_ui.getArraySlice(self.live_image,
-                                          self.ui.image_view.imageItem)
+            region = roi_ui.getArraySlice(self.live_image, self.ui.image_view.imageItem)
             x0 = region[0][0].start
             x1 = region[0][0].stop
             y0 = region[0][1].start
@@ -584,7 +592,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
             return (x0, y0, width, height)
 
-        list_roi  = self.roi_ui_measurement
+        list_roi = self.roi_ui_measurement
         for _row, _roi in enumerate(list_roi):
             [x0, y0, width, height] = get_roi_parameters(_roi)
             self.ui.tableWidget.item(_row, 0).setText(str(x0))
@@ -601,13 +609,13 @@ class CalibratedTransmissionUi(QMainWindow):
         roi_ui.blockSignals(False)
 
     # setter
-    def set_item_main_table(self, row=0, col=0, value=''):
+    def set_item_main_table(self, row=0, col=0, value=""):
         item = QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if col == 4:
             item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    def set_item_summary_table(self, row=0, col=0, value=''):
+    def set_item_summary_table(self, row=0, col=0, value=""):
         item = QTableWidgetItem(str(value))
         self.ui.summary_table.setItem(row, col, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
@@ -615,7 +623,7 @@ class CalibratedTransmissionUi(QMainWindow):
     # getter
     def get_image_selected(self):
         slider_index = self.ui.file_slider.value()
-        _image = self.data_dict['data'][slider_index]
+        _image = self.data_dict["data"][slider_index]
         return _image
 
     def get_selected_row(self):
@@ -726,79 +734,75 @@ class CalibratedTransmissionUi(QMainWindow):
         self.remove_measurement_roi_ui(row=selected_row)
         self.display_measurement_profiles()
 
-    def cell_changed(self, row, col ):
+    def cell_changed(self, row, col):
         self.update_measurement_rois_from_table(row=row)
         self.display_measurement_profiles()
 
     def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption = "Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+        )
         if _export_folder:
-            o_export = ExportCalibration(parent = self,
-                                         export_folder=_export_folder)
+            o_export = ExportCalibration(parent=self, export_folder=_export_folder)
             o_export.run()
             QtGui.QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
-        self.change_slider(offset = -1)
+        self.change_slider(offset=-1)
         self.display_measurement_profiles()
 
     def next_image_button_clicked(self):
-        self.change_slider(offset = +1)
+        self.change_slider(offset=+1)
         self.display_measurement_profiles()
 
     def help_button_clicked(self):
         import webbrowser
+
         webbrowser.open("https://neutronimaging.ornl.gov/calibrated-transmission/")
 
     def closeEvent(self, event=None):
         pass
 
 
-class ExportCalibration(object):
-
-    def __init__(self, parent=None, export_folder=''):
+class ExportCalibration:
+    def __init__(self, parent=None, export_folder=""):
         self.parent = parent
         self.export_folder = export_folder
 
     def get_metadata(self):
         metadata = []
-        metadata.append("#Working dir: {}".format(self.parent.working_dir))
+        metadata.append(f"#Working dir: {self.parent.working_dir}")
         if self.parent.ui.use_calibration1_checkbox.isChecked():
             metadata.append("#Calibration Region 1:")
-            metadata.append("#   x0: {}".format(str(self.parent.ui.calibration1_x0.text())))
-            metadata.append("#   y0: {}".format(str(self.parent.ui.calibration1_y0.text())))
-            metadata.append("#   width: {}".format(str(self.parent.ui.calibration1_width.text())))
-            metadata.append("#   height: {}".format(str(self.parent.ui.calibration1_height.text())))
-            metadata.append("#   file index: {}".format(str(self.parent.ui.calibration1_index.text())))
-            metadata.append("#   value requested: {}".format(str(self.parent.ui.calibration1_value.text())))
+            metadata.append(f"#   x0: {str(self.parent.ui.calibration1_x0.text())}")
+            metadata.append(f"#   y0: {str(self.parent.ui.calibration1_y0.text())}")
+            metadata.append(f"#   width: {str(self.parent.ui.calibration1_width.text())}")
+            metadata.append(f"#   height: {str(self.parent.ui.calibration1_height.text())}")
+            metadata.append(f"#   file index: {str(self.parent.ui.calibration1_index.text())}")
+            metadata.append(f"#   value requested: {str(self.parent.ui.calibration1_value.text())}")
         if self.parent.ui.use_calibration2_checkbox.isChecked():
             metadata.append("#Calibration Region 2:")
-            metadata.append("#   x0: {}".format(str(self.parent.ui.calibration2_x0.text())))
-            metadata.append("#   y0: {}".format(str(self.parent.ui.calibration2_y0.text())))
-            metadata.append("#   width: {}".format(str(self.parent.ui.calibration2_width.text())))
-            metadata.append("#   height: {}".format(str(self.parent.ui.calibration2_height.text())))
-            metadata.append("#   file index: {}".format(str(self.parent.ui.calibration2_index.text())))
-            metadata.append("#   value requested: {}".format(str(self.parent.ui.calibration2_value.text())))
+            metadata.append(f"#   x0: {str(self.parent.ui.calibration2_x0.text())}")
+            metadata.append(f"#   y0: {str(self.parent.ui.calibration2_y0.text())}")
+            metadata.append(f"#   width: {str(self.parent.ui.calibration2_width.text())}")
+            metadata.append(f"#   height: {str(self.parent.ui.calibration2_height.text())}")
+            metadata.append(f"#   file index: {str(self.parent.ui.calibration2_index.text())}")
+            metadata.append(f"#   value requested: {str(self.parent.ui.calibration2_value.text())}")
         nbr_measurement_region = self.parent.ui.tableWidget.rowCount()
         _legend = "#File_name, Time_stamp, Relative_time(s)"
         if nbr_measurement_region > 0:
             metadata.append("#Measurement Regions:")
             for _index_region in np.arange(nbr_measurement_region):
                 [x0, y0, width, height] = self.parent.get_item_row(row=_index_region)
-                metadata.append("#  region {}: [x0, y0, width, height]=[{}, {}, {}, {}]".format(_index_region,
-                                                                                                x0, y0,
-                                                                                                width, height))
-                _legend += ", Mean_counts_of_region {}".format(_index_region+1)
+                metadata.append(f"#  region {_index_region}: [x0, y0, width, height]=[{x0}, {y0}, {width}, {height}]")
+                _legend += f", Mean_counts_of_region {_index_region+1}"
         metadata.append("#")
         metadata.append(_legend)
         return metadata
 
     def run(self):
         nbr_files = self.parent.ui.summary_table.rowCount()
-        nbr_col= self.parent.ui.summary_table.columnCount()
+        nbr_col = self.parent.ui.summary_table.columnCount()
 
         metadata = self.get_metadata()
         data = []
@@ -811,12 +815,9 @@ class ExportCalibration(object):
         export_file_name = os.path.basename(self.parent.working_dir)
         full_export_file_name = os.path.join(self.export_folder, export_file_name + "_calibrated_transmission.txt")
 
-        make_ascii_file(metadata=metadata,
-                        data=data,
-                        output_file_name=full_export_file_name,
-                        dim='1d')
+        make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim="1d")
 
         QApplication.processEvents()
 
         # display name of file exported for 10s
-        self.parent.ui.statusbar.showMessage("File Created: {}".format(full_export_file_name), 10000)
+        self.parent.ui.statusbar.showMessage(f"File Created: {full_export_file_name}", 10000)

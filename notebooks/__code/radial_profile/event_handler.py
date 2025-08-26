@@ -7,7 +7,6 @@ from __code.radial_profile.display import Display
 
 
 class EventHandler(Parent):
-
     def file_index_changed(self):
         file_index = self.parent.ui.slider.value()
         live_image = self.parent.get_selected_image(file_index)
@@ -35,10 +34,10 @@ class EventHandler(Parent):
         green = self.parent.ui.guide_green_slider.value()
         blue = self.parent.ui.guide_blue_slider.value()
         alpha = self.parent.ui.guide_alpha_slider.value()
-        self.parent.guide_color_slider['red'] = red
-        self.parent.guide_color_slider['green'] = green
-        self.parent.guide_color_slider['blue'] = blue
-        self.parent.guide_color_slider['alpha'] = alpha
+        self.parent.guide_color_slider["red"] = red
+        self.parent.guide_color_slider["green"] = green
+        self.parent.guide_color_slider["blue"] = blue
+        self.parent.guide_color_slider["alpha"] = alpha
         self.circle_center_changed()
 
         self.parent.ui.image_view.removeItem(self.parent.line_view_binning)
@@ -66,28 +65,29 @@ class EventHandler(Parent):
         pos = np.array([[x0, y0], [x1, y1], [x2, y2]])
         adj = np.array([[0, 1], [1, 2], [2, 0]])
 
-        symbols = ['+', 'o', 'o']
+        symbols = ["+", "o", "o"]
 
-        lines = np.array([(255, 0, 0, 255, 2), (255, 0, 0, 0, 1), (255, 0, 0, 255, 2)],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte), ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
+        lines = np.array(
+            [(255, 0, 0, 255, 2), (255, 0, 0, 0, 1), (255, 0, 0, 255, 2)],
+            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+        )
 
         if self.parent.sector_g:
             self.parent.ui.image_view.removeItem(self.parent.sector_g)
         self.parent.sector_g = pg.GraphItem()
         self.parent.ui.image_view.addItem(self.parent.sector_g)
         self.parent.sector_g.setData(pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False)
-        
+
     def update_angle_label_position(self):
         x0 = int(str(self.parent.ui.circle_x.text()))
         y0 = int(str(self.parent.ui.circle_y.text()))
 
         # add angle 0, 90, 180 and 270 labels
         if self.parent.angle_0 is None:
-            self.parent.angle_0 = pg.TextItem(text=u'0\u00b0', anchor=(0, 1))
-            self.parent.angle_90 = pg.TextItem(text=u'90\u00b0', anchor=(0, 1))
-            self.parent.angle_180 = pg.TextItem(text=u'180\u00b0', anchor=(0, 0))
-            self.parent.angle_270 = pg.TextItem(text=u'270\u00b0', anchor=(1, 1))
+            self.parent.angle_0 = pg.TextItem(text="0\u00b0", anchor=(0, 1))
+            self.parent.angle_90 = pg.TextItem(text="90\u00b0", anchor=(0, 1))
+            self.parent.angle_180 = pg.TextItem(text="180\u00b0", anchor=(0, 0))
+            self.parent.angle_270 = pg.TextItem(text="270\u00b0", anchor=(1, 1))
 
             self.parent.ui.image_view.addItem(self.parent.angle_0)
             self.parent.ui.image_view.addItem(self.parent.angle_90)
@@ -98,23 +98,22 @@ class EventHandler(Parent):
         self.parent.angle_90.setPos(self.parent.height, y0)
         self.parent.angle_180.setPos(x0, self.parent.width)
         self.parent.angle_270.setPos(0, y0)
-        
-    def calculate_sector_xy_position(self, angle=0, x0=0, y0=0):
-        x = np.NaN
-        y = np.NaN
 
-        angle_top_right = self.parent.corners['top_right']
-        angle_bottom_right = self.parent.corners['bottom_right']
-        angle_bottom_left = self.parent.corners['bottom_left']
-        angle_top_left = self.parent.corners['top_left']
+    def calculate_sector_xy_position(self, angle=0, x0=0, y0=0):
+        x = np.nan
+        y = np.nan
+
+        angle_top_right = self.parent.corners["top_right"]
+        angle_bottom_right = self.parent.corners["bottom_right"]
+        angle_bottom_left = self.parent.corners["bottom_left"]
+        angle_top_left = self.parent.corners["top_left"]
 
         # print("angle_top_right: {}".format(angle_top_right))
         # print("angle_bottom_right: {}".format(angle_bottom_right))
         # print("angle_bottom_left: {}".format(angle_bottom_left))
         # print("angle_top_left: {}".format(angle_top_left))
 
-        if (angle_top_right <= angle) and \
-                (angle <= angle_bottom_right):
+        if (angle_top_right <= angle) and (angle <= angle_bottom_right):
             # right
 
             # get x
@@ -198,9 +197,9 @@ class EventHandler(Parent):
                 x = x0 - x
 
         return [y, x]
-    
+
     def calculate_corners_angles(self):
-        '''top vertical being angle 0'''
+        """top vertical being angle 0"""
 
         x0 = float(str(self.parent.ui.circle_x.text()))
         y0 = float(str(self.parent.ui.circle_y.text()))
@@ -210,10 +209,10 @@ class EventHandler(Parent):
         #        width = self.parent.height
         #        height = self.parent.width
 
-        theta_tr = np.NaN  # angle top right
-        theta_br = np.NaN  # bottom right
-        theta_bl = np.NaN  # bottom left
-        theta_tl = np.NaN  # top left
+        theta_tr = np.nan  # angle top right
+        theta_br = np.nan  # bottom right
+        theta_bl = np.nan  # bottom left
+        theta_tl = np.nan  # top left
 
         theta_tr = np.arctan((width - x0) / y0)
         theta_tr_deg = np.rad2deg(theta_tr)
@@ -227,11 +226,11 @@ class EventHandler(Parent):
         theta_tl = 2 * np.pi - np.arctan(x0 / y0)
         theta_tl_deg = np.rad2deg(theta_tl)
 
-        self.parent.corners['top_right'] = theta_tr_deg
-        self.parent.corners['bottom_right'] = theta_br_deg
-        self.parent.corners['bottom_left'] = theta_bl_deg
-        self.parent.corners['top_left'] = theta_tl_deg
-        
+        self.parent.corners["top_right"] = theta_tr_deg
+        self.parent.corners["bottom_right"] = theta_br_deg
+        self.parent.corners["bottom_left"] = theta_bl_deg
+        self.parent.corners["top_left"] = theta_tl_deg
+
     def sector_radio_button_changed(self):
         is_full_circle = self.parent.ui.sector_full_circle.isChecked()
         if is_full_circle:
@@ -286,11 +285,13 @@ class EventHandler(Parent):
             _pen.setColor(QtGui.QColor(0, 0, 255))
             _pen.setWidthF(0.1)
 
-            self.parent.max_radius_item = pg.CircleROI([x0 - max_radius, y0 - max_radius],
-                                            [2*max_radius, 2*max_radius],
-                                            movable=False,
-                                            resizable=False,
-                                            pen=_pen)
+            self.parent.max_radius_item = pg.CircleROI(
+                [x0 - max_radius, y0 - max_radius],
+                [2 * max_radius, 2 * max_radius],
+                movable=False,
+                resizable=False,
+                pen=_pen,
+            )
             handles = self.parent.max_radius_item.getHandles()
             self.parent.ui.image_view.addItem(self.parent.max_radius_item)
             for _handle in handles:

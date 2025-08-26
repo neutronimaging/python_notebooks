@@ -1,15 +1,15 @@
-import numpy as np
 import os
 import re
+
+import numpy as np
+from qtpy import QtCore, QtGui
 from qtpy.QtWidgets import QMainWindow
-from qtpy import QtGui, QtCore
 
 from __code import load_ui
 from __code.metadata_overlapping_images import HELP_PAGE, LIST_FUNNY_CHARACTERS
 
 
 class MetadataStringFormatLauncher:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -23,22 +23,22 @@ class MetadataStringFormatLauncher:
 
 
 class MetadataStringFormatHandler(QMainWindow):
-
     column_width = [400, 100]
 
     def __init__(self, parent=None):
-
         self.parent = parent
         super(MetadataStringFormatHandler, self).__init__(parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui', 'ui_metadata_overlapping_images_string_format.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_metadata_overlapping_images_string_format.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Clean String")
 
         self.init_table()
         self.init_table_size()
 
-    def set_item_parent_table(self, row=0, col=0, value='', editable=False):
+    def set_item_parent_table(self, row=0, col=0, value="", editable=False):
         item = QtGui.QTableWidgetItem(str(value))
         self.parent.ui.tableWidget.setItem(row, col, item)
         if not editable:
@@ -57,6 +57,7 @@ class MetadataStringFormatHandler(QMainWindow):
 
     def launch_help(self):
         import webbrowser
+
         webbrowser.open(HELP_PAGE)
 
     def string_format_changed(self, value):
@@ -64,19 +65,19 @@ class MetadataStringFormatHandler(QMainWindow):
         _clean_first_part = ""
         for _c in _first_part:
             if _c in LIST_FUNNY_CHARACTERS:
-                _clean_first_part += "\{}".format(_c)
+                _clean_first_part += rf"\{_c}"
             else:
-                _clean_first_part += "{}".format(_c)
+                _clean_first_part += f"{_c}"
 
         _second_part = self.ui.second_part_lineEdit.text()
         _clean_second_part = ""
         for _c in _second_part:
             if _c in LIST_FUNNY_CHARACTERS:
-                _clean_second_part += "\{}".format(_c)
+                _clean_second_part += rf"\{_c}"
             else:
-                _clean_second_part += "{}".format(_c)
+                _clean_second_part += f"{_c}"
 
-        regular_expr = r"{}(.*){}".format(_clean_first_part, _clean_second_part)
+        regular_expr = rf"{_clean_first_part}(.*){_clean_second_part}"
 
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
@@ -92,7 +93,7 @@ class MetadataStringFormatHandler(QMainWindow):
             self.ui.tableWidget.setColumnWidth(_col_index, _col_width)
 
     def init_table(self):
-        list_files_full_name = self.parent.data_dict['file_name']
+        list_files_full_name = self.parent.data_dict["file_name"]
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
         main_table_metadata_column = self.parent.get_raw_metadata_column()
@@ -102,7 +103,7 @@ class MetadataStringFormatHandler(QMainWindow):
             self.set_item_table(row=_row, col=0, value=_file)
             self.set_item_table(row=_row, col=1, value=main_table_metadata_column[_row], editable=True)
 
-    def set_item_table(self, row=0, col=0, value='', editable=False):
+    def set_item_table(self, row=0, col=0, value="", editable=False):
         item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if not editable:

@@ -1,18 +1,18 @@
-from collections import OrderedDict
 import copy
-import numpy as np
 import json
 import os
+from collections import OrderedDict
+
+import numpy as np
 
 THIS_FILE_PATH = os.path.dirname(__file__)
-CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config.json')
+CONFIG_FILE = os.path.join(THIS_FILE_PATH, "config.json")
 
-X_METADATA_NAME = 'MotLongAxis.RBV'
-Y_METADATA_NAME = 'MotLiftTable.RBV'
+X_METADATA_NAME = "MotLongAxis.RBV"
+Y_METADATA_NAME = "MotLiftTable.RBV"
 
 
 class DataInitialization:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -29,7 +29,6 @@ class DataInitialization:
             _dict = OrderedDict()
             previous_metadata = {}
             for _file_index, _file in enumerate(data_dictionary[_folder_name].keys()):
-
                 current_metadata = data_dictionary[_folder_name][_file].metadata
 
                 if _file_index == 0:
@@ -43,9 +42,7 @@ class DataInitialization:
                         xoffset += image_width
                 previous_metadata = copy.deepcopy(current_metadata)
 
-                _offset_dict = {'xoffset': xoffset,
-                                'yoffset': yoffset,
-                                'visible': True}
+                _offset_dict = {"xoffset": xoffset, "yoffset": yoffset, "visible": True}
 
                 _dict[_file] = _offset_dict
 

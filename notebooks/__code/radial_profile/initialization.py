@@ -1,14 +1,12 @@
-from qtpy.QtWidgets import QProgressBar, QVBoxLayout, QHBoxLayout, QLabel, QSlider, QWidget, QSpacerItem, QSizePolicy
-from qtpy import QtCore
 import pyqtgraph as pg
-import numpy as np
+from qtpy import QtCore
+from qtpy.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QSizePolicy, QSlider, QSpacerItem, QVBoxLayout, QWidget
 
 from __code._utilities.parent import Parent
 from __code.radial_profile.event_handler import EventHandler
 
 
 class Initialization(Parent):
-
     def pyqtgraph(self):
         self.parent.ui.image_view = pg.ImageView(view=pg.PlotItem())
         self.parent.ui.image_view.ui.roiBtn.hide()
@@ -65,19 +63,19 @@ class Initialization(Parent):
         self.parent.ui.circle_x.setText(str(int(self.parent.height / 2)))
         # self.parent.ui.lineEdit.setText(str(self.parent.grid_size))
 
-        self.parent.ui.guide_red_slider.setValue(self.parent.guide_color_slider['red'])
-        self.parent.ui.guide_green_slider.setValue(self.parent.guide_color_slider['green'])
-        self.parent.ui.guide_blue_slider.setValue(self.parent.guide_color_slider['blue'])
-        self.parent.ui.guide_alpha_slider.setValue(self.parent.guide_color_slider['alpha'])
+        self.parent.ui.guide_red_slider.setValue(self.parent.guide_color_slider["red"])
+        self.parent.ui.guide_green_slider.setValue(self.parent.guide_color_slider["green"])
+        self.parent.ui.guide_blue_slider.setValue(self.parent.guide_color_slider["blue"])
+        self.parent.ui.guide_alpha_slider.setValue(self.parent.guide_color_slider["alpha"])
 
-        self.parent.ui.sector_from_value.setText(str(self.parent.sector_range['from']))
-        self.parent.ui.sector_to_value.setText(str(self.parent.sector_range['to']))
+        self.parent.ui.sector_from_value.setText(str(self.parent.sector_range["from"]))
+        self.parent.ui.sector_to_value.setText(str(self.parent.sector_range["to"]))
 
-        self.parent.ui.sector_from_units.setText(u"\u00B0")
-        self.parent.ui.sector_to_units.setText(u"\u00B0")
+        self.parent.ui.sector_from_units.setText("\u00b0")
+        self.parent.ui.sector_to_units.setText("\u00b0")
 
-        self.parent.ui.from_angle_slider.setValue(self.parent.sector_range['from'])
-        self.parent.ui.to_angle_slider.setValue(self.parent.sector_range['to'])
+        self.parent.ui.from_angle_slider.setValue(self.parent.sector_range["from"])
+        self.parent.ui.to_angle_slider.setValue(self.parent.sector_range["to"])
 
         self.parent.sector_radio_button_changed()
 
@@ -85,7 +83,7 @@ class Initialization(Parent):
         o_event = EventHandler(parent=self.parent)
         max_radius = o_event.retrieve_max_radius_possible()
         self.parent.ui.max_radius_slider.setMaximum(int(max_radius))
-        self.parent.ui.max_radius_slider.setValue(int(max_radius/2))
+        self.parent.ui.max_radius_slider.setValue(int(max_radius / 2))
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)

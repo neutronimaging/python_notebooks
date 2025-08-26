@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_registration.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
@@ -10,7 +8,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1007, 1149)
@@ -284,20 +282,20 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
         self.help_button.clicked.connect(MainWindow.help_button_clicked)
-        self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
-        self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
+        self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
+        self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_row_clicked)
-        self.opacity_slider.valueChanged['int'].connect(MainWindow.opacity_changed)
+        self.opacity_slider.valueChanged["int"].connect(MainWindow.opacity_changed)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.selection_all.clicked.connect(MainWindow.selection_all_clicked)
         self.opacity_selection_slider.sliderPressed.connect(MainWindow.selection_slider_changed)
-        self.opacity_selection_slider.sliderMoved['int'].connect(MainWindow.selection_slider_moved)
+        self.opacity_selection_slider.sliderMoved["int"].connect(MainWindow.selection_slider_moved)
         self.manual_registration_button.clicked.connect(MainWindow.manual_registration_button_clicked)
-        self.tableWidget.cellChanged['int','int'].connect(MainWindow.table_cell_modified)
+        self.tableWidget.cellChanged["int", "int"].connect(MainWindow.table_cell_modified)
         self.auto_registration_button.clicked.connect(MainWindow.auto_registration_button_clicked)
         self.grid_display_checkBox.clicked.connect(MainWindow.grid_display_checkBox_clicked)
-        self.grid_size_slider.sliderMoved['int'].connect(MainWindow.grid_size_slider_moved)
+        self.grid_size_slider.sliderMoved["int"].connect(MainWindow.grid_size_slider_moved)
         self.grid_size_slider.sliderPressed.connect(MainWindow.grid_size_slider_pressed)
         self.marker_registration_button.clicked.connect(MainWindow.markers_registration_button_clicked)
         self.profiler_registration_button.clicked.connect(MainWindow.profiler_registration_button_clicked)

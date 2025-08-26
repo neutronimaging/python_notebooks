@@ -1,14 +1,12 @@
-from qtpy.QtWidgets import QTableWidgetItem, QSpinBox, QComboBox
-from qtpy import QtCore
 import numpy as np
+from qtpy import QtCore
+from qtpy.QtWidgets import QComboBox, QSpinBox, QTableWidgetItem
 
 from __code._utilities.table_handler import TableHandler
-from __code.group_images_by_cycle_for_grating_experiment import list_fit_procedure
-from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
+from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns, list_fit_procedure
 
 
 class ExcelTableHandler(TableHandler):
-
     def define_row_for_setter(self, row=0):
         self.row_to_set = row
 
@@ -80,11 +78,11 @@ class ExcelTableHandler(TableHandler):
             period_widget.setMaximum(10)
             period_widget.setValue(int(value))
             self.insert_widget(row=self.row_to_set, column=column, widget=period_widget)
-            period_widget.valueChanged.connect(lambda value, row=self.row_to_set, column=column: method(value, row,
-                                                                                                column))
+            period_widget.valueChanged.connect(
+                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+            )
         else:
-            period_widget = self.get_widget(row=self.row_to_set,
-                                            column=column)
+            period_widget = self.get_widget(row=self.row_to_set, column=column)
             period_widget.blockSignals(True)
             period_widget.setValue(int(value))
             period_widget.blockSignals(False)
@@ -103,11 +101,11 @@ class ExcelTableHandler(TableHandler):
             images_per_step.setMaximum(10)
             images_per_step.setValue(images_per_step_value)
             self.insert_widget(row=self.row_to_set, column=column, widget=images_per_step)
-            images_per_step.valueChanged.connect(lambda value, row=self.row_to_set, column=column: method(value, row,
-                                                                                                          column))
+            images_per_step.valueChanged.connect(
+                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+            )
         else:
-            images_per_step = self.get_widget(row=self.row_to_set,
-                                              column=column)
+            images_per_step = self.get_widget(row=self.row_to_set, column=column)
             images_per_step.blockSignals(True)
             images_per_step.setValue(int(value))
             images_per_step.blockSignals(False)
@@ -143,11 +141,11 @@ class ExcelTableHandler(TableHandler):
             index = list_procedure.index(fit_procedure_value)
             fit_procedure.setCurrentIndex(index)
             self.insert_widget(row=self.row_to_set, column=column, widget=fit_procedure)
-            fit_procedure.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(value,
-                                                                                                               row, column))
+            fit_procedure.currentIndexChanged.connect(
+                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+            )
         else:
-            fit_procedure = self.get_widget(row=self.row_to_set,
-                                            column=column)
+            fit_procedure = self.get_widget(row=self.row_to_set, column=column)
             fit_procedure.blockSignals(True)
             fit_procedure.setCurrentIndex(value)
             fit_procedure.blockSignals(False)
@@ -176,17 +174,16 @@ class ExcelTableHandler(TableHandler):
         column = IndexOfColumns.gamma_filter_data_ob
         if new:
             gamma_filter_value = str(value)
-            values = ['yes', 'no']
+            values = ["yes", "no"]
             gamma_filter_ui = QComboBox()
             gamma_filter_ui.addItems(values)
             gamma_filter_ui.setCurrentText(gamma_filter_value)
             self.insert_widget(row=self.row_to_set, column=column, widget=gamma_filter_ui)
-            gamma_filter_ui.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(value,
-                                                                                                                 row,
-                                                                                                                 column))
+            gamma_filter_ui.currentIndexChanged.connect(
+                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+            )
         else:
-            gamma_filter_ui = self.get_widget(row=self.row_to_set,
-                                              column=column)
+            gamma_filter_ui = self.get_widget(row=self.row_to_set, column=column)
             gamma_filter_ui.blockSignals(True)
             gamma_filter_ui.setCurrentIndex(value)
             gamma_filter_ui.blockSignals(False)
@@ -208,7 +205,7 @@ class ExcelTableHandler(TableHandler):
             value_int = int(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_data_threshold_5x5(self, value):
         column = IndexOfColumns.data_threshold_5x5
@@ -223,7 +220,7 @@ class ExcelTableHandler(TableHandler):
             value_int = int(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_data_threshold_7x7(self, value):
         column = IndexOfColumns.data_threshold_7x7
@@ -238,7 +235,7 @@ class ExcelTableHandler(TableHandler):
             value_int = float(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_data_sigma_log(self, value):
         column = IndexOfColumns.data_sigma_log
@@ -260,16 +257,16 @@ class ExcelTableHandler(TableHandler):
         column = IndexOfColumns.gamma_filter_dc
         if new:
             gamma_filter_value = value
-            values = ['yes', 'no']
+            values = ["yes", "no"]
             gamma_filter_dc_ui = QComboBox()
             gamma_filter_dc_ui.addItems(values)
             gamma_filter_dc_ui.setCurrentText(gamma_filter_value)
             self.insert_widget(row=self.row_to_set, column=column, widget=gamma_filter_dc_ui)
-            gamma_filter_dc_ui.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(
-                    value, row, column))
+            gamma_filter_dc_ui.currentIndexChanged.connect(
+                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+            )
         else:
-            gamma_filter_dc_ui = self.get_widget(row=self.row_to_set,
-                                                 column=column)
+            gamma_filter_dc_ui = self.get_widget(row=self.row_to_set, column=column)
             gamma_filter_dc_ui.blockSignals(True)
             gamma_filter_dc_ui.setCurrentIndex(value)
             gamma_filter_dc_ui.blockSignals(False)
@@ -281,7 +278,7 @@ class ExcelTableHandler(TableHandler):
             value_int = int(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_dc_threshold_3x3(self, value):
         column = IndexOfColumns.dc_threshold_3x3
@@ -296,7 +293,7 @@ class ExcelTableHandler(TableHandler):
             value_int = int(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_dc_threshold_5x5(self, value):
         column = IndexOfColumns.dc_threhsold_5x5
@@ -311,7 +308,7 @@ class ExcelTableHandler(TableHandler):
             value_int = int(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_dc_threshold_7x7(self, value):
         column = IndexOfColumns.dc_threshold_7x7
@@ -326,7 +323,7 @@ class ExcelTableHandler(TableHandler):
             value_int = float(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_dc_log(self, value):
         column = IndexOfColumns.dc_log
@@ -348,16 +345,16 @@ class ExcelTableHandler(TableHandler):
         column = IndexOfColumns.dc_outlier_removal
         if new:
             dc_outlier_value = value
-            values = ['yes', 'no']
+            values = ["yes", "no"]
             dc_outlier_ui = QComboBox()
             dc_outlier_ui.addItems(values)
             dc_outlier_ui.setCurrentText(dc_outlier_value)
             self.insert_widget(row=self.row_to_set, column=column, widget=dc_outlier_ui)
-            dc_outlier_ui.currentIndexChanged.connect(lambda value, row=self.row_to_set, column=column: method(value,
-                                                                                                               row, column))
+            dc_outlier_ui.currentIndexChanged.connect(
+                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+            )
         else:
-            dc_outlier_ui = self.get_widget(row=self.row_to_set,
-                                            column=column)
+            dc_outlier_ui = self.get_widget(row=self.row_to_set, column=column)
             dc_outlier_ui.blockSignals(True)
             dc_outlier_ui.setCurrentIndex(value)
             dc_outlier_ui.blockSignals(False)
@@ -369,7 +366,7 @@ class ExcelTableHandler(TableHandler):
             value_int = float(value)
             return value_int
         except ValueError:
-            return np.NaN
+            return np.nan
 
     def set_dc_outlier_value(self, value):
         column = IndexOfColumns.dc_outlier_value

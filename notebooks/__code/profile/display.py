@@ -1,10 +1,9 @@
 import numpy as np
-from skimage import transform
 import pyqtgraph as pg
+from skimage import transform
 
 
 class DisplayImages:
-
     def __init__(self, parent=None, recalculate_image=False):
         self.parent = parent
         self.recalculate_image = recalculate_image
@@ -17,10 +16,11 @@ class DisplayImages:
         if recalculate_image:
             angle = self.parent.rotation_angle
             # rotate all images
-            self.parent.data_dict['data'] = [transform.rotate(_image, angle) for _image in
-                                             self.parent.data_dict_raw['data']]
+            self.parent.data_dict["data"] = [
+                transform.rotate(_image, angle) for _image in self.parent.data_dict_raw["data"]
+            ]
 
-        _image = self.parent.data_dict['data'][slider_index]
+        _image = self.parent.data_dict["data"][slider_index]
         return _image
 
     def get_image_filename(self):
@@ -63,7 +63,7 @@ class DisplayImages:
         # vertical lines
         x = 0
         index = 0
-        while (x <= width):
+        while x <= width:
             one_edge = [x, 0]
             other_edge = [x, height]
             pos.append(one_edge)
@@ -74,7 +74,7 @@ class DisplayImages:
 
         # vertical lines
         y = 0
-        while (y <= height):
+        while y <= height:
             one_edge = [0, y]
             other_edge = [width, y]
             pos.append(one_edge)
@@ -83,42 +83,42 @@ class DisplayImages:
             y += grid_size
             index += 2
 
-        pos_adj_dict['pos'] = np.array(pos)
-        pos_adj_dict['adj'] = np.array(adj)
+        pos_adj_dict["pos"] = np.array(pos)
+        pos_adj_dict["adj"] = np.array(adj)
 
         return pos_adj_dict
 
     def display_grid(self):
         # remove previous grid if any
-        if self.parent.grid_view['item']:
-            self.parent.ui.image_view.removeItem(self.parent.grid_view['item'])
+        if self.parent.grid_view["item"]:
+            self.parent.ui.image_view.removeItem(self.parent.grid_view["item"])
 
         # if we want a grid
         if self.parent.ui.grid_display_checkBox.isChecked():
             grid_size = self.parent.ui.grid_size_slider.value()
             [height, width] = np.shape(self.parent.live_image)
 
-            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
-                                                      height=height,
-                                                      width=width)
-            pos = pos_adj_dict['pos']
-            adj = pos_adj_dict['adj']
+            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size, height=height, width=width)
+            pos = pos_adj_dict["pos"]
+            adj = pos_adj_dict["adj"]
 
-            line_color = self.parent.grid_view['color']
+            line_color = self.parent.grid_view["color"]
             _transparency_value = 255 - (float(str(self.parent.ui.transparency_slider.value())) / 100) * 255
             _list_line_color = list(line_color)
             _list_line_color[3] = _transparency_value
             line_color = tuple(_list_line_color)
-            lines = np.array([line_color for n in np.arange(len(pos))],
-                             dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                    ('blue', np.ubyte), ('alpha', np.ubyte),
-                                    ('width', float)])
+            lines = np.array(
+                [line_color for n in np.arange(len(pos))],
+                dtype=[
+                    ("red", np.ubyte),
+                    ("green", np.ubyte),
+                    ("blue", np.ubyte),
+                    ("alpha", np.ubyte),
+                    ("width", float),
+                ],
+            )
 
             grid = pg.GraphItem()
             self.parent.ui.image_view.addItem(grid)
-            grid.setData(pos=pos,
-                         adj=adj,
-                         pen=lines,
-                         symbol=None,
-                         pxMode=False)
-            self.parent.grid_view['item'] = grid
+            grid.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+            self.parent.grid_view["item"] = grid

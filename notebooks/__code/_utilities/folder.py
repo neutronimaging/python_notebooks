@@ -1,11 +1,11 @@
 import glob
 import os
-import numpy as np
 import shutil
 
+import numpy as np
 
-def get_list_of_folders_with_specified_file_type(list_of_folders_to_check=None,
-                                                 file_extension=['tiff', 'tif']):
+
+def get_list_of_folders_with_specified_file_type(list_of_folders_to_check=None, file_extension=["tiff", "tif"]):
     """
     check in the list of folder given (list_of_folders_to_check) if files of the type specified are there.
     If no file can be found in that folder with that type, the folder name is removed from the list
@@ -16,10 +16,10 @@ def get_list_of_folders_with_specified_file_type(list_of_folders_to_check=None,
     :return:
       list of folders that do have at least one file with the correct file extension
     """
-    if not (type(list_of_folders_to_check) is list):
+    if type(list_of_folders_to_check) is not list:
         raise ValueError("list_of_folders_to_check must be a list!")
 
-    if not (type(file_extension) is list):
+    if type(file_extension) is not list:
         raise ValueError("file_extension must be a list!")
 
     for _folder in list_of_folders_to_check:
@@ -33,15 +33,16 @@ def get_list_of_folders_with_specified_file_type(list_of_folders_to_check=None,
             break
 
         for _extension in file_extension:
-            list_of_files = glob.glob(os.path.join(_folder, '*.{}'.format(_extension)))
+            list_of_files = glob.glob(os.path.join(_folder, f"*.{_extension}"))
             if len(list_of_files) > 0:
                 list_of_folders_checked.append(_folder)
 
     return list_of_folders_checked
 
 
-def get_list_of_folders_with_specified_file_type_and_same_number_of_files(list_of_folders_to_check=None,
-                                                                          file_extension=['tiff', 'tif']):
+def get_list_of_folders_with_specified_file_type_and_same_number_of_files(
+    list_of_folders_to_check=None, file_extension=["tiff", "tif"]
+):
     """
     check in the list of folder given (list_of_folders_to_check) if files of the type specified are there.
     If no file can be found in that folder with that type, the folder name is removed from the list
@@ -52,10 +53,10 @@ def get_list_of_folders_with_specified_file_type_and_same_number_of_files(list_o
     :return:
       list of folders that do have at least one file with the correct file extension
     """
-    if not (type(list_of_folders_to_check) is list):
+    if type(list_of_folders_to_check) is not list:
         raise ValueError("list_of_folders_to_check must be a list!")
 
-    if not (type(file_extension) is list):
+    if type(file_extension) is not list:
         raise ValueError("file_extension must be a list!")
 
     list_of_files = {}
@@ -65,7 +66,7 @@ def get_list_of_folders_with_specified_file_type_and_same_number_of_files(list_o
 
         list_of_files[_folder] = []
         for _ext in file_extension:
-            list_files_of_that_extension = glob.glob(os.path.join(_folder, '*.{}'.format(_ext)))
+            list_files_of_that_extension = glob.glob(os.path.join(_folder, f"*.{_ext}"))
             for _file in list_files_of_that_extension:
                 list_of_files[_folder].append(_file)
 
@@ -78,7 +79,6 @@ def get_list_of_folders_with_specified_file_type_and_same_number_of_files(list_o
     list_of_folders_checked = []
     list_of_folders_rejected = []
     for _folder in list_of_files.keys():
-
         _local_list_of_files = list_of_files[_folder]
         if len(_local_list_of_files) == max_len:
             list_of_folders_checked.append(_folder)
@@ -95,5 +95,5 @@ def make_folder(folder_name):
 
 def make_or_reset_folder(folder_name):
     if os.path.exists(folder_name):
-         shutil.rmtree(folder_name)
+        shutil.rmtree(folder_name)
     os.makedirs(folder_name)

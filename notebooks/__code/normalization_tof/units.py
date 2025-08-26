@@ -1,7 +1,7 @@
 from enum import Enum
-import numpy as np
-from scipy.constants import h, c, electron_volt, m_n
 
+import numpy as np
+from scipy.constants import c, electron_volt, h, m_n
 
 """ Small library of units and conversions for use in SAMMY fitting. """
 
@@ -106,7 +106,7 @@ def convert_to_energy(from_unit, to_unit):
         EnergyUnitOptions.MeV: 1e6,
         EnergyUnitOptions.GeV: 1e9,
         # EnergyUnitOptions.J: 6.242e12,
-        EnergyUnitOptions.J: 1/electron_volt,
+        EnergyUnitOptions.J: 1 / electron_volt,
     }
 
     return conversion_factors[from_unit] / conversion_factors[to_unit]
@@ -135,8 +135,7 @@ def convert_to_cross_section(from_unit, to_unit):
     return conversion_factors[from_unit] / conversion_factors[to_unit]
 
 
-def convert_from_wavelength_to_energy_ev(wavelength, 
-                                         unit_from=DistanceUnitOptions.angstrom): 
+def convert_from_wavelength_to_energy_ev(wavelength, unit_from=DistanceUnitOptions.angstrom):
     """Convert wavelength to energy based on the given units.
 
     Args:
@@ -152,13 +151,15 @@ def convert_from_wavelength_to_energy_ev(wavelength,
     return energy
 
 
-def convert_array_from_time_to_lambda(time_array: np.ndarray, 
-                                      time_unit: TimeUnitOptions,       
-                                      distance_source_detector: float,
-                                      distance_source_detector_unit: DistanceUnitOptions,  
-                                      detector_offset_unit: DistanceUnitOptions,
-                                      lambda_unit: DistanceUnitOptions,
-                                      detector_offset: float = 0.0 ) -> np.ndarray:
+def convert_array_from_time_to_lambda(
+    time_array: np.ndarray,
+    time_unit: TimeUnitOptions,
+    distance_source_detector: float,
+    distance_source_detector_unit: DistanceUnitOptions,
+    detector_offset_unit: DistanceUnitOptions,
+    lambda_unit: DistanceUnitOptions,
+    detector_offset: float = 0.0,
+) -> np.ndarray:
     """Convert an array of time values to wavelength values.
 
     Args:
@@ -177,7 +178,9 @@ def convert_array_from_time_to_lambda(time_array: np.ndarray,
     """
     time_array_s = time_array * convert_time_units(time_unit, TimeUnitOptions.s)
     detector_offset_s = detector_offset * convert_time_units(detector_offset_unit, TimeUnitOptions.s)
-    distance_source_detector_m = distance_source_detector * convert_distance_units(distance_source_detector_unit, DistanceUnitOptions.m)
+    distance_source_detector_m = distance_source_detector * convert_distance_units(
+        distance_source_detector_unit, DistanceUnitOptions.m
+    )
 
     h_over_mn = h / m_n
     lambda_m = h_over_mn * (time_array_s + detector_offset_s) / distance_source_detector_m
@@ -187,13 +190,15 @@ def convert_array_from_time_to_lambda(time_array: np.ndarray,
     return lambda_converted
 
 
-def convert_array_from_time_to_energy(time_array: np.ndarray, 
-                                      time_unit: TimeUnitOptions,       
-                                      distance_source_detector: float,
-                                      distance_source_detector_unit: DistanceUnitOptions,
-                                      detector_offset: float,   
-                                      detector_offset_unit: DistanceUnitOptions,
-                                      energy_unit: EnergyUnitOptions) -> np.ndarray:
+def convert_array_from_time_to_energy(
+    time_array: np.ndarray,
+    time_unit: TimeUnitOptions,
+    distance_source_detector: float,
+    distance_source_detector_unit: DistanceUnitOptions,
+    detector_offset: float,
+    detector_offset_unit: DistanceUnitOptions,
+    energy_unit: EnergyUnitOptions,
+) -> np.ndarray:
     """Convert an array of time values to energy values.
 
     Args:
@@ -209,20 +214,20 @@ def convert_array_from_time_to_energy(time_array: np.ndarray,
     this is using the formula: E_ev = 1/2 m_n v^2
     with t_tof = L/v (L distance source to detector in m, v velocity of the neutron in m/s)
     so E_ev = 1/2 m_n (L/t_tof)^2
-    
+
     Returns:
         np.ndarray: Array of energy values.
     """
-    
+
     time_units_factor = convert_time_units(time_unit, TimeUnitOptions.s)
     time_array_s = time_array * time_units_factor
-    
+
     detector_units_factor = convert_time_units(detector_offset_unit, TimeUnitOptions.s)
     detector_offset = detector_units_factor * detector_offset
 
     distance_source_detector_factor = convert_distance_units(distance_source_detector_unit, DistanceUnitOptions.m)
     distance_source_detector_m = distance_source_detector * distance_source_detector_factor
-    
+
     # Calculate the energy in eV using the formula E_ev = 1/2 m_n (L/t_tof)^2 / electron_volt
 
     full_time_array_s = time_array_s + detector_offset

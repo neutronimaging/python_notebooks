@@ -1,15 +1,15 @@
 import os
-import numpy as np
-import ipywidgets as widgets
-from IPython.display import display, HTML
 
-from __code.ipywe import fileselector
-from __code._utilities.folder import make_or_reset_folder
+import ipywidgets as widgets
+import numpy as np
+from IPython.display import HTML, display
+
 from __code import file_handler
+from __code._utilities.folder import make_or_reset_folder
+from __code.ipywe import fileselector
 
 
 class Main:
-
     list_shapes = None
 
     def __init__(self, working_data=None, list_images=None, working_metadata=None):
@@ -32,25 +32,26 @@ class Main:
             _height, _width = _shape
             self.dict_shapes[f"{_height}, {_width}"] = _shape
 
-        vertical_layout = widgets.VBox([widgets.Label("Available shapes (height, width)"),
-                                        widgets.RadioButtons(options=self.dict_shapes.keys())])
+        vertical_layout = widgets.VBox(
+            [widgets.Label("Available shapes (height, width)"), widgets.RadioButtons(options=self.dict_shapes.keys())]
+        )
         display(vertical_layout)
         self.shape_dropdown_ui = vertical_layout.children[1]
 
     def select_output_folder(self):
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Select where you want to create the corrected images new folder!</span>'
+            )
+        )
 
-        display(HTML(
-            '<span style="font-size: 20px; color:blue">Select where you want to create the corrected images new folder!</span>'))
-
-        self.output_folder_ui = fileselector.FileSelectorPanel(instruction='Select Output Folder ...',
-                                                               start_dir=self.working_dir,
-                                                               type='directory',
-                                                               next=self.export)
+        self.output_folder_ui = fileselector.FileSelectorPanel(
+            instruction="Select Output Folder ...", start_dir=self.working_dir, type="directory", next=self.export
+        )
 
         self.output_folder_ui.show()
 
     def export(self, output_folder):
-
         w = widgets.IntProgress()
         w.max = len(self.list_images)
         display(w)
@@ -64,7 +65,6 @@ class Main:
         make_or_reset_folder(new_output_folder)
 
         for _index, _data in enumerate(self.working_data):
-
             _file_name = self.list_images[_index]
             _metadata = self.working_metadata[_index]
 
@@ -80,11 +80,13 @@ class Main:
             base_filename = os.path.basename(_file_name)
             full_new_output_filename = os.path.join(new_output_folder, base_filename)
 
-            file_handler.make_tiff(data=new_image,
-                                   # metadata=_metadata,
-                                   filename=full_new_output_filename)
+            file_handler.make_tiff(
+                data=new_image,
+                # metadata=_metadata,
+                filename=full_new_output_filename,
+            )
 
             w.value = _index + 1
 
         w.close()
-        display(HTML('<span style="font-size: 20px; color=blue">Images created in ' + new_output_folder + '</span>'))
+        display(HTML('<span style="font-size: 20px; color=blue">Images created in ' + new_output_folder + "</span>"))

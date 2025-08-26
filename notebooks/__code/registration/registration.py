@@ -1,34 +1,32 @@
-from IPython.display import HTML
-from IPython.display import display
-import numpy as np
-import os
 import copy
-from qtpy.QtWidgets import QMainWindow, QTableWidgetItem
-from qtpy import QtGui, QtCore
+import os
+import warnings
 import webbrowser
 
-from __code import load_ui
+import numpy as np
+from IPython.display import HTML, display
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import QMainWindow, QTableWidgetItem
 
+from __code import load_ui
 from __code._utilities.table_handler import TableHandler
-from __code.registration.event_handler import EventHandler
-from __code.registration.marker_handler import MarkerHandler
+from __code.registration.check import Check
 from __code.registration.display import Display
-from __code.registration.initialization import Initialization
-from __code.registration.registration_marker import RegistrationMarkersLauncher
+from __code.registration.event_handler import EventHandler
 from __code.registration.export import Export
+from __code.registration.initialization import Initialization
+from __code.registration.manual import ManualLauncher
+from __code.registration.marker_handler import MarkerHandler
 from __code.registration.registration_auto import RegistrationAuto
 from __code.registration.registration_auto_confirmation import RegistrationAutoConfirmationLauncher
-from __code.registration.manual import ManualLauncher
+from __code.registration.registration_marker import RegistrationMarkersLauncher
 from __code.registration.registration_profile import RegistrationProfileLauncher
-from __code.registration.check import Check
 from __code.registration.table_handler import TableHandler
 
-import warnings
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
 class RegistrationUi(QMainWindow):
-
     table_registration = {}  # dictionary that populate the table
 
     table_column_width = [650, 80, 80, 80]
@@ -40,7 +38,7 @@ class RegistrationUi(QMainWindow):
     # by default, the reference image is the first image
     reference_image_index = 0
     reference_image = None
-    reference_image_short_name = ''
+    reference_image_short_name = ""
     color_reference_background = QtGui.QColor(50, 250, 50)
     color_reference_profile = [50, 250, 50]
 
@@ -50,10 +48,7 @@ class RegistrationUi(QMainWindow):
     live_image = []
 
     # grid on top of images
-    grid_view = {'pos': None,
-                 'adj': None,
-                 'item': None,
-                 'color': (0, 0, 255, 255, 1)}
+    grid_view = {"pos": None, "adj": None, "item": None, "color": (0, 0, 255, 255, 1)}
 
     new_reference_image = True
     list_rgb_profile_color = None
@@ -78,32 +73,34 @@ class RegistrationUi(QMainWindow):
     marker_table_buffer_cell = None
 
     # initial position of the marker (None means that no row has been selected yet)
-    markers_initial_position = {'row': None,
-                                'tab_name': '1'}
+    markers_initial_position = {"row": None, "tab_name": "1"}
 
     def __init__(self, parent=None, data_dict=None):
-
         super(QMainWindow, self).__init__(parent)
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that will pop up in a few seconds \
-            (maybe hidden behind this browser!)</span>'))
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_registration.ui'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that will pop up in a few seconds \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_registration.ui")
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
         self.setWindowTitle("Registration")
 
         self.data_dict = data_dict  # Normalization data dictionary  {'filename': [],
-                                                                     #'data': [[...],[...]]],
-                                                                     #'metadata': [],
-                                                                     #'shape': {}}
+        #'data': [[...],[...]]],
+        #'metadata': [],
+        #'shape': {}}
 
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
-        self.reference_image = self.data_dict['data'][self.reference_image_index]
-        self.working_dir = os.path.dirname(self.data_dict['file_name'][0])
-        self.reference_image_short_name = str(os.path.basename(self.data_dict['file_name'][0]))
+        self.reference_image = self.data_dict["data"][self.reference_image_index]
+        self.working_dir = os.path.dirname(self.data_dict["file_name"][0])
+        self.reference_image_short_name = str(os.path.basename(self.data_dict["file_name"][0]))
 
         # initialization
         o_init = Initialization(parent=self)
@@ -114,12 +111,12 @@ class RegistrationUi(QMainWindow):
         o_event.profile_line_moved()
 
         self.new_reference_image = False
-        self.ui.selection_reference_opacity_groupBox.setVisible(False) # because by default first row = reference selected
+        self.ui.selection_reference_opacity_groupBox.setVisible(
+            False
+        )  # because by default first row = reference selected
 
     def filter_checkbox_clicked(self):
-        list_ui = [self.ui.filter_column_name_comboBox,
-                   self.ui.filter_logic_comboBox,
-                   self.ui.filter_value]
+        list_ui = [self.ui.filter_column_name_comboBox, self.ui.filter_logic_comboBox, self.ui.filter_value]
         for _ui in list_ui:
             _ui.setEnabled(self.ui.filter_checkBox.isChecked())
 
@@ -168,12 +165,12 @@ class RegistrationUi(QMainWindow):
         if row == self.reference_image_index:
             is_reference_image = True
 
-        self.set_item(row, 0, infos['filename'], is_reference_image=is_reference_image)
-        self.set_item(row, 1, infos['xoffset'], is_reference_image=is_reference_image)
-        self.set_item(row, 2, infos['yoffset'], is_reference_image=is_reference_image)
-        self.set_item(row, 3, infos['rotation'], is_reference_image=is_reference_image)
+        self.set_item(row, 0, infos["filename"], is_reference_image=is_reference_image)
+        self.set_item(row, 1, infos["xoffset"], is_reference_image=is_reference_image)
+        self.set_item(row, 2, infos["yoffset"], is_reference_image=is_reference_image)
+        self.set_item(row, 3, infos["rotation"], is_reference_image=is_reference_image)
 
-    def set_item(self, row=0, col=0, value='', is_reference_image=False):
+    def set_item(self, row=0, col=0, value="", is_reference_image=False):
         item = QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, col, item)
         if is_reference_image:
@@ -261,9 +258,7 @@ class RegistrationUi(QMainWindow):
     def selection_all_clicked(self):
         _is_checked = self.ui.selection_all.isChecked()
 
-        list_widgets = [self.ui.top_row_label,
-                        self.ui.bottom_row_label,
-                        self.ui.opacity_selection_slider]
+        list_widgets = [self.ui.top_row_label, self.ui.bottom_row_label, self.ui.opacity_selection_slider]
         for _widget in list_widgets:
             _widget.setEnabled(not _is_checked)
         self.display_image()
@@ -289,32 +284,44 @@ class RegistrationUi(QMainWindow):
     def manual_registration_button_clicked(self):
         """launch the manual registration tool"""
         o_registration_tool = ManualLauncher(parent=self)
-        self.set_widget_status(list_ui=[self.ui.auto_registration_button,
-                                        self.ui.marker_registration_button,
-                                        self.ui.profiler_registration_button],
-                               enabled=False)
+        self.set_widget_status(
+            list_ui=[
+                self.ui.auto_registration_button,
+                self.ui.marker_registration_button,
+                self.ui.profiler_registration_button,
+            ],
+            enabled=False,
+        )
 
     def auto_registration_button_clicked(self):
         o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)
 
     def markers_registration_button_clicked(self):
         o_markers_registration = RegistrationMarkersLauncher(parent=self)
-        self.set_widget_status(list_ui=[self.ui.auto_registration_button,
-                                        self.ui.manual_registration_button,
-                                        self.ui.profiler_registration_button],
-                               enabled=False)
+        self.set_widget_status(
+            list_ui=[
+                self.ui.auto_registration_button,
+                self.ui.manual_registration_button,
+                self.ui.profiler_registration_button,
+            ],
+            enabled=False,
+        )
 
     def profiler_registration_button_clicked(self):
-        self.set_widget_status(list_ui=[self.ui.auto_registration_button,
-                                        self.ui.manual_registration_button,
-                                        self.ui.marker_registration_button],
-                               enabled=False)
+        self.set_widget_status(
+            list_ui=[
+                self.ui.auto_registration_button,
+                self.ui.manual_registration_button,
+                self.ui.marker_registration_button,
+            ],
+            enabled=False,
+        )
         o_registration_profile = RegistrationProfileLauncher(parent=self)
 
     def start_auto_registration(self):
-        o_auto_register = RegistrationAuto(parent=self,
-                                           reference_image=self.reference_image,
-                                           floating_images=self.data_dict['data'])
+        o_auto_register = RegistrationAuto(
+            parent=self, reference_image=self.reference_image, floating_images=self.data_dict["data"]
+        )
         o_auto_register.auto_align()
 
     def grid_display_checkBox_clicked(self):

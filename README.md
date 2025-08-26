@@ -36,7 +36,7 @@ pixi run lab
 ## Available Commands
 
 - `pixi run lab` - Start Jupyter Lab
-- `pixi run notebook` - Start Jupyter Notebook  
+- `pixi run notebook` - Start Jupyter Notebook
 - `pixi run test` - Run tests
 - `pixi run test_imports` - Verify all packages import correctly
 - `pixi run test_all` - Run all tests

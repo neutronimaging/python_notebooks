@@ -1,32 +1,27 @@
 import os
-from qtpy.QtWidgets import QMainWindow, QVBoxLayout, QProgressBar, QApplication
+
 import numpy as np
+from qtpy.QtWidgets import QMainWindow
 
 from __code import load_ui
 from __code._utilities.table_handler import TableHandler
-
-from __code.overlay_images.initialization import Initialization
 from __code.overlay_images.event_handler import EventHandler
-from __code.overlay_images.get import Get
 from __code.overlay_images.export import Export
+from __code.overlay_images.get import Get
+from __code.overlay_images.initialization import Initialization
 
 
 class InterfaceHandler:
-
     def __init__(self, working_dir=None, o_norm_high_res=None, o_norm_low_res=None):
+        assert len(o_norm_low_res.data["sample"]["file_name"]) == len(o_norm_high_res.data["sample"]["file_name"])
 
-        assert len(o_norm_low_res.data['sample']['file_name']) == len(o_norm_high_res.data['sample']['file_name'])
-
-        o_interface = Interface(o_norm_high_res=o_norm_high_res,
-                                o_norm_low_res=o_norm_low_res,
-                                working_dir=working_dir)
+        o_interface = Interface(o_norm_high_res=o_norm_high_res, o_norm_low_res=o_norm_low_res, working_dir=working_dir)
         o_interface.show()
 
         self.o_interface = o_interface
 
 
 class Interface(QMainWindow):
-
     SINGLE_OFFSET = 1  # pixels
     DOUBLE_OFFSET = 5  # pixels
 
@@ -43,59 +38,63 @@ class Interface(QMainWindow):
     #   .... }
     dict_images_offset = None
 
-    current_live_image = {'high_res': None, 'low_res': None, 'overlay': None}
-    image_view = {'high_res': None, 'low_res': None, 'overlay': None}
+    current_live_image = {"high_res": None, "low_res": None, "overlay": None}
+    image_view = {"high_res": None, "low_res": None, "overlay": None}
 
     resize_and_overlay_images = []
-    resize_hres_lres_images = {'hres': None, 'lres': None}
+    resize_hres_lres_images = {"hres": None, "lres": None}
     resize_and_overlay_modes = []
 
-    markers = {'high_res': {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
-                            '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},
-                            },
-               'low_res':  {'1': {'x': 100, 'y': 50, 'ui': None, 'target_ui': None},
-                            '2': {'x': 300, 'y': 50, 'ui': None, 'target_ui': None},
-                            },
-               'overlay': {'1': {'x': 500, 'y': 500, 'ui': None, 'target_ui': None, 'length': 200},
-                           },
-               'width': 50,
-               'height': 50,
-               'target': {'length': 10,
-                          'border': 10,
-                          'color': {'1': (255, 0, 0, 255, 1),
-                                    '2': (0, 0, 255, 255, 1),
-                                    'horizontal': (255, 0, 0, 255, 2),
-                                    'vertical': (0, 0, 255, 255, 2)},
-                          },
-               }
+    markers = {
+        "high_res": {
+            "1": {"x": 100, "y": 50, "ui": None, "target_ui": None},
+            "2": {"x": 300, "y": 50, "ui": None, "target_ui": None},
+        },
+        "low_res": {
+            "1": {"x": 100, "y": 50, "ui": None, "target_ui": None},
+            "2": {"x": 300, "y": 50, "ui": None, "target_ui": None},
+        },
+        "overlay": {
+            "1": {"x": 500, "y": 500, "ui": None, "target_ui": None, "length": 200},
+        },
+        "width": 50,
+        "height": 50,
+        "target": {
+            "length": 10,
+            "border": 10,
+            "color": {
+                "1": (255, 0, 0, 255, 1),
+                "2": (0, 0, 255, 255, 1),
+                "horizontal": (255, 0, 0, 255, 2),
+                "vertical": (0, 0, 255, 255, 2),
+            },
+        },
+    }
 
-    histogram_level = {'high_res': None, 'low_res': None, 'overlay': None}
+    histogram_level = {"high_res": None, "low_res": None, "overlay": None}
     transparency = 0
 
     # if any of the current parameter is different from this, the EXPORT button becomes unavailable
-    parameters_used_on_all_images = {'scaling_factor': 0,
-                                     'xoffset': 0,
-                                     'yoffset': 0}
+    parameters_used_on_all_images = {"scaling_factor": 0, "xoffset": 0, "yoffset": 0}
 
     def __init__(self, parent=None, o_norm_high_res=None, o_norm_low_res=None, working_dir=None):
-
         self.o_norm_high_res = o_norm_high_res
         self.o_norm_low_res = o_norm_low_res
         self.working_dir = working_dir if working_dir else "./"
 
-        self.high_res_image_height, self.high_res_image_width = np.shape(o_norm_high_res.data['sample']['data'][0])
-        self.low_res_image_height, self.low_res_image_width = np.shape(o_norm_low_res.data['sample']['data'][0])
+        self.high_res_image_height, self.high_res_image_width = np.shape(o_norm_high_res.data["sample"]["data"][0])
+        self.low_res_image_height, self.low_res_image_width = np.shape(o_norm_low_res.data["sample"]["data"][0])
         self.rescaled_low_res_height, self.rescaled_low_res_width = None, None
-        self.list_of_high_res_filename = o_norm_high_res.data['sample']['file_name']
+        self.list_of_high_res_filename = o_norm_high_res.data["sample"]["file_name"]
 
-        self.high_res_input_folder = os.path.dirname(o_norm_high_res.data['sample']['file_name'][0])
-        self.low_res_input_folder = os.path.dirname(o_norm_low_res.data['sample']['file_name'][0])
+        self.high_res_input_folder = os.path.dirname(o_norm_high_res.data["sample"]["file_name"][0])
+        self.low_res_input_folder = os.path.dirname(o_norm_low_res.data["sample"]["file_name"][0])
 
         super(Interface, self).__init__(parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_overlay.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_overlay.ui")
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Overlay images with scaling")
 
@@ -127,28 +126,28 @@ class Interface(QMainWindow):
 
     def markers_changed(self):
         o_get = Get(parent=self)
-        high_res_1_dict = o_get.marker_location(image_resolution='high_res', target_index='1')
-        self.markers['high_res']['1']['x'] = high_res_1_dict['x']
-        self.markers['high_res']['1']['y'] = high_res_1_dict['y']
+        high_res_1_dict = o_get.marker_location(image_resolution="high_res", target_index="1")
+        self.markers["high_res"]["1"]["x"] = high_res_1_dict["x"]
+        self.markers["high_res"]["1"]["y"] = high_res_1_dict["y"]
 
-        high_res_2_dict = o_get.marker_location(image_resolution='high_res', target_index='2')
-        self.markers['high_res']['2']['x'] = high_res_2_dict['x']
-        self.markers['high_res']['2']['y'] = high_res_2_dict['y']
+        high_res_2_dict = o_get.marker_location(image_resolution="high_res", target_index="2")
+        self.markers["high_res"]["2"]["x"] = high_res_2_dict["x"]
+        self.markers["high_res"]["2"]["y"] = high_res_2_dict["y"]
 
-        low_res_1_dict = o_get.marker_location(image_resolution='low_res', target_index='1')
-        self.markers['low_res']['1']['x'] = low_res_1_dict['x']
-        self.markers['low_res']['1']['y'] = low_res_1_dict['y']
+        low_res_1_dict = o_get.marker_location(image_resolution="low_res", target_index="1")
+        self.markers["low_res"]["1"]["x"] = low_res_1_dict["x"]
+        self.markers["low_res"]["1"]["y"] = low_res_1_dict["y"]
 
-        low_res_2_dict = o_get.marker_location(image_resolution='low_res', target_index='2')
-        self.markers['low_res']['2']['x'] = low_res_2_dict['x']
-        self.markers['low_res']['2']['y'] = low_res_2_dict['y']
+        low_res_2_dict = o_get.marker_location(image_resolution="low_res", target_index="2")
+        self.markers["low_res"]["2"]["x"] = low_res_2_dict["x"]
+        self.markers["low_res"]["2"]["y"] = low_res_2_dict["y"]
 
         o_event = EventHandler(parent=self)
-        o_event.update_target(image_resolution='high_res', target_index='1')
-        o_event.update_target(image_resolution='high_res', target_index='2')
+        o_event.update_target(image_resolution="high_res", target_index="1")
+        o_event.update_target(image_resolution="high_res", target_index="2")
 
-        o_event.update_target(image_resolution='low_res', target_index='1')
-        o_event.update_target(image_resolution='low_res', target_index='2')
+        o_event.update_target(image_resolution="low_res", target_index="1")
+        o_event.update_target(image_resolution="low_res", target_index="2")
 
     def overlay_stack_of_images_clicked(self):
         o_event = EventHandler(parent=self)
@@ -269,9 +268,9 @@ class Interface(QMainWindow):
 
     def profile_region_moved(self):
         o_get = Get(parent=self)
-        overlay_1_dict = o_get.marker_location(image_resolution='overlay', target_index='1')
-        self.markers['overlay']['1']['x'] = overlay_1_dict['x']
-        self.markers['overlay']['1']['y'] = overlay_1_dict['y']
+        overlay_1_dict = o_get.marker_location(image_resolution="overlay", target_index="1")
+        self.markers["overlay"]["1"]["x"] = overlay_1_dict["x"]
+        self.markers["overlay"]["1"]["y"] = overlay_1_dict["y"]
 
         o_event = EventHandler(parent=self)
         o_event.update_profile_markers_and_target(with_profile=True)

@@ -16,13 +16,15 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.math_images import MathImages
 from __code import system
-system.System.select_working_dir(notebook='math_images')
+from __code.math_images import MathImages
+
+system.System.select_working_dir(notebook="math_images")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -50,10 +52,8 @@ o_math.which_math()
 o_math.recap()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Output Folder 
+# # Select Output Folder
 
 # + run_control={"frozen": false, "read_only": false}
 o_math.select_output_folder()
 # -
-
-

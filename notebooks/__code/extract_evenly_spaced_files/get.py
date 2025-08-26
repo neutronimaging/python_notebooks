@@ -1,13 +1,12 @@
-import numpy as np
 import os
 
-from __code._utilities.get import Get as TopGet
+import numpy as np
 
+from __code._utilities.get import Get as TopGet
 from __code.extract_evenly_spaced_files import LOG_FILENAME
 
 
 class Get(TopGet):
-
     def log_file_name(self):
         return TopGet.log_file_name(LOG_FILENAME)
 
@@ -36,7 +35,7 @@ class Get(TopGet):
         renamed_list_of_files_to_extract = []
         for _counter, _file in enumerate(list_of_files_to_extract):
             [_name, ext] = os.path.splitext(_file)
-            new_name = prefix + "{:04d}{}".format(_counter, ext)
+            new_name = prefix + f"{_counter:04d}{ext}"
             renamed_list_of_files_to_extract.append(new_name)
         return renamed_list_of_files_to_extract
 

@@ -16,14 +16,15 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Select your IPTS 
+# # Select your IPTS
 
 # +
+from __code import system
 from __code.extract_nexus_daslogs import extract
 
-from __code import system
-system.System.select_working_dir(notebook='extract_nexus_daslogs')
+system.System.select_working_dir(notebook="extract_nexus_daslogs")
 from __code.__all import custom_style
+
 custom_style.style()
 # -
 
@@ -33,5 +34,3 @@ o_extract = extract.Extract(working_dir=system.System.get_working_dir())
 o_extract.select_nexus()
 
 o_extract.export()
-
-

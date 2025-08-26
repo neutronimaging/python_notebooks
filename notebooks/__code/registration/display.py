@@ -6,12 +6,10 @@ from __code.registration.get import Get
 
 
 class Display:
-
     def __init__(self, parent=None):
         self.parent = parent
 
     def image(self):
-
         o_get = Get(parent=self.parent)
 
         # if more than one row selected !
@@ -20,7 +18,6 @@ class Display:
             if self.parent.ui.selection_all.isChecked():
                 _image = o_get.image_selected()
             else:  # display selected images according to slider position
-
                 # retrieve slider infos
                 slider_index = self.parent.ui.opacity_selection_slider.sliderPosition() / 100
 
@@ -28,11 +25,11 @@ class Display:
                 to_index = int(slider_index + 1)
 
                 if from_index == slider_index:
-                    _image = self.parent.data_dict['data'][from_index]
+                    _image = self.parent.data_dict["data"][from_index]
                 else:
-                    _from_image = self.parent.data_dict['data'][from_index]
+                    _from_image = self.parent.data_dict["data"][from_index]
 
-                    _to_image = self.parent.data_dict['data'][to_index]
+                    _to_image = self.parent.data_dict["data"][to_index]
 
                     _from_coefficient = np.abs(to_index - slider_index)
                     _to_coefficient = np.abs(slider_index - from_index)
@@ -58,7 +55,7 @@ class Display:
         self.parent.histogram_level = _histo_widget.getLevels()
 
         _opacity_coefficient = self.parent.ui.opacity_slider.value()  # betwween 0 and 100
-        _opacity_image = _opacity_coefficient / 100.
+        _opacity_image = _opacity_coefficient / 100.0
         _image = np.transpose(_image) * _opacity_image
 
         _opacity_selected = 1 - _opacity_image
@@ -70,11 +67,9 @@ class Display:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0],
-                                    self.parent.histogram_level[1])
+            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
 
     def display_only_reference_image(self):
-
         self.parent.ui.selection_reference_opacity_groupBox.setVisible(False)
 
         _view = self.parent.ui.image_view.getView()
@@ -113,12 +108,11 @@ class Display:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0],
-                                    self.parent.histogram_level[1])
+            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
 
         # we do not want a grid on top
-        if self.parent.grid_view['item']:
-            self.parent.ui.image_view.removeItem(self.parent.grid_view['item'])
+        if self.parent.grid_view["item"]:
+            self.parent.ui.image_view.removeItem(self.parent.grid_view["item"])
 
         if not self.parent.ui.grid_display_checkBox.isChecked():
             return
@@ -126,23 +120,17 @@ class Display:
         grid_size = self.parent.ui.grid_size_slider.value()
         [width, height] = np.shape(live_image)
 
-        pos_adj_dict = Calculate.calculate_matrix_grid(grid_size=grid_size,
-                                                       height=height,
-                                                       width=width)
-        pos = pos_adj_dict['pos']
-        adj = pos_adj_dict['adj']
+        pos_adj_dict = Calculate.calculate_matrix_grid(grid_size=grid_size, height=height, width=width)
+        pos = pos_adj_dict["pos"]
+        adj = pos_adj_dict["adj"]
 
-        line_color = self.parent.grid_view['color']
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
+        line_color = self.parent.grid_view["color"]
+        lines = np.array(
+            [line_color for n in np.arange(len(pos))],
+            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+        )
 
         grid = pg.GraphItem()
         self.parent.ui.image_view.addItem(grid)
-        grid.setData(pos=pos,
-                     adj=adj,
-                     pen=lines,
-                     symbol=None,
-                     pxMode=False)
-        self.parent.grid_view['item'] = grid
+        grid.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+        self.parent.grid_view["item"] = grid

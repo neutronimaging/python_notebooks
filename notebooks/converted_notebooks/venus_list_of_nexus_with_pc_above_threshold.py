@@ -18,20 +18,18 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # +
+
 from __code import system
 from __code.venus_list_of_nexus_with_pc_above_threshold.main import VenusNexusListPCAboveThreshold
 
-import h5py
-import numpy as np
-
-system.System.select_working_dir(facility='SNS', instrument='VENUS')
+system.System.select_working_dir(facility="SNS", instrument="VENUS")
 from __code.__all import custom_style
+
 custom_style.style()
 
-import matplotlib.pyplot as plt
 # %matplotlib notebook
 # -
 
@@ -47,5 +45,3 @@ o_event.select_list_nexus()
 # # Export this list of NeXus with proton charge above threshold
 
 o_event.export_good_nexus()
-
-

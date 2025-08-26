@@ -1,21 +1,22 @@
 import os
+
+import numpy as np
 import pyqtgraph as pg
 from qtpy import QtCore
-from qtpy.QtWidgets import QVBoxLayout, QProgressBar, QTableWidgetItem
-import numpy as np
+from qtpy.QtWidgets import QProgressBar, QTableWidgetItem, QVBoxLayout
 
 from __code.file_handler import retrieve_time_stamp
-from __code.metadata_overlapping_images.general_classes import ScaleSettings, MetadataSettings
+from __code.metadata_overlapping_images.general_classes import MetadataSettings, ScaleSettings
+
 from .get import Get
 
 
 class Initializer:
-
     def __init__(self, parent=None):
         self.parent = parent
 
     def timestamp_dict(self):
-        list_files = self.parent.data_dict['file_name']
+        list_files = self.parent.data_dict["file_name"]
         self.parent.timestamp_dict = retrieve_time_stamp(list_files)
 
     def parameters(self):
@@ -31,7 +32,7 @@ class Initializer:
 
     def table(self):
         # init the summary table
-        list_files_full_name = self.parent.data_dict['file_name']
+        list_files_full_name = self.parent.data_dict["file_name"]
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
         self.parent.ui.tableWidget.blockSignals(True)
@@ -44,7 +45,7 @@ class Initializer:
         self.parent.ui.tableWidget.blockSignals(False)
 
     def set_scale_spinbox_max_value(self):
-        [height, width] = np.shape(self.parent.data_dict['data'][0])
+        [height, width] = np.shape(self.parent.data_dict["data"][0])
         if self.parent.ui.scale_horizontal_orientation.isChecked():
             max_value = width
         else:
@@ -52,12 +53,11 @@ class Initializer:
         self.parent.ui.scale_size_spinbox.setMaximum(max_value)
 
     def widgets(self):
-
         # splitter
         self.parent.ui.splitter.setSizes([800, 50])
 
         # file slider
-        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
+        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict["data"]) - 1)
 
         # update size of table columns
         nbr_columns = self.parent.ui.tableWidget.columnCount()
@@ -73,16 +73,16 @@ class Initializer:
             self.parent.ui.select_metadata_combobox.setVisible(False)
 
         # list of scale available
-        self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units['string'])
+        self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units["string"])
 
         # pixel size range
-        [height, width] = np.shape(self.parent.data_dict['data'][0])
+        [height, width] = np.shape(self.parent.data_dict["data"][0])
         self.set_scale_spinbox_max_value()
         if self.parent.ui.scale_horizontal_orientation.isChecked():
             max_value = width
         else:
             max_value = height
-        self.parent.ui.scale_size_spinbox.setValue(int(max_value/4))
+        self.parent.ui.scale_size_spinbox.setValue(int(max_value / 4))
 
         # metadata and scale slider positions
         self.parent.ui.scale_position_x.setMaximum(width)
@@ -95,7 +95,7 @@ class Initializer:
 
         self.parent.ui.graph_position_x.setMinimum(0)
         self.parent.ui.graph_position_x.setMaximum(width)
-        self.parent.ui.graph_position_x.setValue(int(width/2))
+        self.parent.ui.graph_position_x.setValue(int(width / 2))
         self.parent.ui.graph_position_y.setMaximum(height)
         self.parent.ui.graph_position_y.setValue(height)
 
@@ -115,12 +115,12 @@ class Initializer:
         vertical_layout.addWidget(self.parent.ui.image_view)
         self.parent.ui.pyqtgraph_widget.setLayout(vertical_layout)
 
-    def set_item_all_plot_file_name_table(self, row=0, value=''):
+    def set_item_all_plot_file_name_table(self, row=0, value=""):
         item = QTableWidgetItem(str(value))
         self.parent.ui.all_plots_file_name_table.setItem(row, 1, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    def set_item_table(self, row=0, col=0, value='', editable=False):
+    def set_item_table(self, row=0, col=0, value="", editable=False):
         item = QTableWidgetItem(str(value))
         self.parent.ui.tableWidget.setItem(row, col, item)
         if not editable:

@@ -19,16 +19,16 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
+# %matplotlib notebook
+from __code import system
 from __code.display_file_names_vs_time_stamp import DisplayFileNamesVsTimeStamp
 
-# %matplotlib notebook
-
-from __code import system
-system.System.select_working_dir(notebook='display_file_names_vs_time_stamp')
+system.System.select_working_dir(notebook="display_file_names_vs_time_stamp")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -45,7 +45,7 @@ o_file_time_stamp.select_image_folder()
 o_file_time_stamp.display()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # List Files Loaded 
+# # List Files Loaded
 
 # + run_control={"frozen": false, "read_only": false}
 o_file_time_stamp.print_result()
@@ -54,4 +54,3 @@ o_file_time_stamp.print_result()
 
 
 # + run_control={"frozen": false, "read_only": false}
-

@@ -1,4 +1,3 @@
-
 class ScaleSettings:
     x0 = 50
     y0 = 50
@@ -14,4 +13,4 @@ class MetadataSettings:
     x0 = 200
     y0 = 200
 
-    color = [255, 255, 255] # white
+    color = [255, 255, 255]  # white

@@ -1,14 +1,13 @@
-#Allows Python 3-style division in Python 2.7
-from __future__ import division
+# Allows Python 3-style division in Python 2.7
 
 import ipywidgets as ipyw
-from . import base
 from traitlets import Unicode
 
+from . import base
 
-@ipyw.register('ipywe.VtkJs')
+
+@ipyw.register("ipywe.VtkJs")
 class VtkJs(base.DOMWidget):
-
     _view_name = Unicode("VtkJsView").tag(sync=True)
     _model_name = Unicode("VtkJsModel").tag(sync=True)
 
@@ -16,4 +15,4 @@ class VtkJs(base.DOMWidget):
 
     def __init__(self, url=None):
         super(VtkJs, self).__init__()
-        self.url =  url
+        self.url = url

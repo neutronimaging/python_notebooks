@@ -1,108 +1,92 @@
 import logging
-from IPython.display import HTML
 import os
 import random
-import numpy as np
-from IPython.display import display
-import pyqtgraph as pg
-from qtpy.QtWidgets import QMainWindow
-from qtpy.QtGui import QGuiApplication
-from qtpy import QtGui
 from pathlib import Path
 
+import numpy as np
+import pyqtgraph as pg
+from IPython.display import HTML, display
 from neutronbraggedge.experiment_handler import *
+from qtpy import QtGui
+from qtpy.QtGui import QGuiApplication
+from qtpy.QtWidgets import QMainWindow
 
-from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_normalization import BraggEdge as BraggEdgeParent
-from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code import load_ui
 from __code._utilities.array import exclude_y_value_when_error_is_nan
-from __code.utilities import find_nearest_index
-from __code.table_handler import TableHandler
-from __code.bragg_edge.peak_fitting_evaluation.peak_fitting_interface_initialization import Initialization
-from __code.bragg_edge.peak_fitting_evaluation.kropff_fitting_job_handler import KropffFittingJobHandler
-from __code.bragg_edge.peak_fitting_evaluation.march_dollase_fitting_job_handler import MarchDollaseFittingJobHandler
-from __code.bragg_edge.peak_fitting_evaluation.kropff import Kropff
-from __code.bragg_edge.peak_fitting_evaluation.march_dollase import MarchDollase
+from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.export_handler import ExportHandler
 from __code.bragg_edge.import_handler import ImportHandler
-
+from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_normalization import BraggEdge as BraggEdgeParent
 from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_selection_tab import BraggEdgeSelectionTab
 from __code.bragg_edge.peak_fitting_evaluation.get import Get, GetInfo
+from __code.bragg_edge.peak_fitting_evaluation.kropff import Kropff
+from __code.bragg_edge.peak_fitting_evaluation.kropff_fitting_job_handler import KropffFittingJobHandler
+from __code.bragg_edge.peak_fitting_evaluation.march_dollase import MarchDollase
+from __code.bragg_edge.peak_fitting_evaluation.march_dollase_fitting_job_handler import MarchDollaseFittingJobHandler
+from __code.bragg_edge.peak_fitting_evaluation.peak_fitting_interface_initialization import Initialization
 from __code.bragg_edge.peak_fitting_initialization import PeakFittingInitialization
+from __code.table_handler import TableHandler
+from __code.utilities import find_nearest_index
 
 from . import DEBUGGING
 
 
 class BraggEdge(BraggEdgeParent):
-
     def load_ob(self, folder_selected):
-        self.load_files(data_type='ob', folder=folder_selected)
+        self.load_files(data_type="ob", folder=folder_selected)
         self.check_data_array_sizes()
         self.divide_normalized_data_by_OB_white_beam()
 
     def divide_normalized_data_by_OB_white_beam(self):
-        norm_data = self.o_norm.data['ob']['data']
+        norm_data = self.o_norm.data["ob"]["data"]
         self.white_beam_ob = np.mean(norm_data, 0)
 
 
 class Interface(QMainWindow):
-
-    fitting_parameters_init = {'kropff': {'a0': 1,
-                                          'b0': 1,
-                                          'ahkl': 1,
-                                          'bhkl': 1,
-                                          'ldahkl': 1e-8,
-                                          'tau': 1,
-                                          'sigma': [1e-7, 1e-6, 1e-5]}}
+    fitting_parameters_init = {
+        "kropff": {"a0": 1, "b0": 1, "ahkl": 1, "bhkl": 1, "ldahkl": 1e-8, "tau": 1, "sigma": [1e-7, 1e-6, 1e-5]}
+    }
 
     bragg_edge_range = [5, 20]
 
     # relative index of the bragg peak only part (kropff and March-Dollase)
-    bragg_peak_selection_range = [np.NaN, np.NaN]
+    bragg_peak_selection_range = [np.nan, np.nan]
 
     selection_roi_rgb = (62, 13, 244)
-    roi_settings = {'color': QtGui.QColor(selection_roi_rgb[0],
-                                          selection_roi_rgb[1],
-                                          selection_roi_rgb[2]),
-                    'width': 0.01,
-                    'position': [10, 10]}
+    roi_settings = {
+        "color": QtGui.QColor(selection_roi_rgb[0], selection_roi_rgb[1], selection_roi_rgb[2]),
+        "width": 0.01,
+        "position": [10, 10],
+    }
     shrinking_roi_rgb = (13, 214, 244)
-    shrinking_roi_settings = {'color': QtGui.QColor(shrinking_roi_rgb[0],
-                                                    shrinking_roi_rgb[1],
-                                                    shrinking_roi_rgb[2]),
-                              'width': 0.01,
-                              'dashes_pattern': [4, 2]}
+    shrinking_roi_settings = {
+        "color": QtGui.QColor(shrinking_roi_rgb[0], shrinking_roi_rgb[1], shrinking_roi_rgb[2]),
+        "width": 0.01,
+        "dashes_pattern": [4, 2],
+    }
     fit_rgb = (0, 255, 0)
 
     shrinking_roi_id = None
-    shrinking_roi = {'x0': None,
-                     'y0': None,
-                     'width': None,
-                     'height': None}
-    previous_roi_selection = {'width': None,
-                              'height': None}
-    image_size = {'width': None,
-                  'height': None}
+    shrinking_roi = {"x0": None, "y0": None, "width": None, "height": None}
+    previous_roi_selection = {"width": None, "height": None}
+    image_size = {"width": None, "height": None}
     roi_id = None
-    xaxis_label = {'index': "File index",
-                   'tof': u"TOF (\u00B5s)",
-                   'lambda': u"\u03BB (\u212B)"}
-    fitting_rois = {'kropff': {'step1': None,
-                               'step2': None,
-                               'step3': None,
-                               },
-                    }
+    xaxis_label = {"index": "File index", "tof": "TOF (\u00b5s)", "lambda": "\u03bb (\u212b)"}
+    fitting_rois = {
+        "kropff": {
+            "step1": None,
+            "step2": None,
+            "step3": None,
+        },
+    }
 
-    is_file_imported = False # True only when the import button has been used
+    is_file_imported = False  # True only when the import button has been used
     bragg_edge_range_ui = None
 
-    kropff_fitting_range = {'high': [None, None],
-                            'low': [None, None],
-                            'bragg_peak': [None, None]}
+    kropff_fitting_range = {"high": [None, None], "low": [None, None], "bragg_peak": [None, None]}
     fitting_peak_ui = None  # vertical line in fitting view (tab 2)
 
-    fitting_procedure_started = {'march-dollase': False,
-                                 'kropff': False}
+    fitting_procedure_started = {"march-dollase": False, "kropff": False}
 
     # x0, y0, x1, y1, width, height
     roi_dimension_from_config_file = [None, None, None, None, None, None]
@@ -164,21 +148,36 @@ class Interface(QMainWindow):
     #                       1: {'width': None, 'height': None},
     #                       }
 
-    march_dollase_fitting_peak_ui = None   # ROI of march dollase peak region
+    march_dollase_fitting_peak_ui = None  # ROI of march dollase peak region
     march_dollase_fitting_history_table = None
-    march_dollase_fitting_initial_parameters = {'d_spacing': np.NaN,
-                                                'sigma': 3.5,
-                                                'alpha': 4.5,
-                                                'a1': "pixels ROI dependent",
-                                                'a2': "pixels ROI dependent",
-                                                'a5': "pixels ROI dependent",
-                                                'a6': "pixels ROI dependent"}
+    march_dollase_fitting_initial_parameters = {
+        "d_spacing": np.nan,
+        "sigma": 3.5,
+        "alpha": 4.5,
+        "a1": "pixels ROI dependent",
+        "a2": "pixels ROI dependent",
+        "a5": "pixels ROI dependent",
+        "a6": "pixels ROI dependent",
+    }
     march_dollase_fitting_history_table_default_new_row = None
     march_dollase_fitting_range_selected = None
 
-    march_dollase_list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
-                                  'd_spacing_error', 'sigma_error', 'alpha_error',
-                                  'a1_error', 'a2_error', 'a5_error', 'a6_error']
+    march_dollase_list_columns = [
+        "d_spacing",
+        "sigma",
+        "alpha",
+        "a1",
+        "a2",
+        "a5",
+        "a6",
+        "d_spacing_error",
+        "sigma_error",
+        "alpha_error",
+        "a1_error",
+        "a2_error",
+        "a5_error",
+        "a6_error",
+    ]
 
     # matplotlib canvas
     kropff_high_plot = None
@@ -187,13 +186,14 @@ class Interface(QMainWindow):
     march_dollase_plot = None
 
     def __init__(self, parent=None, working_dir="", o_bragg=None, spectra_file=None):
-
         o_get = GetInfo(parent=self)
         log_file_name = o_get.log_file_name()
-        logging.basicConfig(filename=log_file_name,
-                            filemode='w',
-                            format='[%(levelname)s] - %(asctime)s - %(message)s',
-                            level=logging.INFO)   # logging.INFO, logging.DEBUG
+        logging.basicConfig(
+            filename=log_file_name,
+            filemode="w",
+            format="[%(levelname)s] - %(asctime)s - %(message)s",
+            level=logging.INFO,
+        )  # logging.INFO, logging.DEBUG
         logging.info("*** Starting new session ***")
 
         if o_bragg:
@@ -205,7 +205,7 @@ class Interface(QMainWindow):
             self.o_bragg = o_bragg
             show_selection_tab = True
             enabled_export_button = False
-            self.index_array = np.arange(len(self.o_norm.data['sample']['file_name']))
+            self.index_array = np.arange(len(self.o_norm.data["sample"]["file_name"]))
         else:
             self.working_dir = working_dir
             show_selection_tab = False
@@ -215,11 +215,15 @@ class Interface(QMainWindow):
             self.spectra_file = spectra_file
             logging.info(f"spectra file: {self.spectra_file}")
 
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         super(Interface, self).__init__(parent)
-        ui_full_path = Path(__file__).parent.parent.parent.parent / 'ui' / 'ui_bragg_edge_peak_fitting.ui'
+        ui_full_path = Path(__file__).parent.parent.parent.parent / "ui" / "ui_bragg_edge_peak_fitting.ui"
 
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Peak Fitting Tool")
@@ -231,7 +235,7 @@ class Interface(QMainWindow):
             self.load_time_spectra()
             self.roi_moved()
         else:
-            o_init = Initialization(parent=self, tab='2')
+            o_init = Initialization(parent=self, tab="2")
             self.disable_left_part_of_selection_tab()
             self.ui.tabWidget.setEnabled(False)
 
@@ -244,11 +248,11 @@ class Interface(QMainWindow):
 
     def retrieve_working_dir(self):
         o_norm = self.o_norm
-        file_path = o_norm.data['sample']['file_name'][0]
+        file_path = o_norm.data["sample"]["file_name"][0]
         return os.path.dirname(file_path)
 
     def load_time_spectra(self):
-        logging.info(f"loading spectra file.")
+        logging.info("loading spectra file.")
         self.tof_handler = TOF(filename=self.spectra_file)
         self.tof_array_s = self.tof_handler.tof_array
         self.update_time_spectra()
@@ -270,18 +274,20 @@ class Interface(QMainWindow):
             self.ui.statusbar.setStyleSheet("color: red")
             return
 
-        _exp = Experiment(tof=self.tof_array_s,
-                          distance_source_detector_m=distance_source_detector_m,
-                          detector_offset_micros=detector_offset_micros)
+        _exp = Experiment(
+            tof=self.tof_array_s,
+            distance_source_detector_m=distance_source_detector_m,
+            detector_offset_micros=detector_offset_micros,
+        )
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
 
     def get_live_image(self):
         if DEBUGGING:
-            final_array = self.o_norm.data['sample']['data']
+            final_array = self.o_norm.data["sample"]["data"]
         else:
             nbr_data_to_use = int(self.number_of_data_to_use_ui.value)
 
-            _data = self.o_norm.data['sample']['data']
+            _data = self.o_norm.data["sample"]["data"]
 
             nbr_images = len(_data)
             list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
@@ -303,21 +309,21 @@ class Interface(QMainWindow):
     def new_dimensions_within_error_range(self):
         """this method is used to check if the ROI sizes changed. We need an error uncertainties as sometimes
         the region varies by + or - 1 pixel when moving it around"""
-        error = 1    # # of pixel
+        error = 1  # # of pixel
 
         roi_id = self.roi_id
-        region = roi_id.getArraySlice(self.final_image,
-                                      self.ui.image_view.imageItem)
+        region = roi_id.getArraySlice(self.final_image, self.ui.image_view.imageItem)
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
         y1 = region[0][1].stop
 
-        new_width = x1-x0-1
-        new_height = y1-y0-1
+        new_width = x1 - x0 - 1
+        new_height = y1 - y0 - 1
 
-        if ((np.abs(new_width - int(self.ui.roi_width.text())) <= error) and
-            (np.abs(new_height) - int(self.ui.roi_height.text())) <= error):
+        if (np.abs(new_width - int(self.ui.roi_width.text())) <= error) and (
+            np.abs(new_height) - int(self.ui.roi_height.text())
+        ) <= error:
             return True
 
         return False
@@ -333,19 +339,19 @@ class Interface(QMainWindow):
         self.bragg_edge_range = [left_index, right_index]
 
     def reset_profile_of_bin_size_slider(self):
-        max_value = np.min([int(str(self.ui.profile_of_bin_size_width.text())),
-                            int(str(self.ui.profile_of_bin_size_height.text()))])
+        max_value = np.min(
+            [int(str(self.ui.profile_of_bin_size_width.text())), int(str(self.ui.profile_of_bin_size_height.text()))]
+        )
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
         self.ui.profile_of_bin_size_slider.setValue(max_value)
 
     def selection_roi_slider_changed(self, new_value):
         if self.ui.square_roi_radiobutton.isChecked():
-            mode = 'square'
+            mode = "square"
         else:
-            mode = 'free'
+            mode = "free"
         o_selection = BraggEdgeSelectionTab(parent=self)
-        o_selection.update_selection(new_value=new_value,
-                                     mode=mode)
+        o_selection.update_selection(new_value=new_value, mode=mode)
 
     def update_profile_of_bin_size_infos(self):
         _width = int(self.ui.roi_width.text())
@@ -374,25 +380,23 @@ class Interface(QMainWindow):
         o_selection = BraggEdgeSelectionTab(parent=self)
         [x0, y0, x1, y1] = o_selection.get_shrinking_roi_dimension()
         o_get = Get(parent=self)
-        profile = o_get.profile_of_roi(x0=x0, y0=y0,
-                                       x1=x1, y1=y1)
+        profile = o_get.profile_of_roi(x0=x0, y0=y0, x1=x1, y1=y1)
 
-        yaxis = profile[left_range: right_range]
+        yaxis = profile[left_range:right_range]
 
         all_x_axis = o_get.all_x_axis()
-        index_array = all_x_axis['index'][0]
-        tof_array = all_x_axis['tof'][0]
-        lambda_array = all_x_axis['lambda'][0]
+        index_array = all_x_axis["index"][0]
+        tof_array = all_x_axis["tof"][0]
+        lambda_array = all_x_axis["lambda"][0]
 
-        index_selected = index_array[left_range: right_range]
-        tof_selected = tof_array[left_range: right_range]
-        lambda_selected = lambda_array[left_range: right_range]
+        index_selected = index_array[left_range:right_range]
+        tof_selected = tof_array[left_range:right_range]
+        lambda_selected = lambda_array[left_range:right_range]
 
-        profile_to_fit = {'yaxis': yaxis,
-                          'xaxis': {'index': index_selected,
-                                    'tof': tof_selected,
-                                    'lambda': lambda_selected},
-                          }
+        profile_to_fit = {
+            "yaxis": yaxis,
+            "xaxis": {"index": index_selected, "tof": tof_selected, "lambda": lambda_selected},
+        }
         self.dict_profile_to_fit = profile_to_fit
 
     def fit_that_selection_pushed_by_program(self, initialize_region=True):
@@ -405,9 +409,9 @@ class Interface(QMainWindow):
         o_init = PeakFittingInitialization(parent=self)
         fitting_input_dictionary = o_init.fitting_input_dictionary(nbr_rois=len(dict_regions))
 
-        o_init.set_top_keys_values(fitting_input_dictionary,
-                                   {'xaxis': x_axis,
-                                    'bragg_edge_range': self.bragg_edge_range})
+        o_init.set_top_keys_values(
+            fitting_input_dictionary, {"xaxis": x_axis, "bragg_edge_range": self.bragg_edge_range}
+        )
         self.append_dict_regions_to_fitting_input_dictionary(dict_regions, fitting_input_dictionary)
 
         # fitting_input_dictionary['xaxis'] = x_axis
@@ -424,7 +428,7 @@ class Interface(QMainWindow):
         if initialize_region:
             self.initialize_default_peak_regions()
         else:
-            if self.fitting_procedure_started['kropff']:
+            if self.fitting_procedure_started["kropff"]:
                 o_kropff.fill_table_with_fitting_information()
         o_march.fill_tables_with_fitting_information()
 
@@ -440,7 +444,7 @@ class Interface(QMainWindow):
         for _row in dict_regions.keys():
             _entry = dict_regions[_row]
             for _key in _entry.keys():
-                fitting_input_dictionary['rois'][_row][_key] = _entry[_key]
+                fitting_input_dictionary["rois"][_row][_key] = _entry[_key]
 
     def fit_that_selection_pushed(self):
         """this will create the fitting_input_dictionary and initialize the table"""
@@ -455,10 +459,10 @@ class Interface(QMainWindow):
         logging.info("initialize_default_peak_region")
 
         [left_range, right_range] = self.bragg_edge_range
-        xaxis_dict = self.fitting_input_dictionary['xaxis']
-        xaxis_index, _ = xaxis_dict['index']
+        xaxis_dict = self.fitting_input_dictionary["xaxis"]
+        xaxis_index, _ = xaxis_dict["index"]
         [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
-        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+        xaxis = xaxis_index[left_xaxis_index:right_xaxis_index]
         left_index = find_nearest_index(array=xaxis, value=left_range)
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
@@ -471,8 +475,8 @@ class Interface(QMainWindow):
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
         dict_rois_imported = self.dict_rois_imported
-        new_width = dict_rois_imported[new_value]['width']
-        new_height = dict_rois_imported[new_value]['height']
+        new_width = dict_rois_imported[new_value]["width"]
+        new_height = dict_rois_imported[new_value]["height"]
         self.ui.profile_of_bin_size_height.setText(new_height)
         self.ui.profile_of_bin_size_width.setText(new_width)
 
@@ -480,9 +484,9 @@ class Interface(QMainWindow):
         o_selection.update_selection_plot()
 
         self.update_vertical_line_in_profile_plot()
-        self.update_kropff_fit_table_graph(fit_region='high')
-        self.update_kropff_fit_table_graph(fit_region='low')
-        self.update_kropff_fit_table_graph(fit_region='bragg_peak')
+        self.update_kropff_fit_table_graph(fit_region="high")
+        self.update_kropff_fit_table_graph(fit_region="low")
+        self.update_kropff_fit_table_graph(fit_region="bragg_peak")
 
     def profile_of_bin_size_slider_changed(self, new_value):
         o_selection = BraggEdgeSelectionTab(parent=self)
@@ -495,15 +499,13 @@ class Interface(QMainWindow):
     def add_profile_to_dict_of_all_regions(self, dict_regions=None):
         for _key in dict_regions.keys():
             current_region = dict_regions[_key]
-            x0 = current_region['x0']
-            y0 = current_region['y0']
-            width = current_region['width']
-            height = current_region['height']
+            x0 = current_region["x0"]
+            y0 = current_region["y0"]
+            width = current_region["width"]
+            height = current_region["height"]
             o_get = Get(parent=self)
-            profile = o_get.profile_of_roi(x0=x0, y0=y0,
-                                           x1=x0 + width,
-                                           y1=y0 + height)
-            current_region['profile'] = profile
+            profile = o_get.profile_of_roi(x0=x0, y0=y0, x1=x0 + width, y1=y0 + height)
+            current_region["profile"] = profile
 
     def select_first_row_of_all_fitting_table(self):
         self.ui.high_lda_tableWidget.selectRow(0)
@@ -530,11 +532,11 @@ class Interface(QMainWindow):
         o_gui = GuiUtility(parent=self)
         algorithm_tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tab_algorithm)
 
-        if algorithm_tab_selected == 'Kropff':
+        if algorithm_tab_selected == "Kropff":
             o_kropff = Kropff(parent=self)
             o_kropff.update_fitting_plot()
 
-        elif algorithm_tab_selected == 'March-Dollase':
+        elif algorithm_tab_selected == "March-Dollase":
             o_march = MarchDollase(parent=self)
             o_march.update_fitting_plot()
 
@@ -542,9 +544,9 @@ class Interface(QMainWindow):
         o_gui = GuiUtility(parent=self)
         algorithm_tab_selected = o_gui.get_tab_selected(tab_ui=self.ui.tab_algorithm)
 
-        if algorithm_tab_selected == 'Kropff':
+        if algorithm_tab_selected == "Kropff":
             self.kropff_fitting_range_changed()
-        elif algorithm_tab_selected == 'March-Dollase':
+        elif algorithm_tab_selected == "March-Dollase":
             self.march_dollase_fitting_range_changed()
 
     def kropff_fitting_range_changed(self):
@@ -554,13 +556,13 @@ class Interface(QMainWindow):
             return
 
         [left_range, right_range] = list(self.fitting_peak_ui.getRegion())
-        xaxis_dict = self.fitting_input_dictionary['xaxis']
+        xaxis_dict = self.fitting_input_dictionary["xaxis"]
         o_get = Get(parent=self)
         x_axis_selected = o_get.x_axis_checked()
         xaxis_index, _ = xaxis_dict[x_axis_selected]
 
         [left_xaxis_index, right_xaxis_index] = self.bragg_edge_range
-        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+        xaxis = xaxis_index[left_xaxis_index:right_xaxis_index]
 
         left_index = find_nearest_index(array=xaxis, value=left_range)
         right_index = find_nearest_index(array=xaxis, value=right_range)
@@ -569,9 +571,9 @@ class Interface(QMainWindow):
         global_left_index = 0  # for debugging
         global_right_index = find_nearest_index(array=xaxis, value=global_right_range)
 
-        self.kropff_fitting_range['high'] = [right_index, global_right_index]
-        self.kropff_fitting_range['low'] = [global_left_index, left_index]
-        self.kropff_fitting_range['bragg_peak'] = [left_index, right_index]
+        self.kropff_fitting_range["high"] = [right_index, global_right_index]
+        self.kropff_fitting_range["low"] = [global_left_index, left_index]
+        self.kropff_fitting_range["bragg_peak"] = [left_index, right_index]
         self.bragg_peak_selection_range = [left_index, right_index]
 
         o_kropff = Kropff(parent=self)
@@ -593,16 +595,13 @@ class Interface(QMainWindow):
         o_get = Get(parent=self)
         x_axis, x_axis_label = o_get.x_axis()
 
-        bragg_edge_range = [x_axis[self.bragg_edge_range[0]],
-                            x_axis[self.bragg_edge_range[1]]]
+        bragg_edge_range = [x_axis[self.bragg_edge_range[0]], x_axis[self.bragg_edge_range[1]]]
 
         if self.bragg_edge_range_ui:
             self.ui.profile.removeItem(self.bragg_edge_range_ui)
-        self.bragg_edge_range_ui = pg.LinearRegionItem(values=bragg_edge_range,
-                                                       orientation=None,
-                                                       brush=None,
-                                                       movable=True,
-                                                       bounds=None)
+        self.bragg_edge_range_ui = pg.LinearRegionItem(
+            values=bragg_edge_range, orientation=None, brush=None, movable=True, bounds=None
+        )
         self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
         self.bragg_edge_range_ui.setZValue(-10)
         self.ui.profile.addItem(self.bragg_edge_range_ui)
@@ -626,15 +625,17 @@ class Interface(QMainWindow):
         o_table.remove_all_rows()
 
     def block_table_ui(self, flag):
-        list_ui = [self.ui.high_lda_tableWidget,
-                   self.ui.low_lda_tableWidget,
-                   self.ui.bragg_edge_tableWidget,
-                   self.ui.march_dollase_result_table]
+        list_ui = [
+            self.ui.high_lda_tableWidget,
+            self.ui.low_lda_tableWidget,
+            self.ui.bragg_edge_tableWidget,
+            self.ui.march_dollase_result_table,
+        ]
         for _ui in list_ui:
             _ui.blockSignals(flag)
 
     def is_fit_infos_loaded(self):
-        if 'fit_infos' in self.fitting_input_dictionary.keys():
+        if "fit_infos" in self.fitting_input_dictionary.keys():
             return True
         return False
 
@@ -650,18 +651,16 @@ class Interface(QMainWindow):
     def roi_radiobuttons_changed(self):
         if self.ui.square_roi_radiobutton.isChecked():
             slider_visible = True
-            new_width = np.min([int(str(self.ui.roi_width.text())),
-                                int(str(self.ui.roi_height.text()))])
-            mode = 'square'
+            new_width = np.min([int(str(self.ui.roi_width.text())), int(str(self.ui.roi_height.text()))])
+            mode = "square"
         else:
             slider_visible = False
             new_width = int(str(self.ui.roi_width.text()))
             self.selection_roi_slider_changed(new_width)
-            mode = 'free'
+            mode = "free"
 
         o_selection = BraggEdgeSelectionTab(parent=self)
-        o_selection.update_selection(new_value=new_width,
-                                     mode=mode)
+        o_selection.update_selection(new_value=new_width, mode=mode)
 
         self.ui.roi_size_slider.setVisible(slider_visible)
 
@@ -690,36 +689,36 @@ class Interface(QMainWindow):
         self.ui.statusbar.setStyleSheet("color: blue")
         self.ui.statusbar.showMessage("Fitting Done!", 1000)  # 10s
 
-        self.fitting_procedure_started['kropff'] = True
+        self.fitting_procedure_started["kropff"] = True
 
     def kropff_fit_high_lambda_region_clicked(self):
-        self.switch_fitting_axis_to('lambda')
+        self.switch_fitting_axis_to("lambda")
         o_fit = KropffFittingJobHandler(parent=self)
-        o_fit.prepare(kropff_tooldbox='high')
+        o_fit.prepare(kropff_tooldbox="high")
         o_fit.run_kropff_high_lambda(update_table_ui=True)
         self.update_fitting_plot()
-        self.update_kropff_fit_table_graph(fit_region='high')
+        self.update_kropff_fit_table_graph(fit_region="high")
 
     def kropff_fit_low_lambda_region_clicked(self):
-        self.switch_fitting_axis_to('lambda')
+        self.switch_fitting_axis_to("lambda")
         o_fit = KropffFittingJobHandler(parent=self)
-        o_fit.prepare(kropff_tooldbox='low')
+        o_fit.prepare(kropff_tooldbox="low")
         o_fit.run_kropff_low_lambda(update_table_ui=True)
         self.update_fitting_plot()
-        self.update_kropff_fit_table_graph(fit_region='low')
+        self.update_kropff_fit_table_graph(fit_region="low")
 
     def kropff_fit_bragg_peak_region_clicked(self):
         self.kropff_fit_bragg_peak_region_of_selected_rows()
 
     def kropff_fit_bragg_peak_region_of_selected_rows(self, list_row_to_fit=None):
-        self.switch_fitting_axis_to('lambda')
+        self.switch_fitting_axis_to("lambda")
         o_fit = KropffFittingJobHandler(parent=self)
-        o_fit.prepare(kropff_tooldbox='bragg_peak')
+        o_fit.prepare(kropff_tooldbox="bragg_peak")
         o_fit.run_bragg_peak(update_table_ui=True, list_row_to_fit=list_row_to_fit)
         self.update_fitting_plot()
-        self.update_kropff_fit_table_graph(fit_region='bragg_peak')
+        self.update_kropff_fit_table_graph(fit_region="bragg_peak")
 
-    def update_kropff_fit_table_graph(self, fit_region='high'):
+    def update_kropff_fit_table_graph(self, fit_region="high"):
         """
         update the plot of the fit parameters selected
         :param fit_region: 'high', 'low' or 'bragg_peak'
@@ -729,25 +728,26 @@ class Interface(QMainWindow):
         parameter_array = []
         parameter_error_array = []
         fitting_input_dictionary = self.fitting_input_dictionary
-        for _index in fitting_input_dictionary['rois'].keys():
-            _parameter = fitting_input_dictionary['rois'][_index]['fitting']['kropff'][fit_region][fit_parameter_selected]
-            _error = fitting_input_dictionary['rois'][_index]['fitting']['kropff'][fit_region]["{}_error".format(fit_parameter_selected)]
+        for _index in fitting_input_dictionary["rois"].keys():
+            _parameter = fitting_input_dictionary["rois"][_index]["fitting"]["kropff"][fit_region][
+                fit_parameter_selected
+            ]
+            _error = fitting_input_dictionary["rois"][_index]["fitting"]["kropff"][fit_region][
+                f"{fit_parameter_selected}_error"
+            ]
             parameter_array.append(_parameter)
             parameter_error_array.append(_error)
         plot_ui = o_gui.get_kropff_fit_graph_ui(fit_region=fit_region)
         x_array = np.arange(len(parameter_array))
 
-        cleaned_parameter_array, cleaned_parameter_error_array = \
-            exclude_y_value_when_error_is_nan(parameter_array,
-                                              parameter_error_array)
+        cleaned_parameter_array, cleaned_parameter_error_array = exclude_y_value_when_error_is_nan(
+            parameter_array, parameter_error_array
+        )
 
         plot_ui.axes.cla()
-        if fit_region == 'bragg_peak':
+        if fit_region == "bragg_peak":
             plot_ui.axes.set_yscale("log")
-        plot_ui.axes.errorbar(x_array,
-                              cleaned_parameter_array,
-                              cleaned_parameter_error_array,
-                              marker='s')
+        plot_ui.axes.errorbar(x_array, cleaned_parameter_array, cleaned_parameter_error_array, marker="s")
         plot_ui.axes.set_xlabel("Row # (see Table tab)")
         plot_ui.draw()
 
@@ -758,23 +758,23 @@ class Interface(QMainWindow):
             self.ui.bragg_edge_tableWidget.setSelectionMode(2)
         self.update_fitting_plot()
 
-    def switch_fitting_axis_to(self, button_name='tof'):
-        if button_name == 'tof':
+    def switch_fitting_axis_to(self, button_name="tof"):
+        if button_name == "tof":
             self.ui.fitting_tof_radiobutton.setChecked(True)
-        elif button_name == 'lambda':
+        elif button_name == "lambda":
             self.ui.fitting_lambda_radiobutton.setChecked(True)
         else:
             self.ui.fitting_index_radiobutton.setChecked(True)
         self.fitting_axis_changed()
 
     def update_kropff_high_plot(self):
-        self.update_kropff_fit_table_graph(fit_region='high')
+        self.update_kropff_fit_table_graph(fit_region="high")
 
     def update_kropff_low_plot(self):
-        self.update_kropff_fit_table_graph(fit_region='low')
+        self.update_kropff_fit_table_graph(fit_region="low")
 
     def update_kropff_bragg_peak_plot(self):
-        self.update_kropff_fit_table_graph(fit_region='bragg_peak')
+        self.update_kropff_fit_table_graph(fit_region="bragg_peak")
 
     def kropff_bragg_peak_right_click(self, position):
         o_kropff = Kropff(parent=self)
@@ -790,7 +790,7 @@ class Interface(QMainWindow):
                 _textedit.setVisible(not state)
             elif column == 0:
                 _label = _widget
-                _label.setText("{:0.6f}".format(float(o_march.get_initial_parameter_value(column=column))))
+                _label.setText(f"{float(o_march.get_initial_parameter_value(column=column)):0.6f}")
                 _label.setVisible(not state)
             else:
                 _label = _widget

@@ -1,23 +1,37 @@
-from qtpy import QtGui
+import logging
+import os
+from pathlib import Path
+
 import numpy as np
 import pyqtgraph as pg
+from qtpy import QtGui
 from qtpy.QtWidgets import QFileDialog, QMenu
-from pathlib import Path
-import os
-import logging
 
-from __code.table_handler import TableHandler
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.get import Get
 from __code.bragg_edge.peak_fitting_evaluation.get import Get as GetPeakFitting
-from __code.utilities import find_nearest_index
 from __code.file_handler import make_ascii_file
+from __code.table_handler import TableHandler
+from __code.utilities import find_nearest_index
 
 
 class MarchDollase:
-    list_columns = ['d_spacing', 'sigma', 'alpha', 'a1', 'a2', 'a5', 'a6',
-                    'd_spacing_error', 'sigma_error', 'alpha_error',
-                    'a1_error', 'a2_error', 'a5_error', 'a6_error']
+    list_columns = [
+        "d_spacing",
+        "sigma",
+        "alpha",
+        "a1",
+        "a2",
+        "a5",
+        "a6",
+        "d_spacing_error",
+        "sigma_error",
+        "alpha_error",
+        "a1_error",
+        "a2_error",
+        "a5_error",
+        "a6_error",
+    ]
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -40,17 +54,16 @@ class MarchDollase:
 
     def fill_table_with_minimum_contain(self):
         fitting_input_dictionary = self.parent.fitting_input_dictionary
-        rois = fitting_input_dictionary['rois']
+        rois = fitting_input_dictionary["rois"]
 
         o_table = TableHandler(table_ui=self.result_table_ui)
         nbr_column = o_table.table_ui.columnCount()
         other_column_name = ["N/A" for _ in np.arange(nbr_column)]
         for _row, _roi in enumerate(rois.keys()):
             _roi_key = rois[_roi]
-            list_col_name = "{}; {}; {}; {}".format(_roi_key['x0'],
-                                                    _roi_key['y0'],
-                                                    _roi_key['width'],
-                                                    _roi_key['height'])
+            list_col_name = "{}; {}; {}; {}".format(
+                _roi_key["x0"], _roi_key["y0"], _roi_key["width"], _roi_key["height"]
+            )
             col_name = [list_col_name] + other_column_name
             o_table.insert_row(_row, col_name)
 
@@ -94,8 +107,10 @@ class MarchDollase:
         self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
 
         o_gui = GuiUtility(parent=self.parent)
-        o_gui.fill_march_dollase_table(list_state=self.parent.march_dollase_fitting_history_table,
-                                       list_initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
+        o_gui.fill_march_dollase_table(
+            list_state=self.parent.march_dollase_fitting_history_table,
+            list_initial_parameters=self.parent.march_dollase_fitting_initial_parameters,
+        )
 
         # keep current selection on new row
         o_table = TableHandler(table_ui=self.parent.march_dollase_user_input_table)
@@ -193,13 +208,17 @@ class MarchDollase:
     def full_reset(self):
         march_dollase_history_state = self.parent.march_dollase_history_state_full_reset
         o_gui = GuiUtility(parent=self.parent)
-        o_gui.fill_march_dollase_table(list_state=march_dollase_history_state,
-                                       initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
+        o_gui.fill_march_dollase_table(
+            list_state=march_dollase_history_state,
+            initial_parameters=self.parent.march_dollase_fitting_initial_parameters,
+        )
 
     def update_table_after_changing_row(self, changing_row=-1):
         o_gui = GuiUtility(parent=self.parent)
-        o_gui.fill_march_dollase_table(list_state=self.parent.march_dollase_fitting_history_table,
-                                       initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
+        o_gui.fill_march_dollase_table(
+            list_state=self.parent.march_dollase_fitting_history_table,
+            initial_parameters=self.parent.march_dollase_fitting_initial_parameters,
+        )
 
         # keep current selection on new row
         o_table = TableHandler(table_ui=self.parent.march_dollase_user_input_table)
@@ -209,12 +228,12 @@ class MarchDollase:
     def advanced_mode_clicked(self):
         hide_advanced = not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
         o_gui = GuiUtility(parent=self.parent)
-        o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_user_input_table,
-                                 list_of_columns=[5, 6],
-                                 state=hide_advanced)
-        o_gui.set_columns_hidden(table_ui=self.parent.ui.march_dollase_result_table,
-                                 list_of_columns=[6, 7, 13, 14],
-                                 state=hide_advanced)
+        o_gui.set_columns_hidden(
+            table_ui=self.parent.ui.march_dollase_user_input_table, list_of_columns=[5, 6], state=hide_advanced
+        )
+        o_gui.set_columns_hidden(
+            table_ui=self.parent.ui.march_dollase_result_table, list_of_columns=[6, 7, 13, 14], state=hide_advanced
+        )
 
     def update_fitting_plot(self):
         self.parent.ui.fitting.clear()
@@ -234,11 +253,16 @@ class MarchDollase:
 
         for row_selected in list_row_selected:
             yaxis = o_get.y_axis_data_of_selected_row(row_selected=row_selected)
-            self.parent.ui.fitting.plot(xaxis, yaxis,
-                                        pen=(self.parent.selection_roi_rgb[0],
-                                             self.parent.selection_roi_rgb[1],
-                                             self.parent.selection_roi_rgb[2]),
-                                        symbol='o')
+            self.parent.ui.fitting.plot(
+                xaxis,
+                yaxis,
+                pen=(
+                    self.parent.selection_roi_rgb[0],
+                    self.parent.selection_roi_rgb[1],
+                    self.parent.selection_roi_rgb[2],
+                ),
+                symbol="o",
+            )
             self.parent.ui.fitting.setLabel("bottom", xaxis_label)
             self.parent.ui.fitting.setLabel("left", "Average transmission")
 
@@ -252,13 +276,12 @@ class MarchDollase:
 
         if self.parent.march_dollase_fitting_peak_ui:
             self.parent.ui.fitting.removeItem(self.parent.march_dollase_fitting_peak_ui)
-        self.parent.march_dollase_fitting_peak_ui = pg.LinearRegionItem(values=local_peak_range,
-                                                                        orientation='vertical',
-                                                                        brush=None,
-                                                                        movable=move_bragg_peak_range,
-                                                                        bounds=None)
+        self.parent.march_dollase_fitting_peak_ui = pg.LinearRegionItem(
+            values=local_peak_range, orientation="vertical", brush=None, movable=move_bragg_peak_range, bounds=None
+        )
         self.parent.march_dollase_fitting_peak_ui.sigRegionChanged.connect(
-                self.parent.march_dollase_fitting_range_changed)
+            self.parent.march_dollase_fitting_range_changed
+        )
         self.parent.march_dollase_fitting_peak_ui.setZValue(-10)
         self.parent.ui.fitting.addItem(self.parent.march_dollase_fitting_peak_ui)
 
@@ -297,21 +320,23 @@ class MarchDollase:
 
     def fill_result_table_with_fitting_information(self):
         fitting_input_dictionary = self.parent.fitting_input_dictionary
-        march_data = fitting_input_dictionary['rois']
+        march_data = fitting_input_dictionary["rois"]
 
         list_columns = self.parent.march_dollase_list_columns
         for _row in march_data.keys():
-            _march_entry = march_data[_row]['fitting']['march_dollase']
+            _march_entry = march_data[_row]["fitting"]["march_dollase"]
 
             for _col, _col_name in enumerate(list_columns):
                 _arg_value = _march_entry.get(_col_name)
-                if not(_arg_value is None):
-                    self.result_table_ui.item(_row, _col + 1).setText("{:4.2f}".format(_arg_value))
+                if _arg_value is not None:
+                    self.result_table_ui.item(_row, _col + 1).setText(f"{_arg_value:4.2f}")
 
     def fill_history_table_with_fitting_information(self):
         o_gui = GuiUtility(parent=self.parent)
-        o_gui.fill_march_dollase_table(list_state=self.parent.march_dollase_fitting_history_table,
-                                       initial_parameters=self.parent.march_dollase_fitting_initial_parameters)
+        o_gui.fill_march_dollase_table(
+            list_state=self.parent.march_dollase_fitting_history_table,
+            initial_parameters=self.parent.march_dollase_fitting_initial_parameters,
+        )
 
     def get_initial_parameter_value(self, column=-1):
         name = self.parent.march_dollase_list_columns[column]
@@ -324,11 +349,11 @@ class MarchDollase:
 
         o_get = Get(parent=self.parent)
         x_axis_selected = o_get.x_axis_checked()
-        xaxis_dict = self.parent.fitting_input_dictionary['xaxis']
+        xaxis_dict = self.parent.fitting_input_dictionary["xaxis"]
         xaxis_index, _ = xaxis_dict[x_axis_selected]
         [left_xaxis_index, right_xaxis_index] = [global_left_range, global_right_range]
 
-        xaxis = xaxis_index[left_xaxis_index: right_xaxis_index]
+        xaxis = xaxis_index[left_xaxis_index:right_xaxis_index]
 
         left_index = find_nearest_index(array=xaxis, value=left_range)
         right_index = find_nearest_index(array=xaxis, value=right_range)
@@ -336,13 +361,14 @@ class MarchDollase:
         self.parent.march_dollase_fitting_range_selected = [left_index, right_index]
         logging.info(f"-> march_dollase_fitting_range_selected: {self.parent.march_dollase_fitting_range_selected}")
 
-        xaxis_in_selected_axis = self.parent.fitting_input_dictionary['xaxis'][x_axis_selected][0][
-                                 global_left_range: global_right_range]
+        xaxis_in_selected_axis = self.parent.fitting_input_dictionary["xaxis"][x_axis_selected][0][
+            global_left_range:global_right_range
+        ]
         real_left_value = xaxis_in_selected_axis[left_index]
         real_right_value = xaxis_in_selected_axis[right_index]
-        if x_axis_selected == 'lambda':
+        if x_axis_selected == "lambda":
             str_format = "{:02f}"
-        elif x_axis_selected == 'tof':
+        elif x_axis_selected == "tof":
             str_format = "{:04.2f}"
         else:
             str_format = "{}"
@@ -364,12 +390,11 @@ class MarchDollase:
             self.export_data_of_selected_rows()
 
     def export_data_of_selected_rows(self):
-
         base_folder = Path(self.parent.working_dir)
         directory = str(base_folder.parent)
-        _export_folder = QFileDialog.getExistingDirectory(self.parent,
-                                                          directory=directory,
-                                                          caption="Select Output Folder")
+        _export_folder = QFileDialog.getExistingDirectory(
+            self.parent, directory=directory, caption="Select Output Folder"
+        )
 
         if _export_folder:
             o_table = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
@@ -377,42 +402,45 @@ class MarchDollase:
 
             str_list_of_rows_selected = [str(_row) for _row in list_of_rows_selected]
             str_rows = "_".join(str_list_of_rows_selected)
-            output_file_name = os.path.join(str(_export_folder), "march_dollase_result_fitting_row{}.txt".format(
-                    str_rows))
+            output_file_name = os.path.join(str(_export_folder), f"march_dollase_result_fitting_row{str_rows}.txt")
 
             fitting_input_dictionary = self.parent.fitting_input_dictionary
 
             o_get = Get(parent=self.parent)
-            xaxis_index = o_get.x_axis_data(x_axis_selected='index')
-            xaxis_tof = o_get.x_axis_data(x_axis_selected='tof')
-            xaxis_lambda = o_get.x_axis_data(x_axis_selected='lambda')
+            xaxis_index = o_get.x_axis_data(x_axis_selected="index")
+            xaxis_tof = o_get.x_axis_data(x_axis_selected="tof")
+            xaxis_lambda = o_get.x_axis_data(x_axis_selected="lambda")
 
             # metadata
             metadata = ["#Marche Dollase Result of Fitting"]
             is_advance_mode = self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
-            metadata.append("#Using advanced fitting mode: {}".format(is_advance_mode))
+            metadata.append(f"#Using advanced fitting mode: {is_advance_mode}")
 
             data_label = "#image index, TOF(micros), Lambda(Angstroms)"
             temp_data = []
             for _row in list_of_rows_selected:
-                _entry = fitting_input_dictionary['rois'][_row]['fitting']['march_dollase']
-                _top_entry = fitting_input_dictionary['rois'][_row]
-                _line = "#-> row {}: x0: {}, y0:{}, width:{}, height:{}, " \
-                        "d_spacing:{}, sigma:{}, alpha:{}, a1:{}, " \
-                        "a2:{}".format(_row,
-                                       _top_entry['x0'],
-                                       _top_entry['y0'],
-                                       _top_entry['width'],
-                                       _top_entry['height'],
-                                       _entry['d_spacing'],
-                                       _entry['sigma'],
-                                       _entry['alpha'],
-                                       _entry['a1'],
-                                       _entry['a2'])
+                _entry = fitting_input_dictionary["rois"][_row]["fitting"]["march_dollase"]
+                _top_entry = fitting_input_dictionary["rois"][_row]
+                _line = (
+                    "#-> row {}: x0: {}, y0:{}, width:{}, height:{}, "
+                    "d_spacing:{}, sigma:{}, alpha:{}, a1:{}, "
+                    "a2:{}".format(
+                        _row,
+                        _top_entry["x0"],
+                        _top_entry["y0"],
+                        _top_entry["width"],
+                        _top_entry["height"],
+                        _entry["d_spacing"],
+                        _entry["sigma"],
+                        _entry["alpha"],
+                        _entry["a1"],
+                        _entry["a2"],
+                    )
+                )
                 if is_advance_mode:
-                    _line += ", a5:{}, a6:{}".format(_entry['a5'], _entry['a6'])
+                    _line += ", a5:{}, a6:{}".format(_entry["a5"], _entry["a6"])
                 metadata.append(_line)
-                data_label += ", row {}".format(_row)
+                data_label += f", row {_row}"
 
                 temp_data.append(o_get.y_axis_data_of_selected_row(row_selected=_row))
 
@@ -424,19 +452,14 @@ class MarchDollase:
             self.parent.debug_data = temp_data
 
             for _index in np.arange(len(xaxis_index)):
-                str_data = "{}, {}, {}".format(xaxis_index[_index],
-                                               xaxis_tof[_index],
-                                               xaxis_lambda[_index])
+                str_data = f"{xaxis_index[_index]}, {xaxis_tof[_index]}, {xaxis_lambda[_index]}"
                 for _col_index in np.arange(len(list_of_rows_selected)):
-                    str_data += ", {}".format(temp_data[_col_index][_index])
+                    str_data += f", {temp_data[_col_index][_index]}"
                 data.append(str_data)
 
-            make_ascii_file(metadata=metadata,
-                            data=data,
-                            output_file_name=output_file_name,
-                            dim='1d')
+            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim="1d")
 
-            message = "{} has been created!".format(output_file_name)
+            message = f"{output_file_name} has been created!"
             self.parent.ui.statusbar.showMessage(message, 10000)  # 10s
 
     def fitting_item_to_plot_changed(self):
@@ -444,13 +467,13 @@ class MarchDollase:
         item_to_plot = o_get.march_dollase_result_fitting_item_selected()
 
         fitting_input_dictionary = self.parent.fitting_input_dictionary
-        march_data = fitting_input_dictionary['rois']
+        march_data = fitting_input_dictionary["rois"]
 
         array_to_plot = []
         for _roi in march_data.keys():
-            _value = march_data[_roi]['fitting']['march_dollase'][item_to_plot]
+            _value = march_data[_roi]["fitting"]["march_dollase"][item_to_plot]
             array_to_plot.append(_value)
 
         self.parent.march_dollase_plot.axes.cla()
-        self.parent.march_dollase_plot.axes.plot(array_to_plot, '*')
+        self.parent.march_dollase_plot.axes.plot(array_to_plot, "*")
         self.parent.march_dollase_plot.draw()

@@ -1,37 +1,33 @@
-from IPython.display import HTML
-from IPython.display import display
+import collections
+import os
 
 import numpy as np
-import os
-import copy
-import collections
 import pyqtgraph as pg
+from IPython.display import HTML, display
 from skimage import transform
 
 try:
-    from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui, QtWidgets
-    from PyQt4.QtGui import QMainWindow, QDialog
+    from PyQt4.QtGui import QDialog, QFileDialog, QMainWindow
 except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
+    from PyQt5 import QtCore, QtGui
+    from PyQt5.QtWidgets import QFileDialog, QMainWindow
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
+
     def _fromUtf8(s):
         return s
 
-from __code._utilities.color import  Color
-from __code.file_handler import retrieve_time_stamp, make_ascii_file
-from __code.ui_scale_overlapping_images import Ui_MainWindow as UiMainWindow
+
+from __code._utilities.color import Color
 from __code.decorators import wait_cursor
-from __code.file_handler import make_ascii_file
+from __code.file_handler import make_ascii_file, retrieve_time_stamp
+from __code.ui_scale_overlapping_images import Ui_MainWindow as UiMainWindow
 
 
 class ScaleOverlappingImagesUi(QMainWindow):
-
     data_dict = {}
     data_dict_raw = {}
     timestamp_dict = {}
@@ -46,10 +42,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
     summary_table_width = [300, 150, 100]
 
     live_image = []
-    grid_view = {'pos': None,
-                 'adj': None,
-                 'item': None,
-                 'color': (0, 0, 255, 255, 1)}
+    grid_view = {"pos": None, "adj": None, "item": None, "color": (0, 0, 255, 255, 1)}
 
     profile_color = (0, 255, 0, 255, 1)
 
@@ -59,24 +52,31 @@ class ScaleOverlappingImagesUi(QMainWindow):
     list_guide_pyqt_roi = list()
     list_profile_pyqt_roi = list()
     list_table_widget_checkbox = list()
-    default_guide_roi = {'x0': 0, 'y0': 0, 'width':200, 'height': 800,
-                         'isChecked': True,
-                         'color_activated':'r',
-                         'color_deactivated': 'b'}
-    previous_active_row = -1 # use to deactivated the guide and profile roi
+    default_guide_roi = {
+        "x0": 0,
+        "y0": 0,
+        "width": 200,
+        "height": 800,
+        "isChecked": True,
+        "color_activated": "r",
+        "color_deactivated": "b",
+    }
+    previous_active_row = -1  # use to deactivated the guide and profile roi
 
     # default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
     #                               'width': 200, 'height': 200}
-    default_profile_width_values = np.arange(1,50,2)
+    default_profile_width_values = np.arange(1, 50, 2)
 
-
-    #remove-me
+    # remove-me
     test_roi = None
 
-    def __init__(self, parent=None, working_dir='', data_dict=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+    def __init__(self, parent=None, working_dir="", data_dict=None):
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
@@ -84,10 +84,10 @@ class ScaleOverlappingImagesUi(QMainWindow):
         self.setWindowTitle("Metadata Overlapping Images")
 
         self.working_dir = working_dir
-        self.data_dict = data_dict # Normalization data dictionary  {'file_name': [],
-                                                                     #'data': [[...],[...]]],
-                                                                     #'metadata': [],
-                                                                     #'shape': {}}
+        self.data_dict = data_dict  # Normalization data dictionary  {'file_name': [],
+        #'data': [[...],[...]]],
+        #'metadata': [],
+        #'shape': {}}
 
         # # untouched array of images (used to move and rotate images)
         # self.data_dict_raw = copy.deepcopy(data_dict)
@@ -141,11 +141,9 @@ class ScaleOverlappingImagesUi(QMainWindow):
 
         for _row in np.arange(nbr_row):
             [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-            _label = ' Profile #{}'.format(_row+1)
+            _label = f" Profile #{_row+1}"
             _color = list_rgb_profile_color[_row]
-            self.ui.profile_view.plot(x_axis, profile,
-                                        name=_label,
-                                        pen=_color)
+            self.ui.profile_view.plot(x_axis, profile, name=_label, pen=_color)
 
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
@@ -166,9 +164,9 @@ class ScaleOverlappingImagesUi(QMainWindow):
         self.all_plots_legend = self.ui.all_plots_view.addLegend()
 
         for _color_index_file, _index_file in enumerate(list_index_file_selected):
-            _data = self.data_dict['data'][_index_file]
+            _data = self.data_dict["data"][_index_file]
             for _color_index_profile, _index_profile in enumerate(list_index_profile_selected):
-                legend = "File #{} - Profile #{}".format(_index_file, _index_profile)
+                legend = f"File #{_index_file} - Profile #{_index_profile}"
                 _color = list_rgb_profile_color[_color_index_file + _color_index_profile * nbr_file_selected]
                 [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
                 self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
@@ -178,7 +176,6 @@ class ScaleOverlappingImagesUi(QMainWindow):
         o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
 
     def remove_row(self, row=-1):
-
         if row == -1:
             return
 
@@ -206,7 +203,6 @@ class ScaleOverlappingImagesUi(QMainWindow):
             new_selection_2 = QtGui.QTableWidgetSelectionRange(row, 0, row, 1)
             self.ui.tableWidget_2.setRangeSelected(new_selection_2, True)
 
-
     def update_guide_roi_using_guide_table(self, row=-1):
         [x0, y0, width, height] = self.get_item_row(row=row)
         roi_ui = self.list_guide_pyqt_roi[row]
@@ -216,8 +212,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
         roi_ui.blockSignals(False)
 
     def update_profile_rois(self, row=-1):
-        if row == -1: # update all of them
-
+        if row == -1:  # update all of them
             # # remove all profile rois
             # self.list_profile_pyqt_roi = list()
             # for _profile_roi in self.list_profile_pyqt_roi:
@@ -242,16 +237,15 @@ class ScaleOverlappingImagesUi(QMainWindow):
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
             if self.is_row_enabled(row=_row):
-                region = _roi.getArraySlice(self.live_image,
-                                            self.ui.image_view.imageItem)
+                region = _roi.getArraySlice(self.live_image, self.ui.image_view.imageItem)
 
                 x0 = region[0][0].start
                 x1 = region[0][0].stop
                 y0 = region[0][1].start
                 y1 = region[0][1].stop
 
-                width = np.abs(x1 - x0)-1
-                height = np.abs(y1 - y0)-1
+                width = np.abs(x1 - x0) - 1
+                height = np.abs(y1 - y0) - 1
 
                 self.set_item_main_table(row=_row, col=1, value=str(x0))
                 self.set_item_main_table(row=_row, col=2, value=str(y0))
@@ -277,11 +271,11 @@ class ScaleOverlappingImagesUi(QMainWindow):
         self.ui.tableWidget.insertRow(row)
         self.ui.tableWidget.setRowHeight(row, self.guide_table_height)
 
-        self.set_item_main_table(row=row, col=0, value=default_values['isChecked'])
-        self.set_item_main_table(row=row, col=1, value=default_values['x0'])
-        self.set_item_main_table(row=row, col=2, value=default_values['y0'])
-        self.set_item_main_table(row=row, col=3, value=default_values['width'])
-        self.set_item_main_table(row=row, col=4, value=default_values['height'])
+        self.set_item_main_table(row=row, col=0, value=default_values["isChecked"])
+        self.set_item_main_table(row=row, col=1, value=default_values["x0"])
+        self.set_item_main_table(row=row, col=2, value=default_values["y0"])
+        self.set_item_main_table(row=row, col=3, value=default_values["width"])
+        self.set_item_main_table(row=row, col=4, value=default_values["height"])
 
         # select new entry
         nbr_row = self.ui.tableWidget.rowCount()
@@ -316,11 +310,11 @@ class ScaleOverlappingImagesUi(QMainWindow):
         """rename all the profile name"""
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText("Profile # {}".format(_row+1))
+            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row+1}")
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):
-        item = QtGui.QTableWidgetItem("Profile # {}".format(row))
+        item = QtGui.QTableWidgetItem(f"Profile # {row}")
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
         self.ui.all_plots_profiles_table.setItem(row, 0, item)
 
@@ -340,7 +334,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
         self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
         widget.blockSignals(False)
 
-    def set_item_main_table(self, row=0, col=0, value=''):
+    def set_item_main_table(self, row=0, col=0, value=""):
         if col == 0:
             spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             widget = QtGui.QCheckBox()
@@ -373,19 +367,19 @@ class ScaleOverlappingImagesUi(QMainWindow):
             x_left = x0
             x_right = x0 + width
 
-            profile_center = y0 + np.abs(int((height)/2.))
+            profile_center = y0 + np.abs(int((height) / 2.0))
             y_top = profile_center - delta_profile
             y_bottom = profile_center + delta_profile
 
         else:
-            profile_center = x0 + np.abs(int((width) / 2.))
+            profile_center = x0 + np.abs(int((width) / 2.0))
             x_left = profile_center - delta_profile
             x_right = profile_center + delta_profile
 
             y_top = y0
             y_bottom = y0 + height
 
-        Profile = collections.namedtuple('Profile', ['x_left', 'x_right', 'y_top', 'y_bottom', 'profile_center'])
+        Profile = collections.namedtuple("Profile", ["x_left", "x_right", "y_top", "y_bottom", "profile_center"])
         result = Profile(x_left, x_right, y_top, y_bottom, profile_center)
         return result
 
@@ -406,7 +400,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
             mean_axis = 0
             x_axis = np.arange(y_top, y_bottom)
 
-        _data = image[x_left: x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
+        _data = image[x_left:x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
         profile = np.mean(_data, axis=mean_axis)
         return [x_axis, profile]
 
@@ -421,8 +415,8 @@ class ScaleOverlappingImagesUi(QMainWindow):
         height = int(str(self.ui.tableWidget.item(row, 4).text()))
         return (x0, y0, width, height)
 
-    def get_selected_row(self, source='tableWidget'):
-        if source == 'tableWidget':
+    def get_selected_row(self, source="tableWidget"):
+        if source == "tableWidget":
             ui = self.ui.tableWidget
         else:
             ui = self.ui.tableWidget_2
@@ -438,7 +432,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
         for _selection in selection:
             top_row = _selection.topRow()
             bottom_row = _selection.bottomRow()
-            for _row in np.arange(top_row, bottom_row+1):
+            for _row in np.arange(top_row, bottom_row + 1):
                 list_row_selected.append(_row)
         return list_row_selected
 
@@ -450,11 +444,11 @@ class ScaleOverlappingImagesUi(QMainWindow):
         selection = self.ui.all_plots_file_name_table.selectedRanges()
         return self.__create_list_from_selection(selection)
 
-    def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
+    def _highlights_guide_profile_pyqt_roi(self, row=-1, status="activated"):
         if row == -1:
             return
         _guide_ui = self.list_guide_pyqt_roi[row]
-        _guide_ui.setPen(self.default_guide_roi['color_' + status])
+        _guide_ui.setPen(self.default_guide_roi["color_" + status])
 
     def highlight_guide_profile_pyqt_rois(self, row=-1):
         """When user click a row in the table, the correspoinding ROI will be activated and ots
@@ -465,8 +459,8 @@ class ScaleOverlappingImagesUi(QMainWindow):
             return
 
         try:
-            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
-            self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
+            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status="deactivated")
+            self._highlights_guide_profile_pyqt_roi(row=row, status="activated")
         except:
             pass
 
@@ -506,7 +500,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
 
     ## Event Handler
     def tab_changed(self, tab_index):
-        if tab_index == 1: # display all plots
+        if tab_index == 1:  # display all plots
             self.update_all_plots()
 
     def guide_changed(self):
@@ -532,7 +526,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
         full_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
-        row = self.get_selected_row(source='tableWidget_2')
+        row = self.get_selected_row(source="tableWidget_2")
         new_selection = QtGui.QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.highlight_guide_profile_pyqt_rois(row=row)
@@ -600,7 +594,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
-        self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
+        self._highlights_guide_profile_pyqt_roi(row=selected_row, status="deactivated")
         self.insert_row(row=selected_row)
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.previous_active_row = selected_row
@@ -616,41 +610,39 @@ class ScaleOverlappingImagesUi(QMainWindow):
         self.display_profiles()
 
     def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+        )
         if _export_folder:
-            o_export = ExportProfiles(parent=self,
-                                      export_folder=_export_folder)
+            o_export = ExportProfiles(parent=self, export_folder=_export_folder)
             o_export.run()
             QtGui.QGuiApplication.processEvents()
 
     def previous_image_button_clicked(self):
-        self.change_slider(offset = -1)
+        self.change_slider(offset=-1)
         # self.display_measurement_profiles()
 
     def next_image_button_clicked(self):
-        self.change_slider(offset = +1)
+        self.change_slider(offset=+1)
         # self.display_measurement_profiles()
 
     def help_button_clicked(self):
         import webbrowser
+
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/profile/")
 
     def closeEvent(self, event=None):
         pass
 
 
-class ExportProfiles(object):
-
-    def __init__(self, parent=None, export_folder=''):
+class ExportProfiles:
+    def __init__(self, parent=None, export_folder=""):
         self.parent = parent
         self.export_folder = export_folder
 
     def _create_output_file_name(self, profile_index=0):
         base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, "{}_profile_{}.txt".format(base_name, profile_index+1))
+        output_file_name = os.path.join(self.export_folder, f"{base_name}_profile_{profile_index+1}.txt")
         return output_file_name
 
     def _create_metadata(self, profile_index=0):
@@ -663,18 +655,18 @@ class ExportProfiles(object):
         y_top = profile_dimension.y_top
         y_bottom = profile_dimension.y_bottom
         metadata.append("#Profile dimension:")
-        metadata.append("# * [x0, y0, x1, y1] = [{}, {}, {}, {}]".format(x_left, y_top, x_right, y_bottom))
+        metadata.append(f"# * [x0, y0, x1, y1] = [{x_left}, {y_top}, {x_right}, {y_bottom}]")
         if is_x_profile_direction:
             metadata.append("# * integrated over y_axis")
-            table_axis = ['#x_axis']
+            table_axis = ["#x_axis"]
         else:
             metadata.append("# * integrated over x_axis")
-            table_axis = ['#y_axis']
-        nbr_files = len(self.parent.data_dict['file_name'])
-        metadata.append("#List of files ({} files)".format(nbr_files))
-        for _index, _file in enumerate(self.parent.data_dict['file_name']):
-            metadata.append("# * {} -> col{}".format(_file, _index+1))
-            table_axis.append("# col.{}".format(_index+1))
+            table_axis = ["#y_axis"]
+        nbr_files = len(self.parent.data_dict["file_name"])
+        metadata.append(f"#List of files ({nbr_files} files)")
+        for _index, _file in enumerate(self.parent.data_dict["file_name"]):
+            metadata.append(f"# * {_file} -> col{_index+1}")
+            table_axis.append(f"# col.{_index+1}")
         metadata.append("#")
         metadata.append("#" + ",".join(table_axis))
         return metadata
@@ -682,15 +674,14 @@ class ExportProfiles(object):
     def _create_data(self, profile_index=0):
         all_profiles = []
         x_axis = []
-        for _data in self.parent.data_dict['data']:
-            [x_axis, profile] = self.parent.get_profile(image=np.transpose(_data),
-                                                        profile_roi_row=profile_index)
+        for _data in self.parent.data_dict["data"]:
+            [x_axis, profile] = self.parent.get_profile(image=np.transpose(_data), profile_roi_row=profile_index)
             all_profiles.append(list(profile))
 
         data = []
         for _index, _row in enumerate(np.transpose(all_profiles)):
             str_row = [str(_value) for _value in _row]
-            data.append("{}, ".format(x_axis[_index]) + ", ".join(str_row))
+            data.append(f"{x_axis[_index]}, " + ", ".join(str_row))
 
         return data
 
@@ -700,16 +691,12 @@ class ExportProfiles(object):
             _output_file_name = self._create_output_file_name(profile_index=_profile_index)
             metadata = self._create_metadata(profile_index=_profile_index)
             data = self._create_data(profile_index=_profile_index)
-            make_ascii_file(metadata=metadata,
-                            data=data,
-                            output_file_name=_output_file_name,
-                            dim='1d')
+            make_ascii_file(metadata=metadata, data=data, output_file_name=_output_file_name, dim="1d")
 
-            display(HTML("Exported Profile file {}".format(_output_file_name)))
+            display(HTML(f"Exported Profile file {_output_file_name}"))
 
 
-class GuideAndProfileRoisHandler(object):
-
+class GuideAndProfileRoisHandler:
     __profile = None
 
     def __init__(self, parent=None, row=-1):
@@ -730,9 +717,11 @@ class GuideAndProfileRoisHandler(object):
 
     def _define_guide(self):
         """define the guide"""
-        guide_roi = pg.RectROI([self.parent.default_guide_roi['x0'], self.parent.default_guide_roi['y0']],
-                                [self.parent.default_guide_roi['width'], self.parent.default_guide_roi['height']],
-                            pen=self.parent.default_guide_roi['color_activated'])
+        guide_roi = pg.RectROI(
+            [self.parent.default_guide_roi["x0"], self.parent.default_guide_roi["y0"]],
+            [self.parent.default_guide_roi["width"], self.parent.default_guide_roi["height"]],
+            pen=self.parent.default_guide_roi["color_activated"],
+        )
         guide_roi.addScaleHandle([1, 1], [0, 0])
         guide_roi.addScaleHandle([0, 0], [1, 1])
         guide_roi.sigRegionChanged.connect(self.parent.guide_changed)
@@ -753,14 +742,13 @@ class GuideAndProfileRoisHandler(object):
         y_bottom = profile_dimension.y_bottom
 
         if is_x_profile_direction:
-
             pos = []
             pos.append([x_left, y_top])
             pos.append([x_right, y_top])
             adj = []
             adj.append([0, 1])
 
-            if y_top != y_bottom: # height == 1
+            if y_top != y_bottom:  # height == 1
                 pos.append([x_left, y_bottom])
                 pos.append([x_right, y_bottom])
                 adj.append([2, 3])
@@ -768,8 +756,7 @@ class GuideAndProfileRoisHandler(object):
             adj = np.array(adj)
             pos = np.array(pos)
 
-        else: # y-profile direction
-
+        else:  # y-profile direction
             pos = []
             pos.append([x_left, y_top])
             pos.append([x_left, y_bottom])
@@ -787,83 +774,82 @@ class GuideAndProfileRoisHandler(object):
         line_color = self.parent.profile_color
         _list_line_color = list(line_color)
         line_color = tuple(_list_line_color)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
+        lines = np.array(
+            [line_color for n in np.arange(len(pos))],
+            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+        )
 
         profile = pg.GraphItem()
         self.parent.ui.image_view.addItem(profile)
-        profile.setData(pos=pos,
-                     adj=adj,
-                     pen=lines,
-                     symbol=None,
-                     pxMode=False)
+        profile.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
 
         self.__profile = profile
 
 
-class Initializer(object):
-
+class Initializer:
     def __init__(self, parent=None):
         self.parent = parent
 
     def timestamp_dict(self):
-        list_files = self.parent.data_dict['file_name']
+        list_files = self.parent.data_dict["file_name"]
         self.parent.timestamp_dict = retrieve_time_stamp(list_files)
 
     def table(self):
         # init the summary table
-        list_files_full_name = self.parent.data_dict['file_name']
+        list_files_full_name = self.parent.data_dict["file_name"]
         list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
 
-        list_time_stamp = self.parent.timestamp_dict['list_time_stamp']
-        list_time_stamp_user_format = self.parent.timestamp_dict['list_time_stamp_user_format']
+        list_time_stamp = self.parent.timestamp_dict["list_time_stamp"]
+        list_time_stamp_user_format = self.parent.timestamp_dict["list_time_stamp_user_format"]
         time_0 = list_time_stamp[0]
         for _row, _file in enumerate(list_files_short_name):
             self.parent.ui.summary_table.insertRow(_row)
             self.set_item_summary_table(row=_row, col=0, value=_file)
             self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
             _offset = list_time_stamp[_row] - time_0
-            self.set_item_summary_table(row=_row, col=2, value="{:0.2f}".format(_offset))
+            self.set_item_summary_table(row=_row, col=2, value=f"{_offset:0.2f}")
 
             self.parent.ui.all_plots_file_name_table.insertRow(_row)
             self.set_item_all_plot_file_name_table(row=_row, value=os.path.basename(_file))
 
-    def parameters(self):        
+    def parameters(self):
         # init the position of the measurement ROI
-        [height, width] = np.shape(self.parent.data_dict['data'][0])
-        self.parent.default_guide_roi['width'] = int(width/10)
-        self.parent.default_guide_roi['height'] = int(height/5)
-        self.parent.default_guide_roi['x0'] = int(width/2)
-        self.parent.default_guide_roi['y0'] = int(height/2)
+        [height, width] = np.shape(self.parent.data_dict["data"][0])
+        self.parent.default_guide_roi["width"] = int(width / 10)
+        self.parent.default_guide_roi["height"] = int(height / 5)
+        self.parent.default_guide_roi["x0"] = int(width / 2)
+        self.parent.default_guide_roi["y0"] = int(height / 2)
         self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
 
     def widgets(self):
         _file_path = os.path.dirname(__file__)
-        left_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_fast.png'))
-        self.parent.ui.left_rotation_button_fast.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_fast_file + "'); " + \
-                                                        "background-repeat: no-repeat")
+        left_rotation_fast_file = os.path.abspath(
+            os.path.join(_file_path, "static/profile/button_rotation_left_fast.png")
+        )
+        self.parent.ui.left_rotation_button_fast.setStyleSheet(
+            "background-image: " "url('" + left_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+        )
 
-        right_rotation_fast_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_fast.png'))
-        self.parent.ui.right_rotation_button_fast.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_fast_file + "'); " + \
-                                                         "background-repeat: no-repeat")
+        right_rotation_fast_file = os.path.abspath(
+            os.path.join(_file_path, "static/profile/button_rotation_right_fast.png")
+        )
+        self.parent.ui.right_rotation_button_fast.setStyleSheet(
+            "background-image: " "url('" + right_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+        )
 
-        left_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                               'static/profile/button_rotation_left_slow.png'))
-        self.parent.ui.left_rotation_button_slow.setStyleSheet("background-image: "
-                                                        "url('" + left_rotation_slow_file + "'); " + \
-                                                        "background-repeat: no-repeat")
+        left_rotation_slow_file = os.path.abspath(
+            os.path.join(_file_path, "static/profile/button_rotation_left_slow.png")
+        )
+        self.parent.ui.left_rotation_button_slow.setStyleSheet(
+            "background-image: " "url('" + left_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+        )
 
-        right_rotation_slow_file = os.path.abspath(os.path.join(_file_path,
-                                                                'static/profile/button_rotation_right_slow.png'))
-        self.parent.ui.right_rotation_button_slow.setStyleSheet("background-image: "
-                                                         "url('" + right_rotation_slow_file + "'); " + \
-                                                         "background-repeat: no-repeat")
+        right_rotation_slow_file = os.path.abspath(
+            os.path.join(_file_path, "static/profile/button_rotation_right_slow.png")
+        )
+        self.parent.ui.right_rotation_button_slow.setStyleSheet(
+            "background-image: " "url('" + right_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+        )
 
         self.parent.ui.splitter_2.setSizes([250, 50])
         self.parent.ui.splitter.setSizes([500, 50])
@@ -871,7 +857,7 @@ class Initializer(object):
         self.parent.ui.all_plots_verti_splitter.setSizes([300, 100])
 
         # file slider
-        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict['data']) - 1)
+        self.parent.ui.file_slider.setMaximum(len(self.parent.data_dict["data"]) - 1)
 
         # update size of table columns
         nbr_columns = self.parent.ui.tableWidget.columnCount()
@@ -883,10 +869,12 @@ class Initializer(object):
         for _col in range(nbr_columns):
             self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
 
-        self.parent.display_ui = [self.parent.ui.display_size_label,
-                           self.parent.ui.grid_size_slider,
-                           self.parent.ui.display_transparency_label,
-                           self.parent.ui.transparency_slider]
+        self.parent.display_ui = [
+            self.parent.ui.display_size_label,
+            self.parent.ui.grid_size_slider,
+            self.parent.ui.display_transparency_label,
+            self.parent.ui.transparency_slider,
+        ]
 
     def pyqtgraph(self):
         # image
@@ -913,19 +901,18 @@ class Initializer(object):
         vertical_layout2.addWidget(self.parent.ui.all_plots_view)
         self.parent.ui.all_plots_widget.setLayout(vertical_layout2)
 
-    def set_item_all_plot_file_name_table(self, row=0, value=''):
+    def set_item_all_plot_file_name_table(self, row=0, value=""):
         item = QtGui.QTableWidgetItem(str(value))
         self.parent.ui.all_plots_file_name_table.setItem(row, 0, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-    def set_item_summary_table(self, row=0, col=0, value=''):
+    def set_item_summary_table(self, row=0, col=0, value=""):
         item = QtGui.QTableWidgetItem(str(value))
         self.parent.ui.summary_table.setItem(row, col, item)
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
 
-class DisplayImages(object):
-
+class DisplayImages:
     def __init__(self, parent=None, recalculate_image=False):
         self.parent = parent
         self.recalculate_image = recalculate_image
@@ -938,9 +925,11 @@ class DisplayImages(object):
         if recalculate_image:
             angle = self.parent.rotation_angle
             # rotate all images
-            self.parent.data_dict['data'] = [transform.rotate(_image, angle) for _image in self.parent.data_dict_raw['data']]
+            self.parent.data_dict["data"] = [
+                transform.rotate(_image, angle) for _image in self.parent.data_dict_raw["data"]
+            ]
 
-        _image = self.parent.data_dict['data'][slider_index]
+        _image = self.parent.data_dict["data"][slider_index]
         return _image
 
     def display_images(self):
@@ -976,7 +965,7 @@ class DisplayImages(object):
         # vertical lines
         x = 0
         index = 0
-        while (x <= width):
+        while x <= width:
             one_edge = [x, 0]
             other_edge = [x, height]
             pos.append(one_edge)
@@ -987,7 +976,7 @@ class DisplayImages(object):
 
         # vertical lines
         y = 0
-        while (y <= height):
+        while y <= height:
             one_edge = [0, y]
             other_edge = [width, y]
             pos.append(one_edge)
@@ -996,46 +985,42 @@ class DisplayImages(object):
             y += grid_size
             index += 2
 
-        pos_adj_dict['pos'] = np.array(pos)
-        pos_adj_dict['adj'] = np.array(adj)
+        pos_adj_dict["pos"] = np.array(pos)
+        pos_adj_dict["adj"] = np.array(adj)
 
         return pos_adj_dict
 
     def display_grid(self):
         # remove previous grid if any
-        if self.parent.grid_view['item']:
-            self.parent.ui.image_view.removeItem(self.parent.grid_view['item'])
+        if self.parent.grid_view["item"]:
+            self.parent.ui.image_view.removeItem(self.parent.grid_view["item"])
 
         # if we want a grid
         if self.parent.ui.grid_display_checkBox.isChecked():
-
             grid_size = self.parent.ui.grid_size_slider.value()
             [height, width] = np.shape(self.parent.live_image)
 
-            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size,
-                                                      height=height,
-                                                      width=width)
-            pos = pos_adj_dict['pos']
-            adj = pos_adj_dict['adj']
+            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size, height=height, width=width)
+            pos = pos_adj_dict["pos"]
+            adj = pos_adj_dict["adj"]
 
-            line_color = self.parent.grid_view['color']
-            _transparency_value = 255 - (float(str(self.parent.ui.transparency_slider.value()))/100) * 255
+            line_color = self.parent.grid_view["color"]
+            _transparency_value = 255 - (float(str(self.parent.ui.transparency_slider.value())) / 100) * 255
             _list_line_color = list(line_color)
             _list_line_color[3] = _transparency_value
             line_color = tuple(_list_line_color)
-            lines = np.array([line_color for n in np.arange(len(pos))],
-                             dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                    ('blue', np.ubyte), ('alpha', np.ubyte),
-                                    ('width', float)])
+            lines = np.array(
+                [line_color for n in np.arange(len(pos))],
+                dtype=[
+                    ("red", np.ubyte),
+                    ("green", np.ubyte),
+                    ("blue", np.ubyte),
+                    ("alpha", np.ubyte),
+                    ("width", float),
+                ],
+            )
 
             grid = pg.GraphItem()
             self.parent.ui.image_view.addItem(grid)
-            grid.setData(pos=pos,
-                         adj=adj,
-                         pen=lines,
-                         symbol=None,
-                         pxMode=False)
-            self.parent.grid_view['item'] = grid
-
-
-
+            grid.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+            self.parent.grid_view["item"] = grid

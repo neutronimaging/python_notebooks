@@ -22,10 +22,12 @@
 # # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.select_metadata_to_display import DisplayMetadata
 from __code import system
-system.System.select_working_dir(notebook='list_tiff_metadata')
+from __code.select_metadata_to_display import DisplayMetadata
+
+system.System.select_working_dir(notebook="list_tiff_metadata")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -33,7 +35,7 @@ custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
 o_meta = DisplayMetadata(working_dir=system.System.get_working_dir())
-o_meta.select_images(instruction='Select TIFF images ...')
+o_meta.select_images(instruction="Select TIFF images ...")
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select Metadata to Display
@@ -51,13 +53,12 @@ o_meta.display_metadata_list()
 o_meta.display_metadata_selected()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Export Metadata Selected 
+# # Export Metadata Selected
 
 # + run_control={"frozen": false, "read_only": false}
-o_meta.select_output_folder(instruction='Select Output Folder ...')
+o_meta.select_output_folder(instruction="Select Output Folder ...")
 
 # + run_control={"frozen": false, "read_only": false}
 o_meta.export()
 
 # + run_control={"frozen": false, "read_only": false}
-

@@ -1,16 +1,16 @@
-from qtpy.QtWidgets import QVBoxLayout, QProgressBar
 import matplotlib
-matplotlib.use('Qt5Agg')
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import numpy as np
+from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 
-from __code.panoramic_stitching.mplcanvas import MplCanvas
+matplotlib.use("Qt5Agg")
+import numpy as np
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
 from __code._utilities.array import get_n_random_int_of_max_value_m
 from __code._utilities.table_handler import TableHandler
+from __code.panoramic_stitching.mplcanvas import MplCanvas
 
 
 class Initialization:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -25,13 +25,11 @@ class Initialization:
             widget.setLayout(layout)
             return sc
 
-        self.parent.profiles_plot = _matplotlib(parent=self.parent,
-                                           widget=self.parent.ui.profiles_widget)
+        self.parent.profiles_plot = _matplotlib(parent=self.parent, widget=self.parent.ui.profiles_widget)
 
-        self.parent.elements_position = _matplotlib(parent=self.parent,
-                                                    widget=self.parent.ui.elements_position_widget)
+        self.parent.elements_position = _matplotlib(parent=self.parent, widget=self.parent.ui.elements_position_widget)
 
-        self.parent.elements_position.mpl_connect('button_press_event', self.parent.click_on_elements_position_plot)
+        self.parent.elements_position.mpl_connect("button_press_event", self.parent.click_on_elements_position_plot)
 
     def widgets(self):
         list_of_images = self.parent.list_of_images
@@ -51,13 +49,13 @@ class Initialization:
         self.parent.ui.threshold_slider.setMaximum(global_max)
         self.parent.ui.threshold_slider.setMinimum(global_min)
 
-        delta_global = (global_max - global_min)/3
-        self.parent.ui.threshold_slider.setValue(int(2*delta_global))
+        delta_global = (global_max - global_min) / 3
+        self.parent.ui.threshold_slider.setValue(int(2 * delta_global))
 
         self.parent.ui.listWidget.addItems(list_of_images)
         self.parent.ui.listWidget.setCurrentRow(0)
 
-        self.parent.ui.tolerance_units.setText(u"degrees (\u00b0)")
+        self.parent.ui.tolerance_units.setText("degrees (\u00b0)")
 
         self.parent.ui.splitter.setSizes([500, 100])
         self.parent.ui.splitter_3.setSizes([200, 500])
@@ -99,7 +97,4 @@ class Initialization:
         for _row_index, _row_value in enumerate(formatted_data):
             o_table.insert_empty_row(_row_index)
             for _col_index, _value in enumerate(_row_value):
-                o_table.insert_item(row=_row_index,
-                                    column=_col_index,
-                                    value=_value,
-                                    editable=False)
+                o_table.insert_item(row=_row_index, column=_col_index, value=_value, editable=False)

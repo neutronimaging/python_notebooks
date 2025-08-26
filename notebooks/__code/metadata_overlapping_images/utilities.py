@@ -8,19 +8,19 @@ def string_cleaning(first_part_of_string_to_remove="", last_part_of_string_to_re
     _clean_first_part = ""
     for _c in first_part_of_string_to_remove:
         if _c in LIST_FUNNY_CHARACTERS:
-            _clean_first_part += "\{}".format(_c)
+            _clean_first_part += rf"\{_c}"
         else:
-            _clean_first_part += "{}".format(_c)
+            _clean_first_part += f"{_c}"
 
     last_part_of_string_to_remove = last_part_of_string_to_remove
     _clean_second_part = ""
     for _c in last_part_of_string_to_remove:
         if _c in LIST_FUNNY_CHARACTERS:
-            _clean_second_part += "\{}".format(_c)
+            _clean_second_part += rf"\{_c}"
         else:
-            _clean_second_part += "{}".format(_c)
+            _clean_second_part += f"{_c}"
 
-    regular_expr = r"{}(.*){}".format(_clean_first_part, _clean_second_part)
+    regular_expr = rf"{_clean_first_part}(.*){_clean_second_part}"
 
     m = re.match(regular_expr, str(string_to_clean))
     if m and m.group(1):
@@ -31,11 +31,7 @@ def string_cleaning(first_part_of_string_to_remove="", last_part_of_string_to_re
 
 
 def linear_operation(input_parameter="", math_1="", value_1="", math_2="", value_2=""):
-
-    if is_linear_operation_valid(input_parameter=input_parameter,
-                                 value_1=value_1,
-                                 value_2=value_2):
-
+    if is_linear_operation_valid(input_parameter=input_parameter, value_1=value_1, value_2=value_2):
         operation_to_eval = f"{input_parameter}"
         if value_1:
             operation_to_eval += f" {math_1} {float(value_1)}"
@@ -50,7 +46,6 @@ def linear_operation(input_parameter="", math_1="", value_1="", math_2="", value
 
 
 def is_linear_operation_valid(input_parameter="", value_1="", value_2=""):
-
     def is_error_in_operation(value):
         operation = str(value.strip())
         if operation:
@@ -60,9 +55,11 @@ def is_linear_operation_valid(input_parameter="", value_1="", value_2=""):
                 return True
         return False
 
-    if (not is_error_in_operation(value_1)) and \
-        (not is_error_in_operation(value_2)) and \
-        (not is_error_in_operation(input_parameter)):
+    if (
+        (not is_error_in_operation(value_1))
+        and (not is_error_in_operation(value_2))
+        and (not is_error_in_operation(input_parameter))
+    ):
         return True
 
     return False

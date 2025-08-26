@@ -5,10 +5,10 @@ def exclude_y_value_when_error_is_nan(axis, error_axis):
     axis_cleaned = []
     error_axis_cleaned = []
 
-    for _x, _error in zip(axis, error_axis):
+    for _x, _error in zip(axis, error_axis, strict=False):
         if (_x == "None") or (_error == "None") or (_x is None) or (_error is None):
-            axis_cleaned.append(np.NaN)
-            error_axis_cleaned.append(np.NaN)
+            axis_cleaned.append(np.nan)
+            error_axis_cleaned.append(np.nan)
         else:
             axis_cleaned.append(float(_x))
             error_axis_cleaned.append(float(_error))
@@ -33,17 +33,14 @@ def reject_outliers(array=None):
     if len(array) < 3:
         return array
 
-    new_array = [_value
-                 for _value in array
-                 if (not (_value == np.min(array)))
-                 and (not (_value == np.max(array)))]
+    new_array = [_value for _value in array if (not (_value == np.min(array))) and (not (_value == np.max(array)))]
     return new_array
 
 
 def reject_n_outliers(array=None, n=1):
     set_array = list(array)
     set_array.sort()
-    return set_array[n: -n]
+    return set_array[n:-n]
 
 
 def find_nearest_index(array, value):

@@ -18,25 +18,25 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
 from __code.timepix3_histo_hdf5_mcp_detector.timepix3_histo_hdf5_mcp_detector import Timepix3HistoHdf5McpDetector
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP')
+system.System.select_working_dir(facility="SNS", instrument="SNAP")
 from __code.__all import custom_style
+
 custom_style.style()
 
-import matplotlib.pyplot as plt
 # %matplotlib notebook
 # -
 
-# # Prepare UI engine 
+# # Prepare UI engine
 
 # %gui qt
 
-# # Select Histo MCP HDF5 File  
+# # Select Histo MCP HDF5 File
 
 o_timepix3 = Timepix3HistoHdf5McpDetector(working_dir=system.System.get_working_dir())
 o_timepix3.hdf5_or_config_file_input()
@@ -60,12 +60,10 @@ o_timepix3.calculate_and_display_profile()
 
 o_timepix3.select_peak_to_fit()
 
-# ## fit peak 
+# ## fit peak
 
 o_timepix3.fitting()
 
 # # Saving session
 
 o_timepix3.saving_session()
-
-

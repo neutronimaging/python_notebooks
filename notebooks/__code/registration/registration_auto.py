@@ -8,7 +8,6 @@ from qtpy.QtWidgets import QApplication
 
 
 class RegistrationAuto:
-
     registered_parameters = {}
 
     def __init__(self, parent=None, reference_image=[], floating_images=[]):
@@ -25,14 +24,13 @@ class RegistrationAuto:
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
 
-        for _row,_image in enumerate(_list_images):
-            [yoffset, xoffset], error, diffphase = register_translation(_ref_image,
-                                                                        _image)
+        for _row, _image in enumerate(_list_images):
+            [yoffset, xoffset], error, diffphase = register_translation(_ref_image, _image)
             if not _row == self.parent.reference_image_index:
                 self.parent.set_item(row=_row, col=1, value=xoffset)
                 self.parent.set_item(row=_row, col=2, value=yoffset)
 
-            self.parent.eventProgress.setValue(_row+1)
+            self.parent.eventProgress.setValue(_row + 1)
             QApplication.processEvents()
 
         self.parent.eventProgress.setVisible(False)

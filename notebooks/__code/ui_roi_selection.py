@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Volumes/G-DRIVE/git/python_notebooks/notebooks/ui/ui_roi_selection.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
@@ -8,7 +6,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1140, 704)
@@ -111,7 +110,7 @@ class Ui_MainWindow(object):
         self.apply_button.clicked.connect(MainWindow.apply_clicked)
         self.remove_roi_button.clicked.connect(MainWindow.remove_roi_button_clicked)
         self.add_roi_button.clicked.connect(MainWindow.add_roi_button_clicked)
-        self.table_roi.itemChanged['QTableWidgetItem*'].connect(MainWindow.update_table_roi)
+        self.table_roi.itemChanged["QTableWidgetItem*"].connect(MainWindow.update_table_roi)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -129,4 +128,3 @@ class Ui_MainWindow(object):
         self.add_roi_button.setText(_translate("MainWindow", "+"))
         self.cancel_button.setText(_translate("MainWindow", "Cancel"))
         self.apply_button.setText(_translate("MainWindow", "OK"))
-

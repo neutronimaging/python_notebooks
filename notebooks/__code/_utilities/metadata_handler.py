@@ -1,12 +1,12 @@
+import collections
 import datetime
 import os
 from collections import OrderedDict
+
 from PIL import Image
-import collections
 
 
-class MetadataHandler(object):
-
+class MetadataHandler:
     @staticmethod
     def get_list_of_metadata(tiff_file=None):
         if tiff_file is None:
@@ -17,14 +17,13 @@ class MetadataHandler(object):
         info = collections.OrderedDict(sorted(o_image0.tag_v2.items()))
         display_format = []
         for tag, value in info.items():
-            display_format.append("{} -> {}".format(tag, value))
+            display_format.append(f"{tag} -> {value}")
 
         return display_format
 
     @staticmethod
-    def get_time_stamp(file_name='', ext='tif'):
-
-        if ext in ['tif', 'tiff']:
+    def get_time_stamp(file_name="", ext="tif"):
+        if ext in ["tif", "tiff"]:
             try:
                 o_image = Image.open(file_name)
                 o_dict = dict(o_image.tag_v2)
@@ -39,11 +38,11 @@ class MetadataHandler(object):
 
             except:
                 time_stamp = os.path.getctime(file_name)
-        elif ext == 'fits':
+        elif ext == "fits":
             time_stamp = os.path.getctime(file_name)
 
         else:
-            raise NotImplemented
+            raise NotImplementedError
 
         return time_stamp
 
@@ -74,7 +73,7 @@ class MetadataHandler(object):
         return unix_epoch_timestamp
 
     @staticmethod
-    def get_metata(filename='', list_metadata=[]):
+    def get_metata(filename="", list_metadata=[]):
         if filename == "":
             return {}
 
@@ -88,7 +87,7 @@ class MetadataHandler(object):
         return result
 
     @staticmethod
-    def get_metadata(filename='', list_metadata=[], using_enum_object=False):
+    def get_metadata(filename="", list_metadata=[], using_enum_object=False):
         if filename == "":
             return {}
 
@@ -113,15 +112,15 @@ class MetadataHandler(object):
 
         _dict = OrderedDict()
         for _file in list_files:
-            _meta = MetadataHandler.get_metadata(filename=_file,
-                                                 list_metadata=list_metadata,
-                                                 using_enum_object=using_enum_object)
+            _meta = MetadataHandler.get_metadata(
+                filename=_file, list_metadata=list_metadata, using_enum_object=using_enum_object
+            )
             _dict[_file] = _meta
 
         return _dict
 
     @staticmethod
-    def get_value_of_metadata_key(filename='', list_key=None):
+    def get_value_of_metadata_key(filename="", list_key=None):
         if filename == "":
             return {}
 
@@ -146,8 +145,7 @@ class MetadataHandler(object):
 
         _dict = OrderedDict()
         for _file in list_files:
-            _meta = MetadataHandler.get_value_of_metadata_key(filename=_file,
-                                                              list_key=list_key)
+            _meta = MetadataHandler.get_value_of_metadata_key(filename=_file, list_key=list_key)
             _dict[_file] = _meta
 
         return _dict

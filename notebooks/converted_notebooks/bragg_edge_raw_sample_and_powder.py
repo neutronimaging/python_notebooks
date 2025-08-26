@@ -18,22 +18,24 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.bragg_edge.bragg_edge_raw_sample_and_powder import BraggEdge
 from __code.bragg_edge.bragg_edge import Interface
+from __code.bragg_edge.bragg_edge_raw_sample_and_powder import BraggEdge
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP', notebook='bragg_edge_raw_sample_and_powder')
+system.System.select_working_dir(facility="SNS", instrument="SNAP", notebook="bragg_edge_raw_sample_and_powder")
 from __code.__all import custom_style
+
 custom_style.style()
 
-from plotly.offline import plot, init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode
+
 init_notebook_mode()
 # -
 
-# ## Prepare UI engine 
+# ## Prepare UI engine
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
@@ -48,7 +50,7 @@ o_bragg = BraggEdge(working_dir=system.System.get_working_dir())
 o_bragg.select_working_folder()
 # -
 
-# # Select Open Beam Input Folder 
+# # Select Open Beam Input Folder
 
 o_bragg.select_ob_folder()
 
@@ -69,19 +71,19 @@ o_background = Interface(data=o_bragg.final_image)
 o_background.show()
 # -
 
-# # Normalize Data 
+# # Normalize Data
 
 o_bragg.normalization(o_background=o_background)
 
-# # Powder Element(s) to Use to Compare the Bragg Edges  
+# # Powder Element(s) to Use to Compare the Bragg Edges
 
 o_bragg.list_elements()
 
-# ## List Bragg Edges 
+# ## List Bragg Edges
 
 o_bragg.list_powder_bragg_edges()
 
-# # Select Sample ROI 
+# # Select Sample ROI
 
 o_sample = Interface(data=o_bragg.final_image)
 o_sample.show()
@@ -93,7 +95,7 @@ o_sample.show()
 o_bragg.exp_setup()
 # -
 
-# # Calculate Bragg Edges Data 
+# # Calculate Bragg Edges Data
 
 o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_sample.list_roi)
 o_bragg.load_time_spectra()
@@ -102,15 +104,13 @@ o_bragg.load_time_spectra()
 # # Display Bragg Edges vs Signal
 # -
 
-# Run the next cell **only if** you want to display the signal Counts vs lambda 
+# Run the next cell **only if** you want to display the signal Counts vs lambda
 
 # + run_control={"frozen": false, "read_only": false}
 o_bragg.plot()
 # -
-# # Export Data 
+# # Export Data
 
 o_bragg.select_output_data_folder()
 
 o_bragg.select_output_table_folder()
-
-

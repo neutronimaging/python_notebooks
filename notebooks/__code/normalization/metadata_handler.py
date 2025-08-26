@@ -1,11 +1,9 @@
-from IPython.display import display, HTML
 import collections
-import numpy as np
-import logging
 from enum import Enum
 
-from __code import file_handler
-from __code import metadata_handler
+from IPython.display import HTML, display
+
+from __code import file_handler, metadata_handler
 from __code._utilities.dictionary import combine_dictionaries
 
 
@@ -21,24 +19,28 @@ class MetadataName(Enum):
         return self.value
 
 
-METADATA_KEYS = {'ob' : [MetadataName.EXPOSURE_TIME,
-                         MetadataName.DETECTOR_MANUFACTURER,
-                         MetadataName.APERTURE_HR,
-                         MetadataName.APERTURE_HL,
-                         MetadataName.APERTURE_VT,
-                         MetadataName.APERTURE_VB],
-                 'df' : [MetadataName.EXPOSURE_TIME,
-                         MetadataName.DETECTOR_MANUFACTURER],
-                 'all': [MetadataName.EXPOSURE_TIME,
-                         MetadataName.DETECTOR_MANUFACTURER,
-                         MetadataName.APERTURE_HR,
-                         MetadataName.APERTURE_HL,
-                         MetadataName.APERTURE_VT,
-                         MetadataName.APERTURE_VB]}
+METADATA_KEYS = {
+    "ob": [
+        MetadataName.EXPOSURE_TIME,
+        MetadataName.DETECTOR_MANUFACTURER,
+        MetadataName.APERTURE_HR,
+        MetadataName.APERTURE_HL,
+        MetadataName.APERTURE_VT,
+        MetadataName.APERTURE_VB,
+    ],
+    "df": [MetadataName.EXPOSURE_TIME, MetadataName.DETECTOR_MANUFACTURER],
+    "all": [
+        MetadataName.EXPOSURE_TIME,
+        MetadataName.DETECTOR_MANUFACTURER,
+        MetadataName.APERTURE_HR,
+        MetadataName.APERTURE_HL,
+        MetadataName.APERTURE_VT,
+        MetadataName.APERTURE_VB,
+    ],
+}
 
 
 class MetadataHandler:
-
     @staticmethod
     def retrieve_metadata(list_of_files=None, display_infos=False, label=""):
         """
@@ -57,32 +59,44 @@ class MetadataHandler:
         _time_metadata_dict = MetadataHandler._reformat_dict(dictionary=_dict)
 
         _beamline_metadata_dict = MetadataHandler.retrieve_beamline_metadata(list_of_files)
-        _metadata_dict = combine_dictionaries(master_dictionary=_time_metadata_dict,
-                                              servant_dictionary=_beamline_metadata_dict)
+        _metadata_dict = combine_dictionaries(
+            master_dictionary=_time_metadata_dict, servant_dictionary=_beamline_metadata_dict
+        )
 
         if display_infos:
-            display(HTML('<span style="font-size: 20px; color:blue">Nbr of images: ' + str(len(_metadata_dict)) +
-                         '</span'))
-            display(HTML('<span style="font-size: 20px; color:blue">First image was taken at : ' + \
-                         _metadata_dict[0]['time_stamp_user_format'] + '</span>'))
+            display(
+                HTML('<span style="font-size: 20px; color:blue">Nbr of images: ' + str(len(_metadata_dict)) + "</span")
+            )
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:blue">First image was taken at : '
+                    + _metadata_dict[0]["time_stamp_user_format"]
+                    + "</span>"
+                )
+            )
             last_index = len(_metadata_dict) - 1
-            display(HTML('<span style="font-size: 20px; color:blue">Last image was taken at : ' + \
-                         _metadata_dict[last_index]['time_stamp_user_format'] + '</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:blue">Last image was taken at : '
+                    + _metadata_dict[last_index]["time_stamp_user_format"]
+                    + "</span>"
+                )
+            )
 
         return _metadata_dict
 
     @staticmethod
     def retrieve_beamline_metadata(list_files):
         """list of metadata to retrieve is:000
-            - acquisition time -> 65027
-            - detector type -> 65026 (Manufacturer)
-            - slits positions ->
-            - aperture value
+        - acquisition time -> 65027
+        - detector type -> 65026 (Manufacturer)
+        - slits positions ->
+        - aperture value
         """
-        list_metadata = METADATA_KEYS['all']
-        _dict = metadata_handler.MetadataHandler.retrieve_metadata(list_files=list_files,
-                                                                   list_metadata=list_metadata,
-                                                                   using_enum_object=True)
+        list_metadata = METADATA_KEYS["all"]
+        _dict = metadata_handler.MetadataHandler.retrieve_metadata(
+            list_files=list_files, list_metadata=list_metadata, using_enum_object=True
+        )
 
         for _file_key in _dict.keys():
             _file_dict = {}
@@ -95,7 +109,7 @@ class MetadataHandler:
                     except ValueError:
                         _value = split_raw_value[1]
                     finally:
-                        _file_dict[_pv.value] = {'value': _value, 'name': _pv.name}
+                        _file_dict[_pv.value] = {"value": _value, "name": _pv.name}
                 else:
                     _file_dict[_pv.value] = {}
             _dict[_file_key] = _file_dict
@@ -115,12 +129,14 @@ class MetadataHandler:
              }
         """
         formatted_dictionary = collections.OrderedDict()
-        list_files = dictionary['list_images']
-        list_time_stamp = dictionary['list_time_stamp']
-        list_time_stamp_user_format = dictionary['list_time_stamp_user_format']
+        list_files = dictionary["list_images"]
+        list_time_stamp = dictionary["list_time_stamp"]
+        list_time_stamp_user_format = dictionary["list_time_stamp_user_format"]
 
         for _index, _file in enumerate(list_files):
-            formatted_dictionary[_index] = {'filename'              : _file,
-                                            'time_stamp'            : list_time_stamp[_index],
-                                            'time_stamp_user_format': list_time_stamp_user_format[_index]}
+            formatted_dictionary[_index] = {
+                "filename": _file,
+                "time_stamp": list_time_stamp[_index],
+                "time_stamp_user_format": list_time_stamp_user_format[_index],
+            }
         return formatted_dictionary

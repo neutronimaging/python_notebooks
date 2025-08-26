@@ -18,20 +18,20 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code import system
-from __code.timepix3_from_event_to_histo_hdf5.timepix3_from_event_to_histo_hdf5 import Timepix3FromEventToHistoHdf5
-
 import h5py
 import numpy as np
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP')
+from __code import system
+from __code.timepix3_from_event_to_histo_hdf5.timepix3_from_event_to_histo_hdf5 import Timepix3FromEventToHistoHdf5
+
+system.System.select_working_dir(facility="SNS", instrument="SNAP")
 from __code.__all import custom_style
+
 custom_style.style()
 
-import matplotlib.pyplot as plt
 # %matplotlib notebook
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -43,16 +43,16 @@ o_event.select_event_nexus()
 
 # # Manually loading the data
 
-with h5py.File(o_event.input_nexus_file_name, 'r') as nxs:
-    o_event.x_array = np.array(nxs['events']['x'])
-    o_event.y_array = np.array(nxs['events']['y'])
-    o_event.tof_array = np.array(nxs['events']['tof_ns'])
+with h5py.File(o_event.input_nexus_file_name, "r") as nxs:
+    o_event.x_array = np.array(nxs["events"]["x"])
+    o_event.y_array = np.array(nxs["events"]["y"])
+    o_event.tof_array = np.array(nxs["events"]["tof_ns"])
 
-# # Some statistics 
+# # Some statistics
 
 o_event.display_infos()
 
-# # Define MCP detector size 
+# # Define MCP detector size
 
 o_event.define_detector()
 
@@ -64,18 +64,16 @@ o_event.select_binning_parameter()
 
 o_event.bins()
 
-# # Display integrated stack 
+# # Display integrated stack
 
 o_event.display_integrated_stack()
 
-# # Display slices 
+# # Display slices
 
 o_event.display_slices()
 
-# # Export Histogram HDF5 
+# # Export Histogram HDF5
 
 o_event.define_output_filename()
 
 o_event.select_output_location()
-
-

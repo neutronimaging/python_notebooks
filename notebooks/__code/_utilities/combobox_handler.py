@@ -1,5 +1,4 @@
 class ComboboxHandler:
-
     def __init__(self, combobox_ui=None):
         self.combobox_ui = combobox_ui
 

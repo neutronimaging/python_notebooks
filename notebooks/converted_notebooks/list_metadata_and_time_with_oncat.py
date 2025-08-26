@@ -16,32 +16,31 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # +
-from __code.select_files_and_folders import SelectFiles, SelectFolder
-from __code.list_metadata_and_time_with_oncat import ListMetadata
-
 from __code import system
-system.System.select_working_dir(notebook='list_metadata_and_time_with_oncat')
+from __code.list_metadata_and_time_with_oncat import ListMetadata
+from __code.select_files_and_folders import SelectFiles, SelectFolder
+
+system.System.select_working_dir(notebook="list_metadata_and_time_with_oncat")
 from __code.__all import custom_style
+
 custom_style.style()
 # -
 
-# # Select Images 
+# # Select Images
 
 o_select = SelectFiles(system=system)
 
-# # Log in to ONCat 
+# # Log in to ONCat
 
 o_list = ListMetadata()
 
-# # Select Metadata to Keep 
+# # Select Metadata to Keep
 
 o_list.select_metadata(system=system, list_of_files=o_select.list_of_files)
 
 # # Create and Export ASCII File
 
 o_output_folder = SelectFolder(system=system, next_function=o_list.export_ascii)
-
-

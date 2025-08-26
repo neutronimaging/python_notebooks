@@ -19,14 +19,15 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
+from __code import system
 from __code.from_attenuation_to_concentration import *
 
-from __code import system
-system.System.select_working_dir(notebook='from_attenuation_to_concentration')
+system.System.select_working_dir(notebook="from_attenuation_to_concentration")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -37,13 +38,13 @@ o_convert = FromAttenuationToConcentration(working_dir=system.System.get_working
 o_convert.select_folder()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Define conversion formula 
+# # Define conversion formula
 
 # + run_control={"frozen": false, "read_only": false}
 o_convert.define_conversion_formula()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Converting Data 
+# # Converting Data
 
 # + run_control={"frozen": false, "read_only": false}
 o_convert.converting_data()
@@ -55,13 +56,3 @@ o_convert.converting_data()
 o_convert.select_output_folder()
 
 # + run_control={"frozen": false, "read_only": false}
-
-
-
-
-
-
-
-
-
-

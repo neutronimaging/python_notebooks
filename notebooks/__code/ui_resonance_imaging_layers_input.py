@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_resonance_imaging_layers_input.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.3
@@ -7,10 +5,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(812, 722)
@@ -285,9 +283,9 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.validate_table_iinputs.clicked.connect(MainWindow.validate_table_input_clicked)
-        self.layer_name_combobox.currentIndexChanged['QString'].connect(MainWindow.layer_combobox_clicked)
-        self.element_name_combobox.currentIndexChanged['QString'].connect(MainWindow.element_combobox_clicked)
-        self.element_table.cellChanged['int','int'].connect(MainWindow.element_table_edited)
+        self.layer_name_combobox.currentIndexChanged["QString"].connect(MainWindow.layer_combobox_clicked)
+        self.element_name_combobox.currentIndexChanged["QString"].connect(MainWindow.element_combobox_clicked)
+        self.element_table.cellChanged["int", "int"].connect(MainWindow.element_table_edited)
         self.ok_button.clicked.connect(MainWindow.ok_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -359,7 +357,7 @@ class Ui_MainWindow(object):
         self.label_16.setText(_translate("MainWindow", "eV"))
         self.validate_table_iinputs.setText(_translate("MainWindow", "Validate Table Inputs"))
         self.check_groupBox.setTitle(_translate("MainWindow", "Check"))
-        self.label.setText(_translate("MainWindow", "Layer\'s Name"))
+        self.label.setText(_translate("MainWindow", "Layer's Name"))
         self.label_2.setText(_translate("MainWindow", "Thickness"))
         self.layer_thickness.setText(_translate("MainWindow", "N/A"))
         self.label_4.setText(_translate("MainWindow", "mm"))

@@ -1,24 +1,31 @@
-from IPython.display import HTML
-from IPython.display import display
+import collections
+import copy
+import os
 
 import numpy as np
-import os
-import copy
-import collections
-
-from qtpy.QtWidgets import QFileDialog, QMainWindow, QTableWidgetSelectionRange, QTableWidgetItem, \
-    QSpacerItem, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QWidget
+from IPython.display import HTML, display
 from qtpy import QtCore
 from qtpy.QtGui import QGuiApplication
+from qtpy.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QHBoxLayout,
+    QMainWindow,
+    QSizePolicy,
+    QSpacerItem,
+    QTableWidgetItem,
+    QTableWidgetSelectionRange,
+    QWidget,
+)
 
-from __code import load_ui
-from __code import interact_me_style, normal_style
+from __code import interact_me_style, load_ui, normal_style
 from __code._utilities.color import Color
 from __code._utilities.table_handler import TableHandler
-from __code.profile.initialization import Initializer
 from __code.profile.display import DisplayImages
-from __code.profile.export import ExportProfiles, ExportAverageROI
+from __code.profile.export import ExportAverageROI, ExportProfiles
 from __code.profile.guide_and_profile_rois_handler import GuideAndProfileRoisHandler
+from __code.profile.initialization import Initializer
 
 
 class ProfileUi(QMainWindow):
@@ -36,10 +43,7 @@ class ProfileUi(QMainWindow):
     summary_table_width = [300, 150, 100]
 
     live_image = []
-    grid_view = {'pos'  : None,
-                 'adj'  : None,
-                 'item' : None,
-                 'color': (0, 0, 255, 255, 1)}
+    grid_view = {"pos": None, "adj": None, "item": None, "color": (0, 0, 255, 255, 1)}
 
     profile_color = (0, 255, 0, 255, 1)
 
@@ -49,10 +53,15 @@ class ProfileUi(QMainWindow):
     list_guide_pyqt_roi = list()
     list_profile_pyqt_roi = list()
     list_table_widget_checkbox = list()
-    default_guide_roi = {'x0'               : 0, 'y0': 0, 'width': 200, 'height': 800,
-                         'isChecked'        : True,
-                         'color_activated'  : 'r',
-                         'color_deactivated': 'b'}
+    default_guide_roi = {
+        "x0": 0,
+        "y0": 0,
+        "width": 200,
+        "height": 800,
+        "isChecked": True,
+        "color_activated": "r",
+        "color_deactivated": "b",
+    }
     previous_active_row = -1  # use to deactivated the guide and profile roi
 
     # default_guide_table_values = {'isChecked': True, 'x0': 0, 'y0': 0,
@@ -62,16 +71,19 @@ class ProfileUi(QMainWindow):
     # remove-me
     test_roi = None
 
-    def __init__(self, parent=None, working_dir='', data_dict=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+    def __init__(self, parent=None, working_dir="", data_dict=None):
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         QMainWindow.__init__(self, parent=parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_profile.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_profile.ui")
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Profile")
 
@@ -80,7 +92,7 @@ class ProfileUi(QMainWindow):
         # 'data': [[...],[...]]],
         # 'metadata': [],
         # 'shape': {}}
-        self.list_filenames = data_dict['file_name']
+        self.list_filenames = data_dict["file_name"]
 
         # untouched array of images (used to move and rotate images)
         self.data_dict_raw = copy.deepcopy(data_dict)
@@ -102,7 +114,6 @@ class ProfileUi(QMainWindow):
         self.ui.export_button.setEnabled(enable_button)
 
     def _we_can_enable_export_profiles(self):
-
         # if no profile, we can't enable export
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         nbr_row = o_table.row_count()
@@ -144,11 +155,9 @@ class ProfileUi(QMainWindow):
 
         for _row in np.arange(nbr_row):
             [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-            _label = ' Profile #{}'.format(_row + 1)
+            _label = f" Profile #{_row + 1}"
             _color = list_rgb_profile_color[_row]
-            self.ui.profile_view.plot(x_axis, profile,
-                                      name=_label,
-                                      pen=_color)
+            self.ui.profile_view.plot(x_axis, profile, name=_label, pen=_color)
 
     def update_all_plots(self):
         list_index_file_selected = self.get_all_plots_files_index_selected()
@@ -165,9 +174,9 @@ class ProfileUi(QMainWindow):
         self.all_plots_legend = self.ui.all_plots_view.addLegend()
 
         for _color_index_file, _index_file in enumerate(list_index_file_selected):
-            _data = self.data_dict['data'][_index_file]
+            _data = self.data_dict["data"][_index_file]
             for _color_index_profile, _index_profile in enumerate(list_index_profile_selected):
-                legend = "File #{} - Profile #{}".format(_index_file, _index_profile)
+                legend = f"File #{_index_file} - Profile #{_index_profile}"
                 _color = list_rgb_profile_color[_color_index_file + _color_index_profile * nbr_file_selected]
                 [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
                 self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
@@ -177,7 +186,6 @@ class ProfileUi(QMainWindow):
         o_image = DisplayImages(parent=self, recalculate_image=recalculate_image)
 
     def remove_row(self, row=-1):
-
         if row == -1:
             return
 
@@ -215,7 +223,6 @@ class ProfileUi(QMainWindow):
 
     def update_profile_rois(self, row=-1):
         if row == -1:  # update all of them
-
             # # remove all profile rois
             # self.list_profile_pyqt_roi = list()
             # for _profile_roi in self.list_profile_pyqt_roi:
@@ -240,8 +247,7 @@ class ProfileUi(QMainWindow):
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
             if self.is_row_enabled(row=_row):
-                region = _roi.getArraySlice(self.live_image,
-                                            self.ui.image_view.imageItem)
+                region = _roi.getArraySlice(self.live_image, self.ui.image_view.imageItem)
 
                 x0 = region[0][0].start
                 x1 = region[0][0].stop
@@ -275,11 +281,11 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget.insertRow(row)
         self.ui.tableWidget.setRowHeight(row, self.guide_table_height)
 
-        self.set_item_main_table(row=row, col=0, value=default_values['isChecked'])
-        self.set_item_main_table(row=row, col=1, value=default_values['x0'])
-        self.set_item_main_table(row=row, col=2, value=default_values['y0'])
-        self.set_item_main_table(row=row, col=3, value=default_values['width'])
-        self.set_item_main_table(row=row, col=4, value=default_values['height'])
+        self.set_item_main_table(row=row, col=0, value=default_values["isChecked"])
+        self.set_item_main_table(row=row, col=1, value=default_values["x0"])
+        self.set_item_main_table(row=row, col=2, value=default_values["y0"])
+        self.set_item_main_table(row=row, col=3, value=default_values["width"])
+        self.set_item_main_table(row=row, col=4, value=default_values["height"])
 
         # select new entry
         nbr_row = self.ui.tableWidget.rowCount()
@@ -314,11 +320,11 @@ class ProfileUi(QMainWindow):
         """rename all the profile name"""
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText("Profile # {}".format(_row + 1))
+            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row + 1}")
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):
-        item = QTableWidgetItem("Profile # {}".format(row))
+        item = QTableWidgetItem(f"Profile # {row}")
         item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
         self.ui.all_plots_profiles_table.setItem(row, 0, item)
 
@@ -338,7 +344,7 @@ class ProfileUi(QMainWindow):
         self.ui.tableWidget_2.setCellWidget(row, 0, cell_widget)
         widget.blockSignals(False)
 
-    def set_item_main_table(self, row=0, col=0, value=''):
+    def set_item_main_table(self, row=0, col=0, value=""):
         if col == 0:
             spacerItem_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
             widget = QCheckBox()
@@ -364,11 +370,11 @@ class ProfileUi(QMainWindow):
             self.ui.tableWidget.setItem(row, col, item)
             # self.ui.tableWidget.blockSignals(False)
 
-    def get_full_roi_dimension(self, row=-1):   
+    def get_full_roi_dimension(self, row=-1):
         """return the dimension of the full region surrounding the ROI (red rectangle)"""
         [x0, y0, width, height] = self.get_item_row(row=row)
-        
-        roi = collections.namedtuple('roi', ['x0', 'y0', 'width', 'height'])
+
+        roi = collections.namedtuple("roi", ["x0", "y0", "width", "height"])
         result = roi(x0, y0, width, height)
         return result
 
@@ -381,19 +387,19 @@ class ProfileUi(QMainWindow):
             x_left = x0
             x_right = x0 + width
 
-            profile_center = y0 + np.abs(int((height) / 2.))
+            profile_center = y0 + np.abs(int((height) / 2.0))
             y_top = profile_center - delta_profile
             y_bottom = profile_center + delta_profile
 
         else:
-            profile_center = x0 + np.abs(int((width) / 2.))
+            profile_center = x0 + np.abs(int((width) / 2.0))
             x_left = profile_center - delta_profile
             x_right = profile_center + delta_profile
 
             y_top = y0
             y_bottom = y0 + height
 
-        Profile = collections.namedtuple('Profile', ['x_left', 'x_right', 'y_top', 'y_bottom', 'profile_center'])
+        Profile = collections.namedtuple("Profile", ["x_left", "x_right", "y_top", "y_bottom", "profile_center"])
         result = Profile(x_left, x_right, y_top, y_bottom, profile_center)
         return result
 
@@ -414,7 +420,7 @@ class ProfileUi(QMainWindow):
             mean_axis = 0
             x_axis = np.arange(y_top, y_bottom)
 
-        _data = image[x_left: x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
+        _data = image[x_left:x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
         profile = np.mean(_data, axis=mean_axis)
         return [x_axis, profile]
 
@@ -429,8 +435,8 @@ class ProfileUi(QMainWindow):
         height = int(str(self.ui.tableWidget.item(row, 4).text()))
         return (x0, y0, width, height)
 
-    def get_selected_row(self, source='tableWidget'):
-        if source == 'tableWidget':
+    def get_selected_row(self, source="tableWidget"):
+        if source == "tableWidget":
             ui = self.ui.tableWidget
         else:
             ui = self.ui.tableWidget_2
@@ -458,11 +464,11 @@ class ProfileUi(QMainWindow):
         selection = self.ui.all_plots_file_name_table.selectedRanges()
         return self.__create_list_from_selection(selection)
 
-    def _highlights_guide_profile_pyqt_roi(self, row=-1, status='activated'):
+    def _highlights_guide_profile_pyqt_roi(self, row=-1, status="activated"):
         if row == -1:
             return
         _guide_ui = self.list_guide_pyqt_roi[row]
-        _guide_ui.setPen(self.default_guide_roi['color_' + status])
+        _guide_ui.setPen(self.default_guide_roi["color_" + status])
 
     def highlight_guide_profile_pyqt_rois(self, row=-1):
         """When user click a row in the table, the correspoinding ROI will be activated and ots
@@ -473,8 +479,8 @@ class ProfileUi(QMainWindow):
             return
 
         try:
-            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status='deactivated')
-            self._highlights_guide_profile_pyqt_roi(row=row, status='activated')
+            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status="deactivated")
+            self._highlights_guide_profile_pyqt_roi(row=row, status="activated")
         except:
             pass
 
@@ -540,7 +546,7 @@ class ProfileUi(QMainWindow):
         nbr_row = self.ui.tableWidget.rowCount()
         full_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(full_range, False)
-        row = self.get_selected_row(source='tableWidget_2')
+        row = self.get_selected_row(source="tableWidget_2")
         new_selection = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.ui.tableWidget.setRangeSelected(new_selection, True)
         self.highlight_guide_profile_pyqt_rois(row=row)
@@ -609,7 +615,7 @@ class ProfileUi(QMainWindow):
 
     def add_row_button_clicked(self):
         selected_row = self.get_selected_row()
-        self._highlights_guide_profile_pyqt_roi(row=selected_row, status='deactivated')
+        self._highlights_guide_profile_pyqt_roi(row=selected_row, status="deactivated")
         self.insert_row(row=selected_row)
         self.add_guide_and_profile_pyqt_roi(row=selected_row)
         self.previous_active_row = selected_row
@@ -627,17 +633,14 @@ class ProfileUi(QMainWindow):
         self.display_profiles()
 
     def export_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+        )
         if _export_folder:
-            o_export = ExportProfiles(parent=self,
-                                      export_folder=_export_folder)
+            o_export = ExportProfiles(parent=self, export_folder=_export_folder)
             o_export.run()
- 
-            o_average = ExportAverageROI(parent=self,
-                                         export_folder=_export_folder)
+
+            o_average = ExportAverageROI(parent=self, export_folder=_export_folder)
             o_average.run()
 
             QGuiApplication.processEvents()
@@ -652,6 +655,7 @@ class ProfileUi(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
+
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/profile/")
 
     def closeEvent(self, event=None):

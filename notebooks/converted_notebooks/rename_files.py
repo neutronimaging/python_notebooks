@@ -19,13 +19,15 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select your IPTS 
+# # Select your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.rename_files.rename_files import NamingSchemaDefinition, FormatFileNameIndex
 from __code import system
-system.System.select_working_dir(notebook='rename_files')
+from __code.rename_files.rename_files import FormatFileNameIndex
+
+system.System.select_working_dir(notebook="rename_files")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -36,7 +38,7 @@ o_format = FormatFileNameIndex(working_dir=system.System.get_working_dir())
 o_format.select_input_files()
 # -
 
-# # Define new naming schema 
+# # Define new naming schema
 
 o_format.define_new_naming_schema()
 
@@ -52,5 +54,3 @@ o_format.o_schema.check_new_names()
 # + run_control={"frozen": false, "read_only": false}
 o_format.o_schema.select_export_folder()
 # -
-
-

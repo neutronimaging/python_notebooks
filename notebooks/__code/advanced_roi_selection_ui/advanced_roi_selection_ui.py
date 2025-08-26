@@ -1,52 +1,58 @@
-from IPython.display import HTML
-from IPython.display import display
-import numpy as np
+import os
 import random
 from collections import OrderedDict
-import pyqtgraph as pg
-from qtpy.QtWidgets import QMainWindow, QProgressBar, QVBoxLayout, QTableWidgetSelectionRange, QTableWidgetItem
-from qtpy import QtGui
-from __code import load_ui
-import os
 
+import numpy as np
+import pyqtgraph as pg
+from IPython.display import HTML, display
 from NeuNorm.normalization import Normalization
-from __code.ui_roi_selection import Ui_MainWindow as UiMainWindow
-from __code.config import percentage_of_images_to_use_for_roi_selection, \
-    minimum_number_of_images_to_use_for_roi_selection
+from qtpy import QtGui
+from qtpy.QtWidgets import QMainWindow, QProgressBar, QTableWidgetItem, QTableWidgetSelectionRange, QVBoxLayout
+
+from __code import load_ui
+from __code.config import (
+    minimum_number_of_images_to_use_for_roi_selection,
+    percentage_of_images_to_use_for_roi_selection,
+)
 
 
 class Interface(QMainWindow):
-
     roi_width = 0.01
-    roi_selected = {} #nice formatting of list_roi for outside access
+    roi_selected = {}  # nice formatting of list_roi for outside access
 
     list_of_files = None
     live_data = []
     o_norm = None
     roi_column_width = 70
     integrated_image = None
-    integrated_image_size = {'width': -1, 'height': -1}
+    integrated_image_size = {"width": -1, "height": -1}
 
     array2d = None
 
-    list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
-    default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
+    list_roi = {}  #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
+    default_roi = {"x0": 0, "y0": 0, "x1": 50, "y1": 50, "id": None}
 
-    def __init__(self, parent=None,
-                 o_norm=None,
-                 array2d=None,
-                 list_of_files=None,
-                 percentage_of_data_to_use=None,
-                 callback=None,
-                 display_info_message=True,
-                 mandatory_regions=False,
-                 list_roi=None):         # if provided, should have the format {0: {'x0':None, 'y0': None, 'x1': None, 'y1': None}}
-
+    def __init__(
+        self,
+        parent=None,
+        o_norm=None,
+        array2d=None,
+        list_of_files=None,
+        percentage_of_data_to_use=None,
+        callback=None,
+        display_info_message=True,
+        mandatory_regions=False,
+        list_roi=None,
+    ):  # if provided, should have the format {0: {'x0':None, 'y0': None, 'x1': None, 'y1': None}}
         if display_info_message:
-            display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-                (maybe hidden behind this browser!)</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:blue">Check UI that popped up \
+                (maybe hidden behind this browser!)</span>'
+                )
+            )
 
-        if not (array2d is None):
+        if array2d is not None:
             # we are giving the 2d array directly
             self.array2d = array2d
 
@@ -65,18 +71,21 @@ class Interface(QMainWindow):
         self.mandatory_regions = mandatory_regions
         if list_roi:
             for key in list_roi.keys():
-                self.list_roi[key] = {'x0': list_roi[key]['x0'],
-                                      'y0': list_roi[key]['y0'],
-                                      'x1': list_roi[key]['x1'],
-                                      'y1': list_roi[key]['y1'],
-                                      'id': None}
+                self.list_roi[key] = {
+                    "x0": list_roi[key]["x0"],
+                    "y0": list_roi[key]["y0"],
+                    "x1": list_roi[key]["x1"],
+                    "y1": list_roi[key]["y1"],
+                    "id": None,
+                }
 
         # method called when leaving the application, if any
         self.callback = callback
 
         super(QMainWindow, self).__init__(parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui', 'ui_roi_selection.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_roi_selection.ui")
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
         self.init_statusbar()
@@ -118,40 +127,50 @@ class Interface(QMainWindow):
             [height, width] = np.shape(data_array[0])
             nbr_sample = len(data_array)
         else:
-            nbr_sample = '0'
-            [height, width] = ['N/A', 'N/A']
+            nbr_sample = "0"
+            [height, width] = ["N/A", "N/A"]
 
         return [nbr_sample, height, width]
 
     def __built_html_table_row_3_columns(self, name, nbr, height, width):
-        _html = '<tr><td>' + str(name) + '</td><td>' + str(nbr) + '</td><td>' + str(height) + \
-        '*' + str(width) + '</td></tr>'
+        _html = (
+            "<tr><td>"
+            + str(name)
+            + "</td><td>"
+            + str(nbr)
+            + "</td><td>"
+            + str(height)
+            + "*"
+            + str(width)
+            + "</td></tr>"
+        )
         return _html
 
     def recap(self):
         """Display nbr of files loaded and size. This can be used to figure why a normalization failed"""
-        [nbr_sample, height_sample, width_sample] = self.__get_recap(self.o_norm.data['sample']['data'])
-        [nbr_ob, height_ob, width_ob] = self.__get_recap(self.o_norm.data['ob']['data'])
-        [nbr_df, height_df, width_df] = self.__get_recap(self.o_norm.data['df']['data'])
+        [nbr_sample, height_sample, width_sample] = self.__get_recap(self.o_norm.data["sample"]["data"])
+        [nbr_ob, height_ob, width_ob] = self.__get_recap(self.o_norm.data["ob"]["data"])
+        [nbr_df, height_df, width_df] = self.__get_recap(self.o_norm.data["df"]["data"])
 
-        html =  '<table><tr><td width="30%"><strong>Type</strong></td><td><strong>Number</strong></td><td>' + \
-                '<strong>Size (height*width)</strong></td></tr>'
-        html += self.__built_html_table_row_3_columns('sample', nbr_sample, height_sample, width_sample)
-        html += self.__built_html_table_row_3_columns('ob', nbr_ob, height_ob, width_ob)
-        html += self.__built_html_table_row_3_columns('df', nbr_df, height_df, width_df)
-        html += '</table>'
+        html = (
+            '<table><tr><td width="30%"><strong>Type</strong></td><td><strong>Number</strong></td><td>'
+            + "<strong>Size (height*width)</strong></td></tr>"
+        )
+        html += self.__built_html_table_row_3_columns("sample", nbr_sample, height_sample, width_sample)
+        html += self.__built_html_table_row_3_columns("ob", nbr_ob, height_ob, width_ob)
+        html += self.__built_html_table_row_3_columns("df", nbr_df, height_df, width_df)
+        html += "</table>"
         display(HTML(html))
 
     def integrate_images(self):
-
-        if not(self.array2d is None):
+        if self.array2d is not None:
             self.integrated_image = self.array2d
 
         else:
             percentage_of_data_to_use = self.percentage_of_data_to_use
 
             if self.o_norm:
-                nbr_files = len(self.o_norm.data['sample']['data'])
+                nbr_files = len(self.o_norm.data["sample"]["data"])
             else:
                 nbr_files = len(self.list_of_files)
 
@@ -164,23 +183,23 @@ class Interface(QMainWindow):
             random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
 
             if self.o_norm:
-                list_data_to_use = [self.o_norm.data['sample']['data'][_index] for _index in random_list]
+                list_data_to_use = [self.o_norm.data["sample"]["data"][_index] for _index in random_list]
             else:
                 o_norm = Normalization()
                 list_of_files = np.array(self.list_of_files)
                 list_of_files = list(list_of_files[random_list])
                 o_norm.load(file=list_of_files, notebook=True)
 
-            list_data_to_use = o_norm.data['sample']['data']
+            list_data_to_use = o_norm.data["sample"]["data"]
             self.integrated_image = np.mean(list_data_to_use, axis=0)
 
         [_height, _width] = np.shape(self.integrated_image)
-        self.integrated_image_size['height'] = _height
-        self.integrated_image_size['width'] = _width
+        self.integrated_image_size["height"] = _height
+        self.integrated_image_size["width"] = _width
 
     def _clean_image(self, image):
         _result_inf = np.where(np.isinf(image))
-        image[_result_inf] = np.NaN
+        image[_result_inf] = np.nan
         return image
 
     def display_image(self):
@@ -189,11 +208,11 @@ class Interface(QMainWindow):
         self.ui.image_view.setImage(_image)
 
     def remove_row_entry(self, row):
-        _roi_id = self.list_roi[row]['id']
+        _roi_id = self.list_roi[row]["id"]
         self.ui.image_view.removeItem(_roi_id)
         del self.list_roi[row]
 
-        #rename row
+        # rename row
         new_list_roi = {}
         new_row_index = 0
         for _previous_row_index in self.list_roi.keys():
@@ -202,7 +221,6 @@ class Interface(QMainWindow):
         self.list_roi = new_list_roi
 
     def remove_roi_button_clicked(self):
-
         self.ui.table_roi.blockSignals(True)
 
         _selection = self.ui.table_roi.selectedRanges()
@@ -222,7 +240,7 @@ class Interface(QMainWindow):
         if new_nbr_row == 0:
             return
 
-        if row == (old_nbr_row-1):
+        if row == (old_nbr_row - 1):
             row = new_nbr_row - 1
 
         _new_selection = QTableWidgetSelectionRange(row, 0, row, 3)
@@ -247,26 +265,26 @@ class Interface(QMainWindow):
 
             self.ui.table_roi.insertRow(_index_row)
 
-            self._set_item_value(_index_row, 0, _roi['x0'])
+            self._set_item_value(_index_row, 0, _roi["x0"])
             # _item = QtGui.QTableWidgetItem(str(_roi['x0']))
             # self.ui.table_roi.setItem(_index_row, 0, _item)
 
-            self._set_item_value(_index_row, 1, _roi['y0'])
+            self._set_item_value(_index_row, 1, _roi["y0"])
             # _item = QtGui.QTableWidgetItem(str(_roi['y0']))
             # self.ui.table_roi.setItem(_index_row, 1, _item)
 
-            self._set_item_value(_index_row, 2, _roi['x1'])
+            self._set_item_value(_index_row, 2, _roi["x1"])
             # _item = QtGui.QTableWidgetItem(str(_roi['x1']))
             # self.ui.table_roi.setItem(_index_row, 2, _item)
 
-            self._set_item_value(_index_row, 3, _roi['y1'])
+            self._set_item_value(_index_row, 3, _roi["y1"])
             # _item = QtGui.QTableWidgetItem(str(_roi['y1']))
             # self.ui.table_roi.setItem(_index_row, 3, _item)
 
             _index_row += 1
 
         self.ui.table_roi.blockSignals(False)
-        #self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
+        # self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
 
     def _set_item_value(self, row=0, column=0, value=-1):
         _item = QTableWidgetItem(str(value))
@@ -279,9 +297,9 @@ class Interface(QMainWindow):
         value = int(value)
 
         if x_axis:
-            max_value = self.integrated_image_size['width']
+            max_value = self.integrated_image_size["width"]
         else:
-            max_value = self.integrated_image_size['height']
+            max_value = self.integrated_image_size["height"]
 
         if value < 0:
             return min_value
@@ -314,11 +332,11 @@ class Interface(QMainWindow):
             self._set_item_value(_row, 2, _x1)
             self._set_item_value(_row, 3, _y1)
 
-            _roi['x0'] = _x0
-            _roi['y0'] = _y0
-            _roi['x1'] = _x1
-            _roi['y1'] = _y1
-            _roi['id'] = old_list_roi[_row]['id']
+            _roi["x0"] = _x0
+            _roi["y0"] = _y0
+            _roi["x1"] = _x1
+            _roi["y1"] = _y1
+            _roi["id"] = old_list_roi[_row]["id"]
 
             new_list_roi[_row] = _roi
 
@@ -333,17 +351,16 @@ class Interface(QMainWindow):
         for _row in list_roi.keys():
             _roi = list_roi[_row]
 
-            _x0 = int(_roi['x0'])
-            _y0 = int(_roi['y0'])
-            _x1 = int(_roi['x1'])
-            _y1 = int(_roi['y1'])
+            _x0 = int(_roi["x0"])
+            _y0 = int(_roi["y0"])
+            _x1 = int(_roi["x1"])
+            _y1 = int(_roi["y1"])
 
             _width = np.abs(_x1 - _x0)
             _height = np.abs(_y1 - _y0)
 
-            _roi_id = self.init_roi(x0=_x0, y0=_y0,
-                                    width=_width, height=_height)
-            _roi['id'] = _roi_id
+            _roi_id = self.init_roi(x0=_x0, y0=_y0, width=_width, height=_height)
+            _roi["id"] = _roi_id
 
             list_roi[_row] = _roi
 
@@ -354,16 +371,15 @@ class Interface(QMainWindow):
         if _item:
             return str(_item.text())
         else:
-            return ''
+            return ""
 
     def roi_manually_moved(self):
         list_roi = self.list_roi
 
         for _row in list_roi.keys():
-
             _roi = list_roi[_row]
 
-            roi_id = _roi['id']
+            roi_id = _roi["id"]
             region = roi_id.getArraySlice(self.integrated_image, self.ui.image_view.imageItem)
 
             x0 = region[0][0].start
@@ -371,10 +387,10 @@ class Interface(QMainWindow):
             y0 = region[0][1].start
             y1 = region[0][1].stop
 
-            _roi['x0'] = x0
-            _roi['x1'] = x1
-            _roi['y0'] = y0
-            _roi['y1'] = y1
+            _roi["x0"] = x0
+            _roi["x1"] = x1
+            _roi["y0"] = y0
+            _roi["y1"] = y1
 
             list_roi[_row] = _roi
 
@@ -386,7 +402,7 @@ class Interface(QMainWindow):
 
         for _row in list_roi.keys():
             _roi = list_roi[_row]
-            roi_id = _roi['id']
+            roi_id = _roi["id"]
             self.ui.image_view.removeItem(roi_id)
 
     def add_rois(self, list_roi=None):
@@ -400,31 +416,29 @@ class Interface(QMainWindow):
             row = 0
 
         for key in list_roi.keys():
-
             # init new row with default value
             self.ui.table_roi.insertRow(row)
             _roi = list_roi[key]
 
-            _item = QTableWidgetItem(str(_roi['x0']))
+            _item = QTableWidgetItem(str(_roi["x0"]))
             self.ui.table_roi.setItem(row, 0, _item)
 
-            _item = QTableWidgetItem(str(_roi['y0']))
+            _item = QTableWidgetItem(str(_roi["y0"]))
             self.ui.table_roi.setItem(row, 1, _item)
 
-            _item = QTableWidgetItem(str(_roi['x1']))
+            _item = QTableWidgetItem(str(_roi["x1"]))
             self.ui.table_roi.setItem(row, 2, _item)
 
-            _item = QTableWidgetItem(str(_roi['y1']))
+            _item = QTableWidgetItem(str(_roi["y1"]))
             self.ui.table_roi.setItem(row, 3, _item)
 
-            x0_int = int(_roi['x0'])
-            y0_int = int(_roi['y0'])
-            width_int = np.abs(x0_int - int(_roi['x1']))
-            height_int = np.abs(y0_int - int(_roi['y1']))
+            x0_int = int(_roi["x0"])
+            y0_int = int(_roi["y0"])
+            width_int = np.abs(x0_int - int(_roi["x1"]))
+            height_int = np.abs(y0_int - int(_roi["y1"]))
 
-            _roi_id = self.init_roi(x0=x0_int, y0=y0_int,
-                                    width=width_int, height=height_int)
-            list_roi[key]['id'] = _roi_id
+            _roi_id = self.init_roi(x0=x0_int, y0=y0_int, width=width_int, height=height_int)
+            list_roi[key]["id"] = _roi_id
 
         self.list_roi = list_roi
         self.ui.table_roi.blockSignals(False)
@@ -444,16 +458,16 @@ class Interface(QMainWindow):
         self.ui.table_roi.insertRow(row)
         _default_roi = self.default_roi
 
-        _item = QTableWidgetItem(str(_default_roi['x0']))
+        _item = QTableWidgetItem(str(_default_roi["x0"]))
         self.ui.table_roi.setItem(row, 0, _item)
 
-        _item = QTableWidgetItem(str(_default_roi['y0']))
+        _item = QTableWidgetItem(str(_default_roi["y0"]))
         self.ui.table_roi.setItem(row, 1, _item)
 
-        _item = QTableWidgetItem(str(_default_roi['x1']))
+        _item = QTableWidgetItem(str(_default_roi["x1"]))
         self.ui.table_roi.setItem(row, 2, _item)
 
-        _item = QTableWidgetItem(str(_default_roi['y1']))
+        _item = QTableWidgetItem(str(_default_roi["y1"]))
         self.ui.table_roi.setItem(row, 3, _item)
 
         # save new list_roi dictionary
@@ -463,25 +477,24 @@ class Interface(QMainWindow):
             _roi = {}
 
             _x0 = self._get_item_value(_row, 0)
-            _roi['x0'] = int(_x0)
+            _roi["x0"] = int(_x0)
 
             _y0 = self._get_item_value(_row, 1)
-            _roi['y0'] = int(_y0)
+            _roi["y0"] = int(_y0)
 
             _x1 = self._get_item_value(_row, 2)
-            _roi['x1'] = int(_x1)
+            _roi["x1"] = int(_x1)
 
             _y1 = self._get_item_value(_row, 3)
-            _roi['y1'] = int(_y1)
+            _roi["y1"] = int(_y1)
 
             x0_int = int(_x0)
             y0_int = int(_y0)
             width_int = np.abs(x0_int - int(_x1))
             height_int = np.abs(y0_int - int(_y1))
 
-            _roi_id = self.init_roi(x0=x0_int, y0=y0_int,
-                                    width=width_int, height=height_int)
-            _roi['id'] = _roi_id
+            _roi_id = self.init_roi(x0=x0_int, y0=y0_int, width=width_int, height=height_int)
+            _roi["id"] = _roi_id
             list_roi[_row] = _roi
 
         self.list_roi = list_roi
@@ -529,17 +542,17 @@ class Interface(QMainWindow):
         roi_selected = {}
         for _key in self.list_roi.keys():
             _roi = self.list_roi[_key]
-            x0 = _roi['x0']
-            y0 = _roi['y0']
-            x1 = _roi['x1']
-            y1 = _roi['y1']
-            new_entry = {'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1}
+            x0 = _roi["x0"]
+            y0 = _roi["y0"]
+            x1 = _roi["x1"]
+            y1 = _roi["y1"]
+            new_entry = {"x0": x0, "y0": y0, "x1": x1, "y1": y1}
             roi_selected[_key] = new_entry
 
         self.roi_selected = roi_selected
 
     def apply_clicked(self):
-        self.update_table_roi(None) #check ROI before leaving application
+        self.update_table_roi(None)  # check ROI before leaving application
         self.format_roi()
         self.close()
         if self.callback:

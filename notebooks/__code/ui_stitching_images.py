@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/ui/ui_stitching_images.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(982, 811)
@@ -118,4 +117,3 @@ class Ui_MainWindow(object):
         self.groupBox_3.setTitle(_translate("MainWindow", "Stiched Image"))
         self.cancel_button.setText(_translate("MainWindow", "Close"))
         self.apply_button.setText(_translate("MainWindow", "Export ..."))
-

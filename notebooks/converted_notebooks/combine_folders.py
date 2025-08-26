@@ -16,17 +16,19 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.combine_folders import CombineFolders
 from __code import system
-system.System.select_working_dir(notebook='combine_folders')
+from __code.combine_folders import CombineFolders
+
+system.System.select_working_dir(notebook="combine_folders")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Folders to Merge 
+# # Select Folders to Merge
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge = CombineFolders(working_dir=system.System.get_working_dir())
@@ -58,10 +60,8 @@ o_merge.how_to_combine()
 o_merge.extra_files()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Output Folder 
+# # Select Output Folder
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge.select_output_folder()
 # -
-
-

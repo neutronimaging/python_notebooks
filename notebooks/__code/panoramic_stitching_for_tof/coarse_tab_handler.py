@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 from qtpy.QtWidgets import QComboBox
 
@@ -6,13 +7,12 @@ from __code._utilities.table_handler import TableHandler
 
 
 class CoarseTabHandler:
-
     def __init__(self, parent=None):
         self.parent = parent
 
     def initialize_table(self):
         list_folders = self.parent.list_folders
-        short_list_folders = [''] + [os.path.basename(_file) for _file in list_folders]
+        short_list_folders = [""] + [os.path.basename(_file) for _file in list_folders]
         nbr_folders = len(list_folders)
 
         o_table = TableHandler(table_ui=self.parent.ui.coarse_alignment_tableWidget)
@@ -75,8 +75,10 @@ class CoarseTabHandler:
                     data = data_dictionary[folder_name].data
                     real_row_nbr = _row - nbr_empty_rows
                     real_col_nbr = _column - nbr_empty_columns
-                    panoramic_image[real_row_nbr*image_height:(real_row_nbr+1)*image_height,
-                                    real_col_nbr*image_width:(real_col_nbr+1)*image_width] = data
+                    panoramic_image[
+                        real_row_nbr * image_height : (real_row_nbr + 1) * image_height,
+                        real_col_nbr * image_width : (real_col_nbr + 1) * image_width,
+                    ] = data
 
         self.parent.coarse_panoramic_image = panoramic_image
 
@@ -110,4 +112,3 @@ class CoarseTabHandler:
             self.parent.ui.image_view_coarse_alignment.clear()
         else:
             self.parent.ui.image_view_coarse_alignment.setImage(_image)
-

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_registration_profile.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
@@ -10,7 +8,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
@@ -208,11 +206,11 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
-        self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
+        self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
+        self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
-        self.opacity_slider.sliderMoved['int'].connect(MainWindow.opacity_slider_moved)
+        self.opacity_slider.sliderMoved["int"].connect(MainWindow.opacity_slider_moved)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
         self.calculate_markers_button.clicked.connect(MainWindow.calculate_markers_button_clicked)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_row_clicked)

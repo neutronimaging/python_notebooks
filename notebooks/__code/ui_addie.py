@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Volumes/my_book_thunderbolt_duo/git/IPTS/python_notebooks/ui/ui_addie.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1352, 807)
@@ -125,7 +124,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.h3_table.customContextMenuRequested['QPoint'].connect(MainWindow.h3_table_right_click)
+        self.h3_table.customContextMenuRequested["QPoint"].connect(MainWindow.h3_table_right_click)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -175,4 +174,3 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "8"))
         self.h3_table.setSortingEnabled(__sortingEnabled)
         self.treeWidget.headerItem().setText(0, _translate("MainWindow", "Columns Visibility"))
-

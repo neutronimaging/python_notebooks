@@ -3,7 +3,6 @@ from qtpy.QtWidgets import QApplication
 
 
 class StatusMessageStatus:
-
     ready = "QStatusBar{padding-left:8px;background:rgba(236,236,236,75);color:green;font-weight:normal;}"
     working = "QStatusBar{padding-left:8px;background:rgba(105,105,105,75);color:rgb(210,105,30);font-weight:normal;}"
     error = "QStatusBar{padding-left:8px;background:rgba(255,0,0,255);color:black;font-weight:bold;}"

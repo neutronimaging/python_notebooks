@@ -17,17 +17,19 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.combine_images import CombineImages
 from __code import system
-system.System.select_working_dir(notebook='combine_all_images_selected')
+from __code.combine_images import CombineImages
+
+system.System.select_working_dir(notebook="combine_all_images_selected")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Images to Merge 
+# # Select Images to Merge
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge = CombineImages(working_dir=system.System.get_working_dir())
@@ -40,7 +42,7 @@ o_merge.select_files()
 o_merge.how_to_combine()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Output Folder 
+# # Select Output Folder
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge.select_output_folder()
@@ -49,10 +51,8 @@ o_merge.select_output_folder()
 o_merge.define_output_filename()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Merging 
+# # Merging
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge.merging()
 # -
-
-

@@ -100,8 +100,7 @@ class TableHandler:
         self.table_ui.insertRow(row)
 
     def insert_row(self, row=0, list_col_name=None):
-        """row is the row number
-        """
+        """row is the row number"""
         self.table_ui.insertRow(row)
         for column, _text in enumerate(list_col_name):
             _item = QtGui.QTableWidgetItem(_text)
@@ -114,14 +113,14 @@ class TableHandler:
         self.table_ui.insertColumn(column)
 
     def set_item_with_float(self, row=0, column=0, float_value=""):
-        if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
+        if (str(float_value) == "None") or (str(float_value) == "N/A"):
             _str_value = "N/A"
         else:
             _str_value = self.cell_str_format.format(float(float_value))
         self.table_ui.item(row, column).setText(_str_value)
 
     def insert_item_with_float(self, row=0, column=0, float_value="", format_str="{}"):
-        if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
+        if (str(float_value) == "None") or (str(float_value) == "N/A"):
             _str_value = "N/A"
         else:
             _str_value = format_str.format(float(float_value))

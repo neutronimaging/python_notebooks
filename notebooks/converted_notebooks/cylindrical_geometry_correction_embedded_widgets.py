@@ -16,7 +16,7 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Workflow of the notebook 
+# # Workflow of the notebook
 
 # * **User**: select the images to work with.
 # * *Notebook*: load images
@@ -37,25 +37,27 @@
 # %matplotlib notebook
 
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.cylindrical_geometry_correction_embedded_widgets.main import CylindricalGeometryCorrectionEmbeddedWidgets
+warnings.filterwarnings("ignore")
 
 from __code import system
-system.System.select_working_dir(notebook='cylindrical_geometry_correction_embedded_widgets')
+from __code.cylindrical_geometry_correction_embedded_widgets.main import CylindricalGeometryCorrectionEmbeddedWidgets
+
+system.System.select_working_dir(notebook="cylindrical_geometry_correction_embedded_widgets")
 
 from __code.__all import custom_style
+
 custom_style.style()
 # -
 
-# # Select Images 
+# # Select Images
 
 o_ipts = CylindricalGeometryCorrectionEmbeddedWidgets(working_dir=system.System.get_working_dir())
 o_ipts.select_images()
 
 # # Use config file (optional)
 #
-# Run this cell when you have a config file you saved in a previous session and wants to reload it here. This will allow you to automatically re-use the same region of interests. 
+# Run this cell when you have a config file you saved in a previous session and wants to reload it here. This will allow you to automatically re-use the same region of interests.
 
 o_ipts.select_config()
 
@@ -75,7 +77,7 @@ o_ipts.visualize_raw_images()
 
 o_ipts.rotate_images()
 
-# # crop sample to region of interest 
+# # crop sample to region of interest
 
 # By playing with the **left**, **right**, **top** and **bottom** sliders, select a region surrounding the data you want to work with.
 #
@@ -87,7 +89,7 @@ o_ipts.rotate_images()
 #     </html>
 #
 # * Make sure you include the container in the selection (edges should have a value of 1)
-# and 
+# and
 # * a part of the container without sample inside (will be used for normalization)
 #
 # For example:
@@ -113,7 +115,7 @@ o_ipts.background_range_selection()
 
 # # Select sample
 #
-# Select the **top** and **bottom** limit of your sample. 
+# Select the **top** and **bottom** limit of your sample.
 #
 # __For example:__
 #
@@ -126,15 +128,15 @@ o_ipts.sample_region_selection()
 
 o_ipts.remove_background_signal()
 
-# # Profiles to work with 
+# # Profiles to work with
 
 o_ipts.display_of_profiles()
 
-# # Applying geometry correction 
+# # Applying geometry correction
 
 o_ipts.correct_cylinder_geometry()
 
-# # Export 
+# # Export
 #
 # This will export:
 #  - the corrected cropped images
@@ -142,5 +144,3 @@ o_ipts.correct_cylinder_geometry()
 #  - all the configuration used in this notebook (config file)
 
 o_ipts.export_profiles()
-
-

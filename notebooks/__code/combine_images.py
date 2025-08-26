@@ -1,66 +1,72 @@
 import os
-from scipy.stats.mstats import gmean
-from ipywidgets import widgets
-from IPython.display import display, HTML
-import numpy as np
 
+import numpy as np
+from IPython.display import HTML, display
+from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
+from scipy.stats.mstats import gmean
 
 from __code import file_handler
 from __code.ipywe import fileselector
 
 
-class CombineImages(object):
-    working_dir = ''
+class CombineImages:
+    working_dir = ""
 
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir=""):
         self.working_dir = working_dir
 
     def select_files(self):
-        self.files_list_widget = fileselector.FileSelectorPanel(instruction='select files to combine',
-                                                                start_dir=self.working_dir,
-                                                                multiple=True)
+        self.files_list_widget = fileselector.FileSelectorPanel(
+            instruction="select files to combine", start_dir=self.working_dir, multiple=True
+        )
         self.files_list_widget.show()
 
     def how_to_combine(self):
-        _file = open("__docs/combine_images/geometric_mean.png", 'rb')
+        _file = open("__docs/combine_images/geometric_mean.png", "rb")
         _geo_image = _file.read()
-        geo_box = widgets.HBox([widgets.Label("Geometric Mean",
-                                              layout=widgets.Layout(width='20%')),
-                                widgets.Image(value=_geo_image,
-                                              format='png')])
-        _file = open("__docs/combine_images/algebric_mean.png", 'rb')
+        geo_box = widgets.HBox(
+            [
+                widgets.Label("Geometric Mean", layout=widgets.Layout(width="20%")),
+                widgets.Image(value=_geo_image, format="png"),
+            ]
+        )
+        _file = open("__docs/combine_images/algebric_mean.png", "rb")
         _alge_image = _file.read()
-        alge_box = widgets.HBox([widgets.Label("Arithmetic Mean",
-                                              layout=widgets.Layout(width='20%')),
-                                widgets.Image(value=_alge_image,
-                                              format='png')])
+        alge_box = widgets.HBox(
+            [
+                widgets.Label("Arithmetic Mean", layout=widgets.Layout(width="20%")),
+                widgets.Image(value=_alge_image, format="png"),
+            ]
+        )
 
-        self.combine_method = widgets.RadioButtons(options=['add', 'arithmetic mean', 'geometric mean', 'median'],
-                                                   value='arithmetic mean')
+        self.combine_method = widgets.RadioButtons(
+            options=["add", "arithmetic mean", "geometric mean", "median"], value="arithmetic mean"
+        )
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
         display(vertical)
 
     def select_output_folder(self):
-        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select where to create the ' + \
-                                                                               'combined image ...',
-                                                                   start_dir=self.working_dir,
-                                                                   newdir_toolbar_button=True,
-                                                                   type='directory')
+        self.output_folder_widget = fileselector.FileSelectorPanel(
+            instruction="select where to create the " + "combined image ...",
+            start_dir=self.working_dir,
+            newdir_toolbar_button=True,
+            type="directory",
+        )
 
         self.output_folder_widget.show()
 
     def __get_formated_merging_algo_name(self):
         _algo = self.combine_method.value
-        if _algo =='arithmetic mean':
-            return 'arithmetic_mean'
-        elif _algo == 'geometric mean':
-            return 'geometric_mean'
-        elif _algo == 'median':
-            return 'median'
-        elif _algo == 'add':
-            return 'add'
+        if _algo == "arithmetic mean":
+            return "arithmetic_mean"
+        elif _algo == "geometric mean":
+            return "geometric_mean"
+        elif _algo == "median":
+            return "median"
+        elif _algo == "add":
+            return "add"
         else:
             raise NotImplementedError(f"Algorithm {_algo} not implemented!")
 
@@ -72,27 +78,26 @@ class CombineImages(object):
         [default_new_name, ext] = self.__create_merged_file_name(list_files_names=short_list_files)
 
         display(widgets.HTML(value="<hr>"))
-        
-        top_label = widgets.Label("Define the new output file name",
-                                 layout=widgets.Layout(width='100%'))
+
+        top_label = widgets.Label("Define the new output file name", layout=widgets.Layout(width="100%"))
 
         folder_name = os.path.dirname(list_files[0])
 
-        box1 = widgets.HBox([widgets.Label("Original folder name",
-                                            layout=widgets.Layout(width='20%')),
-                             widgets.Label(f"{folder_name}",
-                                            layout=widgets.Layout(width='80%')),
-                                ])
+        box1 = widgets.HBox(
+            [
+                widgets.Label("Original folder name", layout=widgets.Layout(width="20%")),
+                widgets.Label(f"{folder_name}", layout=widgets.Layout(width="80%")),
+            ]
+        )
         display(box1)
 
-        box = widgets.HBox([widgets.Label("File Name",
-                                          layout=widgets.Layout(width='20%')),
-                            widgets.Text("",
-                                         placeholder="Your file name here",
-                                         layout=widgets.Layout(width='60%')),
-                            widgets.Label("_{}{}".format(merging_algo, ext),
-                                          layout=widgets.Layout(width='20%')),
-                            ])
+        box = widgets.HBox(
+            [
+                widgets.Label("File Name", layout=widgets.Layout(width="20%")),
+                widgets.Text("", placeholder="Your file name here", layout=widgets.Layout(width="60%")),
+                widgets.Label(f"_{merging_algo}{ext}", layout=widgets.Layout(width="20%")),
+            ]
+        )
         self.default_filename_ui = box.children[1]
         self.ext_ui = box.children[2]
         vertical_box = widgets.VBox([top_label, box])
@@ -106,13 +111,13 @@ class CombineImages(object):
 
         # get merging algorithm
         merging_algo = self.combine_method.value
-        if merging_algo =='arithmetic mean':
+        if merging_algo == "arithmetic mean":
             algorithm = self.__arithmetic_mean
-        elif merging_algo == 'geometric mean':
+        elif merging_algo == "geometric mean":
             algorithm = self.__geo_mean
-        elif merging_algo == 'add':
+        elif merging_algo == "add":
             algorithm = self.__add
-        elif merging_algo == 'median':
+        elif merging_algo == "median":
             algorithm = self.__median
         else:
             raise NotImplementedError(f"algo {merging_algo} not implemented!")
@@ -122,19 +127,19 @@ class CombineImages(object):
 
         o_load = Normalization()
         o_load.load(file=list_files, notebook=True)
-        _data = o_load.data['sample']['data']
-        _metadata = o_load.data['sample']['metadata']
+        _data = o_load.data["sample"]["data"]
+        _metadata = o_load.data["sample"]["metadata"]
 
-        merging_ui = widgets.HBox([widgets.Label("Merging Progress",
-                                                 layout=widgets.Layout(width='20%')),
-                                   widgets.IntProgress(max=2)])
+        merging_ui = widgets.HBox(
+            [widgets.Label("Merging Progress", layout=widgets.Layout(width="20%")), widgets.IntProgress(max=2)]
+        )
         display(merging_ui)
         w1 = merging_ui.children[1]
 
         combined_data = self.__merging_algorithm(algorithm, _data)
         w1.value = 1
 
-        #_new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
+        # _new_name = self.__create_merged_file_name(list_files_names=o_load.data['sample']['file_name'])
         _new_name = self.default_filename_ui.value + self.ext_ui.value
         output_file_name = os.path.join(output_folder, _new_name)
 
@@ -142,10 +147,14 @@ class CombineImages(object):
 
         w1.value = 2
 
-        display(HTML('<span style="font-size: 20px; color:blue">File created: ' + \
-                     os.path.basename(output_file_name) + '</span>'))
-        display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + \
-                     output_folder + '</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">File created: '
+                + os.path.basename(output_file_name)
+                + "</span>"
+            )
+        )
+        display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + output_folder + "</span>"))
 
     def __create_merged_file_name(self, list_files_names=[]):
         """Create the new base name using a combine name of all the input file
@@ -154,14 +163,14 @@ class CombineImages(object):
         :return:
             'image001_image002.fits'
         """
-        ext = ''
+        ext = ""
         list_base_name = []
         for _file in list_files_names:
             basename = os.path.basename(_file)
             [_name, ext] = os.path.splitext(basename)
             list_base_name.append(_name)
 
-        return ('_'.join(list_base_name), ext)
+        return ("_".join(list_base_name), ext)
 
     def __add(self, data_array):
         return np.sum(data_array, axis=0)

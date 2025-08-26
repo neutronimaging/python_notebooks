@@ -16,13 +16,15 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.group_images_by_cycle_for_panoramic_stitching.group_images import GroupImages
 from __code import system
-system.System.select_working_dir(notebook='group_images_by_cycle_for_panoramic_stitching')
+from __code.group_images_by_cycle_for_panoramic_stitching.group_images import GroupImages
+
+system.System.select_working_dir(notebook="group_images_by_cycle_for_panoramic_stitching")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -33,7 +35,7 @@ o_group = GroupImages(working_dir=system.System.get_working_dir())
 o_group.select_input_folder()
 # -
 
-# # Sort files 
+# # Sort files
 
 o_group.how_to_sort_files()
 
@@ -45,5 +47,3 @@ o_group.how_to_sort_files()
 # + run_control={"frozen": false, "read_only": false}
 o_group.select_output_folder()
 # -
-
-
