@@ -7,9 +7,47 @@
 This repository provides various notebooks for users of the neutron imaging beamlines at ORNL.
 Full tutorial of most of the notebooks can be found at [here](https://neutronimaging.pages.ornl.gov/tutorial/).
 
+## Prerequisites
+
+This project uses [Pixi](https://pixi.sh/) for environment and dependency management. Install Pixi:
+
+```bash
+curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+## Quick Start
+
+1. Clone the repository:
+```bash
+git clone https://github.com/ornlneutronimaging/python_notebooks.git
+cd python_notebooks_development
+```
+
+2. Install dependencies:
+```bash
+pixi install
+```
+
+3. Launch Jupyter Lab:
+```bash
+pixi run lab
+```
+
+## Available Commands
+
+- `pixi run lab` - Start Jupyter Lab
+- `pixi run notebook` - Start Jupyter Notebook  
+- `pixi run test` - Run tests
+- `pixi run test_imports` - Verify all packages import correctly
+- `pixi run test_all` - Run all tests
+- `pixi run check` - Run installation check
+
+For development:
+- `pixi run -e dev lint` - Run code linting
+
 ## Instructions
 
-To learn how to access or install the notebooks, and how to run them, refer to the complete tutorial found on our imaging web site https://neutronimaging.pages.ornl.gov
+To learn more about the notebooks and how to use them, refer to the complete tutorial found on our imaging web site https://neutronimaging.pages.ornl.gov
 
 ![Screen Shot 2021-06-11 at 8 03 33 AM](https://user-images.githubusercontent.com/1138324/121683900-000cc080-ca8c-11eb-815f-5ff52731dba7.png)
 
@@ -52,14 +90,19 @@ To turn debugging mode on, add the flag -d (--use_debugging_mode) to the command
 $ python before_and_after_github_script.py -a -d
 ``` -->
 
-To run the tests
-```
-$ cd notebooks
-$ export PYTHONPATH=$PWD:$PYTHONPATH
-$ pytest
+To run the tests:
+```bash
+pixi run test
+# or
+pixi run test_all  # runs all test suites
 ```
 ## Deployment
 
-An updated deployment strategy is underway.
+This project uses Pixi for reproducible environments. The `pixi.lock` file ensures consistent dependencies across all installations.
 
-Currently, notebooks are distributed directly by the Computational Instrument Scientist.
+### Environment Management
+
+- Default environment: `pixi shell` or `pixi run <command>`
+- Development environment: `pixi run -e dev <command>`
+
+Notebooks are distributed directly by the Computational Instrument Scientist.

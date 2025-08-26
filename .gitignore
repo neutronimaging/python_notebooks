@@ -18,3 +18,6 @@ build/*
 dist/*
 .pytest_cache/*
 .idea/*
+# pixi environments
+.pixi/*
+!.pixi/config.toml
