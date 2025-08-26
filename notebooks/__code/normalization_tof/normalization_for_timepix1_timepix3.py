@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 # from enum import Enum
 # from scipy.constants import h, c, electron_volt, m_n
 
+from timepix_geometry_correction.correct import TimepixGeometryCorrection
+
 from __code.normalization_tof.units import convert_array_from_time_to_lambda, convert_array_from_time_to_energy
 from __code.normalization_tof.units import TimeUnitOptions, DistanceUnitOptions, EnergyUnitOptions
 
@@ -104,8 +106,28 @@ def create_x_axis_file(lambda_array: np.ndarray = None,
     logging.info(f"X axis file created: {x_axis_file_name}")
 
 
-def correct_chips_alignment(data: np.ndarray) -> np.ndarray:
-    return data  # Placeholder for chips alignment correction logic
+def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
+    """
+    correct the chips position (fill the gaps between the chips) using the dedicated library 
+    timepix_geometry_correction (https://github.com/ornlneutronimaging/timepix_geometry_correction)
+    
+    Args:
+        data (np.ndarray): input data array
+        config (dict): configuration dictionary for chips alignment
+    Returns:
+        np.ndarray: corrected data array
+    """ 
+    logging.info("Correcting chips alignment ...")
+    for _index, _data in enumerate(data):
+        o_corrector = TimepixGeometryCorrection(raw_image=_data,
+                                                config=config)
+
+        data_corrected = o_corrector.correct()
+        data[_index] = data_corrected
+
+    logging.info(f"\t{np.shape(data_corrected) = }")
+    logging.info(f"Chips alignment corrected!")
+    return data_corrected
 
 
 def normalization_with_list_of_full_path(sample_dict: dict = None, 
@@ -121,6 +143,7 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
                                     preview: bool = False,
                                     distance_source_detector_m: float = 25,
                                     correct_chips_alignment_flag: bool = True,
+                                    correct_chips_alignment_config: dict = None,
                                     export_mode: dict = None) -> None | np.ndarray:
     """normalize the sample data with ob data using proton charge and shutter counts
     Args:
@@ -143,6 +166,7 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
         preview (bool): if True, display preview of the data
         distance_source_detector_m (float): distance from source to detector in meters
         correct_chips_alignment_flag (bool): if True, correct chips alignment
+        correct_chips_alignment_config (dict): configuration for chips alignment correction
         export_mode (dict): dictionary with export options
 
     """
@@ -218,7 +242,7 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
         logging.info("Correcting chips alignment ...")
         if verbose:
             display(HTML("Correcting chips alignment ..."))
-            ob_data_combined = correct_chips_alignment(ob_data_combined)
+            ob_data_combined = correct_chips_alignment(ob_data_combined, correct_chips_alignment_config)
             logging.info(f"Chips alignment corrected!")
             if verbose:
                 display(HTML(f"Chips alignment corrected!"))
@@ -249,7 +273,7 @@ def normalization_with_list_of_full_path(sample_dict: dict = None,
         if verbose:
             display(HTML("Correcting chips alignment ..."))
         for _sample_run_number in sample_master_dict.keys():
-            sample_master_dict[_sample_run_number][MasterDictKeys.data] = correct_chips_alignment(sample_master_dict[_sample_run_number][MasterDictKeys.data])
+            sample_master_dict[_sample_run_number][MasterDictKeys.data] = correct_chips_alignment(sample_master_dict[_sample_run_number][MasterDictKeys.data], correct_chips_alignment_config)
         logging.info(f"Chips alignment corrected!")
         if verbose:
             display(HTML(f"Chips alignment corrected!"))
@@ -813,7 +837,7 @@ def combine_ob_images(ob_master_dict: dict,
 
         # remove zeros
         if replace_ob_zeros_by_nan:
-            ob_data[ob_data == 0] = np.NaN
+            ob_data[ob_data == 0] = np.nan
 
         # if True:
         #     # replace zeros in OB by median of surrounding pixels
@@ -839,7 +863,7 @@ def combine_ob_images(ob_master_dict: dict,
 
     # remove zeros
     if replace_ob_zeros_by_nan:
-        ob_data_combined[ob_data_combined == 0] = np.NaN
+        ob_data_combined[ob_data_combined == 0] = np.nan
 
     return ob_data_combined
 

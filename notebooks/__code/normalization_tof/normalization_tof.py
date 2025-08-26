@@ -23,7 +23,7 @@ from __code.normalization_tof.normalization_for_timepix1_timepix3 import (normal
                                                                 normalization_with_list_of_full_path, 
                                                                 load_data_using_multithreading,
                                                                 retrieve_list_of_tif)
-from __code.normalization_tof.config import DEBUG_DATA
+from __code.normalization_tof.config import DEBUG_DATA, timepix1_config, timepix3_config
 from __code.normalization_tof import autoreduce_dir, distance_source_detector_m
 from __code.normalization_tof import DetectorType, raw_dir, autoreduce_dir
 
@@ -703,6 +703,14 @@ class NormalizationTof:
             ob_dict[os.path.basename(_full_path)] = {'full_path': _full_path,
                                                      'nexus': self.dict_ob[_full_path]['nexus']}
    
+        if self.correct_chips_alignment_flag.value:
+            if self.detector_type in [DetectorType.tpx1_legacy, DetectorType.tpx1]:
+                correct_chips_alignment_config = timepix1_config
+            elif self.detector_type == DetectorType.tpx3:
+                correct_chips_alignment_config = timepix3_config
+            else:
+                correct_chips_alignment_config = None
+
         normalization_with_list_of_full_path(sample_dict=sample_dict,
                                             ob_dict=ob_dict,
                                             output_folder=output_folder,
@@ -710,6 +718,7 @@ class NormalizationTof:
                                             shutter_counts_flag=self.shutter_counts_flag.value,
                                             replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
                                             correct_chips_alignment_flag=self.correct_chips_alignment_flag.value,
+                                            correct_chips_alignment_config=correct_chips_alignment_config,
                                             verbose=True,
                                             instrument=self.instrument,
                                             detector_delay_us=detector_delay_us,
