@@ -17,23 +17,26 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_panoramic_stitching.ui')
 
-from __code.panoramic_stitching import Interface, InterfaceHandler
+o_builder = UiBuilder(ui_name="ui_panoramic_stitching.ui")
 
 from __code import system
+from __code.panoramic_stitching import Interface, InterfaceHandler
+
 system.System.select_working_dir()
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Description 
+# # Description
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # This is just a template notebook for more complex UI that required pyqtgraph
@@ -43,7 +46,7 @@ custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
 o_template = InterfaceHandler(working_dir=system.System.get_working_dir())
-o_template.select_images(instruction='Select tiff or Fits Images ...')
+o_template.select_images(instruction="Select tiff or Fits Images ...")
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Display Images
@@ -54,4 +57,3 @@ o_interface = Interface(o_norm=o_template.o_norm)
 o_interface.show()
 
 # + run_control={"frozen": false, "read_only": false}
-

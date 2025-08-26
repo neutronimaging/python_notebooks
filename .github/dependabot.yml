@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # Enable version updates for Python dependencies (via pyproject.toml)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    # Only update direct dependencies
+    allow:
+      - dependency-type: "direct"
+    # Group updates to reduce PR noise
+    groups:
+      python-dependencies:
+        patterns:
+          - "*"

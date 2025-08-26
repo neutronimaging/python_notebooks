@@ -1,16 +1,16 @@
-#Allows for Python 3-style division in Python 2.7
-from __future__ import division
+# Allows for Python 3-style division in Python 2.7
 
-import ipywidgets as ipyw
-from . import base
-from traitlets import Unicode, Float, Integer, observe
-import numpy as np
 import sys
 
+import ipywidgets as ipyw
+import numpy as np
+from traitlets import Float, Integer, Unicode, observe
 
-@ipyw.register('ipywe.ImageDisplay')
+from . import base
+
+
+@ipyw.register("ipywe.ImageDisplay")
 class ImageDisplay(base.DOMWidget):
-
     _view_name = Unicode("ImgDisplayView").tag(sync=True)
     _model_name = Unicode("ImgDisplayModel").tag(sync=True)
 
@@ -34,7 +34,6 @@ class ImageDisplay(base.DOMWidget):
     height = Integer().tag(sync=True)
     width = Integer().tag(sync=True)
 
-    
     def __init__(self, image, width, height, init_roi=None):
         self.width = width
         self.height = height
@@ -48,11 +47,11 @@ class ImageDisplay(base.DOMWidget):
         self.xbuff = 0
         self.ybuff = 0
         if init_roi != None:
-            assert (type(init_roi) is list or type(init_roi) is tuple)
-            self._offXtop = init_roi[0]*1./self._ncols_currimg * self.width
-            self._offXbottom = init_roi[1]*1./self._ncols_currimg * self.width
-            self._offYtop = init_roi[2]*1./self._nrows_currimg * self.height
-            self._offYbottom = init_roi[3]*1./self._nrows_currimg * self.height
+            assert type(init_roi) is list or type(init_roi) is tuple
+            self._offXtop = init_roi[0] * 1.0 / self._ncols_currimg * self.width
+            self._offXbottom = init_roi[1] * 1.0 / self._ncols_currimg * self.width
+            self._offYtop = init_roi[2] * 1.0 / self._nrows_currimg * self.height
+            self._offYbottom = init_roi[3] * 1.0 / self._nrows_currimg * self.height
         self._b64value = self.createImg()
         super(ImageDisplay, self).__init__()
         return
@@ -60,28 +59,35 @@ class ImageDisplay(base.DOMWidget):
     def createImg(self):
         if self._img_min >= self._img_max:
             self._img_max = self._img_min + abs(self._img_max - self._img_min) * 1e-5
-        img = ((self.curr_img_data-self._img_min)/(self._img_max-self._img_min)*(2**8-1)).astype('uint8')
+        img = ((self.curr_img_data - self._img_min) / (self._img_max - self._img_min) * (2**8 - 1)).astype("uint8")
         size = np.max(img.shape)
         view_size = np.max((self.width, self.height))
         if size > view_size:
-            downsample_ratio = 1.*view_size/size
+            downsample_ratio = 1.0 * view_size / size
             import scipy.misc
+
             img = scipy.misc.imresize(img, downsample_ratio)
         else:
-            upsample_ratio = 1.*view_size/size
+            upsample_ratio = 1.0 * view_size / size
             import scipy.misc
+
             img = scipy.misc.imresize(img, upsample_ratio)
-        """Chooses the correct string IO method based on 
+        """Chooses the correct string IO method based on
                which version of Python is being used.
            Once Python 2.7 support ends, this can be replaced
                with just the content of the else statement."""
         if sys.version_info < (3, 0):
             from cStringIO import StringIO
+
             f = StringIO()
         else:
             from io import BytesIO
+
             f = BytesIO()
-        import PIL.Image, base64
+        import base64
+
+        import PIL.Image
+
         PIL.Image.fromarray(img).save(f, self._format)
         imgb64v = base64.b64encode(f.getvalue())
         return imgb64v
@@ -89,20 +95,22 @@ class ImageDisplay(base.DOMWidget):
     @observe("_zoom_click")
     def zoomImg(self, change):
         self.arr = self.curr_img.data.copy()
-        left = int(self._offXtop/self.width * self._ncols_currimg)
-        right = int(self._offXbottom/self.width*self._ncols_currimg)
-        top = int(self._offYtop/self.height*self._nrows_currimg)
-        bottom = int(self._offYbottom/self.height*self._nrows_currimg)
+        left = int(self._offXtop / self.width * self._ncols_currimg)
+        right = int(self._offXbottom / self.width * self._ncols_currimg)
+        top = int(self._offYtop / self.height * self._nrows_currimg)
+        bottom = int(self._offYbottom / self.height * self._nrows_currimg)
         select_width = right - left
         select_height = bottom - top
-        self._xcoord_absolute += (left - self.xbuff)
-        self._ycoord_absolute += (top - self.ybuff)
+        self._xcoord_absolute += left - self.xbuff
+        self._ycoord_absolute += top - self.ybuff
         if select_width == 0:
             select_width = 1
         if select_height == 0:
             select_height = 1
-        self.arr = self.arr[self._ycoord_absolute:(self._ycoord_absolute + select_height),
-                            self._xcoord_absolute:(self._xcoord_absolute + select_width)]
+        self.arr = self.arr[
+            self._ycoord_absolute : (self._ycoord_absolute + select_height),
+            self._xcoord_absolute : (self._xcoord_absolute + select_width),
+        ]
         self._nrows, self._ncols = self.arr.shape
         self.curr_img_data = self.arr.copy()
         if self._ncols > self._nrows:

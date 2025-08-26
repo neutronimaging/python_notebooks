@@ -1,27 +1,23 @@
-import numpy as np
 import matplotlib
-import os
-import copy
+import numpy as np
 
-matplotlib.use('Qt5Agg')
+matplotlib.use("Qt5Agg")
 
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
-from qtpy.QtWidgets import QProgressBar, QVBoxLayout, QAbstractItemView
-from qtpy import QtGui
 import pyqtgraph as pg
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from qtpy import QtGui
+from qtpy.QtWidgets import QAbstractItemView, QProgressBar, QVBoxLayout
 
-from __code.table_handler import TableHandler
 from __code.bragg_edge.mplcanvas import MplCanvas
 from __code.dual_energy.my_table_widget import MyTableWidget
-from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
+from __code.table_handler import TableHandler
 
 
 class Initialization:
     distance_detector_sample = 1300  # m
     detector_offset = 6500  # micros
 
-    def __init__(self, parent=None, tab='all'):
+    def __init__(self, parent=None, tab="all"):
         self.parent = parent
 
         self.block_signals(True)
@@ -57,10 +53,10 @@ class Initialization:
 
     def normalize_images_by_white_beam(self):
         white_beam_ob = self.parent.o_bragg.white_beam_ob
-        list_data = self.parent.o_norm.data['sample']['data']
+        list_data = self.parent.o_norm.data["sample"]["data"]
         for _index_data, _data in enumerate(list_data):
             normalized_data = _data / white_beam_ob
-            self.parent.o_norm.data['sample']['data'][_index_data] = normalized_data
+            self.parent.o_norm.data["sample"]["data"][_index_data] = normalized_data
 
     def block_signals(self, flag):
         list_ui = []
@@ -70,8 +66,8 @@ class Initialization:
     def save_image_size(self):
         _image = self.parent.get_live_image()
         [height, width] = np.shape(_image)
-        self.parent.image_size['width'] = width
-        self.parent.image_size['height'] = height
+        self.parent.image_size["width"] = width
+        self.parent.image_size["height"] = height
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
@@ -121,36 +117,34 @@ class Initialization:
 
     def labels(self):
         # labels
-        self.parent.ui.detector_offset_units.setText(u"\u03BCs")
-        self.parent.ui.selection_tof_radiobutton.setText(u"TOF (\u03BCs)")
-        self.parent.ui.selection_lambda_radiobutton.setText(u"\u03BB (\u212B)")
+        self.parent.ui.detector_offset_units.setText("\u03bcs")
+        self.parent.ui.selection_tof_radiobutton.setText("TOF (\u03bcs)")
+        self.parent.ui.selection_lambda_radiobutton.setText("\u03bb (\u212b)")
 
     def text_fields(self):
         self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
         self.parent.ui.detector_offset.setText(str(self.detector_offset))
-        self.parent.ui.selection_bin_size_value.setText(str(self.parent.bin_size_value['index']))
+        self.parent.ui.selection_bin_size_value.setText(str(self.parent.bin_size_value["index"]))
 
     def widgets(self):
         self.parent.ui.splitter.setSizes([500, 400])
         self.parent.ui.splitter_2.setSizes([500, 400])
         self.parent.ui.calculation_bin_table = MyTableWidget(parent=self.parent)
-        self.parent.ui.calculation_bin_table.cellClicked['int', 'int'].connect(
-                self.parent.calculation_table_cell_clicked)
+        self.parent.ui.calculation_bin_table.cellClicked["int", "int"].connect(
+            self.parent.calculation_table_cell_clicked
+        )
         self.parent.ui.calculation_bin_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.parent.ui.verticalLayout_table.addWidget(self.parent.ui.calculation_bin_table)
 
     def roi_setup(self):
-        [x0, y0] = self.parent.roi_settings['position']
+        [x0, y0] = self.parent.roi_settings["position"]
         self.parent.selection_x0y0 = [x0, y0]
-        width = self.parent.previous_roi_selection['width']
-        height = self.parent.previous_roi_selection['height']
+        width = self.parent.previous_roi_selection["width"]
+        height = self.parent.previous_roi_selection["height"]
         _pen = QtGui.QPen()
-        _pen.setColor(self.parent.roi_settings['color'])
-        _pen.setWidthF(self.parent.roi_settings['border_width'])
-        self.parent.roi_id = pg.ROI([x0, y0],
-                                    [width, width],
-                                    pen=_pen,
-                                    scaleSnap=True)
+        _pen.setColor(self.parent.roi_settings["color"])
+        _pen.setWidthF(self.parent.roi_settings["border_width"])
+        self.parent.roi_id = pg.ROI([x0, y0], [width, width], pen=_pen, scaleSnap=True)
         self.parent.roi_id.addScaleHandle([1, 1], [0, 0])
         self.parent.roi_id.addScaleHandle([0, 0], [1, 1])
         self.parent.ui.image_view.addItem(self.parent.roi_id)
@@ -164,12 +158,18 @@ class Initialization:
 
     def _clean_image(self, image):
         _result_inf = np.where(np.isinf(image))
-        image[_result_inf] = np.NaN
+        image[_result_inf] = np.nan
         return image
 
     def table_header(self):
-        column_names = [u'#', u'From file index', u'To file index',
-                        u'From TOF (\u03BCs)', u'To TOF (\u03BCs)',
-                        u'From \u03BB (\u212B)', u'To \u03BB (\u212B)']
+        column_names = [
+            "#",
+            "From file index",
+            "To file index",
+            "From TOF (\u03bcs)",
+            "To TOF (\u03bcs)",
+            "From \u03bb (\u212b)",
+            "To \u03bb (\u212b)",
+        ]
         o_high = TableHandler(table_ui=self.parent.ui.summary_table)
         o_high.set_column_names(column_names=column_names)

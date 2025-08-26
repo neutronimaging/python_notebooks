@@ -1,113 +1,71 @@
 name: Test and Deploy
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, next, qa]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
+  run-unit-tests:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    name: Run tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
-    run-unit-tests:
-      runs-on: ubuntu-22.04
-      timeout-minutes: 60
-      name: ubuntu-22.04
-      steps:
-        - uses: actions/checkout@v3
-        - uses: conda-incubator/setup-miniconda@v2
-          with:
-            auto-update-conda: true
-            mamba-version: "*"
-            environment-file: conda/neutron-imaging-dev.yml
-            cache-environment-key: ${{ runner.os }}-env-${{ hashFiles('**/neutron-imaging-dev.yml') }}
-            cache-downloads-key: ${{ runner.os }}-downloads-${{ hashFiles('**/neutron-imaging-dev.yml') }}
-        - name: Map the Branch Name to a Conda Environment
-          uses: neutrons/branch-mapper@modifiedMain
-          id: envname
-          with:
-            prefix: "neutron-imaging"
-            suffix-default: "-dev"
-        - name: Install dependencies
-          timeout-minutes: 60
-          shell: bash -l {0}
-          run: |
-            echo "installing additional dependencies if needed"
-        - name: Run tests
-          shell: bash -l {0}
-          run: |
-            cd notebooks
-            python -m pytest tests/
+      - name: Setup pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+          manifest-path: pyproject.toml
+          cache: true
+          environments: default
 
-    trigger-deploy-conda-environment:
-      runs-on: ubuntu-22.04
-      timeout-minutes: 60
-      name: test-trigger-deploy-conda-environment
-      if: ${{ github.ref_protected }}
-      steps:
-        - uses: actions/checkout@v3
+      - name: Run import tests
+        run: pixi run test_imports
 
-        - name: Get changed files
-          id: changed-files
-          uses: tj-actions/changed-files@v41.0.0
+      - name: Run unit tests
+        run: pixi run test
 
-        # Find which conda environment file we should use for the deployment
-        # branch `main` maps to `neutron-imaging` (YML file "conda/neutron-imaging.yml")
-        # branch `next` (and any other branch) maps to `neutron-imaging-dev`
-        - name: Map the Branch Name to a Conda Environment
-          uses: neutrons/branch-mapper@modifiedMain
-          id: envname
-          with:
-            prefix: "neutron-imaging"
-            suffix-default: "-dev"
+      - name: Run linting (informational only)
+        run: pixi run -e dev lint || echo "Linting issues found (non-blocking)"
+        continue-on-error: true
 
-        - name: Extract branch name
-          shell: bash
-          run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          id: extract_branch
+      - name: Audit dependencies (informational only)
+        run: pixi run -e dev audit || echo "Vulnerabilities found (non-blocking)"
+        continue-on-error: true
 
-        - name: Trigger Deploy
-          id: trigger
-          env:
-            CONDAENVFILE: 'conda/${{ steps.envname.outputs.name }}.yml'
-          if: ${{ contains(steps.changed-files.outputs.all_changed_files, env.CONDAENVFILE) }}
-          uses: eic/trigger-gitlab-ci@v2
-          with:
-            url: https://code.ornl.gov
-            token: ${{ secrets.GITLAB_TRIGGER_TOKEN_CONDA }}
-            project_id: 11833
-            ref_name: main
-            variables: |
-              PLAY="update"
-              CONDA_ENV="${{ steps.envname.outputs.name }}"
-              CONDA_ENV_SOURCE="https://raw.githubusercontent.com/neutronimaging/python_notebooks/${{ steps.extract_branch.outputs.branch }}/conda/${{ steps.envname.outputs.name }}.yml"
+  trigger-deploy-notebooks:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    # only trigger deploys from protected branches
+    if: ${{ github.ref_protected }}
+    needs: run-unit-tests
+    steps:
+      - name: Map the Branch Name to a Notebook Collection
+        uses: neutrons/branch-mapper@modifiedMain
+        id: notebook_collection
+        with:
+          prefix: "IPTS_notebooks"
+          suffix-default: "_testing"
 
-        - name: Annotate commit
-          if: ${{ steps.trigger.conclusion == 'success' }}
-          uses: peter-evans/commit-comment@v2
-          with:
-            body: |
-              GitLab pipeline with CONDA_ENV=${{ steps.conda_env_name.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}
+      - name: Trigger deploy
+        id: trigger
+        uses: eic/trigger-gitlab-ci@v2
+        with:
+          url: https://code.ornl.gov
+          token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
+          project_id: 11602
+          ref_name: main
+          variables: |
+            PLAY="imaging"
+            EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
 
-    trigger-deploy-notebooks:
-      runs-on: ubuntu-22.04
-      timeout-minutes: 60
-      # only trigger deploys from protected branches
-      if: ${{ github.ref_protected}}
-      steps:
-        - name: Map the Branch Name to a Notebook Collection
-          uses: neutrons/branch-mapper@modifiedMain
-          id: notebook_collection
-          with:
-            prefix: "IPTS_notebooks"
-            suffix-default: "_testing"
-        - name: Trigger deploy
-          id: trigger
-          uses: eic/trigger-gitlab-ci@v2
-          with:
-            url: https://code.ornl.gov
-            token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
-            project_id: 11602
-            ref_name: main
-            variables: |
-              PLAY="imaging"
-              EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
-        - name: Annotate commit
-          uses: peter-evans/commit-comment@v2
-          with:
-            body: |
-              GitLab pipeline with NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}
+      - name: Annotate commit
+        uses: peter-evans/commit-comment@v3
+        with:
+          body: |
+            GitLab pipeline with NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}

@@ -1,12 +1,10 @@
 class FittingRegions:
-
     high_lambda = "high_lambda"
     low_lambda = "low_lambda"
     bragg_peak = "bragg_peak"
 
 
 class DefaultFittingParameters:
-
     a0 = 1
     b0 = 1
     ahkl = 1
@@ -17,7 +15,6 @@ class DefaultFittingParameters:
 
 
 class JSONKeys:
-
     dSD_m = "distance source detector in m"
     infos = "infos"
     input_nexus_filename = "input nexus filename"
@@ -46,5 +43,5 @@ class JSONKeys:
     sigma = "sigma"
 
 
-LIST_ELEMENTS = ['Ni', 'Ta', 'Al']
-LIST_ELEMENTS_SUPPORTED = ['Ni', 'Al']
+LIST_ELEMENTS = ["Ni", "Ta", "Al"]
+LIST_ELEMENTS_SUPPORTED = ["Ni", "Al"]

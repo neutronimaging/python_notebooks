@@ -5,7 +5,6 @@ from __code._utilities.parent import Parent
 
 
 class Display(Parent):
-
     def grid(self):
         [width, height] = self.parent.get_image_dimension(self.parent.working_data)
         bin_size = self.parent.ui.grid_size_slider.value()
@@ -27,7 +26,7 @@ class Display(Parent):
         # vertical lines
         x = x0
         index = 0
-        while (x <= x0 + width):
+        while x <= x0 + width:
             one_edge = [x, y0]
             other_edge = [x, real_height]
             pos.append(one_edge)
@@ -38,7 +37,7 @@ class Display(Parent):
 
         # horizontal lines
         y = y0
-        while (y <= y0 + height):
+        while y <= y0 + height:
             one_edge = [x0, y]
             other_edge = [read_width, y]
             pos.append(one_edge)
@@ -50,21 +49,20 @@ class Display(Parent):
         pos = np.array(pos)
         adj = np.array(adj)
 
-        line_color = (self.parent.guide_color_slider['red'],
-                      self.parent.guide_color_slider['green'],
-                      self.parent.guide_color_slider['blue'],
-                      self.parent.guide_color_slider['alpha'], 0.5)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
+        line_color = (
+            self.parent.guide_color_slider["red"],
+            self.parent.guide_color_slider["green"],
+            self.parent.guide_color_slider["blue"],
+            self.parent.guide_color_slider["alpha"],
+            0.5,
+        )
+        lines = np.array(
+            [line_color for n in np.arange(len(pos))],
+            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+        )
 
         line_view_binning = pg.GraphItem()
         self.parent.ui.image_view.addItem(line_view_binning)
-        line_view_binning.setData(pos=pos,
-                                  adj=adj,
-                                  pen=lines,
-                                  symbol=None,
-                                  pxMode=False)
+        line_view_binning.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
 
         self.parent.line_view_binning = line_view_binning

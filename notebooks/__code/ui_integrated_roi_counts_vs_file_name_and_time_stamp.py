@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_integrated_roi_counts_vs_file_name_and_time_stamp.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.3
@@ -10,7 +8,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1365, 811)
@@ -292,8 +290,8 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
-        self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
-        self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
+        self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
+        self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
@@ -302,13 +300,13 @@ class Ui_MainWindow(object):
         self.add_roi_button.clicked.connect(MainWindow.add_row_button_clicked)
         self.grid_display_checkBox.clicked.connect(MainWindow.display_grid_clicked)
         self.grid_size_slider.sliderPressed.connect(MainWindow.grid_size_slider_clicked)
-        self.grid_size_slider.sliderMoved['int'].connect(MainWindow.grid_size_slider_moved)
+        self.grid_size_slider.sliderMoved["int"].connect(MainWindow.grid_size_slider_moved)
         self.transparency_slider.sliderPressed.connect(MainWindow.transparency_slider_clicked)
-        self.transparency_slider.sliderMoved['int'].connect(MainWindow.transparency_slider_moved)
+        self.transparency_slider.sliderMoved["int"].connect(MainWindow.transparency_slider_moved)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
-        self.tableWidget.cellChanged['int','int'].connect(MainWindow.table_widget_cell_changed)
+        self.tableWidget.cellChanged["int", "int"].connect(MainWindow.table_widget_cell_changed)
         self.grid_size_slider.sliderReleased.connect(MainWindow.grid_size_slider_released)
-        self.tabWidget.currentChanged['int'].connect(MainWindow.tab_changed)
+        self.tabWidget.currentChanged["int"].connect(MainWindow.tab_changed)
         self.add_radioButton.clicked.connect(MainWindow.algo_changed)
         self.mean_readioButton.clicked.connect(MainWindow.algo_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

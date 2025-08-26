@@ -17,16 +17,19 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.ibeatles_strain_mapping_hdf5_loader.main import Main
+warnings.filterwarnings("ignore")
+
 from __code import system
+from __code.ibeatles_strain_mapping_hdf5_loader.main import Main
+
 system.System.select_working_dir()
 from __code.__all import custom_style
+
 custom_style.style()
 
 # %matplotlib notebook
@@ -37,19 +40,17 @@ custom_style.style()
 # <img src='__code/ibeatles_strain_mapping_hdf5_loader/static/ibeatles_export_as_hdf5_menu.png' />
 
 # + run_control={"frozen": false, "read_only": false}
-o_strain_display = Main(working_dir = system.System.get_working_dir())
+o_strain_display = Main(working_dir=system.System.get_working_dir())
 o_strain_display.select_hdf5_file()
 # -
 
-# # Display all data 
+# # Display all data
 
 # + run_control={"frozen": false, "read_only": false}
 o_strain_display.process_data()
-o_strain_display.display()   
+o_strain_display.display()
 # -
 
 # # Display strain mapping and sample
 
 o_strain_display.display_with_interpolation()
-
-

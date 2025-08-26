@@ -1,5 +1,4 @@
 class ListWidget:
-
     def __init__(self, ui=None):
         self.ui = ui
 
@@ -14,11 +13,11 @@ class ListWidget:
 
     def select_next_element(self):
         current_row = self.get_current_row()
-        self.ui.setCurrentRow(current_row+1)
+        self.ui.setCurrentRow(current_row + 1)
 
     def select_previous_element(self):
         current_row = self.get_current_row()
-        self.ui.setCurrentRow(current_row-1)
+        self.ui.setCurrentRow(current_row - 1)
 
     def select_element(self, row=0):
         self.ui.setCurrentRow(row)

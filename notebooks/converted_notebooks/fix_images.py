@@ -21,15 +21,17 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.fix_images import FixImages
+warnings.filterwarnings("ignore")
 
 # %matplotlib notebook
 from __code import system
-system.System.select_working_dir(notebook='fix_images')
+from __code.fix_images import FixImages
+
+system.System.select_working_dir(notebook="fix_images")
 
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -40,14 +42,14 @@ _o_fix = FixImages(working_dir=system.System.get_working_dir())
 _o_fix.select_images()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Give statistics 
+# # Give statistics
 
 # + run_control={"frozen": false, "read_only": false}
 _o_fix.load()
 _o_fix.give_statistics()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Display Images and Histograms 
+# # Display Images and Histograms
 
 # + run_control={"frozen": false, "read_only": false}
 _o_fix.display_and_fix()
@@ -59,4 +61,3 @@ _o_fix.display_and_fix()
 _o_fix.select_folder_and_export_images()
 
 # + run_control={"frozen": false, "read_only": false}
-

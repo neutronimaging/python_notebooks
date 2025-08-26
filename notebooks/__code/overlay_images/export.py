@@ -1,30 +1,25 @@
-from qtpy.QtWidgets import QFileDialog, QApplication
-from qtpy import QtGui
 import os
 
 from NeuNorm.normalization import Normalization
+from qtpy import QtGui
+from qtpy.QtWidgets import QFileDialog
 
 from __code.file_handler import make_or_reset_folder
 
 
 class Export:
-
     def __init__(self, parent=None):
         self.parent = parent
 
     def run(self):
         working_dir = os.path.abspath(os.path.dirname(self.parent.working_dir))
-        export_folder = QFileDialog.getExistingDirectory(self.parent,
-                                                         caption="Select folder",
-                                                         directory=working_dir)
+        export_folder = QFileDialog.getExistingDirectory(self.parent, caption="Select folder", directory=working_dir)
 
         if export_folder:
-
             # make own folder where the data will be exported
             short_high_res_input_folder = os.path.basename(self.parent.high_res_input_folder)
             short_low_res_input_folder = os.path.basename(self.parent.low_res_input_folder)
-            output_folder = "{}_and_{}_overlaid".format(short_low_res_input_folder,
-                                                        short_high_res_input_folder)
+            output_folder = f"{short_low_res_input_folder}_and_{short_high_res_input_folder}_overlaid"
             full_output_folder = os.path.join(export_folder, output_folder)
             make_or_reset_folder(full_output_folder)
 
@@ -39,29 +34,28 @@ class Export:
             self.parent.eventProgress.setVisible(True)
             QtGui.QGuiApplication.processEvents()
 
-            sf = self.parent.parameters_used_on_all_images['scaling_factor']
-            xoffset = self.parent.parameters_used_on_all_images['xoffset']
-            yoffset = self.parent.parameters_used_on_all_images['yoffset']
-            metadata = {1000: 'scaling_factor: {}'.format(sf),
-                        1001: 'xoffset: {}'.format(xoffset),
-                        1002: 'yoffset: {}'.format(yoffset),
-                        }
+            sf = self.parent.parameters_used_on_all_images["scaling_factor"]
+            xoffset = self.parent.parameters_used_on_all_images["xoffset"]
+            yoffset = self.parent.parameters_used_on_all_images["yoffset"]
+            metadata = {
+                1000: f"scaling_factor: {sf}",
+                1001: f"xoffset: {xoffset}",
+                1002: f"yoffset: {yoffset}",
+            }
 
             list_of_filename = self.parent.list_of_high_res_filename
             for _index, _overlay_image in enumerate(resize_and_overlay_images):
-
                 _short_filemame = os.path.basename(list_of_filename[_index])
                 o_norm = Normalization()
                 o_norm.load(data=_overlay_image)
-                o_norm.data['sample']['file_name'] = [_short_filemame]
-                o_norm.data['sample']['metadata'] = [metadata]
-                o_norm.export(folder=full_output_folder,
-                              data_type='sample')
+                o_norm.data["sample"]["file_name"] = [_short_filemame]
+                o_norm.data["sample"]["metadata"] = [metadata]
+                o_norm.export(folder=full_output_folder, data_type="sample")
                 self.parent.eventProgress.setValue(_index + 1)
                 QtGui.QGuiApplication.processEvents()
 
             self.parent.eventProgress.setVisible(False)
 
-            message = "Overlaid images exported in {}".format(full_output_folder)
+            message = f"Overlaid images exported in {full_output_folder}"
             self.parent.ui.statusbar.showMessage(message, 20000)  # 20s
             self.parent.ui.statusbar.setStyleSheet("color: green")

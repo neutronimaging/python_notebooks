@@ -16,16 +16,19 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.panoramic_stitching_for_tof.panoramic_stitching_for_tof import PanoramicStitching
+warnings.filterwarnings("ignore")
+
 from __code import system
-system.System.select_working_dir(notebook='panoramic_stitching_for_tof')
+from __code.panoramic_stitching_for_tof.panoramic_stitching_for_tof import PanoramicStitching
+
+system.System.select_working_dir(notebook="panoramic_stitching_for_tof")
 from __code.__all import custom_style
+
 custom_style.style()
 # -
 
@@ -40,5 +43,3 @@ custom_style.style()
 o_stitch = PanoramicStitching(working_dir=system.System.get_working_dir())
 o_stitch.select_input_folders()
 # -
-
-

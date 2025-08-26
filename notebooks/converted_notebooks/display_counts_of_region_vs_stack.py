@@ -17,20 +17,23 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_display_counts_of_region_vs_stack.ui')
 
-from __code.display_counts_of_region_vs_stack import ImageWindow, DisplayCountsVsStack
+o_builder = UiBuilder(ui_name="ui_display_counts_of_region_vs_stack.ui")
 
 from __code import system
-system.System.select_working_dir(notebook='display_counts_of_region_vs_stack')
+from __code.display_counts_of_region_vs_stack import DisplayCountsVsStack, ImageWindow
+
+system.System.select_working_dir(notebook="display_counts_of_region_vs_stack")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -54,4 +57,3 @@ _image = ImageWindow(display_counts_vs_stack=o_display)
 _image.show()
 
 # + run_control={"frozen": false, "read_only": false}
-

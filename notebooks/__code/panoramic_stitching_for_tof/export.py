@@ -1,30 +1,29 @@
-import os
-from qtpy.QtWidgets import QFileDialog
-from qtpy import QtGui
-import numpy as np
-from collections import OrderedDict
 import glob
+import os
+from collections import OrderedDict
 
+import numpy as np
 from NeuNorm.normalization import Normalization
+from qtpy import QtGui
+from qtpy.QtWidgets import QFileDialog
 
-from __code.file_handler import make_or_reset_folder
+from __code.file_handler import copy_and_rename_files_to_folder, make_or_reset_folder
 from __code.panoramic_stitching_for_tof.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
-from __code.file_handler import copy_and_rename_files_to_folder
 
 FILE_PREFIX = "image_"
 
 
 class Export:
-
     def __init__(self, parent=None):
         self.parent = parent
 
     def run(self):
-        output_folder = QFileDialog.getExistingDirectory(self.parent,
-                                                         directory=self.parent.working_dir,
-                                                         caption="Select where the folder containing the "
-                                                                   "panoramic images will be created!",
-                                                         options=QFileDialog.ShowDirsOnly)
+        output_folder = QFileDialog.getExistingDirectory(
+            self.parent,
+            directory=self.parent.working_dir,
+            caption="Select where the folder containing the " "panoramic images will be created!",
+            options=QFileDialog.ShowDirsOnly,
+        )
         if output_folder:
             self.parent.ui.setEnabled(False)
             QtGui.QGuiApplication.processEvents()
@@ -55,33 +54,38 @@ class Export:
         for _file_index in np.arange(nbr_files):
             panoramic_image = np.zeros((panoramic_height, panoramic_width))
             for _folder_index, _folder in enumerate(data_dictionary.keys()):
-
-                xoffset = offset_dictionary[_folder]['xoffset']
-                yoffset = offset_dictionary[_folder]['yoffset']
+                xoffset = offset_dictionary[_folder]["xoffset"]
+                yoffset = offset_dictionary[_folder]["yoffset"]
 
                 list_files = list(data_dictionary[_folder].keys())
 
                 image = data_dictionary[_folder][list_files[_file_index]].data
 
                 if _folder_index == 0:
-                    panoramic_image[yoffset+VERTICAL_MARGIN: yoffset+image_height+VERTICAL_MARGIN,
-                    xoffset+HORIZONTAL_MARGIN: xoffset+image_width+HORIZONTAL_MARGIN] = image
+                    panoramic_image[
+                        yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
+                        xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                    ] = image
                     continue
 
                 temp_big_image = np.zeros((panoramic_height, panoramic_width))
 
-                temp_big_image[yoffset+VERTICAL_MARGIN: yoffset+image_height+VERTICAL_MARGIN,
-                xoffset+HORIZONTAL_MARGIN: xoffset+image_width+HORIZONTAL_MARGIN] = image
+                temp_big_image[
+                    yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
+                    xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                ] = image
 
                 where_temp_big_image_has_value_only = np.where((temp_big_image != 0) & (panoramic_image == 0))
                 where_both_images_overlap = np.where((panoramic_image != 0) & (temp_big_image != 0))
 
-                panoramic_image[where_temp_big_image_has_value_only] = \
-                    temp_big_image[where_temp_big_image_has_value_only]
-                panoramic_image[where_both_images_overlap] = (panoramic_image[where_both_images_overlap] +
-                                                              temp_big_image[where_both_images_overlap]) / 2
+                panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
+                    where_temp_big_image_has_value_only
+                ]
+                panoramic_image[where_both_images_overlap] = (
+                    panoramic_image[where_both_images_overlap] + temp_big_image[where_both_images_overlap]
+                ) / 2
 
-            file_name = FILE_PREFIX + "{:04d}.tiff".format(_file_index)
+            file_name = FILE_PREFIX + f"{_file_index:04d}.tiff"
             panoramic_images_dict[file_name] = panoramic_image
 
             self.parent.eventProgress.setValue(_file_index + 1)
@@ -91,9 +95,8 @@ class Export:
         self.parent.eventProgress.setVisible(False)
 
     def export_images(self, output_folder=None):
-
         new_folder_name = os.path.basename(self.parent.working_dir) + "_panoramic"
-        self.parent.ui.statusbar.showMessage("Exporting images in folder {}".format(new_folder_name))
+        self.parent.ui.statusbar.showMessage(f"Exporting images in folder {new_folder_name}")
         QtGui.QGuiApplication.processEvents()
 
         new_output_folder_name = os.path.join(output_folder, new_folder_name)
@@ -109,12 +112,12 @@ class Export:
 
         o_norm = Normalization()
         o_norm.load(data=list_data)
-        o_norm.data['sample']['filename'] = list_filename
-        o_norm.export(new_output_folder_name, data_type='sample')
+        o_norm.data["sample"]["filename"] = list_filename
+        o_norm.export(new_output_folder_name, data_type="sample")
 
         self.copy_txt_files_to_output_folder(output_folder=new_output_folder_name)
 
-        self.parent.ui.statusbar.showMessage("{} has been created!".format(new_output_folder_name), 10000)  # 10s
+        self.parent.ui.statusbar.showMessage(f"{new_output_folder_name} has been created!", 10000)  # 10s
         QtGui.QGuiApplication.processEvents()
 
     def copy_txt_files_to_output_folder(self, output_folder=None):
@@ -129,6 +132,6 @@ class Export:
             new_name = split_name[-1]
             list_new_file_names.append(new_name)
 
-        copy_and_rename_files_to_folder(list_files=list_txt_files,
-                                        new_list_files_names=list_new_file_names,
-                                        output_folder=output_folder)
+        copy_and_rename_files_to_folder(
+            list_files=list_txt_files, new_list_files_names=list_new_file_names, output_folder=output_folder
+        )

@@ -1,11 +1,8 @@
-import numpy as np
-
 from __code._utilities.parent import Parent
 from __code.wave_front_dynamics.algorithms import ListAlgorithm
 
 
 class Get(Parent):
-
     def prepare_data_bin_size(self):
         return self.parent.ui.bin_value_horizontalSlider.value()
 
@@ -14,9 +11,9 @@ class Get(Parent):
 
     def prepare_data_bin_type(self):
         if self.parent.ui.prepare_data_bin_type_mean.isChecked():
-            return 'mean'
+            return "mean"
         elif self.parent.ui.prepare_data_bin_type_median.isChecked():
-            return 'median'
+            return "median"
         else:
             raise NotImplementedError("data bin type not implemented!")
 
@@ -47,10 +44,10 @@ class Get(Parent):
 
     def working_range_of_data(self, data=None):
         bin_size = self.prepare_data_bin_size()
-        min_data_range = self.parent.data_range['min']
-        max_data_range = self.parent.data_range['max']
+        min_data_range = self.parent.data_range["min"]
+        max_data_range = self.parent.data_range["max"]
         # min_data_range_for_plot = np.floor(min_data_range/bin_size)
         # max_data_range_for_plot = np.floor(max_data_range/bin_size)
 
-        working_data = data[min_data_range: max_data_range]
+        working_data = data[min_data_range:max_data_range]
         return working_data

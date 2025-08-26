@@ -14,37 +14,42 @@
 
 # + run_control={"frozen": false, "read_only": false}
 # MacPro
-list_files = ["/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-19799/Day1/20180129_BanderaGrey_Dolomite_Dry_0040_0182.tiff",
-             "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-19921-Charles/02/im0000.tif"]
+list_files = [
+    "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-19799/Day1/20180129_BanderaGrey_Dolomite_Dry_0040_0182.tiff",
+    "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-19921-Charles/02/im0000.tif",
+]
 
 # unix
-#list_files = ['/HFIR/CG1DImaging/IPTS-19799/raw/radiographs/Day1/20180129_BanderaGrey_Dolomite_Dry_0040_0182.tif',]
+# list_files = ['/HFIR/CG1DImaging/IPTS-19799/raw/radiographs/Day1/20180129_BanderaGrey_Dolomite_Dry_0040_0182.tif',]
 
-expected_time_stamp = [886107840.0457269,
-                       1517259840.5604978,]
+expected_time_stamp = [
+    886107840.0457269,
+    1517259840.5604978,
+]
 
-expected_user_time_stamp = ["2018-01-29 16:04:00",
-                            "2018-03-21 12:14:31",]
+expected_user_time_stamp = [
+    "2018-01-29 16:04:00",
+    "2018-03-21 12:14:31",
+]
 
 # +
-from PIL import Image
-import os
 import datetime
-import pytz
+import os
 
-class MetadataHandler(object):
+from PIL import Image
 
+
+class MetadataHandler:
     @staticmethod
-    def get_time_stamp(file_name='', ext='tif'):
-
-        if ext == 'tif':
+    def get_time_stamp(file_name="", ext="tif"):
+        if ext == "tif":
             try:
                 o_image = Image.open(file_name)
                 o_dict = dict(o_image.tag_v2)
                 try:
                     time_stamp_s = str(o_dict[65002])
                     time_stamp_ns = str(o_dict[65003])
-                    time_stamp_string = "{}.{}".format(time_stamp_s, time_stamp_ns)
+                    time_stamp_string = f"{time_stamp_s}.{time_stamp_ns}"
                     time_stamp = float(time_stamp_string)
                 except:
                     time_stamp = o_dict[65000]
@@ -52,14 +57,14 @@ class MetadataHandler(object):
                 time_stamp = MetadataHandler._convert_epics_timestamp_to_rfc3339_timestamp(time_stamp)
             except:
                 time_stamp = os.path.getctime(file_name)
-        elif ext == 'fits':
+        elif ext == "fits":
             time_stamp = os.path.getctime(file_name)
 
         else:
-            raise NotImplemented
+            raise NotImplementedError
 
         return time_stamp
-    
+
     @staticmethod
     def convert_to_human_readable_format(timestamp):
         """Convert the unix time stamp into a human readable time format
@@ -83,8 +88,9 @@ class MetadataHandler(object):
         # https://www.epochconverter.com/
         EPOCH_OFFSET = 631152000
         unix_epoch_timestamp = EPOCH_OFFSET + epics_timestamp
-  
+
         return unix_epoch_timestamp
+
 
 #         # Use pytz magic to get an ORNL-localized version of a Python
 #     # datetime object.
@@ -97,8 +103,8 @@ class MetadataHandler(object):
 
 # -
 
-for _index,_file in enumerate(list_files):
-    _time_stamp = MetadataHandler.get_time_stamp(file_name=_file, ext='tif')
+for _index, _file in enumerate(list_files):
+    _time_stamp = MetadataHandler.get_time_stamp(file_name=_file, ext="tif")
     assert MetadataHandler.convert_to_human_readable_format(_time_stamp) == expected_user_time_stamp[_index]
 
 # Testing the type of the metadata
@@ -110,5 +116,3 @@ type(o_dict[65002])
 import platform
 
 platform.system()
-
-

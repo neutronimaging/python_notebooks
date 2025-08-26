@@ -17,21 +17,23 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP', notebook='bragg_edge_normalization')
+system.System.select_working_dir(facility="SNS", instrument="SNAP", notebook="bragg_edge_normalization")
 from __code.__all import custom_style
+
 custom_style.style()
 
-from plotly.offline import plot, init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode
+
 init_notebook_mode()
 # -
 
-# ## Prepare UI Engine 
+# ## Prepare UI Engine
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
@@ -45,14 +47,10 @@ o_bragg = BraggEdge(working_dir=system.System.get_working_dir())
 o_bragg.select_working_folder()
 # -
 
-# # Select mode of normalization 
+# # Select mode of normalization
 
 o_bragg.normalization_settings_widgets()
 
 # # Export Normalized Data and Time Spectra File
 
 o_bragg.normalization()
-
-
-
-

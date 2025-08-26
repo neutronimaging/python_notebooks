@@ -1,55 +1,53 @@
-import random
-import os
 import glob
-from IPython.display import HTML
-from IPython.display import display
-import numpy as np
+import os
+import random
 from collections import OrderedDict
-from plotly.offline import iplot
+
+import numpy as np
 import plotly.graph_objs as go
-from ipywidgets import widgets
 import pyqtgraph as pg
-
-from qtpy.QtWidgets import QMainWindow, QProgressBar, QVBoxLayout, QTableWidgetSelectionRange, QTableWidgetItem
-from qtpy import QtGui, QtCore
-
-from __code import load_ui
-
-from neutronbraggedge.experiment_handler import *
-from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
-from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
+from IPython.display import HTML, display
+from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
+from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
+from neutronbraggedge.experiment_handler import *
+from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
+from plotly.offline import iplot
+from qtpy import QtGui
+from qtpy.QtWidgets import QMainWindow, QProgressBar, QTableWidgetItem, QTableWidgetSelectionRange, QVBoxLayout
 
+from __code import file_handler, load_ui
 from __code.ipywe import fileselector
-from __code import file_handler
-from __code.ui_roi_selection import Ui_MainWindow as UiMainWindow
 
 
 class BraggEdge:
-
-    list_of_elements = ['Fe']
+    list_of_elements = ["Fe"]
     data = []
     spectra_file = None
 
-    label_width = '15%'
+    label_width = "15%"
 
-    def __init__(self, working_dir='./'):
+    def __init__(self, working_dir="./"):
         self.working_dir = working_dir
         self.ipts_folder = working_dir
 
     def full_list_elements(self):
-        retrieve_material = RetrieveMaterialMetadata(material='all')
+        retrieve_material = RetrieveMaterialMetadata(material="all")
         self.list_returned = retrieve_material.full_list_material()
 
-        box4 = widgets.HBox([widgets.Label("List of elements",
-                                           layout=widgets.Layout(width=self.label_width)),
-                             widgets.Select(options=self.list_returned,
-                                          layout=widgets.Layout(width='20%'))])
+        box4 = widgets.HBox(
+            [
+                widgets.Label("List of elements", layout=widgets.Layout(width=self.label_width)),
+                widgets.Select(options=self.list_returned, layout=widgets.Layout(width="20%")),
+            ]
+        )
 
-        box5 = widgets.HBox([widgets.Label("Nbr Bragg Edges",
-                                           layout=widgets.Layout(width=self.label_width)),
-                             widgets.IntText(8,
-                                            layout=widgets.Layout(width='20%'))])
+        box5 = widgets.HBox(
+            [
+                widgets.Label("Nbr Bragg Edges", layout=widgets.Layout(width=self.label_width)),
+                widgets.IntText(8, layout=widgets.Layout(width="20%")),
+            ]
+        )
 
         vertical_box = widgets.VBox([box4, box5])
         display(vertical_box)
@@ -58,21 +56,25 @@ class BraggEdge:
         self.nbr_bragg_edges_ui = box5.children[1]
 
     def list_elements(self):
-        retrieve_material = RetrieveMaterialMetadata(material='all')
+        retrieve_material = RetrieveMaterialMetadata(material="all")
         self.list_returned = retrieve_material.full_list_material()
 
         # import pprint
         # pprint.pprint(list_returned)
 
-        box4 = widgets.HBox([widgets.Label("List of elements",
-                                           layout=widgets.Layout(width=self.label_width)),
-                             widgets.Text(','.join(self.list_of_elements),
-                                          layout=widgets.Layout(width='20%'))])
+        box4 = widgets.HBox(
+            [
+                widgets.Label("List of elements", layout=widgets.Layout(width=self.label_width)),
+                widgets.Text(",".join(self.list_of_elements), layout=widgets.Layout(width="20%")),
+            ]
+        )
 
-        box5 = widgets.HBox([widgets.Label("Nbr Bragg Edges",
-                                           layout=widgets.Layout(width=self.label_width)),
-                             widgets.Text(str(8),
-                                          layout=widgets.Layout(width='20%'))])
+        box5 = widgets.HBox(
+            [
+                widgets.Label("Nbr Bragg Edges", layout=widgets.Layout(width=self.label_width)),
+                widgets.Text(str(8), layout=widgets.Layout(width="20%")),
+            ]
+        )
 
         vertical_box = widgets.VBox([box4, box5])
         display(vertical_box)
@@ -81,16 +83,19 @@ class BraggEdge:
         self.nbr_bragg_edges_ui = box5.children[1]
 
     def exp_setup(self):
+        box2 = widgets.HBox(
+            [
+                widgets.Label("dSD (m)", layout=widgets.Layout(width=self.label_width)),
+                widgets.Text(str(16.08), layout=widgets.Layout(width="20%")),
+            ]
+        )
 
-        box2 = widgets.HBox([widgets.Label("dSD (m)",
-                                           layout=widgets.Layout(width=self.label_width)),
-                             widgets.Text(str(16.08),
-                                          layout=widgets.Layout(width='20%'))])
-
-        box3 = widgets.HBox([widgets.Label("detector offset (microS)",
-                                           layout=widgets.Layout(width=self.label_width)),
-                             widgets.Text(str(3700),
-                                          layout=widgets.Layout(width='20%'))])
+        box3 = widgets.HBox(
+            [
+                widgets.Label("detector offset (microS)", layout=widgets.Layout(width=self.label_width)),
+                widgets.Text(str(3700), layout=widgets.Layout(width="20%")),
+            ]
+        )
 
         vertical_box = widgets.VBox([box2, box3])
         display(vertical_box)
@@ -99,14 +104,12 @@ class BraggEdge:
         self.detector_offset_ui = box3.children[1]
 
     def list_powder_bragg_edges(self):
-
         list_of_elements_selected = self.list_elements_ui.value
-        list_of_elements = list_of_elements_selected.split(',')
+        list_of_elements = list_of_elements_selected.split(",")
         list_of_elements = [_element.strip() for _element in list_of_elements]
         number_of_bragg_edges = int(self.nbr_bragg_edges_ui.value)
 
-        _handler = BraggEdgeLibrary(material=list_of_elements,
-                                    number_of_bragg_edges=number_of_bragg_edges)
+        _handler = BraggEdgeLibrary(material=list_of_elements, number_of_bragg_edges=number_of_bragg_edges)
         self.bragg_edges = _handler.bragg_edges
         self.hkl = _handler.hkl
         self.handler = _handler
@@ -114,22 +117,24 @@ class BraggEdge:
         print(_handler)
 
     def select_working_folder(self):
-        select_data = fileselector.FileSelectorPanel(instruction='Select Data Folder ...',
-                                                     start_dir=self.working_dir,
-                                                     next=self.load_data,
-                                                     type='directory',
-                                                     multiple=False)
+        select_data = fileselector.FileSelectorPanel(
+            instruction="Select Data Folder ...",
+            start_dir=self.working_dir,
+            next=self.load_data,
+            type="directory",
+            multiple=False,
+        )
         select_data.show()
 
     def load_data(self, folder_selected):
-        list_files = glob.glob(os.path.join(folder_selected, '*.fits'))
+        list_files = glob.glob(os.path.join(folder_selected, "*.fits"))
 
         if list_files == []:
-            list_files = glob.glob(os.path.join(folder_selected, '*.tif*'))
+            list_files = glob.glob(os.path.join(folder_selected, "*.tif*"))
 
-        else: #fits
+        else:  # fits
             # keep only files of interest
-            list_files = [file for file in list_files if not "_SummedImg.fits" in file]
+            list_files = [file for file in list_files if "_SummedImg.fits" not in file]
             list_files = [file for file in list_files if ".fits" in file]
 
         # sort list of files
@@ -138,65 +143,76 @@ class BraggEdge:
         o_norm = Normalization()
         o_norm.load(file=list_files, notebook=True)
 
-        self.data = o_norm.data['sample']['data']
-        self.list_files = o_norm.data['sample']['file_name']
+        self.data = o_norm.data["sample"]["data"]
+        self.list_files = o_norm.data["sample"]["file_name"]
 
-        display(HTML('<span style="font-size: 20px; color:blue">' + str(len(list_files)) + \
-                     ' files have been loaded</span>'))
+        display(
+            HTML('<span style="font-size: 20px; color:blue">' + str(len(list_files)) + " files have been loaded</span>")
+        )
 
         # define time spectra file
         folder = os.path.dirname(self.list_files[0])
-        spectra_file = glob.glob(os.path.join(folder, '*_Spectra.txt'))
+        spectra_file = glob.glob(os.path.join(folder, "*_Spectra.txt"))
         if spectra_file:
             self.spectra_file = spectra_file[0]
-            display(HTML('<span style="font-size: 20px; color:blue"> Spectra File automatically located: ' + \
-                         self.spectra_file + '</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:blue"> Spectra File automatically located: '
+                    + self.spectra_file
+                    + "</span>"
+                )
+            )
 
         else:
-            #ask for spectra file
+            # ask for spectra file
             self.select_time_spectra_file()
 
     def load_time_spectra(self):
         _tof_handler = TOF(filename=self.spectra_file)
-        _exp = Experiment(tof=_tof_handler.tof_array,
-                          distance_source_detector_m=float(self.dSD_ui.value),
-                          detector_offset_micros=float(self.detector_offset_ui.value))
+        _exp = Experiment(
+            tof=_tof_handler.tof_array,
+            distance_source_detector_m=float(self.dSD_ui.value),
+            detector_offset_micros=float(self.detector_offset_ui.value),
+        )
         self.lambda_array = _exp.lambda_array * 1e10  # to be in Angstroms
         self.tof_array = _tof_handler.tof_array
 
     def save_time_spectra(self, file):
         self.spectra_file = file
-        display(HTML('<span style="font-size: 20px; color:blue"> Spectra File : ' + \
-                     self.spectra_file + '</span>'))
+        display(HTML('<span style="font-size: 20px; color:blue"> Spectra File : ' + self.spectra_file + "</span>"))
 
     def select_time_spectra_file(self):
         self.working_dir = os.path.dirname(self.list_files[0])
 
-        self.time_spectra_ui = fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
-                                                              start_dir=self.working_dir,
-                                                              next=self.save_time_spectra,
-                                                              filters={'spectra_file': "_Spectra.txt"},
-                                                              multiple=False)
+        self.time_spectra_ui = fileselector.FileSelectorPanel(
+            instruction="Select Time Spectra File ...",
+            start_dir=self.working_dir,
+            next=self.save_time_spectra,
+            filters={"spectra_file": "_Spectra.txt"},
+            multiple=False,
+        )
         self.time_spectra_ui.show()
 
     def select_just_time_spectra_file(self):
-        self.time_spectra_ui = fileselector.FileSelectorPanel(instruction='Select Time Spectra File ...',
-                                                              start_dir=self.working_dir,
-                                                              filters={'spectra_file': "*_Spectra.txt"},
-                                                              multiple=False)
+        self.time_spectra_ui = fileselector.FileSelectorPanel(
+            instruction="Select Time Spectra File ...",
+            start_dir=self.working_dir,
+            filters={"spectra_file": "*_Spectra.txt"},
+            multiple=False,
+        )
         self.time_spectra_ui.show()
 
     def how_many_data_to_use_to_select_sample_roi(self):
         nbr_images = len(self.data)
-        init_value = int(nbr_images/10)
+        init_value = int(nbr_images / 10)
         if init_value == 0:
             init_value = 1
-        box1 = widgets.HBox([widgets.Label("Nbr of images to use:",
-                                           layout=widgets.Layout(width='15')),
-                             widgets.IntSlider(value=init_value,
-                                               max=nbr_images,
-                                               min=1,
-                                               layout=widgets.Layout(width='50%'))])
+        box1 = widgets.HBox(
+            [
+                widgets.Label("Nbr of images to use:", layout=widgets.Layout(width="15")),
+                widgets.IntSlider(value=init_value, max=nbr_images, min=1, layout=widgets.Layout(width="50%")),
+            ]
+        )
         box2 = widgets.Label("(The more you select, the longer it will take to display the preview!)")
         vbox = widgets.VBox([box1, box2])
         display(vbox)
@@ -223,18 +239,15 @@ class BraggEdge:
         self.final_image = final_image
 
     def calculate_counts_vs_file_index_of_regions_selected(self, list_roi=[]):
-
         counts_vs_file_index = []
         for _data in self.data:
-
             _array_data = []
 
             for _roi in list_roi.keys():
-
-                x0 = int(list_roi[_roi]['x0'])
-                y0 = int(list_roi[_roi]['y0'])
-                x1 = int(list_roi[_roi]['x1'])
-                y1 = int(list_roi[_roi]['y1'])
+                x0 = int(list_roi[_roi]["x0"])
+                y0 = int(list_roi[_roi]["y0"])
+                x1 = int(list_roi[_roi]["x1"])
+                y1 = int(list_roi[_roi]["y1"])
 
                 _array_data.append(np.mean(_data[y0:y1, x0:x1]))
 
@@ -243,7 +256,6 @@ class BraggEdge:
         self.counts_vs_file_index = counts_vs_file_index
 
     def plot(self):
-
         bragg_edges = self.bragg_edges
         hkl = self.hkl
         lambda_array = self.lambda_array
@@ -259,21 +271,14 @@ class BraggEdge:
                 _hkl_string.append(_hkl_s)
             _hkl_formated[_material] = _hkl_string
 
-        trace = go.Scatter(
-            x=self.lambda_array,
-            y=self.counts_vs_file_index,
-            mode='markers')
+        trace = go.Scatter(x=self.lambda_array, y=self.counts_vs_file_index, mode="markers")
 
         layout = go.Layout(
             width=1000,
             height=500,
             title="Sum Counts vs TOF",
-            xaxis=dict(
-                title="Lambda (Angstroms)"
-            ),
-            yaxis=dict(
-                title="Sum Counts"
-            ),
+            xaxis=dict(title="Lambda (Angstroms)"),
+            yaxis=dict(title="Sum Counts"),
         )
 
         max_x = 6
@@ -286,16 +291,15 @@ class BraggEdge:
             for _index, _value in enumerate(bragg_edges[_material]):
                 if _value > max_x:
                     continue
-                bragg_line = {"type": "line",
-                              'x0': _value,
-                              'x1': _value,
-                              'yref': "paper",
-                              'y0': 0,
-                              'y1': 1,
-                              'line': {
-                                  'color': 'rgb(255, 0, 0)',
-                                  'width': 1
-                              }}
+                bragg_line = {
+                    "type": "line",
+                    "x0": _value,
+                    "x1": _value,
+                    "yref": "paper",
+                    "y0": 0,
+                    "y1": 1,
+                    "line": {"color": "rgb(255, 0, 0)", "width": 1},
+                }
                 figure.add_shape(bragg_line)
                 # layout.shapes.append(bragg_line)
                 y_off = 1 - 0.25 * y_index
@@ -306,15 +310,12 @@ class BraggEdge:
                     y=y_off,
                     text=_hkl_formated[_material][_index],
                     yref="paper",
-                    font=dict(
-                        family="Arial",
-                        size=16,
-                        color="rgb(150,50,50)"
-                    ),
+                    font=dict(family="Arial", size=16, color="rgb(150,50,50)"),
                     showarrow=True,
                     arrowhead=3,
                     ax=0,
-                    ay=-25)
+                    ay=-25,
+                )
 
                 figure.add_annotation(_annot)
 
@@ -322,18 +323,19 @@ class BraggEdge:
         iplot(figure)
 
     def select_output_folder(self):
-        self.select_folder(message='output',
-                           next_function=self.export_table)
+        self.select_folder(message="output", next_function=self.export_table)
 
     def export_table(self, output_folder):
         material = self.handler.material[0]
         lattice = self.handler.lattice[material]
         crystal_structure = self.handler.crystal_structure[material]
-        metadata = ["# material: {}".format(material),
-                    "# crystal structure: {}".format(crystal_structure),
-                    "# lattice: {} Angstroms".format(lattice),
-                    "#",
-                    "# hkl, d(angstroms), BraggEdge"]
+        metadata = [
+            f"# material: {material}",
+            f"# crystal structure: {crystal_structure}",
+            f"# lattice: {lattice} Angstroms",
+            "#",
+            "# hkl, d(angstroms), BraggEdge",
+        ]
         data = []
         bragg_edges = self.bragg_edges[material]
         hkl = self.hkl[material]
@@ -341,55 +343,55 @@ class BraggEdge:
             _hkl_str = [str(i) for i in hkl[_index]]
             _hkl = "".join(_hkl_str)
             _bragg_edges = float(bragg_edges[_index])
-            _d = _bragg_edges/2.
-            _row = "{}, {}, {}".format(_hkl, _d, _bragg_edges)
+            _d = _bragg_edges / 2.0
+            _row = f"{_hkl}, {_d}, {_bragg_edges}"
             data.append(_row)
 
-        output_file_name = os.path.join(output_folder, 'bragg_edges_of_{}.txt'.format(material))
+        output_file_name = os.path.join(output_folder, f"bragg_edges_of_{material}.txt")
 
-        file_handler.make_ascii_file(metadata=metadata,
-                                     data=data,
-                                     dim='1d',
-                                     output_file_name=output_file_name)
+        file_handler.make_ascii_file(metadata=metadata, data=data, dim="1d", output_file_name=output_file_name)
 
-        display(HTML('<span style="font-size: 20px; color:blue">File created : ' + \
-                     output_file_name + '</span>'))
+        display(HTML('<span style="font-size: 20px; color:blue">File created : ' + output_file_name + "</span>"))
 
     def select_folder(self, message="", next_function=None):
-        folder_widget = fileselector.FileSelectorPanel(instruction='select {} folder'.format(message),
-                                                       start_dir=self.working_dir,
-                                                       next=next_function,
-                                                       type='directory',
-                                                       multiple=False)
+        folder_widget = fileselector.FileSelectorPanel(
+            instruction=f"select {message} folder",
+            start_dir=self.working_dir,
+            next=next_function,
+            type="directory",
+            multiple=False,
+        )
         folder_widget.show()
 
 
 class Interface(QMainWindow):
-
     roi_width = 0.01
-    roi_selected = {} #nice formatting of list_roi for outside access
+    roi_selected = {}  # nice formatting of list_roi for outside access
 
     live_data = []
     o_norm = None
     roi_column_width = 70
     integrated_image = None
-    integrated_image_size = {'width': -1, 'height': -1}
+    integrated_image_size = {"width": -1, "height": -1}
 
-    list_roi = {} #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
-    default_roi = {'x0': 0, 'y0': 0, 'x1': 50, 'y1': 50, 'id': None}
+    list_roi = {}  #  'row": {'x0':None, 'y0': None, 'x1': None, 'y1': None}
+    default_roi = {"x0": 0, "y0": 0, "x1": 50, "y1": 50, "id": None}
 
     def __init__(self, parent=None, data=None, instruction="", next=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         self.live_data = data
         self.next = next
 
         super(QMainWindow, self).__init__(parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_roi_selection.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_roi_selection.ui")
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
         # QMainWindow.__init__(self, parent=parent)
@@ -459,12 +461,12 @@ class Interface(QMainWindow):
     def integrate_images(self):
         self.integrated_image = self.live_data
         [_height, _width] = np.shape(self.integrated_image)
-        self.integrated_image_size['height'] = _height
-        self.integrated_image_size['width'] = _width
+        self.integrated_image_size["height"] = _height
+        self.integrated_image_size["width"] = _width
 
     def _clean_image(self, image):
         _result_inf = np.where(np.isinf(image))
-        image[_result_inf] = np.NaN
+        image[_result_inf] = np.nan
         return image
 
     def display_image(self):
@@ -473,11 +475,11 @@ class Interface(QMainWindow):
         self.ui.image_view.setImage(_image)
 
     def remove_row_entry(self, row):
-        _roi_id = self.list_roi[row]['id']
+        _roi_id = self.list_roi[row]["id"]
         self.ui.image_view.removeItem(_roi_id)
         del self.list_roi[row]
 
-        #rename row
+        # rename row
         new_list_roi = {}
         new_row_index = 0
         for _previous_row_index in self.list_roi.keys():
@@ -486,7 +488,6 @@ class Interface(QMainWindow):
         self.list_roi = new_list_roi
 
     def remove_roi_button_clicked(self):
-
         self.ui.table_roi.blockSignals(True)
 
         _selection = self.ui.table_roi.selectedRanges()
@@ -506,7 +507,7 @@ class Interface(QMainWindow):
         if new_nbr_row == 0:
             return
 
-        if row == (old_nbr_row-1):
+        if row == (old_nbr_row - 1):
             row = new_nbr_row - 1
 
         _new_selection = QTableWidgetSelectionRange(row, 0, row, 3)
@@ -531,26 +532,26 @@ class Interface(QMainWindow):
 
             self.ui.table_roi.insertRow(_index_row)
 
-            self._set_item_value(_index_row, 0, _roi['x0'])
+            self._set_item_value(_index_row, 0, _roi["x0"])
             # _item = QTableWidgetItem(str(_roi['x0']))
             # self.ui.table_roi.setItem(_index_row, 0, _item)
 
-            self._set_item_value(_index_row, 1, _roi['y0'])
+            self._set_item_value(_index_row, 1, _roi["y0"])
             # _item = QTableWidgetItem(str(_roi['y0']))
             # self.ui.table_roi.setItem(_index_row, 1, _item)
 
-            self._set_item_value(_index_row, 2, _roi['x1'])
+            self._set_item_value(_index_row, 2, _roi["x1"])
             # _item = QTableWidgetItem(str(_roi['x1']))
             # self.ui.table_roi.setItem(_index_row, 2, _item)
 
-            self._set_item_value(_index_row, 3, _roi['y1'])
+            self._set_item_value(_index_row, 3, _roi["y1"])
             # _item = QTableWidgetItem(str(_roi['y1']))
             # self.ui.table_roi.setItem(_index_row, 3, _item)
 
             _index_row += 1
 
         self.ui.table_roi.blockSignals(False)
-        #self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
+        # self.ui.table_roi.itemChanged['QTableWidgetItem*'].connect(self.update_table_roi)
 
     def _set_item_value(self, row=0, column=0, value=-1):
         _item = QTableWidgetItem(str(value))
@@ -563,9 +564,9 @@ class Interface(QMainWindow):
         value = int(value)
 
         if x_axis:
-            max_value = self.integrated_image_size['width']
+            max_value = self.integrated_image_size["width"]
         else:
-            max_value = self.integrated_image_size['height']
+            max_value = self.integrated_image_size["height"]
 
         if value < 0:
             return min_value
@@ -598,11 +599,11 @@ class Interface(QMainWindow):
             self._set_item_value(_row, 2, _x1)
             self._set_item_value(_row, 3, _y1)
 
-            _roi['x0'] = _x0
-            _roi['y0'] = _y0
-            _roi['x1'] = _x1
-            _roi['y1'] = _y1
-            _roi['id'] = old_list_roi[_row]['id']
+            _roi["x0"] = _x0
+            _roi["y0"] = _y0
+            _roi["x1"] = _x1
+            _roi["y1"] = _y1
+            _roi["id"] = old_list_roi[_row]["id"]
 
             new_list_roi[_row] = _roi
 
@@ -617,17 +618,16 @@ class Interface(QMainWindow):
         for _row in list_roi.keys():
             _roi = list_roi[_row]
 
-            _x0 = int(_roi['x0'])
-            _y0 = int(_roi['y0'])
-            _x1 = int(_roi['x1'])
-            _y1 = int(_roi['y1'])
+            _x0 = int(_roi["x0"])
+            _y0 = int(_roi["y0"])
+            _x1 = int(_roi["x1"])
+            _y1 = int(_roi["y1"])
 
             _width = np.abs(_x1 - _x0)
             _height = np.abs(_y1 - _y0)
 
-            _roi_id = self.init_roi(x0=_x0, y0=_y0,
-                                    width=_width, height=_height)
-            _roi['id'] = _roi_id
+            _roi_id = self.init_roi(x0=_x0, y0=_y0, width=_width, height=_height)
+            _roi["id"] = _roi_id
 
             list_roi[_row] = _roi
 
@@ -638,16 +638,15 @@ class Interface(QMainWindow):
         if _item:
             return str(_item.text())
         else:
-            return ''
+            return ""
 
     def roi_manually_moved(self):
         list_roi = self.list_roi
 
         for _row in list_roi.keys():
-
             _roi = list_roi[_row]
 
-            roi_id = _roi['id']
+            roi_id = _roi["id"]
             region = roi_id.getArraySlice(self.integrated_image, self.ui.image_view.imageItem)
 
             x0 = region[0][0].start
@@ -655,10 +654,10 @@ class Interface(QMainWindow):
             y0 = region[0][1].start
             y1 = region[0][1].stop
 
-            _roi['x0'] = x0
-            _roi['x1'] = x1
-            _roi['y0'] = y0
-            _roi['y1'] = y1
+            _roi["x0"] = x0
+            _roi["x1"] = x1
+            _roi["y0"] = y0
+            _roi["y1"] = y1
 
             list_roi[_row] = _roi
 
@@ -669,9 +668,8 @@ class Interface(QMainWindow):
         list_roi = self.list_roi
 
         for _row in list_roi.keys():
-
             _roi = list_roi[_row]
-            roi_id = _roi['id']
+            roi_id = _roi["id"]
             self.ui.image_view.removeItem(roi_id)
 
     def add_roi_button_clicked(self):
@@ -688,16 +686,16 @@ class Interface(QMainWindow):
         self.ui.table_roi.insertRow(row)
         _default_roi = self.default_roi
 
-        _item = QTableWidgetItem(str(_default_roi['x0']))
+        _item = QTableWidgetItem(str(_default_roi["x0"]))
         self.ui.table_roi.setItem(row, 0, _item)
 
-        _item = QTableWidgetItem(str(_default_roi['y0']))
+        _item = QTableWidgetItem(str(_default_roi["y0"]))
         self.ui.table_roi.setItem(row, 1, _item)
 
-        _item = QTableWidgetItem(str(_default_roi['x1']))
+        _item = QTableWidgetItem(str(_default_roi["x1"]))
         self.ui.table_roi.setItem(row, 2, _item)
 
-        _item = QTableWidgetItem(str(_default_roi['y1']))
+        _item = QTableWidgetItem(str(_default_roi["y1"]))
         self.ui.table_roi.setItem(row, 3, _item)
 
         # save new list_roi dictionary
@@ -707,25 +705,24 @@ class Interface(QMainWindow):
             _roi = {}
 
             _x0 = self._get_item_value(_row, 0)
-            _roi['x0'] = int(_x0)
+            _roi["x0"] = int(_x0)
 
             _y0 = self._get_item_value(_row, 1)
-            _roi['y0'] = int(_y0)
+            _roi["y0"] = int(_y0)
 
             _x1 = self._get_item_value(_row, 2)
-            _roi['x1'] = int(_x1)
+            _roi["x1"] = int(_x1)
 
             _y1 = self._get_item_value(_row, 3)
-            _roi['y1'] = int(_y1)
+            _roi["y1"] = int(_y1)
 
             x0_int = int(_x0)
             y0_int = int(_y0)
             width_int = np.abs(x0_int - int(_x1))
             height_int = np.abs(y0_int - int(_y1))
 
-            _roi_id = self.init_roi(x0=x0_int, y0=y0_int,
-                                    width=width_int, height=height_int)
-            _roi['id'] = _roi_id
+            _roi_id = self.init_roi(x0=x0_int, y0=y0_int, width=width_int, height=height_int)
+            _roi["id"] = _roi_id
             list_roi[_row] = _roi
 
         self.list_roi = list_roi
@@ -762,17 +759,17 @@ class Interface(QMainWindow):
         roi_selected = {}
         for _key in self.list_roi.keys():
             _roi = self.list_roi[_key]
-            x0 = _roi['x0']
-            y0 = _roi['y0']
-            x1 = _roi['x1']
-            y1 = _roi['y1']
-            new_entry = {'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1}
+            x0 = _roi["x0"]
+            y0 = _roi["y0"]
+            x1 = _roi["x1"]
+            y1 = _roi["y1"]
+            new_entry = {"x0": x0, "y0": y0, "x1": x1, "y1": y1}
             roi_selected[_key] = new_entry
 
         self.roi_selected = roi_selected
 
     def apply_clicked(self):
-        self.update_table_roi(None) #check ROI before leaving application
+        self.update_table_roi(None)  # check ROI before leaving application
         self.format_roi()
         self.close()
 

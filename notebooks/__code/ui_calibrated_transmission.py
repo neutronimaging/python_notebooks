@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_calibrated_transmission.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.3
@@ -10,7 +8,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1347, 949)
@@ -115,7 +113,7 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_x0_label.setPalette(palette)
-        self.calibration1_x0_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration1_x0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.calibration1_x0_label.setObjectName("calibration1_x0_label")
         self.gridLayout.addWidget(self.calibration1_x0_label, 0, 0, 1, 1)
         self.calibration1_x0 = QtWidgets.QLineEdit(self.tab_3)
@@ -144,7 +142,9 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_width_label.setPalette(palette)
-        self.calibration1_width_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration1_width_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration1_width_label.setObjectName("calibration1_width_label")
         self.gridLayout.addWidget(self.calibration1_width_label, 0, 2, 1, 1)
         self.calibration1_width = QtWidgets.QLineEdit(self.tab_3)
@@ -172,7 +172,9 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_value_label.setPalette(palette)
-        self.calibration1_value_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration1_value_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration1_value_label.setObjectName("calibration1_value_label")
         self.gridLayout.addWidget(self.calibration1_value_label, 0, 4, 1, 1)
         self.calibration1_value = QtWidgets.QLineEdit(self.tab_3)
@@ -200,7 +202,7 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_y0_label.setPalette(palette)
-        self.calibration1_y0_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration1_y0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.calibration1_y0_label.setObjectName("calibration1_y0_label")
         self.gridLayout.addWidget(self.calibration1_y0_label, 1, 0, 1, 1)
         self.calibration1_y0 = QtWidgets.QLineEdit(self.tab_3)
@@ -228,7 +230,9 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_height_label.setPalette(palette)
-        self.calibration1_height_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration1_height_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration1_height_label.setObjectName("calibration1_height_label")
         self.gridLayout.addWidget(self.calibration1_height_label, 1, 2, 1, 1)
         self.calibration1_height = QtWidgets.QLineEdit(self.tab_3)
@@ -401,7 +405,7 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_x0_label.setPalette(palette)
-        self.calibration2_x0_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration2_x0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.calibration2_x0_label.setObjectName("calibration2_x0_label")
         self.gridLayout_2.addWidget(self.calibration2_x0_label, 0, 0, 1, 1)
         self.calibration2_x0 = QtWidgets.QLineEdit(self.tab_4)
@@ -421,7 +425,9 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_width_label.setPalette(palette)
-        self.calibration2_width_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration2_width_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration2_width_label.setObjectName("calibration2_width_label")
         self.gridLayout_2.addWidget(self.calibration2_width_label, 0, 2, 1, 1)
         self.calibration2_width = QtWidgets.QLineEdit(self.tab_4)
@@ -440,7 +446,9 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_value_label.setPalette(palette)
-        self.calibration2_value_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration2_value_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration2_value_label.setObjectName("calibration2_value_label")
         self.gridLayout_2.addWidget(self.calibration2_value_label, 0, 4, 1, 1)
         self.calibration2_value = QtWidgets.QLineEdit(self.tab_4)
@@ -459,7 +467,7 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_y0_label.setPalette(palette)
-        self.calibration2_y0_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration2_y0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.calibration2_y0_label.setObjectName("calibration2_y0_label")
         self.gridLayout_2.addWidget(self.calibration2_y0_label, 1, 0, 1, 1)
         self.calibration2_y0 = QtWidgets.QLineEdit(self.tab_4)
@@ -478,7 +486,9 @@ class Ui_MainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_height_label.setPalette(palette)
-        self.calibration2_height_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.calibration2_height_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration2_height_label.setObjectName("calibration2_height_label")
         self.gridLayout_2.addWidget(self.calibration2_height_label, 1, 2, 1, 1)
         self.calibration2_height = QtWidgets.QLineEdit(self.tab_4)
@@ -687,8 +697,8 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         self.toolBox.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
-        self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
-        self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
+        self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
+        self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)

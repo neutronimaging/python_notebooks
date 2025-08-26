@@ -18,7 +18,7 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code.normalization import *
@@ -55,7 +55,7 @@ o_norm.o_norm.data['ob']['data']
 o_norm.o_norm.data['sample']['data']
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Background Region 
+# # Select Background Region
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm = sample_panel.o_norm_handler
@@ -81,7 +81,7 @@ o_norm.o_norm.data['sample']
 o_norm.o_norm.get_normalized_data()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Export 
+# # Export
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm.select_export_folder(ipts_folder=sample_panel.ipts_dir)
@@ -129,5 +129,3 @@ import matplotlib.pyplot as plt
 # + run_control={"frozen": false, "read_only": false}
 plt.imshow(o_norm.normalized_data_array[0])
 # -
-
-

@@ -1,0 +1,80 @@
+name: Update pixi lockfile
+
+on:
+  schedule:
+    # Run at 00:00 on Monday (weekly updates)
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+    inputs:
+      environments:
+        description: "Space-separated list of environments to update (or 'all')"
+        default: "all"
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pixi-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+          manifest-path: pyproject.toml
+
+      - name: Update pixi lockfile
+        run: |
+          if [ "${{ github.event.inputs.environments }}" = "all" ] || [ -z "${{ github.event.inputs.environments }}" ]; then
+            pixi update --json
+          else
+            for env in ${{ github.event.inputs.environments }}; do
+              pixi update --environment $env --json
+            done
+          fi
+
+      - name: Commit changes
+        id: commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Check if there are changes
+          if git diff --quiet pixi.lock; then
+            echo "No changes to pixi.lock"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            git add pixi.lock
+            git commit -m "chore: update pixi.lock"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.commit.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-pixi-lock-${{ github.run_number }}
+          title: "chore: update pixi.lock"
+          body: |
+            ## Automated pixi.lock update
+
+            This PR updates the `pixi.lock` file with the latest compatible versions of dependencies.
+
+            ### What changed
+            - Updated pixi.lock to use latest compatible package versions
+            - All version constraints in pyproject.toml are still respected
+
+            ### How to test
+            1. `pixi install`
+            2. `pixi run test_imports`
+            3. `pixi run test`
+
+            ---
+            *This is an automated PR created by the update-lockfiles workflow.*
+          commit-message: "chore: update pixi.lock"
+          delete-branch: true

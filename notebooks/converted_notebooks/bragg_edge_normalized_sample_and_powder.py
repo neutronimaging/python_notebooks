@@ -18,17 +18,19 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
 from __code.bragg_edge.bragg_edge import BraggEdge, Interface
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP', notebook='bragg_edge_normalized_sample_and_powder')
+system.System.select_working_dir(facility="SNS", instrument="SNAP", notebook="bragg_edge_normalized_sample_and_powder")
 from __code.__all import custom_style
+
 custom_style.style()
 
-from plotly.offline import plot, init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode
+
 init_notebook_mode()
 
 # + run_control={"frozen": false, "read_only": false}
@@ -58,11 +60,11 @@ o_interface = Interface(data=o_bragg.final_image)
 o_interface.show()
 # -
 
-# # Powder element(s) to use to compare data  
+# # Powder element(s) to use to compare data
 
 o_bragg.list_elements()
 
-# ## List Bragg Edges 
+# ## List Bragg Edges
 
 o_bragg.list_powder_bragg_edges()
 o_bragg.bragg_edges
@@ -81,5 +83,3 @@ o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.
 o_bragg.load_time_spectra()
 o_bragg.plot()
 # -
-
-

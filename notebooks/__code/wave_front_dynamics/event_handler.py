@@ -1,20 +1,18 @@
 from qtpy import QtGui
-import numpy as np
 
 from __code._utilities.parent import Parent
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
-from __code.wave_front_dynamics.get import Get
 from __code.wave_front_dynamics.algorithms import Algorithms, ListAlgorithm
 from __code.wave_front_dynamics.display import Display
+from __code.wave_front_dynamics.get import Get
 
 
 class EventHandler(Parent):
-
     def data_range_changed(self):
         min_range = self.parent.ui.left_range_slider.value()
         max_range = self.parent.ui.right_range_slider.value()
-        self.parent.data_range['min'] = min_range
-        self.parent.data_range['max'] = max_range
+        self.parent.data_range["min"] = min_range
+        self.parent.data_range["max"] = max_range
 
         o_display = Display(parent=self.parent)
         o_display.update_prepare_data_plot()
@@ -76,14 +74,11 @@ class EventHandler(Parent):
         edge_calculation_algorithm = o_get.edge_calculation_algorithms()
 
         if edge_calculation_algorithm == ListAlgorithm.all:
-
             o_display = Display(parent=self.parent)
             o_display.clear_plots()
             self.reset_peak_value_arrays()
 
-            list_algo = [ListAlgorithm.sliding_average,
-                         ListAlgorithm.error_function,
-                         ListAlgorithm.change_point]
+            list_algo = [ListAlgorithm.sliding_average, ListAlgorithm.error_function, ListAlgorithm.change_point]
             for _algo in list_algo:
                 self.running_algo(algorithm=_algo)
                 # self.check_status_of_edge_calculation_checkboxes()
@@ -95,22 +90,20 @@ class EventHandler(Parent):
     def running_algo(self, algorithm=None):
         list_of_data_prepared = self.parent.list_of_data_prepared
 
-        show_status_message(parent=self.parent,
-                            message=f"Running {algorithm} ...",
-                            status=StatusMessageStatus.working)
+        show_status_message(parent=self.parent, message=f"Running {algorithm} ...", status=StatusMessageStatus.working)
 
-        o_algo = Algorithms(list_data=list_of_data_prepared,
-                            ignore_first_dataset=False,
-                            algorithm_selected=algorithm,
-                            progress_bar_ui=self.parent.event_progress)
-        self.parent.peak_value_arrays[algorithm] = \
-            o_algo.get_peak_value_array(algorithm_selected=algorithm)
+        o_algo = Algorithms(
+            list_data=list_of_data_prepared,
+            ignore_first_dataset=False,
+            algorithm_selected=algorithm,
+            progress_bar_ui=self.parent.event_progress,
+        )
+        self.parent.peak_value_arrays[algorithm] = o_algo.get_peak_value_array(algorithm_selected=algorithm)
         self.parent.data_have_been_reversed_in_calculation = o_algo.data_have_been_reversed_in_calculation
 
-        show_status_message(parent=self.parent,
-                            message=f"Running {algorithm}: Done",
-                            status=StatusMessageStatus.ready,
-                            duration_s=10)
+        show_status_message(
+            parent=self.parent, message=f"Running {algorithm}: Done", status=StatusMessageStatus.ready, duration_s=10
+        )
 
     def edge_calculation_file_index_slider_changed(self, slider_value=None):
         if slider_value is None:
@@ -145,7 +138,7 @@ class EventHandler(Parent):
         enabled_state = False
         for _key in self.parent.peak_value_arrays.keys():
             value = self.parent.peak_value_arrays[_key]
-            if not (value is None):
+            if value is not None:
                 enabled_state = True
                 break
         self.parent.ui.export_button.setEnabled(enabled_state)
@@ -154,9 +147,11 @@ class EventHandler(Parent):
         self.parent.ui.edge_calculation_file_index_value.setEnabled(enabled_state)
 
     def reset_peak_value_arrays(self):
-        self.parent.peak_value_arrays = {ListAlgorithm.sliding_average: None,
-                                         ListAlgorithm.change_point: None,
-                                         ListAlgorithm.error_function: None}
+        self.parent.peak_value_arrays = {
+            ListAlgorithm.sliding_average: None,
+            ListAlgorithm.change_point: None,
+            ListAlgorithm.error_function: None,
+        }
 
     def update_list_of_relative_timestamp_of_prepared_data(self):
         list_timestamp = self.parent.list_timestamp
@@ -166,7 +161,6 @@ class EventHandler(Parent):
         list_of_timestamp_of_data_prepared = []
         for _index, _state in enumerate(boolean_list_of_files_to_use):
             if _state:
-
                 if t0 == -1:
                     t0 = float(list_timestamp[_index])
                     list_of_timestamp_of_data_prepared.append(0)

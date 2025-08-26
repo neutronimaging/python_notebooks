@@ -1,33 +1,30 @@
-from IPython.display import HTML
-from IPython.display import display
 import numpy as np
-from collections import OrderedDict
-
 import pyqtgraph as pg
+from IPython.display import HTML, display
 
 try:
-    from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
+    from PyQt4.QtGui import QFileDialog, QMainWindow
 except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5 import QtGui
+    from PyQt5.QtWidgets import QMainWindow
 
-from __code.ui_file_metadata_display  import Ui_MainWindow as UiMainWindow
+from __code.ui_file_metadata_display import Ui_MainWindow as UiMainWindow
 
 
 class Interface(QMainWindow):
-
     exp_dict = None
     roi_column_width = [50, 120, 120]
     working_range_of_images = []
-    working_range = [0,0]
+    working_range = [0, 0]
 
     def __init__(self, parent=None, exp_dict=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         self.exp_dict = exp_dict
 
@@ -55,7 +52,7 @@ class Interface(QMainWindow):
         row_counts = self.ui.tableWidget.rowCount()
         if row_counts > 0:
             nbr_column = self.ui.tableWidget.columnCount()
-            _selection_range = QtGui.QTableWidgetSelectionRange(0, 0, 0, nbr_column-1)
+            _selection_range = QtGui.QTableWidgetSelectionRange(0, 0, 0, nbr_column - 1)
             self.ui.tableWidget.setRangeSelected(_selection_range, True)
             self.refresh_pyqtgraph()
 
@@ -66,8 +63,8 @@ class Interface(QMainWindow):
         for _group_index in exp_dict.keys():
             _item = exp_dict[_group_index]
 
-            _T = _item['T']
-            _P = _item['P']
+            _T = _item["T"]
+            _P = _item["P"]
 
             self.__insert_row(row=int(_group_index), T=_T, P=_P)
 
@@ -75,7 +72,7 @@ class Interface(QMainWindow):
         _item = QtGui.QTableWidgetItem(str(value))
         self.ui.tableWidget.setItem(row, column, _item)
 
-    def __insert_row(self, row=0, T='N/A', P='N/A'):
+    def __insert_row(self, row=0, T="N/A", P="N/A"):
         self.ui.tableWidget.insertRow(row)
         self._set_item_value(row, 0, str(row))
         self._set_item_value(row, 1, T)
@@ -95,9 +92,9 @@ class Interface(QMainWindow):
         exp_dict = self.exp_dict
 
         working_range_of_images = []
-        for row in np.arange(from_group, to_group+1):
+        for row in np.arange(from_group, to_group + 1):
             group = str(row)
-            _data = exp_dict[group]['working_image']['image']
+            _data = exp_dict[group]["working_image"]["image"]
             working_range_of_images.append(_data)
 
         self.working_range = [from_group, to_group]
@@ -129,8 +126,8 @@ class Interface(QMainWindow):
 
         # update labels on top of image display
         _current_dict = self.exp_dict[str(slider_value)]
-        _T = _current_dict['T']
-        _P = _current_dict['P']
+        _T = _current_dict["T"]
+        _P = _current_dict["P"]
 
         self.ui.para_1_value.setText(_T)
         self.ui.para_2_value.setText(_P)
@@ -145,7 +142,7 @@ class Interface(QMainWindow):
         if _item:
             return str(_item.text())
         else:
-            return ''
+            return ""
 
     def export_button_clicked(self):
         # pop up select folder dialog box
@@ -159,4 +156,3 @@ class Interface(QMainWindow):
 
     def closeEvent(self, eventhere=None):
         pass
-

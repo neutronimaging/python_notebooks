@@ -17,11 +17,13 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_addie.ui')
-o_builder = UiBuilder(ui_name = 'ui_addie_save_config.ui')
+
+o_builder = UiBuilder(ui_name="ui_addie.ui")
+o_builder = UiBuilder(ui_name="ui_addie_save_config.ui")
 
 from __code.addie import Interface
 
@@ -38,5 +40,3 @@ from __code.addie import Interface
 o_interface = Interface()
 o_interface.show()
 # -
-
-

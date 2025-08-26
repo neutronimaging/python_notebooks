@@ -1,10 +1,8 @@
 import pyqtgraph as pg
-from qtpy.QtWidgets import QVBoxLayout, QProgressBar
-from qtpy import QtGui
+from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 
 
 class InterfaceInitialization:
-
     def __init__(self, parent=None):
         self.parent = parent
 

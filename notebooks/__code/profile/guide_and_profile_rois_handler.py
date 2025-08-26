@@ -1,5 +1,5 @@
-import pyqtgraph as pg
 import numpy as np
+import pyqtgraph as pg
 
 
 class GuideAndProfileRoisHandler:
@@ -23,9 +23,11 @@ class GuideAndProfileRoisHandler:
 
     def _define_guide(self):
         """define the guide"""
-        guide_roi = pg.RectROI([self.parent.default_guide_roi['x0'], self.parent.default_guide_roi['y0']],
-                               [self.parent.default_guide_roi['width'], self.parent.default_guide_roi['height']],
-                               pen=self.parent.default_guide_roi['color_activated'])
+        guide_roi = pg.RectROI(
+            [self.parent.default_guide_roi["x0"], self.parent.default_guide_roi["y0"]],
+            [self.parent.default_guide_roi["width"], self.parent.default_guide_roi["height"]],
+            pen=self.parent.default_guide_roi["color_activated"],
+        )
         guide_roi.addScaleHandle([1, 1], [0, 0])
         guide_roi.addScaleHandle([0, 0], [1, 1])
         guide_roi.sigRegionChanged.connect(self.parent.guide_changed)
@@ -46,7 +48,6 @@ class GuideAndProfileRoisHandler:
         y_bottom = profile_dimension.y_bottom
 
         if is_x_profile_direction:
-
             pos = []
             pos.append([x_left, y_top])
             pos.append([x_right, y_top])
@@ -62,7 +63,6 @@ class GuideAndProfileRoisHandler:
             pos = np.array(pos)
 
         else:  # y-profile direction
-
             pos = []
             pos.append([x_left, y_top])
             pos.append([x_left, y_bottom])
@@ -80,17 +80,13 @@ class GuideAndProfileRoisHandler:
         line_color = self.parent.profile_color
         _list_line_color = list(line_color)
         line_color = tuple(_list_line_color)
-        lines = np.array([line_color for n in np.arange(len(pos))],
-                         dtype=[('red', np.ubyte), ('green', np.ubyte),
-                                ('blue', np.ubyte), ('alpha', np.ubyte),
-                                ('width', float)])
+        lines = np.array(
+            [line_color for n in np.arange(len(pos))],
+            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+        )
 
         profile = pg.GraphItem()
         self.parent.ui.image_view.addItem(profile)
-        profile.setData(pos=pos,
-                        adj=adj,
-                        pen=lines,
-                        symbol=None,
-                        pxMode=False)
+        profile.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
 
         self.__profile = profile

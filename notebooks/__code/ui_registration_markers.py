@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_registration_markers.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
@@ -7,10 +5,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
-class Ui_Dialog(object):
+class Ui_Dialog:
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(594, 531)
@@ -58,8 +56,8 @@ class Ui_Dialog(object):
         self.tabWidget.setCurrentIndex(-1)
         self.add_marker_button.clicked.connect(Dialog.add_marker_button_clicked)
         self.remove_marker_button.clicked.connect(Dialog.remove_marker_button_clicked)
-        self.marker_color_widget.currentIndexChanged['QString'].connect(Dialog.marker_color_changed)
-        self.tabWidget.currentChanged['int'].connect(Dialog.marker_tab_changed)
+        self.marker_color_widget.currentIndexChanged["QString"].connect(Dialog.marker_color_changed)
+        self.tabWidget.currentChanged["int"].connect(Dialog.marker_tab_changed)
         self.run_registration_button.clicked.connect(Dialog.run_registration_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 

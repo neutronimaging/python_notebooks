@@ -1,26 +1,21 @@
-from IPython.display import HTML
-from IPython.display import display
-
 import pyqtgraph as pg
+from IPython.display import HTML, display
 
 try:
-    from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
+    from PyQt4.QtGui import QFileDialog, QMainWindow
 except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
     from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5.QtWidgets import QMainWindow
 
 from NeuNorm.normalization import Normalization
 
-from __code.ui_template  import Ui_MainWindow as UiMainWindow
 from __code.file_folder_browser import FileFolderBrowser
+from __code.ui_template import Ui_MainWindow as UiMainWindow
 
 
 class InterfaceHandler(FileFolderBrowser):
-
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir=""):
         super(InterfaceHandler, self).__init__(working_dir=working_dir)
 
     def load(self):
@@ -31,18 +26,20 @@ class InterfaceHandler(FileFolderBrowser):
 
 
 class Interface(QMainWindow):
-
     live_data = []
 
     def __init__(self, parent=None, o_norm=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         self.o_norm = o_norm
 
-        self.list_files = self.o_norm.data['sample']['file_name']
-        self.list_data = self.o_norm.data['sample']['data']
+        self.list_files = self.o_norm.data["sample"]["file_name"]
+        self.list_data = self.o_norm.data["sample"]["data"]
 
         QMainWindow.__init__(self, parent=parent)
         self.ui = UiMainWindow()
@@ -110,6 +107,3 @@ class Interface(QMainWindow):
 
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")
-
-
-

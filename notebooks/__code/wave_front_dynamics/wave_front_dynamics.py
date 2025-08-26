@@ -1,27 +1,26 @@
-from IPython.display import HTML
-import numpy as np
-from IPython.display import display
-import os
-from qtpy.QtWidgets import QMainWindow
 import copy
+import os
+
+import numpy as np
+from IPython.display import HTML, display
+from qtpy.QtWidgets import QMainWindow
 
 from __code import load_ui
 from __code.ipywe import fileselector
 from __code.wave_front_dynamics.algorithms import ListAlgorithm
-from __code.wave_front_dynamics.initialization import Initialization
-from __code.wave_front_dynamics.event_handler import EventHandler
 from __code.wave_front_dynamics.display import Display
+from __code.wave_front_dynamics.event_handler import EventHandler
 from __code.wave_front_dynamics.export import Export
-from __code.wave_front_dynamics.loader import loading_radial_profile_file, loading_linear_profile_file
+from __code.wave_front_dynamics.initialization import Initialization
+from __code.wave_front_dynamics.loader import loading_linear_profile_file, loading_radial_profile_file
 
 
 class InputASCIIType:
-    linear_profile = 'linear profile'
-    radial_profile = 'radial_profile'
+    linear_profile = "linear profile"
+    radial_profile = "radial_profile"
 
 
 class WaveFrontDynamics:
-
     list_of_ascii_files = None
     list_of_original_image_files = None
     list_of_data = None
@@ -55,17 +54,17 @@ class WaveFrontDynamics:
             result_dict = loading_radial_profile_file(list_of_ascii_files)
             display(HTML("Loaded using radial profile method .... Done!"))
 
-        self.list_of_ascii_files = result_dict['list_of_ascii_files']
-        self.list_timestamp = result_dict['list_timestamp']
-        self.list_of_data = result_dict['list_of_data']
-        self.list_of_original_image_files = result_dict['list_of_original_image_files']
+        self.list_of_ascii_files = result_dict["list_of_ascii_files"]
+        self.list_timestamp = result_dict["list_timestamp"]
+        self.list_of_data = result_dict["list_of_data"]
+        self.list_of_original_image_files = result_dict["list_of_original_image_files"]
 
     def determine_input_ascii_file_type(self, file_name):
         """look at the first line of the ascii file and determine the program who generated that ASCII
         -> line starts with "# source image:" means it came from radial profile
         otherwise, linear profile
         """
-        with open(file_name, 'r') as f:
+        with open(file_name) as f:
             for line in f.readlines():
                 if line.startswith("# source image:"):
                     return InputASCIIType.radial_profile
@@ -76,18 +75,19 @@ class WaveFrontDynamics:
         self.list_of_ascii_files = list_of_files
 
     def select_data(self):
-        instructions = 'Select linear profile ASCII or Radial Profile list of ascii files ...'
-        self.list_data_widget = fileselector.FileSelectorPanel(instruction=instructions,
-                                                               start_dir=self.working_dir,
-                                                               # next=self.load_data,
-                                                               filters={"ASCII": "*.txt"},
-                                                               default_filter="ASCII",
-                                                               multiple=True)
+        instructions = "Select linear profile ASCII or Radial Profile list of ascii files ..."
+        self.list_data_widget = fileselector.FileSelectorPanel(
+            instruction=instructions,
+            start_dir=self.working_dir,
+            # next=self.load_data,
+            filters={"ASCII": "*.txt"},
+            default_filter="ASCII",
+            multiple=True,
+        )
         self.list_data_widget.show()
 
 
 class WaveFrontDynamicsUI(QMainWindow):
-
     list_of_ascii_files = None
     nbr_files = None
     boolean_list_of_files_to_use = None
@@ -102,21 +102,22 @@ class WaveFrontDynamicsUI(QMainWindow):
     list_of_data_prepared = None
     list_of_timestamp_of_data_prepared = None
 
-    peak_value_arrays = {ListAlgorithm.sliding_average: None,
-                         ListAlgorithm.change_point   : None,
-                         ListAlgorithm.error_function : None}
+    peak_value_arrays = {
+        ListAlgorithm.sliding_average: None,
+        ListAlgorithm.change_point: None,
+        ListAlgorithm.error_function: None,
+    }
 
-    data_range = {'min': np.NaN,
-                  'max': np.NaN}
-    max_number_of_data_points = np.NaN
+    data_range = {"min": np.nan, "max": np.nan}
+    max_number_of_data_points = np.nan
 
     # matplotlib
     prepare_data_plot = None
 
     def __init__(self, parent=None, working_dir="./", wave_front_dynamics=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Launched UI! '
-                     '(maybe hidden behind this browser!)</span>'))
+        display(
+            HTML('<span style="font-size: 20px; color:blue">Launched UI! ' "(maybe hidden behind this browser!)</span>")
+        )
 
         self.working_dir = working_dir
         self.wave_front_dynamics = wave_front_dynamics
@@ -133,9 +134,9 @@ class WaveFrontDynamicsUI(QMainWindow):
         self.nbr_files = len(self.list_of_data)
 
         super(QMainWindow, self).__init__(parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_wave_front_dynamics.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_wave_front_dynamics.ui")
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Define center and sector of profile")
 

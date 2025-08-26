@@ -23,14 +23,16 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
 
+warnings.filterwarnings("ignore")
+
+from __code import system
 from __code.overlay_images.interface_handler import InterfaceHandler
 from __code.overlay_images.overlay_images import OverlayImages
 
-from __code import system
-system.System.select_working_dir(notebook='overlay_images')
+system.System.select_working_dir(notebook="overlay_images")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
@@ -41,20 +43,18 @@ custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
 o_data = OverlayImages(working_dir=system.System.get_working_dir())
-o_data.select_input_folder(data_type='high resolution')
+o_data.select_input_folder(data_type="high resolution")
 # -
 
-# # Select folder containing low resolution images 
+# # Select folder containing low resolution images
 
-o_data.select_input_folder(data_type='low resolution')
+o_data.select_input_folder(data_type="low resolution")
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Launch User Interface
 
 # + run_control={"frozen": false, "read_only": false}
-o_interface = InterfaceHandler(o_norm_high_res=o_data.o_norm_high_res,
-                               o_norm_low_res=o_data.o_norm_low_res,
-                               working_dir=o_data.working_dir)
+o_interface = InterfaceHandler(
+    o_norm_high_res=o_data.o_norm_high_res, o_norm_low_res=o_data.o_norm_low_res, working_dir=o_data.working_dir
+)
 # -
-
-

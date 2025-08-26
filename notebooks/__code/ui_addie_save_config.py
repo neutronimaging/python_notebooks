@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Volumes/my_book_thunderbolt_duo/git/IPTS/python_notebooks/ui/ui_addie_save_config.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_Dialog(object):
+
+class Ui_Dialog:
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(401, 89)
@@ -57,4 +56,3 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "Configuration Name:"))
         self.cancel_button.setText(_translate("Dialog", "Cancel"))
         self.save_button.setText(_translate("Dialog", "Save"))
-

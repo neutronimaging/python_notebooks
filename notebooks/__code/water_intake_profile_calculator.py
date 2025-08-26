@@ -1,39 +1,44 @@
-from IPython.display import HTML
-from IPython.display import display
-from ipywidgets import widgets
-
-import numpy as np
+import glob
 import os
 import re
-import glob
-from scipy.special import erf
-from scipy.optimize import curve_fit
+
+import numpy as np
+import pyqtgraph as pg
 from changepy import pelt
 from changepy.costs import normal_var
-
-import pyqtgraph as pg
-from pyqtgraph.dockarea import *
-
-from qtpy.QtWidgets import (QFileDialog, QMainWindow, QLabel, QHBoxLayout, QSpacerItem, QProgressBar, 
-                            QPushButton, QVBoxLayout, QSlider, QSizePolicy, QWidget, QTableWidgetItem,
-                            QApplication)
-from qtpy import QtGui
-from qtpy import QtCore
-
+from IPython.display import HTML, display
+from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
+from pyqtgraph.dockarea import *
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QProgressBar,
+    QPushButton,
+    QSizePolicy,
+    QSlider,
+    QSpacerItem,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
+from scipy.optimize import curve_fit
+from scipy.special import erf
 
 from __code import load_ui
-from __code.file_handler import make_ascii_file
-from __code.ipywe import fileselector
-from __code.file_handler import retrieve_time_stamp
 from __code.file_format_reader import DscReader
-from __code.ui_water_intake_profile  import Ui_MainWindow as UiMainWindow
+from __code.file_handler import make_ascii_file, retrieve_time_stamp
+from __code.ipywe import fileselector
 
 
 class MeanRangeCalculation:
-    '''
+    """
     Mean value of all the counts between left_pixel and right pixel
-    '''
+    """
 
     def __init__(self, data=None):
         self.data = data
@@ -43,8 +48,8 @@ class MeanRangeCalculation:
         _data = self.data
         _nbr_pixel = self.nbr_pixel
 
-        self.left_mean = np.nanmean(_data[0:pixel+1])
-        self.right_mean = np.nanmean(_data[pixel+1:_nbr_pixel])
+        self.left_mean = np.nanmean(_data[0 : pixel + 1])
+        self.right_mean = np.nanmean(_data[pixel + 1 : _nbr_pixel])
 
     def calculate_delta_mean_square(self):
         self.delta_square = np.square(self.left_mean - self.right_mean)
@@ -53,7 +58,7 @@ class MeanRangeCalculation:
 class WaterIntakeHandler:
     """This class calculates the water intake position of a set of profiles"""
 
-    dict_profiles = {}   # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
+    dict_profiles = {}  # {'0': {'data': [], 'delta_time': 45455}, '1': {...} ...}
 
     water_intake_peak_sliding_average = []
     water_intake_peak_erf = []
@@ -64,22 +69,22 @@ class WaterIntakeHandler:
     # fitting by error function requires that the signal goes from max to min values
     is_data_from_max_to_min = True
 
-    def __init__(self, dict_profiles={}, ignore_first_image=True, algorithm_selected='sliding_average'):
+    def __init__(self, dict_profiles={}, ignore_first_image=True, algorithm_selected="sliding_average"):
         self.dict_profiles = dict_profiles
         self.ignore_first_image = ignore_first_image
 
-        if algorithm_selected == 'sliding_average':
+        if algorithm_selected == "sliding_average":
             self.calculate_using_sliding_average()
-        elif algorithm_selected == 'error_function':
+        elif algorithm_selected == "error_function":
             self.calculate_using_erf()
-        elif algorithm_selected == 'change_point':
+        elif algorithm_selected == "change_point":
             self.calculate_change_point()
         else:
             raise ValueError("algorithm not implemented yet!")
 
     @staticmethod
     def fitting_function(x, c, w, m, n):
-        return ((m-n)/2.) * erf((x-c)/w) + (m+n)/2.
+        return ((m - n) / 2.0) * erf((x - c) / w) + (m + n) / 2.0
 
     def are_data_from_max_to_min(self, ydata):
         nbr_points = len(ydata)
@@ -89,7 +94,7 @@ class WaterIntakeHandler:
 
         ydata = ydata.copy()
         ydata_reversed = ydata[::-1]
-        mean_last_part = np.mean(ydata_reversed[0: nbr_point_for_investigation])
+        mean_last_part = np.mean(ydata_reversed[0:nbr_point_for_investigation])
 
         if mean_first_part > mean_last_part:
             return True
@@ -102,7 +107,7 @@ class WaterIntakeHandler:
 
         if self.ignore_first_image:
             _start_file = 1
-            _end_file = nbr_files+1
+            _end_file = nbr_files + 1
         else:
             _start_file = 0
             _end_file = nbr_files
@@ -111,8 +116,8 @@ class WaterIntakeHandler:
         water_intake_deltatime = []
         for _index_file in np.arange(_start_file, _end_file):
             _profile = _dict_profiles[str(_index_file)]
-            ydata = _profile['data']
-            xdata = _profile['delta_time']
+            ydata = _profile["data"]
+            xdata = _profile["delta_time"]
 
             var = np.mean(ydata)
             result = pelt(normal_var(ydata, var), len(ydata))
@@ -144,8 +149,8 @@ class WaterIntakeHandler:
 
         for _index_file in np.arange(_start_file, _end_file):
             _profile = _dict_profiles[str(_index_file)]
-            ydata = _profile['data']
-            xdata = _profile['delta_time']
+            ydata = _profile["data"]
+            xdata = _profile["delta_time"]
 
             is_data_from_max_to_min = self.are_data_from_max_to_min(ydata)
             self.is_data_from_max_to_min = is_data_from_max_to_min
@@ -154,13 +159,10 @@ class WaterIntakeHandler:
 
             (popt, pcov) = self.fitting_algorithm(ydata)
 
-            _local_dict = {'c': popt[0],
-                           'w': popt[1],
-                           'm': popt[2],
-                           'n': popt[3]}
+            _local_dict = {"c": popt[0], "w": popt[1], "m": popt[2], "n": popt[3]}
 
             error = np.sqrt(np.diag(pcov))
-            _peak = int(popt[0] + (popt[1]/np.sqrt(2)))
+            _peak = int(popt[0] + (popt[1] / np.sqrt(2)))
             water_intake_peaks_erf.append(_peak)
 
             for _i, _err in enumerate(error):
@@ -171,7 +173,7 @@ class WaterIntakeHandler:
                 else:
                     error[_i] = _err
 
-            _peak_error = int(error[0] + (error[1]/np.sqrt(2)))
+            _peak_error = int(error[0] + (error[1] / np.sqrt(2)))
 
             water_intake_peaks_erf_error.append(_peak_error)
             delta_time.append(xdata)
@@ -190,12 +192,12 @@ class WaterIntakeHandler:
 
     def calculate_using_sliding_average(self):
         _dict_profiles = self.dict_profiles
-        nbr_pixels = len(_dict_profiles['1']['data'])
+        nbr_pixels = len(_dict_profiles["1"]["data"])
         nbr_files = len(_dict_profiles.keys())
 
         if self.ignore_first_image:
             _start_file = 1
-            _end_file = nbr_files+1
+            _end_file = nbr_files + 1
         else:
             _start_file = 0
             _end_file = nbr_files
@@ -204,16 +206,16 @@ class WaterIntakeHandler:
         water_intake_peak = []
         for _index_file in np.arange(_start_file, _end_file):
             _profile = _dict_profiles[str(_index_file)]
-            _profile_data = _profile['data']
-            _delta_time = _profile['delta_time']
+            _profile_data = _profile["data"]
+            _delta_time = _profile["delta_time"]
             delta_array = []
             _o_range = MeanRangeCalculation(data=_profile_data)
-            for _pixel in np.arange(0, nbr_pixels-5):
+            for _pixel in np.arange(0, nbr_pixels - 5):
                 _o_range.calculate_left_right_mean(pixel=_pixel)
                 _o_range.calculate_delta_mean_square()
                 delta_array.append(_o_range.delta_square)
 
-            peak_value = delta_array.index(max(delta_array[0: nbr_pixels -5]))
+            peak_value = delta_array.index(max(delta_array[0 : nbr_pixels - 5]))
             water_intake_peak.append(peak_value)
             water_intake_deltatime.append(_delta_time)
 
@@ -222,21 +224,20 @@ class WaterIntakeHandler:
 
 
 class WaterIntakeProfileSelector(QMainWindow):
-
     list_data = []
 
     dict_data = {}
-    dict_data_raw = {} # dict data untouched (not sorted)
-    list_images_raw = [] # use to reste dict_data
+    dict_data_raw = {}  # dict data untouched (not sorted)
+    list_images_raw = []  # use to reste dict_data
     dict_water_intake = {}
-    dic_disc = {} # dictionary created when loading dsc folder
+    dic_disc = {}  # dictionary created when loading dsc folder
 
     current_image = []
     ignore_first_image_checked = True
     roi_width = 0.05
-    roi = {'x0': 88, 'y0': 131, 'width': 142, 'height': 171}
+    roi = {"x0": 88, "y0": 131, "width": 142, "height": 171}
     table_column_width = [350, 150, 200]
-    dict_profiles = {} # contain all the profiles just before calculating the water intake
+    dict_profiles = {}  # contain all the profiles just before calculating the water intake
 
     # by default, we integrate over the x-axis
     is_inte_along_x_axis = True
@@ -251,26 +252,29 @@ class WaterIntakeProfileSelector(QMainWindow):
     # state of the image
     image_view_state = {}
 
-    algorithm_selected = 'sliding_average'
+    algorithm_selected = "sliding_average"
 
     def __init__(self, parent=None, dict_data={}):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
-            (maybe hidden behind this browser!)</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that popped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         QMainWindow.__init__(self, parent=parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                    os.path.join('ui',
-                                                 'ui_water_intake_profile.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), os.path.join("ui", "ui_water_intake_profile.ui")
+        )
 
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Water Intake Calculator")
 
         self.dict_data_raw = dict_data.copy()
         self.dict_data = dict_data.copy()
-        self.list_data = dict_data['list_data'].copy()
-        self.list_images_raw = dict_data['list_images']
+        self.list_data = dict_data["list_data"].copy()
+        self.list_images_raw = dict_data["list_images"]
         self.working_dir = os.path.dirname(self.list_images_raw[0])
 
         self.init_statusbar()
@@ -338,9 +342,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         d2 = Dock("Profile", size=(200, 100))
         d3 = Dock("Water Intake", size=(200, 400))
 
-        area.addDock(d1, 'top')
-        area.addDock(d2, 'bottom')
-        area.addDock(d3, 'right')
+        area.addDock(d1, "top")
+        area.addDock(d2, "bottom")
+        area.addDock(d3, "right")
 
         # image view
         self.ui.image_view = pg.ImageView(view=pg.PlotItem())
@@ -352,10 +356,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         _pen = QtGui.QPen()
         _pen.setColor(_color)
         _pen.setWidthF(self.roi_width)
-        _x0 = self.roi['x0']
-        _y0 = self.roi['y0']
-        _width = self.roi['width']
-        _height = self.roi['height']
+        _x0 = self.roi["x0"]
+        _y0 = self.roi["y0"]
+        _width = self.roi["width"]
+        _height = self.roi["height"]
         _roi_id = pg.ROI([_x0, _y0], [_width, _height], pen=_pen, scaleSnap=True)
         _roi_id.addScaleHandle([1, 1], [0, 0])
         _roi_id.addScaleHandle([0, 0], [1, 1])
@@ -365,14 +369,14 @@ class WaterIntakeProfileSelector(QMainWindow):
         d1.addWidget(self.ui.image_view)
 
         # profile
-        self.profile = pg.PlotWidget(title='Profile')
+        self.profile = pg.PlotWidget(title="Profile")
         self.profile.plot()
         self.profile_vline = pg.InfiniteLine(angle=90, movable=False)
         self.profile.addItem(self.profile_vline, ignoreBounds=True)
         d2.addWidget(self.profile)
 
         # water intake
-        self.water_intake = pg.PlotWidget(title='Water Intake')
+        self.water_intake = pg.PlotWidget(title="Water Intake")
         self.water_intake.plot()
         self.ui.water_intake_refresh_button = QPushButton("Refresh Water Intake Plot")
         self.ui.water_intake_refresh_button.clicked.connect(self.refresh_water_intake_plot_clicked)
@@ -399,7 +403,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.file_index_slider.setTickPosition(QSlider.TicksBelow)
         self.ui.file_index_slider.setTickInterval(1)
 
-        self.ui.file_index_slider.valueChanged['int'].connect(self.slider_changed)
+        self.ui.file_index_slider.valueChanged["int"].connect(self.slider_changed)
         self.ui.file_index_value = QLabel()
         self.ui.file_index_value.setMinimumSize(QtCore.QSize(40, 30))
         self.ui.file_index_value.setMaximumSize(QtCore.QSize(40, 30))
@@ -447,7 +451,6 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.ui.file_index_slider.blockSignals(False)
 
     def update_infos_tab(self):
-
         if self.ui.sort_files_by_name_radioButton.isChecked():
             is_by_name = True
         else:
@@ -455,16 +458,16 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         dict_data = self.dict_data
 
-        _time_column_label = 'Time Stamp (Unix format)'
+        _time_column_label = "Time Stamp (Unix format)"
         if is_by_name:
-            _time_column_label = 'Delta Time (s)'
+            _time_column_label = "Delta Time (s)"
 
         item = self.ui.tableWidget.horizontalHeaderItem(1)
         item.setText(_time_column_label)
 
-        list_files = dict_data['list_images']
-        list_time_stamp = dict_data['list_time_stamp']
-        list_time_stamp_user = dict_data['list_time_stamp_user_format']
+        list_files = dict_data["list_images"]
+        list_time_stamp = dict_data["list_time_stamp"]
+        list_time_stamp_user = dict_data["list_time_stamp_user_format"]
 
         if self.ui.ignore_first_image_checkbox.isChecked():
             list_files = list_files[1:]
@@ -476,14 +479,11 @@ class WaterIntakeProfileSelector(QMainWindow):
         for _row, _file_name in enumerate(list_files):
             _short_name = os.path.basename(_file_name)
             _time_stamp_unix = list_time_stamp[_row]
-            if is_by_name: #cleanup format
-                _time_stamp_unix = "{:.2f}".format(_time_stamp_unix)
+            if is_by_name:  # cleanup format
+                _time_stamp_unix = f"{_time_stamp_unix:.2f}"
             _time_stamp_user = list_time_stamp_user[_row]
 
-            self.__insert_information_in_table(row=_row,
-                                               col0=_short_name,
-                                               col1=_time_stamp_unix,
-                                               col2=_time_stamp_user)
+            self.__insert_information_in_table(row=_row, col0=_short_name, col1=_time_stamp_unix, col2=_time_stamp_user)
 
     def __clear_infos_table(self):
         nbr_row = self.ui.tableWidget.rowCount()
@@ -493,11 +493,11 @@ class WaterIntakeProfileSelector(QMainWindow):
     def __insert_information_in_table(self, row, col0, col1, col2):
         self.ui.tableWidget.insertRow(row)
 
-        #col0
+        # col0
         _item = QTableWidgetItem(str(str(col0)))
         self.ui.tableWidget.setItem(row, 0, _item)
 
-        #col1
+        # col1
         _item = QTableWidgetItem(str(str(col1)))
         self.ui.tableWidget.setItem(row, 1, _item)
 
@@ -507,10 +507,10 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def update_labels(self):
         _roi = self.roi
-        _x0 = _roi['x0']
-        _y0 = _roi['y0']
-        _width = _roi['width']
-        _height = _roi['height']
+        _x0 = _roi["x0"]
+        _y0 = _roi["y0"]
+        _width = _roi["width"]
+        _height = _roi["height"]
         self.x0_value.setText(str(_x0))
         self.y0_value.setText(str(_y0))
         self.width_value.setText(str(_width))
@@ -537,18 +537,18 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def get_profile_algo(self):
         if self.ui.add_radioButton.isChecked():
-            return 'add'
+            return "add"
         elif self.ui.mean_radioButton.isChecked():
-            return 'mean'
+            return "mean"
         elif self.ui.median_radioButton.isChecked():
-            return 'median'
-        return ''
+            return "median"
+        return ""
 
     def get_algorithm_selected(self):
         if self.ui.sliding_average_checkBox.isChecked():
-            return 'sliding_average'
+            return "sliding_average"
         elif self.ui.error_function_checkBox.isChecked():
-            return 'error_function'
+            return "error_function"
         elif self.ui.change_point_checkBox.isChecked():
             return "change_point"
         else:
@@ -562,17 +562,19 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         self.calculate_all_profiles()
 
-        o_water_intake_handler = WaterIntakeHandler(dict_profiles=self.dict_profiles,
-                                                    ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked(),
-                                                    algorithm_selected=algorithm_selected)
+        o_water_intake_handler = WaterIntakeHandler(
+            dict_profiles=self.dict_profiles,
+            ignore_first_image=self.ui.ignore_first_image_checkbox.isChecked(),
+            algorithm_selected=algorithm_selected,
+        )
 
         pixel_size = self.ui.pixel_size_spinBox.value()
-        if algorithm_selected == 'sliding_average':
+        if algorithm_selected == "sliding_average":
             peak = o_water_intake_handler.water_intake_peak_sliding_average
             self.water_intake_peaks_sliding_average = peak.copy()
             delta_time = o_water_intake_handler.water_intake_deltatime
 
-        elif algorithm_selected == 'error_function':
+        elif algorithm_selected == "error_function":
             peak = o_water_intake_handler.water_intake_peaks_erf
             self.water_intake_peaks_erf = peak.copy()
             self.dict_error_function_parameters = o_water_intake_handler.dict_error_function_parameters
@@ -582,12 +584,12 @@ class WaterIntakeProfileSelector(QMainWindow):
             # due to the fact that the pixel reported may be from the right
             if self.is_inte_along_x_axis:
                 if not self.is_data_from_max_to_min:
-                    peak = [int(self.roi['height'] - _peak) for _peak in peak]
+                    peak = [int(self.roi["height"] - _peak) for _peak in peak]
             else:
                 if not self.is_data_from_max_to_min:
-                    peak = [int(self.roi['width'] - peak) for peak in peak]
+                    peak = [int(self.roi["width"] - peak) for peak in peak]
 
-        elif algorithm_selected == 'change_point':
+        elif algorithm_selected == "change_point":
             peak = o_water_intake_handler.water_intake_peaks_change_point
             self.water_intake_peaks_change_point = peak.copy()
             delta_time = o_water_intake_handler.water_intake_deltatime
@@ -597,51 +599,46 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         # we want absolute pixel value
         if self.is_inte_along_x_axis:
-            peak = [_peak + int(self.roi['y0']) for _peak in peak]
+            peak = [_peak + int(self.roi["y0"]) for _peak in peak]
         else:
-            peak = [_peak + int(self.roi['x0']) for _peak in peak]
+            peak = [_peak + int(self.roi["x0"]) for _peak in peak]
 
         if self.ui.pixel_radioButton.isChecked():  # pixel
-            y_label = 'Pixel Position'
+            y_label = "Pixel Position"
         else:  # distance
             peak = [float(_peak) * pixel_size for _peak in peak]
-            y_label = 'Distance (mm)'
+            y_label = "Distance (mm)"
 
         self.dict_water_intake = {}
-        self.dict_water_intake['xaxis'] = delta_time
-        self.dict_water_intake['yaxis'] = peak
+        self.dict_water_intake["xaxis"] = delta_time
+        self.dict_water_intake["yaxis"] = peak
 
         self.water_intake.clear()
-        if algorithm_selected == 'error_function':
+        if algorithm_selected == "error_function":
             error = o_water_intake_handler.dict_error_function_parameters_error
             top = error
             bottom = error
             peak = np.array(peak)
-            self.dict_water_intake['error'] = error
+            self.dict_water_intake["error"] = error
 
             # cleaning the error to make sure their values is not bigger than the peak value
             for _index, _err in enumerate(error):
                 if _err > peak[_index]:
                     error[_index] = np.sqrt(peak[_index])
 
-            err = pg.ErrorBarItem(x=delta_time,
-                                  y=peak,
-                                  top=top,
-                                  bottom=bottom)
+            err = pg.ErrorBarItem(x=delta_time, y=peak, top=top, bottom=bottom)
 
             self.water_intake.addItem(err)
-            self.water_intake.plot(delta_time, peak, symbolPen=None,
-                                   pen=None,
-                                   symbol='o',
-                                   symbolBruch=(200,200,200,50))
+            self.water_intake.plot(
+                delta_time, peak, symbolPen=None, pen=None, symbol="o", symbolBruch=(200, 200, 200, 50)
+            )
         else:
-            self.water_intake.plot(delta_time, peak, symbolPen=None,
-                                   pen=None,
-                                   symbol='o',
-                                   symbolBruch=(200,200,200,50))
+            self.water_intake.plot(
+                delta_time, peak, symbolPen=None, pen=None, symbol="o", symbolBruch=(200, 200, 200, 50)
+            )
 
-        self.water_intake.setLabel('left', y_label)
-        self.water_intake.setLabel('bottom', 'Delta Time')
+        self.water_intake.setLabel("left", y_label)
+        self.water_intake.setLabel("bottom", "Delta Time")
 
         # QApplication.restoreOverrideCursor()
 
@@ -654,62 +651,56 @@ class WaterIntakeProfileSelector(QMainWindow):
             index_selected -= 1
 
         algorithm_selected = self.get_algorithm_selected()
-        if algorithm_selected == 'sliding_average':
+        if algorithm_selected == "sliding_average":
             _water_intake_peaks = self.water_intake_peaks_sliding_average.copy()
             if self.is_inte_along_x_axis:
-                _offset = int(self.roi['y0'])
+                _offset = int(self.roi["y0"])
             else:
-                _offset = int(self.roi['x0'])
-            peak_value = _water_intake_peaks[index_selected] +_offset
-        elif algorithm_selected == 'error_function':
+                _offset = int(self.roi["x0"])
+            peak_value = _water_intake_peaks[index_selected] + _offset
+        elif algorithm_selected == "error_function":
             _water_intake_peaks = self.water_intake_peaks_erf.copy()
             is_data_from_max_to_min = self.is_data_from_max_to_min
             if self.is_inte_along_x_axis:
                 if is_data_from_max_to_min:
-                    peak_value = _water_intake_peaks[index_selected] + int(self.roi['y0'])
+                    peak_value = _water_intake_peaks[index_selected] + int(self.roi["y0"])
                 else:
-                    peak_value = int(self.roi['height'] + self.roi['y0'] - _water_intake_peaks[index_selected])
+                    peak_value = int(self.roi["height"] + self.roi["y0"] - _water_intake_peaks[index_selected])
             else:
                 if is_data_from_max_to_min:
-                    peak_value = _water_intake_peaks[index_selected] + int(self.roi['x0'])
+                    peak_value = _water_intake_peaks[index_selected] + int(self.roi["x0"])
                 else:
-                    peak_value = int(self.roi['width'] + self.roi['x0'] - _water_intake_peaks[index_selected])
-        elif algorithm_selected == 'change_point':
+                    peak_value = int(self.roi["width"] + self.roi["x0"] - _water_intake_peaks[index_selected])
+        elif algorithm_selected == "change_point":
             _water_intake_peaks = self.water_intake_peaks_change_point.copy()
             if self.is_inte_along_x_axis:
-                _offset = int(self.roi['y0'])
+                _offset = int(self.roi["y0"])
             else:
-                _offset = int(self.roi['x0'])
-            peak_value = _water_intake_peaks[index_selected] +_offset
+                _offset = int(self.roi["x0"])
+            peak_value = _water_intake_peaks[index_selected] + _offset
         else:
-            raise NotImplemented
+            raise NotImplementedError
 
-        self.profile_vline = pg.InfiniteLine(angle=90, movable=False,
-                                             pos=peak_value)
+        self.profile_vline = pg.InfiniteLine(angle=90, movable=False, pos=peak_value)
         self.profile.addItem(self.profile_vline, ignoreBounds=True)
 
         # display fitting function for error function
-        if self.get_algorithm_selected() == 'error_function':
-
-            index_selected = self.ui.file_index_slider.value()-1
+        if self.get_algorithm_selected() == "error_function":
+            index_selected = self.ui.file_index_slider.value() - 1
             dict_error_function_parameters = self.dict_error_function_parameters.copy()
             # pprint.pprint(dict_error_function_parameters)
             _fit_parameters = dict_error_function_parameters[str(index_selected)]
 
             xdata = self.live_x_axis
             fitting_xdata = np.arange(len(xdata))
-            ydata = WaterIntakeHandler.fitting_function(fitting_xdata,
-                                                        _fit_parameters['c'],
-                                                        _fit_parameters['w'],
-                                                        _fit_parameters['m'],
-                                                        _fit_parameters['n'])
+            ydata = WaterIntakeHandler.fitting_function(
+                fitting_xdata, _fit_parameters["c"], _fit_parameters["w"], _fit_parameters["m"], _fit_parameters["n"]
+            )
 
             if not is_data_from_max_to_min:
                 ydata = ydata[::-1]
 
-            self.profile.plot(xdata, ydata, pen=(255,0,0))
-
-
+            self.profile.plot(xdata, ydata, pen=(255, 0, 0))
 
     def export_profile_clicked(self):
         o_profile_handler = ProfileHandler(parent=self)
@@ -725,21 +716,20 @@ class WaterIntakeProfileSelector(QMainWindow):
             _axis_to_integrate = 0
         _algo_used = self.get_profile_algo()
 
-        if _algo_used == 'add':
+        if _algo_used == "add":
             _profile = np.sum(image, axis=_axis_to_integrate)
-        elif _algo_used == 'mean':
+        elif _algo_used == "mean":
             _profile = np.mean(image, axis=_axis_to_integrate)
-        elif _algo_used == 'median':
+        elif _algo_used == "median":
             _profile = np.median(image, axis=_axis_to_integrate)
         else:
             raise NotImplementedError
         return _profile
 
     def export_water_intake_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption = 'Select Output Folder',
-                                                          options = QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+        )
         if _export_folder:
             export_folder = os.path.abspath(_export_folder)
 
@@ -747,8 +737,8 @@ class WaterIntakeProfileSelector(QMainWindow):
             if dict_water_intake == {}:
                 return
 
-            x_axis = dict_water_intake['xaxis']
-            y_axis = dict_water_intake['yaxis']
+            x_axis = dict_water_intake["xaxis"]
+            y_axis = dict_water_intake["yaxis"]
 
             nbr_files = len(x_axis)
 
@@ -756,55 +746,58 @@ class WaterIntakeProfileSelector(QMainWindow):
             _algo_used = self.get_profile_algo()
             _master_algo_used = self.get_algorithm_selected()
             _roi = self.roi
-            x0 = _roi['x0']
-            y0 = _roi['y0']
-            width = _roi['width']
-            height = _roi['height']
+            x0 = _roi["x0"]
+            y0 = _roi["y0"]
+            width = _roi["width"]
+            height = _roi["height"]
 
-            if _master_algo_used == 'error_function':
-                error = dict_water_intake['error']
+            if _master_algo_used == "error_function":
+                error = dict_water_intake["error"]
 
-            list_images = self.dict_data['list_images']
+            list_images = self.dict_data["list_images"]
             full_input_folder = os.path.dirname(list_images[0])
             short_input_folder = os.path.basename(full_input_folder)
 
             yaxis_label = self.__get_water_intake_yaxis_label()
-            if yaxis_label == 'distance':
+            if yaxis_label == "distance":
                 yaxis_label += "(mm)"
 
             if self.is_inte_along_x_axis:
-                inte_direction = 'x_axis'
+                inte_direction = "x_axis"
             else:
-                inte_direction = 'y_axis'
+                inte_direction = "y_axis"
 
             metadata = []
             metadata.append("# Water Intake Signal ")
-            metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
-            metadata.append("# integration direction: {}".format(inte_direction))
-            metadata.append("# input folder: {}".format(full_input_folder))
-            metadata.append("# algorithm used: {}".format(_algo_used))
-            metadata.append("# calculation used: {}".format(_master_algo_used))
+            metadata.append(f"# roi [x0, y0, width, height]: [{x0}, {y0}, {width}, {height}]")
+            metadata.append(f"# integration direction: {inte_direction}")
+            metadata.append(f"# input folder: {full_input_folder}")
+            metadata.append(f"# algorithm used: {_algo_used}")
+            metadata.append(f"# calculation used: {_master_algo_used}")
             metadata.append("# ")
-            metadata.append("# Time(s), {}, error".format(yaxis_label))
+            metadata.append(f"# Time(s), {yaxis_label}, error")
 
-            export_file_name = "water_intake_of_{}_with_{}input_files.txt".format(short_input_folder, nbr_files)
+            export_file_name = f"water_intake_of_{short_input_folder}_with_{nbr_files}input_files.txt"
             full_export_file_name = os.path.join(export_folder, export_file_name)
 
-            if _master_algo_used == 'error_function':
-                metadata.append("# Time(s), {}, error".format(yaxis_label))
-                data = [ "{}, {}, {}".format(_x_axis, _y_axis, _error) for _x_axis, _y_axis, _error in zip(x_axis, y_axis, error)]
+            if _master_algo_used == "error_function":
+                metadata.append(f"# Time(s), {yaxis_label}, error")
+                data = [
+                    f"{_x_axis}, {_y_axis}, {_error}"
+                    for _x_axis, _y_axis, _error in zip(x_axis, y_axis, error, strict=False)
+                ]
             else:
-                metadata.append("# Time(s), {}".format(yaxis_label))
-                data = [ "{}, {}".format(_x_axis, _y_axis) for _x_axis, _y_axis, _error in zip(x_axis, y_axis)]
+                metadata.append(f"# Time(s), {yaxis_label}")
+                data = [f"{_x_axis}, {_y_axis}" for _x_axis, _y_axis, _error in zip(x_axis, y_axis, strict=False)]
 
-            display(HTML("Exported water intake file: {}".format(full_export_file_name)))
-            make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim='1d')
+            display(HTML(f"Exported water intake file: {full_export_file_name}"))
+            make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim="1d")
 
     def __get_water_intake_yaxis_label(self):
         if self.ui.pixel_radioButton.isChecked():
-            return 'pixel'
+            return "pixel"
         else:
-            return 'distance'
+            return "distance"
 
     def roi_moved(self):
         region = self.roi_id.getArraySlice(self.current_image, self.ui.image_view.imageItem)
@@ -814,18 +807,18 @@ class WaterIntakeProfileSelector(QMainWindow):
         y0 = region[0][1].start
         y1 = region[0][1].stop
 
-        width = np.abs(x1-x0)
-        height = np.abs(y1-y0)
-        self.roi['x0'] = x0
-        self.roi['y0'] = y0
-        self.roi['width'] = width-1
-        self.roi['height'] = height-1
+        width = np.abs(x1 - x0)
+        height = np.abs(y1 - y0)
+        self.roi["x0"] = x0
+        self.roi["y0"] = y0
+        self.roi["width"] = width - 1
+        self.roi["height"] = height - 1
         self.update_labels()
         self.update_profile_plot()
 
     def _clean_image(self, image):
         _result_inf = np.where(np.isinf(image))
-        image[_result_inf] = np.NaN
+        image[_result_inf] = np.nan
         return image
 
     def _force_range(self, image):
@@ -836,7 +829,6 @@ class WaterIntakeProfileSelector(QMainWindow):
         # return image
 
     def update_image(self):
-
         _view = self.ui.image_view.getView()
         _view_box = _view.getViewBox()
         _state = _view_box.getState()
@@ -848,7 +840,7 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.histogram_level = _histo_widget.getLevels()
 
         index_selected = self.ui.file_index_slider.value()
-        _image = self.dict_data['list_data'][index_selected-1]
+        _image = self.dict_data["list_data"][index_selected - 1]
         _image = np.transpose(_image)
         _image = self._clean_image(_image)
         _image = self._force_range(_image)
@@ -903,10 +895,10 @@ class WaterIntakeProfileSelector(QMainWindow):
             self._reset_dict()
 
         dict_data = self.dict_data
-        list_images = np.array(dict_data['list_images'].copy())
-        list_time_stamp = np.array(dict_data['list_time_stamp'].copy())
-        list_time_stamp_user_format = np.array(dict_data['list_time_stamp_user_format'].copy())
-        list_data = np.array(dict_data['list_data'].copy())
+        list_images = np.array(dict_data["list_images"].copy())
+        list_time_stamp = np.array(dict_data["list_time_stamp"].copy())
+        list_time_stamp_user_format = np.array(dict_data["list_time_stamp_user_format"].copy())
+        list_data = np.array(dict_data["list_data"].copy())
 
         if is_by_name:
             sort_index = np.argsort(list_images)
@@ -918,10 +910,10 @@ class WaterIntakeProfileSelector(QMainWindow):
         sorted_list_time_stamp_user_format = list_time_stamp_user_format[sort_index]
         sorted_list_data = list_data[sort_index]
 
-        dict_data['list_images'] = list(sorted_list_images)
-        dict_data['list_time_stamp'] = list(sorted_list_time_stamp)
-        dict_data['list_time_stamp_user_format'] = list(sorted_list_time_stamp_user_format)
-        dict_data['list_data'] = sorted_list_data
+        dict_data["list_images"] = list(sorted_list_images)
+        dict_data["list_time_stamp"] = list(sorted_list_time_stamp)
+        dict_data["list_time_stamp_user_format"] = list(sorted_list_time_stamp_user_format)
+        dict_data["list_data"] = sorted_list_data
 
         self.dict_data = dict_data
 
@@ -930,16 +922,15 @@ class WaterIntakeProfileSelector(QMainWindow):
             delta_time = self.ui.time_between_runs_spinBox.value()
             nbr_files = len(list_images)
             new_time_stamp = np.arange(nbr_files) * delta_time
-            self.dict_data['list_time_stamp'] = new_time_stamp
+            self.dict_data["list_time_stamp"] = new_time_stamp
 
     def _reset_dict(self):
         self.dict_data = self.dict_data_raw.copy()
 
     def _fix_index_of_files(self):
-        """reformat file name to make sure index has 4 digits
-        """
+        """reformat file name to make sure index has 4 digits"""
         _dict_data_raw = self.dict_data_raw
-        list_files = _dict_data_raw['list_images'].copy()
+        list_files = _dict_data_raw["list_images"].copy()
         formated_list_files = []
 
         re_string = r"^(?P<part1>\w*)_(?P<index>\d+)$"
@@ -947,19 +938,19 @@ class WaterIntakeProfileSelector(QMainWindow):
             dirname = os.path.dirname(_file)
             basename = os.path.basename(_file)
             [base, ext] = os.path.splitext(basename)
-            base = base.replace(" ","") # remove white spaces in name of file
+            base = base.replace(" ", "")  # remove white spaces in name of file
             m = re.match(re_string, base)
             if m is None:
                 raise ValueError
             else:
-                part1 = m.group('part1')
-                index = int(m.group('index'))
-                new_index = "{:04d}".format(index)
-                new_file = os.path.join(dirname, part1 + '_' + new_index + ext)
+                part1 = m.group("part1")
+                index = int(m.group("index"))
+                new_index = f"{index:04d}"
+                new_file = os.path.join(dirname, part1 + "_" + new_index + ext)
                 formated_list_files.append(new_file)
 
         self.dict_data = self.dict_data_raw.copy()
-        self.dict_data['list_images'] = formated_list_files
+        self.dict_data["list_images"] = formated_list_files
 
     def time_between_runs_spinBox_changed(self):
         self.sorting_files_checkbox_clicked()
@@ -968,46 +959,48 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.update_profile_plot()
 
     def export_table_button_clicked(self):
-        _export_folder = QFileDialog.getExistingDirectory(self,
-                                                          directory=self.working_dir,
-                                                          caption = 'Select Output Folder',
-                                                          options = QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+        )
 
         if _export_folder:
             export_folder = os.path.abspath(_export_folder)
 
             dict_data = self.dict_data
-            list_images = dict_data['list_images']
+            list_images = dict_data["list_images"]
             input_folder = os.path.basename(os.path.dirname(list_images[0]))
 
-            output_file_name = os.path.join(export_folder, input_folder + '_sorting_table.txt')
+            output_file_name = os.path.join(export_folder, input_folder + "_sorting_table.txt")
 
-            list_time = dict_data['list_time_stamp']
-            list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+            list_time = dict_data["list_time_stamp"]
+            list_time_stamp_user_format = dict_data["list_time_stamp_user_format"]
 
             is_sorting_by_name = self.ui.sort_files_by_name_radioButton.isChecked()
             if is_sorting_by_name:
-                _time_label = 'Time Stamp (unix)'
+                _time_label = "Time Stamp (unix)"
             else:
-                _time_label = 'Delta Time (s)'
+                _time_label = "Delta Time (s)"
 
-            metadata = ["#File Name, {}, Time Stamp (user format)".format(_time_label)]
-            data = ["{}. {}, {}".format(_file, _time, _timer_user) for (_file, _time, _timer_user) in
-                    zip(list_images, list_time, list_time_stamp_user_format)]
+            metadata = [f"#File Name, {_time_label}, Time Stamp (user format)"]
+            data = [
+                f"{_file}. {_time}, {_timer_user}"
+                for (_file, _time, _timer_user) in zip(
+                    list_images, list_time, list_time_stamp_user_format, strict=False
+                )
+            ]
 
-            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim='1d')
-            display(HTML("Table has been exported in {}".format(output_file_name)))
+            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim="1d")
+            display(HTML(f"Table has been exported in {output_file_name}"))
 
     def import_dsc_clicked(self):
-        _dsc_folder = QFileDialog.getExistingDirectory(self,
-                                                       directory=self.working_dir,
-                                                       caption = 'Select Output Folder',
-                                                       options = QFileDialog.ShowDirsOnly)
+        _dsc_folder = QFileDialog.getExistingDirectory(
+            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+        )
         if _dsc_folder:
             dsc_folder = os.path.abspath(_dsc_folder)
 
             list_dsc_files = glob.glob(os.path.join(dsc_folder, "*.dsc"))
-            o_dsc_reader = DscReader(list_files = list_dsc_files)
+            o_dsc_reader = DscReader(list_files=list_dsc_files)
             o_dsc_reader.read()
             o_dsc_reader.build_coresponding_file_image_name()
             o_dsc_reader.make_tif_file_name_the_key()
@@ -1021,18 +1014,18 @@ class WaterIntakeProfileSelector(QMainWindow):
         dict_disc = self.dict_time_stamp_vs_tiff
         dict_data_raw = self.dict_data_raw
 
-        list_images = dict_data_raw['list_images']
+        list_images = dict_data_raw["list_images"]
 
         new_list_time_stamp = []
         new_list_time_stamp_user_format = []
 
         for _key in list_images:
             _short_key = os.path.basename(_key)
-            new_list_time_stamp.append(dict_disc[_short_key]['time_stamp'])
-            new_list_time_stamp_user_format.append(dict_disc[_short_key]['time_stamp_user_format'])
+            new_list_time_stamp.append(dict_disc[_short_key]["time_stamp"])
+            new_list_time_stamp_user_format.append(dict_disc[_short_key]["time_stamp_user_format"])
 
-        self.dict_data_raw['list_time_stamp'] = new_list_time_stamp.copy()
-        self.dict_data_raw['list_time_stamp_user_format'] = new_list_time_stamp_user_format.copy()
+        self.dict_data_raw["list_time_stamp"] = new_list_time_stamp.copy()
+        self.dict_data_raw["list_time_stamp_user_format"] = new_list_time_stamp_user_format.copy()
 
     def algorithm_changed(self):
         self.update_plots()
@@ -1050,6 +1043,7 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
+
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/water_intake_profile_calculator/")
 
     def ok_button_clicked(self):
@@ -1063,37 +1057,36 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.close()
 
 
-class WaterIntakeProfileCalculator(object):
+class WaterIntakeProfileCalculator:
+    dict_files = {
+        "list_images": [],  # list of full file name images
+        "list_data": [],
+        "list_time_stamp": [],
+        "list_time_stamp_user_format": [],
+    }
 
-    dict_files = {'list_images': [],   # list of full file name images
-                  'list_data': [],
-                  'list_time_stamp': [],
-                  'list_time_stamp_user_format': [],
-                  }
-
-    def __init__(self, working_dir='./'):
+    def __init__(self, working_dir="./"):
         self.working_dir = working_dir
 
     def select_file_help(self, value):
         import webbrowser
+
         webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile")
 
     def select_data(self):
-        help_ui = widgets.Button(description="HELP",
-                                 button_style='info')
+        help_ui = widgets.Button(description="HELP", button_style="info")
         help_ui.on_click(self.select_file_help)
         display(help_ui)
 
-        self.files_ui = fileselector.FileSelectorPanel(instruction='Select Images ...',
-                                                       start_dir=self.working_dir,
-                                                       next=self.load_and_plot,
-                                                       multiple=True)
+        self.files_ui = fileselector.FileSelectorPanel(
+            instruction="Select Images ...", start_dir=self.working_dir, next=self.load_and_plot, multiple=True
+        )
 
         self.files_ui.show()
 
     def load_and_plot(self, list_images):
         self.load(list_images)
-        #self.launch_plot()
+        # self.launch_plot()
 
     def launch_plot(self):
         o_gui = WaterIntakeProfileSelector(dict_data=self.dict_files)
@@ -1102,21 +1095,21 @@ class WaterIntakeProfileCalculator(object):
     def load(self, list_images):
         # list_images = self.files_ui.selected
         self.dict_files = retrieve_time_stamp(list_images)
-        #self.__sort_files_using_time_stamp(self.dict_files)
+        # self.__sort_files_using_time_stamp(self.dict_files)
         self.__load_files()
 
     # Helper functions
     def __load_files(self):
         o_load = Normalization()
-        o_load.load(file=self.dict_files['list_images'], notebook=True)
-        self.dict_files['list_data'] = o_load.data['sample']['data']
+        o_load.load(file=self.dict_files["list_images"], notebook=True)
+        self.dict_files["list_data"] = o_load.data["sample"]["data"]
 
     def __sort_files_using_time_stamp(self, dict_time_stamp):
         """Using the time stamp information, all the files will be sorted in ascending order of time stamp"""
 
-        list_images = dict_time_stamp['list_images'].copy()
-        list_time_stamp = dict_time_stamp['list_time_stamp'].copy()
-        list_time_stamp_user_format = dict_time_stamp['list_time_stamp_user_format'].copy()
+        list_images = dict_time_stamp["list_images"].copy()
+        list_time_stamp = dict_time_stamp["list_time_stamp"].copy()
+        list_time_stamp_user_format = dict_time_stamp["list_time_stamp_user_format"].copy()
 
         list_images = np.array(list_images)
         time_stamp = np.array(list_time_stamp)
@@ -1130,12 +1123,14 @@ class WaterIntakeProfileCalculator(object):
         sorted_list_time_stamp = time_stamp[sort_index]
         sorted_list_time_stamp_user_format = time_stamp_user_format[sort_index]
 
-        self.dict_files = {'list_images': list(sorted_list_images),
-                           'list_time_stamp': sorted_list_time_stamp,
-                           'list_time_stamp_user_format': sorted_list_time_stamp_user_format}
+        self.dict_files = {
+            "list_images": list(sorted_list_images),
+            "list_time_stamp": sorted_list_time_stamp,
+            "list_time_stamp_user_format": sorted_list_time_stamp_user_format,
+        }
 
-class ProfileHandler(object):
 
+class ProfileHandler:
     _profile = []
     _bins = []
     x0 = 0
@@ -1145,27 +1140,27 @@ class ProfileHandler(object):
 
     def __init__(self, parent=None):
         self.parent = parent
-        
+
     def calculate_profile(self, all=False, index=0):
         dict_data = self.parent.dict_data
         self._save_roi_corners()
 
-        if all: # all profiles
+        if all:  # all profiles
             if self.parent.ui.ignore_first_image_checkbox.isChecked():
                 first_image = 1
             else:
                 first_image = 0
 
-            nbr_images = len(dict_data['list_images'])
+            nbr_images = len(dict_data["list_images"])
             for index in np.arange(first_image, nbr_images):
                 self.__calculate_individual_profile(index_file=index, save=True)
 
-        else: # only index
-            self.__calculate_individual_profile(index_file=index-1)
+        else:  # only index
+            self.__calculate_individual_profile(index_file=index - 1)
 
     def __calculate_individual_profile(self, index_file=0, save=False):
-        _image = self.parent.dict_data['list_data'][index_file]
-        _image_of_roi = _image[self.y0:self.y1, self.x0:self.x1]
+        _image = self.parent.dict_data["list_data"][index_file]
+        _image_of_roi = _image[self.y0 : self.y1, self.x0 : self.x1]
         _profile = self.get_profile(_image_of_roi)
 
         # rebin profile
@@ -1174,10 +1169,10 @@ class ProfileHandler(object):
         # calculate bin array
         bins = []
         index = 0
-        while (index < len(_profile)):
+        while index < len(_profile):
             if np.mod(index, bin_size) != 0:
                 pass
-            else: # end of bin
+            else:  # end of bin
                 bins.append(index)
 
             index += 1
@@ -1186,15 +1181,15 @@ class ProfileHandler(object):
 
         # make sure the size of profile agrees with the bin size defined
         if not (np.mod(len(_profile), bin_size) == 0):
-            _profile = _profile[:-np.mod(len(_profile), bin_size)]
-        _profile = np.reshape(_profile, (int(len(_profile)/bin_size), bin_size))
+            _profile = _profile[: -np.mod(len(_profile), bin_size)]
+        _profile = np.reshape(_profile, (int(len(_profile) / bin_size), bin_size))
         _profile = np.mean(_profile, axis=1)
 
         self._profile = _profile
         self._bins = bins
 
         if save:
-            list_time_stamp = self.parent.dict_data['list_time_stamp']
+            list_time_stamp = self.parent.dict_data["list_time_stamp"]
             is_sorting_by_name = self.parent.ui.sort_files_by_name_radioButton.isChecked()
             if is_sorting_by_name:
                 time_stamp_first_file = 0
@@ -1209,27 +1204,25 @@ class ProfileHandler(object):
             else:
                 x_axis = self._bins + int(self.x0)
 
-            x_axis = x_axis[:len(self._profile)]
+            x_axis = x_axis[: len(self._profile)]
 
-            self.parent.dict_profiles[str(index_file)] = {'data': _profile,
-                                                          'x_axis': x_axis,
-                                                          'delta_time': delta_time}
+            self.parent.dict_profiles[str(index_file)] = {"data": _profile, "x_axis": x_axis, "delta_time": delta_time}
 
     def plot(self):
         self.parent.profile.clear()
         if self.parent.is_inte_along_x_axis:
-            y_axis_label = 'Y pixels'
+            y_axis_label = "Y pixels"
             x_axis = self._bins + int(self.y0)
         else:
-            y_axis_label = 'X pixels'
+            y_axis_label = "X pixels"
             x_axis = self._bins + int(self.x0)
 
-        x_axis = x_axis[:len(self._profile)]
+        x_axis = x_axis[: len(self._profile)]
 
         self.parent.live_x_axis = x_axis
         self.parent.profile.plot(x_axis, self._profile)
-        self.parent.profile.setLabel('left', 'Counts')
-        self.parent.profile.setLabel('bottom', y_axis_label)
+        self.parent.profile.setLabel("left", "Counts")
+        self.parent.profile.setLabel("bottom", y_axis_label)
 
     def get_profile(self, image):
         """return the 1D profile of the image using the correct integration method (add, mean, median)"""
@@ -1240,11 +1233,11 @@ class ProfileHandler(object):
             _axis_to_integrate = 0
         _algo_used = self.parent.get_profile_algo()
 
-        if _algo_used == 'add':
+        if _algo_used == "add":
             _profile = np.sum(image, axis=_axis_to_integrate)
-        elif _algo_used == 'mean':
+        elif _algo_used == "mean":
             _profile = np.mean(image, axis=_axis_to_integrate)
-        elif _algo_used == 'median':
+        elif _algo_used == "median":
             _profile = np.median(image, axis=_axis_to_integrate)
         else:
             raise NotImplementedError
@@ -1252,35 +1245,37 @@ class ProfileHandler(object):
 
     def _save_roi_corners(self):
         _roi = self.parent.roi
-        self.x0 = _roi['x0']
-        self.y0 = _roi['y0']
-        width = _roi['width']
-        height = _roi['height']
+        self.x0 = _roi["x0"]
+        self.y0 = _roi["y0"]
+        width = _roi["width"]
+        height = _roi["height"]
         self.x1 = self.x0 + width
         self.y1 = self.y0 + height
 
     def export(self):
         # select output folder
-        _export_folder = QFileDialog.getExistingDirectory(self.parent,
-                                                          directory=self.parent.working_dir,
-                                                          caption="Select Output Folder",
-                                                          options=QFileDialog.ShowDirsOnly)
+        _export_folder = QFileDialog.getExistingDirectory(
+            self.parent,
+            directory=self.parent.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
+        )
         if _export_folder:
             export_folder = os.path.abspath(_export_folder)
 
             dict_data = self.parent.dict_data
-            list_images = dict_data['list_images']
-            list_time_stamp = dict_data['list_time_stamp']
-            #list_data = dict_data['list_data']
-            list_time_stamp_user_format = dict_data['list_time_stamp_user_format']
+            list_images = dict_data["list_images"]
+            list_time_stamp = dict_data["list_time_stamp"]
+            # list_data = dict_data['list_data']
+            list_time_stamp_user_format = dict_data["list_time_stamp_user_format"]
             _algo_used = self.parent.get_profile_algo()
 
             # get metadata roi selection
             _roi = self.parent.roi
-            x0 = _roi['x0']
-            y0 = _roi['y0']
-            width = _roi['width']
-            height = _roi['height']
+            x0 = _roi["x0"]
+            y0 = _roi["y0"]
+            width = _roi["width"]
+            height = _roi["height"]
             # x1 = x0 + width
             # y1 = y0 + height
 
@@ -1293,9 +1288,9 @@ class ProfileHandler(object):
             self.parent.eventProgress.setVisible(True)
 
             if self.parent.is_inte_along_x_axis:
-                inte_direction = 'x_axis'
+                inte_direction = "x_axis"
             else:
-                inte_direction = 'y_axis'
+                inte_direction = "y_axis"
 
             if self.parent.ui.ignore_first_image_checkbox.isChecked():
                 first_image = 1
@@ -1305,35 +1300,32 @@ class ProfileHandler(object):
             for index in np.arange(first_image, nbr_images):
                 _short_file_name = os.path.basename(list_images[index])
                 [_basename, _] = os.path.splitext(_short_file_name)
-                output_file_name = os.path.join(export_folder, _basename + '_profile.txt')
+                output_file_name = os.path.join(export_folder, _basename + "_profile.txt")
 
                 metadata = []
                 metadata.append("# Profile over ROI selected integrated along x-axis")
-                metadata.append("# roi [x0, y0, width, height]: [{}, {}, {}, {}]".format(x0, y0, width, height))
-                metadata.append("# integration direction: {}".format(inte_direction))
-                metadata.append("# folder: {}".format(input_folder))
-                metadata.append("# filename: {}".format(_short_file_name))
-                metadata.append("# timestamp (unix): {}".format(list_time_stamp[index]))
-                metadata.append("# timestamp (user format): {}".format(list_time_stamp_user_format[index]))
-                metadata.append("# algorithm used: {}".format(_algo_used))
+                metadata.append(f"# roi [x0, y0, width, height]: [{x0}, {y0}, {width}, {height}]")
+                metadata.append(f"# integration direction: {inte_direction}")
+                metadata.append(f"# folder: {input_folder}")
+                metadata.append(f"# filename: {_short_file_name}")
+                metadata.append(f"# timestamp (unix): {list_time_stamp[index]}")
+                metadata.append(f"# timestamp (user format): {list_time_stamp_user_format[index]}")
+                metadata.append(f"# algorithm used: {_algo_used}")
                 metadata.append("# ")
                 metadata.append("# pixel, counts")
 
-                _profile = self.parent.dict_profiles[str(index)]['data']
-                _pixel_index = self.parent.dict_profiles[str(index)]['x_axis']
-                pixel_profile = zip(_pixel_index, _profile)
+                _profile = self.parent.dict_profiles[str(index)]["data"]
+                _pixel_index = self.parent.dict_profiles[str(index)]["x_axis"]
+                pixel_profile = zip(_pixel_index, _profile, strict=False)
 
                 data = []
                 for _pixel_index, _counts in pixel_profile:
-                    _line = "{}, {}".format(_pixel_index + y0, _counts)
+                    _line = f"{_pixel_index + y0}, {_counts}"
                     data.append(_line)
 
-                make_ascii_file(metadata=metadata,
-                                data=data,
-                                output_file_name=output_file_name,
-                                dim='1d')
+                make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim="1d")
 
                 self.parent.eventProgress.setValue(index)
 
             self.parent.eventProgress.setVisible(False)
-            display(HTML("Exported Profiles files ({} files) in {}".format(nbr_images, export_folder)))
+            display(HTML(f"Exported Profiles files ({nbr_images} files) in {export_folder}"))

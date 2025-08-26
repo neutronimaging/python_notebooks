@@ -1,12 +1,10 @@
 from collections import OrderedDict
 
-
-from __code.metadata_handler import MetadataHandler
 from __code._utilities.list import is_this_list_already_in_those_lists_within_tolerance
+from __code.metadata_handler import MetadataHandler
 
 
 class GroupImagesByCycle:
-
     def __init__(self, list_of_files=None, list_of_metadata_key=None, tolerance_value=0.1):
         """
 
@@ -28,9 +26,9 @@ class GroupImagesByCycle:
     def create_master_dictionary(self):
         list_key_value = self.list_of_metadata_key_value_number
         print(f"list_key_value: {list_key_value}")
-        master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(list_files=self.list_of_files,
-                                                                           list_key=list_key_value,
-                                                                           is_from_notebook=True)
+        master_dictionary = MetadataHandler.retrieve_value_of_metadata_key(
+            list_files=self.list_of_files, list_key=list_key_value, is_from_notebook=True
+        )
 
         clean_master_dictionary = OrderedDict()
         list_metadata_key = []
@@ -63,9 +61,9 @@ class GroupImagesByCycle:
                 _value = float(_file_dictionary[_key])
                 list_of_metadata_for_that_file.append(_value)
 
-            if not is_this_list_already_in_those_lists_within_tolerance(list_of_metadata_for_that_file,
-                                                                        full_list_of_metadata_list,
-                                                                        tolerance=self.tolerance_value):
+            if not is_this_list_already_in_those_lists_within_tolerance(
+                list_of_metadata_for_that_file, full_list_of_metadata_list, tolerance=self.tolerance_value
+            ):
                 full_list_of_metadata_list.append(list_of_metadata_for_that_file)
                 list_files_in_that_group.append(_file)
             else:

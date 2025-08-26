@@ -1,17 +1,16 @@
-from collections import OrderedDict
 import copy
+from collections import OrderedDict
+
 import numpy as np
-import os
 
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
 
-X_METADATA_NAME = 'MotLongAxis.RBV'
-Y_METADATA_NAME = 'MotLiftTable.RBV'
+X_METADATA_NAME = "MotLongAxis.RBV"
+Y_METADATA_NAME = "MotLiftTable.RBV"
 
 
 class DataInitialization:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -40,9 +39,7 @@ class DataInitialization:
                 if not folder_name == "":
                     xoffset = (_column - nbr_empty_columns) * image_width
                     yoffset = (_row - nbr_empty_rows) * image_height
-                    _offset_dict = {'xoffset': xoffset,
-                                    'yoffset': yoffset,
-                                    'visible': True}
+                    _offset_dict = {"xoffset": xoffset, "yoffset": yoffset, "visible": True}
                     offset_dictionary[folder_name] = _offset_dict
 
         self.parent.offset_dictionary = offset_dictionary

@@ -1,26 +1,24 @@
-from qtpy.QtWidgets import QMainWindow
 import os
+
 import numpy as np
+from qtpy.QtWidgets import QMainWindow
 
 from __code import load_ui
-from __code.hfir_reactor_element_analysis.initialization import Initialization
+from __code.hfir_reactor_element_analysis.all_peaks_found_event_handler import AllPeaksFoundEventHandler
 from __code.hfir_reactor_element_analysis.event_handler import EventHandler
 from __code.hfir_reactor_element_analysis.export_data import ExportData
-from __code.hfir_reactor_element_analysis.all_peaks_found_event_handler import AllPeaksFoundEventHandler
+from __code.hfir_reactor_element_analysis.initialization import Initialization
 from __code.hfir_reactor_element_analysis.missing_peaks_event_handler import MissingPeaksEventHandler
 
 
 class InterfaceHandler:
-
     def __init__(self, working_dir=None, o_selection=None):
-        o_interface = Interface(o_selection=o_selection,
-                                working_dir=working_dir)
+        o_interface = Interface(o_selection=o_selection, working_dir=working_dir)
         o_interface.show()
         self.o_interface = o_interface
 
 
 class Interface(QMainWindow):
-
     NUMBER_OF_FUEL_ELEMENTS = 369
     MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS = 50
     ELEMENTS_POSITION_OUTLIERS = 10  # number of data points to remove before calculating mean x position
@@ -34,7 +32,7 @@ class Interface(QMainWindow):
     ideal_table_data_error = None  # missing elements
     list_mean_position_of_elements = None
 
-    percent_of_outliers_to_reject = 10   # %
+    percent_of_outliers_to_reject = 10  # %
 
     def __init__(self, parent=None, o_selection=None, working_dir=None):
         self.o_selection = o_selection
@@ -45,9 +43,10 @@ class Interface(QMainWindow):
 
         super(Interface, self).__init__(parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_hfir_reactor_element_local_max.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_hfir_reactor_element_local_max.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Elements Position")
 

@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/ui/ui_dual_energy.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(921, 595)
@@ -156,4 +155,3 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Size"))
         self.bin_units.setText(_translate("MainWindow", "files"))
         self.done_button.setText(_translate("MainWindow", "DONE"))
-

@@ -17,29 +17,30 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
+from __code import system
 from __code.images_registration_pystackreg.main import ImagesRegistrationPystackreg
 
-from __code import system
-system.System.select_working_dir(notebook='images_registration_pystackreg')
+system.System.select_working_dir(notebook="images_registration_pystackreg")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Select images to register
 
 # + run_control={"frozen": false, "read_only": false}
-o_register = ImagesRegistrationPystackreg(working_dir = system.System.get_working_dir())
+o_register = ImagesRegistrationPystackreg(working_dir=system.System.get_working_dir())
 o_register.select_folder()
 # -
 
-# # Display unregistered images 
+# # Display unregistered images
 
 o_register.display_unregistered()
 
-# # Crop images 
+# # Crop images
 
 # Select region of images to keep
 
@@ -48,11 +49,11 @@ o_register.crop_unregistered_images()
 
 o_register.perform_cropping()
 
-# # Define registration parameters 
+# # Define registration parameters
 
 o_register.define_parameters()
 
-# # Perform registration 
+# # Perform registration
 
 o_register.run()
 
@@ -67,6 +68,6 @@ o_register.crop_registered_images()
 
 o_register.perform_cropping_for_export()
 
-# # Export Images 
+# # Export Images
 
 o_register.export()

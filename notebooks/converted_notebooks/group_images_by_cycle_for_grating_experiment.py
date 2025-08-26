@@ -16,16 +16,19 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.group_images_by_cycle_for_grating_experiment.group_images import GroupImages
+warnings.filterwarnings("ignore")
+
 from __code import system
-system.System.select_working_dir(notebook='group_images_by_cycle_for_grating_experiment')
+from __code.group_images_by_cycle_for_grating_experiment.group_images import GroupImages
+
+system.System.select_working_dir(notebook="group_images_by_cycle_for_grating_experiment")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -36,15 +39,15 @@ o_group = GroupImages(working_dir=system.System.get_working_dir())
 o_group.select_data_to_sort()
 # -
 
-# # Select Type of Data 
+# # Select Type of Data
 
 o_group.define_type_of_data()
 
-# # Select Metadata to Use for Sorting 
+# # Select Metadata to Use for Sorting
 
 o_group.select_metadata_to_use_for_sorting()
 
-# # Grouping 
+# # Grouping
 
 o_group.grouping()
 
@@ -57,10 +60,8 @@ o_group.grouping()
 o_group.select_output_folder()
 # -
 
-# # Generate Angel Configuration File (Excel) 
+# # Generate Angel Configuration File (Excel)
 
 # %gui qt
 
 o_group.generate_angel_configuration_file()
-
-

@@ -1,19 +1,17 @@
 from qtpy.QtWidgets import QTableWidgetSelectionRange
 
 from __code._utilities.table_handler import TableHandler as UtilitiesTableHandler
-
-from __code.registration.event_handler import EventHandler
-from __code.registration.display import Display
 from __code.registration.check import Check
-from __code.registration.marker_handler import MarkerHandler
+from __code.registration.display import Display
+from __code.registration.event_handler import EventHandler
 from __code.registration.get import Get
+from __code.registration.marker_handler import MarkerHandler
 
 
 class TableHandler(UtilitiesTableHandler):
-    
     def __init__(self, parent=None):
         self.parent = parent
-        
+
     def table_row_clicked(self, row=-1):
         self.parent.ui.file_slider.blockSignals(True)
         if row == -1:
@@ -45,7 +43,6 @@ class TableHandler(UtilitiesTableHandler):
         self.parent.ui.file_slider.blockSignals(False)
 
     def select_row_in_table(self, row=0, user_selected_row=True):
-
         if not user_selected_row:
             self.parent.ui.tableWidget.blockSignals(True)
 
@@ -53,11 +50,11 @@ class TableHandler(UtilitiesTableHandler):
         nbr_row = self.parent.ui.tableWidget.rowCount()
 
         # clear previous selection
-        full_range = QTableWidgetSelectionRange(0, 0, nbr_row-1, nbr_col-1)
+        full_range = QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_col - 1)
         self.parent.ui.tableWidget.setRangeSelected(full_range, False)
 
         # select file of interest
-        selection_range = QTableWidgetSelectionRange(row, 0, row, nbr_col-1)
+        selection_range = QTableWidgetSelectionRange(row, 0, row, nbr_col - 1)
         self.parent.ui.tableWidget.setRangeSelected(selection_range, True)
 
         self.parent.ui.tableWidget.showRow(row)

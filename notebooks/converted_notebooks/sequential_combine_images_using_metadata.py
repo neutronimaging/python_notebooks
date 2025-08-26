@@ -16,24 +16,26 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.sequential_combine_images_using_metadata import SequentialCombineImagesUsingMetadata
 from __code import system
-system.System.select_working_dir(notebook='sequential_combine_images_using_metadata')
+from __code.sequential_combine_images_using_metadata import SequentialCombineImagesUsingMetadata
+
+system.System.select_working_dir(notebook="sequential_combine_images_using_metadata")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Folder containing all images to merge 
+# # Select Folder containing all images to merge
 
 # + run_control={"frozen": false, "read_only": false}
 o_merge = SequentialCombineImagesUsingMetadata(working_dir=system.System.get_working_dir())
 o_merge.select_folder()
 # -
 
-# # Select Metadata to match 
+# # Select Metadata to match
 
 # Only sequential runs having the **same metadata you are going to select** will be combined
 
@@ -60,5 +62,3 @@ o_merge.recap_merging_list()
 # + run_control={"frozen": false, "read_only": false}
 o_merge.select_output_folder_and_merge()
 # -
-
-

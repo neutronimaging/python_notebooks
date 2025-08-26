@@ -25,28 +25,29 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_scale_overlapping_images.ui')
 
-from __code import system
-from __code.fileselector import FileSelection
-from __code.scale_overlapping_images import ScaleOverlappingImagesUi
+o_builder = UiBuilder(ui_name="ui_scale_overlapping_images.ui")
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
-
 # + run_control={"frozen": false, "read_only": false}
 import glob
 import os
-#file_dir = '/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20139-Hao-Liu/05-07-18_LFR_normalized_light_version/' #MacPro
-file_dir = '/Users/j35/IPTS/charles/'
 
-list_files = glob.glob(file_dir + '*.tif') 
+from __code.fileselector import FileSelection
+from __code.scale_overlapping_images import ScaleOverlappingImagesUi
+
+# file_dir = '/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20139-Hao-Liu/05-07-18_LFR_normalized_light_version/' #MacPro
+file_dir = "/Users/j35/IPTS/charles/"
+
+list_files = glob.glob(file_dir + "*.tif")
 
 o_selection = FileSelection()
 o_selection.load_files(list_files)
 
-o_scale = ScaleOverlappingImagesUi(working_dir=os.path.dirname(list_files[0]),
-                      data_dict=o_selection.data_dict['sample'])
+o_scale = ScaleOverlappingImagesUi(
+    working_dir=os.path.dirname(list_files[0]), data_dict=o_selection.data_dict["sample"]
+)
 o_scale.show()
 
 
@@ -54,4 +55,3 @@ o_scale.show()
 
 
 # + run_control={"frozen": false, "read_only": false}
-

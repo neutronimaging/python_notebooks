@@ -20,14 +20,16 @@
 
 # +
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.load_images import LoadImages
-from __code.rotate_and_crop_images.rotate_and_crop_images import RotateAndCropImages, Export
+warnings.filterwarnings("ignore")
 
 from __code import system
-system.System.select_working_dir(notebook='rotate_and_crop_images')
+from __code.load_images import LoadImages
+from __code.rotate_and_crop_images.rotate_and_crop_images import Export, RotateAndCropImages
+
+system.System.select_working_dir(notebook="rotate_and_crop_images")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
@@ -44,22 +46,22 @@ o_load = LoadImages(working_dir=system.System.get_working_dir())
 o_load.select_images(virtual_load=True)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select crop region and/or rotation angle 
+# # Select crop region and/or rotation angle
 
 # + run_control={"frozen": false, "read_only": false}
 o_crop = RotateAndCropImages(o_load=o_load)
 o_crop.show()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Export Images 
+# # Export Images
 
 # + run_control={"frozen": false, "read_only": false}
 rotated_working_data = o_crop.rotated_working_data
 rotation_angle = o_crop.rotation_angle
 
-o_output_folder = Export(working_dir=system.System.get_working_dir(),
-                        data_dict=o_crop.rotated_data_dict,
-                        rotation_angle=rotation_angle)
+o_output_folder = Export(
+    working_dir=system.System.get_working_dir(), data_dict=o_crop.rotated_data_dict, rotation_angle=rotation_angle
+)
 o_output_folder.select_folder()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -72,5 +74,3 @@ try:
 except:
     pass
 # -
-
-

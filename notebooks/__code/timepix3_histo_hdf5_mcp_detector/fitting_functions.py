@@ -10,7 +10,7 @@ def kropff_high_lambda(lda, a0, b0):
     a0 parameter to fit
     b0 parameter to fit
     """
-    if (a0 == np.NaN) or (b0 == np.NaN):
+    if (a0 == np.nan) or (b0 == np.nan):
         return None
     exp_expression = np.exp(-(a0 + b0 * lda))
     return exp_expression
@@ -26,7 +26,7 @@ def kropff_low_lambda(lda, a0, b0, ahkl, bhkl):
     ahkl parameter to fit
     bhkl parameter to fit
     """
-    if (a0 == np.NaN) or (b0 == np.NaN) or (ahkl == np.NaN) or (bhkl == np.NaN):
+    if (a0 == np.nan) or (b0 == np.nan) or (ahkl == np.nan) or (bhkl == np.nan):
         return None
     exp_expression_1 = np.exp(-(a0 + b0 * lda))
     exp_expression_2 = np.exp(-(ahkl + bhkl * lda))
@@ -59,7 +59,7 @@ def kropff_bragg_peak_tof(lda, a0, b0, ahkl, bhkl, ldahkl, sigma, tau):
     exp_expression_1 = np.exp(-(a0 + b0 * lda))
     exp_expression_2 = np.exp(-(ahkl + bhkl * lda))
 
-    final_part1 = (B(ldahkl, sigma, tau, lda) * exp_expression_1)
+    final_part1 = B(ldahkl, sigma, tau, lda) * exp_expression_1
     final_part2 = (1 - B(ldahkl, sigma, tau, lda)) * exp_expression_1 * exp_expression_2
 
     return final_part1 + final_part2

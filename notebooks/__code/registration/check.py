@@ -2,7 +2,6 @@ import numpy as np
 
 
 class Check:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -36,17 +35,18 @@ class Check:
         """
         selection = self.parent.ui.tableWidget.selectedRanges()
         if selection:
-
-            list_file_index_widgets = [self.parent.ui.previous_image_button,
-                                       self.parent.ui.file_slider,
-                                       self.parent.ui.next_image_button]
+            list_file_index_widgets = [
+                self.parent.ui.previous_image_button,
+                self.parent.ui.file_slider,
+                self.parent.ui.next_image_button,
+            ]
 
             top_row = selection[0].topRow()
             bottom_row = selection[0].bottomRow()
             if np.abs(bottom_row - top_row) >= 1:  # show selection images widgets
                 self.parent.ui.selection_groupBox.setVisible(True)
-                self.parent.ui.top_row_label.setText("Row {}".format(top_row + 1))
-                self.parent.ui.bottom_row_label.setText("Row {}".format(bottom_row + 1))
+                self.parent.ui.top_row_label.setText(f"Row {top_row + 1}")
+                self.parent.ui.bottom_row_label.setText(f"Row {bottom_row + 1}")
                 self.parent.ui.opacity_selection_slider.setMinimum(top_row * 100)
                 self.parent.ui.opacity_selection_slider.setMaximum(bottom_row * 100)
                 self.parent.ui.opacity_selection_slider.setSliderPosition(top_row * 100)

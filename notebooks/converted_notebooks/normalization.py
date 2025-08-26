@@ -18,15 +18,16 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
+from __code import system
 from __code.normalization.normalization import *
 from __code.roi_selection_ui import Interface
 
-from __code import system
-system.System.select_working_dir(notebook='normalization')
+system.System.select_working_dir(notebook="normalization")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -45,7 +46,7 @@ sample_panel.init_ui(files=files)
 wizard = WizardPanel(sample_panel=sample_panel)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Background Region 
+# # Select Background Region
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm = sample_panel.o_norm_handler
@@ -56,17 +57,17 @@ o_gui.show()
 # # Normalization
 # -
 
-# ## Settings 
+# ## Settings
 
 o_norm.settings()
 
-# ## Create normalized data 
+# ## Create normalized data
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm.run_normalization(dict_roi=o_gui.roi_selected)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Export 
+# # Export
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm.select_export_folder(ipts_folder=sample_panel.ipts_dir)
@@ -74,5 +75,3 @@ o_norm.select_export_folder(ipts_folder=sample_panel.ipts_dir)
 # + run_control={"frozen": false, "read_only": false}
 o_norm.export()
 # -
-
-

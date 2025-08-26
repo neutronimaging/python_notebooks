@@ -2,7 +2,6 @@ from __code.timepix3_histo_hdf5_mcp_detector import FittingRegions
 
 
 class FittingErrorException(Exception):
-
     def __init__(self, fitting_region=FittingRegions.high_lambda, message=""):
         self.message = message
         self.fitting_region = fitting_region

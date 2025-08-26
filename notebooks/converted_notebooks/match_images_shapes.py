@@ -19,12 +19,13 @@
 # # Select Your IPTS
 
 # +
+from __code import system
 from __code.match_images_shapes.load_images import LoadImages
 from __code.match_images_shapes.main import Main
 
-from __code import system
-system.System.select_working_dir(notebook='rotate_and_crop_images')
+system.System.select_working_dir(notebook="rotate_and_crop_images")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -38,13 +39,13 @@ o_load = LoadImages(working_dir=system.System.get_working_dir())
 o_load.select_images(use_next=True)
 # -
 
-# # Shapes available 
+# # Shapes available
 
-o_main = Main(working_data=o_load.working_data, list_images=o_load.list_images, working_metadata=o_load.working_metadata)
+o_main = Main(
+    working_data=o_load.working_data, list_images=o_load.list_images, working_metadata=o_load.working_metadata
+)
 o_main.display_available_shapes()
 
-# # Select output location 
+# # Select output location
 
 o_main.select_output_folder()
-
-

@@ -17,22 +17,24 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 from __code.bragg_edge.bragg_edge import Interface
+from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 
-system.System.select_working_dir(facility='SNS', instrument='VENUS', notebook='bragg_edge_profile')
+system.System.select_working_dir(facility="SNS", instrument="VENUS", notebook="bragg_edge_profile")
 from __code.__all import custom_style
+
 custom_style.style()
 
-from plotly.offline import plot, init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode
+
 init_notebook_mode()
 # -
 
-# ## Prepare UI engine 
+# ## Prepare UI engine
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
@@ -62,7 +64,7 @@ o_bragg.exp_setup()
 
 o_bragg.how_many_data_to_use_to_select_sample_roi()
 
-# ### Select the sample position 
+# ### Select the sample position
 
 o_interface_sample = Interface(data=o_bragg.get_image_to_use_for_display())
 o_interface_sample.show()
@@ -77,13 +79,11 @@ o_bragg.load_time_spectra()
 # # Display Bragg Edges vs Signal
 # -
 
-# Run the next cell **only if** you want to display the signal Counts vs lambda 
+# Run the next cell **only if** you want to display the signal Counts vs lambda
 
 # + run_control={"frozen": false, "read_only": false}
 o_bragg.plot()
 # -
-# # Export ASCII Data 
+# # Export ASCII Data
 
 o_bragg.select_output_data_folder()
-
-

@@ -1,10 +1,6 @@
-# coding: utf-8
-
-
-import traitlets
 import ipywidgets as ipyw
-from IPython.display import display, HTML, clear_output
-from ._utils import js_alert
+import traitlets
+from IPython.display import display
 
 
 class Context:
@@ -12,10 +8,8 @@ class Context:
 
 
 class Step(traitlets.HasTraits):
-
-    layout = ipyw.Layout(border="1px lightgray solid",
-                         margin='5px', padding='15px')
-    button_layout = ipyw.Layout(margin='10px 5px 5px 5px')
+    layout = ipyw.Layout(border="1px lightgray solid", margin="5px", padding="15px")
+    button_layout = ipyw.Layout(margin="10px 5px 5px 5px")
 
     def __init__(self, context, previous_step=None):
         super(Step, self).__init__()
@@ -39,11 +33,11 @@ class Step(traitlets.HasTraits):
         previous_step = self.previous_step
         buttons = []
         if previous_step:
-            PREVIOUS = ipyw.Button(description='PREVIOUS')
+            PREVIOUS = ipyw.Button(description="PREVIOUS")
             PREVIOUS.on_click(self.handle_previous_button_click)
             buttons.append(PREVIOUS)
         #
-        NEXT = ipyw.Button(description='NEXT')
+        NEXT = ipyw.Button(description="NEXT")
         NEXT.on_click(self.handle_next_button_click)
         buttons.append(NEXT)
         return ipyw.HBox(children=buttons)
@@ -54,10 +48,10 @@ class Step(traitlets.HasTraits):
         if not self._ondisplay:
             display(self.panel)
             self._ondisplay = True
-        self.panel.layout.display = 'block'
+        self.panel.layout.display = "block"
 
     def remove(self):
-        self.panel.layout.display = 'none'
+        self.panel.layout.display = "none"
 
     def handle_next_button_click(self, s):
         if not self.validate():
@@ -82,7 +76,8 @@ class Step(traitlets.HasTraits):
         else:
             next_step = self.next_step
         # no next step. done
-        if next_step is None: return
+        if next_step is None:
+            return
         # has next step. make sure it knows about this step
         next_step.previous_step = self
         next_step.show()
@@ -90,5 +85,3 @@ class Step(traitlets.HasTraits):
 
     def createNextStep(self):
         raise NotImplementedError
-
-

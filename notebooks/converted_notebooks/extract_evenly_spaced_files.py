@@ -17,14 +17,16 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.extract_evenly_spaced_files.main import ExtractEvenlySpacedFiles as EESF
-from __code.extract_evenly_spaced_files.interface_handler import Interface
 from __code import system
-system.System.select_working_dir(notebook='extract_evenly_spaced_files')
+from __code.extract_evenly_spaced_files.interface_handler import Interface
+from __code.extract_evenly_spaced_files.main import ExtractEvenlySpacedFiles as EESF
+
+system.System.select_working_dir(notebook="extract_evenly_spaced_files")
 from __code.__all import custom_style
+
 custom_style.style()
 # -
 
@@ -36,7 +38,7 @@ o_extract = EESF(working_dir=system.System.get_working_dir())
 o_extract.sorting_method()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Folder with Images to Extract 
+# # Select Folder with Images to Extract
 # -
 
 o_extract.select_folder()
@@ -56,16 +58,14 @@ o_inteface = Interface(o_extract=o_extract)
 # This will replace the last part of the name (file counter digit)
 #
 # for example:
-#     
+#
 #     original first file:  20191030_object1_0070_004_594_0003.tiff
 #     new first file name:  20191030_object1_0070_004_594_0000.tiff
 
 o_extract.renamed_files()
 
-# # Select output folder 
+# # Select output folder
 
 # + run_control={"frozen": false, "read_only": false}
 o_extract.select_output_folder()
 # -
-
-

@@ -1,14 +1,22 @@
-import pyqtgraph as pg
-from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QVBoxLayout, QTableWidgetItem, QLabel, QSpacerItem, QWidget, QHBoxLayout, QSizePolicy, QProgressBar
 import os
 
+import pyqtgraph as pg
+from pyqtgraph.dockarea import *
+from qtpy.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QProgressBar,
+    QSizePolicy,
+    QSpacerItem,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from __code._utilities.table_handler import TableHandler
 
 
 class Initialization:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -20,15 +28,15 @@ class Initialization:
         d2 = Dock("Filtered", size=(200, 200))
         d2h = Dock("Filtered Histogram", size=(200, 200))
 
-        area.addDock(d1, 'left')
-        area.addDock(d1h, 'left')
-        area.moveDock(d1, 'above', d1h)
-        area.addDock(d2, 'right', d1)
-        area.addDock(d2h, 'right')
-        area.moveDock(d2, 'above', d2h)
+        area.addDock(d1, "left")
+        area.addDock(d1h, "left")
+        area.moveDock(d1, "above", d1h)
+        area.addDock(d2, "right", d1)
+        area.addDock(d2h, "right")
+        area.moveDock(d2, "above", d2h)
 
         # raw image
-        self.parent.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
+        self.parent.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name="raw_image")
         self.parent.ui.raw_image_view.ui.roiBtn.hide()
         self.parent.ui.raw_image_view.ui.menuBtn.hide()
         self.parent.ui.raw_image_view.view.setAutoVisible(y=True)
@@ -38,9 +46,11 @@ class Initialization:
         self.parent.ui.raw_image_view.addItem(self.parent.raw_hLine, ignoreBounds=True)
         self.parent.raw_vLine.setPos([1000, 1000])
         self.parent.raw_hLine.setPos([1000, 1000])
-        self.parent.raw_proxy = pg.SignalProxy(self.parent.ui.raw_image_view.view.scene().sigMouseMoved,
-                                               rateLimit=60,
-                                               slot=self.parent.mouse_moved_in_raw_image)
+        self.parent.raw_proxy = pg.SignalProxy(
+            self.parent.ui.raw_image_view.view.scene().sigMouseMoved,
+            rateLimit=60,
+            slot=self.parent.mouse_moved_in_raw_image,
+        )
         d1.addWidget(self.parent.ui.raw_image_view)
 
         # raw histogram plot
@@ -48,7 +58,7 @@ class Initialization:
         d1h.addWidget(self.parent.ui.raw_histogram_plot)
 
         # filtered image
-        self.parent.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name='filtered_image')
+        self.parent.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name="filtered_image")
         self.parent.ui.filtered_image_view.ui.roiBtn.hide()
         self.parent.ui.filtered_image_view.ui.menuBtn.hide()
         self.parent.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
@@ -57,9 +67,11 @@ class Initialization:
         self.parent.ui.filtered_image_view.addItem(self.parent.filtered_hLine, ignoreBounds=True)
         self.parent.filtered_vLine.setPos([1000, 1000])
         self.parent.filtered_hLine.setPos([1000, 1000])
-        self.parent.filtered_proxy = pg.SignalProxy(self.parent.ui.filtered_image_view.view.scene().sigMouseMoved,
-                                                    rateLimit=60,
-                                                    slot=self.parent.mouse_moved_in_filtered_image)
+        self.parent.filtered_proxy = pg.SignalProxy(
+            self.parent.ui.filtered_image_view.view.scene().sigMouseMoved,
+            rateLimit=60,
+            slot=self.parent.mouse_moved_in_filtered_image,
+        )
         d2.addWidget(self.parent.ui.filtered_image_view)
 
         # filtered histogram plot

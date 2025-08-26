@@ -1,15 +1,16 @@
-#Allows Python 3-style division in Python 2.7
-from __future__ import division
+# Allows Python 3-style division in Python 2.7
 
-import numpy as np
-import ipywidgets as ipyw
-from . import base
 import sys
-from traitlets import Unicode, Integer, Float, observe
+
+import ipywidgets as ipyw
 import matplotlib.pyplot as plt
+import numpy as np
+from traitlets import Float, Integer, Unicode, observe
+
+from . import base
 
 
-@ipyw.register('ipywe.ImageDataGraph')
+@ipyw.register("ipywe.ImageDataGraph")
 class ImageDataGraph(base.DOMWidget):
     """The backend python class for the custom ImageDataGraph widget.
 
@@ -70,33 +71,40 @@ class ImageDataGraph(base.DOMWidget):
     def getimg_bytes(self):
         """Encodes the image's data into Base64."""
 
-        img = ((self.img_data-self._img_min)/(self._img_max-self._img_min)*(2**8-1)).astype("uint8")
+        img = ((self.img_data - self._img_min) / (self._img_max - self._img_min) * (2**8 - 1)).astype("uint8")
         size = np.max(img.shape)
         view_size = np.max((self.width, self.height))
         if size > view_size:
-            downsample_ratio = view_size/size
+            downsample_ratio = view_size / size
             import scipy.misc
+
             img = scipy.misc.imresize(img, downsample_ratio)
         else:
-            upsample_ratio = view_size/size
+            upsample_ratio = view_size / size
             import scipy.misc
+
             img = scipy.misc.imresize(img, upsample_ratio)
         if sys.version_info < (3, 0):
             from cStringIO import StringIO
+
             f = StringIO()
         else:
             from io import BytesIO
+
             f = BytesIO()
-        import PIL.Image, base64
+        import base64
+
+        import PIL.Image
+
         PIL.Image.fromarray(img).save(f, self._format)
         imgb64v = base64.b64encode(f.getvalue())
         return imgb64v
 
-    #This function is called when the value of _graph_click changes
+    # This function is called when the value of _graph_click changes
     @observe("_graph_click")
     def graph_data(self, change):
         """Determines whether the graph calculations should
-               include width or not and calls the appropriate function."""
+        include width or not and calls the appropriate function."""
 
         if self._linepix_width == 1:
             self._graphb64 = self.nowidth_graph()
@@ -106,13 +114,13 @@ class ImageDataGraph(base.DOMWidget):
 
     def nowidth_graph(self):
         """Collects the data for a line with no width.
-               Then, creates a matplotlib graph of the data,
-               and encodes the graph into Base64 for the JavaScript code to display."""
+        Then, creates a matplotlib graph of the data,
+        and encodes the graph into Base64 for the JavaScript code to display."""
 
-        p1x_abs = self._offsetX1/self.width * self._ncols
-        p1y_abs = self._offsetY1/self.height * self._nrows
-        p2x_abs = self._offsetX2/self.width * self._ncols
-        p2y_abs = self._offsetY2/self.height * self._nrows
+        p1x_abs = self._offsetX1 / self.width * self._ncols
+        p1y_abs = self._offsetY1 / self.height * self._nrows
+        p2x_abs = self._offsetX2 / self.width * self._ncols
+        p2y_abs = self._offsetY2 / self.height * self._nrows
         if p1x_abs > p2x_abs:
             tempx = p2x_abs
             tempy = p2y_abs
@@ -164,7 +172,7 @@ class ImageDataGraph(base.DOMWidget):
         ycoords.append(curr_y)
         vals.append(self.img_data[curr_x, curr_y])
         for x, y in np.nditer([xcoords, ycoords]):
-            dist = np.sqrt(((x - xcoords[0])**2 + (y - ycoords[0])**2))
+            dist = np.sqrt((x - xcoords[0]) ** 2 + (y - ycoords[0]) ** 2)
             dists.append(dist)
         plt.plot(dists, vals)
         plt.xlim(np.min(dists) * 0.75, np.max(dists))
@@ -174,29 +182,32 @@ class ImageDataGraph(base.DOMWidget):
         graph = plt.gcf()
         if sys.version_info < (3, 0):
             from StringIO import StringIO
+
             graphdata = StringIO()
         else:
             from io import BytesIO
+
             graphdata = BytesIO()
         graph.savefig(graphdata, format=self._format)
         graphdata.seek(0)
         import base64
+
         gb64v = base64.b64encode(graphdata.read())
         plt.clf()
         return gb64v
 
     def width_graph(self):
         """Creates the graph for a line with width.
-               First, it calculates the endpoints of the drawn line.
-               Then, depending on whether the line is horizontal,
-               vertical, or diagonal, it calls the corresponding function
-               to get the data needed for graphing. Finally, it creates
-               the matplotlib graph and encodes it into Base64."""
+        First, it calculates the endpoints of the drawn line.
+        Then, depending on whether the line is horizontal,
+        vertical, or diagonal, it calls the corresponding function
+        to get the data needed for graphing. Finally, it creates
+        the matplotlib graph and encodes it into Base64."""
 
-        p1x_abs = self._offsetX1/self.width * self._ncols
-        p1y_abs = self._offsetY1/self.height * self._nrows
-        p2x_abs = self._offsetX2/self.width * self._ncols
-        p2y_abs = self._offsetY2/self.height * self._nrows
+        p1x_abs = self._offsetX1 / self.width * self._ncols
+        p1y_abs = self._offsetY1 / self.height * self._nrows
+        p2x_abs = self._offsetX2 / self.width * self._ncols
+        p2y_abs = self._offsetY2 / self.height * self._nrows
         dists = []
         vals = []
         if p1y_abs == p2y_abs and p1x_abs != p2x_abs:
@@ -211,13 +222,16 @@ class ImageDataGraph(base.DOMWidget):
         graph = plt.gcf()
         if sys.version_info < (3, 0):
             from StringIO import StringIO
+
             graphdata = StringIO()
         else:
             from io import BytesIO
+
             graphdata = BytesIO()
         graph.savefig(graphdata, format=self._format)
         graphdata.seek(0)
         import base64
+
         gb64v = base64.b64encode(graphdata.read())
         plt.clf()
         return gb64v
@@ -241,14 +255,14 @@ class ImageDataGraph(base.DOMWidget):
             tempx = x1
             x1 = x0
             x0 = tempx
-        wid = self._linepix_width//self.height * self._nrows
-        top = y_init - wid//2
+        wid = self._linepix_width // self.height * self._nrows
+        top = y_init - wid // 2
         if int(top) < 0:
             top = 0
-        bottom = y_init + wid//2 + 1
+        bottom = y_init + wid // 2 + 1
         if int(bottom) > self._nrows - 1:
             bottom = self._nrows - 1
-        max_dist = np.sqrt((x1 - x0)**2)
+        max_dist = np.sqrt((x1 - x0) ** 2)
         bin_step = max_dist / self._num_bins
         bins = [0]
         curr_bin_max = 0
@@ -257,12 +271,12 @@ class ImageDataGraph(base.DOMWidget):
             bins.append(curr_bin_max)
         intensities = np.zeros(len(bins))
         num_binvals = np.zeros(len(bins))
-        Y, X = np.mgrid[top:bottom, x0:(x1+1)]
+        Y, X = np.mgrid[top:bottom, x0 : (x1 + 1)]
         for x, y in np.nditer([X, Y]):
             for b in bins:
                 ind = bins.index(b)
                 if ind < len(bins) - 1:
-                    if x >= b + x0 and x < bins[ind+1] + x0:
+                    if x >= b + x0 and x < bins[ind + 1] + x0:
                         intensities[ind] = intensities[ind] + self.img_data[int(y), int(x)]
                         num_binvals[ind] = num_binvals[ind] + 1
                         break
@@ -270,7 +284,7 @@ class ImageDataGraph(base.DOMWidget):
             if num == 0:
                 vals.append(0)
             else:
-                vals.append(val/num)
+                vals.append(val / num)
         return bins, vals, bin_step
 
     def get_data_vertical(self, x_init, y_init, y_fin):
@@ -292,14 +306,14 @@ class ImageDataGraph(base.DOMWidget):
             tempy = y1
             y1 = y0
             y0 = tempy
-        wid = self._linepix_width//self.width * self._ncols
-        left = x_init - wid//2
+        wid = self._linepix_width // self.width * self._ncols
+        left = x_init - wid // 2
         if int(left) < 0:
             left = 0
-        right = x_init + wid//2 + 1
+        right = x_init + wid // 2 + 1
         if int(right) > self._ncols - 1:
             right = self._ncols - 1
-        max_dist = np.sqrt((y1 - y0)**2)
+        max_dist = np.sqrt((y1 - y0) ** 2)
         bin_step = max_dist / self._num_bins
         bins = [0]
         curr_bin_max = 0
@@ -308,12 +322,12 @@ class ImageDataGraph(base.DOMWidget):
             bins.append(curr_bin_max)
         intensities = np.zeros(len(bins))
         num_binvals = np.zeros(len(bins))
-        Y, X = np.mgrid[y0:(y1+1), left:right]
+        Y, X = np.mgrid[y0 : (y1 + 1), left:right]
         for x, y in np.nditer([X, Y]):
             for b in bins:
                 ind = bins.index(b)
                 if ind < len(bins) - 1:
-                    if y >= b + y0 and y < bins[ind+1] + y0:
+                    if y >= b + y0 and y < bins[ind + 1] + y0:
                         intensities[ind] = intensities[ind] + self.img_data[int(y), int(x)]
                         num_binvals[ind] = num_binvals[ind] + 1
                         break
@@ -321,7 +335,7 @@ class ImageDataGraph(base.DOMWidget):
             if num == 0:
                 vals.append(0)
             else:
-                vals.append(val/num)
+                vals.append(val / num)
         return bins, vals, bin_step
 
     def get_data_diagonal(self, x_init, y_init, x_fin, y_fin):
@@ -353,9 +367,9 @@ class ImageDataGraph(base.DOMWidget):
             y0 = tempy
         slope = (y1 - y0) / (x1 - x0)
         angle = np.arctan(slope)
-        wid_x = abs((self._linepix_width * np.cos(angle))/self.width * self._ncols)
-        wid_y = abs((self._linepix_width * np.sin(angle))/self.height * self._nrows)
-        wid = np.sqrt((wid_x)**2 + (wid_y)**2)
+        wid_x = abs((self._linepix_width * np.cos(angle)) / self.width * self._ncols)
+        wid_y = abs((self._linepix_width * np.sin(angle)) / self.height * self._nrows)
+        wid = np.sqrt((wid_x) ** 2 + (wid_y) ** 2)
         left = x0 - (wid_x // 2)
         right = x1 + (wid_x // 2) + 1
         if slope > 0:
@@ -375,13 +389,13 @@ class ImageDataGraph(base.DOMWidget):
         Y, X = np.mgrid[bottom:top, left:right]
         h_x = X - x0
         h_y = Y - y0
-        norm_x = (y0 - y1) / np.sqrt((y0 - y1)**2 + (x1 - x0)**2)
-        norm_y = (x1 - x0) / np.sqrt((y0 - y1)**2 + (x1 - x0)**2)
-        e_x = (x1 - x0) / np.sqrt((x1 - x0)**2 + (y1 - y0)**2)
-        e_y = (y1 - y0) / np.sqrt((x1 - x0)**2 + (y1 - y0)**2)
-        dist = h_x*norm_x + h_y*norm_y
-        pos = h_x*e_x + h_y*e_y
-        max_dist = np.sqrt((x1 - x0)**2 + (y1 - y0)**2)
+        norm_x = (y0 - y1) / np.sqrt((y0 - y1) ** 2 + (x1 - x0) ** 2)
+        norm_y = (x1 - x0) / np.sqrt((y0 - y1) ** 2 + (x1 - x0) ** 2)
+        e_x = (x1 - x0) / np.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+        e_y = (y1 - y0) / np.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+        dist = h_x * norm_x + h_y * norm_y
+        pos = h_x * e_x + h_y * e_y
+        max_dist = np.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
         bin_step = max_dist / self._num_bins
         curr_bin_max = 0
         bin_borders = [0]
@@ -407,6 +421,6 @@ class ImageDataGraph(base.DOMWidget):
             if n == 0:
                 vals.append(0)
             else:
-                vals.append(i/n)
+                vals.append(i / n)
         bins = bin_borders
         return bins, vals, bin_step

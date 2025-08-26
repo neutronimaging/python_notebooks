@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_metadata_overlapping_images.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1419, 849)
@@ -439,42 +438,42 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
         self.pushButton.clicked.connect(MainWindow.help_button_clicked)
-        self.scale_checkbox.clicked['bool'].connect(MainWindow.scale_checkbox_clicked)
-        self.metadata_checkbox.clicked['bool'].connect(MainWindow.metadata_checkbox_clicked)
+        self.scale_checkbox.clicked["bool"].connect(MainWindow.scale_checkbox_clicked)
+        self.metadata_checkbox.clicked["bool"].connect(MainWindow.metadata_checkbox_clicked)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.file_slider.sliderPressed.connect(MainWindow.slider_file_clicked)
-        self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
-        self.select_metadata_checkbox.clicked['bool'].connect(MainWindow.select_metadata_checkbox_clicked)
-        self.select_metadata_combobox.currentIndexChanged['int'].connect(MainWindow.metadata_list_changed)
+        self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
+        self.select_metadata_checkbox.clicked["bool"].connect(MainWindow.select_metadata_checkbox_clicked)
+        self.select_metadata_combobox.currentIndexChanged["int"].connect(MainWindow.metadata_list_changed)
         self.scale_horizontal_orientation.clicked.connect(MainWindow.scale_orientation_clicked)
         self.scale_vertical_orientation.clicked.connect(MainWindow.scale_orientation_clicked)
-        self.scale_thickness.valueChanged['int'].connect(MainWindow.scale_thickness_value_changed)
-        self.scale_color_combobox.currentIndexChanged['int'].connect(MainWindow.scale_color_changed)
-        self.scale_size_spinbox.valueChanged['int'].connect(MainWindow.scale_size_changed)
+        self.scale_thickness.valueChanged["int"].connect(MainWindow.scale_thickness_value_changed)
+        self.scale_color_combobox.currentIndexChanged["int"].connect(MainWindow.scale_color_changed)
+        self.scale_size_spinbox.valueChanged["int"].connect(MainWindow.scale_size_changed)
         self.scale_real_size.returnPressed.connect(MainWindow.scale_real_size_changed)
-        self.scale_units_combobox.currentIndexChanged['int'].connect(MainWindow.scale_units_changed)
-        self.scale_position_x.sliderMoved['int'].connect(MainWindow.scale_position_moved)
+        self.scale_units_combobox.currentIndexChanged["int"].connect(MainWindow.scale_units_changed)
+        self.scale_position_x.sliderMoved["int"].connect(MainWindow.scale_position_moved)
         self.scale_position_x.sliderPressed.connect(MainWindow.scale_position_clicked)
-        self.metadata_position_x.sliderMoved['int'].connect(MainWindow.metadata_position_moved)
+        self.metadata_position_x.sliderMoved["int"].connect(MainWindow.metadata_position_moved)
         self.metadata_position_x.sliderPressed.connect(MainWindow.metadata_position_clicked)
-        self.metadata_position_y.sliderMoved['int'].connect(MainWindow.metadata_position_moved)
+        self.metadata_position_y.sliderMoved["int"].connect(MainWindow.metadata_position_moved)
         self.metadata_position_y.sliderPressed.connect(MainWindow.metadata_position_clicked)
-        self.scale_position_y.sliderMoved['int'].connect(MainWindow.scale_position_moved)
+        self.scale_position_y.sliderMoved["int"].connect(MainWindow.scale_position_moved)
         self.scale_position_y.sliderPressed.connect(MainWindow.scale_position_clicked)
-        self.metadata_color_combobox.currentIndexChanged['int'].connect(MainWindow.metadata_color_changed)
+        self.metadata_color_combobox.currentIndexChanged["int"].connect(MainWindow.metadata_color_changed)
         self.manual_metadata_name.returnPressed.connect(MainWindow.metadata_name_return_pressed)
         self.manual_metadata_units.returnPressed.connect(MainWindow.metadata_name_return_pressed)
         self.metadata_graph_size_slider.sliderPressed.connect(MainWindow.metadata_graph_size_pressed)
-        self.metadata_graph_size_slider.sliderMoved['int'].connect(MainWindow.metadata_graph_size_moved)
+        self.metadata_graph_size_slider.sliderMoved["int"].connect(MainWindow.metadata_graph_size_moved)
         self.import_table_button.clicked.connect(MainWindow.import_table_pressed)
-        self.tableWidget.customContextMenuRequested['QPoint'].connect(MainWindow.metadata_table_right_click)
+        self.tableWidget.customContextMenuRequested["QPoint"].connect(MainWindow.metadata_table_right_click)
         self.graph_position_y.sliderPressed.connect(MainWindow.graph_position_clicked)
         self.graph_position_x.sliderPressed.connect(MainWindow.graph_position_clicked)
-        self.graph_position_x.sliderMoved['int'].connect(MainWindow.graph_position_moved)
-        self.graph_position_y.sliderMoved['int'].connect(MainWindow.graph_position_moved)
-        self.enable_graph_checkbox.stateChanged['int'].connect(MainWindow.enable_graph_button_clicked)
-        self.graph_color_combobox.currentIndexChanged['int'].connect(MainWindow.graph_color_changed)
+        self.graph_position_x.sliderMoved["int"].connect(MainWindow.graph_position_moved)
+        self.graph_position_y.sliderMoved["int"].connect(MainWindow.graph_position_moved)
+        self.enable_graph_checkbox.stateChanged["int"].connect(MainWindow.enable_graph_button_clicked)
+        self.graph_color_combobox.currentIndexChanged["int"].connect(MainWindow.graph_color_changed)
         self.graph_position_x.sliderReleased.connect(MainWindow.graph_position_clicked)
         self.graph_position_y.sliderReleased.connect(MainWindow.graph_position_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -542,4 +541,3 @@ class Ui_MainWindow(object):
         self.actionDsc.setText(_translate("MainWindow", "dsc ..."))
         self.actionWater_Intake_2.setText(_translate("MainWindow", "Water Intake ..."))
         self.actionProfiles.setText(_translate("MainWindow", "Profiles ..."))
-

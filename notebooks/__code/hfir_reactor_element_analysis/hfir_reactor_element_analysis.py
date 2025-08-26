@@ -1,14 +1,11 @@
 import pandas as pd
-import numpy as np
-from IPython.display import HTML
-from IPython.display import display, clear_output
+from IPython.display import HTML, clear_output, display
 
-from __code.ipywe import fileselector
 from __code.file_handler import read_ascii
+from __code.ipywe import fileselector
 
 
 class HfirReactorElementAnalysis:
-
     pandas_obj = None
     metadata = None
     column_labels = None
@@ -17,15 +14,16 @@ class HfirReactorElementAnalysis:
         self.working_dir = working_dir
 
     def select_ascii_file(self):
-        ascii_file_ui = fileselector.FileSelectorPanel(instruction="Select ASCII file ...",
-                                                       start_dir=self.working_dir,
-                                                       next=self.load_ascii,
-                                                       filters={"CSV": "*.csv"},
-                                                       default_filter="CSV")
+        ascii_file_ui = fileselector.FileSelectorPanel(
+            instruction="Select ASCII file ...",
+            start_dir=self.working_dir,
+            next=self.load_ascii,
+            filters={"CSV": "*.csv"},
+            default_filter="CSV",
+        )
         ascii_file_ui.show()
 
     def load_ascii(self, ascii_file_name):
-
         display(HTML('<span style="font-size: 20px; color:Blue">Loading data set ... PROCESSING!</span>'))
 
         # retrieving metadata and column names
@@ -45,12 +43,9 @@ class HfirReactorElementAnalysis:
         self.column_labels = column_labels
 
         # retrieving data with pandas
-        self.pandas_obj = pd.read_csv(ascii_file_name,
-                                      skiprows=_line_number + 2,
-                                      delimiter=", ",
-                                      names=column_labels,
-                                      dtype=float,
-                                      index_col=0)
+        self.pandas_obj = pd.read_csv(
+            ascii_file_name, skiprows=_line_number + 2, delimiter=", ", names=column_labels, dtype=float, index_col=0
+        )
 
         clear_output(wait=False)
         display(HTML('<span style="font-size: 20px; color:green">Loading data set ... DONE!</span>'))

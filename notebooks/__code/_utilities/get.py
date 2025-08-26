@@ -5,7 +5,6 @@ from __code._utilities.parent import Parent
 
 
 class Get(Parent):
-
     @staticmethod
     def log_file_name(log_file_name):
         full_log_file_name = Get.full_home_file_name(log_file_name)

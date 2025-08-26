@@ -1,27 +1,24 @@
+import copy
 import os.path
 
-import matplotlib.pyplot as plt
-from ipywidgets import interactive
 import ipywidgets as widgets
-from IPython.display import display, HTML
-from matplotlib.widgets import RectangleSelector
+import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.patches as patches
+from IPython.display import HTML, display
+from ipywidgets import interactive
+from matplotlib.widgets import RectangleSelector
+from PIL import Image
 from pystackreg import StackReg
 from tqdm import tqdm
-from PIL import Image
-import copy
 
-from __code.ipywe import fileselector
-from __code._utilities.file import retrieve_list_of_most_dominant_extension_from_folder
-from __code._utilities.file import make_or_reset_folder
+from __code._utilities.file import make_or_reset_folder, retrieve_list_of_most_dominant_extension_from_folder
 from __code._utilities.images import read_img_stack
-from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code._utilities.json import save_json
+from __code._utilities.time import get_current_time_in_special_file_name_format
+from __code.ipywe import fileselector
 
 
 class AlgoList:
-
     translation = StackReg.TRANSLATION
     rigid_body = StackReg.RIGID_BODY
     scaled_rotation = StackReg.SCALED_ROTATION
@@ -30,35 +27,34 @@ class AlgoList:
 
 
 class ReferenceList:
-
-    previous = 'previous'
-    first = 'first'
-    mean = 'mean'
+    previous = "previous"
+    first = "first"
+    mean = "mean"
 
 
 def props(cls):
-    return [i for i in cls.__dict__.keys() if i[:1] != '_']
+    return [i for i in cls.__dict__.keys() if i[:1] != "_"]
 
 
 class ImagesRegistrationPystackreg:
-
     working_dir = None
 
     selector_unregistered = None
     selector_registered = None
 
-    crop = {'before registration': None,
-            'after registration': None}
+    crop = {"before registration": None, "after registration": None}
 
     def __init__(self, working_dir=None):
         self.working_dir = working_dir
 
     def select_folder(self):
-        self.folder_widget = fileselector.FileSelectorPanel(instruction='select folder of images to register',
-                                                            start_dir=self.working_dir,
-                                                            type='directory',
-                                                            next=self.load_images,
-                                                            multiple=False)
+        self.folder_widget = fileselector.FileSelectorPanel(
+            instruction="select folder of images to register",
+            start_dir=self.working_dir,
+            type="directory",
+            next=self.load_images,
+            multiple=False,
+        )
         self.folder_widget.show()
 
     def load_images(self, folder_name=None):
@@ -67,18 +63,14 @@ class ImagesRegistrationPystackreg:
         # retrieve list of files
         self.list_of_files, ext = retrieve_list_of_most_dominant_extension_from_folder(folder=folder_name)
 
-        self.stack = read_img_stack(list_files=self.list_of_files,
-                                    ext=ext)
+        self.stack = read_img_stack(list_files=self.list_of_files, ext=ext)
 
         display(HTML("Data have been loaded!"))
         print("Data have been loaded!")
 
     def display_unregistered(self):
-
         def preview_unregistered(image_index, vmin=0.8, vmax=1.2):
-            fig, ax = plt.subplots(ncols=3, nrows=1,
-                                   num="Unregistered images",
-                                   figsize=(15, 5))
+            fig, ax = plt.subplots(ncols=3, nrows=1, num="Unregistered images", figsize=(15, 5))
             ax[0].imshow(self.stack[0], vmin=0, vmax=1)
             ax[0].set_title("First image")
 
@@ -89,21 +81,15 @@ class ImagesRegistrationPystackreg:
             ax[2].set_title(f"Image[{image_index}] / First image")
             cb = plt.colorbar(image, ax=ax[2])
 
-        v = interactive(preview_unregistered,
-                        image_index=widgets.IntSlider(min=0,
-                                                      max=len(self.list_of_files) - 1,
-                                                      value=1),
-                        vmin=widgets.FloatSlider(min=0,
-                                                 max=2,
-                                                 value=0.8),
-                        vmax=widgets.FloatSlider(min=0,
-                                                 max=2,
-                                                 value=1.2),
-                        )
+        v = interactive(
+            preview_unregistered,
+            image_index=widgets.IntSlider(min=0, max=len(self.list_of_files) - 1, value=1),
+            vmin=widgets.FloatSlider(min=0, max=2, value=0.8),
+            vmax=widgets.FloatSlider(min=0, max=2, value=1.2),
+        )
         display(v)
 
     def crop_unregistered_images(self):
-
         def _select_callback(eclick, erelease):
             """
             Callback for line selection.
@@ -120,20 +106,21 @@ class ImagesRegistrationPystackreg:
         img = self.stack[0]
         ax.imshow(img)
 
-        ax.set_title(f"Click and drag to select a rectangular ROI.")
+        ax.set_title("Click and drag to select a rectangular ROI.")
         self.selector_unregistered = RectangleSelector(
-                                    ax,
-                                    _select_callback,
-                                    useblit=True,
-                                    button=[1, 3],  # disable middle button
-                                    minspanx=5, minspany=5,
-                                    spancoords='pixels',
-                                    interactive=True)
+            ax,
+            _select_callback,
+            useblit=True,
+            button=[1, 3],  # disable middle button
+            minspanx=5,
+            minspany=5,
+            spancoords="pixels",
+            interactive=True,
+        )
 
         ax.set_title("Click and drag to select region to crop")
 
     def _get_crop_region(self, selector):
-
         data_have_been_cropped = True
 
         x_corners = selector.corners[0]
@@ -155,12 +142,8 @@ class ImagesRegistrationPystackreg:
         return x0, x1, y0, y1, data_have_been_cropped
 
     def perform_cropping(self):
-
         x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(self.selector_unregistered)
-        self.crop['before registration'] = {'x0': x0,
-                                            'x1': x1,
-                                            'y0': y0,
-                                            'y1': y1}
+        self.crop["before registration"] = {"x0": x0, "x1": x1, "y0": y0, "y1": y1}
 
         if data_have_been_cropped:
             _stack_cropped = []
@@ -172,9 +155,7 @@ class ImagesRegistrationPystackreg:
         else:
             self.stack_cropped = copy.deepcopy(self.stack)
 
-        fig, ax = plt.subplots(ncols=1, nrows=1,
-                               num="Cropped images",
-                               figsize=(5, 5))
+        fig, ax = plt.subplots(ncols=1, nrows=1, num="Cropped images", figsize=(5, 5))
 
         image = ax.imshow(self.stack_cropped[0], vmin=0, vmax=1)
         ax.set_title("First image")
@@ -203,23 +184,20 @@ class ImagesRegistrationPystackreg:
         registration_type = self._get_registration_type(registration_name)
 
         o_sr = StackReg(registration_type)
-        self.registered_stack = o_sr.register_transform_stack(self.stack_cropped,
-                                                              reference=image_reference,
-                                                              verbose=True)
+        self.registered_stack = o_sr.register_transform_stack(
+            self.stack_cropped, reference=image_reference, verbose=True
+        )
 
         self.display_registered()
 
     def display_registered(self):
-
         self.fig2 = None
 
         def preview_registered(image_index, vmin=0.8, vmax=1.2):
             if self.fig2:
                 self.fig2.clear()
 
-            self.fig2, ax2 = plt.subplots(ncols=3, nrows=1,
-                                     num="Registered images",
-                                     figsize=(15, 5))
+            self.fig2, ax2 = plt.subplots(ncols=3, nrows=1, num="Registered images", figsize=(15, 5))
 
             ax2[0].imshow(self.registered_stack[0], vmin=0, vmax=1)
             ax2[0].set_title("First image")
@@ -227,28 +205,22 @@ class ImagesRegistrationPystackreg:
             ax2[1].imshow(self.registered_stack[image_index], vmin=0, vmax=1)
             ax2[1].set_title(f"Image #{image_index}")
 
-            image = ax2[2].imshow(np.divide(self.registered_stack[image_index],
-                                            self.registered_stack[0]),
-                                 vmin=vmin, vmax=vmax)
+            image = ax2[2].imshow(
+                np.divide(self.registered_stack[image_index], self.registered_stack[0]), vmin=vmin, vmax=vmax
+            )
             ax2[2].set_title(f"Image[{image_index}] / First image")
             cb = plt.colorbar(image, ax=ax2[2])
             # display(fig)
 
-        v2 = interactive(preview_registered,
-                        image_index=widgets.IntSlider(min=0,
-                                                      max=len(self.list_of_files) - 1,
-                                                      value=1),
-                        vmin=widgets.FloatSlider(min=0,
-                                                 max=2,
-                                                 value=0.8),
-                        vmax=widgets.FloatSlider(min=0,
-                                                 max=2,
-                                                 value=1.2),
-                        )
+        v2 = interactive(
+            preview_registered,
+            image_index=widgets.IntSlider(min=0, max=len(self.list_of_files) - 1, value=1),
+            vmin=widgets.FloatSlider(min=0, max=2, value=0.8),
+            vmax=widgets.FloatSlider(min=0, max=2, value=1.2),
+        )
         display(v2)
 
     def crop_registered_images(self):
-
         def _select_callback(eclick, erelease):
             """
             Callback for line selection.
@@ -265,25 +237,23 @@ class ImagesRegistrationPystackreg:
         img = self.registered_stack[0]
         ax.imshow(img)
 
-        ax.set_title(f"Click and drag to select a rectangular ROI.")
+        ax.set_title("Click and drag to select a rectangular ROI.")
         self.selector_registered = RectangleSelector(
-                                    ax,
-                                    _select_callback,
-                                    useblit=True,
-                                    button=[1, 3],  # disable middle button
-                                    minspanx=5, minspany=5,
-                                    spancoords='pixels',
-                                    interactive=True)
+            ax,
+            _select_callback,
+            useblit=True,
+            button=[1, 3],  # disable middle button
+            minspanx=5,
+            minspany=5,
+            spancoords="pixels",
+            interactive=True,
+        )
 
         ax.set_title("Click and drag to select region to crop")
 
     def perform_cropping_for_export(self):
-
         x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(self.selector_registered)
-        self.crop['after registration'] = {'x0': x0,
-                                           'x1': x1,
-                                           'y0': y0,
-                                           'y1': y1}
+        self.crop["after registration"] = {"x0": x0, "x1": x1, "y0": y0, "y1": y1}
 
         if data_have_been_cropped:
             _final_stack_cropped = []
@@ -305,18 +275,19 @@ class ImagesRegistrationPystackreg:
 
     def export(self):
         display(HTML("<span><b>Exporting the registered data:</b></span>"))
-        self.output_label = widgets.Label(f" IN PROGRESS")
+        self.output_label = widgets.Label(" IN PROGRESS")
         display(self.output_label)
 
-        self.output_folder_widget = fileselector.FileSelectorPanel(instruction='select output folder',
-                                                                   start_dir=self.working_dir,
-                                                                   type='directory',
-                                                                   next=self.export_images,
-                                                                   multiple=False)
+        self.output_folder_widget = fileselector.FileSelectorPanel(
+            instruction="select output folder",
+            start_dir=self.working_dir,
+            type="directory",
+            next=self.export_images,
+            multiple=False,
+        )
         self.output_folder_widget.show()
 
     def export_images(self, output_folder):
-
         output_folder = os.path.abspath(output_folder)
         registered_crop_stack = self.final_stack_cropped
         list_file_names = self.list_of_files
@@ -334,13 +305,13 @@ class ImagesRegistrationPystackreg:
             _image.save(full_output_file_name)
 
         # create json with parameters used
-        metadata = {'input folder': source_folder,
-                    'number of files': len(list_file_names),
-                    'crop': self.crop,
-                    'registration': {'type': self.algo_options.value,
-                                     'image of reference': self.reference_options.value}
-                    }
-        json_file_name = os.path.join(full_output_folder_name, 'config.json')
+        metadata = {
+            "input folder": source_folder,
+            "number of files": len(list_file_names),
+            "crop": self.crop,
+            "registration": {"type": self.algo_options.value, "image of reference": self.reference_options.value},
+        }
+        json_file_name = os.path.join(full_output_folder_name, "config.json")
         save_json(json_file_name, metadata)
 
         self.output_label.value = f"DONE! (Registered files have been created in {full_output_folder_name})"

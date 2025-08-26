@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_scale_overlapping_images.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.3
@@ -7,10 +5,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1365, 811)
@@ -170,13 +168,13 @@ class Ui_MainWindow(object):
         self.pushButton.clicked.connect(MainWindow.help_button_clicked)
         self.grid_display_checkBox.clicked.connect(MainWindow.display_grid_clicked)
         self.grid_size_slider.sliderPressed.connect(MainWindow.grid_size_slider_clicked)
-        self.grid_size_slider.sliderMoved['int'].connect(MainWindow.grid_size_slider_moved)
+        self.grid_size_slider.sliderMoved["int"].connect(MainWindow.grid_size_slider_moved)
         self.transparency_slider.sliderPressed.connect(MainWindow.transparency_slider_clicked)
-        self.transparency_slider.sliderMoved['int'].connect(MainWindow.transparency_slider_moved)
+        self.transparency_slider.sliderMoved["int"].connect(MainWindow.transparency_slider_moved)
         self.grid_size_slider.sliderReleased.connect(MainWindow.grid_size_slider_released)
-        self.file_slider.sliderMoved['int'].connect(MainWindow.slider_file_changed)
+        self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
         self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
-        self.file_slider.valueChanged['int'].connect(MainWindow.slider_file_changed)
+        self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

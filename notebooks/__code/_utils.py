@@ -1,10 +1,7 @@
-# coding: utf-8
+from IPython.display import HTML, display
 
-import ipywidgets as ipyw
-from IPython.display import display, HTML
 
 def js_alert(m):
     js = "<script>alert('%s');</script>" % m
     display(HTML(js))
     return
-

@@ -18,7 +18,7 @@ def are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.01)
     if list1 == list2:
         return True
 
-    for item1, item2 in zip(list1, list2):
+    for item1, item2 in zip(list1, list2, strict=False):
         if not np.abs(float(item1) - float(item2)) <= tolerance:
             return False
 
@@ -43,7 +43,7 @@ def are_those_two_lists_of_lists_identical_within_tolerance(list1, list2, tolera
     if list1 == list2:
         return True
 
-    for list_item1, list_item2 in zip(list1, list2):
+    for list_item1, list_item2 in zip(list1, list2, strict=False):
         if not are_those_two_lists_identical_within_tolerance(list_item1, list_item2, tolerance=tolerance):
             return False
 
@@ -80,11 +80,11 @@ def extract_list_of_runs_from_string(string):
         raise TypeError("The parameter passed should be a string")
 
     list_of_runs = []
-    list_of_items = string.split(',')
+    list_of_items = string.split(",")
     for item in list_of_items:
         item = item.strip()
-        if '-' in item:
-            limits = item.split('-')
+        if "-" in item:
+            limits = item.split("-")
             if len(limits) != 2:
                 raise ValueError(f"Wrong format for the range of runs: {item}")
             try:

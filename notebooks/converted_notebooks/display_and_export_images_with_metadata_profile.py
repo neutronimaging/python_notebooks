@@ -16,17 +16,19 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.display_and_export_images_with_metadata_profile import DisplayExportScreenshots
 from __code import system
-system.System.select_working_dir(notebook='display_and_export_images_with_metadata_profile')
+from __code.display_and_export_images_with_metadata_profile import DisplayExportScreenshots
+
+system.System.select_working_dir(notebook="display_and_export_images_with_metadata_profile")
 from __code.__all import custom_style
-custom_style.style() 
+
+custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Image Folder 
+# # Select Image Folder
 # -
 
 o_display_export = DisplayExportScreenshots(working_dir=system.System.get_working_dir())
@@ -42,7 +44,7 @@ o_display_export.select_input_folder()
 o_display_export.select_metadata_file()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Display Images with Profile of metadata 
+# # Display Images with Profile of metadata
 
 # + run_control={"frozen": false, "read_only": false}
 o_display_export.display()
@@ -57,4 +59,3 @@ o_display_export.select_export_folder()
 o_display_export.export()
 
 # + run_control={"frozen": false, "read_only": false}
-

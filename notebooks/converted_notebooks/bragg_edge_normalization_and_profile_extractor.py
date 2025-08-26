@@ -17,22 +17,24 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 from __code.bragg_edge.bragg_edge import Interface
+from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 
-system.System.select_working_dir(facility='SNS', instrument='SNAP')
+system.System.select_working_dir(facility="SNS", instrument="SNAP")
 from __code.__all import custom_style
+
 custom_style.style()
 
-from plotly.offline import plot, init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode
+
 init_notebook_mode()
 # -
 
-# ## Prepare UI engine 
+# ## Prepare UI engine
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
@@ -47,7 +49,7 @@ o_bragg = BraggEdge(working_dir=system.System.get_working_dir())
 o_bragg.select_working_folder()
 # -
 
-# # Select Open Beam Input Folder 
+# # Select Open Beam Input Folder
 
 o_bragg.select_ob_folder()
 
@@ -70,11 +72,11 @@ o_interface = Interface(data=o_bragg.get_image_to_use_for_display())
 o_interface.show()
 # -
 
-# ## Perform normalization 
+# ## Perform normalization
 
 o_bragg.normalization(list_rois=o_interface.roi_selected)
 
-# ## Export normalized data 
+# ## Export normalized data
 
 o_bragg.export_normalized_data()
 
@@ -87,7 +89,7 @@ o_bragg.export_normalized_data()
 o_bragg.exp_setup()
 # -
 
-# ## Define the position of your sample 
+# ## Define the position of your sample
 
 o_interface_sample = Interface(data=o_bragg.final_image)
 o_interface_sample.show()
@@ -102,13 +104,11 @@ o_bragg.load_time_spectra()
 # # Display Bragg Edges vs Signal
 # -
 
-# Run the next cell **only if** you want to display the signal Counts vs lambda 
+# Run the next cell **only if** you want to display the signal Counts vs lambda
 
 # + run_control={"frozen": false, "read_only": false}
 o_bragg.plot()
 # -
-# # Export ASCII Data 
+# # Export ASCII Data
 
 o_bragg.select_output_data_folder()
-
-

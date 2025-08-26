@@ -1,20 +1,23 @@
-from qtpy.QtWidgets import QDialog, QApplication
-from qtpy import QtCore
 import os
 
+from qtpy import QtCore
+from qtpy.QtWidgets import QApplication, QDialog
+
 from __code import load_ui
+
 from .utilities import string_cleaning
 
 
 class MetadataSelectorHandler(QDialog):
-
     def __init__(self, parent=None, column=2):
         self.parent = parent
         self.column = column
         super(MetadataSelectorHandler, self).__init__(parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui', 'ui_metadata_overlapping_metadata_selector.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_metadata_overlapping_metadata_selector.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Select Metadata Toolbox")
 
@@ -29,14 +32,14 @@ class MetadataSelectorHandler(QDialog):
         self.ui.select_metadata_combobox.addItems(list_metadata)
 
         metadata_operation = self.parent.metadata_operation[self.column]
-        self.ui.select_metadata_combobox.setCurrentIndex(metadata_operation['index_of_metadata'])
-        self.ui.first_part_lineEdit.setText(metadata_operation['first_part_of_string_to_remove'])
-        self.ui.second_part_lineEdit.setText(metadata_operation['last_part_of_string_to_remove'])
-        self.ui.linear_operation_lineEdit_1.setText(metadata_operation['value_1'])
-        self.ui.linear_operation_lineEdit_2.setText(metadata_operation['value_2'])
-        math_1_index = self.ui.linear_operation_comboBox_1.findText(metadata_operation['math_1'])
+        self.ui.select_metadata_combobox.setCurrentIndex(metadata_operation["index_of_metadata"])
+        self.ui.first_part_lineEdit.setText(metadata_operation["first_part_of_string_to_remove"])
+        self.ui.second_part_lineEdit.setText(metadata_operation["last_part_of_string_to_remove"])
+        self.ui.linear_operation_lineEdit_1.setText(metadata_operation["value_1"])
+        self.ui.linear_operation_lineEdit_2.setText(metadata_operation["value_2"])
+        math_1_index = self.ui.linear_operation_comboBox_1.findText(metadata_operation["math_1"])
         self.ui.linear_operation_comboBox_1.setCurrentIndex(math_1_index)
-        math_2_index = self.ui.linear_operation_comboBox_2.findText(metadata_operation['math_2'])
+        math_2_index = self.ui.linear_operation_comboBox_2.findText(metadata_operation["math_2"])
         self.ui.linear_operation_comboBox_2.setCurrentIndex(math_2_index)
 
     def string_cleaning_changed(self, new_text=None):
@@ -44,9 +47,11 @@ class MetadataSelectorHandler(QDialog):
         last_part_of_string_to_remove = str(self.ui.second_part_lineEdit.text())
         string_to_clean = self.ui.select_metadata_combobox.currentText()
 
-        cleaned_string = string_cleaning(first_part_of_string_to_remove=first_part_of_string_to_remove,
-                                         last_part_of_string_to_remove=last_part_of_string_to_remove,
-                                         string_to_clean=string_to_clean)
+        cleaned_string = string_cleaning(
+            first_part_of_string_to_remove=first_part_of_string_to_remove,
+            last_part_of_string_to_remove=last_part_of_string_to_remove,
+            string_to_clean=string_to_clean,
+        )
         self.ui.linear_operation_value_before.setText(cleaned_string)
 
         self.check_if_before_linear_operation_valid()
@@ -82,7 +87,7 @@ class MetadataSelectorHandler(QDialog):
             operation_to_eval += f" {math_2} {float(value_2)}"
 
         result = eval(operation_to_eval)
-        self.ui.linear_operation_value_after.setText("{}".format(result))
+        self.ui.linear_operation_value_after.setText(f"{result}")
         self.update_final_result()
 
     def linear_operation_combobox_changed(self, new_string=None):
@@ -121,14 +126,15 @@ class MetadataSelectorHandler(QDialog):
             value_1 = ""
             value_2 = ""
 
-        self.parent.metadata_operation[self.column] = {"first_part_of_string_to_remove": first_part_of_string_to_remove,
-                                                       "last_part_of_string_to_remove": last_part_of_string_to_remove,
-                                                       "math_1": math_1,
-                                                       "value_1": value_1,
-                                                       "math_2": math_2,
-                                                       "value_2": value_2,
-                                                       "index_of_metadata": self.index_metadata_selected,
-                                                       }
+        self.parent.metadata_operation[self.column] = {
+            "first_part_of_string_to_remove": first_part_of_string_to_remove,
+            "last_part_of_string_to_remove": last_part_of_string_to_remove,
+            "math_1": math_1,
+            "value_1": value_1,
+            "math_2": math_2,
+            "value_2": value_2,
+            "index_of_metadata": self.index_metadata_selected,
+        }
 
     def is_before_linear_operation_is_valid(self):
         string_to_check = str(self.ui.linear_operation_value_before.text())
@@ -145,7 +151,6 @@ class MetadataSelectorHandler(QDialog):
         self.ui.linear_operation_groupBox.setEnabled(enable_linear_operation_widgets)
 
     def is_linear_operation_valid(self):
-
         def result_of_checking_operation(ui=None):
             is_error_in_operation = False
             operation = str(ui.text()).strip()

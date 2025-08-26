@@ -23,16 +23,19 @@
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_gamma_filtering_tool.ui')
 
-from __code.gamma_filtering_tool import Interface, InterfaceHandler
+o_builder = UiBuilder(ui_name="ui_gamma_filtering_tool.ui")
 
 from __code import system
+from __code.gamma_filtering_tool import Interface, InterfaceHandler
+
 system.System.select_working_dir()
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
@@ -43,17 +46,16 @@ custom_style.style()
 
 # + run_control={"frozen": false, "read_only": false}
 o_template = InterfaceHandler(working_dir=system.System.get_working_dir())
-o_template.select_images(instruction='Select tiff or Fits Images ...')
+o_template.select_images(instruction="Select tiff or Fits Images ...")
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Load and Display Images
 
 # + run_control={"frozen": false, "read_only": false}
-o_interface = Interface(list_of_files = o_template.get_list_of_files())
+o_interface = Interface(list_of_files=o_template.get_list_of_files())
 o_interface.show()
 
 # + run_control={"frozen": false, "read_only": false}
 
 
 # + run_control={"frozen": false, "read_only": false}
-

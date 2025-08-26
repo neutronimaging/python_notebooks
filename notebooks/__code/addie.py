@@ -1,198 +1,195 @@
-#from IPython.display import HTML
-#from IPython.display import display
+# from IPython.display import HTML
+# from IPython.display import display
 import copy
 import os
-from os.path import expanduser
-import numpy as np
-from collections import OrderedDict
 import pickle
 from collections import OrderedDict
-import pprint
+from os.path import expanduser
+
+import numpy as np
 
 try:
-    from PyQt4.QtGui import QFileDialog
-    from PyQt4.QtCore import QObject
     from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow, QTableWidgetItem, QMenu, QDialog
+    from PyQt4.QtCore import QObject
+    from PyQt4.QtGui import QDialog, QFileDialog, QMainWindow, QMenu, QTableWidgetItem
 except ImportError:
     try:
-        from PyQt5.QtWidgets import QFileDialog, QTreeWidgetItem, QTableWidgetItem
         from PyQt5 import QtCore, QtGui
         from PyQt5.QtCore import QObject
-        from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QDialog, QAction
+        from PyQt5.QtWidgets import (
+            QAction,
+            QApplication,
+            QDialog,
+            QFileDialog,
+            QMainWindow,
+            QMenu,
+            QTableWidgetItem,
+            QTreeWidgetItem,
+        )
     except ImportError:
         raise ImportError("Requires PyQt5 or PyQt4.")
 
-from __code.ui_addie  import Ui_MainWindow as UiMainWindow
+from __code.ui_addie import Ui_MainWindow as UiMainWindow
 from __code.ui_addie_save_config import Ui_Dialog as UiDialogSave
 
 user_home = expanduser("~")
-CONFIG_FILE = os.path.join(user_home, '.addie_config.cfg')
+CONFIG_FILE = os.path.join(user_home, ".addie_config.cfg")
 
 
 class Interface(QMainWindow):
-
-    config_dict = OrderedDict() # various configurations defined by the user
-    reset_config_dict = OrderedDict() # just to reset full table
-    active_config_name = ''
+    config_dict = OrderedDict()  # various configurations defined by the user
+    reset_config_dict = OrderedDict()  # just to reset full table
+    active_config_name = ""
 
     # list of config previously saved by user and display when doing right click in table
     list_config_displayed = []
 
-    item_dict = {'ui': None,
-                 'name': '',
-                 'state': True,
-                 'table_row_column': []}
+    item_dict = {"ui": None, "name": "", "state": True, "table_row_column": []}
 
     tree_dict_state = {}
     tree_column = 0
 
     # this record the ui of each check box in the tree
-    tree_ui = {'h1': [],
-               'h2': [],
-               'h3': [],
-               }
+    tree_ui = {
+        "h1": [],
+        "h2": [],
+        "h3": [],
+    }
 
-    leaf = {'ui': None,
-            'name': ''}
+    leaf = {"ui": None, "name": ""}
 
     # to know the column index of each element of the tree
-    h_index = {'h1': None,
-               'h2': None,
-               'h3': None}
+    h_index = {"h1": None, "h2": None, "h3": None}
 
-    base_dict = {'ui': None,
-                          'name': "Title",
-                          'children': None,
-                          'h_index': copy.deepcopy(h_index),
-                          }
+    base_dict = {
+        "ui": None,
+        "name": "Title",
+        "children": None,
+        "h_index": copy.deepcopy(h_index),
+    }
 
     tree_dict = OrderedDict()
-    tree_dict['title'] = copy.deepcopy(base_dict)
-    tree_dict['title']['name'] = "Title"
+    tree_dict["title"] = copy.deepcopy(base_dict)
+    tree_dict["title"]["name"] = "Title"
 
     sample_children_1 = OrderedDict()
-    sample_children_1['sample_runs'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_runs']['name'] = "Runs"
+    sample_children_1["sample_runs"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_runs"]["name"] = "Runs"
 
     sample_children_2 = OrderedDict()
-    sample_children_2['sample_background_runs'] = copy.deepcopy(base_dict)
-    sample_children_2['sample_background_runs']['name'] = "Runs"
+    sample_children_2["sample_background_runs"] = copy.deepcopy(base_dict)
+    sample_children_2["sample_background_runs"]["name"] = "Runs"
 
-    sample_children_2['sample_background_background'] = copy.deepcopy(base_dict)
-    sample_children_2['sample_background_background']['name'] = "Background"
+    sample_children_2["sample_background_background"] = copy.deepcopy(base_dict)
+    sample_children_2["sample_background_background"]["name"] = "Background"
 
-    sample_children_1['sample_background'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_background']['name'] = "Background"
-    sample_children_1['sample_background']['children'] = sample_children_2
+    sample_children_1["sample_background"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_background"]["name"] = "Background"
+    sample_children_1["sample_background"]["children"] = sample_children_2
 
-    sample_children_1['sample_material'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_material']['name'] = "Material"
+    sample_children_1["sample_material"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_material"]["name"] = "Material"
 
-    sample_children_1['sample_packing_fraction'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_packing_fraction']['name'] = "Packing Fraction"
+    sample_children_1["sample_packing_fraction"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_packing_fraction"]["name"] = "Packing Fraction"
 
     sample_children_2 = OrderedDict()
-    sample_children_2['sample_geometry_shape'] = copy.deepcopy(base_dict)
-    sample_children_2['sample_geometry_shape']['name'] = "Shape"
+    sample_children_2["sample_geometry_shape"] = copy.deepcopy(base_dict)
+    sample_children_2["sample_geometry_shape"]["name"] = "Shape"
 
-    sample_children_2['sample_geometry_radius'] = copy.deepcopy(base_dict)
-    sample_children_2['sample_geometry_radius']['name'] = "Radius"
+    sample_children_2["sample_geometry_radius"] = copy.deepcopy(base_dict)
+    sample_children_2["sample_geometry_radius"]["name"] = "Radius"
 
-    sample_children_2['sample_geometry_Height'] = copy.deepcopy(base_dict)
-    sample_children_2['sample_geometry_Height']['name'] = "Height"
+    sample_children_2["sample_geometry_Height"] = copy.deepcopy(base_dict)
+    sample_children_2["sample_geometry_Height"]["name"] = "Height"
 
-    sample_children_1['sample_geometry'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_geometry']['name'] = "Geometry"
-    sample_children_1['sample_geometry']['children'] = sample_children_2
+    sample_children_1["sample_geometry"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_geometry"]["name"] = "Geometry"
+    sample_children_1["sample_geometry"]["children"] = sample_children_2
 
-    sample_children_1['sample_absolute_correction'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_absolute_correction']['name'] = "Abs. Correction"
+    sample_children_1["sample_absolute_correction"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_absolute_correction"]["name"] = "Abs. Correction"
 
-    sample_children_1['sample_multi_scattering_correction'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_multi_scattering_correction']['name'] = 'Multi Scattering Correction'
+    sample_children_1["sample_multi_scattering_correction"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_multi_scattering_correction"]["name"] = "Multi Scattering Correction"
 
-    sample_children_1['sample_inelastic_correction'] = copy.deepcopy(base_dict)
-    sample_children_1['sample_inelastic_correction']['name'] = 'Inelastic Correction'
+    sample_children_1["sample_inelastic_correction"] = copy.deepcopy(base_dict)
+    sample_children_1["sample_inelastic_correction"]["name"] = "Inelastic Correction"
 
-    tree_dict['sample'] = copy.deepcopy(base_dict)
-    tree_dict['sample']['name'] = 'Sample'
-    tree_dict['sample']['children'] = sample_children_1
+    tree_dict["sample"] = copy.deepcopy(base_dict)
+    tree_dict["sample"]["name"] = "Sample"
+    tree_dict["sample"]["children"] = sample_children_1
 
     vanadium_children_1 = OrderedDict()
-    vanadium_children_1['vanadium_runs'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_runs']['name'] = "Runs"
+    vanadium_children_1["vanadium_runs"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_runs"]["name"] = "Runs"
 
     vanadium_children_2 = OrderedDict()
-    vanadium_children_2['vanadium_background_runs'] = copy.deepcopy(base_dict)
-    vanadium_children_2['vanadium_background_runs']['name'] = "Runs"
+    vanadium_children_2["vanadium_background_runs"] = copy.deepcopy(base_dict)
+    vanadium_children_2["vanadium_background_runs"]["name"] = "Runs"
 
-    vanadium_children_2['vanadium_background_background'] = copy.deepcopy(base_dict)
-    vanadium_children_2['vanadium_background_background']['name'] = "Background"
+    vanadium_children_2["vanadium_background_background"] = copy.deepcopy(base_dict)
+    vanadium_children_2["vanadium_background_background"]["name"] = "Background"
 
-    vanadium_children_1['vanadium_background'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_background']['name'] = "Background"
-    vanadium_children_1['vanadium_background']['children'] = vanadium_children_2
+    vanadium_children_1["vanadium_background"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_background"]["name"] = "Background"
+    vanadium_children_1["vanadium_background"]["children"] = vanadium_children_2
 
-    vanadium_children_1['vanadium_material'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_material']['name'] = "Materials"
+    vanadium_children_1["vanadium_material"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_material"]["name"] = "Materials"
 
-    vanadium_children_1['vanadium_packing_fraction'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_packing_fraction']['name'] = "Packing Fraction"
+    vanadium_children_1["vanadium_packing_fraction"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_packing_fraction"]["name"] = "Packing Fraction"
 
     vanadium_children_2 = OrderedDict()
-    vanadium_children_2['vanadium_geometry_shape'] = copy.deepcopy(base_dict)
-    vanadium_children_2['vanadium_geometry_shape']['name'] = 'Shape'
+    vanadium_children_2["vanadium_geometry_shape"] = copy.deepcopy(base_dict)
+    vanadium_children_2["vanadium_geometry_shape"]["name"] = "Shape"
 
-    vanadium_children_2['vanadium_geometry_radius'] = copy.deepcopy(base_dict)
-    vanadium_children_2['vanadium_geometry_radius']['name'] = 'Radius'
+    vanadium_children_2["vanadium_geometry_radius"] = copy.deepcopy(base_dict)
+    vanadium_children_2["vanadium_geometry_radius"]["name"] = "Radius"
 
-    vanadium_children_2['vanadium_geometry_Height'] = copy.deepcopy(base_dict)
-    vanadium_children_2['vanadium_geometry_Height']['name'] = 'Height'
+    vanadium_children_2["vanadium_geometry_Height"] = copy.deepcopy(base_dict)
+    vanadium_children_2["vanadium_geometry_Height"]["name"] = "Height"
 
-    vanadium_children_1['vanadium_geometry'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_geometry']['name'] = 'Geometry'
-    vanadium_children_1['vanadium_geometry']['children'] = vanadium_children_2
+    vanadium_children_1["vanadium_geometry"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_geometry"]["name"] = "Geometry"
+    vanadium_children_1["vanadium_geometry"]["children"] = vanadium_children_2
 
-    vanadium_children_1['vanadium_absolute_correction'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_absolute_correction']['name'] = "Abs. Correction"
+    vanadium_children_1["vanadium_absolute_correction"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_absolute_correction"]["name"] = "Abs. Correction"
 
-    vanadium_children_1['vanadium_multi_scattering_correction'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_multi_scattering_correction']['name'] = 'Multi Scattering Correction'
+    vanadium_children_1["vanadium_multi_scattering_correction"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_multi_scattering_correction"]["name"] = "Multi Scattering Correction"
 
-    vanadium_children_1['vanadium_inelastic_correction'] = copy.deepcopy(base_dict)
-    vanadium_children_1['vanadium_inelastic_correction']['name'] = "Inelastic Correction"
+    vanadium_children_1["vanadium_inelastic_correction"] = copy.deepcopy(base_dict)
+    vanadium_children_1["vanadium_inelastic_correction"]["name"] = "Inelastic Correction"
 
-    tree_dict['vanadium'] = copy.deepcopy(base_dict)
-    tree_dict['vanadium']['name'] = 'Vanadium'
-    tree_dict['vanadium']['children'] = vanadium_children_1
+    tree_dict["vanadium"] = copy.deepcopy(base_dict)
+    tree_dict["vanadium"]["name"] = "Vanadium"
+    tree_dict["vanadium"]["children"] = vanadium_children_1
 
-    table_headers = {'h1': [],
-                     'h2': [],
-                     'h3': [],
-                     }
+    table_headers = {
+        "h1": [],
+        "h2": [],
+        "h3": [],
+    }
 
     # to find which h1 column goes with wich h2 and which h3
-    table_columns_links = {'h1': [],
-                           'h2': [],
-                           'h3': [],
-                           }
+    table_columns_links = {
+        "h1": [],
+        "h2": [],
+        "h3": [],
+    }
 
     default_width = 90
 
-    table_width = {'h1': [],
-                   'h2': [],
-                   'h3': []}
+    table_width = {"h1": [], "h2": [], "h3": []}
 
-    columns_label = {'h1': [],
-                     'h2': [],
-                     'h3': []}
-
+    columns_label = {"h1": [], "h2": [], "h3": []}
 
     minimum_col_width = 10
 
     def __init__(self, parent=None):
-
         # display(HTML('<span style="font-size: 20px; color:blue">Check UI that popped up \
         #     (maybe hidden behind this browser!)</span>'))
 
@@ -209,13 +206,13 @@ class Interface(QMainWindow):
         self.save_raw_config()
 
     def save_raw_config(self):
-        '''this will allow the user to reset the full table and get it back in its initial state'''
+        """this will allow the user to reset the full table and get it back in its initial state"""
         o_current_table_config = TableConfig(parent=self)
         current_config = o_current_table_config.get_current_config()
 
         inside_dict = OrderedDict()
-        inside_dict['table'] = current_config
-        inside_dict['active'] = False
+        inside_dict["table"] = current_config
+        inside_dict["active"] = False
 
         self.reset_config_dict = inside_dict
 
@@ -228,15 +225,15 @@ class Interface(QMainWindow):
         self.ui.h2_table.horizontalScrollBar().valueChanged.connect(self.scroll_h2_table)
         self.ui.h3_table.horizontalScrollBar().valueChanged.connect(self.scroll_h3_table)
 
-    def load_this_config(self, key='', resize=False):
-        if key == '':
+    def load_this_config(self, key="", resize=False):
+        if key == "":
             return
 
-        config_to_load = self.config_dict[key]['table']
+        config_to_load = self.config_dict[key]["table"]
 
-        h1_dict = config_to_load['h1']
-        h2_dict = config_to_load['h2']
-        h3_dict = config_to_load['h3']
+        h1_dict = config_to_load["h1"]
+        h2_dict = config_to_load["h2"]
+        h3_dict = config_to_load["h3"]
 
         # print("config to load")
         # pprint.pprint(config_to_load)
@@ -248,18 +245,18 @@ class Interface(QMainWindow):
         self.block_table_ui()
 
         for _col in h1_dict:
-            _visible = h1_dict[_col]['visible']
-            _width = h1_dict[_col]['width']
+            _visible = h1_dict[_col]["visible"]
+            _width = h1_dict[_col]["width"]
             self.set_size_and_visibility_column(h1=_col, width=_width, visibility=_visible, resize=resize)
 
         for _col in h2_dict:
-            _visible = h2_dict[_col]['visible']
-            _width = h2_dict[_col]['width']
+            _visible = h2_dict[_col]["visible"]
+            _width = h2_dict[_col]["width"]
             self.set_size_and_visibility_column(h2=_col, width=_width, visibility=_visible, resize=resize)
 
         for _col in h3_dict:
-            _visible = h3_dict[_col]['visible']
-            _width = h3_dict[_col]['width']
+            _visible = h3_dict[_col]["visible"]
+            _width = h3_dict[_col]["width"]
             self.set_size_and_visibility_column(h3=_col, width=_width, visibility=_visible, resize=resize)
 
         self.update_tree_dict_and_tree(config_to_load)
@@ -267,9 +264,8 @@ class Interface(QMainWindow):
 
         self.block_table_ui(unblock_all=True)
 
-
     def update_tree_dict_and_tree(self, config_to_load={}):
-        '''This method will update the tree_dict dictionary as well as the state of the tree'''
+        """This method will update the tree_dict dictionary as well as the state of the tree"""
 
         def from_boolean_to_ui_status(visible):
             if visible:
@@ -278,12 +274,12 @@ class Interface(QMainWindow):
                 return QtCore.Qt.Unchecked
 
         def change_state_tree_widgets(list_tree_ui, list_h_columns):
-            for _ui, _key in zip(list_tree_ui, list_h_columns):
+            for _ui, _key in zip(list_tree_ui, list_h_columns, strict=False):
                 if _ui is None:
                     continue
                 else:
                     _config = list_h_columns[_key]
-                    _visibility = _config['visible']
+                    _visibility = _config["visible"]
                     _state = from_boolean_to_ui_status(_visibility)
                     _ui.setCheckState(0, _state)
 
@@ -295,27 +291,25 @@ class Interface(QMainWindow):
         tree_ui = self.tree_ui
 
         # working with h1
-        list_h1_columns = config_to_load['h1']
-        list_h1_tree_ui = tree_ui['h1']
+        list_h1_columns = config_to_load["h1"]
+        list_h1_tree_ui = tree_ui["h1"]
         change_state_tree_widgets(list_h1_tree_ui, list_h1_columns)
 
         # working with h2
-        list_h2_columns = config_to_load['h2']
-        list_h2_tree_ui = tree_ui['h2']
+        list_h2_columns = config_to_load["h2"]
+        list_h2_tree_ui = tree_ui["h2"]
         change_state_tree_widgets(list_h2_tree_ui, list_h2_columns)
 
         # working with h3
-        list_h3_columns = config_to_load['h3']
-        list_h3_tree_ui = tree_ui['h3']
+        list_h3_columns = config_to_load["h3"]
+        list_h3_tree_ui = tree_ui["h3"]
         change_state_tree_widgets(list_h3_tree_ui, list_h3_columns)
 
         self.ui.treeWidget.blockSignals(False)
 
-
     def h3_table_right_click(self, position):
         o_h3_table = H3TableHandler(parent=self)
         o_h3_table.right_click()
-
 
     def scroll_h1_table(self, value):
         self.ui.h2_table.horizontalScrollBar().setValue(value)
@@ -329,12 +323,7 @@ class Interface(QMainWindow):
         self.ui.h1_table.horizontalScrollBar().setValue(value)
         self.ui.h2_table.horizontalScrollBar().setValue(value)
 
-    def block_table_ui(self, block_all=True,
-                       unblock_all=False,
-                       block_h1=False,
-                       block_h2=False,
-                       block_h3=False):
-
+    def block_table_ui(self, block_all=True, unblock_all=False, block_h1=False, block_h2=False, block_h3=False):
         if block_all:
             block_h1 = True
             block_h2 = True
@@ -381,13 +370,12 @@ class Interface(QMainWindow):
 
         # add this size_diff to last_h2 and last_h3
         last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
-        if (last_h3_visible_size < self.minimum_col_width) and \
-                (new_size < old_size):
+        if (last_h3_visible_size < self.minimum_col_width) and (new_size < old_size):
             self.set_size_column(h1=index_column, width=old_size)
         else:
             last_h2_visible_size = self.get_size_column(h2=last_h2_visible)
-            self.set_size_column(h2=last_h2_visible, width=last_h2_visible_size+size_diff)
-            self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+            self.set_size_column(h2=last_h2_visible, width=last_h2_visible_size + size_diff)
+            self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size + size_diff)
 
         self.block_table_ui(unblock_all=True)
         # print("")
@@ -409,19 +397,18 @@ class Interface(QMainWindow):
         size_diff = new_size - old_size
 
         last_h3_visible_size = self.get_size_column(h3=last_h3_visible)
-        if (last_h3_visible_size < self.minimum_col_width) and \
-                (new_size < old_size):
+        if (last_h3_visible_size < self.minimum_col_width) and (new_size < old_size):
             self.set_size_column(h2=index_column, width=old_size)
         else:
             # add this size_diff to parent and last h3
             parent_size = self.get_size_column(h1=h1_parent)
-            self.set_size_column(h1=h1_parent, width=parent_size+size_diff)
-            self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size+size_diff)
+            self.set_size_column(h1=h1_parent, width=parent_size + size_diff)
+            self.set_size_column(h3=last_h3_visible, width=last_h3_visible_size + size_diff)
 
         self.block_table_ui(unblock_all=True)
 
     def resizing_h1_using_all_visible_h2(self, h1=None):
-        '''automatically resize the h1 using all its h2 visible '''
+        """automatically resize the h1 using all its h2 visible"""
         h2_children = self.get_h2_children_from_h1(h1=h1)
         list_visible_h2 = self.get_all_h2_visible(list_h2=h2_children)
 
@@ -446,14 +433,14 @@ class Interface(QMainWindow):
 
         # get h2 and h1 size and resize them
         h1_parent_size = self.get_size_column(h1=h1_parent)
-        self.set_size_column(h1=h1_parent, width=h1_parent_size+size_diff)
+        self.set_size_column(h1=h1_parent, width=h1_parent_size + size_diff)
         h2_parent_size = self.get_size_column(h2=h2_parent)
-        self.set_size_column(h2=h2_parent, width=h2_parent_size+size_diff)
+        self.set_size_column(h2=h2_parent, width=h2_parent_size + size_diff)
 
         self.block_table_ui(unblock_all=True)
 
     def resizing_h2_using_all_visible_h3(self, h2=None):
-        '''automatically resizing the h2 using all its h3 visible'''
+        """automatically resizing the h2 using all its h3 visible"""
         h3_children = self.get_h3_children_from_h2(h2=h2)
         list_visible_h3 = self.get_all_h3_visible(list_h3=h3_children)
 
@@ -474,24 +461,24 @@ class Interface(QMainWindow):
         return not table_ui.isColumnHidden(master_h)
 
     def get_table_ui(self, h1=None, h2=None, h3=None):
-        '''h1, h2 or h3 are column indexes'''
-        if not h1 is None:
+        """h1, h2 or h3 are column indexes"""
+        if h1 is not None:
             table_ui = self.ui.h1_table
-        elif not h2 is None:
+        elif h2 is not None:
             table_ui = self.ui.h2_table
-        elif not h3 is None:
+        elif h3 is not None:
             table_ui = self.ui.h3_table
         else:
             table_ui = None
         return table_ui
 
     def get_master_h(self, h1=None, h2=None, h3=None):
-        '''return the only defined column index from h1, h2 or h3 table'''
-        if not h1 is None:
+        """return the only defined column index from h1, h2 or h3 table"""
+        if h1 is not None:
             return h1
-        elif not h2 is None:
+        elif h2 is not None:
             return h2
-        elif not h3 is None:
+        elif h3 is not None:
             return h3
         else:
             return None
@@ -524,12 +511,12 @@ class Interface(QMainWindow):
             return None
 
         table_columns_links = self.table_columns_links
-        list_h2_values = table_columns_links['h2']
+        list_h2_values = table_columns_links["h2"]
 
         return list_h2_values[h1]
 
     def get_all_h2_visible(self, list_h2=[]):
-        '''return the list of all the visible h2 from the list of h2 given'''
+        """return the list of all the visible h2 from the list of h2 given"""
         if list_h2 == []:
             return None
 
@@ -549,7 +536,7 @@ class Interface(QMainWindow):
         return None
 
     def get_all_h3_visible(self, list_h3=[]):
-        '''return the list of all the visible h3 from the list of h3 given'''
+        """return the list of all the visible h3 from the list of h3 given"""
         if list_h3 == []:
             return None
 
@@ -573,8 +560,8 @@ class Interface(QMainWindow):
             return None
 
         table_columns_links = self.table_columns_links
-        list_h3_values = table_columns_links['h3']
-        list_h2_values = table_columns_links['h2']
+        list_h3_values = table_columns_links["h3"]
+        list_h2_values = table_columns_links["h2"]
 
         index_h2 = -1
         index_h1 = 0
@@ -594,7 +581,7 @@ class Interface(QMainWindow):
             return None
 
         table_columns_links = self.table_columns_links
-        list_h2_values = table_columns_links['h2']
+        list_h2_values = table_columns_links["h2"]
 
         h1_parent_index = 0
         for h2_values in list_h2_values:
@@ -609,7 +596,7 @@ class Interface(QMainWindow):
             return [None, None]
 
         table_columns_links = self.table_columns_links
-        list_h3_values = table_columns_links['h3']
+        list_h3_values = table_columns_links["h3"]
 
         h1_parent_index = 0
         h2_parent_index = 0
@@ -624,7 +611,7 @@ class Interface(QMainWindow):
         return [None, None]
 
     def resizing_table(self, tree_dict={}):
-        '''updating the size of the columns using visibility of the various elements of the tree'''
+        """updating the size of the columns using visibility of the various elements of the tree"""
         if tree_dict == {}:
             return
 
@@ -632,15 +619,14 @@ class Interface(QMainWindow):
 
         # if user disabled or enabled at the h1 level, nothing to do as all the columns will be automatically
         # resized the right way
-        h1 = tree_dict['h1']
-        h2 = tree_dict['h2']
-        h3 = tree_dict['h3']
+        h1 = tree_dict["h1"]
+        h2 = tree_dict["h2"]
+        h3 = tree_dict["h3"]
         if not h1 == []:
             pass
 
         # if user clicked at the h2 level
         elif not h2 == []:
-
             h2 = h2[0]
 
             h1_parent = self.get_h1_parent_from_h2(h2=h2)
@@ -659,7 +645,6 @@ class Interface(QMainWindow):
 
         # if user clicked at the h3 level
         elif not h3 == []:
-
             h3 = h3[0]
 
             [h1_parent, h2_parent] = self.get_h1_h2_parent_from_h3(h3=h3)
@@ -691,24 +676,23 @@ class Interface(QMainWindow):
 
         self.block_table_ui(unblock_all=True)
 
-
     def init_headers(self):
         td = self.tree_dict
 
-        table_headers = {'h1': [], 'h2': [], 'h3': []}
+        table_headers = {"h1": [], "h2": [], "h3": []}
         for _key_h1 in td.keys():
-            table_headers['h1'].append(td[_key_h1]['name'])
-            if td[_key_h1]['children']:
-                for _key_h2 in td[_key_h1]['children'].keys():
-                    table_headers['h2'].append(td[_key_h1]['children'][_key_h2]['name'])
-                    if td[_key_h1]['children'][_key_h2]['children']:
-                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
-                            table_headers['h3'].append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['name'])
+            table_headers["h1"].append(td[_key_h1]["name"])
+            if td[_key_h1]["children"]:
+                for _key_h2 in td[_key_h1]["children"].keys():
+                    table_headers["h2"].append(td[_key_h1]["children"][_key_h2]["name"])
+                    if td[_key_h1]["children"][_key_h2]["children"]:
+                        for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
+                            table_headers["h3"].append(td[_key_h1]["children"][_key_h2]["children"][_key_h3]["name"])
                     else:
-                        table_headers['h3'].append('')
+                        table_headers["h3"].append("")
             else:
-                table_headers['h2'].append('')
-                table_headers['h3'].append('')
+                table_headers["h2"].append("")
+                table_headers["h3"].append("")
 
         self.table_headers = table_headers
 
@@ -725,66 +709,61 @@ class Interface(QMainWindow):
     def init_table_dimensions(self):
         td = self.tree_dict
 
-        table_width = {'h1': [], 'h2': [], 'h3': []}
+        table_width = {"h1": [], "h2": [], "h3": []}
 
         # check all the h1 headers
         for _key_h1 in td.keys():
-
             # if h1 header has children
-            if td[_key_h1]['children']:
-
+            if td[_key_h1]["children"]:
                 absolute_nbr_h3_for_this_h1 = 0
 
                 # loop through list of h2 header for this h1 header
-                for _key_h2 in td[_key_h1]['children'].keys():
-
+                for _key_h2 in td[_key_h1]["children"].keys():
                     # if h2 has children, just count how many children
-                    if td[_key_h1]['children'][_key_h2]['children']:
-                        nbr_h3 = len(td[_key_h1]['children'][_key_h2]['children'])
+                    if td[_key_h1]["children"][_key_h2]["children"]:
+                        nbr_h3 = len(td[_key_h1]["children"][_key_h2]["children"])
 
                         for _ in np.arange(nbr_h3):
-                            table_width['h3'].append(self.default_width)
+                            table_width["h3"].append(self.default_width)
 
                         ## h2 header will be as wide as the number of h3 children
-                        table_width['h2'].append(nbr_h3 * self.default_width)
+                        table_width["h2"].append(nbr_h3 * self.default_width)
 
                         ## h1 header will be += the number of h3 children
                         absolute_nbr_h3_for_this_h1 += nbr_h3
 
                     # if h2 has no children
                     else:
-
                         ## h2 header is 1 wide
-                        table_width['h2'].append(self.default_width)
-                        table_width['h3'].append(self.default_width)
+                        table_width["h2"].append(self.default_width)
+                        table_width["h3"].append(self.default_width)
 
                         ## h2 header will be += 1
                         absolute_nbr_h3_for_this_h1 += 1
 
-                table_width['h1'].append(absolute_nbr_h3_for_this_h1 * self.default_width)
+                table_width["h1"].append(absolute_nbr_h3_for_this_h1 * self.default_width)
 
             # if h1 has no children
             else:
                 # h1, h2 and h3 are 1 wide
-                table_width['h1'].append(self.default_width)
-                table_width['h2'].append(self.default_width)
-                table_width['h3'].append(self.default_width)
+                table_width["h1"].append(self.default_width)
+                table_width["h2"].append(self.default_width)
+                table_width["h3"].append(self.default_width)
 
         self.table_width = table_width
 
     def init_tables(self):
-
         # set h1, h2 and h3 headers
         self.init_headers()
-        self.init_table_header(table_ui=self.ui.h1_table, list_items=self.table_headers['h1'])
-        self.init_table_header(table_ui=self.ui.h2_table, list_items=self.table_headers['h2'])
-        self.init_table_header(table_ui=self.ui.h3_table, list_items=self.table_headers['h3'])
+        self.init_table_header(table_ui=self.ui.h1_table, list_items=self.table_headers["h1"])
+        self.init_table_header(table_ui=self.ui.h2_table, list_items=self.table_headers["h2"])
+        self.init_table_header(table_ui=self.ui.h3_table, list_items=self.table_headers["h3"])
 
         # set h1, h2 and h3 width
         self.init_table_dimensions()
-        self.init_table_col_width(table_width=self.table_width['h1'], table_ui=self.ui.h1_table)
-        self.init_table_col_width(table_width=self.table_width['h2'], table_ui=self.ui.h2_table)
-        self.init_table_col_width(table_width=self.table_width['h3'], table_ui=self.ui.h3_table)
+        self.init_table_col_width(table_width=self.table_width["h1"], table_ui=self.ui.h1_table)
+        self.init_table_col_width(table_width=self.table_width["h2"], table_ui=self.ui.h2_table)
+        self.init_table_col_width(table_width=self.table_width["h3"], table_ui=self.ui.h3_table)
 
         self.h1_header_table = self.ui.h1_table.horizontalHeader()
         self.h2_header_table = self.ui.h2_table.horizontalHeader()
@@ -805,22 +784,17 @@ class Interface(QMainWindow):
         td = self.tree_dict
 
         for _key_h1 in td.keys():
-
-            if item == td[_key_h1]['ui']:
+            if item == td[_key_h1]["ui"]:
                 return _key_h1
 
-            if td[_key_h1]['children']:
-
-                for _key_h2 in td[_key_h1]['children'].keys():
-
-                    if item == td[_key_h1]['children'][_key_h2]['ui']:
+            if td[_key_h1]["children"]:
+                for _key_h2 in td[_key_h1]["children"].keys():
+                    if item == td[_key_h1]["children"][_key_h2]["ui"]:
                         return _key_h2
 
-                    if td[_key_h1]['children'][_key_h2]['children']:
-
-                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
-
-                            if item == td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui']:
+                    if td[_key_h1]["children"][_key_h2]["children"]:
+                        for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
+                            if item == td[_key_h1]["children"][_key_h2]["children"][_key_h3]["ui"]:
                                 return _key_h3
 
         return None
@@ -831,23 +805,25 @@ class Interface(QMainWindow):
 
         self.h1_header_table.blockSignals(True)
         self.h2_header_table.blockSignals(True)
-        #self.h3_header_table.blockSignals(True)
+        # self.h3_header_table.blockSignals(True)
 
         h_columns_affected = self.get_h_columns_from_item_name(item_name=self.get_item_name(item))
 
         # import pprint
         # pprint.pprint(h_columns_affected)
 
-        self.change_state_tree(list_ui=h_columns_affected['list_tree_ui'],
-                               list_parent_ui=h_columns_affected['list_parent_ui'],
-                               state=item.checkState(0))
+        self.change_state_tree(
+            list_ui=h_columns_affected["list_tree_ui"],
+            list_parent_ui=h_columns_affected["list_parent_ui"],
+            state=item.checkState(0),
+        )
 
         self.update_table_columns_visibility()
         self.resizing_table(tree_dict=h_columns_affected)
-        
+
         self.h1_header_table.blockSignals(False)
         self.h2_header_table.blockSignals(False)
-        #self.h3_header_table.blockSignals(False)
+        # self.h3_header_table.blockSignals(False)
 
     def make_all_columns_visible(self):
         """Make all columns of all table visible"""
@@ -881,7 +857,7 @@ class Interface(QMainWindow):
             QtGui.QGuiApplication.processEvents()
 
         def get_boolean_state(key=None):
-            status = key['state']
+            status = key["state"]
             if status == QtCore.Qt.Checked:
                 return True
             else:
@@ -892,50 +868,35 @@ class Interface(QMainWindow):
 
         td = self.tree_dict
         for h1_counter, _key_h1 in enumerate(td.keys()):
-
             _h1_boolean_status = get_boolean_state(td[_key_h1])
 
-            set_column_visibility(column=h1_counter,
-                                  table_ui=self.ui.h1_table,
-                                  visible=_h1_boolean_status)
+            set_column_visibility(column=h1_counter, table_ui=self.ui.h1_table, visible=_h1_boolean_status)
 
-            if td[_key_h1]['children']:
+            if td[_key_h1]["children"]:
+                for _key_h2 in td[_key_h1]["children"].keys():
+                    _h2_boolean_status = get_boolean_state(td[_key_h1]["children"][_key_h2])
+                    set_column_visibility(column=h2_counter, table_ui=self.ui.h2_table, visible=_h2_boolean_status)
 
-                for _key_h2 in td[_key_h1]['children'].keys():
-
-                    _h2_boolean_status = get_boolean_state(td[_key_h1]['children'][_key_h2])
-                    set_column_visibility(column=h2_counter,
-                                          table_ui=self.ui.h2_table,
-                                          visible=_h2_boolean_status)
-
-                    if td[_key_h1]['children'][_key_h2]['children']:
-
-                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
-
-                            _h3_boolean_status = get_boolean_state(td[_key_h1]['children'][_key_h2]['children'][_key_h3])
-                            set_column_visibility(column=h3_counter,
-                                                  table_ui=self.ui.h3_table,
-                                                  visible=_h3_boolean_status)
+                    if td[_key_h1]["children"][_key_h2]["children"]:
+                        for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
+                            _h3_boolean_status = get_boolean_state(
+                                td[_key_h1]["children"][_key_h2]["children"][_key_h3]
+                            )
+                            set_column_visibility(
+                                column=h3_counter, table_ui=self.ui.h3_table, visible=_h3_boolean_status
+                            )
                             h3_counter += 1
 
                     else:
-
-                        set_column_visibility(column=h3_counter,
-                                              table_ui=self.ui.h3_table,
-                                              visible=_h2_boolean_status)
+                        set_column_visibility(column=h3_counter, table_ui=self.ui.h3_table, visible=_h2_boolean_status)
                         h3_counter += 1
 
                     h2_counter += 1
 
             else:
-
                 # h2 and h3 should have the same status as h1
-                set_column_visibility(column=h2_counter,
-                                      table_ui=self.ui.h2_table,
-                                      visible=_h1_boolean_status)
-                set_column_visibility(column=h3_counter,
-                                      table_ui=self.ui.h3_table,
-                                      visible=_h1_boolean_status)
+                set_column_visibility(column=h2_counter, table_ui=self.ui.h2_table, visible=_h1_boolean_status)
+                set_column_visibility(column=h3_counter, table_ui=self.ui.h3_table, visible=_h1_boolean_status)
 
                 h2_counter += 1
                 h3_counter += 1
@@ -972,54 +933,43 @@ class Interface(QMainWindow):
         # if all h3 of an h2 are disabled, h2 should be disabled
         # if all h2 of a h1 are disabled, h1 should be disabled
         for _key_h1 in td.keys():
-
-            if td[_key_h1]['children']:
-
+            if td[_key_h1]["children"]:
                 all_h2_disabled = True
 
-                for _key_h2 in td[_key_h1]['children'].keys():
-
-                    if td[_key_h1]['children'][_key_h2]['children']:
-
+                for _key_h2 in td[_key_h1]["children"].keys():
+                    if td[_key_h1]["children"][_key_h2]["children"]:
                         all_h3_disabled = True
-                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
-
-                            if td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'].checkState(0):
+                        for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
+                            if td[_key_h1]["children"][_key_h2]["children"][_key_h3]["ui"].checkState(0):
                                 all_h3_disabled = False
                                 all_h2_disabled = False
                                 break
 
                         if all_h3_disabled:
                             # we need to make sure the h2 is disabled as well
-                            td[_key_h1]['children'][_key_h2]['ui'].setCheckState(0, QtCore.Qt.Unchecked)
+                            td[_key_h1]["children"][_key_h2]["ui"].setCheckState(0, QtCore.Qt.Unchecked)
 
                     else:
-
-                        if td[_key_h1]['children'][_key_h2]['ui'].checkState(0):
+                        if td[_key_h1]["children"][_key_h2]["ui"].checkState(0):
                             all_h2_disabled = False
 
                 if all_h2_disabled:
                     # we need to make sure the h1 is disabled as well then
-                    td[_key_h1]['ui'].setCheckState(0, QtCore.Qt.Unchecked)
-
+                    td[_key_h1]["ui"].setCheckState(0, QtCore.Qt.Unchecked)
 
         # record full tree state
         for _key_h1 in td.keys():
+            td[_key_h1]["state"] = td[_key_h1]["ui"].checkState(0)
 
-            td[_key_h1]['state'] = td[_key_h1]['ui'].checkState(0)
+            if td[_key_h1]["children"]:
+                for _key_h2 in td[_key_h1]["children"].keys():
+                    td[_key_h1]["children"][_key_h2]["state"] = td[_key_h1]["children"][_key_h2]["ui"].checkState(0)
 
-            if td[_key_h1]['children']:
-
-                for _key_h2 in td[_key_h1]['children'].keys():
-
-                    td[_key_h1]['children'][_key_h2]['state'] = td[_key_h1]['children'][_key_h2]['ui'].checkState(0)
-
-                    if td[_key_h1]['children'][_key_h2]['children']:
-
-                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
-
-                            td[_key_h1]['children'][_key_h2]['children'][_key_h3]['state'] = \
-                            td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'].checkState(0)
+                    if td[_key_h1]["children"][_key_h2]["children"]:
+                        for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
+                            td[_key_h1]["children"][_key_h2]["children"][_key_h3]["state"] = td[_key_h1]["children"][
+                                _key_h2
+                            ]["children"][_key_h3]["ui"].checkState(0)
 
         self.tree_dict = td
 
@@ -1039,25 +989,20 @@ class Interface(QMainWindow):
         h2 = []
         h3 = []
 
-        h2_index=0
-        h3_index=0
+        h2_index = 0
+        h3_index = 0
 
         td = self.tree_dict
         for h1_index, _key_h1 in enumerate(td.keys()):
-
             h1.append(h1_index)
 
-            if td[_key_h1]['children']:
-
+            if td[_key_h1]["children"]:
                 _h2 = []
                 _h3_h2 = []
-                for _key_h2 in td[_key_h1]['children']:
-
-                    if td[_key_h1]['children'][_key_h2]['children']:
-
+                for _key_h2 in td[_key_h1]["children"]:
+                    if td[_key_h1]["children"][_key_h2]["children"]:
                         _h3_h3 = []
-                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children']:
-
+                        for _key_h3 in td[_key_h1]["children"][_key_h2]["children"]:
                             _h3_h3.append(h3_index)
                             h3_index += 1
 
@@ -1075,17 +1020,18 @@ class Interface(QMainWindow):
                 h2.append(_h2)
 
             else:
-            # h1 does not have any h2 children
+                # h1 does not have any h2 children
 
                 h2.append([h2_index])
                 h3.append([[h3_index]])
                 h2_index += 1
                 h3_index += 1
 
-        self.table_columns_links = {'h1': h1,
-                                    'h2': h2,
-                                    'h3': h3,
-                                    }
+        self.table_columns_links = {
+            "h1": h1,
+            "h2": h2,
+            "h3": h3,
+        }
 
     def get_h_columns_from_item_name(self, item_name=None):
         # h_columns_affected = {'h1': [],
@@ -1109,100 +1055,97 @@ class Interface(QMainWindow):
 
         td = self.tree_dict
         for h1_global_counter, _key_h1 in enumerate(td.keys()):
-
             if item_name == _key_h1:
                 # get all h2 and h3 of this h1
 
-                if td[_key_h1]['children']:
-
-                    for _key_h2 in td[_key_h1]['children']:
-
-                        if td[_key_h1]['children'][_key_h2]['children']:
-
-                            list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
-                            for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+                if td[_key_h1]["children"]:
+                    for _key_h2 in td[_key_h1]["children"]:
+                        if td[_key_h1]["children"][_key_h2]["children"]:
+                            list_tree_ui.append(td[_key_h1]["children"][_key_h2]["ui"])
+                            for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
                                 h3_columns.append(h3_global_counter)
-                                list_tree_ui.append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'])
+                                list_tree_ui.append(td[_key_h1]["children"][_key_h2]["children"][_key_h3]["ui"])
                                 h3_global_counter += 1
 
                         else:
-
                             h2_columns.append(h2_global_counter)
-                            list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
+                            list_tree_ui.append(td[_key_h1]["children"][_key_h2]["ui"])
                             h3_columns.append(h3_global_counter)
 
                             h2_global_counter += 1
                             h3_global_counter += 1
 
-                    return {'h1': [h1_global_counter],
-                            'h2': h2_columns,
-                            'h3': h3_columns,
-                            'list_tree_ui': list_tree_ui,
-                            'list_parent_ui': list_parent_ui}
+                    return {
+                        "h1": [h1_global_counter],
+                        "h2": h2_columns,
+                        "h3": h3_columns,
+                        "list_tree_ui": list_tree_ui,
+                        "list_parent_ui": list_parent_ui,
+                    }
 
                 else:
-
-                    list_tree_ui.append(td[_key_h1]['ui'])
-                    return {'h1': [h1_global_counter],
-                            'h2': [h2_global_counter],
-                            'h3': [h3_global_counter],
-                            'list_tree_ui': list_tree_ui,
-                            'list_parent_ui': list_parent_ui}
+                    list_tree_ui.append(td[_key_h1]["ui"])
+                    return {
+                        "h1": [h1_global_counter],
+                        "h2": [h2_global_counter],
+                        "h3": [h3_global_counter],
+                        "list_tree_ui": list_tree_ui,
+                        "list_parent_ui": list_parent_ui,
+                    }
 
             else:
                 # start looking into the h2 layer if it has children
 
-                if td[_key_h1]['children']:
-
-                    for _key_h2 in td[_key_h1]['children'].keys():
-
+                if td[_key_h1]["children"]:
+                    for _key_h2 in td[_key_h1]["children"].keys():
                         if item_name == _key_h2:
                             # get all h3 for this h2 and we are done
 
-                            if td[_key_h1]['children'][_key_h2]['children']:
+                            if td[_key_h1]["children"][_key_h2]["children"]:
                                 # if key_h2 has children
 
                                 # list all h3 leaves for this h2
-                                for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
+                                for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
                                     h3_columns.append(h3_global_counter)
-                                    list_tree_ui.append(td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'])
+                                    list_tree_ui.append(td[_key_h1]["children"][_key_h2]["children"][_key_h3]["ui"])
                                     h3_global_counter += 1
 
                             else:
                                 h3_columns = [h3_global_counter]
 
-                            list_tree_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
-                            list_parent_ui.append(td[_key_h1]['ui'])
-                            return {'h1': [],
-                                    'h2': [h2_global_counter],
-                                    'h3': h3_columns,
-                                    'list_tree_ui': list_tree_ui,
-                                    'list_parent_ui': list_parent_ui}
+                            list_tree_ui.append(td[_key_h1]["children"][_key_h2]["ui"])
+                            list_parent_ui.append(td[_key_h1]["ui"])
+                            return {
+                                "h1": [],
+                                "h2": [h2_global_counter],
+                                "h3": h3_columns,
+                                "list_tree_ui": list_tree_ui,
+                                "list_parent_ui": list_parent_ui,
+                            }
 
                         else:
                             # we did not find the item name yet
 
                             # start looking into all the h2 children (if any)
-                            if td[_key_h1]['children'][_key_h2]['children']:
-
+                            if td[_key_h1]["children"][_key_h2]["children"]:
                                 # loop through all the h3 and look for item_name. If found
                                 # we are done
-                                for _key_h3 in td[_key_h1]['children'][_key_h2]['children'].keys():
-
+                                for _key_h3 in td[_key_h1]["children"][_key_h2]["children"].keys():
                                     if item_name == _key_h3:
                                         # we found the item name at the h3 layer,
                                         # no leaf below, so we are done
 
-                                        list_parent_ui.append(td[_key_h1]['ui'])
-                                        list_parent_ui.append(td[_key_h1]['children'][_key_h2]['ui'])
-                                        return {'h1': [],
-                                                'h2': [],
-                                                'h3': [h3_global_counter],
-                                                'list_tree_ui': list_tree_ui,
-                                                'list_parent_ui': list_parent_ui}
+                                        list_parent_ui.append(td[_key_h1]["ui"])
+                                        list_parent_ui.append(td[_key_h1]["children"][_key_h2]["ui"])
+                                        return {
+                                            "h1": [],
+                                            "h2": [],
+                                            "h3": [h3_global_counter],
+                                            "list_tree_ui": list_tree_ui,
+                                            "list_parent_ui": list_parent_ui,
+                                        }
 
                                     else:
-
                                         h3_global_counter += 1
 
                                 h2_global_counter += 1
@@ -1219,81 +1162,69 @@ class Interface(QMainWindow):
                     h2_global_counter += 1
                     h3_global_counter += 1
 
-        return {'h1': h1_columns,
-                'h2': h2_columns,
-                'h3': h3_columns,
-                'list_tree_ui': list_tree_ui,
-                'list_parent_ui': list_parent_ui}
+        return {
+            "h1": h1_columns,
+            "h2": h2_columns,
+            "h3": h3_columns,
+            "list_tree_ui": list_tree_ui,
+            "list_parent_ui": list_parent_ui,
+        }
 
     def addItems(self, parent):
         td = self.tree_dict
         absolute_parent = parent
 
-        tree_ui = {'h1': [],
-                   'h2': [],
-                   'h3': []}
+        tree_ui = {"h1": [], "h2": [], "h3": []}
 
         h1_index = 0
         h2_index = 0
         h3_index = 0
 
         def set_h_indexes(location, h1=None, h2=None, h3=None):
-            location['h_index']['h1'] = h1
-            location['h_index']['h2'] = h2
-            location['h_index']['h3'] = h3
+            location["h_index"]["h1"] = h1
+            location["h_index"]["h2"] = h2
+            location["h_index"]["h3"] = h3
 
         for _key_h1 in td.keys():
-
             # if there are children, we need to use addParent
-            if td[_key_h1]['children']:
+            if td[_key_h1]["children"]:
+                _h1_parent = self.addParent(absolute_parent, td[_key_h1]["name"], _key_h1)
+                td[_key_h1]["ui"] = _h1_parent
+                tree_ui["h1"].append(_h1_parent)
 
-                _h1_parent = self.addParent(absolute_parent,
-                                            td[_key_h1]['name'],
-                                            _key_h1)
-                td[_key_h1]['ui'] = _h1_parent
-                tree_ui['h1'].append(_h1_parent)
-
-                for _key_h2 in td[_key_h1]['children'].keys():
-
+                for _key_h2 in td[_key_h1]["children"].keys():
                     # if there are children, we need to use addParent
-                    if td[_key_h1]['children'][_key_h2]['children']:
+                    if td[_key_h1]["children"][_key_h2]["children"]:
+                        _h2_parent = self.addParent(_h1_parent, td[_key_h1]["children"][_key_h2]["name"], _key_h2)
+                        td[_key_h1]["children"][_key_h2]["ui"] = _h2_parent
+                        tree_ui["h2"].append(_h2_parent)
 
-                        _h2_parent = self.addParent(_h1_parent,
-                                                    td[_key_h1]['children'][_key_h2]['name'],
-                                                    _key_h2)
-                        td[_key_h1]['children'][_key_h2]['ui'] = _h2_parent
-                        tree_ui['h2'].append(_h2_parent)
+                        for _key_h3 in td[_key_h1]["children"][_key_h2]["children"]:
+                            _h3_child = self.addChild(
+                                _h2_parent, td[_key_h1]["children"][_key_h2]["children"][_key_h3]["name"], _key_h3
+                            )
+                            td[_key_h1]["children"][_key_h2]["children"][_key_h3]["ui"] = _h3_child
 
-                        for _key_h3 in td[_key_h1]['children'][_key_h2]['children']:
-                            _h3_child = self.addChild(_h2_parent,
-                                                      td[_key_h1]['children'][_key_h2]['children'][_key_h3]['name'],
-                                                      _key_h3)
-                            td[_key_h1]['children'][_key_h2]['children'][_key_h3]['ui'] = _h3_child
-
-                            set_h_indexes(td[_key_h1]['children'][_key_h2]['children'][_key_h3], h3=h3_index)
-                            tree_ui['h3'].append(_h3_child)
+                            set_h_indexes(td[_key_h1]["children"][_key_h2]["children"][_key_h3], h3=h3_index)
+                            tree_ui["h3"].append(_h3_child)
                             h3_index += 1
 
-                    else: # key_h2 has no children, it's a leaf
-                        _h3_child = self.addChild(_h1_parent,
-                                                  td[_key_h1]['children'][_key_h2]['name'],
-                                                  _key_h2)
-                        td[_key_h1]['children'][_key_h2]['ui'] = _h3_child
-                        tree_ui['h2'].append(_h3_child)
-                        tree_ui['h3'].append(None)
+                    else:  # key_h2 has no children, it's a leaf
+                        _h3_child = self.addChild(_h1_parent, td[_key_h1]["children"][_key_h2]["name"], _key_h2)
+                        td[_key_h1]["children"][_key_h2]["ui"] = _h3_child
+                        tree_ui["h2"].append(_h3_child)
+                        tree_ui["h3"].append(None)
                         h3_index += 1
 
-                    set_h_indexes(td[_key_h1]['children'][_key_h2], h2=h2_index)
+                    set_h_indexes(td[_key_h1]["children"][_key_h2], h2=h2_index)
                     h2_index += 1
 
-            else: #_key_h1 has no children, using addChild
-                _child = self.addChild(absolute_parent,
-                                       td[_key_h1]['name'],
-                                       _key_h1)
-                td[_key_h1]['ui'] = _child
-                tree_ui['h1'].append(_child)
-                tree_ui['h2'].append(None)
-                tree_ui['h3'].append(None)
+            else:  # _key_h1 has no children, using addChild
+                _child = self.addChild(absolute_parent, td[_key_h1]["name"], _key_h1)
+                td[_key_h1]["ui"] = _child
+                tree_ui["h1"].append(_child)
+                tree_ui["h2"].append(None)
+                tree_ui["h3"].append(None)
                 h2_index += 1
 
             set_h_indexes(td[_key_h1], h1=h1_index)
@@ -1304,7 +1235,7 @@ class Interface(QMainWindow):
 
     def addParent(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
-        item.setData(self.tree_column, QtCore.Qt.UserRole, '')
+        item.setData(self.tree_column, QtCore.Qt.UserRole, "")
         item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
         item.setCheckState(self.tree_column, QtCore.Qt.Checked)
         item.setExpanded(True)
@@ -1312,7 +1243,7 @@ class Interface(QMainWindow):
 
     def addChild(self, parent, title, name):
         item = QTreeWidgetItem(parent, [title])
-        item.setData(self.tree_column, QtCore.Qt.UserRole, '')
+        item.setData(self.tree_column, QtCore.Qt.UserRole, "")
         item.setCheckState(self.tree_column, QtCore.Qt.Checked)
         return item
 
@@ -1328,11 +1259,10 @@ class Interface(QMainWindow):
 
     def closeEvent(self, eventhere=None):
         pass
-        #print("Leaving Parameters Selection UI")
+        # print("Leaving Parameters Selection UI")
 
 
 class SaveConfigInterface(QDialog):
-
     # config_dict = {}
 
     def __init__(self, parent=None, grand_parent=None):
@@ -1352,38 +1282,37 @@ class SaveConfigInterface(QDialog):
         name_config = self.get_defined_name_config()
         if name_config:
             self.parent.save_as_config_name_selected(name=name_config)
-            self.grand_parent.ui.statusbar.showMessage("New configuration saved ({})".format(name_config), 8000)
+            self.grand_parent.ui.statusbar.showMessage(f"New configuration saved ({name_config})", 8000)
             self.grand_parent.ui.statusbar.setStyleSheet("color: green")
             self.close()
 
     def cancel_clicked(self):
         self.close()
 
+
 class ConfigHandler:
-    '''This class takes care of the config dictionary manipulations'''
+    """This class takes care of the config dictionary manipulations"""
 
     @staticmethod
     def activate_this_config(key="", config={}):
         for _key in config:
             if _key == key:
-                config[_key]['active'] = True
+                config[_key]["active"] = True
                 break
         return config
 
     @staticmethod
     def deactivate_all_config(config={}):
         for _key in config:
-            config[_key]['active'] = False
+            config[_key]["active"] = False
         return config
 
     @staticmethod
     def lazy_export_config(config_dict={}):
-        with open(CONFIG_FILE, 'wb') as handle:
+        with open(CONFIG_FILE, "wb") as handle:
             full_config = {}
-            full_config['configurations'] = config_dict
-            pickle.dump(full_config,
-                        handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+            full_config["configurations"] = config_dict
+            pickle.dump(full_config, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
     def remove_this_config(key="", config={}):
@@ -1395,8 +1324,8 @@ class ConfigHandler:
                 new_config[_key] = config[_key]
         return new_config
 
-class H3TableHandler:
 
+class H3TableHandler:
     # object that takes care of handling the config object
     o_save_config = None
     config_dict = {}
@@ -1406,36 +1335,35 @@ class H3TableHandler:
 
     def retrieve_previous_configurations(self):
         if os.path.exists(CONFIG_FILE):
-            with open(CONFIG_FILE, 'rb') as handle:
+            with open(CONFIG_FILE, "rb") as handle:
                 _cfg = pickle.load(handle)
 
                 try:
-                    config_dict = _cfg['configurations']
+                    config_dict = _cfg["configurations"]
                 except KeyError:
                     return
 
             self.parent.config_dict = config_dict
 
     def save_as_config(self):
-        o_save_config = SaveConfigInterface(parent=self,
-                                            grand_parent=self.parent)
+        o_save_config = SaveConfigInterface(parent=self, grand_parent=self.parent)
         o_save_config.show()
         self.o_save_config = o_save_config
 
-    def save_as_config_name_selected(self, name=''):
+    def save_as_config_name_selected(self, name=""):
         self.create_config_dict(name=name)
         self.export_config()
 
-    def create_config_dict(self, name=''):
-        if name == '':
-            name = 'undefined'
+    def create_config_dict(self, name=""):
+        if name == "":
+            name = "undefined"
 
         o_current_table_config = TableConfig(parent=self.parent)
         current_config = o_current_table_config.get_current_config()
 
         inside_dict = OrderedDict()
-        inside_dict['table'] = current_config
-        inside_dict['active'] = True
+        inside_dict["table"] = current_config
+        inside_dict["active"] = True
 
         # retrieve previous config file
         previous_config_dict = self.parent.config_dict
@@ -1446,7 +1374,7 @@ class H3TableHandler:
         else:
             self.deactivate_all_config()
             old_full_config = self.parent.config_dict
-            #list_keys = old_full_config.keys()
+            # list_keys = old_full_config.keys()
             old_full_config[name] = inside_dict
             new_full_config = old_full_config
 
@@ -1455,17 +1383,15 @@ class H3TableHandler:
     def deactivate_all_config(self):
         old_full_config = self.parent.config_dict
         for _key in old_full_config:
-            old_full_config[_key]['active'] = False
+            old_full_config[_key]["active"] = False
         self.parent.config_dict = old_full_config
 
     def export_config(self):
         config_dict = self.config_dict
-        with open(CONFIG_FILE, 'wb') as handle:
+        with open(CONFIG_FILE, "wb") as handle:
             full_config = {}
-            full_config['configurations'] = config_dict
-            pickle.dump(full_config,
-                        handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+            full_config["configurations"] = config_dict
+            pickle.dump(full_config, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def save_config(self):
         active_config_name = self.parent.active_config_name
@@ -1473,12 +1399,12 @@ class H3TableHandler:
 
     def reset_table(self):
         config_dict = self.parent.config_dict
-        if not ("FULL_RESET" in config_dict):
-            config_dict['FULL_RESET'] = self.parent.reset_config_dict
+        if "FULL_RESET" not in config_dict:
+            config_dict["FULL_RESET"] = self.parent.reset_config_dict
             self.parent.config_dict = config_dict
 
         ConfigHandler.lazy_export_config(config_dict=self.parent.config_dict)
-        self.parent.load_this_config(key='FULL_RESET', resize=True)
+        self.parent.load_this_config(key="FULL_RESET", resize=True)
 
     def right_click(self):
         self.retrieve_previous_configurations()
@@ -1506,20 +1432,19 @@ class H3TableHandler:
         if not list_configs == []:
             config.addSeparator()
             for _label in list_configs:
-
                 if _label == "FULL_RESET":
                     continue
 
                 this_one_is_active = False
 
-                if previous_config[_label]['active']:
+                if previous_config[_label]["active"]:
                     self.parent.active_config_name = _label
-                    _full_label = u"\u2713 " + _label
+                    _full_label = "\u2713 " + _label
                     save_state = True
                     this_one_is_active = True
 
                 else:
-                    _full_label = u"\u200b   \u200b " + _label
+                    _full_label = "\u200b   \u200b " + _label
 
                 list_config_displayed.append(_label)
                 temp = config.addMenu(_full_label)
@@ -1554,22 +1479,19 @@ class H3TableHandler:
             return
 
         if not (list_signal_config_files == []):
-
             # user clicked to select config
             for _index, _signal in enumerate(list_signal_config_files):
                 if action == _signal:
                     self.activate_this_config(config=list_config_displayed[_index])
 
         if not (list_signal_remove_config == []):
-
             # user clicked to remove config
             for _index, _signal in enumerate(list_signal_remove_config):
                 if action == _signal:
                     self.remove_this_config(config=list_config_displayed[_index])
 
     def remove_this_config(self, config):
-        config_dict = ConfigHandler.remove_this_config(config=self.parent.config_dict,
-                                                       key=config)
+        config_dict = ConfigHandler.remove_this_config(config=self.parent.config_dict, key=config)
         self.parent.config_dict = config_dict
         # import pprint
         # pprint.pprint(config_dict)
@@ -1577,31 +1499,29 @@ class H3TableHandler:
 
     def activate_this_config(self, config):
         config_dict = ConfigHandler.deactivate_all_config(config=self.parent.config_dict)
-        config_dict = ConfigHandler.activate_this_config(config=config_dict,
-                                                         key=config)
+        config_dict = ConfigHandler.activate_this_config(config=config_dict, key=config)
         self.parent.config_dict = config_dict
         ConfigHandler.lazy_export_config(config_dict=config_dict)
         self.parent.load_this_config(key=config)
 
 
 class TableConfig:
-    '''This class will look at the h1, h2 and h3 table to create the config use width and visibility of each column'''
+    """This class will look at the h1, h2 and h3 table to create the config use width and visibility of each column"""
 
     def __init__(self, parent=None):
         self.parent = parent
 
     def get_current_config(self):
         current_config_dict = {}
-        current_config_dict['h1'] = self.__get_current_table_config(table='h1')
-        current_config_dict['h2'] = self.__get_current_table_config(table='h2')
-        current_config_dict['h3'] = self.__get_current_table_config(table='h3')
+        current_config_dict["h1"] = self.__get_current_table_config(table="h1")
+        current_config_dict["h2"] = self.__get_current_table_config(table="h2")
+        current_config_dict["h3"] = self.__get_current_table_config(table="h3")
         return current_config_dict
 
-    def __get_current_table_config(self, table='h1'):
-
-        if table == 'h1':
+    def __get_current_table_config(self, table="h1"):
+        if table == "h1":
             table_ui = self.parent.ui.h1_table
-        elif table == 'h2':
+        elif table == "h2":
             table_ui = self.parent.ui.h2_table
         else:
             table_ui = self.parent.ui.h3_table
@@ -1611,15 +1531,6 @@ class TableConfig:
         for _col in np.arange(nbr_column):
             _width = table_ui.columnWidth(_col)
             _visible = not table_ui.isColumnHidden(_col)
-            _dict[_col] = {'width': _width,
-                           'visible': _visible}
+            _dict[_col] = {"width": _width, "visible": _visible}
 
         return _dict
-
-
-
-
-
-
-
-

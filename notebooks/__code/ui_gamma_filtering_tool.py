@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Volumes/G-DRIVE/git/python_notebooks/notebooks/ui/ui_gamma_filtering_tool.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
@@ -7,10 +5,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(936, 722)
@@ -112,7 +110,7 @@ class Ui_MainWindow(object):
         self.cancel_button.clicked.connect(MainWindow.cancel_clicked)
         self.apply_button.clicked.connect(MainWindow.apply_clicked)
         self.file_index_slider.sliderPressed.connect(MainWindow.slider_clicked)
-        self.file_index_slider.valueChanged['int'].connect(MainWindow.slider_moved)
+        self.file_index_slider.valueChanged["int"].connect(MainWindow.slider_moved)
         self.filtering_coefficient_value.returnPressed.connect(MainWindow.filtering_coefficient_changed)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

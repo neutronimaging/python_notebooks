@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 requirements = [
     "jupyter",
     "matplotlib",
@@ -50,10 +48,7 @@ version_check_packages = {
 if success:
     print("All required packages installed")
 else:
-    print(
-        "Please install these missing packages "
-        "to be able to run the Imaging Notebooks."
-    )
+    print("Please install these missing packages " "to be able to run the Imaging Notebooks.")
     missing = [k for k, v in import_result.items() if not v]
     print("\t" + "\n\t".join(missing))
 
@@ -68,16 +63,12 @@ def version_checker(package_name, version, nbextension=None):
     if nbextension is None:
         nbextension = package_name
     if not good_version:
-        print(
-            "\n**** Please upgrade {} to version {} by running:".format(
-                package_name, version_check_packages[package_name]
-            )
-        )
-        print("        conda remove --force {} # if you use conda".format(package_name))
-        print("        pip install --pre --upgrade {}".format(package_name))
-        print("        jupyter nbextension enable --py {}".format(nbextension))
+        print(f"\n**** Please upgrade {package_name} to version {version_check_packages[package_name]} by running:")
+        print(f"        conda remove --force {package_name} # if you use conda")
+        print(f"        pip install --pre --upgrade {package_name}")
+        print(f"        jupyter nbextension enable --py {nbextension}")
     else:
-        print("{} version is good!".format(package_name))
+        print(f"{package_name} version is good!")
 
 
 # Check as many packages as we can...

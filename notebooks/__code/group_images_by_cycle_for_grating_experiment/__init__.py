@@ -1,14 +1,7 @@
-list_fit_procedure = ["EM Fit",
-                      "Matrix Fit",
-                      "MATRIX",
-                      "FFT Fit",
-                      "Sinus Fit",
-                      "Matrix Fit Advanced"
-                      ]
+list_fit_procedure = ["EM Fit", "Matrix Fit", "MATRIX", "FFT Fit", "Sinus Fit", "Matrix Fit Advanced"]
 
 
 class IndexOfColumns:
-
     first_data_file = 0
     last_data_file = 1
     first_ob_file = 2

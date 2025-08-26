@@ -22,18 +22,19 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code.normalization_batch import *
-
 from __code.ui_builder import UiBuilder
-o_builder = UiBuilder(ui_name = 'ui_roi_selection.ui')
+
+o_builder = UiBuilder(ui_name="ui_roi_selection.ui")
+from __code import system
 from __code.roi_selection_ui import Interface
 
-from __code import system
 system.System.select_working_dir()
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -52,7 +53,7 @@ sample_panel.init_ui(files=files)
 wizard = WizardPanel(sample_panel=sample_panel)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Background Region 
+# # Select Background Region
 
 # + run_control={"frozen": false, "read_only": false}
 o_norm = sample_panel.o_norm_handler
@@ -69,4 +70,3 @@ o_norm.select_export_folder()
 o_norm.export(rois=o_gui.roi_selected)
 
 # + run_control={"frozen": false, "read_only": false}
-

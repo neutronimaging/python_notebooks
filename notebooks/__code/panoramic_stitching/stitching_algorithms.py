@@ -1,5 +1,4 @@
 class StitchingAlgorithmType:
-
     minimum = "minimum counts"
     maximum = "maximum counts"
     mean = "mean counts"

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_registration_profile_settings.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
@@ -7,10 +5,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(776, 184)
@@ -60,6 +58,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Maximum Delta Pixel Offset"))
-        self.plainTextEdit.setPlainText(_translate("MainWindow", "Maximum Pixel offset values allowed between two images. If the algorithm returns an offset value greater than this value, the program will use the previous offset value.\n"
-""))
+        self.plainTextEdit.setPlainText(
+            _translate(
+                "MainWindow",
+                "Maximum Pixel offset values allowed between two images. If the algorithm returns an offset value greater than this value, the program will use the previous offset value.\n"
+                "",
+            )
+        )
         self.ok_button.setText(_translate("MainWindow", "OK"))

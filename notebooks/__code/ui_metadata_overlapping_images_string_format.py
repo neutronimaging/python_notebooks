@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_metadata_overlapping_images_string_format.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(807, 640)
@@ -69,8 +68,8 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.first_part_lineEdit.textChanged['QString'].connect(MainWindow.string_format_changed)
-        self.second_part_lineEdit.textChanged['QString'].connect(MainWindow.string_format_changed)
+        self.first_part_lineEdit.textChanged["QString"].connect(MainWindow.string_format_changed)
+        self.second_part_lineEdit.textChanged["QString"].connect(MainWindow.string_format_changed)
         self.pushButton_3.clicked.connect(MainWindow.launch_help)
         self.pushButton_2.clicked.connect(MainWindow.cancel)
         self.pushButton.clicked.connect(MainWindow.ok)
@@ -88,4 +87,3 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "Cancel"))
         self.pushButton_3.setText(_translate("MainWindow", "Help"))
         self.pushButton.setText(_translate("MainWindow", "OK"))
-

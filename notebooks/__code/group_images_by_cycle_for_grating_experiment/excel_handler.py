@@ -1,27 +1,26 @@
-import pandas as pd
-from qtpy.QtWidgets import QMainWindow, QFileDialog, QMenu
-from qtpy import QtGui
-from IPython.display import display
-from IPython.display import HTML
-import os
-import numpy as np
-import re
 import json
-from collections import OrderedDict
 import logging
+import os
+import re
+from collections import OrderedDict
 
-from __code._utilities.string import format_html_message
+import numpy as np
+import pandas as pd
+from IPython.display import HTML, display
+from qtpy import QtGui
+from qtpy.QtWidgets import QFileDialog, QMainWindow, QMenu
+
 from __code import load_ui
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
+from __code._utilities.string import format_html_message
+from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
 from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
 from __code.group_images_by_cycle_for_grating_experiment.repeat_widget_change_dialog import RepeatWidgetChangeDialog
-from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
 
 ROW_HEIGHT = 40
 
 
 class ExcelHandler:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -44,30 +43,35 @@ class ExcelHandler:
         data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
 
         # if we want to populate the sample column, we need to have the same number of sample and ob
-        if (nbr_excel_row != nbr_notebook_row) and (data_type_to_populate_with_notebook_data == 'sample'):
-            display(HTML("<font color='red'>Number of rows in Excel document selected and number of group <b>DO NOT "
-                         "MATCH!</b></font>"))
+        if (nbr_excel_row != nbr_notebook_row) and (data_type_to_populate_with_notebook_data == "sample"):
+            display(
+                HTML(
+                    "<font color='red'>Number of rows in Excel document selected and number of group <b>DO NOT "
+                    "MATCH!</b></font>"
+                )
+            )
             display(HTML("<font color='blue'><b>SOLUTION</b>: create a new Excel document!</font>"))
 
         else:
             new_df = self._populate_pandas_object(
-                    df=df,
-                    data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data)
+                df=df, data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data
+            )
 
-            o_interface = Interface(grand_parent=self.parent,
-                                    excel_file=excel_file,
-                                    pandas_object=new_df,
-                                    data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
-                                    first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
+            o_interface = Interface(
+                grand_parent=self.parent,
+                excel_file=excel_file,
+                pandas_object=new_df,
+                data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
+                first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary,
+            )
             o_interface.show()
 
     def get_excel_config(self):
-        config_file = os.path.join(os.path.dirname(__file__), 'excel_config.json')
+        config_file = os.path.join(os.path.dirname(__file__), "excel_config.json")
         with open(config_file) as json_file:
             return json.load(json_file)
 
-    def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data='sample'):
-
+    def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data="sample"):
         logging.info("Entering _populate_pandas_object!")
 
         def get_matching_ob_group_index(sample_outer_value=None, dict_group_outer_value=None):
@@ -90,18 +94,18 @@ class ExcelHandler:
         output_folder = os.path.abspath(self.parent.output_folder)
         first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
 
-        if data_type_to_populate_with_notebook_data == 'sample':
-
+        if data_type_to_populate_with_notebook_data == "sample":
             logging.info("working with Sample")
 
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-                df.iloc[_row_index, 0] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
-                                                          'first'])
-                df.iloc[_row_index, 1] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key][
-                    'last'])
+                df.iloc[_row_index, 0] = os.path.join(
+                    output_folder, first_last_run_of_each_group_dictionary[_key]["first"]
+                )
+                df.iloc[_row_index, 1] = os.path.join(
+                    output_folder, first_last_run_of_each_group_dictionary[_key]["last"]
+                )
 
         else:  # ob
-
             # logging.info("working with OB")
 
             dict_group_outer_value = self.parent.dict_group_outer_value
@@ -109,24 +113,25 @@ class ExcelHandler:
 
             # go one row at a time and check value of sample_information (outer loop)
             for _row in np.arange(number_of_df_rows):
-
                 # logging.info(f"-> _row:{_row}")
 
                 sample_outer_value = df.iloc[_row, IndexOfColumns.sample_information]
                 logging.info(f"-> sample_outer_value: {sample_outer_value}")
-                ob_group_index = get_matching_ob_group_index(sample_outer_value=sample_outer_value,
-                                                             dict_group_outer_value=dict_group_outer_value)
+                ob_group_index = get_matching_ob_group_index(
+                    sample_outer_value=sample_outer_value, dict_group_outer_value=dict_group_outer_value
+                )
                 # logging.info(f"-> ob_group_index: {ob_group_index}")
 
-                df.iloc[_row, 2] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                    ob_group_index]['first'])
-                df.iloc[_row, 3] = os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                    ob_group_index]['last'])
+                df.iloc[_row, 2] = os.path.join(
+                    output_folder, first_last_run_of_each_group_dictionary[ob_group_index]["first"]
+                )
+                df.iloc[_row, 3] = os.path.join(
+                    output_folder, first_last_run_of_each_group_dictionary[ob_group_index]["last"]
+                )
 
         return df
 
-    def _create_pandas_object(self, data_type_to_populate_with_notebook_data='sample'):
-
+    def _create_pandas_object(self, data_type_to_populate_with_notebook_data="sample"):
         def formatting_angle_value(str_angle_value=""):
             """
             str_value = "2.000000"
@@ -148,23 +153,23 @@ class ExcelHandler:
         excel_config = self.get_excel_config()
 
         df_dict = {}
-        if data_type_to_populate_with_notebook_data == 'sample':
-
+        if data_type_to_populate_with_notebook_data == "sample":
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-
                 if _row_index == 0:
-                    df_dict["first_data_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                                                                   _key]['first'])]
-                    df_dict["last_data_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                                                                  _key]['last'])]
+                    df_dict["first_data_file"] = [
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                    ]
+                    df_dict["last_data_file"] = [
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                    ]
                     df_dict["sample_information"] = [dict_group_outer_value[_key]]
                 else:
-                    df_dict["first_data_file"].append(os.path.join(output_folder,
-                                                                   first_last_run_of_each_group_dictionary[_key][
-                                                                       'first']))
-                    df_dict["last_data_file"].append(os.path.join(output_folder,
-                                                                  first_last_run_of_each_group_dictionary[_key][
-                                                                      'last']))
+                    df_dict["first_data_file"].append(
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                    )
+                    df_dict["last_data_file"].append(
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                    )
                     df_dict["sample_information"].append(dict_group_outer_value[_key])
 
             nbr_row = len(first_last_run_of_each_group_dictionary.keys())
@@ -172,35 +177,36 @@ class ExcelHandler:
             df_dict["last_ob_file"] = ["None" for _ in np.arange(nbr_row)]
 
         else:  # ob
-
             for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
-
                 nbr_row = len(first_last_run_of_each_group_dictionary.keys())
                 df_dict["first_sample_file"] = ["None" for _ in np.arange(nbr_row)]
                 df_dict["last_sample_file"] = ["None" for _ in np.arange(nbr_row)]
 
                 if _row_index == 0:
-                    df_dict["first_ob_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                        _key]['first'])]
-                    df_dict["last_ob_file"] = [os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                        _key]['last'])]
+                    df_dict["first_ob_file"] = [
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                    ]
+                    df_dict["last_ob_file"] = [
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                    ]
                 else:
-                    df_dict["first_ob_file"].append(os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                                                                     _key]['first']))
-                    df_dict["last_ob_file"].append(os.path.join(output_folder, first_last_run_of_each_group_dictionary[
-                                                                    _key]['last']))
+                    df_dict["first_ob_file"].append(
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                    )
+                    df_dict["last_ob_file"].append(
+                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                    )
 
         # default file_id
         dict_group_outer_value = self.parent.dict_group_outer_value
 
         for _row_index, _key in enumerate(dict_group_outer_value):
-
             angle_value_formatted = formatting_angle_value(str_angle_value=dict_group_outer_value[_key])
             _file_id = f"sample_{angle_value_formatted}"
             if _row_index == 0:
-                df_dict['file_id'] = [_file_id]
+                df_dict["file_id"] = [_file_id]
             else:
-                df_dict['file_id'].append(_file_id)
+                df_dict["file_id"].append(_file_id)
 
         df_dict["first_dc_file"] = ["None" for _ in np.arange(nbr_row)]
         df_dict["last_dc_file"] = ["None" for _ in np.arange(nbr_row)]
@@ -224,15 +230,19 @@ class ExcelHandler:
         return df
 
     def new_excel(self):
-        self.parent.excel_info_widget.value = f"<b>Working with new excel file!"
+        self.parent.excel_info_widget.value = "<b>Working with new excel file!"
         data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
 
-        pandas_object = self._create_pandas_object(data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data)
+        pandas_object = self._create_pandas_object(
+            data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data
+        )
 
-        o_interface = Interface(grand_parent=self.parent,
-                                pandas_object=pandas_object,
-                                data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
-                                first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary)
+        o_interface = Interface(
+            grand_parent=self.parent,
+            pandas_object=pandas_object,
+            data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
+            first_last_run_of_each_group_dictionary=self.parent.first_last_run_of_each_group_dictionary,
+        )
         o_interface.show()
 
 
@@ -240,23 +250,32 @@ class Interface(QMainWindow):
     pandas_object = None  # pandas excel object
     excel_config = None
 
-    def __init__(self, parent=None, grand_parent=None, excel_file=None,
-                 first_last_run_of_each_group_dictionary=None,
-                 data_type_to_populate_with_notebook_data='sample',
-                 pandas_object=None):
-
-        display(format_html_message(pre_message="Check UI that popped up \
+    def __init__(
+        self,
+        parent=None,
+        grand_parent=None,
+        excel_file=None,
+        first_last_run_of_each_group_dictionary=None,
+        data_type_to_populate_with_notebook_data="sample",
+        pandas_object=None,
+    ):
+        display(
+            format_html_message(
+                pre_message="Check UI that popped up \
                     (maybe hidden behind this browser!)",
-                                    spacer=""))
+                spacer="",
+            )
+        )
         self.grand_parent = grand_parent
         self.data_type_to_populate_with_notebook_data = data_type_to_populate_with_notebook_data
         self.output_folder = self.grand_parent.output_folder
 
         self.pandas_object = pandas_object
         super(Interface, self).__init__(parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_grating_excel_editor.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_grating_excel_editor.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Excel Editor")
         self.excel_file = excel_file
@@ -273,8 +292,7 @@ class Interface(QMainWindow):
         self.check_table_content_pushed()
 
     def widget_state_changed(self, new_value, row=0, column=0):
-        self.repeat_widget_changed_or_not_dialog(row_changed=row,
-                                                 column_changed=column)
+        self.repeat_widget_changed_or_not_dialog(row_changed=row, column_changed=column)
 
     def repeat_widget_changed_or_not_dialog(self, row_changed=0, column_changed=0):
         o_dialog = RepeatWidgetChangeDialog(parent=self, input_row=row_changed, input_column=column_changed)
@@ -283,11 +301,12 @@ class Interface(QMainWindow):
     @staticmethod
     def add_output_folder_to_dictionary(first_last_run_of_each_group_dictionary=None, output_folder=None):
         for _key in first_last_run_of_each_group_dictionary.keys():
-            first_last_run_of_each_group_dictionary[_key]['first'] = os.path.join(output_folder,
-                                                                                  first_last_run_of_each_group_dictionary[_key]['first'])
-            first_last_run_of_each_group_dictionary[_key]['last'] = os.path.join(output_folder,
-                                                                                  first_last_run_of_each_group_dictionary[
-                                                                                      _key]['last'])
+            first_last_run_of_each_group_dictionary[_key]["first"] = os.path.join(
+                output_folder, first_last_run_of_each_group_dictionary[_key]["first"]
+            )
+            first_last_run_of_each_group_dictionary[_key]["last"] = os.path.join(
+                output_folder, first_last_run_of_each_group_dictionary[_key]["last"]
+            )
         return first_last_run_of_each_group_dictionary
 
     def check_table_content_pushed(self):
@@ -355,7 +374,7 @@ class Interface(QMainWindow):
         def is_roi_correct_format(roi):
             """check if roi has the format [##,##,##,##] where ## are integers"""
             roi = roi.strip()
-            result = re.search("\[\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*\]", roi)
+            result = re.search(r"\[\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*\]", roi)
             try:
                 if len(result.groups()) != 4:
                     return False
@@ -440,20 +459,23 @@ class Interface(QMainWindow):
             set_color_for_that_mandatory_field(file_id, _row, 24)
 
         if self.at_least_one_error_found:
-            show_status_message(parent=self,
-                                message=f"At least one issue found in table! Angel will not be able to execute this "
-                                        f"excel!",
-                                status=StatusMessageStatus.warning,
-                                duration_s=15)
+            show_status_message(
+                parent=self,
+                message="At least one issue found in table! Angel will not be able to execute this " "excel!",
+                status=StatusMessageStatus.warning,
+                duration_s=15,
+            )
 
         else:
-            show_status_message(parent=self,
-                                message=f"File is ready to be loaded into Angel!",
-                                status=StatusMessageStatus.ready,
-                                duration_s=15)
+            show_status_message(
+                parent=self,
+                message="File is ready to be loaded into Angel!",
+                status=StatusMessageStatus.ready,
+                duration_s=15,
+            )
 
     def load_config(self):
-        config_file = os.path.join(os.path.dirname(__file__), 'excel_config.json')
+        config_file = os.path.join(os.path.dirname(__file__), "excel_config.json")
         with open(config_file) as json_file:
             self.excel_config = json.load(json_file)
 
@@ -472,15 +494,16 @@ class Interface(QMainWindow):
 
     def init_statusbar_message(self):
         if self.excel_file:
-            show_status_message(parent=self,
-                                message=f"Loaded excel file {self.excel_file}!",
-                                status=StatusMessageStatus.ready,
-                                duration_s=10)
+            show_status_message(
+                parent=self,
+                message=f"Loaded excel file {self.excel_file}!",
+                status=StatusMessageStatus.ready,
+                duration_s=10,
+            )
         else:
-            show_status_message(parent=self,
-                                message="Created a new Excel file!",
-                                status=StatusMessageStatus.ready,
-                                duration_s=10)
+            show_status_message(
+                parent=self, message="Created a new Excel file!", status=StatusMessageStatus.ready, duration_s=10
+            )
 
     def fill_table(self):
         pandas_object = self.pandas_object
@@ -550,20 +573,17 @@ class Interface(QMainWindow):
         folder_selected = self.grand_parent.folder_selected
         base_folder_name = os.path.basename(folder_selected)
         default_file_name = os.path.join(working_dir, base_folder_name + "_angel_excel.xls")
-        file_and_extension_name = QFileDialog.getSaveFileName(self,
-                                                              "Select or define file name",
-                                                              default_file_name,
-                                                              "Excel (*.xls)")
+        file_and_extension_name = QFileDialog.getSaveFileName(
+            self, "Select or define file name", default_file_name, "Excel (*.xls)"
+        )
 
         file_name = file_and_extension_name[0]
         if file_name:
             table_dict = self.collect_table_dict()
 
         df = pd.DataFrame(table_dict)
-        writer = pd.ExcelWriter(file_name,
-                                engine='xlsxwriter')
-        df.to_excel(writer, sheet_name="Tabelle1",
-                            index=False)
+        writer = pd.ExcelWriter(file_name, engine="xlsxwriter")
+        df.to_excel(writer, sheet_name="Tabelle1", index=False)
         writer.save()
 
     def collect_table_dict(self):
@@ -600,7 +620,6 @@ class Interface(QMainWindow):
         osc_pixel = []
 
         for _row in np.arange(nbr_rows):
-
             o_table.define_row_for_getter(row=_row)
 
             first_data_file.append(o_table.get_first_data_file())
@@ -632,35 +651,38 @@ class Interface(QMainWindow):
             used_environment.append("")
             osc_pixel.append("")
 
-        table_dict = OrderedDict({'first_data_file'     : first_data_file,
-                                  'last_data_file'      : last_data_file,
-                                  'first_ob_file'       : first_ob_file,
-                                  'last_ob_file'        : last_ob_file,
-                                  'first_dc_file'       : first_dc_file,
-                                  'last_dc_file'        : last_dc_file,
-                                  'period'              : period,
-                                  'images_per_step'     : images_per_step,
-                                  'rotation'            : rotation,
-                                  'fit_procedure'       : fit_procedure,
-                                  'roi'                 : roi,
-                                  'gamma_filter_data/ob': gamma_filter_data_ob,
-                                  'data_threshold_3x3'  : data_threshold_3x3,
-                                  'data_threshold_5x5'  : data_threshold_5x5,
-                                  'data_threshold_7x7'  : data_threshold_7x7,
-                                  'data_sigma_log'      : data_sigma_log,
-                                  'gamma_filter_dc'     : gamma_filter_dc,
-                                  'dc_threshold_3x3'    : dc_threshold_3x3,
-                                  'dc_threshold_5x5'    : dc_threshold_5x5,
-                                  'dc_threshold_7x7'    : dc_threshold_7x7,
-                                  'dc_sigma_log'        : dc_sigma_log,
-                                  'dc_outlier_removal'  : dc_outlier_removal,
-                                  'dc_outlier_value'    : dc_outlier_value,
-                                  'result_directory'    : result_directory,
-                                  'file_id'             : file_id,
-                                  'sample_information'  : sample_information,
-                                  'used_environment'    : used_environment,
-                                  'osc_pixel'           : osc_pixel,
-                                  })
+        table_dict = OrderedDict(
+            {
+                "first_data_file": first_data_file,
+                "last_data_file": last_data_file,
+                "first_ob_file": first_ob_file,
+                "last_ob_file": last_ob_file,
+                "first_dc_file": first_dc_file,
+                "last_dc_file": last_dc_file,
+                "period": period,
+                "images_per_step": images_per_step,
+                "rotation": rotation,
+                "fit_procedure": fit_procedure,
+                "roi": roi,
+                "gamma_filter_data/ob": gamma_filter_data_ob,
+                "data_threshold_3x3": data_threshold_3x3,
+                "data_threshold_5x5": data_threshold_5x5,
+                "data_threshold_7x7": data_threshold_7x7,
+                "data_sigma_log": data_sigma_log,
+                "gamma_filter_dc": gamma_filter_dc,
+                "dc_threshold_3x3": dc_threshold_3x3,
+                "dc_threshold_5x5": dc_threshold_5x5,
+                "dc_threshold_7x7": dc_threshold_7x7,
+                "dc_sigma_log": dc_sigma_log,
+                "dc_outlier_removal": dc_outlier_removal,
+                "dc_outlier_value": dc_outlier_value,
+                "result_directory": result_directory,
+                "file_id": file_id,
+                "sample_information": sample_information,
+                "used_environment": used_environment,
+                "osc_pixel": osc_pixel,
+            }
+        )
 
         return table_dict
 
@@ -687,7 +709,7 @@ class Interface(QMainWindow):
             show_browse_for_all_row = True
 
         show_copy_content_to_rest_of_column = False
-        if column_selected in [4, 5, 10, 12, 13, 14, 15, 17, 18,19, 20, 22, 23]:
+        if column_selected in [4, 5, 10, 12, 13, 14, 15, 17, 18, 19, 20, 22, 23]:
             show_copy_content_to_rest_of_column = True
 
         remove = menu.addAction("Remove selected row")
@@ -726,20 +748,23 @@ class Interface(QMainWindow):
             self.check_table_content_pushed()
 
         elif action == browse_this_row:
-            self.browse(show_browse_for_folder=show_browse_for_folder,
-                        show_browse_for_file=show_browse_for_file,
-                        row_selected=[row_selected],
-                        column_selected=column_selected)
+            self.browse(
+                show_browse_for_folder=show_browse_for_folder,
+                show_browse_for_file=show_browse_for_file,
+                row_selected=[row_selected],
+                column_selected=column_selected,
+            )
 
         elif action == browse_all_row:
-            self.browse(show_browse_for_folder=show_browse_for_folder,
-                        show_browse_for_file=show_browse_for_file,
-                        row_selected=np.arange(o_table.row_count()),
-                        column_selected=column_selected)
+            self.browse(
+                show_browse_for_folder=show_browse_for_folder,
+                show_browse_for_file=show_browse_for_file,
+                row_selected=np.arange(o_table.row_count()),
+                column_selected=column_selected,
+            )
 
         elif action == copy_content_to_rest_of_column:
-            self.copy_content_to_rest_of_column(current_row=row_selected,
-                                                current_column=column_selected)
+            self.copy_content_to_rest_of_column(current_row=row_selected, current_column=column_selected)
             self.check_table_content_pushed()
 
     def copy_content_to_rest_of_column(self, current_row=0, current_column=0):
@@ -749,37 +774,26 @@ class Interface(QMainWindow):
         for _row in np.arange(nbr_row):
             o_table.set_item_with_str(row=_row, column=current_column, cell_str=value_to_copy)
 
-    def browse(self, show_browse_for_folder=False,
-               show_browse_for_file=True,
-               row_selected=[0], column_selected=0):
-
+    def browse(self, show_browse_for_folder=False, show_browse_for_file=True, row_selected=[0], column_selected=0):
         folder_selected = self.grand_parent.folder_selected
 
         if show_browse_for_file:
-            file_and_extension_name = QFileDialog.getOpenFileName(self,
-                                                                  "Select file ...",
-                                                                   folder_selected)
+            file_and_extension_name = QFileDialog.getOpenFileName(self, "Select file ...", folder_selected)
 
             file_selected = file_and_extension_name[0]
             if file_selected:
                 o_table = TableHandler(table_ui=self.ui.tableWidget)
                 for _row in row_selected:
-                    o_table.set_item_with_str(row=_row,
-                                              column=column_selected,
-                                              cell_str=file_selected)
+                    o_table.set_item_with_str(row=_row, column=column_selected, cell_str=file_selected)
 
         elif show_browse_for_folder:
             folder_name = os.path.dirname(folder_selected)
-            folder = QFileDialog.getExistingDirectory(self,
-                                                      "Select output folder ...",
-                                                      folder_name)
+            folder = QFileDialog.getExistingDirectory(self, "Select output folder ...", folder_name)
 
             if folder:
                 o_table = TableHandler(table_ui=self.ui.tableWidget)
                 for _row in row_selected:
-                    o_table.set_item_with_str(row=_row,
-                                              column=column_selected,
-                                              cell_str=folder)
+                    o_table.set_item_with_str(row=_row, column=column_selected, cell_str=folder)
 
         self.check_table_content_pushed()
 

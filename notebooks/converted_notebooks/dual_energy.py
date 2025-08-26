@@ -17,17 +17,19 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Your IPTS 
+# # Select Your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.dual_energy.dual_energy import Interface, DualEnergy
+warnings.filterwarnings("ignore")
 
 from __code import system
-system.System.select_working_dir(notebook='dual_energy')
+from __code.dual_energy.dual_energy import DualEnergy, Interface
+
+system.System.select_working_dir(notebook="dual_energy")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -51,21 +53,24 @@ o_interface = Interface(o_dual=o_dual, spectra_file=o_dual.spectra_file)
 o_interface.show()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # DEBUGGING 
+# # DEBUGGING
 
 # +
 import warnings
-warnings.filterwarnings('ignore')
 
-from __code.dual_energy.dual_energy import Interface, DualEnergy
+warnings.filterwarnings("ignore")
+
 import glob
 import os
+
+from __code.dual_energy.dual_energy import DualEnergy, Interface
+
 # -
 
 # %gui qt
 
 # +
-data_path = '/Users/j35/IPTS/VENUS/IPTS-25778_normalized'
+data_path = "/Users/j35/IPTS/VENUS/IPTS-25778_normalized"
 list_data = glob.glob(data_path + "*.tif")
 spectra_file = os.path.join(data_path, "Image019_Spectra.txt")
 assert os.path.exists(spectra_file)
@@ -74,9 +79,5 @@ o_dual = DualEnergy(working_dir=data_path)
 o_dual.load_data(data_path)
 # -
 
-o_interface = Interface(o_dual=o_dual,
-                       working_dir=data_path,
-                       spectra_file=spectra_file)
+o_interface = Interface(o_dual=o_dual, working_dir=data_path, spectra_file=spectra_file)
 o_interface.show()
-
-

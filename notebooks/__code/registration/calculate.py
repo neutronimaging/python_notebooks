@@ -2,7 +2,6 @@ import numpy as np
 
 
 class Calculate:
-
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -20,34 +19,34 @@ class Calculate:
         # vertical lines
         x = 0
         index = 0
-        while (x <= width):
+        while x <= width:
             one_edge = [x, 0]
             other_edge = [x, height]
             pos.append(one_edge)
             pos.append(other_edge)
-            adj.append([index, index+1])
+            adj.append([index, index + 1])
             x += grid_size
             index += 2
 
         # vertical lines
         y = 0
-        while (y <= height):
+        while y <= height:
             one_edge = [0, y]
             other_edge = [width, y]
             pos.append(one_edge)
             pos.append(other_edge)
-            adj.append([index, index+1])
+            adj.append([index, index + 1])
             y += grid_size
             index += 2
 
-        pos_adj_dict['pos'] = np.array(pos)
-        pos_adj_dict['adj'] = np.array(adj)
+        pos_adj_dict["pos"] = np.array(pos)
+        pos_adj_dict["adj"] = np.array(adj)
 
         return pos_adj_dict
 
     @staticmethod
     def intermediates_points(p1, p2):
-        """"Return a list of nb_points equally spaced points
+        """ "Return a list of nb_points equally spaced points
         between p1 and p2
 
         p1 = [x0, y0]
@@ -60,8 +59,7 @@ class Calculate:
         x_spacing = (p2[0] - p1[0]) / (nb_points + 1)
         y_spacing = (p2[1] - p1[1]) / (nb_points + 1)
 
-        full_array = [[int(p1[0] + i * x_spacing), int(p1[1] + i * y_spacing)]
-                      for i in range(1, nb_points + 1)]
+        full_array = [[int(p1[0] + i * x_spacing), int(p1[1] + i * y_spacing)] for i in range(1, nb_points + 1)]
 
         clean_array = []
         for _points in full_array:

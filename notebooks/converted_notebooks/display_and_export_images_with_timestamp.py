@@ -16,16 +16,18 @@
 #
 # <img src='__docs/__all/notebook_rules.png' />
 
-# # Select your IPTS 
+# # Select your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-system.System.select_working_dir(notebook='display_and_export_images_with_timestamp')
+
+system.System.select_working_dir(notebook="display_and_export_images_with_timestamp")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Description 
+# # Description
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # This notebook will display (and save) the images with the **absolute** or **relative** time stamp.
@@ -33,13 +35,13 @@ custom_style.style()
 # Then you will also have the option to export all the images to create for example a movie out of it.
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Python Import 
+# # Python Import
 
 # + run_control={"frozen": false, "read_only": false}
 from __code.display_and_export_images_with_time_stamp import DisplayExportScreenshots
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select Image Folder 
+# # Select Image Folder
 
 # + run_control={"frozen": false, "read_only": false}
 working_dir = system.System.get_working_dir()
@@ -70,5 +72,3 @@ o_file_time_stamp.select_export_folder()
 # + run_control={"frozen": false, "read_only": false}
 o_file_time_stamp.export()
 # -
-
-

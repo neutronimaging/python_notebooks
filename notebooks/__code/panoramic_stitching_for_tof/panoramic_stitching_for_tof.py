@@ -1,62 +1,65 @@
+import copy
+import os
+
 from IPython.display import display
 from qtpy.QtWidgets import QMainWindow
-import os
-import copy
 
-from __code.ipywe import fileselector
+from __code import load_ui
 from __code._utilities.folder import get_list_of_folders_with_specified_file_type
 from __code._utilities.string import format_html_message
-from __code import load_ui
-
-from __code.panoramic_stitching_for_tof.gui_initialization import GuiInitialization
-from __code.panoramic_stitching_for_tof.load_data import LoadData
-from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import BestContrastTabHandler
-from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
-from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
-from __code.panoramic_stitching_for_tof.data_initialization import DataInitialization
-from __code.panoramic_stitching_for_tof.fine_tab_handler import FineTabHandler
-from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
-from __code.panoramic_stitching_for_tof.profile import Profile
-from __code.panoramic_stitching_for_tof.automatically_stitch import AutomaticallyStitch
-from __code.panoramic_stitching_for_tof.export import Export
-
+from __code.ipywe import fileselector
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
+from __code.panoramic_stitching_for_tof.automatically_stitch import AutomaticallyStitch
+from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import BestContrastTabHandler
+from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
+from __code.panoramic_stitching_for_tof.data_initialization import DataInitialization
+from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
+from __code.panoramic_stitching_for_tof.export import Export
+from __code.panoramic_stitching_for_tof.fine_tab_handler import FineTabHandler
+from __code.panoramic_stitching_for_tof.gui_initialization import GuiInitialization
+from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
+from __code.panoramic_stitching_for_tof.load_data import LoadData
+from __code.panoramic_stitching_for_tof.profile import Profile
 
-SIMPLE_MANUAL_PIXEL_CHANGE = 1      # pixel
-DOUBLE_MANUAL_PIXEL_CHANGE = 5      # pixel
+SIMPLE_MANUAL_PIXEL_CHANGE = 1  # pixel
+DOUBLE_MANUAL_PIXEL_CHANGE = 5  # pixel
 
 
 class PanoramicStitching:
-
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir=""):
         self.working_dir = working_dir
         self.file_extension = ["tiff", "tif"]
 
     def select_input_folders(self):
-        self.list_folder_widget = fileselector.FileSelectorPanel(instruction='select the folders of images to '
-                                                                             'stitch',
-                                                                 start_dir=self.working_dir,
-                                                                 type='directory',
-                                                                 next=self.folder_selected,
-                                                                 multiple=True)
+        self.list_folder_widget = fileselector.FileSelectorPanel(
+            instruction="select the folders of images to " "stitch",
+            start_dir=self.working_dir,
+            type="directory",
+            next=self.folder_selected,
+            multiple=True,
+        )
         self.list_folder_widget.show()
 
     def folder_selected(self, folder_selected):
-        final_list_folders = get_list_of_folders_with_specified_file_type(list_of_folders_to_check=folder_selected,
-                                                                          file_extension=self.file_extension)
+        final_list_folders = get_list_of_folders_with_specified_file_type(
+            list_of_folders_to_check=folder_selected, file_extension=self.file_extension
+        )
         if not final_list_folders:
-
             str_list_ext = ", ".join(self.file_extension)
-            display(format_html_message(pre_message="None of the folder selected contains the file of extension "
-                                                    "requested ({}}".format(str_list_ext),
-                                        spacer=""))
+            display(
+                format_html_message(
+                    pre_message="None of the folder selected contains the file of extension " "requested ({}}".format(
+                        str_list_ext
+                    ),
+                    spacer="",
+                )
+            )
             return
 
         final_list_folders.sort()
         nbr_folder = len(final_list_folders)
-        display(format_html_message(pre_message="Notebook is about to work with {} folders!".format(nbr_folder),
-                                    spacer=""))
+        display(format_html_message(pre_message=f"Notebook is about to work with {nbr_folder} folders!", spacer=""))
 
         # gui initialization
         o_interface = Interface(list_folders=final_list_folders)
@@ -64,8 +67,8 @@ class PanoramicStitching:
         o_interface.load_data()
         o_interface.initialization_after_loading_data()
 
-class Interface(QMainWindow):
 
+class Interface(QMainWindow):
     list_folders = None  # list of folders to work on
 
     # integrated_images = {'folder_name1': MetadataData,
@@ -125,43 +128,53 @@ class Interface(QMainWindow):
     # from_to_roi_id = None
     from_label_id = None
     to_label_id = None
-    from_to_roi = {'x0': 2000 + HORIZONTAL_MARGIN, 'y0': 50 + VERTICAL_MARGIN,
-                   'x1': 50 + HORIZONTAL_MARGIN, 'y1': 50 + VERTICAL_MARGIN}
+    from_to_roi = {
+        "x0": 2000 + HORIZONTAL_MARGIN,
+        "y0": 50 + VERTICAL_MARGIN,
+        "x1": 50 + HORIZONTAL_MARGIN,
+        "y1": 50 + VERTICAL_MARGIN,
+    }
 
     # new implementation
     from_roi_id = None
     from_roi_cross_id = None
     to_roi_id = None
     to_roi_cross_id = None
-    from_roi = {'x': 512 + HORIZONTAL_MARGIN, 'y': 100 + VERTICAL_MARGIN}
-    to_roi = {'x': 100 + HORIZONTAL_MARGIN, 'y': 50 + VERTICAL_MARGIN}
+    from_roi = {"x": 512 + HORIZONTAL_MARGIN, "y": 100 + VERTICAL_MARGIN}
+    to_roi = {"x": 100 + HORIZONTAL_MARGIN, "y": 50 + VERTICAL_MARGIN}
 
-    width_profile = {'min': 1,
-                     'max': 300,
-                     'default': 10}
+    width_profile = {"min": 1, "max": 300, "default": 10}
 
-    horizontal_profile = {'id': None,
-                          'x0': 500 + HORIZONTAL_MARGIN,
-                          'y': 200 + VERTICAL_MARGIN,
-                          'x1': 2500 + HORIZONTAL_MARGIN,
-                          'width': width_profile['default']}
-    vertical_profile = {'id': None,
-                        'x': 300 + HORIZONTAL_MARGIN,
-                        'y0': 70 + VERTICAL_MARGIN,
-                        'y1': 2000 + VERTICAL_MARGIN,
-                        'width': width_profile['default']}
+    horizontal_profile = {
+        "id": None,
+        "x0": 500 + HORIZONTAL_MARGIN,
+        "y": 200 + VERTICAL_MARGIN,
+        "x1": 2500 + HORIZONTAL_MARGIN,
+        "width": width_profile["default"],
+    }
+    vertical_profile = {
+        "id": None,
+        "x": 300 + HORIZONTAL_MARGIN,
+        "y0": 70 + VERTICAL_MARGIN,
+        "y1": 2000 + VERTICAL_MARGIN,
+        "width": width_profile["default"],
+    }
 
     def __init__(self, parent=None, list_folders=None):
-
         self.list_folders = list_folders
 
-        display(format_html_message(pre_message="Check UI that popped up \
+        display(
+            format_html_message(
+                pre_message="Check UI that popped up \
                     (maybe hidden behind this browser!)",
-                                    spacer=""))
+                spacer="",
+            )
+        )
         super(Interface, self).__init__(parent)
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_panoramic_stitching_manual_for_tof.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_panoramic_stitching_manual_for_tof.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Semi-Automatic Panoramic Stitching for TOF Data Sets")
 
@@ -172,8 +185,7 @@ class Interface(QMainWindow):
         # load data and metadata
 
         self.ui.setEnabled(False)
-        o_load = LoadData(parent=self,
-                          list_folders=self.list_folders)
+        o_load = LoadData(parent=self, list_folders=self.list_folders)
         o_load.run()
 
     def initialization_after_loading_data(self):
@@ -263,76 +275,76 @@ class Interface(QMainWindow):
         o_event.vertical_profile(enabled=state)
 
     def left_left_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.left_left_button, name='left_left')
+        EventHandler.button_pressed(ui=self.ui.left_left_button, name="left_left")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
         self.horizontal_profile_changed()
 
     def left_left_button_released(self):
-        EventHandler.button_released(ui=self.ui.left_left_button, name='left_left')
+        EventHandler.button_released(ui=self.ui.left_left_button, name="left_left")
 
     def left_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.left_button, name='left')
+        EventHandler.button_pressed(ui=self.ui.left_button, name="left")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
         self.horizontal_profile_changed()
 
     def left_button_released(self):
-        EventHandler.button_released(ui=self.ui.left_button, name='left')
+        EventHandler.button_released(ui=self.ui.left_button, name="left")
 
     def right_right_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.right_right_button, name='right_right')
+        EventHandler.button_pressed(ui=self.ui.right_right_button, name="right_right")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
         self.horizontal_profile_changed()
 
     def right_right_button_released(self):
-        EventHandler.button_released(ui=self.ui.right_right_button, name='right_right')
+        EventHandler.button_released(ui=self.ui.right_right_button, name="right_right")
 
     def right_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.right_button, name='right')
+        EventHandler.button_pressed(ui=self.ui.right_button, name="right")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='horizontal', nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
         self.horizontal_profile_changed()
 
     def right_button_released(self):
-        EventHandler.button_released(ui=self.ui.right_button, name='right')
+        EventHandler.button_released(ui=self.ui.right_button, name="right")
 
     def up_up_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.up_up_button, name='up_up')
+        EventHandler.button_pressed(ui=self.ui.up_up_button, name="up_up")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='vertical', nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="vertical", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
         self.vertical_profile_changed()
 
     def up_up_button_released(self):
-        EventHandler.button_released(ui=self.ui.up_up_button, name='up_up')
+        EventHandler.button_released(ui=self.ui.up_up_button, name="up_up")
 
     def up_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.up_button, name='up')
+        EventHandler.button_pressed(ui=self.ui.up_button, name="up")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='vertical', nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="vertical", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
         self.vertical_profile_changed()
 
     def up_button_released(self):
-        EventHandler.button_released(ui=self.ui.up_button, name='up')
+        EventHandler.button_released(ui=self.ui.up_button, name="up")
 
     def down_down_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.down_down_button, name='down_down')
+        EventHandler.button_pressed(ui=self.ui.down_down_button, name="down_down")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='vertical', nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="vertical", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
         self.vertical_profile_changed()
 
     def down_down_button_released(self):
-        EventHandler.button_released(ui=self.ui.down_down_button, name='down_down')
+        EventHandler.button_released(ui=self.ui.down_down_button, name="down_down")
 
     def down_button_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.down_button, name='down')
+        EventHandler.button_pressed(ui=self.ui.down_button, name="down")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction='vertical', nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(direction="vertical", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
         self.vertical_profile_changed()
 
     def down_button_released(self):
-        EventHandler.button_released(ui=self.ui.down_button, name='down')
+        EventHandler.button_released(ui=self.ui.down_button, name="down")
 
     def automatically_stitch_all_other_images_button_clicked(self):
         o_auto = AutomaticallyStitch(parent=self)

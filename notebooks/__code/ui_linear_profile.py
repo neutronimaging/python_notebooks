@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/IPTS/python_notebooks/ui/ui_linear_profile.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
@@ -8,7 +6,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 709)
@@ -115,12 +114,12 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.file_index_slider.sliderMoved['int'].connect(MainWindow.slider_changed)
+        self.file_index_slider.sliderMoved["int"].connect(MainWindow.slider_changed)
         self.add_profile.clicked.connect(MainWindow.add_profile)
         self.add_profile_2.clicked.connect(MainWindow.remove_profile)
         self.pushButton.clicked.connect(MainWindow.ok_button_clicked)
         self.actionExport_Profile.triggered.connect(MainWindow.export_button_clicked)
-        self.table_profile.cellChanged['int','int'].connect(MainWindow.save_roi_table)
+        self.table_profile.cellChanged["int", "int"].connect(MainWindow.save_roi_table)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -146,4 +145,3 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "OK"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionExport_Profile.setText(_translate("MainWindow", "Export Profile ..."))
-

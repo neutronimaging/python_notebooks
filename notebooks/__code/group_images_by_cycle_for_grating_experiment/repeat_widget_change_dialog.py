@@ -1,32 +1,31 @@
-from qtpy.QtWidgets import QMainWindow
-from qtpy.QtGui import QIcon
-from qtpy import QtCore, QtGui
 import os
+
 import numpy as np
+from qtpy import QtCore
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QMainWindow
 
 from __code import load_ui
-from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
 from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
+from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
 
 
 class RepeatWidgetChangeDialog(QMainWindow):
-
     def __init__(self, parent=None, input_row=0, input_column=0):
-
         self.grand_parent = parent
         self.input_row = input_row
         self.input_column = input_column
         super(RepeatWidgetChangeDialog, self).__init__(parent)
 
-        ui_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                    os.path.join('ui',
-                                                 'ui_grating_excel_widget_dialog.ui'))
+        ui_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_grating_excel_widget_dialog.ui"),
+        )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
         self.init_widgets()
 
     def init_widgets(self):
-        
         statis_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
         self.do_not_repeat_released_file = os.path.join(statis_file_path, "do_not_repeat_button_released.png")
         self.do_not_repeat_pressed_file = os.path.join(statis_file_path, "do_not_repeat_button_pressed.png")

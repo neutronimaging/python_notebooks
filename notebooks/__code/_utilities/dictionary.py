@@ -14,7 +14,7 @@ def key_path_exists_in_dictionary(dictionary=None, tree_key=None):
 def combine_dictionaries(master_dictionary={}, servant_dictionary={}):
     new_master_dictionary = collections.OrderedDict()
     for _key in master_dictionary.keys():
-        _servant_key = master_dictionary[_key]['filename']
+        _servant_key = master_dictionary[_key]["filename"]
         _dict1 = master_dictionary[_key]
         _dict2 = servant_dictionary[_servant_key]
         _dict3 = {**_dict1, **_dict2}

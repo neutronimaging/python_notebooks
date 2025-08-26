@@ -1,5 +1,5 @@
 import numpy as np
-from qtpy import QtGui, QtCore
+from qtpy import QtCore, QtGui
 from qtpy.QtWidgets import QTableWidgetItem, QTableWidgetSelectionRange
 
 from __code._utilities.widgets_handler import WidgetsHandler
@@ -146,8 +146,7 @@ class TableHandler:
         self.table_ui.insertRow(row)
 
     def insert_row(self, row=0, list_col_name=None):
-        """row is the row number
-        """
+        """row is the row number"""
         self.table_ui.insertRow(row)
         for column, _text in enumerate(list_col_name):
             _item = QTableWidgetItem(_text)
@@ -172,14 +171,14 @@ class TableHandler:
         self.table_ui.item(row, column).setText(cell_str)
 
     def set_item_with_float(self, row=0, column=0, float_value=""):
-        if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
+        if (str(float_value) == "None") or (str(float_value) == "N/A"):
             _str_value = "N/A"
         else:
             _str_value = self.cell_str_format.format(float(float_value))
         self.table_ui.item(row, column).setText(_str_value)
 
     def insert_item_with_float(self, row=0, column=0, float_value="", format_str="{}"):
-        if (str(float_value) == 'None') or (str(float_value) == 'N/A'):
+        if (str(float_value) == "None") or (str(float_value) == "N/A"):
             _str_value = "N/A"
         else:
             _str_value = format_str.format(float(float_value))
@@ -213,8 +212,7 @@ class TableHandler:
         block_signals: block or not any signal emitted by the table
         """
         if block_signal:
-            WidgetsHandler.block_signals(ui=self.table_ui,
-                                         status=True)
+            WidgetsHandler.block_signals(ui=self.table_ui, status=True)
 
         self.remove_all_rows()
 
@@ -225,11 +223,7 @@ class TableHandler:
                     editable_flag = False
                 else:
                     editable_flag = editable_columns_boolean[_column_index]
-                self.insert_item(row=_row_index,
-                                 column=_column_index,
-                                 value=_text,
-                                 editable=editable_flag)
+                self.insert_item(row=_row_index, column=_column_index, value=_text, editable=editable_flag)
 
         if block_signal:
-            WidgetsHandler.block_signals(ui=self.table_ui,
-                                         status=False)
+            WidgetsHandler.block_signals(ui=self.table_ui, status=False)

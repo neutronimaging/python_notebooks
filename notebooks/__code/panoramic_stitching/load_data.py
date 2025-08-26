@@ -1,23 +1,23 @@
 import glob
-from collections import OrderedDict
-import os
 import json
-from qtpy import QtGui
-import numpy as np
+import os
+from collections import OrderedDict
 
+import numpy as np
 from NeuNorm.normalization import Normalization
+from qtpy import QtGui
 
 from __code._utilities.error import NoFilesFound
 
-
 THIS_FILE_PATH = os.path.dirname(__file__)
-CONFIG_FILE = os.path.join(THIS_FILE_PATH, 'config.json')
+CONFIG_FILE = os.path.join(THIS_FILE_PATH, "config.json")
 
 
 class MetadataData:
     """
     object that will store the data (2D array) of each image and metadata
     """
+
     data = None
     metadata = None
 
@@ -31,7 +31,6 @@ class MetadataData:
 
 
 class LoadData:
-
     master_dictionary = None
     metadata_key_to_keep = None
 
@@ -47,8 +46,8 @@ class LoadData:
         self.metadata_key_to_keep = []
         self.metadata_name_to_keep = []
         for key in config.keys():
-            self.metadata_key_to_keep.append(config[key]['key'])
-            self.metadata_name_to_keep.append(config[key]['name'])
+            self.metadata_key_to_keep.append(config[key]["key"])
+            self.metadata_name_to_keep.append(config[key]["name"])
 
     def run(self):
         nbr_folder = len(self.list_folders)
@@ -64,24 +63,24 @@ class LoadData:
             list_files.sort()
             o_norm.load(file=list_files, notebook=False)
 
-            if not o_norm.data['sample']['data']:
+            if not o_norm.data["sample"]["data"]:
                 raise NoFilesFound
 
             # record size of images
             if _folder_index == 0:
-                self.parent.image_height, self.parent.image_width = np.shape(o_norm.data['sample']['data'][0])
+                self.parent.image_height, self.parent.image_width = np.shape(o_norm.data["sample"]["data"][0])
 
             local_dict = OrderedDict()
             for _index, _file in enumerate(list_files):
                 _metadatadata = MetadataData()
-                _metadatadata.data = o_norm.data['sample']['data'][_index]
-                _metadatadata.metadata = o_norm.data['sample']['metadata'][_index]
+                _metadatadata.data = o_norm.data["sample"]["data"][_index]
+                _metadatadata.metadata = o_norm.data["sample"]["metadata"][_index]
                 _metadatadata.keep_only_metadata_defined_in_config(list_key=self.metadata_key_to_keep)
 
                 local_dict[_file] = _metadatadata
 
             master_dict[os.path.basename(_folder)] = local_dict
-            self.parent.eventProgress.setValue(_folder_index+1)
+            self.parent.eventProgress.setValue(_folder_index + 1)
             QtGui.QGuiApplication.processEvents()
 
         self.parent.working_dir = os.path.dirname(self.list_folders[0])

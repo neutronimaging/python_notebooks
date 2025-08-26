@@ -1,6 +1,7 @@
-import os
-import psutil
 import gc
+import os
+
+import psutil
 
 
 def get_memory_usage():
@@ -14,13 +15,13 @@ def get_memory_usage():
     """
     process = psutil.Process(os.getpid())
     mem_info = process.memory_info()
-    mem_usage_mb = mem_info.rss / (1024 ** 2)  # Convert bytes to MB
+    mem_usage_mb = mem_info.rss / (1024**2)  # Convert bytes to MB
 
     # Include memory usage of child processes
     for child in process.children(recursive=True):
         try:
             mem_info = child.memory_info()
-            mem_usage_mb += mem_info.rss / (1024 ** 2)
+            mem_usage_mb += mem_info.rss / (1024**2)
         except psutil.NoSuchProcess:
             continue
 
@@ -34,15 +35,14 @@ def print_memory_usage(message="", end="\n"):
     mem_usage = get_memory_usage()
 
     if mem_usage < 999:
-        units = 'MB'
+        units = "MB"
     else:
         mem_usage /= 1000
-        units = 'GB'
+        units = "GB"
     print(f"{message}: total memory usage = {mem_usage:.2f}{units}", end=end)
 
 
 def delete_object(object=None):
-    '''delete object from memory '''
+    """delete object from memory"""
     object = None
     gc.collect()
-    

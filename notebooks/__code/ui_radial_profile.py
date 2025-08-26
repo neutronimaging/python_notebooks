@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_radial_profile.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1237, 875)
@@ -65,7 +64,9 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.circle_x, 0, 1, 1, 1)
         self.verticalLayout_3.addWidget(self.groupBox_2)
         self.groupBox_3 = QtWidgets.QGroupBox(self.tab_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
@@ -90,7 +91,7 @@ class Ui_MainWindow(object):
         self.sector_from_value.setMinimumSize(QtCore.QSize(30, 0))
         self.sector_from_value.setMaximumSize(QtCore.QSize(30, 16777215))
         self.sector_from_value.setText("")
-        self.sector_from_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.sector_from_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.sector_from_value.setObjectName("sector_from_value")
         self.gridLayout_2.addWidget(self.sector_from_value, 0, 2, 1, 1)
         self.sector_to_label = QtWidgets.QLabel(self.groupBox_3)
@@ -112,7 +113,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.from_angle_slider, 0, 1, 1, 1)
         self.sector_to_value = QtWidgets.QLabel(self.groupBox_3)
         self.sector_to_value.setText("")
-        self.sector_to_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.sector_to_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.sector_to_value.setObjectName("sector_to_value")
         self.gridLayout_2.addWidget(self.sector_to_value, 1, 2, 1, 1)
         self.to_angle_slider = QtWidgets.QScrollBar(self.groupBox_3)
@@ -256,14 +257,14 @@ class Ui_MainWindow(object):
         self.cancel_button.clicked.connect(MainWindow.cancel_clicked)
         self.sector_full_circle.clicked.connect(MainWindow.sector_radio_button_changed)
         self.sector_sector.clicked.connect(MainWindow.sector_radio_button_changed)
-        self.guide_red_slider.sliderMoved['int'].connect(MainWindow.guide_color_changed)
-        self.guide_green_slider.sliderMoved['int'].connect(MainWindow.guide_color_changed)
-        self.guide_blue_slider.sliderMoved['int'].connect(MainWindow.guide_color_changed)
-        self.guide_alpha_slider.sliderMoved['int'].connect(MainWindow.guide_color_changed)
-        self.grid_size_slider.sliderMoved['int'].connect(MainWindow.grid_slider_moved)
+        self.guide_red_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
+        self.guide_green_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
+        self.guide_blue_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
+        self.guide_alpha_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
+        self.grid_size_slider.sliderMoved["int"].connect(MainWindow.grid_slider_moved)
         self.grid_size_slider.sliderPressed.connect(MainWindow.grid_slider_pressed)
-        self.from_angle_slider.sliderMoved['int'].connect(MainWindow.sector_from_angle_moved)
-        self.to_angle_slider.sliderMoved['int'].connect(MainWindow.sector_to_angle_moved)
+        self.from_angle_slider.sliderMoved["int"].connect(MainWindow.sector_from_angle_moved)
+        self.to_angle_slider.sliderMoved["int"].connect(MainWindow.sector_to_angle_moved)
         self.from_angle_slider.sliderPressed.connect(MainWindow.sector_from_angle_clicked)
         self.to_angle_slider.sliderPressed.connect(MainWindow.sector_to_angle_clicked)
         self.from_angle_slider.sliderReleased.connect(MainWindow.sector_from_angle_clicked)
@@ -277,8 +278,8 @@ class Ui_MainWindow(object):
         self.guide_alpha_slider.sliderPressed.connect(MainWindow.guide_color_clicked)
         self.guide_alpha_slider.sliderReleased.connect(MainWindow.guide_color_released)
         self.grid_size_slider.sliderReleased.connect(MainWindow.grid_slider_pressed)
-        self.from_angle_slider.valueChanged['int'].connect(MainWindow.sector_from_angle_moved)
-        self.to_angle_slider.valueChanged['int'].connect(MainWindow.sector_to_angle_moved)
+        self.from_angle_slider.valueChanged["int"].connect(MainWindow.sector_from_angle_moved)
+        self.to_angle_slider.valueChanged["int"].connect(MainWindow.sector_to_angle_moved)
         self.calculate_profiles_button.clicked.connect(MainWindow.calculate_profiles_clicked)
         self.export_profiles_button.clicked.connect(MainWindow.export_profiles_clicked)
         self.help_button.clicked.connect(MainWindow.help_button_clicked)
@@ -303,18 +304,22 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "Red"))
         self.label_9.setText(_translate("MainWindow", "Grid Size"))
         self.groupBox.setTitle(_translate("MainWindow", "Instructions"))
-        self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'.SF NS Text\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">center of circle</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Define <span style=\" font-weight:600;\">radial sector</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* Jump to <span style=\" font-weight:600;\">Profile</span> tab and <span style=\" font-weight:600;\">Run Calculation</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">* <span style=\" font-weight:600;\">Export</span> profiles</p></body></html>"))
+        self.textBrowser.setHtml(
+            _translate(
+                "MainWindow",
+                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n'
+                '<html><head><meta name="qrichtext" content="1" /><style type="text/css">\n'
+                "p, li { white-space: pre-wrap; }\n"
+                "</style></head><body style=\" font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">* Define <span style=" font-weight:600;">center of circle</span></p>\n'
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">* Define <span style=" font-weight:600;">radial sector</span></p>\n'
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">* Jump to <span style=" font-weight:600;">Profile</span> tab and <span style=" font-weight:600;">Run Calculation</span></p>\n'
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">* <span style=" font-weight:600;">Export</span> profiles</p></body></html>',
+            )
+        )
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Initialization"))
         self.calculate_profiles_button.setText(_translate("MainWindow", "Calculate Profiles"))
         self.export_profiles_button.setText(_translate("MainWindow", "Export Profiles ..."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Profile"))
         self.help_button.setText(_translate("MainWindow", "Help"))
         self.cancel_button.setText(_translate("MainWindow", "Done"))
-

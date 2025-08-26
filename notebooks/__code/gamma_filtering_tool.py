@@ -1,29 +1,26 @@
-from IPython.display import HTML
-from IPython.display import display
 import os
+
 import numpy as np
 import pyqtgraph as pg
+from IPython.display import HTML, display
 from pyqtgraph.dockarea import *
 
 try:
-    from PyQt4.QtGui import QFileDialog
     from PyQt4 import QtCore, QtGui
-    from PyQt4.QtGui import QMainWindow
+    from PyQt4.QtGui import QFileDialog, QMainWindow
 except ImportError:
-    from PyQt5.QtWidgets import QFileDialog
-    from PyQt5 import QtCore, QtGui
-    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5 import QtGui
+    from PyQt5.QtWidgets import QMainWindow
 
 from NeuNorm.normalization import Normalization
 
-from __code.ui_gamma_filtering_tool  import Ui_MainWindow as UiMainWindow
-from __code.file_folder_browser import FileFolderBrowser
 from __code.decorators import wait_cursor
+from __code.file_folder_browser import FileFolderBrowser
+from __code.ui_gamma_filtering_tool import Ui_MainWindow as UiMainWindow
 
 
 class InterfaceHandler(FileFolderBrowser):
-
-    def __init__(self, working_dir=''):
+    def __init__(self, working_dir=""):
         super(InterfaceHandler, self).__init__(working_dir=working_dir)
 
     def get_list_of_files(self):
@@ -31,7 +28,6 @@ class InterfaceHandler(FileFolderBrowser):
 
 
 class Interface(QMainWindow):
-
     live_data = []
     default_filtering_coefficient_value = 0.1
 
@@ -50,9 +46,12 @@ class Interface(QMainWindow):
     raw_image_size = []
 
     def __init__(self, parent=None, list_of_files=None):
-
-        display(HTML('<span style="font-size: 20px; color:blue">Check UI that poped up \
-            (maybe hidden behind this browser!)</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Check UI that poped up \
+            (maybe hidden behind this browser!)</span>'
+            )
+        )
 
         self.list_files = list_of_files
 
@@ -96,8 +95,7 @@ class Interface(QMainWindow):
         hori_layout.addWidget(self.filtered_value)
 
         # spacer
-        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding,
-                                       QtGui.QSizePolicy.Expanding)
+        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         hori_layout.addItem(spacerItem)
 
         # add status bar in main ui
@@ -118,7 +116,7 @@ class Interface(QMainWindow):
         it stays between 0 and 1"""
         value = self.ui.filtering_coefficient_value.text()
         try:
-            float_value = np.float(value)
+            float_value = float(value)
         except:
             self.ui.filtering_coefficient_value.setText(str(self.default_filtering_coefficient_value))
             return self.default_filtering_coefficient_value
@@ -137,18 +135,22 @@ class Interface(QMainWindow):
         total_nbr_pixels = raw_image_size[0] * raw_image_size[1]
 
         for _row, _file in enumerate(self.list_files):
-
             o_norm = Normalization()
-            o_norm.load(file=_file, auto_gamma_filter=False, manual_gamma_filter=True, manual_gamma_threshold=self.__get_filtering_coefficient_value())
-            _raw_data = o_norm.data['sample']['data']
+            o_norm.load(
+                file=_file,
+                auto_gamma_filter=False,
+                manual_gamma_filter=True,
+                manual_gamma_threshold=self.__get_filtering_coefficient_value(),
+            )
+            _raw_data = o_norm.data["sample"]["data"]
             nbr_pixel_corrected = self.get_number_pixel_gamma_corrected(data=_raw_data)
 
             # number of pixel corrected
-            _item = QtGui.QTableWidgetItem("{}/{}".format(nbr_pixel_corrected, total_nbr_pixels))
+            _item = QtGui.QTableWidgetItem(f"{nbr_pixel_corrected}/{total_nbr_pixels}")
             self.ui.tableWidget.setItem(_row, 1, _item)
 
             # percentage of pixel corrected
-            _item = QtGui.QTableWidgetItem("{:.02f}%".format(nbr_pixel_corrected*100/total_nbr_pixels))
+            _item = QtGui.QTableWidgetItem(f"{nbr_pixel_corrected*100/total_nbr_pixels:.02f}%")
             self.ui.tableWidget.setItem(_row, 2, _item)
 
     def get_number_pixel_gamma_corrected(self, data=[]):
@@ -158,35 +160,33 @@ class Interface(QMainWindow):
         gamma_indexes = np.where(filtering_coefficient * _data > mean_counts)
         return len(gamma_indexes[0])
 
-    def mouse_moved_in_any_image(self, evt, image='raw'):
+    def mouse_moved_in_any_image(self, evt, image="raw"):
         pos = evt[0]
 
-        if image == 'raw':
+        if image == "raw":
             image_view = self.ui.raw_image_view
-        elif image == 'filtered':
+        elif image == "filtered":
             image_view = self.ui.filtered_image_view
         else:
             image_view = self.ui.diff_image_view
 
         if image_view.view.sceneBoundingRect().contains(pos):
-
             [height, width] = self.raw_image_size
 
-            #mouse_point = self.ui.raw_image_view.view.vb.mapSceneToView(pos)
+            # mouse_point = self.ui.raw_image_view.view.vb.mapSceneToView(pos)
             mouse_point = image_view.view.getViewBox().mapSceneToView(pos)
             mouse_x = int(mouse_point.x())
             mouse_y = int(mouse_point.y())
 
-            if (mouse_x >= 0 and mouse_x < width) and \
-                    (mouse_y >= 0 and mouse_y < height):
+            if (mouse_x >= 0 and mouse_x < width) and (mouse_y >= 0 and mouse_y < height):
                 self.x_value.setText(str(mouse_x))
                 self.y_value.setText(str(mouse_y))
 
                 _raw_value = self.live_raw_image[mouse_x, mouse_y]
                 _filtered_value = self.live_filtered_image[mouse_x, mouse_y]
 
-                self.raw_value.setText("{:.03f}".format(_raw_value))
-                self.filtered_value.setText("{:.03f}".format(_filtered_value))
+                self.raw_value.setText(f"{_raw_value:.03f}")
+                self.filtered_value.setText(f"{_filtered_value:.03f}")
 
                 self.raw_hLine.setPos(mouse_point.y())
                 self.raw_vLine.setPos(mouse_point.x())
@@ -205,10 +205,10 @@ class Interface(QMainWindow):
         self.slider_moved()
 
     def mouse_moved_in_raw_image(self, evt):
-        self.mouse_moved_in_any_image(evt, image='raw')
+        self.mouse_moved_in_any_image(evt, image="raw")
 
     def mouse_moved_in_filtered_image(self, evt):
-        self.mouse_moved_in_any_image(evt, image='filtered')
+        self.mouse_moved_in_any_image(evt, image="filtered")
 
     def init_pyqtgraph(self):
         area = DockArea()
@@ -218,15 +218,15 @@ class Interface(QMainWindow):
         d2 = Dock("Gamma Filtered", size=(200, 200))
         d2h = Dock("Gamma Filtered Histogram", size=(200, 200))
 
-        area.addDock(d1, 'left')
-        area.addDock(d1h, 'left')
-        area.moveDock(d1, 'above', d1h)
-        area.addDock(d2, 'right', d1)
-        area.addDock(d2h, 'right')
-        area.moveDock(d2, 'above', d2h)
+        area.addDock(d1, "left")
+        area.addDock(d1h, "left")
+        area.moveDock(d1, "above", d1h)
+        area.addDock(d2, "right", d1)
+        area.addDock(d2h, "right")
+        area.moveDock(d2, "above", d2h)
 
         # raw image
-        self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name='raw_image')
+        self.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name="raw_image")
         self.ui.raw_image_view.ui.roiBtn.hide()
         self.ui.raw_image_view.ui.menuBtn.hide()
         self.ui.raw_image_view.view.setAutoVisible(y=True)
@@ -236,9 +236,9 @@ class Interface(QMainWindow):
         self.ui.raw_image_view.addItem(self.raw_hLine, ignoreBounds=True)
         self.raw_vLine.setPos([1000, 1000])
         self.raw_hLine.setPos([1000, 1000])
-        self.raw_proxy = pg.SignalProxy(self.ui.raw_image_view.view.scene().sigMouseMoved,
-                                    rateLimit=60,
-                                    slot=self.mouse_moved_in_raw_image)
+        self.raw_proxy = pg.SignalProxy(
+            self.ui.raw_image_view.view.scene().sigMouseMoved, rateLimit=60, slot=self.mouse_moved_in_raw_image
+        )
         d1.addWidget(self.ui.raw_image_view)
 
         # raw histogram plot
@@ -246,7 +246,7 @@ class Interface(QMainWindow):
         d1h.addWidget(self.ui.raw_histogram_plot)
 
         # filtered image
-        self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name='filtered_image')
+        self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name="filtered_image")
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
         self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
@@ -255,9 +255,11 @@ class Interface(QMainWindow):
         self.ui.filtered_image_view.addItem(self.filtered_hLine, ignoreBounds=True)
         self.filtered_vLine.setPos([1000, 1000])
         self.filtered_hLine.setPos([1000, 1000])
-        self.filtered_proxy = pg.SignalProxy(self.ui.filtered_image_view.view.scene().sigMouseMoved,
-                                    rateLimit=60,
-                                    slot=self.mouse_moved_in_filtered_image)
+        self.filtered_proxy = pg.SignalProxy(
+            self.ui.filtered_image_view.view.scene().sigMouseMoved,
+            rateLimit=60,
+            slot=self.mouse_moved_in_filtered_image,
+        )
         d2.addWidget(self.ui.filtered_image_view)
 
         # filtered histogram plot
@@ -268,8 +270,8 @@ class Interface(QMainWindow):
         vertical_layout.addWidget(area)
         self.ui.image_widget.setLayout(vertical_layout)
 
-        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
-        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
+        self.ui.raw_image_view.view.getViewBox().setXLink("filtered_image")
+        self.ui.raw_image_view.view.getViewBox().setYLink("filtered_image")
 
     def init_widgets(self):
         table_column_size = self.table_columns_size
@@ -290,12 +292,12 @@ class Interface(QMainWindow):
 
     def slider_moved(self):
         slider_position = self.ui.file_index_slider.value()
-        self.display_raw_image(file_index=slider_position-1)
-        self.display_corrected_image(file_index=slider_position-1)
+        self.display_raw_image(file_index=slider_position - 1)
+        self.display_corrected_image(file_index=slider_position - 1)
         self.ui.file_index_value.setText(str(slider_position))
         self.reset_states()
-        self.ui.raw_image_view.view.getViewBox().setYLink('filtered_image')
-        self.ui.raw_image_view.view.getViewBox().setXLink('filtered_image')
+        self.ui.raw_image_view.view.getViewBox().setYLink("filtered_image")
+        self.ui.raw_image_view.view.getViewBox().setXLink("filtered_image")
 
     def display_raw_image(self, file_index):
         _view = self.ui.raw_image_view.getView()
@@ -313,7 +315,7 @@ class Interface(QMainWindow):
         o_norm = Normalization()
         file_name = self.list_files[file_index]
         o_norm.load(file=file_name, auto_gamma_filter=False)
-        _image = o_norm.data['sample']['data'][0]
+        _image = o_norm.data["sample"]["data"][0]
 
         _image = np.transpose(_image)
         self.ui.raw_image_view.setImage(_image)
@@ -323,14 +325,13 @@ class Interface(QMainWindow):
         self.raw_image_size = np.shape(_image)
 
         if not first_update:
-            _histo_widget.setLevels(self.raw_histogram_level[0],
-                                    self.raw_histogram_level[1])
+            _histo_widget.setLevels(self.raw_histogram_level[0], self.raw_histogram_level[1])
 
         # histogram
         self.ui.raw_histogram_plot.clear()
         min = 0
         max = np.max(_image)
-        y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
+        y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.nbr_histo_bins))
         self.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
     def reset_states(self):
@@ -359,24 +360,28 @@ class Interface(QMainWindow):
 
         o_norm = Normalization()
         file_name = self.list_files[file_index]
-        o_norm.load(file=file_name, auto_gamma_filter=True, manual_gamma_filter=True, manual_gamma_threshold=self.__get_filtering_coefficient_value())
-        _image = o_norm.data['sample']['data'][0]
+        o_norm.load(
+            file=file_name,
+            auto_gamma_filter=True,
+            manual_gamma_filter=True,
+            manual_gamma_threshold=self.__get_filtering_coefficient_value(),
+        )
+        _image = o_norm.data["sample"]["data"][0]
 
-        #self.ui.filtered_image_view.clear()
+        # self.ui.filtered_image_view.clear()
         _image = np.transpose(_image)
         self.ui.filtered_image_view.setImage(_image)
         _view_box.setState(_state)
         self.live_filtered_image = _image
 
         if not first_update:
-            _histo_widget.setLevels(self.filtered_histogram_level[0],
-                                    self.filtered_histogram_level[1])
+            _histo_widget.setLevels(self.filtered_histogram_level[0], self.filtered_histogram_level[1])
 
         # histogram
         self.ui.filtered_histogram_plot.clear()
         min = 0
         max = np.max(_image)
-        y, x = np.histogram(_image, bins=np.linspace(min, max+1, self.nbr_histo_bins))
+        y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.nbr_histo_bins))
         self.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
 
     def apply_clicked(self):
@@ -396,6 +401,3 @@ class Interface(QMainWindow):
 
     def closeEvent(self, eventhere=None):
         print("Leaving Parameters Selection UI")
-
-
-

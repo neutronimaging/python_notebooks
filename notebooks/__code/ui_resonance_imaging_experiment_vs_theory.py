@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file '/Users/j35/git/python_notebooks/notebooks/ui/ui_resonance_imaging_experiment_vs_theory.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.3
@@ -7,10 +5,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1162, 863)
@@ -155,7 +153,7 @@ class Ui_MainWindow(object):
         self.file_index_ratio_button.clicked.connect(MainWindow.radio_button_clicked)
         self.tof_radio_button.clicked.connect(MainWindow.radio_button_clicked)
         self.lambda_radio_button.clicked.connect(MainWindow.radio_button_clicked)
-        self.list_to_plot_widget.itemClicked['QListWidgetItem*'].connect(MainWindow.plot_selection_changed)
+        self.list_to_plot_widget.itemClicked["QListWidgetItem*"].connect(MainWindow.plot_selection_changed)
         self.energy_radio_button.clicked.connect(MainWindow.radio_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

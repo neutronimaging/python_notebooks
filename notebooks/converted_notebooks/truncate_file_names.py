@@ -19,13 +19,15 @@
 # <img src='__docs/__all/notebook_rules.png' />
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select your IPTS 
+# # Select your IPTS
 
 # + run_control={"frozen": false, "read_only": false}
-from __code.truncate_file_names.truncate_file_names import TruncateFileNames
 from __code import system
-system.System.select_working_dir(notebook='truncate_file_names')
+from __code.truncate_file_names.truncate_file_names import TruncateFileNames
+
+system.System.select_working_dir(notebook="truncate_file_names")
 from __code.__all import custom_style
+
 custom_style.style()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -51,10 +53,6 @@ o_format.o_schema.check_new_names()
 o_format.o_schema.select_export_folder()
 # -
 
-# # Rename the files 
+# # Rename the files
 
 o_format.o_schema.rename_and_export_files()
-
-
-
-

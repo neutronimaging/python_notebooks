@@ -21,20 +21,21 @@ IPTS = 17685
 # <img src='__docs/__all/notebook_rules.png' />
 
 # +
+from __code import system
 from __code.from_dsc_time_info_to_ascii_file_vs_time import CreateExportTimeStamp
 
-from __code import system
-system.System.select_working_dir(notebook='from_dsc_time_to_ascii_file_vs_time')
+system.System.select_working_dir(notebook="from_dsc_time_to_ascii_file_vs_time")
 from __code.__all import custom_style
+
 custom_style.style()
 # -
 
-# # Select DSC Folder 
+# # Select DSC Folder
 
 o_dsc = CreateExportTimeStamp(working_dir=system.System.get_working_dir())
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
-# # Select TIFF Images Folder 
+# # Select TIFF Images Folder
 # -
 
 o_dsc.select_tiff_folder()
@@ -44,4 +45,3 @@ o_dsc.select_tiff_folder()
 o_dsc.select_output_folder_and_create_ascii_file()
 
 # + run_control={"frozen": false, "read_only": false}
-
