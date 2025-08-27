@@ -54,7 +54,7 @@ jobs:
 
       - name: Trigger deploy
         id: trigger
-        uses: eic/trigger-gitlab-ci@v2
+        uses: eic/trigger-gitlab-ci@v3
         with:
           url: https://code.ornl.gov
           token: ${{ secrets.GITLAB_TRIGGER_TOKEN_NOTEBOOKS}}
