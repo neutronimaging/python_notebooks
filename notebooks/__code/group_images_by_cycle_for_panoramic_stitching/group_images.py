@@ -354,7 +354,7 @@ class GroupImages:
                 output_folder=full_folder_name,
             )
             progress_ui.value = _group_index + 1
-            label_ui.value = f"{_group_index+1}/{nbr_groups}"
+            label_ui.value = f"{_group_index + 1}/{nbr_groups}"
 
         hbox.close()
         message = f"{nbr_groups} folders have been created"

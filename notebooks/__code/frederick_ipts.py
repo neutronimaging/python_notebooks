@@ -155,7 +155,7 @@ class FrederickIpts:
             self.exp_dict[_key] = _item
 
             w.value = _index + 1
-            label.value = f"{_index+1}/{nbr_groups}"
+            label.value = f"{_index + 1}/{nbr_groups}"
 
         hbox.close()
         display(widgets.Label(value="Done!"))

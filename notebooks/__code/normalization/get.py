@@ -258,7 +258,7 @@ class Get(TopGet):
         select_width = "100%"
         sample_list_of_runs = widgets.VBox(
             [
-                widgets.HTML("<b>List of Sample runs</b> (ALL RUNS listed here will be " "used!"),
+                widgets.HTML("<b>List of Sample runs</b> (ALL RUNS listed here will be used!"),
                 widgets.Select(options=list_sample, layout=widgets.Layout(width=select_width, height="300px")),
             ],
             layout=widgets.Layout(width="100%"),

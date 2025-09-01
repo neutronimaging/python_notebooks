@@ -145,7 +145,7 @@ class IntegratedRoiUi(QMainWindow):
         profile_list = list()
         for _row in np.arange(nbr_row):
             [x_axis, profile] = self.get_profile(profile_roi_row=_row)
-            _label = f" ROI #{_row+1}"
+            _label = f" ROI #{_row + 1}"
             _color = list_rgb_profile_color[_row]
             self.ui.profile_view.plot(x_axis, profile, name=_label, pen=_color)
 
@@ -320,7 +320,7 @@ class IntegratedRoiUi(QMainWindow):
         """rename all the profile name"""
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row+1}")
+            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row + 1}")
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):

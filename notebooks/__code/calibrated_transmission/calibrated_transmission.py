@@ -400,7 +400,7 @@ class CalibratedTransmissionUi(QMainWindow):
 
         for _index, _key in enumerate(self.measurement_dict.keys()):
             _data = self.measurement_dict[_key]
-            self.ui.measurement_view.plot(_data, name=f"Region {1+_index}", pen=_color_list[_index])
+            self.ui.measurement_view.plot(_data, name=f"Region {1 + _index}", pen=_color_list[_index])
             self.ui.measurement_view.setLabel("bottom", "File Index")
             self.ui.measurement_view.setLabel("left", "Mean Counts Calibrated")
 
@@ -795,7 +795,7 @@ class ExportCalibration:
             for _index_region in np.arange(nbr_measurement_region):
                 [x0, y0, width, height] = self.parent.get_item_row(row=_index_region)
                 metadata.append(f"#  region {_index_region}: [x0, y0, width, height]=[{x0}, {y0}, {width}, {height}]")
-                _legend += f", Mean_counts_of_region {_index_region+1}"
+                _legend += f", Mean_counts_of_region {_index_region + 1}"
         metadata.append("#")
         metadata.append(_legend)
         return metadata

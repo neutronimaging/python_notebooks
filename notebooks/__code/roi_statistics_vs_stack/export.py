@@ -37,7 +37,7 @@ class Export:
             metadata = ["# Statistics created with roi_statistics_vs_stack notebook"]
             metadata.append(f"# working dir: {self.parent.working_folder}")
             metadata.append(
-                f"# roi selected: x0:{roi['x0']}, y0:{roi['y0']}, " f"width:{roi['width']}, height:{roi['height']}"
+                f"# roi selected: x0:{roi['x0']}, y0:{roi['y0']}, width:{roi['width']}, height:{roi['height']}"
             )
             metadata.append("#")
             metadata.append("#file index, file name, time offset (s), min, max, mean, median, standard deviation")

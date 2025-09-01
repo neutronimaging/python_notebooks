@@ -31,7 +31,7 @@ class PanoramicStitching:
 
     def select_input_folders(self):
         self.list_folder_widget = fileselector.FileSelectorPanel(
-            instruction="select all the folders of images to " "stitch",
+            instruction="select all the folders of images to stitch",
             start_dir=self.working_dir,
             type="directory",
             next=self.folder_selected,

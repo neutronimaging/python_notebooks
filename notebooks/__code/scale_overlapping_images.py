@@ -141,7 +141,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
 
         for _row in np.arange(nbr_row):
             [x_axis, profile] = self.get_profile(image=image, profile_roi_row=_row)
-            _label = f" Profile #{_row+1}"
+            _label = f" Profile #{_row + 1}"
             _color = list_rgb_profile_color[_row]
             self.ui.profile_view.plot(x_axis, profile, name=_label, pen=_color)
 
@@ -310,7 +310,7 @@ class ScaleOverlappingImagesUi(QMainWindow):
         """rename all the profile name"""
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row+1}")
+            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row + 1}")
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):
@@ -642,7 +642,7 @@ class ExportProfiles:
 
     def _create_output_file_name(self, profile_index=0):
         base_name = os.path.basename(self.parent.working_dir)
-        output_file_name = os.path.join(self.export_folder, f"{base_name}_profile_{profile_index+1}.txt")
+        output_file_name = os.path.join(self.export_folder, f"{base_name}_profile_{profile_index + 1}.txt")
         return output_file_name
 
     def _create_metadata(self, profile_index=0):
@@ -665,8 +665,8 @@ class ExportProfiles:
         nbr_files = len(self.parent.data_dict["file_name"])
         metadata.append(f"#List of files ({nbr_files} files)")
         for _index, _file in enumerate(self.parent.data_dict["file_name"]):
-            metadata.append(f"# * {_file} -> col{_index+1}")
-            table_axis.append(f"# col.{_index+1}")
+            metadata.append(f"# * {_file} -> col{_index + 1}")
+            table_axis.append(f"# col.{_index + 1}")
         metadata.append("#")
         metadata.append("#" + ",".join(table_axis))
         return metadata
@@ -827,28 +827,28 @@ class Initializer:
             os.path.join(_file_path, "static/profile/button_rotation_left_fast.png")
         )
         self.parent.ui.left_rotation_button_fast.setStyleSheet(
-            "background-image: " "url('" + left_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + left_rotation_fast_file + "'); " + "background-repeat: no-repeat"
         )
 
         right_rotation_fast_file = os.path.abspath(
             os.path.join(_file_path, "static/profile/button_rotation_right_fast.png")
         )
         self.parent.ui.right_rotation_button_fast.setStyleSheet(
-            "background-image: " "url('" + right_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + right_rotation_fast_file + "'); " + "background-repeat: no-repeat"
         )
 
         left_rotation_slow_file = os.path.abspath(
             os.path.join(_file_path, "static/profile/button_rotation_left_slow.png")
         )
         self.parent.ui.left_rotation_button_slow.setStyleSheet(
-            "background-image: " "url('" + left_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + left_rotation_slow_file + "'); " + "background-repeat: no-repeat"
         )
 
         right_rotation_slow_file = os.path.abspath(
             os.path.join(_file_path, "static/profile/button_rotation_right_slow.png")
         )
         self.parent.ui.right_rotation_button_slow.setStyleSheet(
-            "background-image: " "url('" + right_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + right_rotation_slow_file + "'); " + "background-repeat: no-repeat"
         )
 
         self.parent.ui.splitter_2.setSizes([250, 50])

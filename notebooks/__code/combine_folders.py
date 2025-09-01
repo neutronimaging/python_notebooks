@@ -84,9 +84,7 @@ class CombineFolders:
             pass
         else:
             display(
-                HTML(
-                    '<span style="font-size: 20px; color:red">Folders must contain the same number' " of images!</span>"
-                )
+                HTML('<span style="font-size: 20px; color:red">Folders must contain the same number of images!</span>')
             )
 
     def check_validity_of_folders_selected(self):

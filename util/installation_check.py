@@ -12,7 +12,7 @@ requirements = [
     "qtpy",
 ]
 
-import_result = {p: False for p in requirements}
+import_result = dict.fromkeys(requirements, False)
 
 print("Checking requirements for Jupyter Imaging notebooks")
 
@@ -48,7 +48,7 @@ version_check_packages = {
 if success:
     print("All required packages installed")
 else:
-    print("Please install these missing packages " "to be able to run the Imaging Notebooks.")
+    print("Please install these missing packages to be able to run the Imaging Notebooks.")
     missing = [k for k, v in import_result.items() if not v]
     print("\t" + "\n\t".join(missing))
 

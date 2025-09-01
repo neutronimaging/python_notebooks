@@ -27,7 +27,7 @@ class Export:
         output_folder = QFileDialog.getExistingDirectory(
             self.parent,
             directory=self.parent.working_dir,
-            caption="Select where the folder containing the " "panoramic images will be created!",
+            caption="Select where the folder containing the panoramic images will be created!",
             options=QFileDialog.ShowDirsOnly,
         )
         if output_folder:

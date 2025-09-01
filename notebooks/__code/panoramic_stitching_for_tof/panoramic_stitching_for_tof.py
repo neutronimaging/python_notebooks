@@ -33,7 +33,7 @@ class PanoramicStitching:
 
     def select_input_folders(self):
         self.list_folder_widget = fileselector.FileSelectorPanel(
-            instruction="select the folders of images to " "stitch",
+            instruction="select the folders of images to stitch",
             start_dir=self.working_dir,
             type="directory",
             next=self.folder_selected,
@@ -49,7 +49,7 @@ class PanoramicStitching:
             str_list_ext = ", ".join(self.file_extension)
             display(
                 format_html_message(
-                    pre_message="None of the folder selected contains the file of extension " "requested ({}}".format(
+                    pre_message="None of the folder selected contains the file of extension requested ({}}".format(
                         str_list_ext
                     ),
                     spacer="",

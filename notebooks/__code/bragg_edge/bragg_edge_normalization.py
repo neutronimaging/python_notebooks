@@ -160,7 +160,7 @@ class BraggEdge(BraggEdgeParent):
         hbox_1 = widgets.HBox([nbr_images_to_use_label, self.nbr_images_slider_with_ob])
 
         self.select_roi_widget_with_ob = widgets.Button(
-            description="OPTIONAL: Select Region of interest away from " "sample " "to " "improve normalization",
+            description="OPTIONAL: Select Region of interest away from sample to improve normalization",
             layout=widgets.Layout(width="100%"),
         )
         self.select_roi_widget_with_ob.on_click(self.select_roi_with_ob)
@@ -183,7 +183,7 @@ class BraggEdge(BraggEdgeParent):
         hbox_without_ob = widgets.HBox([nbr_images_to_use_label, self.nbr_images_slider_without_ob])
 
         select_roi_widget_without_ob = widgets.Button(
-            description="MANDATORY: Select region of interest " "away from " "sample",
+            description="MANDATORY: Select region of interest away from sample",
             button_style="success",
             layout=widgets.Layout(width="100%"),
         )

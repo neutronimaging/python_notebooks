@@ -57,28 +57,28 @@ class Initializer:
             os.path.join(_file_path, "../static/profile/button_rotation_left_fast.png")
         )
         self.parent.ui.left_rotation_button_fast.setStyleSheet(
-            "background-image: " "url('" + left_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + left_rotation_fast_file + "'); " + "background-repeat: no-repeat"
         )
 
         right_rotation_fast_file = os.path.abspath(
             os.path.join(_file_path, "../static/profile/button_rotation_right_fast.png")
         )
         self.parent.ui.right_rotation_button_fast.setStyleSheet(
-            "background-image: " "url('" + right_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + right_rotation_fast_file + "'); " + "background-repeat: no-repeat"
         )
 
         left_rotation_slow_file = os.path.abspath(
             os.path.join(_file_path, "../static/profile/button_rotation_left_slow.png")
         )
         self.parent.ui.left_rotation_button_slow.setStyleSheet(
-            "background-image: " "url('" + left_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + left_rotation_slow_file + "'); " + "background-repeat: no-repeat"
         )
 
         right_rotation_slow_file = os.path.abspath(
             os.path.join(_file_path, "../static/profile/button_rotation_right_slow.png")
         )
         self.parent.ui.right_rotation_button_slow.setStyleSheet(
-            "background-image: " "url('" + right_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+            "background-image: url('" + right_rotation_slow_file + "'); " + "background-repeat: no-repeat"
         )
 
         self.parent.ui.splitter_2.setSizes([250, 50])

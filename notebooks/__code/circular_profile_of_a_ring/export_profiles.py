@@ -52,7 +52,7 @@ class ExportProfiles:
             list_files = self.parent.list_short_files
             for _row in np.arange(nbr_row):
                 _file = list_files[_row]
-                metadata.append(f"# column {_row+1}: {_file}")
+                metadata.append(f"# column {_row + 1}: {_file}")
 
             metadata.append("#")
             metadata.append("Angle from top vertical (degrees), mean counts (see label of columns above)")

@@ -585,10 +585,7 @@ class IPTS_28402:
             make_ascii_file(metadata=metadata, data=data_array, output_file_name=full_name_of_ascii_file, dim="1d")
 
         display(
-            HTML(
-                '<span style="font-size: 20px; color:blue">The following ASCII (csv) files have been '
-                "created: </span>"
-            )
+            HTML('<span style="font-size: 20px; color:blue">The following ASCII (csv) files have been created: </span>')
         )
         for _ascii_file in list_of_ascii_file_created:
             display(HTML('<span style="font-size: 20px; color:blue"> - ' + _ascii_file + "</span>"))

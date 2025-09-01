@@ -48,7 +48,7 @@ class ImportHandler:
             self.parent.ui.actionExport.setEnabled(True)
 
             self.parent.fitting_procedure_started["kropff"] = result_of_import.get("metadata").get(
-                "kropff fitting " "procedure " "started", False
+                "kropff fitting procedure started", False
             )
             self.parent.fitting_procedure_started["march-dollase"] = result_of_import.get("metadata").get(
                 "march-dollase fitting procedure started", False

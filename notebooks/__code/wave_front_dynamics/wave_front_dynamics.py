@@ -116,7 +116,7 @@ class WaveFrontDynamicsUI(QMainWindow):
 
     def __init__(self, parent=None, working_dir="./", wave_front_dynamics=None):
         display(
-            HTML('<span style="font-size: 20px; color:blue">Launched UI! ' "(maybe hidden behind this browser!)</span>")
+            HTML('<span style="font-size: 20px; color:blue">Launched UI! (maybe hidden behind this browser!)</span>')
         )
 
         self.working_dir = working_dir

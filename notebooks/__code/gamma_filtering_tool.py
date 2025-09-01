@@ -150,7 +150,7 @@ class Interface(QMainWindow):
             self.ui.tableWidget.setItem(_row, 1, _item)
 
             # percentage of pixel corrected
-            _item = QtGui.QTableWidgetItem(f"{nbr_pixel_corrected*100/total_nbr_pixels:.02f}%")
+            _item = QtGui.QTableWidgetItem(f"{nbr_pixel_corrected * 100 / total_nbr_pixels:.02f}%")
             self.ui.tableWidget.setItem(_row, 2, _item)
 
     def get_number_pixel_gamma_corrected(self, data=[]):

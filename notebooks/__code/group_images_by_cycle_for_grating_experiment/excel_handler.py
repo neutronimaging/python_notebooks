@@ -461,7 +461,7 @@ class Interface(QMainWindow):
         if self.at_least_one_error_found:
             show_status_message(
                 parent=self,
-                message="At least one issue found in table! Angel will not be able to execute this " "excel!",
+                message="At least one issue found in table! Angel will not be able to execute this excel!",
                 status=StatusMessageStatus.warning,
                 duration_s=15,
             )
