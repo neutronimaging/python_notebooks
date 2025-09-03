@@ -25,6 +25,12 @@ def get_full_home_file_name(base_file_name):
     return full_log_file_name
 
 
+def get_full_log_file_name(base_file_name):
+    home_folder = expanduser("~")
+    full_log_file_name = os.path.join(home_folder, "logs", base_file_name)
+    return full_log_file_name
+
+
 def force_file_extension(filename, ext=".txt"):
     """this method check the name of the file and makes sure the extension is the one we are requesting"""
     [base, extension] = os.path.splitext(filename)

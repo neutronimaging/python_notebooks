@@ -6,7 +6,7 @@
 name = "python-notebooks-development"
 description = "Python notebooks for neutron imaging beamlines at ORNL"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = "==3.12"
 license = { text = "MIT" }
 readme = "README.md"
 
@@ -21,12 +21,12 @@ issues = "https://github.com/ornlneutronimaging/python_notebooks/issues"
 ###################
 
 [tool.pixi.workspace]
-channels = ["conda-forge", "neutronimaging", "oncat"]
-platforms = ["linux-64", "osx-arm64"]
+channels = ["neutronimaging", "conda-forge", "oncat"]
+platforms = ["linux-64"]
 
 # Base dependencies (always included)
 [tool.pixi.dependencies]
-python = "3.11.*"
+python = "3.12.*"
 requests = "*"
 requests-oauthlib = "*"
 
@@ -42,6 +42,7 @@ scikit-image = "*"
 h5py = "*"
 lmfit = "*"
 pillow = "*"
+neunorm = "*"
 
 # ============================================
 # Feature: Supporting Libraries
@@ -140,12 +141,14 @@ audit = "pip-audit --local || echo 'Warning: Some vulnerabilities found. Conside
 # PyPI Dependencies (all environments)
 # ============================================
 [tool.pixi.pypi-dependencies]
-neunorm = "*"
+# tdcsophiread = { path = "/SNS/VENUS/shared/zhangc/wheels/tdcsophiread-3.0.2-cp312-abi3-linux_x86_64.whl" }
+# neunorm = "*"
 changepy = { git = "https://github.com/JeanBilheux/changepy" }
-ipywe = "*"
+# ipywe = "*"
 neutronbraggedge = "*"
 sectorizedradialprofile = "*"
 imagingreso = "*"
+# tdcsophiread = { path = "/SNS/VENUS/shared/zhangc/wheels/tdcsophiread-3.0.2-cp312-abi3-linux_x86_64.whl" }
 
 # ============================================
 # Environments

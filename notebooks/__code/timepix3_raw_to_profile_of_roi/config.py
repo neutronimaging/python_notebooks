@@ -1,0 +1,1 @@
+default_tpx3_file = "/SNS/VENUS/IPTS-35945/images/tpx3/raw/radiography/20250824_Thick_Cu_SlitO_40cm_2_500C_1_800AngsMin/20250824_Run_10586_Thick_Cu_SlitO_40cm_2_500C_1_800AngsMin_1/20250824_Run_10586_Thick_Cu_SlitO_40cm_2_500C_1_800AngsMin_1_000000.tpx3"
