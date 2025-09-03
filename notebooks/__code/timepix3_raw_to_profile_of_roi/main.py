@@ -4,15 +4,25 @@ import logging
 from IPython.display import display, HTML
 import time
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from ipywidgets import interactive
+from ipywidgets import widgets
 
 from __code.ipywe import fileselector
 from __code._utilities.file import get_full_log_file_name
 from __code.timepix3_raw_to_profile_of_roi import config
 
+# Setup plotting
+plt.rcParams["figure.figsize"] = (10, 6)
+plt.rcParams["font.size"] = 12
+
 LOG_FILE_NAME = "timepix3_raw_to_profile_of_roi.log"
 
 
 class Timepix3RawToProfileOfRoi:
+
+    apply_sampling = False
 
     def __init__(self, working_dir=None, debug=False):
         self.working_dir = working_dir
@@ -47,8 +57,6 @@ class Timepix3RawToProfileOfRoi:
         self.get_file_infos(file_name=file_name)
         self.processing_tpx3(file_name=file_name)
 
-
-
     def get_file_infos(self, file_name=None):
         
         if file_name:
@@ -78,6 +86,7 @@ class Timepix3RawToProfileOfRoi:
 
         # DEBUG ONLY
         hits = np.arange(10)
+        self.hits = hits
 
         end_time = time.time()
         processing_time = end_time - start_time
@@ -106,4 +115,41 @@ class Timepix3RawToProfileOfRoi:
             display(HTML(f"<tr><td>Chip {chip}</td><td>{count:,} hits ({percentage:.1f}%)</td></tr>"))
             display(HTML(f"<tr><td>Chip {chip}</td><td>{count} ({percentage:.1f}%)</td></tr>"))
         display(HTML("</table>"))
+
+    def select_sampling_percentage(self):
+        if len(self.hits) > 100_000:
+            label = widgets.Label("Select sampling percentage:")
+            self.sampling_percentage_ui = widgets.FloatSlider(min=0.01,
+                                                         max=100,
+                                                         value=0.1,
+                                                         step=0.01)
+            hori_layout = widgets.HBox([label, self.sampling_percentage_ui])
+            self.apply_sampling = True
+            display(hori_layout)
+        else:
+            display(HTML("File has less than 100,000 hits. No sampling is needed."))
+            self.apply_sampling = False
+
+    def display_image_with_roi(self):
+        self.generate_2d_hit_map()
         
+
+    def generate_2d_hit_map(self):
+        sample_fraction = self.sampling_percentage_ui.value / 100.
+        if self.apply_sampling:
+            n_sample = int(len(self.hits) * sample_fraction)
+            sample_indices = np.random.choice(len(self.hits), size=n_sample, replace=False)
+            hits_for_viz = self.hits[sample_indices]
+            display(HTML(f"Using {n_sample:,} sampled hits ({sample_fraction*100:.1f}%) for visualization"))
+        else:
+            hits_for_viz = self.hits
+            display(HTML(f"Using all {len(self.hits):,} hits for visualization"))
+       
+        # Create 2D histogram (bin by detector pixels)
+        x_bins = np.arange(0, 515, 1)  # 0 to 514 pixels
+        y_bins = np.arange(0, 515, 1)  # 0 to 514 pixels
+        
+        hist2d, x_edges, y_edges = np.histogram2d(
+            hits_for_viz["x"], hits_for_viz["y"], bins=[x_bins, y_bins])
+
+
