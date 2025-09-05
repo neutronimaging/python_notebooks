@@ -11,14 +11,18 @@ from __code.ipywe import fileselector
 
 
 class CombineImages:
-    working_dir = ""
+    input_working_dir = ""
+    output_working_dir = ""
 
     def __init__(self, working_dir=""):
-        self.working_dir = working_dir
+        self.input_working_dir = working_dir
+        self.output_working_dir = working_dir
 
     def select_files(self):
         self.files_list_widget = fileselector.FileSelectorPanel(
-            instruction="select files to combine", start_dir=self.working_dir, multiple=True
+            instruction="select files to combine", 
+            start_dir=self.input_working_dir, 
+            multiple=True
         )
         self.files_list_widget.show()
 
@@ -50,7 +54,7 @@ class CombineImages:
     def select_output_folder(self):
         self.output_folder_widget = fileselector.FileSelectorPanel(
             instruction="select where to create the " + "combined image ...",
-            start_dir=self.working_dir,
+            start_dir=self.output_working_dir,
             newdir_toolbar_button=True,
             type="directory",
         )
@@ -72,6 +76,7 @@ class CombineImages:
 
     def define_output_filename(self):
         list_files = self.files_list_widget.selected
+        self.input_working_dir = os.path.dirname(os.path.dirname(list_files[0]))
         short_list_files = [os.path.basename(_file) for _file in list_files]
 
         merging_algo = self.__get_formated_merging_algo_name()
@@ -124,6 +129,7 @@ class CombineImages:
 
         # get output folder
         output_folder = os.path.abspath(self.output_folder_widget.selected)
+        self.output_working_dir = output_folder
 
         o_load = Normalization()
         o_load.load(file=list_files, notebook=True)
