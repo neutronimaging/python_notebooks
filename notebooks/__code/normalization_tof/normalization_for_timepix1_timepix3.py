@@ -409,7 +409,7 @@ def normalization_with_list_of_full_path(
 
             sample_integrated1 = np.nansum(_sample_data, axis=1)
             sample_integrated = np.nansum(sample_integrated1, axis=1)
-            axs1[1].plot(sample_integrated)
+            axs1[1].plot(sample_integrated, 'o')
             axs1[1].set_xlabel("File image index")
             axs1[1].set_ylabel("mean of full image")
             plt.tight_layout
@@ -422,7 +422,7 @@ def normalization_with_list_of_full_path(
 
             ob_integrated1 = np.nansum(ob_data_combined, axis=1)
             ob_integrated = np.nansum(ob_integrated1, axis=1)
-            axs2[1].plot(ob_integrated)
+            axs2[1].plot(ob_integrated, 'o')
             axs2[1].set_xlabel("File image index")
             axs2[1].set_ylabel("mean of full image")
             plt.tight_layout()
@@ -435,7 +435,7 @@ def normalization_with_list_of_full_path(
 
             profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
             profile = np.nanmean(profile_step1, axis=1)
-            axs3[1].plot(profile)
+            axs3[1].plot(profile, 'o')
             axs3[1].set_xlabel("File image index")
             axs3[1].set_ylabel("mean of full image")
             plt.tight_layout()
