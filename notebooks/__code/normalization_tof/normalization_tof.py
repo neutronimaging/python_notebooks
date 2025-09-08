@@ -3,11 +3,13 @@ import logging
 import logging as notebook_logging
 import os
 from pathlib import Path
+import numpy as np
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 from IPython.display import HTML, display
 from ipywidgets import interactive
+from PIL import Image
 
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
@@ -252,6 +254,28 @@ class NormalizationTof:
         else:
             raise ValueError(f"Unknown detector type: {self.detector_type}")
 
+    def display_infos(self, input_full_path=None):
+        if input_full_path is None:
+            return
+
+        # retrieve the list of tiff files
+        list_tiff = retrieve_list_of_tif(input_full_path)
+        nbr_tiff = len(list_tiff)
+
+        # load the first tiff file to get the shape and dtype
+        data = Image.open(list_tiff[0])
+        shape = data.size  # (width, height)
+        dtype = np.array(data).dtype  # e.g. 'I;16' for 16-bit unsigned integer
+
+        # present result in a table
+        display(HTML(f"""
+                        <h3>Information for run: {os.path.basename(_full_path)}</h3>
+                    <table border="3px solid black" style="border-collapse:collapse;">
+                        <tr><th>Nbr TIFF</th><th>Images height</th><th>Images width</th><th>Data Type</th></tr>
+                        <tr><td>{nbr_tiff}</td><td>{shape[0]}</td><td>{shape[1]}</td><td>{dtype}</td></tr>
+                    </table>
+        """))
+
     def check_sample(self):
         """
         Check if the sample folder and runs are valid.
@@ -279,6 +303,7 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_sample[_file_full_path] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
+                        self.display_infos(list_of_input_full_path=_file_full_path)
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
 
@@ -299,6 +324,7 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_sample[_run] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
+                        self.display_infos(list_of_input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
@@ -377,6 +403,7 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_ob[_file_full_path] = {}
                         self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
+                        self.display_infos(list_of_input_full_path=_file_full_path)
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
@@ -396,6 +423,7 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_short_name_full_path["ob"][os.path.basename(_run)] = _run
                         self.dict_ob[_run] = {}
+                        self.display_infos(list_of_input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
