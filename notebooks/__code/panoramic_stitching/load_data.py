@@ -24,9 +24,13 @@ class MetadataData:
     def keep_only_metadata_defined_in_config(self, list_key=None):
         metadata_to_keep = {}
         for key in list_key:
-            _metadata_value = self.metadata[key]
-            _name, _value = _metadata_value.split(":")
-            metadata_to_keep[_name] = float(_value)
+            try:
+                _metadata_value = self.metadata[key]
+                _name, _value = _metadata_value.split(":")
+                metadata_to_keep[_name] = float(_value)
+            except KeyError:
+                continue
+        
         self.metadata = metadata_to_keep
 
 

@@ -35,7 +35,7 @@ class DataInitialization:
                     xoffset = 0
                     yoffset = 0
                 else:
-                    if current_metadata[X_METADATA_NAME] < previous_metadata[X_METADATA_NAME]:
+                    if current_metadata.get(X_METADATA_NAME, 0) < previous_metadata.get(X_METADATA_NAME, 0):
                         xoffset = 0
                         yoffset += image_height
                     else:

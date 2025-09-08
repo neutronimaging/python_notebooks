@@ -46,6 +46,8 @@ class PanoramicStitching:
             )
         )
 
+        self.working_dir = os.path.dirname(final_list_folders[0]) if final_list_folders else self.working_dir
+        print("there")
         if not final_list_folders:
             str_list_ext = ", ".join(self.file_extension)
             display(
@@ -60,6 +62,14 @@ class PanoramicStitching:
         final_list_folders.sort()
         nbr_folder = len(final_list_folders)
         display(format_html_message(pre_message=f"Notebook is about to work with {nbr_folder} folders!", spacer=""))
+
+        self.final_list_folders = final_list_folders
+        self.list_folders_rejected = list_folders_rejected
+
+    def start_panoramic_stitching(self):
+
+        final_list_folders = self.final_list_folders
+        list_folders_rejected = self.list_folders_rejected
 
         # gui initialization
         o_interface = Interface(list_folders=final_list_folders, list_folders_rejected=list_folders_rejected)

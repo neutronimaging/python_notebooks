@@ -16,7 +16,7 @@ from skimage.io import imread
 
 # from enum import Enum
 # from scipy.constants import h, c, electron_volt, m_n
-from timepix_geometry_correction.correct import TimepixGeometryCorrection
+# from timepix_geometry_correction.correct import TimepixGeometryCorrection
 
 from __code.normalization_tof.units import (
     DistanceUnitOptions,
@@ -121,17 +121,17 @@ def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
     Returns:
         np.ndarray: corrected data array
     """
-    logging.info("Correcting chips alignment ...")
-    for _index, _data in enumerate(data):
-        o_corrector = TimepixGeometryCorrection(raw_image=_data, config=config)
+    # logging.info("Correcting chips alignment ...")
+    # for _index, _data in enumerate(data):
+    #     o_corrector = TimepixGeometryCorrection(raw_image=_data, config=config)
 
-        data_corrected = o_corrector.correct()
-        data[_index] = data_corrected
+    #     data_corrected = o_corrector.correct()
+    #     data[_index] = data_corrected
 
-    logging.info(f"\t{np.shape(data_corrected) = }")
-    logging.info("Chips alignment corrected!")
-    return data_corrected
-
+    # logging.info(f"\t{np.shape(data_corrected) = }")
+    # logging.info("Chips alignment corrected!")
+    # return data_corrected
+    return data
 
 def normalization_with_list_of_full_path(
     sample_dict: dict = None,
