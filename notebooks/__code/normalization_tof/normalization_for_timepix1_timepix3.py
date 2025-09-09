@@ -5,6 +5,7 @@ import multiprocessing as mp
 import os
 import shutil
 from pathlib import Path
+from typing import Tuple
 
 import h5py
 import matplotlib.pyplot as plt
@@ -141,6 +142,9 @@ def normalization_with_list_of_full_path(
     proton_charge_flag=True,
     shutter_counts_flag=True,
     replace_ob_zeros_by_nan_flag=False,
+    replace_ob_zeros_by_local_median_flag=False,
+    kernel_size_for_local_median: Tuple[int, int, int] = (3, 3, 3),
+    max_iterations: int = 10,
     output_tif: bool = True,
     instrument: str = "VENUS",
     detector_delay_us: float = None,
@@ -165,6 +169,9 @@ def normalization_with_list_of_full_path(
         proton_charge_flag (bool): if True, normalize by proton charge
         shutter_counts_flag (bool): if True, normalize by shutter counts
         replace_ob_zeros_by_nan_flag (bool): if True, replace OB zeros by NaN
+        replace_ob_zeros_by_local_median_flag (bool): if True, replace OB zeros by local median
+        kernel_size_for_local_median (Tuple[int, int, int]): kernel size for local median (y, x, tof)
+        max_iterations (int): maximum number of iterations for local median
         output_tif (bool): if True, export the data as tif files
         instrument (str): instrument name
         detector_delay_us (float): detector delay in microseconds
@@ -244,6 +251,9 @@ def normalization_with_list_of_full_path(
         use_proton_charge=normalized_by_proton_charge,
         use_shutter_counts=normalized_by_shutter_counts,
         replace_ob_zeros_by_nan=replace_ob_zeros_by_nan_flag,
+        replace_ob_zeros_by_local_median=replace_ob_zeros_by_local_median_flag,
+        kernel_size_for_local_median=kernel_size_for_local_median,
+        max_iterations=max_iterations,
     )
     logging.info(f"{ob_data_combined.shape = }")
     if verbose:
@@ -321,8 +331,13 @@ def normalization_with_list_of_full_path(
         logging.info("**********************************")
 
         if normalized_by_proton_charge:
+            logging.info("\t -> Normalized by proton charge")
             proton_charge = sample_master_dict[_sample_run_number][MasterDictKeys.proton_charge]
+            logging.info(f"\t\t proton charge: {proton_charge} C")
+            logging.info(f"\t\t{type(proton_charge) = }")
+            logging.info(f"\t\tbefore division: {_sample_data.dtype = }")
             _sample_data = _sample_data / proton_charge
+            logging.info(f"\t\tafter division: {_sample_data.dtype = }")
 
         if normalized_by_shutter_counts:
             list_shutter_values_for_each_image = produce_list_shutter_for_each_image(
@@ -598,8 +613,8 @@ def export_ob_images(
     display(HTML(f"Created folder {output_stack_folder} for OB outputs!"))
 
 
-def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbose=False):
-    pass
+# def normalization(sample_folder=None, ob_folder=None, output_folder="./", verbose=False):
+#     pass
 
 
 def make_tiff(data: list, filename: str = "", metadata: dict = None) -> None:
@@ -712,7 +727,7 @@ def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
         except KeyError:
             proton_charge = None
             status_all_proton_charge_found = False
-        master_dict[_run_number][MasterDictKeys.proton_charge] = proton_charge
+        master_dict[_run_number][MasterDictKeys.proton_charge] = np.float32(proton_charge)
     return status_all_proton_charge_found
 
 
@@ -819,18 +834,140 @@ def produce_list_shutter_for_each_image(list_time_spectra: list = None, list_shu
     return list_shutter_values_for_each_image
 
 
+def replace_zero_with_local_median(data: np.ndarray, 
+                                  kernel_size: Tuple[int, int, int] = (3, 3, 3),
+                                  max_iterations: int = 10) -> np.ndarray:
+    """
+    Replace 0 values in a 3D array using local median filtering.
+
+    This function ONLY processes small neighborhoods around 0 pixels,
+    avoiding expensive computation on the entire dataset.
+    
+    Parameters:
+    -----------
+    data : np.ndarray
+        3D input array that may contain 0 values
+    kernel_size : Tuple[int, int, int]
+        Size of the kernel for median filtering in (height, width, depth) format
+        Default is (3, 3, 3)
+    max_iterations : int
+        Maximum number of iterations to replace 0 values
+        Default is 10
+    
+    Returns:
+    --------
+    np.ndarray
+        Array with 0 values replaced by local median values
+    """
+    # Work on a copy to avoid modifying the original data
+    result = data.copy()
+
+    # Track initial 0 count
+    initial_zero_count = np.sum(result == 0)
+    if initial_zero_count == 0:
+        return result
+
+    logging.info(f"Starting efficient 0 replacement with kernel size {kernel_size}")
+    logging.info(f"Initial 0 count: {initial_zero_count}")
+
+    # Calculate padding for kernel
+    pad_h, pad_w, pad_d = [k // 2 for k in kernel_size]
+    
+    for iteration in range(max_iterations):
+        # Find current 0 locations
+        zero_coords = np.argwhere(result == 0)
+        current_zero_count = len(zero_coords)
+
+        if current_zero_count == 0:
+            logging.info(f"All 0 values replaced after {iteration} iterations")
+            break
+
+        logging.info(f"Iteration {iteration + 1}: {current_zero_count} 0 values remaining")
+
+        # Process each 0 pixel individually
+        replaced_count = 0
+        for coord in zero_coords:
+            y, x, z = coord
+            
+            # Define the local neighborhood bounds
+            y_min = max(0, y - pad_h)
+            y_max = min(result.shape[0], y + pad_h + 1)
+            x_min = max(0, x - pad_w)
+            x_max = min(result.shape[1], x + pad_w + 1)
+            z_min = max(0, z - pad_d)
+            z_max = min(result.shape[2], z + pad_d + 1)
+            
+            # Extract the local neighborhood
+            neighborhood = result[y_min:y_max, x_min:x_max, z_min:z_max]
+            
+            # Get non-NaN values in the neighborhood
+            valid_values = neighborhood[~np.isnan(neighborhood)]
+            
+            # If we have valid values, compute median and replace
+            if len(valid_values) > 0:
+                median_value = np.median(valid_values)
+                result[y, x, z] = median_value
+                replaced_count += 1
+
+        logging.info(f"  Replaced {replaced_count} zero values in this iteration")
+
+        # If no progress was made, break
+        if replaced_count == 0:
+            remaining_zero_count = np.sum(result == 0)
+            logging.info(f"No progress made. {remaining_zero_count} zero values could not be replaced")
+            logging.info("(These may be in regions with no valid neighbors)")
+            break
+
+    final_zero_count = np.sum(result == 0)
+    logging.info(f"Final zero count: {final_zero_count}")
+    logging.info(f"Successfully replaced {initial_zero_count - final_zero_count} zero values")
+
+    return result
+
+
 def combine_ob_images(
     ob_master_dict: dict,
     use_proton_charge: bool = False,
     use_shutter_counts: bool = False,
     replace_ob_zeros_by_nan: bool = False,
+    replace_ob_zeros_by_local_median: bool = False,
+    kernel_size_for_local_median: Tuple[int, int, int] = (3, 3, 3), 
+    max_iterations: int = 10,
 ) -> np.ndarray:
-    """combine all ob images and correct by proton charge and shutter counts"""
+    """combine all ob images and correct by proton charge and shutter counts
+    
+    Parameters:
+    -----------
+    ob_master_dict : dict
+        master dict of ob run numbers
+    use_proton_charge : bool
+        whether to correct by proton charge
+    use_shutter_counts : bool
+        whether to correct by shutter counts
+    replace_ob_zeros_by_nan : bool
+        whether to replace ob zeros by nan
+    replace_ob_zeros_by_local_median : bool
+        whether to replace ob zeros by local median
+    kernel_size : Tuple[int, int, int]
+        kernel size for local median filtering
+    max_iterations : int
+        maximum number of iterations for local median filtering
+    
+    Returns:
+    --------
+    np.ndarray
+        combined ob data
+    
+    """
 
     logging.info("Combining all open beam images")
     logging.info(f"\tcorrecting by proton charge: {use_proton_charge}")
     logging.info(f"\tshutter counts: {use_shutter_counts}")
     logging.info(f"\treplace ob zeros by nan: {replace_ob_zeros_by_nan}")
+    logging.info(f"\treplace ob zeros by local median: {replace_ob_zeros_by_local_median}")
+    logging.info(f"\tkernel size for local median: y:{kernel_size_for_local_median[0]}, "
+                 f"x:{kernel_size_for_local_median[1]}, "
+                 f"tof:{kernel_size_for_local_median[2]}")
     full_ob_data_corrected = []
 
     for _ob_run_number in ob_master_dict.keys():
@@ -853,7 +990,11 @@ def combine_ob_images(
         if use_proton_charge:
             logging.info("\t -> Normalized by proton charge")
             proton_charge = ob_master_dict[_ob_run_number][MasterDictKeys.proton_charge]
+            logging.info(f"\t\t proton charge: {proton_charge} C")
+            logging.info(f"\t\t{type(proton_charge) = }")
+            logging.info(f"\t\tbefore division: {proton_charge.dtype = }")
             ob_data = ob_data / proton_charge
+            logging.info(f"\t\tafter division: {ob_data.dtype = }")
             logging.info(f"{ob_data.shape = }")
 
         if use_shutter_counts:
@@ -874,23 +1015,10 @@ def combine_ob_images(
         # ob_data_combined = np.array(ob_data).mean(axis=0)
         # logging.info(f"{ob_data_combined.shape = }")
 
-        # remove zeros
-        if replace_ob_zeros_by_nan:
-            ob_data[ob_data == 0] = np.nan
-
-        # if True:
-        #     # replace zeros in OB by median of surrounding pixels
-        #     where_ob_zeros = np.where(ob_data == 0)
-        #     logging.info(f"{len(where_ob_zeros) = }")
-        #     if len(where_ob_zeros[0]) > 0:
-        #         logging.info(f"Replacing zeros in OB data by median of surrounding pixels ...")
-        #         # if verbose:
-        #         #     display(HTML(f"Replacing zeros in OB data by median of surrounding pixels ..."))
-        #         for _index in range(len(where_ob_zeros[0])):
-        #             _t = where_ob_zeros[0][_index]
-        #             _y = where_ob_zeros[1][_index]
-        #             _x = where_ob_zeros[2][_index]
-        #             ob_data[_t, _y, _x] = np.nanmedian(ob_data[_t, _y-1:_y+2, _x-1:_x+2])
+        if replace_ob_zeros_by_local_median:
+            ob_data = replace_zero_with_local_median(ob_data, 
+                                                     kernel_size=kernel_size_for_local_median, 
+                                                     max_iterations=max_iterations)
 
         full_ob_data_corrected.append(ob_data)
         logging.info(f"{np.shape(full_ob_data_corrected) = }")

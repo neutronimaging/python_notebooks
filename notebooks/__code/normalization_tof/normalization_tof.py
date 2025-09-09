@@ -20,7 +20,7 @@ from __code.normalization_tof import DetectorType, autoreduce_dir, distance_sour
 from __code.normalization_tof.config import DEBUG_DATA, timepix1_config, timepix3_config
 from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
     load_data_using_multithreading,
-    normalization,
+    # normalization,
     normalization_with_list_of_full_path,
     retrieve_list_of_tif,
 )
@@ -204,6 +204,8 @@ class NormalizationTof:
         display(vertical_layout)
 
         display(HTML("<span style='font-size: 16px; color:red'>OR</span>"))
+        # give focus to the widgets self.sample_run_numbers_widget
+        self.sample_run_numbers_widget.focus()
 
         self.select_folder(
             instruction="Browse sample runs to normalize",
@@ -269,7 +271,7 @@ class NormalizationTof:
 
         # present result in a table
         display(HTML(f"""
-                        <h3>Information for run: {os.path.basename(_full_path)}</h3>
+                        <h3>Information for run: {os.path.basename(input_full_path)}</h3>
                     <table border="3px solid black" style="border-collapse:collapse;">
                         <tr><th>Nbr TIFF</th><th>Images height</th><th>Images width</th><th>Data Type</th></tr>
                         <tr><td>{nbr_tiff}</td><td>{shape[0]}</td><td>{shape[1]}</td><td>{dtype}</td></tr>
@@ -303,7 +305,7 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_sample[_file_full_path] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
-                        self.display_infos(list_of_input_full_path=_file_full_path)
+                        self.display_infos(input_full_path=_file_full_path)
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
 
@@ -324,7 +326,7 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_sample[_run] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
-                        self.display_infos(list_of_input_full_path=_run)
+                        self.display_infos(input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
@@ -403,7 +405,7 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_ob[_file_full_path] = {}
                         self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
-                        self.display_infos(list_of_input_full_path=_file_full_path)
+                        self.display_infos(input_full_path=_file_full_path)
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
@@ -423,7 +425,7 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_short_name_full_path["ob"][os.path.basename(_run)] = _run
                         self.dict_ob[_run] = {}
-                        self.display_infos(list_of_input_full_path=_run)
+                        self.display_infos(input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
@@ -563,11 +565,12 @@ class NormalizationTof:
 
         label = widgets.Label(value="What to take into account for normalization?")
         display(label)
-        self.proton_charge_flag = widgets.Checkbox(description="Proton charge", value=True)
+        self.proton_charge_flag = widgets.Checkbox(description="Proton charge", 
+                                                   value=True,
+                                                   disabled=False)
         self.shutter_counts_flag = widgets.Checkbox(
             description="Shutter counts", value=not tpx3_disabled_flag, disabled=tpx3_disabled_flag
         )
-        self.replace_ob_zeros_by_nan_flag = widgets.Checkbox(description="Replace OB zeros by NaN", value=True)
         self.correct_chips_alignment_flag = widgets.Checkbox(
             description="Correct chips alignment", disabled=False, value=True
         )
@@ -576,11 +579,54 @@ class NormalizationTof:
             [
                 self.proton_charge_flag,
                 self.shutter_counts_flag,
-                self.replace_ob_zeros_by_nan_flag,
                 self.correct_chips_alignment_flag,
             ]
         )
         display(vertical_layout)
+
+        display(HTML("<hr>"))
+
+        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace OB zeros by local median", 
+                                                                      value=True,
+                                                                      layout=widgets.Layout(width="400px"))
+        self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
+                                                           names='value')
+        self.correct_chips_alignment_flag = widgets.Checkbox(
+            description="Correct chips alignment", disabled=False, value=True
+        )
+        display(self.replace_ob_zeros_by_local_median_flag)
+
+        kernel_size_label = widgets.Label(value="Kernel size for local median (odd number))", 
+                                          layout=widgets.Layout(width="300"))
+        self.kernel_size_for_local_median_y = widgets.BoundedIntText(description="y axis:",
+            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        )
+        self.kernel_size_for_local_median_x = widgets.BoundedIntText(description="x axis:",
+            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        )
+        self.kernel_size_for_local_median_tof = widgets.BoundedIntText(description="tof axis:",
+            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        )
+        hori_layout = widgets.HBox([kernel_size_label, 
+                                    self.kernel_size_for_local_median_y, 
+                                    self.kernel_size_for_local_median_x,
+                                    self.kernel_size_for_local_median_tof],
+                                    hori_layout=widgets.Layout(align_items="center",
+                                                               width="100%"))
+        display(hori_layout)
+
+        _label = widgets.Label(value="Maximum number of iterations:", layout=widgets.Layout(width="300px")) 
+        self.maximum_iterations_ui = widgets.BoundedIntText(
+            value=10,
+            min=1,
+            max=20,
+            step=1,
+            layout=widgets.Layout(width="200px"),
+        )
+        hori_layout = widgets.HBox([_label, self.maximum_iterations_ui],
+                                   hori_layout=widgets.Layout(align_items="center",
+                                                              width="100%"))
+        display(hori_layout)
 
         display(HTML("<hr>"))
 
@@ -596,6 +642,18 @@ class NormalizationTof:
             self.detector_offset_us = widgets.FloatText(value=0.0, disabled=False, layout=widgets.Layout(width="50px"))
             hori_layout = widgets.HBox([label, self.detector_offset_us])
             display(hori_layout)
+
+    def _on_replace_ob_zeros_by_local_median_flag_change(self, change):
+        if change['new']:
+            self.kernel_size_for_local_median_y.disabled = False
+            self.kernel_size_for_local_median_x.disabled = False
+            self.kernel_size_for_local_median_tof.disabled = False
+            self.maximum_iterations_ui.disabled = False
+        else:
+            self.kernel_size_for_local_median_y.disabled = True
+            self.kernel_size_for_local_median_x.disabled = True
+            self.kernel_size_for_local_median_tof.disabled = True
+            self.maximum_iterations_ui.disabled = True
 
     def what_to_export(self):
         display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))
@@ -641,15 +699,15 @@ class NormalizationTof:
 
         display(vertical_layout)
 
-    def run_normalization(self):
-        sample_folder = self.sample_folder
-        ob_folder = self.ob_folder
-        output_folder = self.output_folder
-        normalization(sample_folder=sample_folder, ob_folder=ob_folder, output_folder=output_folder, verbose=True)
-        display(HTML("<span style='color:blue'>Normalization completed</span>"))
-        display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
+    # def run_normalization(self):
+    #     sample_folder = self.sample_folder
+    #     ob_folder = self.ob_folder
+    #     output_folder = self.output_folder
+    #     normalization(sample_folder=sample_folder, ob_folder=ob_folder, output_folder=output_folder, verbose=True)
+    #     display(HTML("<span style='color:blue'>Normalization completed</span>"))
+    #     display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
 
-    # helper functions
+    # # helper functions
 
     def check_folder_is_valid(self, full_path):
         list_tiff = glob.glob(os.path.join(full_path, "*.tif*"))
@@ -777,7 +835,12 @@ class NormalizationTof:
             output_folder=output_folder,
             proton_charge_flag=self.proton_charge_flag.value,
             shutter_counts_flag=self.shutter_counts_flag.value,
-            replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
+            # replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
+            replace_ob_zeros_by_local_median_flag=self.replace_ob_zeros_by_local_median_flag.value,
+            kernel_size_for_local_median=(self.kernel_size_for_local_median_y.value,
+                                          self.kernel_size_for_local_median_x.value,
+                                          self.kernel_size_for_local_median_tof.value),
+            max_iterations=self.maximum_iterations_ui.value,
             correct_chips_alignment_flag=self.correct_chips_alignment_flag.value,
             correct_chips_alignment_config=correct_chips_alignment_config,
             verbose=True,
