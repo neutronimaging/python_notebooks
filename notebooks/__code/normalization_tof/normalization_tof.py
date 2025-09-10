@@ -211,6 +211,7 @@ class NormalizationTof:
             instruction="Browse sample runs to normalize",
             next_function=self.sample_run_numbers_selected,
             multiple=True,
+            newdir_toolbar_button=False,
         )
 
     def sample_run_numbers_selected(self, runs_selected):
@@ -774,7 +775,7 @@ class NormalizationTof:
             display(HTML(f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"))
             notebook_logging.info(f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!")
 
-    def select_folder(self, instruction="Select a folder", next_function=None, start_dir=None, multiple=False, new_dir_toolbar_button=False):
+    def select_folder(self, instruction="Select a folder", next_function=None, start_dir=None, multiple=False, newdir_toolbar_button=False):
         # go straight to autoreduce/mcp folder
         if start_dir is None:
             start_dir = self.autoreduce_dir
@@ -783,7 +784,7 @@ class NormalizationTof:
             instruction=instruction,
             start_dir=start_dir,
             type="directory",
-            newdir_toolbar_button=new_dir_toolbar_button,
+            newdir_toolbar_button=newdir_toolbar_button,
             multiple=multiple,
             sort_in_reverse=True,
             # sort_increasing=False,

@@ -183,6 +183,11 @@ class System:
         return cls.instrument_ui.value
 
     @classmethod
+    def get_ipts_selected(cls):
+        # split IPTS-XXXX and keep only XXXX
+        return cls.working_dir_ui.value.split("-", 1)[-1]
+
+    @classmethod
     def get_computer_name(cls):
         return platform.node()
 
