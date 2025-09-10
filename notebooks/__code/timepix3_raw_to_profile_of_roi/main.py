@@ -24,6 +24,10 @@ class Timepix3RawToProfileOfRoi:
 
     apply_sampling = False
 
+    hist2d = None
+    x_edges = None
+    y_edges = None
+
     def __init__(self, working_dir=None, debug=False):
         self.working_dir = working_dir
         self.debug = debug
@@ -113,10 +117,6 @@ class Timepix3RawToProfileOfRoi:
             _text += f'<tr><td>Chip {chip}</td><td>{count:,} hits ({percentage:.1f}%)</td></tr>'
         _text += '</table>'
         display(HTML(_text))
-   
-
-
-
 
     def select_sampling_percentage(self):
         if len(self.hits) > 100_000:
@@ -133,8 +133,7 @@ class Timepix3RawToProfileOfRoi:
             self.apply_sampling = False
 
     def display_image_with_roi(self):
-        self.generate_2d_hit_map()
-        
+        self.generate_2d_hit_map()    
 
     def generate_2d_hit_map(self):
         sample_fraction = self.sampling_percentage_ui.value / 100.
@@ -150,8 +149,16 @@ class Timepix3RawToProfileOfRoi:
         # Create 2D histogram (bin by detector pixels)
         x_bins = np.arange(0, 515, 1)  # 0 to 514 pixels
         y_bins = np.arange(0, 515, 1)  # 0 to 514 pixels
-        
-        hist2d, x_edges, y_edges = np.histogram2d(
+
+        self.hist2d, self.x_edges, self.y_edges = np.histogram2d(
             hits_for_viz["x"], hits_for_viz["y"], bins=[x_bins, y_bins])
 
+    def select_roi(self):
+        pass
+    
+    def generate_histogram_and_select_roi(self):
+        self.generate_2d_hit_map()
+        self.select_roi()
+
+    
 

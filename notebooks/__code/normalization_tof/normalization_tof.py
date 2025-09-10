@@ -522,7 +522,10 @@ class NormalizationTof:
 
     def select_output_folder(self):
         self.select_folder(
-            instruction="Select output folder", start_dir=self.working_dir, next_function=self.output_folder_selected
+            instruction="Select output folder", 
+            start_dir=self.working_dir, 
+            next_function=self.output_folder_selected,
+            new_dir_toolbar_button=True,
         )
 
     def retrieve_nexus_file_path(self):
@@ -771,7 +774,7 @@ class NormalizationTof:
             display(HTML(f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"))
             notebook_logging.info(f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!")
 
-    def select_folder(self, instruction="Select a folder", next_function=None, start_dir=None, multiple=False):
+    def select_folder(self, instruction="Select a folder", next_function=None, start_dir=None, multiple=False, new_dir_toolbar_button=False):
         # go straight to autoreduce/mcp folder
         if start_dir is None:
             start_dir = self.autoreduce_dir
@@ -780,7 +783,7 @@ class NormalizationTof:
             instruction=instruction,
             start_dir=start_dir,
             type="directory",
-            newdir_toolbar_button=True,
+            newdir_toolbar_button=new_dir_toolbar_button,
             multiple=multiple,
             sort_in_reverse=True,
             # sort_increasing=False,
