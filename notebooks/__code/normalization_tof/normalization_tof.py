@@ -45,6 +45,9 @@ class NormalizationTof:
     ob_run_numbers = None
     output_folder = None
 
+    sample_run_numbers_selected = None
+    ob_run_numbers_selected = None
+
     # {'full_path_data': {'data': None, 'nexus': None}}
     dict_sample = {}
     dict_ob = {}
@@ -102,6 +105,13 @@ class NormalizationTof:
             disabled=False,
         )
         display(self.detector_type_widget)
+
+    def reset_dicts(self):
+        self.dict_sample = {}
+        self.dict_ob = {}
+        self.dict_short_name_full_path = {"sample": {}, "ob": {}}
+        self.dict_ob_runs = None
+        self.dict_ob_data = None
 
     def setup_default_paths(self):
         logging.info("Setting up default paths...")
@@ -209,12 +219,12 @@ class NormalizationTof:
 
         self.select_folder(
             instruction="Browse sample runs to normalize",
-            next_function=self.sample_run_numbers_selected,
+            next_function=self.save_sample_run_numbers_selected,
             multiple=True,
             newdir_toolbar_button=False,
         )
 
-    def sample_run_numbers_selected(self, runs_selected):
+    def save_sample_run_numbers_selected(self, runs_selected):
         self.sample_run_numbers_selected = runs_selected
 
     def retrieve_file_path_from_nexus(self, run_number):
@@ -283,6 +293,7 @@ class NormalizationTof:
         """
         Check if the sample folder and runs are valid.
         """
+        self.reset_dicts()
 
         logging.info("Checking sample inputs...")
         display(HTML("Sample run numbers selected:"))
@@ -316,7 +327,12 @@ class NormalizationTof:
 
         else:
             notebook_logging.info(f"Sample run numbers selected: {self.sample_run_numbers_selected}")
+            if self.sample_run_numbers_selected is None:
+                display(HTML(f"<span style='color:red'>No sample runs selected!</span>"))
+                return
+            
             for _run in self.sample_run_numbers_selected:
+                _run = os.path.abspath(_run)
                 if os.path.exists(_run):
                     notebook_logging.info(f"\tSample run number {_run} - FOUND")
                     # check here that the folder is not empty (contains tiff)
@@ -333,6 +349,8 @@ class NormalizationTof:
                 else:
                     display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
                     notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
+            
+            self.sample_run_numbers_selected = None
 
     def select_ob_folder(self):
         self.select_folder(instruction="Browse ob top folder", next_function=self.ob_folder_selected)
@@ -375,7 +393,7 @@ class NormalizationTof:
 
         self.select_folder(
             instruction="Browse ob run number folders",
-            next_function=self.ob_run_numbers_selected,
+            next_function=self.save_ob_run_numbers_selected,
             start_dir=self.ob_folder,
             multiple=True,
         )
@@ -414,8 +432,13 @@ class NormalizationTof:
                     display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
 
         else:
-            notebook_logging.info(f"OB run numbers selected: {self.ob_run_numbers}")
-            for _run in self.ob_run_numbers:
+            notebook_logging.info(f"OB run numbers selected: {self.ob_run_numbers_selected}")
+            if self.ob_run_numbers_selected is None:
+                display(HTML(f"<span style='color:red'>No OB runs selected!</span>"))
+                return
+            
+            for _run in self.ob_run_numbers_selected:
+                _run = os.path.abspath(_run)
                 if os.path.exists(_run):
                     notebook_logging.info(f"\tOB run number {_run} - FOUND")
                     # check here that the folder is not empty (contains tiff)
@@ -432,6 +455,7 @@ class NormalizationTof:
                 else:
                     display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
                     notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
+            self.ob_run_numbers_selected = None
 
     def _load_and_get_integrated_ob(self, full_path):
         """
@@ -530,6 +554,12 @@ class NormalizationTof:
         )
 
     def retrieve_nexus_file_path(self):
+        """
+        Retrieve the NeXus file paths for sample and OB runs.
+        
+        This function assumes that the NeXus files are named in a specific format"""
+
+        all_nexus_files_found = True
         logging.info("Retrieving NeXus file paths for sample and OB runs...")
 
         logging.info("\tworking with sample runs:")
@@ -539,13 +569,18 @@ class NormalizationTof:
             elif self.detector_type in [DetectorType.tpx1, DetectorType.tpx3]:
                 file_name_split = os.path.basename(full_path).split("_")
                 run_number = file_name_split[2]
-            self.dict_sample[full_path]["nexus"] = os.path.join(
+
+            nexus_full_path = os.path.join(
                 self.nexus_folder, f"{self.instrument.upper()}_{run_number}.nxs.h5"
             )
-            logging.info(
-                f"\t\tNeXus file path for sample run {os.path.basename(full_path)}: {self.dict_sample[full_path]['nexus']}"
-            )
-
+            if os.path.exists(nexus_full_path):
+                logging.info(f"\tNeXus file found: {nexus_full_path}")
+                self.dict_sample[full_path]["nexus"] = nexus_full_path
+            else:
+                logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
+                all_nexus_files_found = False
+                self.dict_sample[full_path]["nexus"] = None
+       
         logging.info("\tworking with ob runs:")
         for full_path in self.dict_ob.keys():
             if self.detector_type == DetectorType.tpx1_legacy:
@@ -553,25 +588,40 @@ class NormalizationTof:
             elif self.detector_type in [DetectorType.tpx1, DetectorType.tpx3]:
                 file_name_split = os.path.basename(full_path).split("_")
                 run_number = file_name_split[2]
-            self.dict_ob[full_path]["nexus"] = os.path.join(
+
+            nexus_full_path = os.path.join(
                 self.nexus_folder, f"{self.instrument.upper()}_{run_number}.nxs.h5"
             )
-            logging.info(
-                f"\t\tNeXus file path for OB run {os.path.basename(full_path)}: {self.dict_ob[full_path]['nexus']}"
-            )
+            if os.path.exists(nexus_full_path):
+                logging.info(f"\tNeXus file found: {nexus_full_path}")
+                self.dict_ob[full_path]["nexus"] = nexus_full_path
+            else:
+                logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
+                all_nexus_files_found = False
+                self.dict_ob[full_path]["nexus"] = None
 
-        logging.info("NeXus file paths retrieved successfully.")
+        logging.info("Done retrieving NeXus file paths.")
+
+        return all_nexus_files_found
 
     def settings(self):
-        self.retrieve_nexus_file_path()
+        all_nexus_found = self.retrieve_nexus_file_path()
 
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
         label = widgets.Label(value="What to take into account for normalization?")
         display(label)
+
+        if all_nexus_found:
+            _value = True
+            _disabled=False
+        else:
+            _value = False
+            _disabled = True
         self.proton_charge_flag = widgets.Checkbox(description="Proton charge", 
-                                                   value=True,
-                                                   disabled=False)
+                                                   value=_value,
+                                                   disabled=_disabled)
+        
         self.shutter_counts_flag = widgets.Checkbox(
             description="Shutter counts", value=not tpx3_disabled_flag, disabled=tpx3_disabled_flag
         )
@@ -703,16 +753,6 @@ class NormalizationTof:
 
         display(vertical_layout)
 
-    # def run_normalization(self):
-    #     sample_folder = self.sample_folder
-    #     ob_folder = self.ob_folder
-    #     output_folder = self.output_folder
-    #     normalization(sample_folder=sample_folder, ob_folder=ob_folder, output_folder=output_folder, verbose=True)
-    #     display(HTML("<span style='color:blue'>Normalization completed</span>"))
-    #     display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
-
-    # # helper functions
-
     def check_folder_is_valid(self, full_path):
         list_tiff = glob.glob(os.path.join(full_path, "*.tif*"))
         if list_tiff:
@@ -747,8 +787,8 @@ class NormalizationTof:
         self.ob_folder = folder_selected
         display(HTML(f"Open beam folder selected: <span style='color:blue'>{folder_selected}</span>"))
 
-    def ob_run_numbers_selected(self, folder_selected):
-        self.ob_run_numbers = folder_selected
+    def save_ob_run_numbers_selected(self, folder_selected):
+        self.ob_run_numbers_selected = folder_selected
         # display(HTML(f"OB folder selected:"))
         # notebook_logging.info(f"OB folder selected: {folder_selected}")
         # for _run in folder_selected:

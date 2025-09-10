@@ -389,7 +389,13 @@ def normalization_with_list_of_full_path(
         if time_spectra is None:
             lambda_array = None
             energy_array = None
+        
         else:
+
+            if detector_delay_us is None:
+                detector_delay_us = 0.0
+                logging.info(f"detector delay is None, setting it to {detector_delay_us} us")
+
             logging.info(f"time spectra shape: {time_spectra.shape}")
 
             lambda_array = convert_array_from_time_to_lambda(
@@ -721,6 +727,12 @@ def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
     status_all_proton_charge_found = True
     for _run_number in master_dict.keys():
         _nexus_path = master_dict[_run_number][MasterDictKeys.nexus_path]
+        if _nexus_path is None or not os.path.exists(_nexus_path):
+            logging.info(f"Nexus file not found for run {_run_number}!")
+            master_dict[_run_number][MasterDictKeys.proton_charge] = None
+            status_all_proton_charge_found = False
+            continue
+
         try:
             with h5py.File(_nexus_path, "r") as hdf5_data:
                 proton_charge = hdf5_data["entry"][MasterDictKeys.proton_charge][0] / 1e12
@@ -757,6 +769,9 @@ def update_dict_with_nexus_full_path(nexus_root_path: str, instrument: str, mast
 def update_with_nexus_metadata(master_dict: dict) -> dict:
     for run_number in master_dict.keys():
         nexus_path = master_dict[run_number][MasterDictKeys.nexus_path]
+        if nexus_path is None or not os.path.exists(nexus_path):
+            logging.info(f"Nexus file not found for run {run_number}!")
+            continue
         detector_offset_us = get_detector_offset_from_nexus(nexus_path)
         master_dict[run_number][MasterDictKeys.detector_delay_us] = detector_offset_us
 
