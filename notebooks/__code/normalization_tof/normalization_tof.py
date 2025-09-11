@@ -106,10 +106,13 @@ class NormalizationTof:
         )
         display(self.detector_type_widget)
 
-    def reset_dicts(self):
+    def reset_sample_dicts(self):
         self.dict_sample = {}
+        self.dict_short_name_full_path["sample"] = {}
+
+    def reset_ob_dicts(self):
+        self.dict_short_name_full_path["ob"] = {}
         self.dict_ob = {}
-        self.dict_short_name_full_path = {"sample": {}, "ob": {}}
         self.dict_ob_runs = None
         self.dict_ob_data = None
 
@@ -293,7 +296,7 @@ class NormalizationTof:
         """
         Check if the sample folder and runs are valid.
         """
-        self.reset_dicts()
+        self.reset_sample_dicts()
 
         logging.info("Checking sample inputs...")
         display(HTML("Sample run numbers selected:"))
@@ -404,6 +407,8 @@ class NormalizationTof:
         """
         logging.info("Checking ob inputs...")
         display(HTML("OB run numbers selected:"))
+
+        self.reset_ob_dicts()
 
         if self.ob_run_numbers_widget.value.strip() != "":
             list_of_runs = extract_list_of_runs_from_string(self.ob_run_numbers_widget.value)
