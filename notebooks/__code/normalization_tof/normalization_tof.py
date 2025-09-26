@@ -218,7 +218,7 @@ class NormalizationTof:
 
         display(HTML("<span style='font-size: 16px; color:red'>OR</span>"))
         # give focus to the widgets self.sample_run_numbers_widget
-        self.sample_run_numbers_widget.focus()
+        # self.sample_run_numbers_widget.focus()
 
         self.select_folder(
             instruction="Browse sample runs to normalize",
