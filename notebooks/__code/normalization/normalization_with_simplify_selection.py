@@ -124,7 +124,7 @@ class NormalizationWithSimplifySelection:
         self.match_files()
         self.calculate_first_and_last_ob()
         self.calculate_time_range()
-        self.display_time_range_selection_widgets()
+        # self.display_time_range_selection_widgets()
 
     def select_ob_folder(self):
         self.select_folder(message="open beam", next_function=self.retrieve_ob_metadata())
@@ -798,15 +798,18 @@ class NormalizationWithSimplifySelection:
         display(table_ui)
 
     def select_output_folder(self):
+        #self.output_folder_ui = myfileselector.MyFileSelectorPanel(
         self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(
             instruction="select where to create the " + "normalized folders",
             start_dir=self.working_dir,
             ipts_folder=self.working_dir,
             next=self.normalization,
             type="directory",
+            stay_alive=False,
             newdir_toolbar_button=True,
         )
-
+        # display(self.output_folder_ui)
+        
     def normalization(self, output_folder):
         display(
             HTML(
@@ -893,3 +896,5 @@ class NormalizationWithSimplifySelection:
         for _folder in list_full_output_normalization_folder_name:
             _folder = _folder if _folder else "None"
             display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + "</span>"))
+
+        print("Normalization is done!")
