@@ -58,6 +58,7 @@ class Normalization:
         notebook_logging.info(f"Sample files selected: {b}")
         self.sample_runs = b
         display(HTML(f"<span style='font-size:16px; color:blue'>{len(b)} Sample files selected</span>"))
+        print(f"{len(b)} sample files selected")
 
     def select_ob_runs(self):
         self.select_data(
@@ -72,6 +73,7 @@ class Normalization:
         notebook_logging.info(f"OB files selected: {b}")
         self.ob_runs = b
         display(HTML(f"<span style='font-size:16px; color:blue'>{len(b)} OB files selected</span>"))
+        print(f"{len(b)} OB files selected")
 
     def select_dc_runs(self):
         self.select_data(
@@ -86,6 +88,7 @@ class Normalization:
         notebook_logging.info(f"DC files selected: {b}")
         self.dc_runs = b
         display(HTML(f"<span style='font-size:16px; color:blue'>{len(b)} DC files selected</span>"))
+        print(f"{len(b)} DC files selected")
 
     def select_data(self, instruction="Select data runs",
                        next_function=None, 
@@ -113,17 +116,16 @@ class Normalization:
         else:
             list_files = self.dc_runs
 
-        o_norm = Normalization()
+        o_norm = NeuNormNormalization()
         o_norm.load(file=list_files, data_type=data_type, notebook=True)
         self.o_norm = o_norm
         return o_norm.data[data_type]["data"]
 
     def select_background_region(self):
         # load sample images selected
-        data_array = self.load_data(data_type="sample")
+        self.data_array = self.load_data(data_type="sample")
         # get integrated image and use it in the Interface
-        self.o_roi_selection_ui = Interface(image=np.mean(data_array, axis=0), 
-                                            title="Select Background Region in Sample Images")
+        self.o_roi_selection_ui = Interface(array2d=np.mean(self.data_array, axis=0))
         self.o_roi_selection_ui.show()
 
     def normalization_settings(self):
@@ -133,7 +135,8 @@ class Normalization:
         list_files.df = self.dc_runs
 
         self.o_norm_handler = NormalizationHandler(list_files=list_files, 
-                                             working_dir=self.working_dir,)
+                                             working_dir=self.working_dir,
+                                             sample_data=self.data_array)
         self.o_norm_handler.load_data()
         self.o_norm_handler.settings()
 
@@ -154,15 +157,20 @@ class Normalization:
     def normalized_and_export(self, output_folder):
         notebook_logging.info(f"Output folder selected: {output_folder}")
         display(HTML(f"<span style='font-size:16px; color:blue'>Output folder selected: {output_folder}</span>"))
+        self.output_folder = output_folder
+
+    def export_normalized_data(self):
+        output_folder = self.output_folder
 
         dict_roi = None
         if hasattr(self, "o_roi_selection_ui"):
-            dict_roi = self.o_roi_selection_ui.get_roi_dictionary()
+            dict_roi = self.o_roi_selection_ui.list_roi
             if dict_roi == {}:
                 dict_roi = None
 
         self.o_norm_handler.run_normalization(dict_roi=dict_roi)
         self.o_norm_handler.export(output_folder=output_folder)
+        notebook_logging.info("*** End of the program ***")
 
     @classmethod
     def legend(cls) -> None:
@@ -192,16 +200,24 @@ class NormalizationHandler:
 
     normalized_data_array = []
 
-    def __init__(self, list_files: ListFiles = None, working_dir: str = "", gamma_threshold: float = 0.9):
+    def __init__(self, list_files: ListFiles = None, 
+                 working_dir: str = "", 
+                 gamma_threshold: float = 0.9,
+                 sample_data: list = None):
+        
         self.files = list_files
         self.working_dir = working_dir
         self.data = Data()
+        if sample_data is not None:
+            self.data.sample = sample_data  
+
         self.gamma_threshold = gamma_threshold
 
     def load_data(self):
         self.o_norm = NeuNormNormalization()
 
         # sample
+
         list_sample = self.files.sample
         # self.o_norm.load(file=list_sample, notebook=True, auto_gamma_filter=False,
         #                  manual_gamma_filter=True, manual_gamma_threshold=self.gamma_threshold)
@@ -330,10 +346,10 @@ class NormalizationHandler:
 
     def settings(self):
         o_norm = self.o_norm
-        nbr_sample = len(o_norm.data["sample"]["data"])
-        nbr_ob = len(o_norm.data["ob"]["data"])
-        if o_norm.data["df"]["data"]:
-            nbr_df = len(o_norm.data["df"]["data"])
+        nbr_sample = len(self.data.sample)
+        nbr_ob = len(self.data.ob)
+        if self.data.df:
+            nbr_df = len(self.data.df)
         else:
             nbr_df = 0
 
@@ -447,22 +463,22 @@ class NormalizationHandler:
                 raise NotImplementedError(f"How to combine OB algorithm ({how_to_combine}) not implemented!")
 
         if dict_roi is None:
-            try:
-                self.o_norm.df_correction()
-                self.o_norm.normalization(
-                    notebook=True, force_median_ob=force_median_ob, force_mean_ob=force_mean_ob, force=True
-                )
-                self.normalized_data_array = self.o_norm.get_normalized_data()
-                self.normalized_metadata_array = self.o_norm.data["sample"]["metadata"]
+            # try:
+            self.o_norm.df_correction()
+            self.o_norm.normalization(
+                notebook=True, force_median_ob=force_median_ob, force_mean_ob=force_mean_ob, force=True
+            )
+            self.normalized_data_array = self.o_norm.get_normalized_data()
+            self.normalized_metadata_array = self.o_norm.data["sample"]["metadata"]
 
-            except ValueError:
-                display(
-                    HTML(
-                        '<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) '
-                        + "do not Match!</span>"
-                    )
-                )
-                return
+            # except ValueError:
+            #     display(
+            #         HTML(
+            #             '<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) '
+            #             + "do not Match!</span>"
+            #         )
+            #     )
+            #     return
 
         else:
             _list_roi = []
@@ -486,22 +502,22 @@ class NormalizationHandler:
 
             self.o_norm.df_correction()
             if _list_roi:
-                try:
-                    self.o_norm.normalization(
-                        roi=_list_roi[0],
-                        notebook=True,
-                        force_median_ob=force_median_ob,
-                        force_mean_ob=force_mean_ob,
-                        force=True,
+                # try:
+                self.o_norm.normalization(
+                    roi=_list_roi[0],
+                    notebook=True,
+                    force_median_ob=force_median_ob,
+                    force_mean_ob=force_mean_ob,
+                    force=True,
                     )
-                except ValueError:
-                    display(
-                        HTML(
-                            '<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) '
-                            + "do not Match!</span>"
-                        )
-                    )
-                    return
+                # except ValueError:
+                #     display(
+                #         HTML(
+                #             '<span style="font-size: 20px; color:red">Data Size of Sample, OB and DF (if any) '
+                #             + "do not Match!</span>"
+                #         )
+                #     )
+                #     return
 
             else:
                 self.o_norm.normalization(notebook=True)
@@ -556,7 +572,7 @@ class NormalizationHandler:
         output_folder = os.path.join(output_folder, base_folder)
         output_folder = make_or_increment_folder_name(output_folder)
 
-        w = widgets.IntProgress()
+        w = widgets.IntProgress(description="Exporting: ", value=0)
         w.max = len(self.files.sample)
         display(w)
 
