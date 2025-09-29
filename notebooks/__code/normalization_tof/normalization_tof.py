@@ -58,18 +58,18 @@ class NormalizationTof:
     dict_ob_runs = None
     dict_ob_data = None
 
-    LOG_PATH = "/SNS/VENUS/shared/log/"
-    file_name, ext = os.path.splitext(os.path.basename(__file__))
-    user_name = os.getlogin()  # add user name to the log file name
-    log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-    print(f"Log file name: {log_file_name}")
-    notebook_logging.basicConfig(
-        filename=log_file_name,
-        filemode="w",
-        format="[%(levelname)s] - %(asctime)s - %(message)s",
-        level=notebook_logging.INFO,
-    )
-    notebook_logging.info(f"*** Starting a new script {file_name} ***")
+    # LOG_PATH = "/SNS/VENUS/shared/log/"
+    # file_name, ext = os.path.splitext(os.path.basename(__file__))
+    # user_name = os.getlogin()  # add user name to the log file name
+    # log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+    # print(f"Log file name: {log_file_name}")
+    # notebook_logging.basicConfig(
+    #     filename=log_file_name,
+    #     filemode="w",
+    #     format="[%(levelname)s] - %(asctime)s - %(message)s",
+    #     level=notebook_logging.INFO,
+    # )
+    # notebook_logging.info(f"*** Starting a new script {file_name} ***")
 
     def __init__(self, working_dir=None, debug=False):
         if debug:
@@ -90,12 +90,12 @@ class NormalizationTof:
         # self.shared_dir = str(Path(shared_dir[self.instrument][0]) / str(ipts) / shared_dir[self.instrument][1])
         self.shared_dir = Path("/") / _facility / self.instrument / str(ipts) / "shared"
 
-        logging.info(f"Instrument: {self.instrument}")
-        logging.info(f"Working dir: {self.working_dir}")
-        logging.info(f"IPTS: {self.ipts}")
-        logging.info(f"facility: {_facility}")
-        logging.info(f"nexus folder: {self.nexus_folder}")
-        logging.info(f"Shared dir: {self.shared_dir}")
+        notebook_logging.info(f"Instrument: {self.instrument}")
+        notebook_logging.info(f"Working dir: {self.working_dir}")
+        notebook_logging.info(f"IPTS: {self.ipts}")
+        notebook_logging.info(f"facility: {_facility}")
+        notebook_logging.info(f"nexus folder: {self.nexus_folder}")
+        notebook_logging.info(f"Shared dir: {self.shared_dir}")
 
         display(HTML("<span style='color:blue; font-size:16px'>Select detector type</span>"))
         self.detector_type_widget = widgets.Dropdown(
@@ -117,7 +117,7 @@ class NormalizationTof:
         self.dict_ob_data = None
 
     def setup_default_paths(self):
-        logging.info("Setting up default paths...")
+        notebook_logging.info("Setting up default paths...")
         self.detector_type = self.detector_type_widget.value
         self.raw_dir = Path(raw_dir[self.instrument][self.detector_type][0]) / str(self.ipts)
         self.autoreduce_dir = (
@@ -125,9 +125,9 @@ class NormalizationTof:
             / str(self.ipts)
             / Path(autoreduce_dir[self.instrument][self.detector_type][1])
         )
-        logging.info(f"\tAutoreduce dir: {self.autoreduce_dir}")
-        logging.info(f"\tDetector type: {self.detector_type}")
-        logging.info(f"\tRaw dir: {self.raw_dir}")
+        notebook_logging.info(f"\tAutoreduce dir: {self.autoreduce_dir}")
+        notebook_logging.info(f"\tDetector type: {self.detector_type}")
+        notebook_logging.info(f"\tRaw dir: {self.raw_dir}")
 
     # def manually_set_runs(self):
 
@@ -235,10 +235,10 @@ class NormalizationTof:
         Retrieve the full path to the NeXus file for the given run number.
         This function should be implemented to read the NeXus file and extract the path.
         """
-        logging.info(f"Retrieving file path from NeXus for run number: {run_number}")
+        notebook_logging.info(f"Retrieving file path from NeXus for run number: {run_number}")
         # Placeholder implementation, replace with actual logic to read NeXus file
         nexus_file_path = Path(self.nexus_folder) / f"{self.instrument.upper()}_{run_number}.nxs.h5"
-        logging.info(f"\tNeXus file path: {nexus_file_path}")
+        notebook_logging.info(f"\tNeXus file path: {nexus_file_path}")
         if nexus_file_path.exists():
             return extract_file_path_from_nexus(nexus_file_path)
         else:
@@ -248,7 +248,7 @@ class NormalizationTof:
         """
         Extract the full path to the run number based on the detector type.
         """
-        logging.info(f"Extracting full path for run number: {run_number} with detector type: {self.detector_type}")
+        notebook_logging.info(f"Extracting full path for run number: {run_number} with detector type: {self.detector_type}")
 
         if run_number is None:
             raise ValueError("Run number must be provided")
@@ -298,12 +298,12 @@ class NormalizationTof:
         """
         self.reset_sample_dicts()
 
-        logging.info("Checking sample inputs...")
+        notebook_logging.info("Checking sample inputs...")
         display(HTML("Sample run numbers selected:"))
 
         if self.sample_run_numbers_widget.value.strip() != "":
             list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
-            logging.info(f"\t{list_of_runs = }")
+            notebook_logging.info(f"\t{list_of_runs = }")
 
             list_of_sample_full_path = []
             for _run in list_of_runs:
@@ -312,11 +312,11 @@ class NormalizationTof:
 
             for _file_full_path in list_of_sample_full_path:
                 if os.path.exists(_file_full_path):
-                    logging.info(f"\tSample run number {_file_full_path} - FOUND")
+                    notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND")
                     is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
-                        logging.info(f"\tSample run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
+                        notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_sample[_file_full_path] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
@@ -325,7 +325,7 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
 
                 else:
-                    logging.info(f"\tSample run number {_file_full_path} - NOT FOUND")
+                    notebook_logging.info(f"\tSample run number {_file_full_path} - NOT FOUND")
                     display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
 
         else:
@@ -405,14 +405,14 @@ class NormalizationTof:
         """
         Check if the ob folder and runs are valid.
         """
-        logging.info("Checking ob inputs...")
+        notebook_logging.info("Checking ob inputs...")
         display(HTML("OB run numbers selected:"))
 
         self.reset_ob_dicts()
 
         if self.ob_run_numbers_widget.value.strip() != "":
             list_of_runs = extract_list_of_runs_from_string(self.ob_run_numbers_widget.value)
-            logging.info(f"\t{list_of_runs = }")
+            notebook_logging.info(f"\t{list_of_runs = }")
 
             list_of_ob_full_path = []
             for _run in list_of_runs:
@@ -421,11 +421,11 @@ class NormalizationTof:
 
             for _file_full_path in list_of_ob_full_path:
                 if os.path.exists(_file_full_path):
-                    logging.info(f"\tOB run number {_file_full_path} - FOUND")
+                    notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND")
                     is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
-                        logging.info(f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
+                        notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_ob[_file_full_path] = {}
                         self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
@@ -433,7 +433,7 @@ class NormalizationTof:
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
-                    logging.info(f"\tOB run number {_file_full_path} - NOT FOUND")
+                    notebook_logging.info(f"\tOB run number {_file_full_path} - NOT FOUND")
                     display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
 
         else:
@@ -467,15 +467,15 @@ class NormalizationTof:
         Load the integrated open beam data from the given OB run path.
         This function is a placeholder and should be implemented to load the actual data.
         """
-        logging.info(f"Loading integrated OB data for {full_path}")
+        notebook_logging.info(f"Loading integrated OB data for {full_path}")
         # Here you would load the integrated OB data, for example using a specific library
         # For now, we will just return a dummy value
         if self.dict_ob[full_path].get("data") is None:
-            logging.info("No data found for this OB run, loading it now...")
+            notebook_logging.info("No data found for this OB run, loading it now...")
             # load the data from the OB run
-            logging.info(f"\tFull path to OB run: {os.path.basename(full_path)}")
+            notebook_logging.info(f"\tFull path to OB run: {os.path.basename(full_path)}")
             list_tiff = retrieve_list_of_tif(full_path)
-            logging.info(f"\tNumber of TIFF files found: {len(list_tiff)}")
+            notebook_logging.info(f"\tNumber of TIFF files found: {len(list_tiff)}")
             if len(list_tiff) == 0:
                 display(HTML(f"<span style='color:red'>No TIFF files found in {full_path}!</span>"))
                 notebook_logging.error(f"No TIFF files found in {full_path}!")
@@ -490,7 +490,7 @@ class NormalizationTof:
             display(HTML("<span style='color:red'>No OB runs selected!</span>"))
             return
 
-        logging.info("Previewing OB runs")
+        notebook_logging.info("Previewing OB runs")
 
         # list_ob_short_runs = [os.path.basename(_run) for _run in self.ob_run_numbers]
         # self.dict_ob_runs = {_short_name: _full_name for _short_name, _full_name in zip(list_ob_short_runs, self.ob_run_numbers)}
@@ -499,9 +499,9 @@ class NormalizationTof:
         list_ob_key = list(self.dict_ob.keys())
         list_ob_short_runs = [os.path.basename(_run) for _run in list_ob_key]
         if len(list_ob_key) == 1:
-            logging.info("Only one OB run")
+            notebook_logging.info("Only one OB run")
             full_path = list_ob_key[0]
-            logging.info(f"\tFull path to OB run: {full_path}")
+            notebook_logging.info(f"\tFull path to OB run: {full_path}")
             integrated_ob = self._load_and_get_integrated_ob(full_path)
             if integrated_ob is None:
                 display(
@@ -517,7 +517,7 @@ class NormalizationTof:
             plt.show()
 
         else:
-            logging.info(f"Multiple OB runs to display: {len(list_ob_key)}")
+            notebook_logging.info(f"Multiple OB runs to display: {len(list_ob_key)}")
 
             def display_ob_run(short_name):
                 """
@@ -565,9 +565,9 @@ class NormalizationTof:
         This function assumes that the NeXus files are named in a specific format"""
 
         all_nexus_files_found = True
-        logging.info("Retrieving NeXus file paths for sample and OB runs...")
+        notebook_logging.info("Retrieving NeXus file paths for sample and OB runs...")
 
-        logging.info("\tworking with sample runs:")
+        notebook_logging.info("\tworking with sample runs:")
         for full_path in self.dict_sample.keys():
             if self.detector_type == DetectorType.tpx1_legacy:
                 run_number = os.path.basename(full_path).split("_")[1]
@@ -579,14 +579,14 @@ class NormalizationTof:
                 self.nexus_folder, f"{self.instrument.upper()}_{run_number}.nxs.h5"
             )
             if os.path.exists(nexus_full_path):
-                logging.info(f"\tNeXus file found: {nexus_full_path}")
+                notebook_logging.info(f"\tNeXus file found: {nexus_full_path}")
                 self.dict_sample[full_path]["nexus"] = nexus_full_path
             else:
-                logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
+                notebook_logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
                 all_nexus_files_found = False
                 self.dict_sample[full_path]["nexus"] = None
-       
-        logging.info("\tworking with ob runs:")
+
+        notebook_logging.info("\tworking with ob runs:")
         for full_path in self.dict_ob.keys():
             if self.detector_type == DetectorType.tpx1_legacy:
                 run_number = os.path.basename(full_path).split("_")[1]
@@ -598,19 +598,20 @@ class NormalizationTof:
                 self.nexus_folder, f"{self.instrument.upper()}_{run_number}.nxs.h5"
             )
             if os.path.exists(nexus_full_path):
-                logging.info(f"\tNeXus file found: {nexus_full_path}")
+                notebook_logging.info(f"\tNeXus file found: {nexus_full_path}")
                 self.dict_ob[full_path]["nexus"] = nexus_full_path
             else:
-                logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
+                notebook_logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
                 all_nexus_files_found = False
                 self.dict_ob[full_path]["nexus"] = None
 
-        logging.info("Done retrieving NeXus file paths.")
+        notebook_logging.info("Done retrieving NeXus file paths.")
 
         return all_nexus_files_found
 
     def settings(self):
         all_nexus_found = self.retrieve_nexus_file_path()
+        notebook_logging.info(f"All NeXus files found: {all_nexus_found}")
 
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
@@ -645,8 +646,8 @@ class NormalizationTof:
 
         display(HTML("<hr>"))
 
-        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace OB zeros by local median", 
-                                                                      value=True,
+        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace OB zeros by local median (will take much more time!)", 
+                                                                      value=False,
                                                                       layout=widgets.Layout(width="400px"))
         self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
                                                            names='value')
