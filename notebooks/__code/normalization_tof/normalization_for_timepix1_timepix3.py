@@ -26,6 +26,7 @@ from __code.normalization_tof.units import (
     convert_array_from_time_to_energy,
     convert_array_from_time_to_lambda,
 )
+from __code.normalization_tof.normalization_for_timepix import create_master_dict
 
 LOG_PATH = "/SNS/VENUS/shared/log/"
 LOAD_DTYPE = np.uint16
@@ -137,6 +138,7 @@ def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
 def normalization_with_list_of_full_path(
     sample_dict: dict = None,
     ob_dict: dict = None,
+    dc_dict: dict = None,
     output_folder: str = "./",
     verbose: bool = False,
     proton_charge_flag=True,
@@ -164,7 +166,11 @@ def normalization_with_list_of_full_path(
             {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
              base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
 
-        output_folder (str): folder to save the output data
+        dc_dict (dict): dictionary with dc run numbers and their data
+            {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
+             base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
+
+                     output_folder (str): folder to save the output data
         verbose (bool): if True, display additional information
         proton_charge_flag (bool): if True, normalize by proton charge
         shutter_counts_flag (bool): if True, normalize by shutter counts
@@ -215,6 +221,10 @@ def normalization_with_list_of_full_path(
     )
     ob_master_dict, ob_status_metadata = create_master_dict(
         data_dictionary=ob_dict, data_type=DataType.ob, instrument=instrument
+    )
+
+    dc_master_dict, dc_status_metadata = create_master_dict(
+        data_dictionary=dc_dict, data_type=DataType.dc, instrument=instrument
     )
 
     # load ob images
@@ -279,6 +289,23 @@ def normalization_with_list_of_full_path(
             spectra_file_name=ob_master_dict[_ob_run_number][MasterDictKeys.spectra_file_name],
         )
 
+    # load dc images
+    for _dc_run_number in dc_master_dict.keys():
+        logging.info(f"loading dc# {_dc_run_number} ... ")
+        if verbose:
+            display(HTML(f"Loading dc# {_dc_run_number} ..."))
+        dc_master_dict[_dc_run_number][MasterDictKeys.data] = load_data_using_multithreading(
+            dc_master_dict[_dc_run_number][MasterDictKeys.list_tif], combine_tof=False
+        )
+        logging.info(f"dc# {_dc_run_number} loaded!")
+        logging.info(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }")
+        if verbose:
+            display(HTML(f"dc# {_dc_run_number} loaded!"))
+            display(HTML(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }"))
+
+    # combine all ob images
+    dc_data_combined = combine_dc_images(dc_master_dict)
+    
     # load sample images
     for _sample_run_number in sample_master_dict.keys():
         logging.info(f"loading sample# {_sample_run_number} ... ")
@@ -366,12 +393,10 @@ def normalization_with_list_of_full_path(
                 spectra_file_name=sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name],
             )
 
-        # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
-        # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data))
-        # _sample_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
-        # _normalized_data = np.zeros_like(_sample_data, dtype=np.float32)
-        # index = 0
-        _normalized_data = np.divide(_sample_data, ob_data_combined)
+        if dc_data_combined is not None:
+            _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined))
+        else:
+            _normalized_data = np.divide(_sample_data, ob_data_combined)
 
         # for _sample, _ob in zip(_sample_data, ob_data_combined):
         #     _normalized_data[index] = np.divide(_sample, _ob)
@@ -938,6 +963,40 @@ def replace_zero_with_local_median(data: np.ndarray,
     logging.info(f"Successfully replaced {initial_zero_count - final_zero_count} zero values")
 
     return result
+
+
+def combine_dc_images(dc_master_dict: dict) -> np.ndarray:
+    """combine all dc images
+    
+    Parameters:
+    -----------
+    dc_master_dict : dict
+        master dict of dc run numbers
+    
+    Returns:
+    --------
+    np.ndarray
+        combined dc data
+    
+    """
+    logging.info("Combining all dark current images")
+    full_dc_data = []
+
+    if dc_master_dict is None:
+        return None
+
+    for _dc_run_number in dc_master_dict.keys():
+        logging.info(f"Combining dc# {_dc_run_number} ...")
+        dc_data = np.array(dc_master_dict[_dc_run_number][MasterDictKeys.data], dtype=np.float32)
+        full_dc_data.append(dc_data)
+        logging.info(f"{np.shape(full_dc_data) = }")
+
+    logging.info("Combining all dc images is done!")
+    logging.info(f"\tbefore: {len(full_dc_data) = }")
+    dc_data_combined = np.array(full_dc_data).mean(axis=0)
+    logging.info(f"\tafter: {dc_data_combined.shape = }")
+
+    return dc_data_combined
 
 
 def combine_ob_images(

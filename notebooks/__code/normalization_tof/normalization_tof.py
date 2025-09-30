@@ -41,22 +41,29 @@ notebook_logging.info(f"*** Starting a new script {file_name} ***")
 class NormalizationTof:
     sample_folder = None
     sample_run_numbers = None
+    sample_run_numbers_selected = None
+    
     ob_folder = None
     ob_run_numbers = None
-    output_folder = None
-
-    sample_run_numbers_selected = None
     ob_run_numbers_selected = None
 
+    dc_folder = None
+    dc_run_numbers = None
+    dc_run_numbers_selected = None
+
+    output_folder = None
+    
     # {'full_path_data': {'data': None, 'nexus': None}}
     dict_sample = {}
     dict_ob = {}
+    dict_dc = {}
 
     # {'short_name': 'full_path_data'}
-    dict_short_name_full_path = {"sample": {}, "ob": {}}
+    dict_short_name_full_path = {"sample": {}, "ob": {}, "dc": {}}
 
     dict_ob_runs = None
     dict_ob_data = None
+    dict_dc_data = None
 
     # LOG_PATH = "/SNS/VENUS/shared/log/"
     # file_name, ext = os.path.splitext(os.path.basename(__file__))
@@ -116,6 +123,12 @@ class NormalizationTof:
         self.dict_ob_runs = None
         self.dict_ob_data = None
 
+    def reset_dc_dicts(self):
+        self.dict_short_name_full_path["dc"] = {}
+        self.dict_dc = {}
+        self.dict_dc_runs = None
+        self.dict_dc_data = None
+
     def setup_default_paths(self):
         notebook_logging.info("Setting up default paths...")
         self.detector_type = self.detector_type_widget.value
@@ -128,58 +141,7 @@ class NormalizationTof:
         notebook_logging.info(f"\tAutoreduce dir: {self.autoreduce_dir}")
         notebook_logging.info(f"\tDetector type: {self.detector_type}")
         notebook_logging.info(f"\tRaw dir: {self.raw_dir}")
-
-    # def manually_set_runs(self):
-
-    #     if self.debug:
-    #         sample_runs = DEBUG_DATA.sample_runs_selected
-    #         sample_run_numbers_list = []
-    #         for _run in sample_runs:
-    #             _, number = _run.split('_')
-    #             sample_run_numbers_list.append(number)
-    #         str_sample_run_numbers = ', '.join(sample_run_numbers_list)
-
-    #         ob_runs = DEBUG_DATA.ob_runs_selected
-    #         ob_run_numbers_list = []
-    #         for _run in ob_runs:
-    #             _, number = _run.split('_')
-    #             ob_run_numbers_list.append(number)
-    #         str_ob_run_numbers = ', '.join(ob_run_numbers_list)
-
-    #         output_folder = DEBUG_DATA.output_folder
-
-    #     else:
-    #         str_sample_run_numbers = ""
-    #         str_ob_run_numbers = ""
-    #         # output_folder = os.path.join(self.working_dir, 'shared')
-    #         output_folder = ""
-
-    #     sample_label = widgets.Label(value="List of sample run numbers (ex: 8702, 8704)")
-    #     self.sample_run_numbers_widget = widgets.Textarea(value=str_sample_run_numbers,
-    #                                                 placeholder="",
-    #                                                 layout=widgets.Layout(width='400px'))
-    #     ob_label = widgets.Label(value="List of ob run numbers (ex: 8703, 8705)")
-    #     self.ob_run_numbers_widget = widgets.Textarea(value=str_ob_run_numbers,
-    #                                             placeholder="",
-    #                                             layout=widgets.Layout(width='400px'))
-    #     output_label = widgets.Label(value=f"Full output folder path")
-    #     self.output_folder_widget = widgets.Text(value=output_folder,
-    #                                       placeholder="",
-    #                                       layout=widgets.Layout(width='400px'))
-    #     vertical_layout = widgets.VBox([sample_label, self.sample_run_numbers_widget,
-    #                                     ob_label, self.ob_run_numbers_widget,
-    #                                     output_label, self.output_folder_widget,])
-    #     display(vertical_layout)
-
-    # if self.instrument != "SNAP":
-    #     display(HTML("<span style='font-size: 16px; color:red'>You have the option here to enter the runs manually or just use the widgets (following cells) to define them!</span>"))
-    #     display(vertical_layout)
-
-    # else:
-    #     display(HTML("<span style='font-size: 16px; color:red'>Manual entry of runs is not available for SNAP instrument!</span>"))
-
-    def select_sample_folder(self):
-        self.select_folder(instruction="Select sample top folder", next_function=self.sample_folder_selected)
+        # self.select_folder(instruction="Select sample top folder", next_function=self.sample_folder_selected)
 
     def select_sample_run_numbers(self):
         # if self.sample_run_numbers_widget.value.strip() != "":
@@ -461,6 +423,107 @@ class NormalizationTof:
                     display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
                     notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
             self.ob_run_numbers_selected = None
+
+    def select_dc_run_numbers(self):
+        self.select_folder(instruction="Browse dc top folder", next_function=self.dc_folder_selected)
+
+    def select_dc_run_numbers(self):
+
+        if self.debug:
+            dc_runs = DEBUG_DATA.dc_runs_selected
+            dc_run_numbers_list = []
+            for _run in dc_runs:
+                _, number = _run.split("_")
+                dc_run_numbers_list.append(number)
+            str_dc_run_numbers = ", ".join(dc_run_numbers_list)
+
+            output_folder = DEBUG_DATA.output_folder
+
+        else:
+            str_dc_run_numbers = ""
+
+        dc_label = widgets.HTML(value="<b><font color='green'>List of dc run numbers (ex: 8705, 8707)</font></b>")
+
+        self.dc_run_numbers_widget = widgets.Textarea(
+            value=str_dc_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+        )
+        vertical_layout = widgets.VBox(
+            [
+                dc_label,
+                self.dc_run_numbers_widget,
+            ]
+        )
+        display(vertical_layout)
+
+        display(HTML("<span style='font-size: 16px; color:red'>OR</span>"))
+
+        self.select_folder(
+            instruction="Browse dc run number folders",
+            next_function=self.save_dc_run_numbers_selected,
+            start_dir=self.dc_folder,
+            multiple=True,
+        )
+
+    def check_dc(self):
+        """
+        Check if the dc folder and runs are valid.
+        """
+        notebook_logging.info("Checking dc inputs...")
+        display(HTML("DC run numbers selected:"))
+
+        self.reset_dc_dicts()
+
+        if self.dc_run_numbers_widget.value.strip() != "":
+            list_of_runs = extract_list_of_runs_from_string(self.dc_run_numbers_widget.value)
+            notebook_logging.info(f"\t{list_of_runs = }")
+
+            list_of_dc_full_path = []
+            for _run in list_of_runs:
+                _full_path = self.extract_full_path(run_number=_run)
+                list_of_dc_full_path.append(_full_path)
+
+            for _file_full_path in list_of_dc_full_path:
+                if os.path.exists(_file_full_path):
+                    notebook_logging.info(f"\tDC run number {_file_full_path} - FOUND")
+                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    if is_valid_run:
+                        nbr_tiff = report_dict["nbr_tiff"]
+                        notebook_logging.info(f"\tDC run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
+                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        self.dict_dc[_file_full_path] = {}
+                        self.dict_short_name_full_path["dc"][os.path.basename(_file_full_path)] = _file_full_path
+                        self.display_infos(input_full_path=_file_full_path)
+                    else:
+                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
+                else:
+                    notebook_logging.info(f"\tDC run number {_file_full_path} - NOT FOUND")
+                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+
+        else:
+            notebook_logging.info(f"DC run numbers selected: {self.dc_run_numbers_selected}")
+            if self.dc_run_numbers_selected is None:
+                display(HTML(f"<span style='color:red'>No DC runs selected!</span>"))
+                return
+
+            for _run in self.dc_run_numbers_selected:
+                _run = os.path.abspath(_run)
+                if os.path.exists(_run):
+                    notebook_logging.info(f"\tDC run number {_run} - FOUND")
+                    # check here that the folder is not empty (contains tiff)
+                    is_valid_run, report_dict = self.check_folder_is_valid(_run)
+                    if is_valid_run:
+                        nbr_tiff = report_dict["nbr_tiff"]
+                        display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
+                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                        self.dict_short_name_full_path["dc"][os.path.basename(_run)] = _run
+                        self.dict_dc[_run] = {}
+                        self.display_infos(input_full_path=_run)
+                    else:
+                        display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
+                else:
+                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    notebook_logging.info(f"\tDC run number {_run} - NOT FOUND!")
+            self.dc_run_numbers_selected = None
 
     def _load_and_get_integrated_ob(self, full_path):
         """
@@ -793,24 +856,16 @@ class NormalizationTof:
         self.ob_folder = folder_selected
         display(HTML(f"Open beam folder selected: <span style='color:blue'>{folder_selected}</span>"))
 
+    def dc_folder_selected(self, folder_selected):
+        self.dc_folder = folder_selected
+        display(HTML(f"Dark current folder selected: <span style='color:blue'>{folder_selected}</span>"))
+
     def save_ob_run_numbers_selected(self, folder_selected):
         self.ob_run_numbers_selected = folder_selected
-        # display(HTML(f"OB folder selected:"))
-        # notebook_logging.info(f"OB folder selected: {folder_selected}")
-        # for _run in folder_selected:
-        #     if os.path.exists(_run):
-        #         notebook_logging.info(f"\tOB run number {_run} - FOUND")
-        #         is_valid_run, report_dict = self.check_folder_is_valid(_run)
-        #         if is_valid_run:
-        #             nbr_tiff = report_dict['nbr_tiff']
-        #             display(HTML(f"<span style='color:green'>{_run}</span>"))
-        #             notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-        #         else:
-        #             display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
-        #     else:
-        #         display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
-        #         notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
-
+     
+    def save_dc_run_numbers_selected(self, folder_selected):
+        self.dc_run_numbers_selected = folder_selected
+        
     def output_folder_selected(self, folder_selected):
         self.output_folder = folder_selected
         display(HTML("Output folder selected:"))
@@ -875,6 +930,13 @@ class NormalizationTof:
                 "nexus": self.dict_ob[_full_path]["nexus"],
             }
 
+        dc_dict = {}
+        for _full_path in self.dict_dc.keys():
+            dc_dict[os.path.basename(_full_path)] = {
+                "full_path": _full_path,
+                "nexus": self.dict_dc[_full_path]["nexus"],
+            }
+
         if self.correct_chips_alignment_flag.value:
             if self.detector_type in [DetectorType.tpx1_legacy, DetectorType.tpx1]:
                 correct_chips_alignment_config = timepix1_config
@@ -886,6 +948,7 @@ class NormalizationTof:
         normalization_with_list_of_full_path(
             sample_dict=sample_dict,
             ob_dict=ob_dict,
+            dc_dict=dc_dict,
             output_folder=output_folder,
             proton_charge_flag=self.proton_charge_flag.value,
             shutter_counts_flag=self.shutter_counts_flag.value,

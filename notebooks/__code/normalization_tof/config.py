@@ -5,6 +5,7 @@ class DEBUG_DATA:
     output_folder = f"{working_dir}/shared/processed_data/jean"
     sample_runs_selected = ["Run_10175"]
     ob_runs_selected = ["Run_10194"]
+    dc_runs_selected = ["Run_10176"]
 
 
 timepix1_config = {
